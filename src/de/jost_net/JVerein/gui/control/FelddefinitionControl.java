@@ -167,7 +167,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     felddefinitionList.addColumn("Label", "label");
     felddefinitionList.addColumn("Datentyp", "datentyp",
         new DatentypFormatter(), false, Column.ALIGN_LEFT);
-    felddefinitionList.addColumn("Länge", "laenge");
+    felddefinitionList.addColumn("LÃ¤nge", "laenge");
     felddefinitionList
         .setContextMenu(new FelddefinitionMenu(felddefinitionList));
     felddefinitionList.setAction(
@@ -179,15 +179,15 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
   private void konvertiereTyp(boolean checkOnly, Felddefinition f, Datentyp d)
       throws RemoteException, ApplicationException
   {
-    // Felddefinition enthält den bisherigen Stand, Datentyp ist die neue
+    // Felddefinition enthÃ¤lt den bisherigen Stand, Datentyp ist die neue
     // Auswahl
 
-    // Bei neuen Zusatzfeldern ist keine Prüfung möglich/erforderlich
+    // Bei neuen Zusatzfeldern ist keine PrÃ¼fung mÃ¶glich/erforderlich
     if (f.isNewObject())
     {
       return;
     }
-    // Gibt es eine Veränderung? Wenn nicht: Ende der Prüfung
+    // Gibt es eine VerÃ¤nderung? Wenn nicht: Ende der PrÃ¼fung
     if (f.getDatentyp() == d.getKey())
     {
       return;
@@ -215,7 +215,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
         break;
     }
     // Wenn das Zusatzfeld noch bei keinem Mitglied angelegt wurde, kann der Typ
-    // generell geändert werden.
+    // generell geÃ¤ndert werden.
     if (it.size() == 0)
     {
       return;
@@ -418,11 +418,11 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     {
       case 1:
         throw new RemoteException(
-            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: }"
+            "Typkonvertierung kann nicht durchgefÃ¼hrt werden. Inhalt: }"
                 + wert);
       case 2:
         throw new RemoteException(
-            "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunächst in Zeichenfolge umwandeln.");
+            "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunÃ¤chst in Zeichenfolge umwandeln.");
     }
   }
 

@@ -31,7 +31,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer EigenschaftGruppe.
+ * LÃ¶schen einer EigenschaftGruppe.
  */
 public class EigenschaftGruppeDeleteAction implements Action
 {
@@ -46,7 +46,7 @@ public class EigenschaftGruppeDeleteAction implements Action
     }
     if (context == null || !(context instanceof EigenschaftGruppe))
     {
-      throw new ApplicationException("Keine Eigenschaften-Gruppe ausgewählt");
+      throw new ApplicationException("Keine Eigenschaften-Gruppe ausgewÃ¤hlt");
     }
     try
     {
@@ -65,9 +65,9 @@ public class EigenschaftGruppeDeleteAction implements Action
         if (it.size() > 0)
         {
           SimpleDialog sd = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-          sd.setTitle("Eigenschaften-Gruppe löschen");
+          sd.setTitle("Eigenschaften-Gruppe lÃ¶schen");
           sd.setText(String.format(
-              "Die Eigenschaften-Gruppe kann nicht gelöscht werden. Sie enthält noch %d Eigenschaft(en).",
+              "Die Eigenschaften-Gruppe kann nicht gelÃ¶scht werden. Sie enthÃ¤lt noch %d Eigenschaft(en).",
               it.size()));
           sd.open();
           return;
@@ -75,8 +75,8 @@ public class EigenschaftGruppeDeleteAction implements Action
         else
         {
           YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-          d.setTitle("Eigenschaften-Gruppe löschen");
-          d.setText("Wollen Sie diese Eigenschaften-Gruppe wirklich löschen?");
+          d.setTitle("Eigenschaften-Gruppe lÃ¶schen");
+          d.setText("Wollen Sie diese Eigenschaften-Gruppe wirklich lÃ¶schen?");
           Boolean choice = (Boolean) d.open();
           if (!choice.booleanValue())
             return;
@@ -84,16 +84,16 @@ public class EigenschaftGruppeDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Eigenschaften-Gruppe", e);
+        Logger.error("Fehler beim LÃ¶schen der Eigenschaften-Gruppe", e);
         return;
       }
 
       eg.delete();
-      GUI.getStatusBar().setSuccessText("Eigenschaften-Gruppe gelöscht.");
+      GUI.getStatusBar().setSuccessText("Eigenschaften-Gruppe gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Eigenschaften-Gruppe.";
+      String fehler = "Fehler beim LÃ¶schen der Eigenschaften-Gruppe.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

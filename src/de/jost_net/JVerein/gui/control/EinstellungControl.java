@@ -580,7 +580,7 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET),
         SWT.HORIZONTAL);
     sepadatumoffset.setScaling(0, 14, 1, 1);
-    sepadatumoffset.setName("Zusätzliche SEPA-Vorlaufzeit");
+    sepadatumoffset.setName("ZusÃ¤tzliche SEPA-Vorlaufzeit");
     SEPADatumOffsetListener listener = new SEPADatumOffsetListener();
     sepadatumoffset.addListener(listener);
     listener.handleEvent(null); // einmal initial ausloesen
@@ -901,7 +901,7 @@ public class EinstellungControl extends AbstractControl
     splitpositionzweck = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.SPLITPOSITIONZWECK));
     splitpositionzweck.setName("Bei automatischem Splitten den "
-        + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
+        + "Verwendungszweck aus den Sollbuchungspositionen Ã¼bernehmen");
     return splitpositionzweck;
   }
 
@@ -914,7 +914,7 @@ public class EinstellungControl extends AbstractControl
     geprueftsynchronisieren = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
     geprueftsynchronisieren
-        .setName("Geprüft Markierung mit Hibiscus synchronisieren");
+        .setName("GeprÃ¼ft Markierung mit Hibiscus synchronisieren");
     return geprueftsynchronisieren;
   }
 
@@ -1087,7 +1087,7 @@ public class EinstellungControl extends AbstractControl
     autobuchunguebernahme = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME));
     autobuchunguebernahme
-        .setName("Automatische Buchungsübernahme aus Hibiscus");
+        .setName("Automatische BuchungsÃ¼bernahme aus Hibiscus");
     return autobuchunguebernahme;
   }
 
@@ -1100,7 +1100,7 @@ public class EinstellungControl extends AbstractControl
     unterdrueckungohnebuchung = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG));
     unterdrueckungohnebuchung
-        .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
+        .setName("Listen: Buchungsarten ohne Buchung unterdrÃ¼cken");
     return unterdrueckungohnebuchung;
   }
 
@@ -2215,8 +2215,8 @@ public class EinstellungControl extends AbstractControl
     unterschriftdrucken = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
     unterschriftdrucken.setName(
-        " *Die maschinelle Erstellung von Zuwendungsbestätigungen muss "
-            + "vorab dem zuständigen Finanzamt angezeigt worden sein.");
+        " *Die maschinelle Erstellung von ZuwendungsbestÃ¤tigungen muss "
+            + "vorab dem zustÃ¤ndigen Finanzamt angezeigt worden sein.");
     return unterschriftdrucken;
   }
 
@@ -2369,7 +2369,7 @@ public class EinstellungControl extends AbstractControl
           (String) getGlaeubigerID().getValue());
       if (getStaat().getValue() == null)
       {
-        throw new ApplicationException("Bitte Staat auswählen");
+        throw new ApplicationException("Bitte Staat auswÃ¤hlen");
       }
       Einstellungen.setEinstellung(Property.STAAT,
           ((Staat) getStaat().getValue()).getKey());
@@ -2597,7 +2597,7 @@ public class EinstellungControl extends AbstractControl
     {
       String successText = "";
 
-      // ggf. Steuer in buchungen übernehmen
+      // ggf. Steuer in buchungen Ã¼bernehmen
       if (!(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG)
           && (Boolean) getSteuerInBuchung().getValue())
       {
@@ -2605,16 +2605,16 @@ public class EinstellungControl extends AbstractControl
         dialog.setTitle("Migration Steuer in Buchung");
 
         dialog.setText("Soll die Steuer aus den Buchungsarten in die\n"
-            + "Buchungen, Sollbuchungspositionen, Zusatzbeträge und Beitragsgruppen\n"
-            + "übernommen werden?\n"
-            + "Das wird für alle bisherigen Einträge gemacht,\n"
+            + "Buchungen, Sollbuchungspositionen, ZusatzbetrÃ¤ge und Beitragsgruppen\n"
+            + "Ã¼bernommen werden?\n"
+            + "Das wird fÃ¼r alle bisherigen EintrÃ¤ge gemacht,\n"
             + "so dass die bisherige Steuer erhalten bleibt.");
         try
         {
           if ((boolean) dialog.open())
           {
             int anzahl = SteuerUtil.setSteuerToBuchung();
-            successText = "Steuer in " + anzahl + " Einträgen übernommen. ";
+            successText = "Steuer in " + anzahl + " EintrÃ¤gen Ã¼bernommen. ";
           }
         }
         catch (Exception ex)

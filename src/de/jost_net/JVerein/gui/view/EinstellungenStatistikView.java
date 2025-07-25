@@ -37,10 +37,10 @@ public class EinstellungenStatistikView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair("Altersgruppen", control.getAltersgruppen());
-    cont.addLabelPair("Mindestalter f. Mitgliedschaftsjubli‰um",
+    cont.addLabelPair("Mindestalter f. Mitgliedschaftsjubli√§um",
         control.getJubilarStartAlter());
-    cont.addLabelPair("Jubil‰en", control.getJubilaeen());
-    cont.addLabelPair("Altersjubil‰en", control.getAltersjubilaeen());
+    cont.addLabelPair("Jubil√§en", control.getJubilaeen());
+    cont.addLabelPair("Altersjubil√§en", control.getAltersjubilaeen());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

@@ -56,7 +56,7 @@ public class SplitbuchungDetailView extends AbstractView
         control.getCurrentObject(), false, "document-new.png");
     neu.setEnabled(!buchungabgeschlossen);
     buttons.addButton(neu);
-    Button aufloesen = new Button("Auflösen",
+    Button aufloesen = new Button("AuflÃ¶sen",
         new SplitbuchungAufloesenAction(control), control.getCurrentObject(),
         false, "unlocked.png");
     aufloesen.setEnabled(!buchungabgeschlossen);

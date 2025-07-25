@@ -284,7 +284,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private TreePart eigenschaftenTree;
 
-  // Elemente für die Auswertung
+  // Elemente fÃ¼r die Auswertung
   private TextInput auswertungUeberschrift = null;
 
   private TextAreaInput vermerk1;
@@ -303,7 +303,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private FamilienbeitragMessageConsumer fbc = null;
 
-  // Liste aller Zusatzbeträge
+  // Liste aller ZusatzbetrÃ¤ge
   private AutoUpdateTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
@@ -312,10 +312,10 @@ public class MitgliedControl extends FilterControl implements Savable
   // Liste der Mails
   private TablePart mailList;
 
-  // Liste der Arbeitseinsätze
+  // Liste der ArbeitseinsÃ¤tze
   private TablePart arbeitseinsatzList;
 
-  // Liste der Lehrgänge
+  // Liste der LehrgÃ¤nge
   private TablePart lehrgaengeList;
 
   private TablePart familienangehoerige;
@@ -330,7 +330,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
 
-  // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
+  // Zeitstempel merken, wann der Letzte refresh ausgefÃ¼hrt wurde.
   private long lastrefresh = 0;
 
   private String eigenschaftenHash;
@@ -483,7 +483,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     strasse = new TextInput(getMitglied().getStrasse(), 40);
 
-    strasse.setName("Straße");
+    strasse.setName("StraÃŸe");
     return strasse;
   }
 
@@ -585,7 +585,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setName("Geburtsdatum");
     this.geburtsdatum.setTitle("Geburtsdatum");
-    this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
+    this.geburtsdatum.setText("Bitte Geburtsdatum wÃ¤hlen");
     zeigeAlter(d);
     this.geburtsdatum.setMandatory(
         (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
@@ -611,7 +611,7 @@ public class MitgliedControl extends FilterControl implements Savable
     geschlecht = new GeschlechtInput(
         g == null ? "o" : getMitglied().getGeschlecht());
     geschlecht.setName("Geschlecht");
-    geschlecht.setPleaseChoose("Bitte auswählen");
+    geschlecht.setPleaseChoose("Bitte auswÃ¤hlen");
     geschlecht.setMandatory(true);
     geschlecht.setName("Geschlecht");
     return geschlecht;
@@ -695,7 +695,7 @@ public class MitgliedControl extends FilterControl implements Savable
     zahlungsweg.setList(weg);
   }
 
-  // Lösche alle Daten aus der Bankverbindungsmaske
+  // LÃ¶sche alle Daten aus der Bankverbindungsmaske
   private void deleteBankverbindung()
   {
     try
@@ -828,7 +828,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
-    this.mandatdatum.setText("Bitte Datum des Mandats wählen");
+    this.mandatdatum.setText("Bitte Datum des Mandats wÃ¤hlen");
     if (((Zahlungsweg) getZahlungsweg().getValue())
         .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
@@ -997,7 +997,7 @@ public class MitgliedControl extends FilterControl implements Savable
       return ktoistrasse;
     }
     ktoistrasse = new TextInput(getMitglied().getKtoiStrasse(), 40);
-    ktoistrasse.setName("Straße");
+    ktoistrasse.setName("StraÃŸe");
     return ktoistrasse;
   }
 
@@ -1073,7 +1073,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     ktoigeschlecht = new GeschlechtInput(getMitglied().getKtoiGeschlecht());
     ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setPleaseChoose("Bitte auswählen");
+    ktoigeschlecht.setPleaseChoose("Bitte auswÃ¤hlen");
     ktoigeschlecht.setMandatory(true);
     ktoigeschlecht.setName("Geschlecht");
     ktoigeschlecht.setMandatory(false);
@@ -1138,7 +1138,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.eintritt = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.eintritt.setTitle("Eintrittsdatum");
     this.eintritt.setName("Eintrittsdatum");
-    this.eintritt.setText("Bitte Eintrittsdatum wählen");
+    this.eintritt.setText("Bitte Eintrittsdatum wÃ¤hlen");
     this.eintritt.setMandatory(
         (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT));
     return eintritt;
@@ -1158,7 +1158,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       // alte Beitragsgruppen hatten das Feld Beitragsarten noch nicht gesetzt
       // (NULL)
-      // diese Beitragsgruppen müssen hier auch erlaubt sein.
+      // diese Beitragsgruppen mÃ¼ssen hier auch erlaubt sein.
       list.addFilter("beitragsart <> ? or beitragsart IS NULL",
           new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
     }
@@ -1169,7 +1169,7 @@ public class MitgliedControl extends FilterControl implements Savable
     beitragsgruppe.setValue(getMitglied().getBeitragsgruppe());
     beitragsgruppe.setMandatory(true);
     beitragsgruppe.setAttribute("bezeichnung");
-    beitragsgruppe.setPleaseChoose("Bitte auswählen");
+    beitragsgruppe.setPleaseChoose("Bitte auswÃ¤hlen");
     beitragsgruppe.addListener(new Listener()
     {
 
@@ -1202,7 +1202,7 @@ public class MitgliedControl extends FilterControl implements Savable
           {
             getMitglied().setVollZahlerID(null);
             disableZahler();
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
+            // ZukÃ¼nftige BeitrÃ¤ge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
             {
               getZukuenftigeBeitraegeView().setVisible(true);
@@ -1325,13 +1325,13 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     auswertungUeberschrift = new TextInput(
         settings.getString("auswertung.ueberschrift", ""));
-    auswertungUeberschrift.setName("Überschrift");
+    auswertungUeberschrift.setName("Ãœberschrift");
     return auswertungUeberschrift;
   }
 
   /**
-   * Liefert ein Part zurück, das den Familienverband anzeigt. Da Container
-   * jedoch nur das Hinzufügen von Parts zulassen, ist das Part Familienverband
+   * Liefert ein Part zurÃ¼ck, das den Familienverband anzeigt. Da Container
+   * jedoch nur das HinzufÃ¼gen von Parts zulassen, ist das Part Familienverband
    * dynamisch: Entweder wird der Familienverband angezeigt (setShow(true)),
    * oder ein leeres Composite (setShow(false))
    * 
@@ -1364,11 +1364,11 @@ public class MitgliedControl extends FilterControl implements Savable
   {
     if (zahler != null)
     {
-      // wenn force nicht gesetzt, gib aktuellen zahler zurück.
+      // wenn force nicht gesetzt, gib aktuellen zahler zurÃ¼ck.
       if (!force)
         return zahler;
       // ansonsten: erzeuge neuen...
-      // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der
+      // Dies ist nÃ¶tig, wenn Zahler ausgeblendet wurde und daher der
       // Parent vom GC disposed wurde.
     }
     zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
@@ -1426,7 +1426,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.austritt = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.austritt.setTitle("Austrittsdatum");
     this.austritt.setName("Austrittsdatum");
-    this.austritt.setText("Bitte Austrittsdatum wählen");
+    this.austritt.setText("Bitte Austrittsdatum wÃ¤hlen");
     this.austritt.addListener(new Listener()
     {
 
@@ -1452,9 +1452,9 @@ public class MitgliedControl extends FilterControl implements Savable
     Date d = getMitglied().getKuendigung();
 
     this.kuendigung = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.kuendigung.setName("Kündigungsdatum");
-    this.kuendigung.setTitle("Kündigungsdatum");
-    this.kuendigung.setText("Bitte Kündigungsdatum wählen");
+    this.kuendigung.setName("KÃ¼ndigungsdatum");
+    this.kuendigung.setTitle("KÃ¼ndigungsdatum");
+    this.kuendigung.setText("Bitte KÃ¼ndigungsdatum wÃ¤hlen");
     this.kuendigung.addListener(new Listener()
     {
 
@@ -1482,7 +1482,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.sterbetag = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.sterbetag.setName("Sterbetag");
     this.sterbetag.setTitle("Sterbetag");
-    this.sterbetag.setText("Bitte Sterbetag wählen");
+    this.sterbetag.setText("Bitte Sterbetag wÃ¤hlen");
     this.sterbetag.addListener(new Listener()
     {
 
@@ -1590,7 +1590,7 @@ public class MitgliedControl extends FilterControl implements Savable
           DateInput di = new DateInput(d, new JVDateFormatTTMMJJJJ());
           di.setName(fd.getLabel());
           di.setTitle(fd.getLabel());
-          di.setText(String.format("Bitte %s wählen", fd.getLabel()));
+          di.setText(String.format("Bitte %s wÃ¤hlen", fd.getLabel()));
           zusatzfelder[i] = di;
           break;
         case Datentyp.GANZZAHL:
@@ -1634,7 +1634,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
 
     // erstelle lesefeldAuswerter, der alle Daten und Methoden
-    // zum Evaluieren von Skripten enthält.
+    // zum Evaluieren von Skripten enthÃ¤lt.
     if (lesefeldAuswerter == null)
     {
       lesefeldAuswerter = new LesefeldAuswerter();
@@ -1645,11 +1645,11 @@ public class MitgliedControl extends FilterControl implements Savable
     if (lesefeldAuswerter.countLesefelder() == 0)
       return null;
 
-    // Ist noch keine ID verfügbar, wird das Mitglied gerade angelegt.
+    // Ist noch keine ID verfÃ¼gbar, wird das Mitglied gerade angelegt.
     // Dann darf getMap() nicht aufgerufen werden, da sonst Standard-Werte
-    // für Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
+    // fÃ¼r Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
     // Da lesefeldAuswerter aber einen kompletten Datensatz eines Mitglieds
-    // benötigt um alle Skripte fehlerfrei zu parsen, dürfen die Lesefelder
+    // benÃ¶tigt um alle Skripte fehlerfrei zu parsen, dÃ¼rfen die Lesefelder
     // noch nicht ausgewertet werden. Die GUI-Elemente werden daher beim
     // ersten Erstellen eines neuen Mitglieds noch nicht angezeigt.
     if (getMitglied().getID() == null)
@@ -1665,7 +1665,7 @@ public class MitgliedControl extends FilterControl implements Savable
         .entrySet().iterator();
     while (it.hasNext())
     {
-      // Evaluiere Skripte und erzeuge für jedes ein TextAreaInput mit
+      // Evaluiere Skripte und erzeuge fÃ¼r jedes ein TextAreaInput mit
       // dem ausgewerteten Inhalt sowie dem Skriptnamen davor.
       Entry<String, Object> pairs = it.next();
       TextAreaInput t = new TextAreaInput(pairs.getValue().toString());
@@ -1692,9 +1692,9 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       Mitglied m = famiter.next();
       // Wenn der Iterator auf das aktuelle Mitglied zeigt,
-      // nutze stattdessen getMitglied() damit nicht das alte, unveränderte
+      // nutze stattdessen getMitglied() damit nicht das alte, unverÃ¤nderte
       // Mitglied
-      // aus der DB verwendet wird, sondern das vom Nutzer veränderte Mitglied.
+      // aus der DB verwendet wird, sondern das vom Nutzer verÃ¤nderte Mitglied.
       if (m.getID().equalsIgnoreCase(getMitglied().getID()))
         m = getMitglied();
       familienangehoerige.addItem(m);
@@ -1750,14 +1750,14 @@ public class MitgliedControl extends FilterControl implements Savable
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
-    zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+    zusatzbetraegeList.addColumn("Erste FÃ¤lligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+    zusatzbetraegeList.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+    zusatzbetraegeList.addColumn("Letzte abgerechnete FÃ¤lligkeit",
         "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-    zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+    zusatzbetraegeList.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
@@ -2076,14 +2076,14 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getKontoDatenLoeschenButton()
   {
-    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    Button b = new Button("Bankverbindung-Daten lÃ¶schen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle("Bankverbindung-Daten löschen");
-        dialog.setText("Bankverbindung-Daten löschen?");
+        dialog.setTitle("Bankverbindung-Daten lÃ¶schen");
+        dialog.setText("Bankverbindung-Daten lÃ¶schen?");
         boolean delete = false;
         try
         {
@@ -2091,7 +2091,7 @@ public class MitgliedControl extends FilterControl implements Savable
         }
         catch (Exception e)
         {
-          Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
+          Logger.error("Fehler beim Bankverbindung-LÃ¶schen-Dialog.", e);
         }
         if (delete)
         {
@@ -2284,7 +2284,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   /**
-   * Zur überwachung der Änderungen einen Hash erzeugen
+   * Zur Ã¼berwachung der Ã„nderungen einen Hash erzeugen
    * 
    * @throws RemoteException
    */
@@ -2455,7 +2455,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
       if (getGeschlecht().getSelectedValue() == null)
       {
-        throw new ApplicationException("Bitte Geschlecht auswählen!");
+        throw new ApplicationException("Bitte Geschlecht auswÃ¤hlen!");
       }
 
       m.setGeschlecht((String) getGeschlecht().getValue());
@@ -2509,8 +2509,8 @@ public class MitgliedControl extends FilterControl implements Savable
       Mitglied m = (Mitglied) prepareStore();
       m.setMandatID((String) getMandatID().getValue());
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
-      // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
-      // Eintrag immer als geändert erkannt.
+      // verwendet, daher kÃ¶nnen wir ihn nicht in fill() setzen, sonst wird der
+      // Eintrag immer als geÃ¤ndert erkannt.
       if (mitgliedstyp != null)
       {
         Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
@@ -2592,7 +2592,7 @@ public class MitgliedControl extends FilterControl implements Savable
               .createList(Felddefinition.class);
           it0.addFilter("label = ?", new Object[] { ti.getName() });
           Felddefinition fd = it0.next();
-          // Ist bereits ein Datensatz für diese Definiton vorhanden ?
+          // Ist bereits ein Datensatz fÃ¼r diese Definiton vorhanden ?
           DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
               .createList(Zusatzfelder.class);
           it.addFilter("mitglied =?", new Object[] { m.getID() });
@@ -2652,7 +2652,7 @@ public class MitgliedControl extends FilterControl implements Savable
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN) && ist_mitglied)
       {
-        // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
+        // Schritt 1: Die selektierten sekundÃ¤ren Beitragsgruppe prÃ¼fen, ob sie
         // bereits gespeichert sind. Ggfls. speichern.
         @SuppressWarnings("rawtypes")
         List items = sekundaerebeitragsgruppe.getItems();
@@ -2664,8 +2664,8 @@ public class MitgliedControl extends FilterControl implements Savable
             sb.store();
           }
         }
-        // Schritt 2: Die sekundären Beitragsgruppe in der Liste, die nicht mehr
-        // selektiert sind, müssen gelöscht werden.
+        // Schritt 2: Die sekundÃ¤ren Beitragsgruppe in der Liste, die nicht mehr
+        // selektiert sind, mÃ¼ssen gelÃ¶scht werden.
         for (SekundaereBeitragsgruppe sb : listeSeB)
         {
           if (!sb.isNewObject() && !items.contains(sb))
@@ -2760,7 +2760,7 @@ public class MitgliedControl extends FilterControl implements Savable
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -2851,7 +2851,7 @@ public class MitgliedControl extends FilterControl implements Savable
         Mitgliedstypen.NICHTMITGLIED).getValue();
     if (mt == null)
     {
-      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
+      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswÃ¤hlen");
       return;
     }
     list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
@@ -2876,7 +2876,7 @@ public class MitgliedControl extends FilterControl implements Savable
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -2948,7 +2948,7 @@ public class MitgliedControl extends FilterControl implements Savable
   private void starteStatistik() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     fd.setFilterExtensions(new String[] { "*.pdf" });
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
@@ -3165,13 +3165,13 @@ public class MitgliedControl extends FilterControl implements Savable
       return true;
     }
 
-    // Sekundäre Beitragsgruppen testen
+    // SekundÃ¤re Beitragsgruppen testen
     Mitglied m = getMitglied();
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
         && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
     {
-      // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
+      // Schritt 1: Die selektierten sekundÃ¤ren Beitragsgruppe prÃ¼fen, ob sie
       // bereits gespeichert sind. Ggfls. speichern.
       @SuppressWarnings("rawtypes")
       List items = sekundaerebeitragsgruppe.getItems();
@@ -3183,8 +3183,8 @@ public class MitgliedControl extends FilterControl implements Savable
           return true;
         }
       }
-      // Schritt 2: Die sekundären Beitragsgruppe in der Liste, die nicht mehr
-      // selektiert sind, müssen gelöscht werden.
+      // Schritt 2: Die sekundÃ¤ren Beitragsgruppe in der Liste, die nicht mehr
+      // selektiert sind, mÃ¼ssen gelÃ¶scht werden.
       for (SekundaereBeitragsgruppe sb : listeSeB)
       {
         if (!sb.isNewObject() && !items.contains(sb))

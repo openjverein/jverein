@@ -61,7 +61,7 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Nummer nicht gÃ¼ltig");
       }
     }
     catch (RemoteException e)

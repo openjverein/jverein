@@ -35,7 +35,7 @@ public class MailVorlageMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(MailVorlageDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new MailVorlageDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new MailVorlageDeleteAction(),
         "user-trash-full.png"));
   }
 }

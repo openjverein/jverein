@@ -30,13 +30,13 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
- * Ein Dialog, ueber den man die Personenart eines neuen Mitglieds auswählen
+ * Ein Dialog, ueber den man die Personenart eines neuen Mitglieds auswÃ¤hlen
  * kann.
  */
 public class BuchungsjournalSortDialog extends AbstractDialog<String>
 {
 
-  // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
+  // 20220823: sbuer: Statische Variablen fuer neue SortiermÃ¶glichkeiten
   // Der Key dient als eindeutiger Bezeichner fuer das Dialogfeld und die
   // Hashmap
   // Der Value dient als Anzeigename im Dialogfeld
@@ -116,7 +116,7 @@ public class BuchungsjournalSortDialog extends AbstractDialog<String>
     {
       return this.sortierung;
     }
-    // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
+    // 20220823: sbuer: Statische Variablen fuer neue SortiermÃ¶glichkeiten
     this.sortierung = new SelectInput(
         new Object[] { ID, DATUM, DATUM_NAME, DATUM_ID, DATUM_ID_NAME,
             DATUM_AUSZUGSNUMMER, DATUM_AUSZUGSNUMMER_NAME, DATUM_BLATTNUMMER,

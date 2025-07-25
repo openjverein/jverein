@@ -75,7 +75,7 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
       }
       if (getBetrag() <= 0)
       {
-        throw new ApplicationException("Betrag nicht gültig");
+        throw new ApplicationException("Betrag nicht gÃ¼ltig");
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
@@ -86,12 +86,12 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
           {
             case ArtBuchungsart.AUSGABE:
               throw new ApplicationException(
-                  "Umsatzsteuer statt Vorsteuer gewählt.");
+                  "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
             case ArtBuchungsart.EINNAHME:
               throw new ApplicationException(
-                  "Vorsteuer statt Umsatzsteuer gewählt.");
-            // Umbuchung ist bei Anlagebuchungen möglich,
-            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                  "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+            // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
             case ArtBuchungsart.UMBUCHUNG:
               break;
           }
@@ -101,7 +101,7 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
                 || getBuchungsart().getAbschreibung()))
         {
           throw new ApplicationException(
-              "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+              "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
         }
       }
     }

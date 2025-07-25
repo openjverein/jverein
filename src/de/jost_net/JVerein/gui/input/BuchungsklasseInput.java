@@ -57,7 +57,7 @@ public class BuchungsklasseInput
         buchungsklasse.setAttribute("bezeichnung");
         break;
     }
-    buchungsklasse.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsklasse.setPleaseChoose("Bitte ausw√§hlen");
     buchungsklasse.setValue(klasse);
     return buchungsklasse;
   }

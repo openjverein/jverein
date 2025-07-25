@@ -56,7 +56,7 @@ public class SollbuchungRechnungAction implements Action
         if (sollb.getRechnung() == null)
         {
           throw new ApplicationException(
-              "Keine Rechnung zu ausgew‰hlter Sollbuchung vorhanden!");
+              "Keine Rechnung zu ausgew√§hlter Sollbuchung vorhanden!");
         }
         GUI.startView(RechnungDetailView.class.getName(), sollb.getRechnung());
       }

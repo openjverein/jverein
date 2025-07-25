@@ -46,7 +46,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   {
     super(list, action);
 
-    // ChangeListener f¸r die Summe der ausgew‰hlten Buchungen anh‰ngen.
+    // ChangeListener f√ºr die Summe der ausgew√§hlten Buchungen anh√§ngen.
     addSelectionListener(e -> {
       createFeatureEventContext(Event.REFRESH, ctx);
       Feature feature = this.getFeature(FeatureSummary.class);
@@ -75,7 +75,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       {
         @SuppressWarnings("rawtypes")
         List l = this.getItems();
-        summary = new String(l.size() + " Datens‰tze");
+        summary = new String(l.size() + " Datens√§tze");
         for (int i = 0; i < l.size(); i++)
         {
           Buchung b = (Buchung) l.get(i);

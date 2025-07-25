@@ -32,7 +32,7 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 
 /**
- * Dialog zur Zuordnung von Arbeitseins‰tzen
+ * Dialog zur Zuordnung von Arbeitseins√§tzen
  */
 public class MitgliedArbeitseinsatzZuordnungDialog
     extends AbstractDialog<Arbeitseinsatz>

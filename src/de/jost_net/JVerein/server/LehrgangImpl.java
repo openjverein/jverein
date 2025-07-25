@@ -87,7 +87,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   {
     if (getLehrgangsart() == null)
     {
-      throw new ApplicationException("Bitte Lehrgangsart ausw‰hlen");
+      throw new ApplicationException("Bitte Lehrgangsart ausw√§hlen");
     }
     if (getVon() == null)
     {

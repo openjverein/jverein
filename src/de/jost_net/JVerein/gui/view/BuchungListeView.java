@@ -76,7 +76,7 @@ public class BuchungListeView extends AbstractView
     center.addLabelPair("Betrag", control.getSuchBetrag());
     center.addLabelPair("Datum von", control.getVondatum());
     center.addLabelPair("Datum bis", control.getBisdatum());
-    center.addLabelPair("Nur ungeprüfte", control.getUngeprueft());
+    center.addLabelPair("Nur ungeprÃ¼fte", control.getUngeprueft());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
     right.addLabelPair("Mitglied zugeordnet?",
         control.getSuchMitgliedZugeordnet());
@@ -111,8 +111,8 @@ public class BuchungListeView extends AbstractView
     }, null, true, "search.png");
     buttons1.addButton(suchen);
     tabAllgemein.addButtonArea(buttons1);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor.setToolTipText("Datumsbereich vowÃ¤rts");
 
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(this,

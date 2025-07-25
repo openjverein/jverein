@@ -225,13 +225,13 @@ public class MailSender
   /**
    * 
    * @param email
-   *          Empf‰nger Adresse
+   *          Empf√§nger Adresse
    * @param subject
    *          Betreff
    * @param text
    *          Nachrittext
    * @param anhang
-   *          Anh‰nge als TreeSet
+   *          Anh√§nge als TreeSet
    * @throws MessagingException
    *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
    * @throws ApplicationException
@@ -249,13 +249,13 @@ public class MailSender
   /**
    * 
    * @param emailadresses
-   *          Empf‰nger Adresse als Array
+   *          Empf√§nger Adresse als Array
    * @param subject
    *          Betreff
    * @param text
    *          Nachrittext
    * @param anhang
-   *          Anh‰nge als TreeSet
+   *          Anh√§nge als TreeSet
    * @throws MessagingException
    *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
    * @throws ApplicationException
@@ -314,7 +314,7 @@ public class MailSender
         MimeBodyPart altMessageBodyPart = new MimeBodyPart();
         altMessageBodyPart.addHeader("Content-Encoding", UTF_8);
         altMessageBodyPart.setText(
-            "Um diese Email richtig darstellen zu kˆnnen, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
+            "Um diese Email richtig darstellen zu k√∂nnen, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
                 + text.replaceAll(
                     "(?s)<\\s*?(script|Script|SCRIPT).*?>.*?</\\s*?(script|Script|SCRIPT)\\s*?>",
                     "")

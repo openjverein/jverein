@@ -97,7 +97,7 @@ public class Kontoauszug
     else
     {
       GUI.getStatusBar()
-          .setErrorText("Kein Mitglied ausgewählt. Vorgang abgebrochen.");
+          .setErrorText("Kein Mitglied ausgewÃ¤hlt. Vorgang abgebrochen.");
       return;
     }
 
@@ -119,7 +119,7 @@ public class Kontoauszug
         if (anzahl == 0)
         {
           GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
+              .setErrorText("Kein Mitglied erfÃ¼llt das Differenz Kriterium.");
           file.delete();
           return;
         }
@@ -162,7 +162,7 @@ public class Kontoauszug
         if (anzahl == 0)
         {
           GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
+              .setErrorText("Kein Mitglied erfÃ¼llt das Differenz Kriterium.");
           file.delete();
           return;
         }
@@ -175,7 +175,7 @@ public class Kontoauszug
   private void init(String extension) throws IOException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)

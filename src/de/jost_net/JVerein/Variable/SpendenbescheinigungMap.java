@@ -96,7 +96,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.ZEILE7.getName(), spb.getZeile7());
     Double dWert = spb.getBetrag();
     // Hier keinen String, sondern ein Double-Objekt in die Map stellen,
-    // damit eine rechtsbündige Ausrichtung des Betrages in der Formular-
+    // damit eine rechtsbÃ¼ndige Ausrichtung des Betrages in der Formular-
     // aufbereitung.getString() erfolgt.
     // Dies ist der Zustand vor Version 2.0
     // map.put(SpendenbescheinigungVar.BETRAG.getName(),
@@ -114,7 +114,7 @@ public class SpendenbescheinigungMap extends AbstractMap
       throw new RemoteException(
           "Fehler bei der Aufbereitung des Betrages in Worten");
     }
-    // Calendar für Alt/Neu
+    // Calendar fÃ¼r Alt/Neu
     GregorianCalendar gc = new GregorianCalendar();
     gc.setTime(spb.getBescheinigungsdatum());
 
@@ -161,13 +161,13 @@ public class SpendenbescheinigungMap extends AbstractMap
       {
         case HerkunftSpende.BETRIEBSVERMOEGEN:
           map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
+              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem BetriebsvermÃ¶gen und ist"
                   + newLineStr
                   + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
           break;
         case HerkunftSpende.PRIVATVERMOEGEN:
           map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
+              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem PrivatvermÃ¶gen.");
           break;
         case HerkunftSpende.KEINEANGABEN:
           map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
@@ -177,7 +177,7 @@ public class SpendenbescheinigungMap extends AbstractMap
       boolean ersatz = spb.getErsatzAufwendungen();
       if (spb.getAutocreate())
       {
-        // Geldspende und keine Sammelbestätigung
+        // Geldspende und keine SammelbestÃ¤tigung
         if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1)
         {
           ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
@@ -191,7 +191,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           (ersatz ? " " : "X"));
     }
 
-    // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
+    // bei SammelbestÃ¤tigungen ein Zeitraum und "siehe Anlage"
     if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
     {
       String zeitraumende = new JVDateFormatTTMMJJJJ()
@@ -467,7 +467,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
         "Waschmaschine");
     map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-        "Privatvermögen");
+        "PrivatvermÃ¶gen");
     map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(), "X");
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");

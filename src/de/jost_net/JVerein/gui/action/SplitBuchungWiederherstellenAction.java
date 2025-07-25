@@ -42,7 +42,7 @@ public class SplitBuchungWiederherstellenAction implements Action
   {
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
     try
     {

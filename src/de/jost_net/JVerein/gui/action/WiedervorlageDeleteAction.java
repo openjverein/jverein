@@ -36,7 +36,7 @@ public class WiedervorlageDeleteAction implements Action
   {
     if (context == null || !(context instanceof Wiedervorlage))
     {
-      throw new ApplicationException("Keine Wiedervorlage ausgewählt");
+      throw new ApplicationException("Keine Wiedervorlage ausgewÃ¤hlt");
     }
     try
     {
@@ -46,8 +46,8 @@ public class WiedervorlageDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Wiedervorlage löschen");
-      d.setText("Wollen Sie diese Wiedervorlage wirklich löschen?");
+      d.setTitle("Wiedervorlage lÃ¶schen");
+      d.setText("Wollen Sie diese Wiedervorlage wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -56,16 +56,16 @@ public class WiedervorlageDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Wiedervorlage", e);
+        Logger.error("Fehler beim LÃ¶schen der Wiedervorlage", e);
         return;
       }
 
       w.delete();
-      GUI.getStatusBar().setSuccessText("Wiedervorlage gelöscht.");
+      GUI.getStatusBar().setSuccessText("Wiedervorlage gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Wiedervorlage.";
+      String fehler = "Fehler beim LÃ¶schen der Wiedervorlage.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

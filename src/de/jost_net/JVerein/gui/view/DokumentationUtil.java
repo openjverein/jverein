@@ -86,7 +86,7 @@ public class DokumentationUtil
   public static final String ZUSATZBETRAEGEIMPORT = MITGLIEDER
       + "zusatzbetrage-importieren";
 
-  // Buchführung
+  // BuchfÃ¼hrung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
@@ -217,7 +217,7 @@ public class DokumentationUtil
 
   public static final String ADRESSTYPEN = ADMMITGLIEDER + "mitgliedstypen";
 
-  // Einstellungen Buchführung
+  // Einstellungen BuchfÃ¼hrung
   public static final String BUCHUNGSART = ADMBUCHF + "buchungsart";
 
   public static final String BUCHUNGSKLASSEN = ADMBUCHF + "buchungsklasse";

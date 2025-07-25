@@ -106,10 +106,10 @@ public class ImportDialog extends AbstractDialog<Object>
   {
     Container group = new SimpleContainer(parent);
     group.addText(
-        "Bitte wählen Sie das gewünschte Dateiformat für den Import aus", true);
+        "Bitte wÃ¤hlen Sie das gewÃ¼nschte Dateiformat fÃ¼r den Import aus", true);
 
     Input formats = getImporterList();
-    group.addLabelPair("Verfügbare Formate:", formats);
+    group.addLabelPair("VerfÃ¼gbare Formate:", formats);
     if (this.encoding != null)
     {
       group.addLabelPair("Encoding", encoding);
@@ -175,13 +175,13 @@ public class ImportDialog extends AbstractDialog<Object>
     }
 
     if (imp == null || imp.importer == null)
-      throw new ApplicationException("Bitte wählen Sie ein Import-Format aus");
+      throw new ApplicationException("Bitte wÃ¤hlen Sie ein Import-Format aus");
 
     settings.setAttribute("lastformat", imp.format.getName());
 
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN);
     fd.setText(i18n.tr(
-        "Bitte wählen Sie die Datei aus, welche für den Import verwendet werden soll."));
+        "Bitte wÃ¤hlen Sie die Datei aus, welche fÃ¼r den Import verwendet werden soll."));
     fd.setFilterNames(getFilterNames(imp));
     fd.setFilterExtensions(imp.format.getFileExtensions());
 
@@ -311,7 +311,7 @@ public class ImportDialog extends AbstractDialog<Object>
 
     if (size == 0)
     {
-      importerListe = new LabelInput("Keine Import-Filter verfügbar");
+      importerListe = new LabelInput("Keine Import-Filter verfÃ¼gbar");
       return importerListe;
     }
 

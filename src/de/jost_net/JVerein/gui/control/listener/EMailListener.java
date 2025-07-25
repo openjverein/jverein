@@ -25,7 +25,7 @@ import de.jost_net.JVerein.util.EmailValidator;
 import de.willuhn.jameica.gui.GUI;
 
 /**
- * Mail-Adresse prüfen
+ * Mail-Adresse prÃ¼fen
  */
 
 public class EMailListener implements Listener
@@ -55,7 +55,7 @@ public class EMailListener implements Listener
     }
     if (!EmailValidator.isValid(em))
     {
-      GUI.getStatusBar().setErrorText("Mailadresse ist ungültig");
+      GUI.getStatusBar().setErrorText("Mailadresse ist ungÃ¼ltig");
     }
   }
 }

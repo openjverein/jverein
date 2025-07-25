@@ -36,13 +36,13 @@ public class AdressaufbereitungTest
   public void test01() throws RemoteException
   {
     IAdresse adr = getAdresse("n", "Herrn", "Dr.", "Willi", "Wichtig",
-        "bei Lieschen Müller", "Bahnhofstr. 1", "12345", "Testenhausen",
+        "bei Lieschen MÃ¼ller", "Bahnhofstr. 1", "12345", "Testenhausen",
         "Deutschland", GeschlechtInput.MAENNLICH);
     assertEquals(
-        "Herrn\nDr. Willi Wichtig\nbei Lieschen Müller\nBahnhofstr. 1\n12345 Testenhausen\nDeutschland",
+        "Herrn\nDr. Willi Wichtig\nbei Lieschen MÃ¼ller\nBahnhofstr. 1\n12345 Testenhausen\nDeutschland",
         Adressaufbereitung.getAdressfeld(adr));
     assertEquals(
-        "bei Lieschen Müller, Bahnhofstr. 1, 12345 Testenhausen, Deutschland",
+        "bei Lieschen MÃ¼ller, Bahnhofstr. 1, 12345 Testenhausen, Deutschland",
         Adressaufbereitung.getAnschrift(adr));
     assertEquals("Wichtig, Dr. Willi", Adressaufbereitung.getNameVorname(adr));
     assertEquals("Dr. Willi Wichtig", Adressaufbereitung.getVornameName(adr));

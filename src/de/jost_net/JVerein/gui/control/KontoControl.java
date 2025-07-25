@@ -322,7 +322,7 @@ public class KontoControl extends FilterControl implements Savable
         SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
         d.setTitle("Erstes Anlagenkonto");
         d.setText(
-            "Beim ersten Anlagenkonto bitte JVerein neu starten um die ƒnderungen anzuwenden");
+            "Beim ersten Anlagenkonto bitte JVerein neu starten um die √Ñnderungen anzuwenden");
         try
         {
           d.open();
@@ -361,7 +361,7 @@ public class KontoControl extends FilterControl implements Savable
         {
           return Kontoart.getByKey((Integer) o).getText();
         }
-        return "ung¸ltig";
+        return "ung√ºltig";
       }
     }, false, Column.ALIGN_LEFT);
     kontenList.addColumn("Hibiscus-Konto", "hibiscusid", new Formatter()
@@ -385,9 +385,9 @@ public class KontoControl extends FilterControl implements Savable
         return "nein";
       }
     }, false, Column.ALIGN_LEFT);
-    kontenList.addColumn("Erˆffnungsdatum", "eroeffnung",
+    kontenList.addColumn("Er√∂ffnungsdatum", "eroeffnung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    kontenList.addColumn("Auflˆsungsdatum", "aufloesung",
+    kontenList.addColumn("Aufl√∂sungsdatum", "aufloesung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
@@ -585,7 +585,7 @@ public class KontoControl extends FilterControl implements Savable
     if (liste != null && b != null && !liste.contains(b))
       liste.add(b);
     buchungsart = new SelectInput(liste, b);
-    buchungsart.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsart.setPleaseChoose("Bitte ausw√§hlen");
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
@@ -615,7 +615,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -705,7 +705,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Anlagensart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Anlagensart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -724,7 +724,7 @@ public class KontoControl extends FilterControl implements Savable
         list != null ? PseudoIterator.asList(list) : null,
         getKonto().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
-    buchungsklasse.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsklasse.setPleaseChoose("Bitte ausw√§hlen");
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
       buchungsklasse.setMandatory(true);
@@ -749,7 +749,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -800,7 +800,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -946,7 +946,7 @@ public class KontoControl extends FilterControl implements Savable
     else
       afamode = new SelectInput(AfaMode.getArray(),
           new AfaMode(getKonto().getAfaMode()));
-    afamode.setPleaseChoose("Bitte ausw‰hlen");
+    afamode.setPleaseChoose("Bitte ausw√§hlen");
     afamode.addListener(new Listener()
     {
       @Override
@@ -1009,7 +1009,7 @@ public class KontoControl extends FilterControl implements Savable
       anlagenzweck.setValue(Anlagenzweck.NUTZUNGSGEBUNDEN);
       anlagenzweck.disable();
     }
-    anlagenzweck.setPleaseChoose("Bitte w‰hlen");
+    anlagenzweck.setPleaseChoose("Bitte w√§hlen");
     return anlagenzweck;
   }
 
@@ -1230,7 +1230,7 @@ public class KontoControl extends FilterControl implements Savable
       while (buchungenIt.hasNext())
       {
         b = (Buchung) buchungenIt.next();
-        // TODO Bei der Anlage m¸ssen wir immer Netto Betr‰ge verwenden?
+        // TODO Bei der Anlage m√ºssen wir immer Netto Betr√§ge verwenden?
         betrag += b.getBetrag();
         d = b.getDatum();
       }

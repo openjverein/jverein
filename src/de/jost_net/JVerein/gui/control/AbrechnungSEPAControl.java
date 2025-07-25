@@ -62,11 +62,11 @@ import de.willuhn.util.ProgressMonitor;
 public class AbrechnungSEPAControl extends AbstractControl
 {
 
-  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
+  private static String CONFIRM_TITEL = "SEPA-Check temporÃ¤r deaktivieren";
 
-  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
-      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
-      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
+  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muÃŸ ein gÃ¼ltiges SEPA-Mandat vorliegen.\n"
+      + "Wenn das Mandat Ã¤lter als 3 Jahre ist, mÃ¼ssen in den letzten 3 Jahren Lastschriften durchgefÃ¼hrt worden sein.\n"
+      + "WÃ¤hlen Sie \"Ja\" nur, wenn diese Bedingungen fÃ¼r alle Mitglieder erfÃ¼llt sind.";
 
   private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
 
@@ -178,8 +178,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return stichtag;
     }
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag für die Abrechnung");
-    this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
+    this.stichtag.setTitle("Stichtag fÃ¼r die Abrechnung");
+    this.stichtag.setText("Bitte Stichtag fÃ¼r die Abrechnung wÃ¤hlen");
     return stichtag;
   }
 
@@ -194,8 +194,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     cal = bat.getCalendar(cal,
         1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
     this.faelligkeit = new DateInput(cal.getTime(), new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit");
-    this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
+    this.faelligkeit.setTitle("FÃ¤lligkeit");
+    this.faelligkeit.setText("Bitte FÃ¤lligkeitsdatum wÃ¤hlen");
     faelligkeit.addListener(event -> {
       if (event.type != SWT.Selection && event.type != SWT.FocusOut)
       {
@@ -218,7 +218,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
-    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
+    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wÃ¤hlen");
     this.vondatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
     return vondatum;
@@ -245,7 +245,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
-        .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
+        .setText("Bitte maximales Austrittsdatum fÃ¼r die Abrechnung wÃ¤hlen");
     this.bisdatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER);
     return bisdatum;
@@ -377,7 +377,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       @Override
       public void handleEvent(Event event)
       {
-        // Bei temporär deaktivieren den User fragen
+        // Bei temporÃ¤r deaktivieren den User fragen
         if ((Boolean) sepacheck.getValue())
         {
           if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
@@ -495,7 +495,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     if (faelligkeit.getValue() == null)
     {
-      throw new ApplicationException("Fälligkeitsdatum fehlt");
+      throw new ApplicationException("FÃ¤lligkeitsdatum fehlt");
     }
     Date vondatum = null;
     if (stichtag.getValue() == null)
@@ -521,7 +521,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     if (aa == Abrechnungsausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wählen.");
+      fd.setText("SEPA-Ausgabedatei wÃ¤hlen.");
       String path = settings.getString("lastdir.sepa",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -534,10 +534,10 @@ public class AbrechnungSEPAControl extends AbstractControl
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
-        throw new ApplicationException("Keine Datei ausgewählt!");
+        throw new ApplicationException("Keine Datei ausgewÃ¤hlt!");
       }
       sepafilercur = new File(file);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
@@ -550,13 +550,13 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
     }
 
-    // PDF-Datei für Basislastschrift2PDF
+    // PDF-Datei fÃ¼r Basislastschrift2PDF
     String pdffileRCUR = null;
     final Boolean pdfprintb = (Boolean) sepaprint.getValue();
     if (pdfprintb)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("PDF-Ausgabedatei wählen");
+      fd.setText("PDF-Ausgabedatei wÃ¤hlen");
 
       String path = settings.getString("lastdir.pdf",
           System.getProperty("user.home"));
@@ -573,7 +573,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         return;
       }
       File file = new File(pdffileRCUR);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
       settings.setAttribute("lastdir.pdf", file.getParent());
     }
 
@@ -605,7 +605,7 @@ public class AbrechnungSEPAControl extends AbstractControl
             monitor.setPercentComplete(100);
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
             GUI.getStatusBar()
-                .setSuccessText("Abrechnung durchgeführt" + abupar.getText());
+                .setSuccessText("Abrechnung durchgefÃ¼hrt" + abupar.getText());
 
           }
           catch (ApplicationException ae)

@@ -53,7 +53,7 @@ public class MitgliedskontoMenu extends ContextMenu
   {
     addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Sollbuchung löschen",
+    addItem(new SollOhneIstItem("Sollbuchung lÃ¶schen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     try
     {
@@ -74,7 +74,7 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
-    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
+    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lÃ¶sen",
         new IstbuchungLoesenAction(), "unlocked.png"));
     try
     {

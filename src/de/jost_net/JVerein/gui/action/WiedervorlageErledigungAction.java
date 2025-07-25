@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Erledigungsdatum einer Wiedervorlage setzen/zurücksetzen.
+ * Erledigungsdatum einer Wiedervorlage setzen/zurÃ¼cksetzen.
  */
 public class WiedervorlageErledigungAction implements Action
 {
@@ -36,7 +36,7 @@ public class WiedervorlageErledigungAction implements Action
   {
     if (context == null || !(context instanceof Wiedervorlage))
     {
-      throw new ApplicationException("Keine Wiedervorlage ausgewählt");
+      throw new ApplicationException("Keine Wiedervorlage ausgewÃ¤hlt");
     }
     try
     {

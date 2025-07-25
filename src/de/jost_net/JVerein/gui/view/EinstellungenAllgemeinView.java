@@ -39,15 +39,15 @@ public class EinstellungenAllgemeinView extends AbstractView
 
     cont.addHeadline("Allgemein");
     cont.addLabelPair("Name", control.getName(true));
-    cont.addLabelPair("Straﬂe", control.getStrasse());
+    cont.addLabelPair("Stra√üe", control.getStrasse());
     cont.addLabelPair("PLZ", control.getPlz());
     cont.addLabelPair("Ort", control.getOrt());
     cont.addLabelPair("Staat", control.getStaat());
     TextInput bic = control.getBic(); // vor IBAN initialisieren, da IBAN eine
-                                      // Referenz auf bic benˆtigt!
+                                      // Referenz auf bic ben√∂tigt!
     cont.addLabelPair("IBAN", control.getIban());
     cont.addLabelPair("BIC", bic);
-    cont.addLabelPair("Gl‰ubiger-ID", control.getGlaeubigerID());
+    cont.addLabelPair("Gl√§ubiger-ID", control.getGlaeubigerID());
     cont.addLabelPair("USt-ID", control.getUstID());
 
     ButtonArea buttons = new ButtonArea();

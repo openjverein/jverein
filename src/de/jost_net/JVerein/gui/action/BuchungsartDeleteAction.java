@@ -36,7 +36,7 @@ public class BuchungsartDeleteAction implements Action
     Buchungsart[] buchungsarten = null;
     if (context == null)
     {
-      throw new ApplicationException("Keine Buchungsart ausgewählt");
+      throw new ApplicationException("Keine Buchungsart ausgewÃ¤hlt");
     }
     else if (context instanceof Buchungsart)
     {
@@ -54,9 +54,9 @@ public class BuchungsartDeleteAction implements Action
     {
       String mehrzahl = buchungsarten.length > 1 ? "en" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Buchungsart" + mehrzahl + " löschen");
+      d.setTitle("Buchungsart" + mehrzahl + " lÃ¶schen");
       d.setText(
-          "Wollen Sie diese Buchungsart" + mehrzahl + " wirklich löschen?");
+          "Wollen Sie diese Buchungsart" + mehrzahl + " wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -65,7 +65,7 @@ public class BuchungsartDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Buchungsart", e);
+        Logger.error("Fehler beim LÃ¶schen der Buchungsart", e);
         return;
       }
 
@@ -76,11 +76,11 @@ public class BuchungsartDeleteAction implements Action
         b.delete();
       }
       GUI.getStatusBar()
-          .setSuccessText("Buchungsart" + mehrzahl + " gelöscht.");
+          .setSuccessText("Buchungsart" + mehrzahl + " gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Die Buchungsart wird bereits benutzt und kann nicht gelöscht werden";
+      String fehler = "Die Buchungsart wird bereits benutzt und kann nicht gelÃ¶scht werden";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

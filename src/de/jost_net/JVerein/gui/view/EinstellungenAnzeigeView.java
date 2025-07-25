@@ -49,17 +49,17 @@ public class EinstellungenAnzeigeView extends AbstractView
     left.addLabelPair("Sterbedatum", control.getSterbedatum());
     left.addLabelPair("Kommunikationsdaten anzeigen",
         control.getKommunikationsdaten());
-    left.addLabelPair("Sekund‰re Beitragsgruppen anzeigen *",
+    left.addLabelPair("Sekund√§re Beitragsgruppen anzeigen *",
         control.getSekundaereBeitragsgruppen());
-    left.addLabelPair("Zusatzbetr‰ge anzeigen *", control.getZusatzbetrag());
-    left.addLabelPair("Zusatzbetr‰ge auch f¸r Ausgetretene *",
+    left.addLabelPair("Zusatzbetr√§ge anzeigen *", control.getZusatzbetrag());
+    left.addLabelPair("Zusatzbetr√§ge auch f√ºr Ausgetretene *",
         control.getZusatzbetragAusgetretene());
     left.addLabelPair("Vermerke anzeigen", control.getVermerke());
     left.addLabelPair("Wiedervorlage anzeigen *", control.getWiedervorlage());
     left.addLabelPair("Kursteilnehmer anzeigen *", control.getKursteilnehmer());
     left.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
         control.getKursteilnehmerGebGesPflicht());
-    left.addLabelPair("Lehrg‰nge anzeigen *", control.getLehrgaenge());
+    left.addLabelPair("Lehrg√§nge anzeigen *", control.getLehrgaenge());
     left.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
     left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
@@ -79,7 +79,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
     right.addLabelPair("Dokumentenspeicherung *",
         control.getDokumentenspeicherung());
-    right.addLabelPair("Individuelle Beitr‰ge *",
+    right.addLabelPair("Individuelle Beitr√§ge *",
         control.getIndividuelleBeitraege());
     right.addLabelPair("Externe Mitgliedsnummer",
         control.getExterneMitgliedsnummer());
@@ -87,7 +87,7 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getMitgliedsnummerAnzeigen());
     right.addLabelPair("Summen Anlagenkonto in Kontensaldo",
         control.getSummenAnlagenkonto());
-    right.addLabelPair("Basis f¸r Berechnung des Alters",
+    right.addLabelPair("Basis f√ºr Berechnung des Alters",
         control.getAltersModel());
     // Einstellung zum Buchungsdialog
     right.addLabelPair("Buchungsart Auswahl",
@@ -97,7 +97,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     cont.addSeparator();
-    cont.addHeadline("* " + "ƒnderung erfordert Neustart");
+    cont.addHeadline("* " + "√Ñnderung erfordert Neustart");
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");

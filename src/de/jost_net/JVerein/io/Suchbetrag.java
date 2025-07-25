@@ -31,12 +31,12 @@ public class Suchbetrag
   {
     KEINE,
     GLEICH,
-    GRÖSSER,
-    GRÖSSERGLEICH,
+    GRÃ–SSER,
+    GRÃ–SSERGLEICH,
     KLEINER,
     KLEINERGLEICH,
     BEREICH,
-    UNGÜLTIG,
+    UNGÃœLTIG,
     BETRAG
   }
 
@@ -84,12 +84,12 @@ public class Suchbetrag
     }
     if (liste.get(0).equals(">"))
     {
-      suchstrategie = Suchstrategie.GRÖSSER;
+      suchstrategie = Suchstrategie.GRÃ–SSER;
       liste.remove(0);
     }
     else if (liste.get(0).equals(">="))
     {
-      suchstrategie = Suchstrategie.GRÖSSERGLEICH;
+      suchstrategie = Suchstrategie.GRÃ–SSERGLEICH;
       liste.remove(0);
     }
     else if (liste.get(0).equals("<"))
@@ -119,7 +119,7 @@ public class Suchbetrag
     }
     else if (liste.size() > 1 && !liste.get(1).equals(".."))
     {
-      throw new Exception("Wert ungültig");
+      throw new Exception("Wert ungÃ¼ltig");
     }
     else if (liste.size() == 1)
     {
@@ -139,8 +139,8 @@ public class Suchbetrag
     }
     catch (ParseException e)
     {
-      suchstrategie = Suchstrategie.UNGÜLTIG;
-      throw new Exception("Wert ungültig");
+      suchstrategie = Suchstrategie.UNGÃœLTIG;
+      throw new Exception("Wert ungÃ¼ltig");
     }
   }
 

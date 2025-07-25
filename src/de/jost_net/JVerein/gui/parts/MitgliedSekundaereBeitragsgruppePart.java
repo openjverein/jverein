@@ -57,7 +57,7 @@ public class MitgliedSekundaereBeitragsgruppePart implements Part
     cont.getComposite().setLayoutData(grid);
     tab = new TabFolder(cont.getComposite(), SWT.NONE);
     tab.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    TabGroup tg1 = new TabGroup(tab, "Sekund‰re Beitragsgruppen");
+    TabGroup tg1 = new TabGroup(tab, "Sekund√§re Beitragsgruppen");
 
     control.getSekundaereBeitragsgruppe().paint(tg1.getComposite());
   }

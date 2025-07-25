@@ -30,18 +30,18 @@ public class EinstellungenBuchfuehrungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Buchführung");
+    GUI.getView().setTitle("Einstellungen BuchfÃ¼hrung");
 
     final EinstellungControl control = new EinstellungControl(this);
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
+    cont.addLabelPair("Beginn GeschÃ¤ftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
-    cont.addLabelPair("Intervall für aktive Konten (Jahre)",
+    cont.addLabelPair("Intervall fÃ¼r aktive Konten (Jahre)",
         control.getUnterdrueckungKonten());
     cont.addLabelPair(
-        "Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
+        "Buchungsarten die seit x Monaten nicht benutzt werden unterdrÃ¼cken",
         control.getUnterdrueckungLaenge());
     cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     cont.addInput(control.getAutoBuchunguebernahme());

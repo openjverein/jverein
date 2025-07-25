@@ -30,7 +30,7 @@ public class Update0459 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     {
-      // Autoincrement von Rechnung auf den maximalen Zähler aus Formular setzen
+      // Autoincrement von Rechnung auf den maximalen ZÃ¤hler aus Formular setzen
       // so gibt es eine fortlaufende Rechnungsnummer bei verwendung der
       // Rechnung-ID
       if (getDriver() == DRIVER.H2)

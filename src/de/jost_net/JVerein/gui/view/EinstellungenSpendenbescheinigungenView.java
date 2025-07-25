@@ -39,11 +39,11 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     cont.addLabelPair("Finanzamt", control.getFinanzamt());
     cont.addLabelPair("Steuernummer", control.getSteuernummer());
     cont.addLabelPair("Bescheiddatum", control.getBescheiddatum());
-    cont.addLabelPair("Bescheid nach § 60a AO", control.getVorlaeufig());
+    cont.addLabelPair("Bescheid nach Â§ 60a AO", control.getVorlaeufig());
     cont.addLabelPair("Veranlagung von", control.getVeranlagungVon());
     cont.addLabelPair("Veranlagung bis", control.getVeranlagungBis());
-    cont.addLabelPair("Begünstigter Zweck", control.getBeguenstigterzweck());
-    cont.addLabelPair("Mitgliedsbeiträge dürfen bescheinigt werden",
+    cont.addLabelPair("BegÃ¼nstigter Zweck", control.getBeguenstigterzweck());
+    cont.addLabelPair("MitgliedsbeitrÃ¤ge dÃ¼rfen bescheinigt werden",
         control.getMitgliedsbetraege());
     cont.addLabelPair("Mindestbetrag",
         control.getSpendenbescheinigungminbetrag());

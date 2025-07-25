@@ -247,7 +247,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
         list != null ? PseudoIterator.asList(list) : null,
         getAktuelleBuchart());
     buchungsartInput.setAttribute("klasse-art-bez");
-    buchungsartInput.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsartInput.setPleaseChoose("Bitte ausw√§hlen");
     buchungsartInput.setComment(" ");
     return buchungsartInput;
   }
@@ -304,7 +304,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
 
       if (null == storeBuchart)
       {
-        GUI.getStatusBar().setErrorText("Keine JVerein Buchungsart gew‰hlt!!");
+        GUI.getStatusBar().setErrorText("Keine JVerein Buchungsart gew√§hlt!!");
         return false;
       }
       return true;

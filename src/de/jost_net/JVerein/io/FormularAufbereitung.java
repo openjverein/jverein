@@ -117,7 +117,7 @@ public class FormularAufbereitung
   private int buendig = links;
 
   /**
-   * ÷ffnet die Datei und startet die PDF-Generierung
+   * √ñffnet die Datei und startet die PDF-Generierung
    * 
    * @param f
    *          Die Datei, in die geschrieben werden soll
@@ -405,7 +405,7 @@ public class FormularAufbereitung
   }
 
   /**
-   * Schlieﬂen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
+   * Schlie√üen des aktuellen Formulars, damit die Datei korrekt gespeichert wird
    * 
    * @throws IOException
    */
@@ -579,14 +579,14 @@ public class FormularAufbereitung
 
   public void printNeueSeite()
   {
-    // Neue Seite mit Anschrift f¸r Fenster in querem Brief
+    // Neue Seite mit Anschrift f√ºr Fenster in querem Brief
     doc.newPage();
   }
 
   public void printAdressfenster(String aussteller, String empfaenger)
       throws RemoteException
   {
-    // Neue Seite mit Anschrift f¸r Fenster in querem Brief
+    // Neue Seite mit Anschrift f√ºr Fenster in querem Brief
     try
     {
       doc.add(new Paragraph(" ", Reporter.getFreeSans(12)));
@@ -657,7 +657,7 @@ public class FormularAufbereitung
         .setCreator(System.getProperty("user.name"));
 
     Invoice invoice = new Invoice()
-        // F‰lligkeitsdatum
+        // F√§lligkeitsdatum
         .setDueDate(sollb.getDatum())
         // Lieferdatum
         .setDeliveryDate(sollb.getDatum())
@@ -684,7 +684,7 @@ public class FormularAufbereitung
     {
       // Mandat
       sender.addDebitDetails(new DirectDebit(re.getIBAN(), re.getMandatID()));
-      // Gl‰ubiger identifikationsnummer
+      // Gl√§ubiger identifikationsnummer
       invoice.setCreditorReferenceID(
           (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
     }
@@ -709,7 +709,7 @@ public class FormularAufbereitung
     if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       id = re.getMitglied().getExterneMitgliedsnummer();
 
-    // Rechnungsempf‰nger
+    // Rechnungsempf√§nger
     invoice.setRecipient(new TradeParty(
         StringTool.toNotNullString(re.getVorname()) + " "
             + StringTool.toNotNullString(re.getName()),

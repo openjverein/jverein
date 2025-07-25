@@ -61,7 +61,7 @@ public class MailVorlageZuweisenAction implements Action
       }
       else
       {
-        throw new ApplicationException("Keine Kontext ausgew‰hlt");
+        throw new ApplicationException("Keine Kontext ausgew√§hlt");
       }
     }
     catch (OperationCanceledException oce)

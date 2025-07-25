@@ -62,8 +62,8 @@ public class KontoauswahlInput
    * Liefert ein Auswahlfeld fuer das Konto.
    * 
    * @param keinkonto
-   *          true= ein kann auch kein Konto ausgew‰hlt werden. false = es muss
-   *          ein Konto ausgew‰hlt werden.
+   *          true= ein kann auch kein Konto ausgew√§hlt werden. false = es muss
+   *          ein Konto ausgew√§hlt werden.
    * 
    * @return Auswahl-Feld.
    * @throws RemoteException

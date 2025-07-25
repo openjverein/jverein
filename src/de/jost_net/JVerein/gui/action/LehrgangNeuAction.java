@@ -51,14 +51,14 @@ public class LehrgangNeuAction implements Action
         if (m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann kˆnnen Lehrg‰nge aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann k√∂nnen Lehrg√§nge aufgenommen werden.");
         }
 
         l.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (RemoteException e)

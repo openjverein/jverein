@@ -92,10 +92,10 @@ public class ZusatzbetragPart implements Part
     {
       group.addLabelPair("Mitglied", getMitglied());
     }
-    group.addLabelPair("Erste F‰lligkeit ", getStartdatum(true));
-    group.addLabelPair("N‰chste F‰lligkeit", getFaelligkeit());
+    group.addLabelPair("Erste F√§lligkeit ", getStartdatum(true));
+    group.addLabelPair("N√§chste F√§lligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
-    group.addLabelPair("Nicht mehr ausf¸hren ab", getEndedatum());
+    group.addLabelPair("Nicht mehr ausf√ºhren ab", getEndedatum());
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());
@@ -119,8 +119,8 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getFaelligkeit();
 
     this.faelligkeit = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("F‰lligkeit");
-    this.faelligkeit.setText("Bitte F‰lligkeitsdatum w‰hlen");
+    this.faelligkeit.setTitle("F√§lligkeit");
+    this.faelligkeit.setText("Bitte F√§lligkeitsdatum w√§hlen");
     this.faelligkeit.addListener(new Listener()
     {
 
@@ -171,7 +171,7 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getStartdatum();
     this.startdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.startdatum.setTitle("Startdatum");
-    this.startdatum.setText("Bitte Startdatum w‰hlen");
+    this.startdatum.setText("Bitte Startdatum w√§hlen");
     this.startdatum.addListener(new Listener()
     {
 
@@ -223,8 +223,8 @@ public class ZusatzbetragPart implements Part
 
     Date d = zusatzbetrag.getEndedatum();
     this.endedatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.endedatum.setTitle("Nicht mehr ausf¸hren ab");
-    this.endedatum.setText("Bitte Endedatum w‰hlen");
+    this.endedatum.setTitle("Nicht mehr ausf√ºhren ab");
+    this.endedatum.setText("Bitte Endedatum w√§hlen");
     this.endedatum.addListener(new Listener()
     {
 
@@ -251,8 +251,8 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getAusfuehrung();
 
     this.ausfuehrung = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.ausfuehrung.setTitle("Ausf¸hrung");
-    this.ausfuehrung.setText("Bitte Ausf¸hrungsdatum w‰hlen");
+    this.ausfuehrung.setTitle("Ausf√ºhrung");
+    this.ausfuehrung.setText("Bitte Ausf√ºhrungsdatum w√§hlen");
     this.ausfuehrung.addListener(new Listener()
     {
 
@@ -345,7 +345,7 @@ public class ZusatzbetragPart implements Part
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }

@@ -121,7 +121,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
       boolean steuerInBuchung = (Boolean) Einstellungen
           .getEinstellung(Property.STEUERINBUCHUNG);
 
-      // Prüfen ob es abgeschlossene Buchungen mit der Steuer gibt
+      // PrÃ¼fen ob es abgeschlossene Buchungen mit der Steuer gibt
       ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
           "buchung");
       it.addColumn("buchung.id");
@@ -141,10 +141,10 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
       if (it.hasNext())
       {
         throw new ApplicationException(
-            "Steuer kann nicht geändert/gelöscht werden, es gibt abgeschlossene Buchungen mit dieser Steuer.");
+            "Steuer kann nicht geÃ¤ndert/gelÃ¶scht werden, es gibt abgeschlossene Buchungen mit dieser Steuer.");
       }
 
-      // Prüfen ob es eine Rechnung mit dieser Steuer gibt
+      // PrÃ¼fen ob es eine Rechnung mit dieser Steuer gibt
       it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
       it.addColumn(Sollbuchung.TABLE_NAME_ID);
       it.setLimit(1);
@@ -165,7 +165,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
       if (it.hasNext())
       {
         throw new ApplicationException(
-            "Steuer kann nicht geändert/gelöscht werden, es existieren Rechnungen mit dieser Steuer.");
+            "Steuer kann nicht geÃ¤ndert/gelÃ¶scht werden, es existieren Rechnungen mit dieser Steuer.");
       }
     }
     catch (RemoteException e)
@@ -189,16 +189,16 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
       }
       if (getSatz() < 0)
       {
-        throw new ApplicationException("Steuersatz nicht gültig");
+        throw new ApplicationException("Steuersatz nicht gÃ¼ltig");
       }
       if (getBuchungsart() == null)
       {
-        throw new ApplicationException("Bitte Steuer-Buchungsart auswählen.");
+        throw new ApplicationException("Bitte Steuer-Buchungsart auswÃ¤hlen.");
       }
       if (getBuchungsart().getArt() == ArtBuchungsart.UMBUCHUNG)
       {
         throw new ApplicationException(
-            "Steuer-Buchungsart mit Art Umbuchung ist nicht möglich.");
+            "Steuer-Buchungsart mit Art Umbuchung ist nicht mÃ¶glich.");
       }
     }
     catch (RemoteException e)

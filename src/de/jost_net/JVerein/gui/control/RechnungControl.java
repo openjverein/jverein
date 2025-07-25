@@ -376,7 +376,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       if (rechnungen != null)
       {
-        text = "Es wurden " + rechnungen.length + " Rechnungen ausgew‰hlt"
+        text = "Es wurden " + rechnungen.length + " Rechnungen ausgew√§hlt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
         for (Rechnung re : rechnungen)
         {

@@ -151,7 +151,7 @@ public class JahresabschlussControl extends KontensaldoControl
       return DateUtils.addDays(ja.getBis(), 1);
     }
 
-    // Geschäftsjahres-Beging aus Datum der ersten Buchung bestimmen, wenn noch
+    // GeschÃ¤ftsjahres-Beging aus Datum der ersten Buchung bestimmen, wenn noch
     // kein Jahresabschluss existiert.
     DBIterator<Buchung> itbu = Einstellungen.getDBService()
         .createList(Buchung.class);
@@ -165,7 +165,7 @@ public class JahresabschlussControl extends KontensaldoControl
     }
 
     // Wenn es noch keine Buchungen gibt, nehmen wir den Beginn des aktuellen
-    // Geschäftsjahres.
+    // GeschÃ¤ftsjahres.
     Geschaeftsjahr gj = new Geschaeftsjahr(new Date());
     return gj.getBeginnGeschaeftsjahr();
   }
@@ -227,7 +227,7 @@ public class JahresabschlussControl extends KontensaldoControl
       return anfangsbestaende;
     }
     anfangsbestaende = new CheckboxInput(getJahresabschluss().isNewObject());
-    anfangsbestaende.setName("Anfangsbestände Folgejahr");
+    anfangsbestaende.setName("AnfangsbestÃ¤nde Folgejahr");
     anfangsbestaende.setEnabled(getJahresabschluss().isNewObject());
     return anfangsbestaende;
   }
@@ -411,12 +411,12 @@ public class JahresabschlussControl extends KontensaldoControl
         if (konto.getEroeffnung() == null)
         {
           text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Eröffnungsdatum\n";
+              + " hat kein ErÃ¶ffnungsdatum\n";
         }
         if (konto.getAnschaffung() == null)
         {
           text = text + "Das Anlagenkonto mit Nummer " + konto.getNummer()
-              + " hat kein Anschaffungsdatum. Bitte auf Plausibilität prüfen!\n";
+              + " hat kein Anschaffungsdatum. Bitte auf PlausibilitÃ¤t prÃ¼fen!\n";
         }
         else if (konto.getAnschaffung().after(Datum.addTage(vongj, -1))
             && konto.getAnschaffung().before(Datum.addTage(bisgj, 1)))
@@ -436,10 +436,10 @@ public class JahresabschlussControl extends KontensaldoControl
           }
           if (Math.abs(betrag - konto.getBetrag()) > Double.MIN_NORMAL)
           {
-            text += "Für das Anlagenkonto mit der Nummer " + konto.getNummer()
+            text += "FÃ¼r das Anlagenkonto mit der Nummer " + konto.getNummer()
                 + " stimmt die Summe der Buchungen (" + betrag
                 + ") nicht mit den Anschaffungskosten (" + konto.getBetrag()
-                + ") überein. Bitte auf Plausibilität prüfen!\n";
+                + ") Ã¼berein. Bitte auf PlausibilitÃ¤t prÃ¼fen!\n";
           }
         }
       }

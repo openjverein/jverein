@@ -33,7 +33,7 @@ public class AnfangsbestandListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Anfangsbest‰nde");
+    GUI.getView().setTitle("Anfangsbest√§nde");
 
     AnfangsbestandControl control = new AnfangsbestandControl(this);
 
@@ -58,8 +58,8 @@ public class AnfangsbestandListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zur¸ck");
-    vor.setToolTipText("Datumsbereich vow‰rts");
+    zurueck.setToolTipText("Datumsbereich zur√ºck");
+    vor.setToolTipText("Datumsbereich vow√§rts");
 
     control.getAnfangsbestandList().paint(this.getParent());
 

@@ -91,7 +91,7 @@ public class ArbeitseinsatzZeile implements GenericObject
       return (ist - soll) * stundensatz;
     }
     throw new RemoteException(
-        String.format("Ungültige Spaltenbezeichung: %s", arg0));
+        String.format("UngÃ¼ltige Spaltenbezeichung: %s", arg0));
   }
 
   @Override

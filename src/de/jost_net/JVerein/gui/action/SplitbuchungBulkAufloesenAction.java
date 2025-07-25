@@ -51,7 +51,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewÃ¤hlt");
     }
     try
     {
@@ -77,8 +77,8 @@ public class SplitbuchungBulkAufloesenAction implements Action
       boolean spendenbescheinigung = false;
       for (Buchung splitbu : b)
       {
-        // Es können mehrere der gleichen Splittbuchung selektiert worden sein
-        // Die Prüfung reicht einmal pro SplitId
+        // Es kÃ¶nnen mehrere der gleichen Splittbuchung selektiert worden sein
+        // Die PrÃ¼fung reicht einmal pro SplitId
         if (!schongeprueft.contains(splitbu.getSplitId()))
         {
           // Check ob einer der Buchungen der Splittbuchung
@@ -110,28 +110,28 @@ public class SplitbuchungBulkAufloesenAction implements Action
       if (!spendenbescheinigung)
       {
         text = "Wollen Sie diese Splituchung" + (b.length > 1 ? "en" : "")
-            + " wirklich auflösen?";
+            + " wirklich auflÃ¶sen?";
       }
       else
       {
         if (b.length == 1)
         {
-          text = "Die Splitbuchung enthält Buchungen denen eine "
+          text = "Die Splitbuchung enthÃ¤lt Buchungen denen eine "
               + "Spendenbescheinigung zugeordnet ist.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Splitbuchung auflösen und Spendenbescheinigungen löschen?";
+              + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+              + "Splitbuchung auflÃ¶sen und Spendenbescheinigungen lÃ¶schen?";
         }
         else
         {
-          text = "Mindestens eine Splitbuchung enthält Buchungen denen "
+          text = "Mindestens eine Splitbuchung enthÃ¤lt Buchungen denen "
               + "eine Spendenbescheinigung zugeordnet ist.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Splitbuchungen auflösen und Spendenbescheinigungen löschen?";
+              + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+              + "Splitbuchungen auflÃ¶sen und Spendenbescheinigungen lÃ¶schen?";
         }
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflösen");
+      d.setTitle("Splitbuchung" + (b.length > 1 ? "en" : "") + " auflÃ¶sen");
       d.setText(text);
       try
       {
@@ -143,7 +143,7 @@ public class SplitbuchungBulkAufloesenAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Auflösen der Splituchung", e);
+        Logger.error("Fehler beim AuflÃ¶sen der Splituchung", e);
         return;
       }
 
@@ -177,17 +177,17 @@ public class SplitbuchungBulkAufloesenAction implements Action
       {
         GUI.getStatusBar()
             .setSuccessText(String.format(
-                "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelöst.",
+                "%d Splituchung" + (count != 1 ? "en" : "") + " aufgelÃ¶st.",
                 count));
       }
       else
       {
-        GUI.getStatusBar().setErrorText("Keine Splituchung aufgelöst");
+        GUI.getStatusBar().setErrorText("Keine Splituchung aufgelÃ¶st");
       }
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Auflösen einer Splituchung.";
+      String fehler = "Fehler beim AuflÃ¶sen einer Splituchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

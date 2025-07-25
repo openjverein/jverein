@@ -58,7 +58,7 @@ public abstract class FormularPartControl extends VorZurueckControl
     formularfelderList.addColumn("Von links", "x");
     formularfelderList.addColumn("Von unten", "y");
     formularfelderList.addColumn("Schriftart", "font");
-    formularfelderList.addColumn("Schriftgröße", "fontsize");
+    formularfelderList.addColumn("SchriftgrÃ¶ÃŸe", "fontsize");
 
     formularfelderList.setRememberColWidths(true);
     formularfelderList.setContextMenu(new FormularfeldMenu());

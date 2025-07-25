@@ -286,7 +286,7 @@ public class BuchungsartControl extends FilterControl implements Savable
         getBuchungsart().getBuchungsklasse());
     buchungsklasse.setValue(getBuchungsart().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
-    buchungsklasse.setPleaseChoose("Bitte auswählen");
+    buchungsklasse.setPleaseChoose("Bitte auswÃ¤hlen");
     return buchungsklasse;
   }
 
@@ -337,7 +337,7 @@ public class BuchungsartControl extends FilterControl implements Savable
       catch (PatternSyntaxException pse)
       {
         throw new ApplicationException(
-            "Regulärer Ausdruck ungültig: " + pse.getDescription());
+            "RegulÃ¤rer Ausdruck ungÃ¼ltig: " + pse.getDescription());
       }
     }
     if (steuer != null)
@@ -387,7 +387,7 @@ public class BuchungsartControl extends FilterControl implements Savable
           {
             return ArtBuchungsart.get((Integer) o);
           }
-          return "ungültig";
+          return "ungÃ¼ltig";
         }
       }, false, Column.ALIGN_LEFT);
       buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
@@ -426,7 +426,7 @@ public class BuchungsartControl extends FilterControl implements Savable
           {
             return StatusBuchungsart.get((Integer) o);
           }
-          return "ungültig";
+          return "ungÃ¼ltig";
         }
       }, false, Column.ALIGN_LEFT);
       buchungsartList.addColumn("Suchtext", "suchbegriff");
@@ -531,7 +531,7 @@ public class BuchungsartControl extends FilterControl implements Savable
   private void starteAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)

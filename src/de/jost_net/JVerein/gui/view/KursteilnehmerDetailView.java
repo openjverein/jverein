@@ -45,7 +45,7 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
     LabelGroup group = new LabelGroup(scrolled.getComposite(),
-        "Daten für die Lastschrift");
+        "Daten fÃ¼r die Lastschrift");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());

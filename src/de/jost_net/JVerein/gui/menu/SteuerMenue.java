@@ -36,7 +36,7 @@ public class SteuerMenue extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SteuerDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new SteuerDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new SteuerDeleteAction(),
         "user-trash-full.png"));
   }
 }

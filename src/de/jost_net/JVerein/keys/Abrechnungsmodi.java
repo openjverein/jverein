@@ -71,21 +71,21 @@ public class Abrechnungsmodi
       case ALLE:
         return "Alle";
       case MO:
-        return "Monatsbeitr‰ge";
+        return "Monatsbeitr√§ge";
       case VI:
-        return "Viertelj‰hrlich";
+        return "Viertelj√§hrlich";
       case HA:
-        return "Halbj‰hrlich";
+        return "Halbj√§hrlich";
       case JA:
-        return "J‰hrlich";
+        return "J√§hrlich";
       case JAHAVIMO:
-        return "Jahres-, Halbjahres-, Vierteljahres- und Monatsbeitr‰ge";
+        return "Jahres-, Halbjahres-, Vierteljahres- und Monatsbeitr√§ge";
       case JAVIMO:
-        return "Jahres-, Vierteljahres- und Monatsbeitr‰ge";
+        return "Jahres-, Vierteljahres- und Monatsbeitr√§ge";
       case HAVIMO:
-        return "Halbjahres-, Vierteljahres- und Monatsbeitr‰ge";
+        return "Halbjahres-, Vierteljahres- und Monatsbeitr√§ge";
       case VIMO:
-        return "Vierteljahres- und Monatsbeitr‰ge";
+        return "Vierteljahres- und Monatsbeitr√§ge";
       case EINGETRETENEMITGLIEDER:
         return "Eingetretene Mitglieder";
       case ABGEMELDETEMITGLIEDER:

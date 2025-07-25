@@ -187,7 +187,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     b.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_AUSWAHL, false, "question-circle.png");
 
-    b.addButton("Übernehmen", new Action()
+    b.addButton("Ãœbernehmen", new Action()
     {
 
       @Override

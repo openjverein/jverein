@@ -100,7 +100,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Von/am");
-    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w‰hlen");
+    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w√§hlen");
     von.setMandatory(true);
     return von;
   }
@@ -118,7 +118,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Bis");
-    this.bis.setText("Bitte Ende der Veranstaltung w‰hlen");
+    this.bis.setText("Bitte Ende der Veranstaltung w√§hlen");
     return bis;
   }
 

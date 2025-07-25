@@ -144,7 +144,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    // Speichern und zurück zum View
+    // Speichern und zurÃ¼ck zum View
     buttons.addButton("Speichern", new Action()
     {
 

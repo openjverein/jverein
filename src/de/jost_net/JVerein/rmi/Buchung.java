@@ -156,8 +156,8 @@ public interface Buchung extends JVereinDBObject
    * 
    * @param speicherung
    *          true: ja, Normalfall <br>
-   *          false: nein, bei Splitbuchungen werden die Datens‰tze zun‰chst in
-   *          einer ArrayList gehalten und sp‰ter in die Datenbank geschrieben.
+   *          false: nein, bei Splitbuchungen werden die Datens√§tze zun√§chst in
+   *          einer ArrayList gehalten und sp√§ter in die Datenbank geschrieben.
    */
   public void setSpeicherung(boolean speicherung) throws RemoteException;
 

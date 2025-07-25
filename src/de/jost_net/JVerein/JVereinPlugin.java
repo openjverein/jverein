@@ -49,7 +49,7 @@ public class JVereinPlugin extends AbstractPlugin
   private Settings settings;
 
   /**
-   * MessageConsumer, mit dem JVerein über neu eingetroffene Umsätze aus
+   * MessageConsumer, mit dem JVerein Ã¼ber neu eingetroffene UmsÃ¤tze aus
    * Hibiscus informiert wird.
    */
   private UmsatzMessageConsumer umc = null;
@@ -155,7 +155,7 @@ public class JVereinPlugin extends AbstractPlugin
     });
     BootMessage msg = new BootMessage(
         "Es wurde eine neue JVerein-Version installiert."
-            + " Alle Änderungen sind auf folgender Seite zu finden:");
+            + " Alle Ã„nderungen sind auf folgender Seite zu finden:");
     msg.setTitle("Neue JVerein-Version");
     msg.setIcon("gtk-info.png");
     msg.setUrl(DokumentationUtil.CHANGELOG);
@@ -310,17 +310,17 @@ public class JVereinPlugin extends AbstractPlugin
         }
       });
       // }
-      // Ist Liquibase installiert? Das wird über das vorhandensein der Tabelle
-      // databaselog geprüft
+      // Ist Liquibase installiert? Das wird Ã¼ber das vorhandensein der Tabelle
+      // databaselog geprÃ¼ft
       // boolean liquibaseinstalliert = DBUpdaterTool
       // .isLiquibaseInstalliert(connection);
       // if (!liquibaseinstalliert)
       // {
-      // Liquibase ist nicht installiert. Über die Synchronisation werden die
+      // Liquibase ist nicht installiert. Ãœber die Synchronisation werden die
       // Liquibase-Tabellen mit Inhalt erzeugt.
       // DBUpdaterTool.changelogsyncLiquibase(connection);
       // }
-      // Jetzt wird noch geprüft ob ein Update erforderlich ist.
+      // Jetzt wird noch geprÃ¼ft ob ein Update erforderlich ist.
       // DBUpdaterTool.updateLiquibase(connection);
     }
     catch (Exception e)

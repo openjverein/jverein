@@ -46,8 +46,8 @@ public class KontoDetailView extends AbstractDetailView
     left.addLabelPair("Kontoart", control.getKontoArt());
     left.addLabelPair("Nummer", control.getNummer());
     left.addLabelPair("Bezeichnung", control.getBezeichnung());
-    left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());
-    left.addLabelPair("Auflösungsdatum", control.getAufloesung());
+    left.addLabelPair("ErÃ¶ffnungsdatum", control.getEroeffnung());
+    left.addLabelPair("AuflÃ¶sungsdatum", control.getAufloesung());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());

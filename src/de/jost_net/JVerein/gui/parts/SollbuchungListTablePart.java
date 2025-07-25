@@ -60,7 +60,7 @@ public class SollbuchungListTablePart extends JVereinTablePart
       {
         @SuppressWarnings("rawtypes")
         List l = this.getItems();
-        summary = new String(l.size() + " Datens‰tze");
+        summary = new String(l.size() + " Datens√§tze");
         for (int i = 0; i < l.size(); i++)
         {
           Sollbuchung sollb = (Sollbuchung) l.get(i);

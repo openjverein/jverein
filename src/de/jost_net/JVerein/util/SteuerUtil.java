@@ -26,12 +26,12 @@ public class SteuerUtil
   /**
    * Speichert die Steuer aus der Buchungsart in den zugeordnete Buchungen
    * 
-   * @return anzahl ge‰nderte Zeilen
+   * @return anzahl ge√§nderte Zeilen
    * @throws RemoteException
    */
   public static int setSteuerToBuchung() throws RemoteException
   {
-    // Nur Buchungen auf Geldkonten kˆnnen Steuern haben
+    // Nur Buchungen auf Geldkonten k√∂nnen Steuern haben
     // Buchungen
     String sql = "update buchung "
         + "set steuer = (select buchungsart.steuer from buchungsart "
@@ -55,7 +55,7 @@ public class SteuerUtil
     int anzahlSollbuchungpositionen = Einstellungen.getDBService()
         .executeUpdate(sql, null);
 
-    // Zusatzbetr‰ge
+    // Zusatzbetr√§ge
     sql = "update zusatzabbuchung "
         + "set steuer = (select buchungsart.steuer from buchungsart "
         + "where zusatzabbuchung.buchungsart = buchungsart.id) "
@@ -66,7 +66,7 @@ public class SteuerUtil
     int anzahlZusatzbetraege = Einstellungen.getDBService().executeUpdate(sql,
         null);
 
-    // Zusatzbetr‰ge-Vorlagen
+    // Zusatzbetr√§ge-Vorlagen
     sql = "update zusatzbetragvorlage "
         + "set steuer = (select buchungsart.steuer from buchungsart "
         + "where zusatzbetragvorlage.buchungsart = buchungsart.id) "
@@ -85,10 +85,10 @@ public class SteuerUtil
         + "and steuer is not null)"
         + "and buchungsart is not null and steuer is null";
 
-    int anzahlZusatzbetr‰ge = Einstellungen.getDBService().executeUpdate(sql,
+    int anzahlZusatzbetr√§ge = Einstellungen.getDBService().executeUpdate(sql,
         null);
 
     return anzahlBuchungen + anzahlSollbuchungpositionen + anzahlZusatzbetraege
-        + anzahlZusatzbetraegeVorlagen + anzahlZusatzbetr‰ge;
+        + anzahlZusatzbetraegeVorlagen + anzahlZusatzbetr√§ge;
   }
 }

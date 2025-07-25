@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung f¸r Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung f√ºr Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -33,7 +33,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Lˆschen eines Abrechnungslaufes
+ * L√∂schen eines Abrechnungslaufes
  */
 public class AbrechnungslaufAbschliessenAction implements Action
 {
@@ -42,7 +42,7 @@ public class AbrechnungslaufAbschliessenAction implements Action
   {
     if (context == null || !(context instanceof Abrechnungslauf))
     {
-      throw new ApplicationException("Keinen Abrechnungslauf ausgew‰hlt");
+      throw new ApplicationException("Keinen Abrechnungslauf ausgew√§hlt");
     }
     try
     {
@@ -58,9 +58,9 @@ public class AbrechnungslaufAbschliessenAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle(String.format("Abrechnungslauf %s abschlieﬂen", abrl.getID()));
+      d.setTitle(String.format("Abrechnungslauf %s abschlie√üen", abrl.getID()));
       d.setText(
-          "Wollen Sie diesen Abrechnungslauf wirklich abschlieﬂen?\nEin nachtr‰gliches Lˆschen ist dann nicht mehr mˆglich.");
+          "Wollen Sie diesen Abrechnungslauf wirklich abschlie√üen?\nEin nachtr√§gliches L√∂schen ist dann nicht mehr m√∂glich.");
 
       try
       {
@@ -72,7 +72,7 @@ public class AbrechnungslaufAbschliessenAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Abschlieﬂen eines Abrechnungslaufes", e);
+        Logger.error("Fehler beim Abschlie√üen eines Abrechnungslaufes", e);
         return;
       }
 
@@ -83,7 +83,7 @@ public class AbrechnungslaufAbschliessenAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Abschlieﬂen eines Abrechnungslaufes";
+      String fehler = "Fehler beim Abschlie√üen eines Abrechnungslaufes";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

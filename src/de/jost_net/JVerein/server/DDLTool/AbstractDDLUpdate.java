@@ -56,12 +56,12 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     if (name.length() != 10)
     {
       throw new RuntimeException(
-          "Ungültiger Name für eine Update-Klasse (Updatennnn)");
+          "UngÃ¼ltiger Name fÃ¼r eine Update-Klasse (Updatennnn)");
     }
     if (!name.startsWith("Update"))
     {
       throw new RuntimeException(
-          "Ungültiger Name für eine Update-Klasse (Updatennnn)");
+          "UngÃ¼ltiger Name fÃ¼r eine Update-Klasse (Updatennnn)");
     }
     nr = Integer.parseInt(name.substring(6));
     this.conn = conn;
@@ -105,7 +105,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     catch (Exception e)
     {
       Logger.error("unable to execute update", e);
-      throw new ApplicationException("Fehler beim Ausführen des Updates", e);
+      throw new ApplicationException("Fehler beim AusfÃ¼hren des Updates", e);
     }
   }
 
@@ -128,7 +128,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     catch (SQLException e)
     {
-      Logger.error("Versionsnummer kann nicht eingefügt werden.", e);
+      Logger.error("Versionsnummer kann nicht eingefÃ¼gt werden.", e);
       throw new ApplicationException(
           "Versionsnummer kann nicht gespeichert werden.");
     }

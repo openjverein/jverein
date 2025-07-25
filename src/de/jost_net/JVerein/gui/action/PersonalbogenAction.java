@@ -102,7 +102,7 @@ public class PersonalbogenAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("Kein Mitglied ausgew√§hlt");
     }
   }
 
@@ -110,7 +110,7 @@ public class PersonalbogenAction implements Action
   {
     final Mitglied[] mitglied = m;
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
 
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     String path = settings.getString("lastdir",
@@ -336,7 +336,7 @@ public class PersonalbogenAction implements Action
         DBIterator<Mitglied> itbg = Einstellungen.getDBService()
             .createList(Mitglied.class);
         itbg.addFilter("zahlerid = ?", m.getID());
-        rpt.addColumn("Vollzahler mit Angehˆrigen", Element.ALIGN_LEFT);
+        rpt.addColumn("Vollzahler mit Angeh√∂rigen", Element.ALIGN_LEFT);
         String zahltfuer = "";
         while (itbg.hasNext())
         {
@@ -358,7 +358,7 @@ public class PersonalbogenAction implements Action
         rpt.addColumn(Adressaufbereitung.getNameVorname(mfa),
             Element.ALIGN_LEFT);
       }
-      rpt.addColumn("Austritts-/K¸ndigungsdatum", Element.ALIGN_LEFT);
+      rpt.addColumn("Austritts-/K√ºndigungsdatum", Element.ALIGN_LEFT);
       String akdatum = "";
       if (m.getAustritt() != null)
       {
@@ -384,7 +384,7 @@ public class PersonalbogenAction implements Action
     }
     rpt.addColumn("Datum Erstspeicherung", Element.ALIGN_LEFT);
     rpt.addColumn(m.getEingabedatum(), Element.ALIGN_LEFT);
-    rpt.addColumn("Datum letzte ƒnderung", Element.ALIGN_LEFT);
+    rpt.addColumn("Datum letzte √Ñnderung", Element.ALIGN_LEFT);
     rpt.addColumn(m.getLetzteAenderung(), Element.ALIGN_LEFT);
     rpt.closeTable();
   }
@@ -392,7 +392,7 @@ public class PersonalbogenAction implements Action
   private void printBeitragsgruppe(Reporter rpt, Mitglied m, Beitragsgruppe bg,
       boolean sek) throws RemoteException, ApplicationException
   {
-    rpt.addColumn((sek ? "Sekund‰re " : "") + "Beitragsgruppe",
+    rpt.addColumn((sek ? "Sekund√§re " : "") + "Beitragsgruppe",
         Element.ALIGN_LEFT);
     String beitragsgruppe = bg.getBezeichnung() + " - "
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
@@ -416,7 +416,7 @@ public class PersonalbogenAction implements Action
       rpt.add(new Paragraph("Zusatzbetrag", Reporter.getFreeSans(12)));
       rpt.addHeaderColumn("Start", Element.ALIGN_LEFT, 30,
           BaseColor.LIGHT_GRAY);
-      rpt.addHeaderColumn("n‰chste F‰ll.", Element.ALIGN_LEFT, 30,
+      rpt.addHeaderColumn("n√§chste F√§ll.", Element.ALIGN_LEFT, 30,
           BaseColor.LIGHT_GRAY);
       rpt.addHeaderColumn("letzte Ausf.", Element.ALIGN_LEFT, 30,
           BaseColor.LIGHT_GRAY);
@@ -549,7 +549,7 @@ public class PersonalbogenAction implements Action
     it.setOrder("order by von");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Lehrg‰nge", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Lehrg√§nge", Reporter.getFreeSans(12)));
       rpt.addHeaderColumn("Lehrgangsart", Element.ALIGN_LEFT, 50,
           BaseColor.LIGHT_GRAY);
       rpt.addHeaderColumn("am/vom", Element.ALIGN_LEFT, 30,
@@ -667,7 +667,7 @@ public class PersonalbogenAction implements Action
     it.setOrder("ORDER BY datum");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Arbeitseins‰tze", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Arbeitseins√§tze", Reporter.getFreeSans(12)));
       rpt.addHeaderColumn("Datum", Element.ALIGN_LEFT, 30,
           BaseColor.LIGHT_GRAY);
       rpt.addHeaderColumn("Stunden", Element.ALIGN_LEFT, 30,

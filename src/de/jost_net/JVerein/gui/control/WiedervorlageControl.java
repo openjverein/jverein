@@ -86,7 +86,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Wiedervorlagedatum w‰hlen");
+    this.datum.setText("Bitte Wiedervorlagedatum w√§hlen");
     this.datum.addListener(new Listener()
     {
 
@@ -130,7 +130,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
 
     this.erledigung = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.erledigung.setTitle("Erledigung");
-    this.erledigung.setText("Bitte Erledigungsdatum w‰hlen");
+    this.erledigung.setText("Bitte Erledigungsdatum w√§hlen");
     this.erledigung.addListener(new Listener()
     {
 

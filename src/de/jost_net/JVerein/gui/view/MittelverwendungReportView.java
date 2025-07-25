@@ -33,7 +33,7 @@ import de.willuhn.jameica.gui.util.TabGroup;
 
 public class MittelverwendungReportView extends AbstractView
 {
-  // Statische Variable, die den zuletzt ausgew‰hlten Tab speichert.
+  // Statische Variable, die den zuletzt ausgew√§hlten Tab speichert.
   private static int tabindex = -1;
 
   @Override
@@ -62,7 +62,7 @@ public class MittelverwendungReportView extends AbstractView
     control.getMittelverwendungSaldoTable()
         .paint(mittelverwendungSaldo.getComposite());
 
-    // Aktiver zuletzt ausgew‰hlter Tab.
+    // Aktiver zuletzt ausgew√§hlter Tab.
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);

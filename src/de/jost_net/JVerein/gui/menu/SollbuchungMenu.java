@@ -53,7 +53,7 @@ public class SollbuchungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Löschen", new SollbuchungLoeschenAction(),
+    addItem(new SollOhneIstItem("LÃ¶schen", new SollbuchungLoeschenAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",

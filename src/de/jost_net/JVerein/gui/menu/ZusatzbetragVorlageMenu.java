@@ -30,14 +30,14 @@ public class ZusatzbetragVorlageMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der ZusatzbetrÃ¤ge.
    */
   public ZusatzbetragVorlageMenu()
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ZusatzbetragVorlageDetailView.class),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new ZusatzbetragVorlageDeleteAction(), "user-trash-full.png"));
   }
 }

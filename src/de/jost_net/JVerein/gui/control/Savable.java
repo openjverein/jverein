@@ -22,7 +22,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Dieses Intervace ermöglicht die Überwachung von Änderungen im Control. Das
+ * Dieses Intervace ermÃ¶glicht die Ãœberwachung von Ã„nderungen im Control. Das
  * Aufbereiten und Zuordnen der Daten (prepareStore()) wird vom Speichern
  * (handleSotre()) getrennt.
  */
@@ -48,9 +48,9 @@ public interface Savable
 
   /**
    * Diese Funktion kann implementiert werden, um selbst zu testen, ob der
-   * Eintrag geändert wurde. In diesem Fall muss true zurückgegeben werden.
+   * Eintrag geÃ¤ndert wurde. In diesem Fall muss true zurÃ¼ckgegeben werden.
    * 
-   * @return true wenn der Eintrag geändert wurde
+   * @return true wenn der Eintrag geÃ¤ndert wurde
    * @throws RemoteException
    */
   public default boolean hasChanged() throws RemoteException

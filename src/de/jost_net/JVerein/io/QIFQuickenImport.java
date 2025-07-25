@@ -47,11 +47,11 @@ import de.willuhn.util.ProgressMonitor;
  * QIFImportHead und QIFImportPos
  * 
  * Eine QIF Datei darf nur ein Konto aus Quicken enthalten, weil Quicken einen
- * unvollständigen Export liefert, wenn mehrere Konten in eine Datei exportiert
+ * unvollstÃ¤ndigen Export liefert, wenn mehrere Konten in eine Datei exportiert
  * werden. Dieser Fehler konnte mit unterschiedlichen Versionen von Quicken nach
  * vollzogen werden.
  * 
- * Es wird nicht das komplette Format unterstützt aber die ( hoffentlich )
+ * Es wird nicht das komplette Format unterstÃ¼tzt aber die ( hoffentlich )
  * wesentlichen Teile die vor allem empirisch ermittelt wurden.
  * 
  * Eine Beschreibung des Formates bekomment man hier
@@ -188,7 +188,7 @@ public class QIFQuickenImport implements Importer
    * 
    * Wir suchen erst eine Account Block - erste Zeile hat Text "!Account" Haben
    * wir diesen gefunden suchen wir den Typ Block - erste Zeile hat Text
-   * "!Type:" Danach kommen die Buchungen für dieses Konto bis eine Zeile mit
+   * "!Type:" Danach kommen die Buchungen fÃ¼r dieses Konto bis eine Zeile mit
    * "!" startet.
    * 
    * @param monitor
@@ -235,9 +235,9 @@ public class QIFQuickenImport implements Importer
           if (!typeListe.isEmpty())
           {
             Logger.error(
-                "Die Datei enthält mehrere Konten. Weil Quicken Fehler bei solchen Exporten hat unterstützen wir dies nicht!");
+                "Die Datei enthÃ¤lt mehrere Konten. Weil Quicken Fehler bei solchen Exporten hat unterstÃ¼tzen wir dies nicht!");
             throw new ApplicationException(
-                "Datei enthält Daten von mehreren Konten!! Bitte jedes Konto einzelen Exportieren!!");
+                "Datei enthÃ¤lt Daten von mehreren Konten!! Bitte jedes Konto einzelen Exportieren!!");
           }
 
           loeschenAlteKontoDaten(qifTyp);
@@ -429,7 +429,7 @@ public class QIFQuickenImport implements Importer
     }
     catch (IOException ex)
     {
-      throw new ApplicationException("Exportdatei kann nicht geöffnet werden.",
+      throw new ApplicationException("Exportdatei kann nicht geÃ¶ffnet werden.",
           ex);
     }
   }
@@ -459,7 +459,7 @@ public class QIFQuickenImport implements Importer
       catch (IOException ex)
       {
         throw new ApplicationException(
-            "Daten können nicht aus der Datei gelesen werden.", ex);
+            "Daten kÃ¶nnen nicht aus der Datei gelesen werden.", ex);
       }
       return false;
     }

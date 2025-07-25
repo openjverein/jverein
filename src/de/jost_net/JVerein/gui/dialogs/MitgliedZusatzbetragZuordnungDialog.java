@@ -44,7 +44,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Dialog zur Zuordnung von Zusatzbetr‰gen
+ * Dialog zur Zuordnung von Zusatzbetr√§gen
  */
 public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
 {
@@ -134,7 +134,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zv.store();
           }
-          message = String.format("%d Zusatzbeitr‰ge gespeichert.", count);
+          message = String.format("%d Zusatzbeitr√§ge gespeichert.", count);
         }
         catch (RemoteException e)
         {

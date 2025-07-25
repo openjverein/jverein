@@ -70,7 +70,7 @@ public class VonBisPart implements Part
       SimpleContainer left = new SimpleContainer(group.getComposite());
       left.addLabelPair("Von", control.getDatumvon());
       left.addLabelPair("Bis", control.getDatumbis());
-      left.addLabelPair("Gesch‰ftsjahr", control.getGeschaeftsjahr());
+      left.addLabelPair("Gesch√§ftsjahr", control.getGeschaeftsjahr());
       SimpleContainer right = new SimpleContainer(group.getComposite());
       right.addLabelPair("Von", control.getSuchDatumvon());
       right.addLabelPair("Bis", control.getSuchDatumbis());

@@ -85,7 +85,7 @@ public class ArbeitseinsatzPart implements Part
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
     this.datum.setName("Datum");
-    this.datum.setText("Datum Arbeitseinsatz w‰hlen");
+    this.datum.setText("Datum Arbeitseinsatz w√§hlen");
     datum.setMandatory(true);
     return datum;
   }

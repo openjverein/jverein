@@ -38,7 +38,7 @@ public class MitgliedstypMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(MitgliedstypDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new MitgliedstypDeleteAction(), "user-trash-full.png"));
   }
 }

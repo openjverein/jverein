@@ -36,7 +36,7 @@ public class BuchungKontoauszugZuordnungAction implements Action
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung(en) ausgewÃ¤hlt");
     }
     try
     {
@@ -94,7 +94,7 @@ public class BuchungKontoauszugZuordnungAction implements Action
         if (counter > 0)
         {
           protecttext = String
-              .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+              .format(", %d Buchungen wurden nicht Ã¼berschrieben. ", counter);
         }
         GUI.getStatusBar().setSuccessText(
             "Kontoauszugsinformationen zugeordnet" + protecttext);

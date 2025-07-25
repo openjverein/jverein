@@ -272,7 +272,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           {
             SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
             d.setTitle("Mail bereits versendet");
-            d.setText("Mail wurde bereits an alle Empf‰nger versendet!");
+            d.setText("Mail wurde bereits an alle Empf√§nger versendet!");
             try
             {
               d.open();
@@ -289,8 +289,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
             d.setTitle("Mail senden?");
             d.setText("Diese Mail wurde bereits an "
                 + (getMail().getEmpfaenger().size() - toBeSentCount)
-                + " der gew‰hlten Empf‰nger versendet. Wollen Sie diese Mail an alle weiteren "
-                + toBeSentCount + " Empf‰nger senden?");
+                + " der gew√§hlten Empf√§nger versendet. Wollen Sie diese Mail an alle weiteren "
+                + toBeSentCount + " Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -338,7 +338,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           if (mail.getTxt().length() > 10000)
           {
             throw new ApplicationException(
-                "Maximale L‰nge des Textes 10.000 Zeichen");
+                "Maximale L√§nge des Textes 10.000 Zeichen");
           }
 
           boolean mailAlreadySent = false;
@@ -355,7 +355,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail erneut senden?");
             d.setText(
-                "An mindestens einen Empf‰nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf‰nger senden?");
+                "An mindestens einen Empf√§nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -410,8 +410,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   /**
-   * Versende Mail an Empf‰nger. Wenn erneutSenden==false wird Mail nur an
-   * Empf‰nger versendet, die Mail noch nicht erhalten haben.
+   * Versende Mail an Empf√§nger. Wenn erneutSenden==false wird Mail nur an
+   * Empf√§nger versendet, die Mail noch nicht erhalten haben.
    */
   private void sendeMail(final boolean erneutSenden) throws RemoteException
   {
@@ -500,7 +500,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
               }
               else
               {
-                monitor.log(empf.getMailAdresse() + " - ¸bersprungen");
+                monitor.log(empf.getMailAdresse() + " - √ºbersprungen");
               }
             }
             catch (Exception e)

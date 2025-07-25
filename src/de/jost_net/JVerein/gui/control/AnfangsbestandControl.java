@@ -120,7 +120,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     if (konten.size() > 1)
     {
       throw new RemoteException(
-          "Mehrere Konten mit gleicher Nummer sind nicht zul‰ssig!");
+          "Mehrere Konten mit gleicher Nummer sind nicht zul√§ssig!");
     }
     Konto k = konten.next();
     a.setKonto(k);

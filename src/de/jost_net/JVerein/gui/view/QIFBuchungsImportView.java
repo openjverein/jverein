@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 /**
- * @author Rolf Mamat Dieser View unterstützt beim Import von Buchungen aus
+ * @author Rolf Mamat Dieser View unterstÃ¼tzt beim Import von Buchungen aus
  *         anderen Programmen wie z.B. Quicken. Im Ersten Schritt wird die
  *         Exportdatei des externen Programmes in die Datenbank Tabellen
  *         ImportKontoHead und ImportKontoPos eingelesen. Danach kann die
@@ -54,13 +54,13 @@ public class QIFBuchungsImportView extends AbstractView
     SimpleContainer bankLinks = new SimpleContainer(colLayout.getComposite());
 
     bankLinks.addLabelPair("Beschreibung", control.getInputBeschreibungKonto());
-    bankLinks.addLabelPair("Eröffnet", control.getInputEroeffnungsDatum());
+    bankLinks.addLabelPair("ErÃ¶ffnet", control.getInputEroeffnungsDatum());
     bankLinks.addLabelPair("Eingelesen", control.getInputImportDatum());
     bankLinks.addLabelPair("Gebucht", control.getInputProcessDatum());
 
     SimpleContainer bankRechts = new SimpleContainer(colLayout.getComposite());
     bankRechts.addLabelPair("Export Datei", control.getInputImportDatei());
-    bankRechts.addLabelPair("Eröffnungs Saldo", control.getInputStartSaldo());
+    bankRechts.addLabelPair("ErÃ¶ffnungs Saldo", control.getInputStartSaldo());
     bankRechts.addLabelPair("Gesamt Saldo", control.getInputEndSaldo());
     bankRechts.addLabelPair("Anzahl Buchungen",
         control.getInputAnzahlBuchungen());
@@ -70,7 +70,7 @@ public class QIFBuchungsImportView extends AbstractView
     group.addLabelPair("JVerein Konto", control.getAuswahlJVereinKonto());
 
     LabelGroup poslistGroup = new LabelGroup(getParent(),
-        "Importierbare Buchungen im gewählten Konto", true);
+        "Importierbare Buchungen im gewÃ¤hlten Konto", true);
     control
         .getImportKontoPosList(new EditAction(QIFBuchungsartZuordnenView.class))
         .paint(poslistGroup.getComposite());
@@ -80,10 +80,10 @@ public class QIFBuchungsImportView extends AbstractView
         DokumentationUtil.QIFIMPORT, false, "question-circle.png");
     buttons.addButton("Import", new QIFDateiEinlesenAction(), null, false,
         "file-import.png");
-    buttons.addButton("Import löschen",
+    buttons.addButton("Import lÃ¶schen",
         control.getAktuellenImportLoeschenAction(), null, false,
         "user-trash-full.png");
-    buttons.addButton("Imports löschen", control.getAlleImportsLoeschenAction(),
+    buttons.addButton("Imports lÃ¶schen", control.getAlleImportsLoeschenAction(),
         null, false, "list-remove.png");
     buttons.addButton("Buchungsarten zuordnen",
         new EditAction(QIFBuchungsartZuordnenView.class), null, false,
@@ -91,7 +91,7 @@ public class QIFBuchungsImportView extends AbstractView
     buttons.addButton("Mitglieder zuordnen",
         new StartViewAction(QIFMitgliederZuordnenView.class), null, false,
         "contact-new.png");
-    buttons.addButton("Buchungen übernehmen", control.getPIFPosBuchenAction(),
+    buttons.addButton("Buchungen Ã¼bernehmen", control.getPIFPosBuchenAction(),
         null, false, "document-new.png");
     buttons.paint(this.getParent());
   }

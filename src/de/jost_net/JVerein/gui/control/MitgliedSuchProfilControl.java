@@ -161,14 +161,14 @@ public class MitgliedSuchProfilControl extends AbstractControl
         s.setAttribute("profilname", sp1.getBezeichnung());
         // Die ID ist nicht im Inhalt enthalten, da zu diesem Zeitpunkt
         // noch nicht bekannt. Macht aber nichts, da wir die ID einfach
-        // direkt aus dem Primärschlüsselfeld des Datensatzes verwenden
+        // direkt aus dem PrimÃ¤rschlÃ¼sselfeld des Datensatzes verwenden
         storeSettings(s, sp1);
         sp1.store();
         s.setAttribute("id", sp1.getID());
       }
       else
       {
-        // Überschreiben eines vorhandenen Suchprofils
+        // Ãœberschreiben eines vorhandenen Suchprofils
         s.setAttribute("id", sp1.getID());
         storeSettings(s, sp1);
         sp1.store();
@@ -196,7 +196,7 @@ public class MitgliedSuchProfilControl extends AbstractControl
 
   /**
    * Settings werden in eine XML-Struktur serialisiert und als Byte-Array in das
-   * Model übertragen
+   * Model Ã¼bertragen
    * 
    * @param s
    *          Die zu speichernden Settings
@@ -213,7 +213,7 @@ public class MitgliedSuchProfilControl extends AbstractControl
   }
 
   /**
-   * Settings können nicht direkt serialisiert werden. Daher werden sie in
+   * Settings kÃ¶nnen nicht direkt serialisiert werden. Daher werden sie in
    * Properties umgewandelt
    * 
    * @param settings

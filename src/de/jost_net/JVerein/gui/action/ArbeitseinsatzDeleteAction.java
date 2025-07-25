@@ -35,7 +35,7 @@ public class ArbeitseinsatzDeleteAction implements Action
   {
     if (context == null || !(context instanceof Arbeitseinsatz))
     {
-      throw new ApplicationException("Keinen Arbeitseinsatz ausgewählt");
+      throw new ApplicationException("Keinen Arbeitseinsatz ausgewÃ¤hlt");
     }
     try
     {
@@ -45,8 +45,8 @@ public class ArbeitseinsatzDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Arbeitseinsatz löschen");
-      d.setText("Wollen Sie diesen Arbeitseinsatz wirklich löschen?");
+      d.setTitle("Arbeitseinsatz lÃ¶schen");
+      d.setText("Wollen Sie diesen Arbeitseinsatz wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -57,16 +57,16 @@ public class ArbeitseinsatzDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Arbeitseinsatzes", e);
+        Logger.error("Fehler beim LÃ¶schen des Arbeitseinsatzes", e);
         return;
       }
 
       aeins.delete();
-      GUI.getStatusBar().setSuccessText("Arbeitseinsatz gelöscht.");
+      GUI.getStatusBar().setSuccessText("Arbeitseinsatz gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Arbeitseinsatzes.";
+      String fehler = "Fehler beim LÃ¶schen des Arbeitseinsatzes.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

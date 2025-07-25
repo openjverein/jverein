@@ -23,12 +23,12 @@ import de.willuhn.datasource.rmi.DBObject;
 public interface MailAnhang extends DBObject
 {
   /**
-   * ID der zugehörigen Mail
+   * ID der zugehÃ¶rigen Mail
    */
   public Mail getMail() throws RemoteException;
 
   /**
-   * ID der zugehörigen Mail
+   * ID der zugehÃ¶rigen Mail
    */
   public void setMail(Mail mail) throws RemoteException;
 

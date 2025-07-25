@@ -67,7 +67,7 @@ import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
-  // Statische Variable, die den zuletzt ausgewählten Tab speichert.
+  // Statische Variable, die den zuletzt ausgewÃ¤hlten Tab speichert.
   private static int tabindex = -1;
 
   // Die aufgerufene Funktion: B=Bearbeiten, N=Neu, D=Duplizieren
@@ -165,7 +165,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     zeichneDokumente(showInTab ? folder : oben.getComposite());
 
-    // Aktivier zuletzt ausgewählten Tab.
+    // Aktivier zuletzt ausgewÃ¤hlten Tab.
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
@@ -173,8 +173,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     folder.addSelectionListener(new SelectionListener()
     {
 
-      // Wenn Tab angeklickt, speicher diesen um ihn später automatisch
-      // wieder auszuwählen.
+      // Wenn Tab angeklickt, speicher diesen um ihn spÃ¤ter automatisch
+      // wieder auszuwÃ¤hlen.
       @Override
       public void widgetSelected(SelectionEvent arg0)
       {
@@ -210,7 +210,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       buttons.addButton(new Button("Personalbogen", new PersonalbogenAction(),
           control.getCurrentObject(), false, "receipt.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
-      // können
+      // kÃ¶nnen
       buttons
           .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "edit-copy.png"));
@@ -314,7 +314,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           if (inp == null)
           {
-            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
+            String errorText = "Achtung! UngÃ¼ltiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
             Input errorInput = new TextInput(errorText);
             errorInput.setEnabled(false);
             svc.addInput(errorInput);
@@ -350,7 +350,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     if (isMitgliedDetail()
         && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
+      Container cont = getTabOrLabelContainer(parentComposite, "LehrgÃ¤nge");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -428,10 +428,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       SimpleContainer cols = new SimpleContainer(cont.getComposite(), true,
           spaltenanzahl * 2);
 
-      // Stelle sicher, dass Eingabefeld sich über mehrere Zeilen erstreckt.
+      // Stelle sicher, dass Eingabefeld sich Ã¼ber mehrere Zeilen erstreckt.
       GridData gridData = new GridData(GridData.FILL_BOTH);
       gridData.minimumHeight = 80;
-      // wenn der Vermerk mehr Zeilen benötigt, sollte er die Scrollbar
+      // wenn der Vermerk mehr Zeilen benÃ¶tigt, sollte er die Scrollbar
       // einblenden.
       gridData.heightHint = 80;
       cols.getComposite().setLayoutData(gridData);
@@ -443,7 +443,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   /**
    * Zeichnet das Mitgliedskonto, wenn dieses aktiviert ist und es sich nicht um
-   * ein neues Mitglied handelt (für dieses macht ein Mitgliedskonto noch kein
+   * ein neues Mitglied handelt (fÃ¼r dieses macht ein Mitgliedskonto noch kein
    * Sinn!)
    * 
    */
@@ -471,7 +471,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Zusatzbeträge");
+      Container cont = getTabOrLabelContainer(parentComposite, "ZusatzbetrÃ¤ge");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -627,8 +627,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       container.addPart(control.getZukuenftigeBeitraegeView());
 
       // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familienangehöriger" gibt, zeige Familienverband-Part.
-      // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
+      // "FamilienangehÃ¶riger" gibt, zeige Familienverband-Part.
+      // Dieser Familien-Part soll Ã¼ber die komplette Breite angezeigt werden,
       // kann daher nicht im SimpleVerticalContainer angezeigt werden.
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
@@ -642,7 +642,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   }
 
   /**
-   * Zeichnet GUI-Felder für Stammdaten. Wenn Kommunikationsdaten aktiviert
+   * Zeichnet GUI-Felder fÃ¼r Stammdaten. Wenn Kommunikationsdaten aktiviert
    * sind, werden drei Spalten angezeigt, ansonsten zwei.
    * 
    * @param parentComposite
@@ -703,7 +703,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   }
 
   /**
-   * Zeichnet den Mitglieds-/Adressnamen in die Überschriftszeile
+   * Zeichnet den Mitglieds-/Adressnamen in die Ãœberschriftszeile
    */
   private void zeichneUeberschrift() throws RemoteException
   {

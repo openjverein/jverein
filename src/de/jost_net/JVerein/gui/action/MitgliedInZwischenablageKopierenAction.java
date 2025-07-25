@@ -59,17 +59,17 @@ public class MitgliedInZwischenablageKopierenAction implements Action
       // wird in Zwischenablage kopiert
       StringBuilder clip = new StringBuilder();
 
-      // bestimme ausgew‰hlte/selektierte Mitglieder
-      ArrayList<Mitglied> ausgew‰hlteMitglieder = new ArrayList<>();
+      // bestimme ausgew√§hlte/selektierte Mitglieder
+      ArrayList<Mitglied> ausgew√§hlteMitglieder = new ArrayList<>();
       if (context instanceof Mitglied)
       {
-        ausgew‰hlteMitglieder.add((Mitglied) context);
+        ausgew√§hlteMitglieder.add((Mitglied) context);
       }
       else if (context instanceof Mitglied[])
       {
         for (Mitglied mitglied : (Mitglied[]) context)
         {
-          ausgew‰hlteMitglieder.add(mitglied);
+          ausgew√§hlteMitglieder.add(mitglied);
         }
       }
 
@@ -86,7 +86,7 @@ public class MitgliedInZwischenablageKopierenAction implements Action
         }
       }
 
-      // schreibe Spalten¸berschriften nach clip
+      // schreibe Spalten√ºberschriften nach clip
       /*
        * for (int i = 0; i < aktiveSpalten.size(); i++) {
        * if(aktiveSpalten.get(i).isChecked()) {
@@ -95,7 +95,7 @@ public class MitgliedInZwischenablageKopierenAction implements Action
        */
 
       // schreibe Mitgliederdaten nach clip
-      for (Mitglied mitglied : ausgew‰hlteMitglieder)
+      for (Mitglied mitglied : ausgew√§hlteMitglieder)
       {
 
         try
@@ -124,7 +124,7 @@ public class MitgliedInZwischenablageKopierenAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("Kein Mitglied ausgew√§hlt");
     }
   }
 }

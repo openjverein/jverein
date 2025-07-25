@@ -34,7 +34,7 @@ public class LehrgangListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Lehrg‰nge");
+    GUI.getView().setTitle("Lehrg√§nge");
 
     final LehrgangControl control = new LehrgangControl(this);
 
@@ -59,8 +59,8 @@ public class LehrgangListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zur¸ck");
-    vor.setToolTipText("Datumsbereich vow‰rts");
+    zurueck.setToolTipText("Datumsbereich zur√ºck");
+    vor.setToolTipText("Datumsbereich vow√§rts");
 
     control.getLehrgaengeList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

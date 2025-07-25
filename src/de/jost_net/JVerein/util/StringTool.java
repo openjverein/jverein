@@ -24,13 +24,13 @@ public class StringTool
   }
 
   /**
-   * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
-   * wobei Leerzeichen am Ende der Zeichenkette angehängt werden.
+   * Formatiert eine Zeichenkette so, dass sie eine feste LÃ¤nge (len) bekommt,
+   * wobei Leerzeichen am Ende der Zeichenkette angehÃ¤ngt werden.
    * 
    * @param string
    *          Die zu formatierende Zeichenkette
    * @param len
-   *          Die Länge der formatierten Zeichenkette
+   *          Die LÃ¤nge der formatierten Zeichenkette
    * @return Die formatierte Zeichenkette
    */
   public static String rpad(String string, int len)
@@ -39,15 +39,15 @@ public class StringTool
   }
 
   /**
-   * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
-   * wobei Leerzeichen am Ende der Zeichenkette angehängt werden.
+   * Formatiert eine Zeichenkette so, dass sie eine feste LÃ¤nge (len) bekommt,
+   * wobei Leerzeichen am Ende der Zeichenkette angehÃ¤ngt werden.
    * 
    * @param string
    *          Die zu formatierende Zeichenkette
    * @param len
-   *          Die Länge der formatierten Zeichenkette
+   *          Die LÃ¤nge der formatierten Zeichenkette
    * @param fillChar
-   *          Zeichenkette, die zum Füllen verwendet wrden soll
+   *          Zeichenkette, die zum FÃ¼llen verwendet wrden soll
    * @return Die formatierte Zeichenkette
    */
   public static String rpad(String string, int len, String fillChar)
@@ -58,13 +58,13 @@ public class StringTool
   }
 
   /**
-   * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
-   * wobei Leerzeichen am Anfang der Zeichenkette angehängt werden.
+   * Formatiert eine Zeichenkette so, dass sie eine feste LÃ¤nge (len) bekommt,
+   * wobei Leerzeichen am Anfang der Zeichenkette angehÃ¤ngt werden.
    * 
    * @param string
    *          Die zu formatierende Zeichenkette
    * @param len
-   *          Die Länge der formatierten Zeichenkette
+   *          Die LÃ¤nge der formatierten Zeichenkette
    * @return Die formatierte Zeichenkette
    */
   public static String lpad(String string, int len)
@@ -73,15 +73,15 @@ public class StringTool
   }
 
   /**
-   * Formatiert eine Zeichenkette so, dass sie eine feste Länge (len) bekommt,
-   * wobei Leerzeichen am Anfang der Zeichenkette angehängt werden.
+   * Formatiert eine Zeichenkette so, dass sie eine feste LÃ¤nge (len) bekommt,
+   * wobei Leerzeichen am Anfang der Zeichenkette angehÃ¤ngt werden.
    * 
    * @param string
    *          Die zu formatierende Zeichenkette
    * @param len
-   *          Die Länge der formatierten Zeichenkette
+   *          Die LÃ¤nge der formatierten Zeichenkette
    * @param fillChar
-   *          Zeichenkette, die zum Füllen verwendet wrden soll
+   *          Zeichenkette, die zum FÃ¼llen verwendet wrden soll
    * @return Die formatierte Zeichenkette
    */
   public static String lpad(String string, int len, String fillChar)

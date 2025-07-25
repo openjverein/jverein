@@ -73,7 +73,7 @@ public class CheckerTest
   @Test
   public void test10()
   {
-    assertTrue(EmailValidator.isValid("jupp.schmitz@köln.de"));
+    assertTrue(EmailValidator.isValid("jupp.schmitz@kÃ¶ln.de"));
   }
 
   @Test

@@ -99,7 +99,7 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     }
     if (getDatum().after(new Date()))
     {
-      throw new ApplicationException("Keine Anfangsbestände in der Zukunft");
+      throw new ApplicationException("Keine AnfangsbestÃ¤nde in der Zukunft");
     }
     Jahresabschluss ja = getJahresabschluss();
     if (ja != null)
@@ -143,12 +143,12 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
         return;
       }
       throw new ApplicationException(
-          "Tag und Monat müssen mit dem Beginn des Geschäftsjahres übereinstimmen.");
+          "Tag und Monat mÃ¼ssen mit dem Beginn des GeschÃ¤ftsjahres Ã¼bereinstimmen.");
     }
     catch (ParseException e)
     {
       throw new ApplicationException(
-          "Beginn des Geschäftsjahres ist in den Einstellungen nicht gesetzt.");
+          "Beginn des GeschÃ¤ftsjahres ist in den Einstellungen nicht gesetzt.");
     }
   }
 

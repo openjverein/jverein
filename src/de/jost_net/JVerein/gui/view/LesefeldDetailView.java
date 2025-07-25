@@ -44,7 +44,7 @@ import org.eclipse.swt.widgets.Listener;
 import java.rmi.RemoteException;
 
 /**
- * Ein View zum Bearbeiten von Skripten für ein Lesefeld.
+ * Ein View zum Bearbeiten von Skripten fÃ¼r ein Lesefeld.
  */
 public class LesefeldDetailView extends AbstractView
 {
@@ -79,7 +79,7 @@ public class LesefeldDetailView extends AbstractView
 
     container.addLabelPair("Mitglied", getMitglied());
 
-    // Auf diese Input-Felder sollte nur über die Funktionen
+    // Auf diese Input-Felder sollte nur Ã¼ber die Funktionen
     // updateLesefeldFromGUI() und updateScriptResult() zugegriffen werden.
     textInputScriptName = new TextInput(
         lesefeld != null ? lesefeld.getBezeichnung() : "");
@@ -139,7 +139,7 @@ public class LesefeldDetailView extends AbstractView
         }
       }
 
-      // erstelle neues lesefeld, wenn nötig.
+      // erstelle neues lesefeld, wenn nÃ¶tig.
       if (lesefeld == null)
         lesefeld = Einstellungen.getDBService().createObject(Lesefeld.class,
             null);
@@ -161,7 +161,7 @@ public class LesefeldDetailView extends AbstractView
 
   /**
    * Holt akutelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
-   * zurück in die GUI.
+   * zurÃ¼ck in die GUI.
    *
    * @return true bei Erfolg, sonst false (Fehlermeldung wird in
    *         Skript-Ausgabe-Feld geschrieben).
@@ -177,7 +177,7 @@ public class LesefeldDetailView extends AbstractView
       result = (String) lesefeldAuswerter.eval(lesefeld.getScript());
       if (result == null)
       {
-        result = "Skript-Fehler: Skript muss Rückgabewert liefern.";
+        result = "Skript-Fehler: Skript muss RÃ¼ckgabewert liefern.";
         success = false;
       }
     }
@@ -221,7 +221,7 @@ public class LesefeldDetailView extends AbstractView
       }
       else
         GUI.getStatusBar().setErrorText(
-            "Skript enthält Fehler. Kann nicht gespeichert werden.");
+            "Skript enthÃ¤lt Fehler. Kann nicht gespeichert werden.");
     }
   }
 
@@ -261,7 +261,7 @@ public class LesefeldDetailView extends AbstractView
       }
       catch (RemoteException e)
       {
-        String fehler = "Fehler beim Auswählen des Mitgliedes";
+        String fehler = "Fehler beim AuswÃ¤hlen des Mitgliedes";
         Logger.error(fehler, e);
         GUI.getStatusBar().setErrorText(fehler);
       }

@@ -46,7 +46,7 @@ public class BuchungDeleteAction implements Action
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewÃ¤hlt");
     }
     try
     {
@@ -89,25 +89,25 @@ public class BuchungDeleteAction implements Action
       if (!spendenbescheinigung)
       {
         text = "Wollen Sie diese Buchung" + (b.length > 1 ? "en" : "")
-            + " wirklich löschen?";
+            + " wirklich lÃ¶schen?";
       }
       else
       {
         if (b.length == 1)
         {
-          text = "Die Buchung gehört zu einer Spendenbescheinigung.\n"
-              + "Sie können nur zusammen gelöscht werden.\n" + "Beide löschen?";
+          text = "Die Buchung gehÃ¶rt zu einer Spendenbescheinigung.\n"
+              + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n" + "Beide lÃ¶schen?";
         }
         else
         {
-          text = "Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Jeweils auch die Spendenbescheinigungen löschen?";
+          text = "Mindestens eine Buchung gehÃ¶rt zu einer Spendenbescheinigung.\n"
+              + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+              + "Jeweils auch die Spendenbescheinigungen lÃ¶schen?";
         }
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Buchung" + (b.length > 1 ? "en" : "") + " löschen");
+      d.setTitle("Buchung" + (b.length > 1 ? "en" : "") + " lÃ¶schen");
       d.setText(text);
       try
       {
@@ -119,7 +119,7 @@ public class BuchungDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Buchung", e);
+        Logger.error("Fehler beim LÃ¶schen der Buchung", e);
         return;
       }
 
@@ -155,11 +155,11 @@ public class BuchungDeleteAction implements Action
       if (count > 0)
       {
         GUI.getStatusBar().setSuccessText(String.format(
-            "%d Buchung" + (count != 1 ? "en" : "") + " gelöscht.", count));
+            "%d Buchung" + (count != 1 ? "en" : "") + " gelÃ¶scht.", count));
       }
       else
       {
-        GUI.getStatusBar().setErrorText("Keine Buchung gelöscht");
+        GUI.getStatusBar().setErrorText("Keine Buchung gelÃ¶scht");
       }
     }
     catch (ApplicationException e)
@@ -168,7 +168,7 @@ public class BuchungDeleteAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchung.";
+      String fehler = "Fehler beim LÃ¶schen der Buchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

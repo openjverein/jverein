@@ -30,7 +30,7 @@ public class JahresabschlussListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jahresabschlüsse");
+    GUI.getView().setTitle("JahresabschlÃ¼sse");
 
     JahresabschlussControl control = new JahresabschlussControl(this);
 

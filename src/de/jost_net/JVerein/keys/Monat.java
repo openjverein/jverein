@@ -20,7 +20,7 @@ public enum Monat
 {
   JANUAR(1, "Januar"),
   FEBRUAR(2, "Februar"),
-  MAERZ(3, "März"),
+  MAERZ(3, "MÃ¤rz"),
   APRIL(4, "April"),
   MAI(5, "Mai"),
   JUNI(6, "Juni"),

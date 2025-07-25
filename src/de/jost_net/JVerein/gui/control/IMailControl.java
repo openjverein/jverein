@@ -23,7 +23,7 @@ import java.util.List;
 import de.jost_net.JVerein.rmi.Mitglied;
 
 /**
- * Interface für den zugriff auf Mail Betreff und Text
+ * Interface fÃ¼r den zugriff auf Mail Betreff und Text
  */
 public interface IMailControl
 {
@@ -39,7 +39,7 @@ public interface IMailControl
   public String getTxtString() throws RemoteException;
 
   /**
-   * @return Liste der Mailempfänger
+   * @return Liste der MailempfÃ¤nger
    */
   default List<Mitglied> getEmpfaengerList() throws RemoteException
   {

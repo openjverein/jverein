@@ -70,7 +70,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
     {
       if (getBetrag().doubleValue() < 0.01)
       {
-        throw new ApplicationException("Betrag muss größer als 0 sein.");
+        throw new ApplicationException("Betrag muss grÃ¶ÃŸer als 0 sein.");
       }
       if (getSpendedatum() == null)
       {
@@ -245,8 +245,8 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Liefert aus der Buchungsliste entweder das größte Datum zurück. Falls noch
-   * keine Buchungen eingetragen sind, wird das Spendendatum zurückgeliefert.
+   * Liefert aus der Buchungsliste entweder das grÃ¶ÃŸte Datum zurÃ¼ck. Falls noch
+   * keine Buchungen eingetragen sind, wird das Spendendatum zurÃ¼ckgeliefert.
    * 
    * @throws RemoteException
    */
@@ -405,12 +405,12 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine
+   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine
    * Sammelbestaetigung ist. Dies ist der Fall, wenn die Liste der Buchungen
-   * mehr als eine Buchung enthält. Ist keine oder nur eine Buchung zugewiesen,
-   * liegt eine Einzelbestätigung vor.
+   * mehr als eine Buchung enthÃ¤lt. Ist keine oder nur eine Buchung zugewiesen,
+   * liegt eine EinzelbestÃ¤tigung vor.
    * 
-   * @return Flag, ob Sammelbestätigung
+   * @return Flag, ob SammelbestÃ¤tigung
    * @throws RemoteException
    */
   @Override
@@ -422,7 +422,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
+   * Liefert als Kennzeichen zurÃ¼ck, ob die Spendenbescheinigung eine echte
    * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
    * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
    * 
@@ -443,13 +443,13 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
-   * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
+   * FÃ¼gt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
+   * Spendenbescheinigung wird anhand der EinzelbetrÃ¤ge der Buchungen berechnet.
    * Die Spendenart wird auf "GELDSPENDE" gesetzt. Das Spendendatum wird auf das
    * kleinste Datum der Buchungen gesetzt.
    * 
    * @param buchung
-   *          Die Buchung zum Hinzufügen
+   *          Die Buchung zum HinzufÃ¼gen
    */
   @Override
   public void addBuchung(Buchung buchung) throws RemoteException
@@ -481,9 +481,9 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Hängt eine Buchung an die Spendenbescheinigung, wenn es eine
-   * Einzelbestätigung werden soll. Sollten vorher schon Buchungen eingetragen
-   * worden sein, wird die Liste der Buchungen vorher gelöscht.
+   * HÃ¤ngt eine Buchung an die Spendenbescheinigung, wenn es eine
+   * EinzelbestÃ¤tigung werden soll. Sollten vorher schon Buchungen eingetragen
+   * worden sein, wird die Liste der Buchungen vorher gelÃ¶scht.
    * 
    * @param buchung
    *          Die Buchung, die der Spendenbescheinigung zugeordnet wird
@@ -504,10 +504,10 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   /**
-   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurück. Falls
+   * Liefert die Liste der Buchungen einer Spendenbescheinigung zurÃ¼ck. Falls
    * die Liste noch nicht angelegt wurde, wird sie aus der Datenbank
    * nachgeladen. Sollten der Spendenbescheinigung noch keine Buchungen
-   * zugeordnet sein, wird eine leere Liste zurückgegeben.<br>
+   * zugeordnet sein, wird eine leere Liste zurÃ¼ckgegeben.<br>
    * Beim Laden der Buchungen wird der Gesamtbetrag berechnet
    * 
    * @return Liste der der Spendenbescheinigung zugeordneten Buchungen

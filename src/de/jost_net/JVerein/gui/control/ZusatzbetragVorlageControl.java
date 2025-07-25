@@ -119,8 +119,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     Date d = getZusatzbetragVorlage().getFaelligkeit();
 
     this.faelligkeit = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("F‰lligkeit");
-    this.faelligkeit.setText("Bitte F‰lligkeitsdatum w‰hlen");
+    this.faelligkeit.setTitle("F√§lligkeit");
+    this.faelligkeit.setText("Bitte F√§lligkeitsdatum w√§hlen");
     this.faelligkeit.addListener(new Listener()
     {
       @Override
@@ -171,7 +171,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     Date d = getZusatzbetragVorlage().getStartdatum();
     this.startdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.startdatum.setTitle("Startdatum");
-    this.startdatum.setText("Bitte Startdatum w‰hlen");
+    this.startdatum.setText("Bitte Startdatum w√§hlen");
     this.startdatum.addListener(new Listener()
     {
       @Override
@@ -286,7 +286,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -327,8 +327,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
     Date d = getZusatzbetragVorlage().getEndedatum();
     this.endedatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.endedatum.setTitle("Nicht mehr ausf¸hren ab");
-    this.endedatum.setText("Bitte Endedatum w‰hlen");
+    this.endedatum.setTitle("Nicht mehr ausf√ºhren ab");
+    this.endedatum.setText("Bitte Endedatum w√§hlen");
     this.endedatum.addListener(new Listener()
     {
       @Override
@@ -393,12 +393,12 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     {
       zusatzbetragVorlageList = new TablePart(zusatzbetragsvorlagen,
           new EditAction(ZusatzbetragVorlageDetailView.class));
-      zusatzbetragVorlageList.addColumn("Erste F‰lligkeit", "startdatum",
+      zusatzbetragVorlageList.addColumn("Erste F√§lligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetragVorlageList.addColumn("N‰chste F‰lligkeit", "faelligkeit",
+      zusatzbetragVorlageList.addColumn("N√§chste F√§lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
-      zusatzbetragVorlageList.addColumn("Nicht mehr ausf¸hren ab", "endedatum",
+      zusatzbetragVorlageList.addColumn("Nicht mehr ausf√ºhren ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
       zusatzbetragVorlageList.addColumn("Betrag", "betrag",

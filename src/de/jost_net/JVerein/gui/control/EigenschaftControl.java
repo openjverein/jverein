@@ -99,7 +99,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
         getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");
-    eigenschaftgruppe.setPleaseChoose("Bitte ausw‰hlen");
+    eigenschaftgruppe.setPleaseChoose("Bitte ausw√§hlen");
     return eigenschaftgruppe;
   }
 

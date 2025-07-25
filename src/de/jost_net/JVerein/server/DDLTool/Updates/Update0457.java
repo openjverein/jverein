@@ -89,10 +89,10 @@ public class Update0457 extends AbstractDDLUpdate
         this.createForeignKey("fk_sollbuchungposition3", "sollbuchungposition",
             "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
 
-    // Für bestehende Sollbuchungen Sollbuchungpositionen erstellen
+    // FÃ¼r bestehende Sollbuchungen Sollbuchungpositionen erstellen
     // Vorerst bleiben in der Tabelle Mitgliedskonto die Spalten
     // buchungsart, buchungsklasse, steuersatz, nettobetrag, steuerbetrag
-    // bestehen damit eine Abwärtskompatibilität besteht
+    // bestehen damit eine AbwÃ¤rtskompatibilitÃ¤t besteht
     execute("INSERT INTO sollbuchungposition"
         + " (sollbuchung, betrag, steuersatz, buchungsart, buchungsklasse, datum, zweck)"
         + " SELECT id,betrag,steuersatz,buchungsart,buchungsklasse,datum,zweck1 FROM mitgliedskonto;");

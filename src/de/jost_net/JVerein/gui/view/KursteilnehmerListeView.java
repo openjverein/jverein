@@ -69,10 +69,10 @@ public class KursteilnehmerListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Eingabe Datumsbereich zurück");
-    vor1.setToolTipText("Eingabe Datumsbereich vowärts");
-    zurueck2.setToolTipText("Abbuchung Datumsbereich zurück");
-    vor2.setToolTipText("Abbuchung Datumsbereich vowärts");
+    zurueck1.setToolTipText("Eingabe Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Eingabe Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Abbuchung Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Abbuchung Datumsbereich vowÃ¤rts");
 
     control.getKursteilnehmerTable().paint(getParent());
     ButtonArea buttons = new ButtonArea();

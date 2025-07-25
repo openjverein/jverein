@@ -42,7 +42,7 @@ public class FormularDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Formular))
     {
-      throw new ApplicationException("kein Formular ausgew‰hlt");
+      throw new ApplicationException("kein Formular ausgew√§hlt");
     }
     try
     {
@@ -75,8 +75,8 @@ public class FormularDuplizierenAction implements Action
   }
 
   /**
-   * Diese Methode sucht eine freie Bezeichnung f¸r die Kopie. Dabei wird (1)
-   * ...(n) an den Dateinamen angeh‰ngt, bis es eine nicht existierende
+   * Diese Methode sucht eine freie Bezeichnung f√ºr die Kopie. Dabei wird (1)
+   * ...(n) an den Dateinamen angeh√§ngt, bis es eine nicht existierende
    * Bezeichnung gibt.
    */
   public String findeBezeichnung(String bezeichnung)

@@ -42,7 +42,7 @@ public class JubilaeenParser
       catch (NumberFormatException e)
       {
         throw new RuntimeException(
-            String.format("Ungültiger Eintrag: %s", element));
+            String.format("UngÃ¼ltiger Eintrag: %s", element));
       }
     }
   }

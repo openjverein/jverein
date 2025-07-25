@@ -46,7 +46,7 @@ public class Geschaeftsjahr
   }
 
   /**
-   * Geschäftsjahr zu einem vorgegebenen Datum ermitteln
+   * GeschÃ¤ftsjahr zu einem vorgegebenen Datum ermitteln
    * 
    * @throws RemoteException
    */

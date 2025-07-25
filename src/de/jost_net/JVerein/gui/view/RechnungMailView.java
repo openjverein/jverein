@@ -101,7 +101,7 @@ public class RechnungMailView extends AbstractView
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());

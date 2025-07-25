@@ -40,7 +40,7 @@ public class SyntaxExportAction implements Action
     }
     if (!(context instanceof Buchung[]))
     {
-      throw new ApplicationException("Ungültiger context");
+      throw new ApplicationException("UngÃ¼ltiger context");
     }
     Buchung[] buchungen = (Buchung[]) context;
     Arrays.sort(buchungen, (b, b2) -> {
@@ -61,7 +61,7 @@ public class SyntaxExportAction implements Action
 
       try
       {
-        // Wenn keine Buchungsart vorhanden ist können wir auch nicht
+        // Wenn keine Buchungsart vorhanden ist kÃ¶nnen wir auch nicht
         // exportieren
         // Split-Gegenbuchungen kennt Syntax nicht
         if (u.getBuchungsart() == null || (u.getSplitTyp() != null

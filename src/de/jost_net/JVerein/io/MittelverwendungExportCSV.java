@@ -95,7 +95,7 @@ public class MittelverwendungExportCSV implements ISaldoExport
       }
       writer.write(csvzeile, header, processors);
       csvzeile = new HashMap<>();
-      String subtitle = "Gesch‰ftsjahr "
+      String subtitle = "Gesch√§ftsjahr "
           + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
           + new JVDateFormatTTMMJJJJ().format(datumbis);
       switch (tab)

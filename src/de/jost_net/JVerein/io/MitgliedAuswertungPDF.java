@@ -66,7 +66,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       {
         report
             .addHeaderColumn(
-                "Eintritt / \nAustritt / \nKündigung"
+                "Eintritt / \nAustritt / \nKÃ¼ndigung"
                     + ((Boolean) Einstellungen.getEinstellung(
                         Property.STERBEDATUM) ? ("/\n" + "Sterbedatum") : ""),
                 Element.ALIGN_CENTER, 30, BaseColor.LIGHT_GRAY);
@@ -175,7 +175,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       report.closeTable();
       report.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d SÃ¤tze.", list.size()));
     }
     catch (Exception e)
     {

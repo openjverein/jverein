@@ -79,13 +79,13 @@ public abstract class FilterControl extends VorZurueckControl
 {
   public final static String ALLE = "Alle";
 
-  // String für allgemeine Settings z.B. settings1
+  // String fÃ¼r allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
 
-  // String für Zusatzfelder
+  // String fÃ¼r Zusatzfelder
   protected String additionalparamprefix1 = "";
 
-  // String für Zusatfelder Anzahl
+  // String fÃ¼r Zusatfelder Anzahl
   protected String additionalparamprefix2 = "";
 
   protected Settings settings = null;
@@ -830,15 +830,15 @@ public abstract class FilterControl extends VorZurueckControl
     String string = "";
     if (selected == 0)
     {
-      string = "Kein Feld ausgewählt";
+      string = "Kein Feld ausgewÃ¤hlt";
     }
     else if (selected == 1)
     {
-      string = "1 Feld ausgewählt";
+      string = "1 Feld ausgewÃ¤hlt";
     }
     else
     {
-      string = String.format("%d Felder ausgewählt", selected);
+      string = String.format("%d Felder ausgewÃ¤hlt", selected);
     }
     zusatzfelderabfrage.setText(string);
   }
@@ -1591,7 +1591,7 @@ public abstract class FilterControl extends VorZurueckControl
   }
 
   /**
-   * Default-Werte für die MitgliederSuchView speichern.
+   * Default-Werte fÃ¼r die MitgliederSuchView speichern.
    * 
    * @throws RemoteException
    */

@@ -73,7 +73,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       }
       if (getFaelligkeit() == null)
       {
-        throw new ApplicationException("Bitte nächste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte nÃ¤chste FÃ¤lligkeit eingeben");
       }
       if (getIntervall() == null)
       {
@@ -94,13 +94,13 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       if (getFaelligkeit().getTime() < getStartdatum().getTime())
       {
         throw new ApplicationException(
-            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen");
+            "Das FÃ¤lligkeitsdatum darf nicht vor dem Startdatum liegen");
       }
       if (!Datum.isImInterval(getStartdatum(), getFaelligkeit(),
           getIntervall()))
       {
         throw new ApplicationException(
-            "Nächste Fälligkeit liegt nicht im Intervall");
+            "NÃ¤chste FÃ¤lligkeit liegt nicht im Intervall");
       }
       if (getBetrag() == null)
       {
@@ -135,12 +135,12 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
           {
             case ArtBuchungsart.AUSGABE:
               throw new ApplicationException(
-                  "Umsatzsteuer statt Vorsteuer gewählt.");
+                  "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
             case ArtBuchungsart.EINNAHME:
               throw new ApplicationException(
-                  "Vorsteuer statt Umsatzsteuer gewählt.");
-            // Umbuchung ist bei Anlagebuchungen möglich,
-            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                  "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+            // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
             case ArtBuchungsart.UMBUCHUNG:
               break;
           }
@@ -150,7 +150,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
                 || getBuchungsart().getAbschreibung()))
         {
           throw new ApplicationException(
-              "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+              "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
         }
       }
     }
@@ -380,15 +380,15 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       return false;
     }
-    // Einmalige Ausführung
+    // Einmalige AusfÃ¼hrung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
     {
       return (getAusfuehrung() == null);
     }
 
-    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
+    // Wenn das Endedatum gesetzt ist und das FÃ¤lligkeitsdatum liegt zum oder
     // hinter
-    // dem Endedatum: nicht mehr ausführen
+    // dem Endedatum: nicht mehr ausfÃ¼hren
     if (getEndedatum() != null
         && getFaelligkeit().getTime() >= getEndedatum().getTime())
     {
@@ -405,10 +405,10 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       return false;
     }
-    // Einmalige Ausführung
+    // Einmalige AusfÃ¼hrung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
     {
-      // Ist das Ausführungsdatum gesetzt?
+      // Ist das AusfÃ¼hrungsdatum gesetzt?
       if (getAusfuehrung() != null)
       {
         return false;
@@ -416,8 +416,8 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       return (getFaelligkeit().getTime() <= datum.getTime());
     }
 
-    // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
-    // dem Endedatum: nicht mehr ausführen
+    // Wenn das Endedatum gesetzt ist und das AusfÃ¼hrungsdatum liegt hinter
+    // dem Endedatum: nicht mehr ausfÃ¼hren
     if ((getEndedatum() != null
         && getFaelligkeit().getTime() >= getEndedatum().getTime())
         || getFaelligkeit().getTime() > datum.getTime())
@@ -449,7 +449,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         getStartdatum());
     if (vorh == null)
     {
-      throw new RemoteException("Datum kann nicht weiter zurückgesetzt werden");
+      throw new RemoteException("Datum kann nicht weiter zurÃ¼ckgesetzt werden");
     }
     else
     {

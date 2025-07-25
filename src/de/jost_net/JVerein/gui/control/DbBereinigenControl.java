@@ -159,10 +159,10 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete(0);
           double progress = 1.0d;
 
-          // Rechnungen löschen
+          // Rechnungen lÃ¶schen
           if (rloeschen && rdate == null)
           {
-            monitor.log("Rechnungen löschen: Kein gültiges Datum eingegeben");
+            monitor.log("Rechnungen lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (rloeschen && rdate != null)
           {
@@ -171,11 +171,11 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Spendenbescheinigungen löschen
+          // Spendenbescheinigungen lÃ¶schen
           if (sloeschen && sdate == null)
           {
             monitor.log(
-                "Spendenbescheinigungen löschen: Kein gültiges Datum eingegeben");
+                "Spendenbescheinigungen lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (sloeschen && sdate != null)
           {
@@ -184,10 +184,10 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Buchungen löschen
+          // Buchungen lÃ¶schen
           if (bloeschen && bdate == null)
           {
-            monitor.log("Buchungen löschen: Kein gültiges Datum eingegeben");
+            monitor.log("Buchungen lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (bloeschen && bdate != null)
           {
@@ -196,11 +196,11 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Lastschriften löschen
+          // Lastschriften lÃ¶schen
           if (lloeschen && ldate == null)
           {
             monitor
-                .log("Lastschriften löschen: Kein gültiges Datum eingegeben");
+                .log("Lastschriften lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (lloeschen && ldate != null)
           {
@@ -209,11 +209,11 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Abrechnungslauf löschen
+          // Abrechnungslauf lÃ¶schen
           if (aloeschen && adate == null)
           {
             monitor.log(
-                "Abrechnungsläufe löschen: Kein gültiges Datum eingegeben");
+                "AbrechnungslÃ¤ufe lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (aloeschen && adate != null)
           {
@@ -222,11 +222,11 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Jahresabschluss löschen
+          // Jahresabschluss lÃ¶schen
           if (jloeschen && jdate == null)
           {
             monitor.log(
-                "Jahresabschlüsse löschen: Kein gültiges Datum eingegeben");
+                "JahresabschlÃ¼sse lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (jloeschen && jdate != null)
           {
@@ -235,10 +235,10 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
 
-          // Mails löschen
+          // Mails lÃ¶schen
           if (mloeschen && mdate == null)
           {
-            monitor.log("Mails löschen: Kein gültiges Datum eingegeben");
+            monitor.log("Mails lÃ¶schen: Kein gÃ¼ltiges Datum eingegeben");
           }
           else if (mloeschen && mdate != null)
           {
@@ -428,7 +428,7 @@ public class DbBereinigenControl extends AbstractControl
     return mDateInput;
   }
 
-  // Lösch Aktionen
+  // LÃ¶sch Aktionen
   private void rechnungenLoeschen(ProgressMonitor monitor, final Date date)
   {
     try
@@ -453,7 +453,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Rechnungung mit Nr "
+          String fehler = "Fehler beim LÃ¶schen der Rechnungung mit Nr "
               + rechnung.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -461,7 +461,7 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Rechnung" + (count != 1 ? "en" : "") + " gelöscht.", count));
+            "%d Rechnung" + (count != 1 ? "en" : "") + " gelÃ¶scht.", count));
       }
       else
       {
@@ -474,7 +474,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Rechnungen.";
+      String fehler = "Fehler beim LÃ¶schen von Rechnungen.";
       monitor.setStatusText(fehler);
     }
   }
@@ -504,7 +504,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Spendenbescheinigung mit Nr "
+          String fehler = "Fehler beim LÃ¶schen der Spendenbescheinigung mit Nr "
               + sp.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -512,7 +512,7 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Spendenbescheinigung" + (count != 1 ? "en" : "") + " gelöscht.",
+            "%d Spendenbescheinigung" + (count != 1 ? "en" : "") + " gelÃ¶scht.",
             count));
       }
       else
@@ -527,7 +527,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Spendenbescheinigungen.";
+      String fehler = "Fehler beim LÃ¶schen von Spendenbescheinigungen.";
       monitor.setStatusText(fehler);
     }
   }
@@ -574,7 +574,7 @@ public class DbBereinigenControl extends AbstractControl
           if (splitmitspende.contains(b.getSplitId()))
           {
             String fehler = "Die Buchung mit der Nr " + b.getID()
-                + " wurde nicht gelöscht. Sie ist Teil einer Splittbuchung "
+                + " wurde nicht gelÃ¶scht. Sie ist Teil einer Splittbuchung "
                 + "mit zugeordeneten Spendenbescheinigungen";
             monitor.setStatusText(fehler);
             continue;
@@ -585,16 +585,16 @@ public class DbBereinigenControl extends AbstractControl
           }
           catch (RemoteException e)
           {
-            // Das kann passieren, wenn die Split Hauptbuchung gelöscht wurde
-            // und jetzt die Splitbuchung gelöscht werden soll, diese
-            // aber durch den Foreign Key bereits gelöscht ist
+            // Das kann passieren, wenn die Split Hauptbuchung gelÃ¶scht wurde
+            // und jetzt die Splitbuchung gelÃ¶scht werden soll, diese
+            // aber durch den Foreign Key bereits gelÃ¶scht ist
             // wenn es aber keine Splitbuchung ist, werfen wir die Exeption
             if (b.getSplitId() == null)
               throw e;
           }
           catch (Exception e)
           {
-            String fehler = "Fehler beim Löschen der Buchung mit Nr "
+            String fehler = "Fehler beim LÃ¶schen der Buchung mit Nr "
                 + b.getID() + ", " + e.getMessage();
             monitor.setStatusText(fehler);
           }
@@ -618,7 +618,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           catch (Exception e)
           {
-            String fehler = "Fehler beim Löschen der Sollbuchung mit Nr "
+            String fehler = "Fehler beim LÃ¶schen der Sollbuchung mit Nr "
                 + b.getSollbuchung().getID() + ", " + e.getMessage();
             monitor.setStatusText(fehler);
           }
@@ -630,7 +630,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Buchung mit Nr " + b.getID()
+          String fehler = "Fehler beim LÃ¶schen der Buchung mit Nr " + b.getID()
               + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -638,13 +638,13 @@ public class DbBereinigenControl extends AbstractControl
       if (counts > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Sollbuchung" + (counts != 1 ? "en" : "") + " gelöscht.",
+            "%d Sollbuchung" + (counts != 1 ? "en" : "") + " gelÃ¶scht.",
             counts));
       }
       if (countb > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Buchung" + (countb != 1 ? "en" : "") + " gelöscht.", countb));
+            "%d Buchung" + (countb != 1 ? "en" : "") + " gelÃ¶scht.", countb));
       }
       else
       {
@@ -657,7 +657,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Buchungen.";
+      String fehler = "Fehler beim LÃ¶schen von Buchungen.";
       monitor.setStatusText(fehler);
     }
   }
@@ -688,7 +688,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Lastschrift mit Nr "
+          String fehler = "Fehler beim LÃ¶schen der Lastschrift mit Nr "
               + la.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -696,7 +696,7 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Lastschrift" + (count != 1 ? "en" : "") + " gelöscht.", count));
+            "%d Lastschrift" + (count != 1 ? "en" : "") + " gelÃ¶scht.", count));
       }
       else
       {
@@ -709,7 +709,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Lastschriften.";
+      String fehler = "Fehler beim LÃ¶schen von Lastschriften.";
       monitor.setStatusText(fehler);
     }
   }
@@ -750,7 +750,7 @@ public class DbBereinigenControl extends AbstractControl
           if (buchungen)
           {
             String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Buchungen"
+                + " wurde nicht gelÃ¶scht. Es existieren noch Buchungen"
                 + " zu diesem Abrechnungslauf";
             monitor.setStatusText(fehler);
             continue;
@@ -778,7 +778,7 @@ public class DbBereinigenControl extends AbstractControl
           if (sollbuchungen)
           {
             String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Sollbuchungen"
+                + " wurde nicht gelÃ¶scht. Es existieren noch Sollbuchungen"
                 + " zu diesem Abrechnungslauf";
             monitor.setStatusText(fehler);
             continue;
@@ -805,7 +805,7 @@ public class DbBereinigenControl extends AbstractControl
           if (lastschriften)
           {
             String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Lastschriften"
+                + " wurde nicht gelÃ¶scht. Es existieren noch Lastschriften"
                 + " zu diesem Abrechnungslauf";
             monitor.setStatusText(fehler);
             continue;
@@ -820,7 +820,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen des Abrechnungslaufs mit Nr "
+          String fehler = "Fehler beim LÃ¶schen des Abrechnungslaufs mit Nr "
               + al.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -828,13 +828,13 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Abrechnungsl" + (count != 1 ? "äufe" : "auf") + " gelöscht.",
+            "%d Abrechnungsl" + (count != 1 ? "Ã¤ufe" : "auf") + " gelÃ¶scht.",
             count));
       }
       else
       {
         monitor
-            .log("Keine Abrechnungsläufe im vorgegebenen Zeitraum vorhanden!");
+            .log("Keine AbrechnungslÃ¤ufe im vorgegebenen Zeitraum vorhanden!");
       }
     }
     catch (OperationCanceledException oce)
@@ -843,7 +843,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Abrechnugsläufen.";
+      String fehler = "Fehler beim LÃ¶schen von AbrechnugslÃ¤ufen.";
       monitor.setStatusText(fehler);
     }
   }
@@ -852,7 +852,7 @@ public class DbBereinigenControl extends AbstractControl
   {
     try
     {
-      // Suche Datum der ältesten Buchung
+      // Suche Datum der Ã¤ltesten Buchung
       final DBService service = Einstellungen.getDBService();
       String sql = "SELECT buchung.datum from buchung " + "WHERE datum < ? "
           + "order by datum ";
@@ -888,8 +888,8 @@ public class DbBereinigenControl extends AbstractControl
             if (!bis.before(buchungdate))
             {
               String fehler = "Der Jahresabschluss mit der Nr " + ja.getID()
-                  + " wurde nicht gelöscht. Es existieren noch Buchungen"
-                  + " in diesem oder vorangehenden Jahresabschlüssen";
+                  + " wurde nicht gelÃ¶scht. Es existieren noch Buchungen"
+                  + " in diesem oder vorangehenden JahresabschlÃ¼ssen";
               monitor.setStatusText(fehler);
               continue;
             }
@@ -911,7 +911,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen des Jahresabschluss mit Nr "
+          String fehler = "Fehler beim LÃ¶schen des Jahresabschluss mit Nr "
               + ja.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -919,13 +919,13 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String.format(
-            "%d Jahresabschl" + (count != 1 ? "üsse" : "uss") + " gelöscht.",
+            "%d Jahresabschl" + (count != 1 ? "Ã¼sse" : "uss") + " gelÃ¶scht.",
             count));
       }
       else
       {
         monitor
-            .log("Keine Jahresabschlüsse im vorgegebenen Zeitraum vorhanden!");
+            .log("Keine JahresabschlÃ¼sse im vorgegebenen Zeitraum vorhanden!");
       }
     }
     catch (OperationCanceledException oce)
@@ -934,7 +934,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Jahresabschlüssen.";
+      String fehler = "Fehler beim LÃ¶schen von JahresabschlÃ¼ssen.";
       monitor.setStatusText(fehler);
     }
   }
@@ -962,7 +962,7 @@ public class DbBereinigenControl extends AbstractControl
         }
         catch (Exception e)
         {
-          String fehler = "Fehler beim Löschen der Lastschrift mit Nr "
+          String fehler = "Fehler beim LÃ¶schen der Lastschrift mit Nr "
               + mail.getID() + ", " + e.getMessage();
           monitor.setStatusText(fehler);
         }
@@ -970,7 +970,7 @@ public class DbBereinigenControl extends AbstractControl
       if (count > 0)
       {
         monitor.setStatusText(String
-            .format("%d Mail" + (count != 1 ? "s" : "") + " gelöscht.", count));
+            .format("%d Mail" + (count != 1 ? "s" : "") + " gelÃ¶scht.", count));
       }
       else
       {
@@ -983,7 +983,7 @@ public class DbBereinigenControl extends AbstractControl
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen von Mails.";
+      String fehler = "Fehler beim LÃ¶schen von Mails.";
       monitor.setStatusText(fehler);
     }
   }

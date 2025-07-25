@@ -70,21 +70,21 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       if (this.getRechnung() != null)
       {
         throw new ApplicationException(
-            "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
-                + "Rechnung gehört");
+            "Sollbuchung kann nicht gelÃ¶scht werden weil sie zu einer "
+                + "Rechnung gehÃ¶rt");
       }
     }
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Rechnung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber
+      // Das passiert wenn sie kurz vorher gelÃ¶scht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Sollbuchung kann nicht gelöscht werden. Siehe system log");
+          "Sollbuchung kann nicht gelÃ¶scht werden. Siehe system log");
     }
   }
 

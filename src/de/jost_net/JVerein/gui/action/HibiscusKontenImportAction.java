@@ -47,7 +47,7 @@ public class HibiscusKontenImportAction implements Action
   {
     if (context == null)
     {
-      // 1) Wir zeigen einen Dialog an, in dem der User das Konto ausw‰hlt
+      // 1) Wir zeigen einen Dialog an, in dem der User das Konto ausw√§hlt
       KontoAuswahlDialog d = new KontoAuswahlDialog(
           KontoAuswahlDialog.POSITION_CENTER);
       try

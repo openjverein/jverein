@@ -73,9 +73,9 @@ public class FormularfeldNeuAction implements Action
             "Fehler bei der Erzeugung eines neuen Formularfeldes", e);
       }
     }
-    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
     // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
-    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+    // fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste zurÃ¼ck.
     if (GUI.getCurrentView().getClass().equals(FormularfeldDetailView.class))
     {
       GUI.getCurrentView().setCurrentObject(ff);

@@ -37,7 +37,7 @@ public class KursteilnehmerDeleteAction implements Action
     Kursteilnehmer[] kursteilnehmer = null;
     if (context == null)
     {
-      throw new ApplicationException("Keinen Kursteilnehmer ausgewählt");
+      throw new ApplicationException("Keinen Kursteilnehmer ausgewÃ¤hlt");
     }
     else if (context instanceof Kursteilnehmer)
     {
@@ -54,9 +54,9 @@ public class KursteilnehmerDeleteAction implements Action
     try
     {
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Kursteilnehmer löschen");
+      d.setTitle("Kursteilnehmer lÃ¶schen");
       d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1 ? "" : "n")
-          + " Kursteilnehmer wirklich löschen?");
+          + " Kursteilnehmer wirklich lÃ¶schen?");
 
       try
       {
@@ -66,7 +66,7 @@ public class KursteilnehmerDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Kursteilnehmers", e);
+        Logger.error("Fehler beim LÃ¶schen des Kursteilnehmers", e);
         return;
       }
       for (Kursteilnehmer kt : kursteilnehmer)
@@ -75,11 +75,11 @@ public class KursteilnehmerDeleteAction implements Action
           continue;
         kt.delete();
       }
-      GUI.getStatusBar().setSuccessText("Kursteilnehmer gelöscht.");
+      GUI.getStatusBar().setSuccessText("Kursteilnehmer gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Kursteilnehmers";
+      String fehler = "Fehler beim LÃ¶schen des Kursteilnehmers";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

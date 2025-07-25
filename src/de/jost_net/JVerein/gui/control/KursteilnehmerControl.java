@@ -212,7 +212,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       return strasse;
     }
     strasse = new TextInput(getKursteilnehmer().getStrasse(), 40);
-    strasse.setName("Straﬂe");
+    strasse.setName("Stra√üe");
     return strasse;
   }
 
@@ -308,7 +308,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     this.mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
-    this.mandatdatum.setText("Bitte Datum des Mandats w‰hlen");
+    this.mandatdatum.setText("Bitte Datum des Mandats w√§hlen");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setMandatory(true);
     return mandatdatum;
@@ -361,7 +361,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     Date d = getKursteilnehmer().getGeburtsdatum();
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
-    this.geburtsdatum.setText("Bitte Geburtsdatum w‰hlen");
+    this.geburtsdatum.setText("Bitte Geburtsdatum w√§hlen");
     if ((Boolean) Einstellungen
         .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
@@ -378,7 +378,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
-    geschlecht.setPleaseChoose("Bitte ausw‰hlen");
+    geschlecht.setPleaseChoose("Bitte ausw√§hlen");
     if ((Boolean) Einstellungen
         .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
@@ -398,7 +398,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
-    part.addColumn("Straﬂe", "strasse");
+    part.addColumn("Stra√üe", "strasse");
     part.addColumn("PLZ", "plz");
     part.addColumn("Ort", "ort");
     part.addColumn("Verwendungszweck", "vzweck1");
@@ -527,7 +527,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       final DBIterator<Kursteilnehmer> list = getIterator();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));

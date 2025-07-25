@@ -132,7 +132,7 @@ public class EigenschaftenNode implements GenericObjectNode
     }
     else if (mitglieder != null)
     {
-      // Aufruf aus Mitglied Kontext Menü -> Eigenschaften
+      // Aufruf aus Mitglied Kontext MenÃ¼ -> Eigenschaften
       // Gesetzte Eigenschaften (CHECKED) aus Datenbank lesen
       Map<Long, Long> counters = new HashMap<>(); // <Eigenschaft.Id, Anzahl>
       Long counter = null;
@@ -146,12 +146,12 @@ public class EigenschaftenNode implements GenericObjectNode
           if (value[0].toString().equals(m.getID()))
           {
             if (counter == null)
-              // Erster Eintrag für Eigenschaft gefunden
+              // Erster Eintrag fÃ¼r Eigenschaft gefunden
               counters.put(value[1], 1l);
             else
-              // Weiterer Eintrag für Eigenschaft gefunden, Anzahl
+              // Weiterer Eintrag fÃ¼r Eigenschaft gefunden, Anzahl
               // inkrementieren
-              // Neuer Eintrag überschreibt alten Eintrag
+              // Neuer Eintrag Ã¼berschreibt alten Eintrag
               counters.put(value[1], ++counter);
           }
         }
@@ -361,7 +361,7 @@ public class EigenschaftenNode implements GenericObjectNode
     {
       switch (preset)
       {
-        // In Mitglied Kontext Menü -> Eigenschaften und
+        // In Mitglied Kontext MenÃ¼ -> Eigenschaften und
         // im Filter Dialog gibt es PLUS und MINUS etc.
         // Die ersten drei Eigenschaften sind in "base" gespeichert
         case EigenschaftenNode.UNCHECKED:
@@ -380,7 +380,7 @@ public class EigenschaftenNode implements GenericObjectNode
     else
     {
       // In (Nicht-)Mitglied Detail View Lasche Eigenschaften und
-      // Mail Empfänger Auswahl Dialog -> Eigenschaften
+      // Mail EmpfÃ¤nger Auswahl Dialog -> Eigenschaften
       // gibt es nur UNCHECKED und CHECKED
       switch (preset)
       {
@@ -427,7 +427,7 @@ public class EigenschaftenNode implements GenericObjectNode
   public ArrayList<EigenschaftenNode> getCheckedNodes() throws RemoteException
   {
     // Liefert alle EIGENSCHAFTEN Nodes die nicht UNCHECKED sind
-    // Momentan nur für ROOT gebraucht
+    // Momentan nur fÃ¼r ROOT gebraucht
     ArrayList<EigenschaftenNode> checkednodes = new ArrayList<>();
     if (this.nodetype == EigenschaftenNode.ROOT)
     {
@@ -492,7 +492,7 @@ public class EigenschaftenNode implements GenericObjectNode
       throws RemoteException
   {
     // Liefert den EigenschaftenNode einer Eigenschaft
-    // Momentan nur für ROOT gebraucht
+    // Momentan nur fÃ¼r ROOT gebraucht
     EigenschaftenNode eigenschaftenNode = null;
     if (this.nodetype == EigenschaftenNode.ROOT)
     {
@@ -518,7 +518,7 @@ public class EigenschaftenNode implements GenericObjectNode
       throws RemoteException
   {
     // Liefert die EigenschaftGruppe zur Id
-    // Momentan nur für ROOT gebraucht
+    // Momentan nur fÃ¼r ROOT gebraucht
     EigenschaftGruppe eigenschaftGruppe = null;
     if (this.nodetype == EigenschaftenNode.ROOT)
     {
@@ -534,7 +534,7 @@ public class EigenschaftenNode implements GenericObjectNode
     return eigenschaftGruppe;
   }
 
-  // Speichert den Startwert für eine Eigenschaft
+  // Speichert den Startwert fÃ¼r eine Eigenschaft
   private class Config
   {
     public String preset;

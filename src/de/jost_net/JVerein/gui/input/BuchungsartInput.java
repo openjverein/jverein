@@ -165,7 +165,7 @@ public class BuchungsartInput
             ((SelectInput) buchungsart).setAttribute("bezeichnung");
             break;
         }
-        ((SelectInput) buchungsart).setPleaseChoose("Bitte ausw‰hlen");
+        ((SelectInput) buchungsart).setPleaseChoose("Bitte ausw√§hlen");
         break;
       case AbstractInputAuswahl.SearchInput:
       default: // default soll SearchInput sein. Eigentlich sollten die

@@ -164,7 +164,7 @@ public class SteuerControl extends VorZurueckControl implements Savable
                 comment = "Einnahme -> Umsatzsteuer";
                 break;
               case ArtBuchungsart.UMBUCHUNG:
-                comment = "Umbuchung ist Ungültig";
+                comment = "Umbuchung ist UngÃ¼ltig";
                 break;
             }
           }

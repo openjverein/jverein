@@ -66,7 +66,7 @@ public class VorlageControl extends VorZurueckControl implements Savable
     vorlage = (Vorlage) getCurrentObject();
     if (vorlage == null)
     {
-      throw new ApplicationException("Keine Vorlage ausgew‰hlt");
+      throw new ApplicationException("Keine Vorlage ausgew√§hlt");
     }
     return vorlage;
   }

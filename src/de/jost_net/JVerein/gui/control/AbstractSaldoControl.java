@@ -90,7 +90,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
   public static final String ENDBESTAND = "endbestand";
 
   /**
-   * Anzahl Eintr‰ge
+   * Anzahl Eintr√§ge
    */
   public static final String ANZAHL = "anzahl";
 
@@ -151,13 +151,13 @@ public abstract class AbstractSaldoControl extends AbstractControl
   /**
    * Liefert die Liste
    * 
-   * @return die Liste der Eintr‰ge
+   * @return die Liste der Eintr√§ge
    * @throws RemoteException
    */
   public abstract ArrayList<PseudoDBObject> getList() throws RemoteException;
 
   /**
-   * L‰dt die Liste neu
+   * L√§dt die Liste neu
    * 
    * @throws ApplicationException
    * 
@@ -190,14 +190,14 @@ public abstract class AbstractSaldoControl extends AbstractControl
   }
 
   /**
-   * Holt den Titel f¸r die Auswertungen
+   * Holt den Titel f√ºr die Auswertungen
    * 
    * @return
    */
   protected abstract String getAuswertungTitle();
 
   /**
-   * Git ein Object, dass das Interface ISaldoExport implementiert zur¸ck.
+   * Git ein Object, dass das Interface ISaldoExport implementiert zur√ºck.
    * 
    * @param type
    *          der type der Auswertung
@@ -223,7 +223,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
       ArrayList<PseudoDBObject> zeile = getList();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       Settings settings = new Settings(this.getClass());
 
@@ -392,10 +392,10 @@ public abstract class AbstractSaldoControl extends AbstractControl
   }
 
   /**
-   * Holt das Gesch‰ftsjahr des Datumbereichs
+   * Holt das Gesch√§ftsjahr des Datumbereichs
    * 
-   * @return Das Gesch‰ftsjahr, wenn Start und Ende mit der Auswahl
-   *         ¸bereinstimmen, sonst 0.
+   * @return Das Gesch√§ftsjahr, wenn Start und Ende mit der Auswahl
+   *         √ºbereinstimmen, sonst 0.
    */
   public Integer isGeschaeftsjahr()
   {

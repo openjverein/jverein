@@ -53,7 +53,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     left.addInput(control.getMailauswahl());
     SelectInput mitgliedsTyp = control
         .getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED);
-    mitgliedsTyp.setPleaseChoose("Bitte ausw‰hlen");
+    mitgliedsTyp.setPleaseChoose("Bitte ausw√§hlen");
     left.addInput(mitgliedsTyp);
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);

@@ -84,18 +84,18 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
     }
-    group.addLabelPair("Buchungsarten überschreiben", getUeberschreiben());
+    group.addLabelPair("Buchungsarten Ã¼berschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Übernehmen", new Action()
+    buttons.addButton("Ãœbernehmen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         if (buchungsarten.getValue() == null)
         {
-          status.setValue("Bitte Buchungsart auswählen");
+          status.setValue("Bitte Buchungsart auswÃ¤hlen");
           status.setColor(Color.ERROR);
           return;
         }
@@ -110,7 +110,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
           {
             if (buchungsklassen.getValue() == null)
             {
-              status.setValue("Bitte Buchungsklasse auswählen");
+              status.setValue("Bitte Buchungsklasse auswÃ¤hlen");
               status.setColor(Color.ERROR);
               return;
             }

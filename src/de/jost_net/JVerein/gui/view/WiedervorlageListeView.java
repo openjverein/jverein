@@ -70,10 +70,10 @@ public class WiedervorlageListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Datumsbereich zurück");
-    vor1.setToolTipText("Datumsbereich vowärts");
-    zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
-    vor2.setToolTipText("Erledigung Datumsbereich vowärts");
+    zurueck1.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Erledigung Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Erledigung Datumsbereich vowÃ¤rts");
 
     control.getWiedervorlageList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();

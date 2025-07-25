@@ -52,7 +52,7 @@ public class MailTextVorschauAction implements Action
       {
         name = context.getClass().getCanonicalName();
       }
-      Logger.error("ShowVariablesDiaglog: Ungültige Klasse: " + name);
+      Logger.error("ShowVariablesDiaglog: UngÃ¼ltige Klasse: " + name);
     }
   }
 }

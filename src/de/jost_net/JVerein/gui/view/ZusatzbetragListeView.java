@@ -33,12 +33,12 @@ public class ZusatzbetragListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Zusatzbeträge");
+    GUI.getView().setTitle("ZusatzbetrÃ¤ge");
 
     final ZusatzbetragControl control = new ZusatzbetragControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Ausführungstag");
-    group.addLabelPair("Ausführungstag", control.getAusfuehrungSuch());
+    LabelGroup group = new LabelGroup(getParent(), "AusfÃ¼hrungstag");
+    group.addLabelPair("AusfÃ¼hrungstag", control.getAusfuehrungSuch());
 
     control.getZusatzbetraegeList().paint(this.getParent());
 

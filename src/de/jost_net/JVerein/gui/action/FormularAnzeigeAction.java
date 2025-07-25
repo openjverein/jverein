@@ -60,7 +60,7 @@ public class FormularAnzeigeAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Formular zur Anzeige ausgew‰hlt");
+      throw new ApplicationException("Kein Formular zur Anzeige ausgew√§hlt");
     }
     try
     {

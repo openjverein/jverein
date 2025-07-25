@@ -189,7 +189,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   /**
    * Ist das Mitglied Teil in einem Familienverband, wird das voll zahlende
-   * Mitglied zurück geliefert.
+   * Mitglied zurÃ¼ck geliefert.
    */
   public Mitglied getVollZahler() throws RemoteException;
 
@@ -198,10 +198,10 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void setVollZahlerID(Long id) throws RemoteException;
 
   /**
-   * Liefert das Mitglied welches den Beitrag für das Mitglied bezahlt. Es ist
+   * Liefert das Mitglied welches den Beitrag fÃ¼r das Mitglied bezahlt. Es ist
    * normalerweise das Mitglied selbst. Ist das Mitglied Teil in einem
    * Familienverband und als Zahlungsweg "Vollzahler" konfiguriert, wird das
-   * voll zahlende Mitglied zurückgeliefert.
+   * voll zahlende Mitglied zurÃ¼ckgeliefert.
    */
   public Mitglied getZahler() throws RemoteException;
 

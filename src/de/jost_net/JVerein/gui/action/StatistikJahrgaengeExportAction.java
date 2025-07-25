@@ -56,7 +56,7 @@ public class StatistikJahrgaengeExportAction implements Action
     {
       Logger.error("Fehler", e);
       GUI.getStatusBar()
-          .setErrorText("Fehler beim exportieren der Mitglieder-Jubil‰en");
+          .setErrorText("Fehler beim exportieren der Mitglieder-Jubil√§en");
     }
   }
 

@@ -40,8 +40,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, ueber den man die Beitragsgruppe beim Auflˆsen eines
- * Familienverbandes ausw‰hlen kann.
+ * Ein Dialog, ueber den man die Beitragsgruppe beim Aufl√∂sen eines
+ * Familienverbandes ausw√§hlen kann.
  */
 public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
 {
@@ -97,7 +97,7 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
         {
           if (control.getBeitragsgruppe(false).getValue() == null)
           {
-            throw new ApplicationException("Bitte Beitragsgruppe ausw‰hlen");
+            throw new ApplicationException("Bitte Beitragsgruppe ausw√§hlen");
           }
           Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppe(false)
               .getValue();

@@ -151,16 +151,16 @@ public class MittelverwendungDialog extends AbstractDialog<Boolean>
   protected void paint(Composite parent) throws Exception
   {
     LabelGroup group = new LabelGroup(parent, "");
-    group.addLabelPair("Rest des Verwendungsrückstand aus\ndem vorletzten GJ",
+    group.addLabelPair("Rest des VerwendungsrÃ¼ckstand aus\ndem vorletzten GJ",
         getVerwendungsrueckstandInput());
     group.addLabelPair(
-        "Zwanghafte satzungsgemäße \nWeitergabe von Mitteln im letzten GJ",
+        "Zwanghafte satzungsgemÃ¤ÃŸe \nWeitergabe von Mitteln im letzten GJ",
         getZwanghafteWeitergabeInput());
     group.addLabelPair("Name", getNameInput());
     group.addInput(getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Übernehmen", context -> {
+    buttons.addButton("Ãœbernehmen", context -> {
       if (zwanghafteWeitergabeInput.getValue() == null
           || verwendungsrueckstandInput.getValue() == null)
       {

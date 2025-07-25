@@ -94,7 +94,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addText(
-        "Bitte Rechnungsdatum und zu verwendendes Formular ausw‰hlen.", true);
+        "Bitte Rechnungsdatum und zu verwendendes Formular ausw√§hlen.", true);
     group.addInput(getStatus());
     formularInput = new FormularInput(FormularArt.RECHNUNG);
     group.addLabelPair("Formular", formularInput);
@@ -112,14 +112,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Rechnung(en) erstellen", context -> {
       if (formularInput.getValue() == null)
       {
-        status.setValue("Bitte Formular ausw‰hlen");
+        status.setValue("Bitte Formular ausw√§hlen");
         status.setColor(Color.ERROR);
         return;
       }
       if (datumInput.getValue() == null
           && !(boolean) sollbuchungsdatumInput.getValue())
       {
-        status.setValue("Bitte Datum ausw‰hlen");
+        status.setValue("Bitte Datum ausw√§hlen");
         status.setColor(Color.ERROR);
         return;
       }

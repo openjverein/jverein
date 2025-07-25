@@ -50,7 +50,7 @@ public class MailemfaengerDeleteAction implements Action
     if (context == null
         || (!(context instanceof Mail) && !(context instanceof Mail[])))
     {
-      throw new ApplicationException("Keine Mail ausgewählt");
+      throw new ApplicationException("Keine Mail ausgewÃ¤hlt");
     }
     try
     {
@@ -76,9 +76,9 @@ public class MailemfaengerDeleteAction implements Action
         return;
       }
       d.setTitle("Mail" + (mail.length > 1 ? "s" : "") + " von "
-          + Adressaufbereitung.getVornameName(mitglied) + " löschen");
+          + Adressaufbereitung.getVornameName(mitglied) + " lÃ¶schen");
       d.setText("Wollen Sie diese Mail" + (mail.length > 1 ? "s" : "") + " von "
-          + Adressaufbereitung.getVornameName(mitglied) + " wirklich löschen?");
+          + Adressaufbereitung.getVornameName(mitglied) + " wirklich lÃ¶schen?");
 
       try
       {
@@ -90,7 +90,7 @@ public class MailemfaengerDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Mail", e);
+        Logger.error("Fehler beim LÃ¶schen der Mail", e);
         return;
       }
       for (Mail ma : mail)
@@ -110,11 +110,11 @@ public class MailemfaengerDeleteAction implements Action
       }
       GUI.getStatusBar().setSuccessText(
 
-          "Mail" + (mail.length > 1 ? "s" : "") + " gelöscht.");
+          "Mail" + (mail.length > 1 ? "s" : "") + " gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Mail.";
+      String fehler = "Fehler beim LÃ¶schen der Mail.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

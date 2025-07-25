@@ -155,7 +155,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     if (sollbuchungsList == null)
     {
       sollbuchungsList = new JVereinTablePart(sollbIt, null);
-      sollbuchungsList.addColumn("F‰lligkeit", Sollbuchung.DATUM,
+      sollbuchungsList.addColumn("F√§lligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
       sollbuchungsList.addColumn("Mitglied", Sollbuchung.MITGLIED);
@@ -208,7 +208,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
       DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));

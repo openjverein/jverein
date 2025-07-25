@@ -33,7 +33,7 @@ public class HelpConsumer implements MessageConsumer
     AbstractView view = (AbstractView) msg.getData();
     Logger.error("help missing for view " + view.getClass());
     GUI.getStatusBar().setErrorText(
-        String.format("Hilfe für Ansicht %s fehlt", view.getClass().getName()));
+        String.format("Hilfe fÃ¼r Ansicht %s fehlt", view.getClass().getName()));
   }
 
   @Override

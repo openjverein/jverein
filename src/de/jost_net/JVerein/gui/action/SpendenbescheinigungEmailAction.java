@@ -48,7 +48,7 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgew‰hlt.");
+      throw new ApplicationException("Keine Spendenbescheinigung ausgew√§hlt.");
     }
     else if (context instanceof Spendenbescheinigung)
     {

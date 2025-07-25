@@ -79,7 +79,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         case MONATLICH12631:
           if (getBetrag() < 0)
           {
-            throw new ApplicationException("Betrag nicht gültig");
+            throw new ApplicationException("Betrag nicht gÃ¼ltig");
           }
 
           break;
@@ -87,7 +87,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           if (getBetragMonatlich() < 0 || getBetragVierteljaehrlich() < 0
               || getBetragHalbjaehrlich() < 0 || getBetragJaehrlich() < 0)
           {
-            throw new ApplicationException("Betrag nicht gültig");
+            throw new ApplicationException("Betrag nicht gÃ¼ltig");
           }
 
           break;
@@ -107,7 +107,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         if (gruppeAlt != null)
         {
           // Da es die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der
-          // Datenbank stehen kann, müssen wir auf null prüfen
+          // Datenbank stehen kann, mÃ¼ssen wir auf null prÃ¼fen
           ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
           if (artAlt == null)
             artAlt = ArtBeitragsart.NORMAL;
@@ -119,7 +119,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             if (list.hasNext())
             {
               throw new ApplicationException(
-                  "Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geändert werden!");
+                  "Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht geÃ¤ndert werden!");
             }
           }
         }
@@ -127,7 +127,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             .getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
         {
           throw new ApplicationException(
-              "Sekundäre Beitragsgrupe kann nicht Beitragsart Familienangehöriger haben!");
+              "SekundÃ¤re Beitragsgrupe kann nicht Beitragsart FamilienangehÃ¶riger haben!");
         }
       }
       if (getSekundaer() != null)
@@ -142,7 +142,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             if (list.hasNext())
             {
               throw new ApplicationException(
-                  "Es existieren Mitglieder mit diesem sekundären Beitrag, Sekundär kann nicht geändert werden!");
+                  "Es existieren Mitglieder mit diesem sekundÃ¤ren Beitrag, SekundÃ¤r kann nicht geÃ¤ndert werden!");
             }
           }
           else
@@ -153,7 +153,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             if (list.hasNext())
             {
               throw new ApplicationException(
-                  "Es existieren Mitglieder mit diesem Beitrag, Sekundär kann nicht geändert werden!");
+                  "Es existieren Mitglieder mit diesem Beitrag, SekundÃ¤r kann nicht geÃ¤ndert werden!");
             }
           }
         }
@@ -161,7 +161,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             .getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
         {
           throw new ApplicationException(
-              "Sekundäre Beitragsgrupe kann nicht Beitragsart Angehöriger haben!");
+              "SekundÃ¤re Beitragsgrupe kann nicht Beitragsart AngehÃ¶riger haben!");
         }
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
@@ -173,12 +173,12 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           {
             case ArtBuchungsart.AUSGABE:
               throw new ApplicationException(
-                  "Umsatzsteuer statt Vorsteuer gewählt.");
+                  "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
             case ArtBuchungsart.EINNAHME:
               throw new ApplicationException(
-                  "Vorsteuer statt Umsatzsteuer gewählt.");
-            // Umbuchung ist bei Anlagebuchungen möglich,
-            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                  "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+            // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
             case ArtBuchungsart.UMBUCHUNG:
               break;
           }
@@ -188,7 +188,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
                 || getBuchungsart().getAbschreibung()))
         {
           throw new ApplicationException(
-              "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+              "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
         }
       }
     }

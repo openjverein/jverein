@@ -64,7 +64,7 @@ public class MittelverwendungExportPDF implements ISaldoExport
           break;
       }
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = "Gesch‰ftsjahr: "
+      String subtitle = "Gesch√§ftsjahr: "
           + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
           + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());

@@ -229,7 +229,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     mitglied.addListener(new MitgliedListener());
     if (mitglied instanceof SelectInput)
     {
-      ((SelectInput) mitglied).setPleaseChoose("Optional auswählen");
+      ((SelectInput) mitglied).setPleaseChoose("Optional auswÃ¤hlen");
       if (m == null)
       {
         ((SelectInput) mitglied).setPreselected(null);
@@ -407,7 +407,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       else
       {
-        // Wegen Kompabilität zu früher
+        // Wegen KompabilitÃ¤t zu frÃ¼her
         check = getSpendenbescheinigung().getErsatzAufwendungen();
       }
     }
@@ -621,7 +621,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     // Bei GELDSPENDE_ECHT liefert das Query auch Splittbuchungen die neben
     // echten Geldbuchungen auch Geldbuchungen mit Verzicht haben.
     // Darum lesen wir nochmal mit ERSTATTUNGSVERZICHT. Wenn eine Id da
-    // auch dabei ist dürfen wir die Splittbuchung nicht nehmen
+    // auch dabei ist dÃ¼rfen wir die Splittbuchung nicht nehmen
     if (suchSpendenart == SuchSpendenart.GELDSPENDE_ECHT)
     {
       ArrayList<Long> erstattungsIds = querySpendenbescheinigungen(
@@ -792,7 +792,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
     String text = "Es wurden " + spbArr.length
-        + " Spendenbescheinigungen ausgewählt"
+        + " Spendenbescheinigungen ausgewÃ¤hlt"
         + "\nFolgende Mitglieder haben keine Mailadresse:";
     try
     {
@@ -805,7 +805,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
       }
       text = text
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
+          + "\nFÃ¼r folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
       for (Spendenbescheinigung spb : spbArr)
       {
         if (spb.getMitglied() == null)
@@ -841,7 +841,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
             if (spblist.size() == 0)
             {
               GUI.getStatusBar()
-                  .setSuccessText("Für die gewählten Filterkriterien wurden "
+                  .setSuccessText("FÃ¼r die gewÃ¤hlten Filterkriterien wurden "
                       + "keine Spendenbescheinigungen gefunden");
               return;
             }
@@ -965,7 +965,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     try
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)

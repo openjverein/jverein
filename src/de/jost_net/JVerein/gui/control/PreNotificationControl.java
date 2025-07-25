@@ -109,7 +109,7 @@ public class PreNotificationControl extends DruckMailControl
       return ausfuehrungsdatum;
     }
     ausfuehrungsdatum = new DateInput();
-    ausfuehrungsdatum.setName("Ausf¸hrungsdatum");
+    ausfuehrungsdatum.setName("Ausf√ºhrungsdatum");
     return ausfuehrungsdatum;
   }
 
@@ -164,7 +164,7 @@ public class PreNotificationControl extends DruckMailControl
             else
             {
               GUI.getStatusBar().setErrorText(
-                  "Kein Abrechnungslauf oder keine Lastschrift ausgew‰hlt");
+                  "Kein Abrechnungslauf oder keine Lastschrift ausgew√§hlt");
               return;
             }
           }
@@ -220,7 +220,7 @@ public class PreNotificationControl extends DruckMailControl
             else
             {
               GUI.getStatusBar().setErrorText(
-                  "Kein Abrechnungslauf oder keine Lastschrift ausgew‰hlt");
+                  "Kein Abrechnungslauf oder keine Lastschrift ausgew√§hlt");
               return;
             }
           }
@@ -228,7 +228,7 @@ public class PreNotificationControl extends DruckMailControl
           settings.setAttribute(settingsprefix + "ct1ausgabe", aa.getKey());
           if (ausfuehrungsdatum.getValue() == null)
           {
-            GUI.getStatusBar().setErrorText("Ausf¸hrungsdatum fehlt");
+            GUI.getStatusBar().setErrorText("Ausf√ºhrungsdatum fehlt");
             return;
           }
           Date d = (Date) ausfuehrungsdatum.getValue();
@@ -294,14 +294,14 @@ public class PreNotificationControl extends DruckMailControl
       if (abrl.getAbgeschlossen())
       {
         GUI.getStatusBar().setErrorText(
-            "Die ausgew‰hlte Lastschrift ist bereits abgeschlossen");
+            "Die ausgew√§hlte Lastschrift ist bereits abgeschlossen");
         return;
       }
       if (!mitMail && lastschrift.getEmail() != null
           && !lastschrift.getEmail().isEmpty())
       {
         GUI.getStatusBar()
-            .setErrorText("Die ausgew‰hlte Lastschrift hat eine Mail Adresse");
+            .setErrorText("Die ausgew√§hlte Lastschrift hat eine Mail Adresse");
         return;
       }
       else
@@ -319,7 +319,7 @@ public class PreNotificationControl extends DruckMailControl
         if (abrl.getAbgeschlossen())
         {
           GUI.getStatusBar()
-              .setErrorText("Die ausgew‰hlte Lastschrift mit der Nr "
+              .setErrorText("Die ausgew√§hlte Lastschrift mit der Nr "
                   + lastschrift.getID() + " ist bereits abgeschlossen");
           return;
         }
@@ -332,14 +332,14 @@ public class PreNotificationControl extends DruckMailControl
       if (lastschriften.size() == 0)
       {
         GUI.getStatusBar().setErrorText(
-            "Alle ausgew‰hlten Lastschriften haben eine Mail Adresse");
+            "Alle ausgew√§hlten Lastschriften haben eine Mail Adresse");
         return;
       }
     }
     else
     {
       GUI.getStatusBar().setErrorText(
-          "Kein Abrechnungslauf oder keine Lastschrift ausgew‰hlt");
+          "Kein Abrechnungslauf oder keine Lastschrift ausgew√§hlt");
       return;
     }
 
@@ -352,7 +352,7 @@ public class PreNotificationControl extends DruckMailControl
     }
 
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -378,7 +378,7 @@ public class PreNotificationControl extends DruckMailControl
         .getValue();
     if (form == null)
     {
-      throw new IOException("kein SEPA Pre-Notification-Formular ausgew‰hlt");
+      throw new IOException("kein SEPA Pre-Notification-Formular ausgew√§hlt");
     }
     Formular fo = (Formular) Einstellungen.getDBService()
         .createObject(Formular.class, form.getID());
@@ -455,7 +455,7 @@ public class PreNotificationControl extends DruckMailControl
       if (abrl.getAbgeschlossen())
       {
         GUI.getStatusBar().setErrorText(
-            "Die ausgew‰hlte Lastschrift ist bereits abgeschlossen");
+            "Die ausgew√§hlte Lastschrift ist bereits abgeschlossen");
         return;
       }
       lastschriften.add((Lastschrift) currentObject);
@@ -470,7 +470,7 @@ public class PreNotificationControl extends DruckMailControl
         if (abrl.getAbgeschlossen())
         {
           GUI.getStatusBar()
-              .setErrorText("Die ausgew‰hlte Lastschrift mit der Nr "
+              .setErrorText("Die ausgew√§hlte Lastschrift mit der Nr "
                   + lastschrift.getID() + " ist bereits abgeschlossen");
           return;
         }
@@ -480,7 +480,7 @@ public class PreNotificationControl extends DruckMailControl
     else
     {
       GUI.getStatusBar().setErrorText(
-          "Kein Abrechnungslauf oder keine Lastschrift ausgew‰hlt");
+          "Kein Abrechnungslauf oder keine Lastschrift ausgew√§hlt");
       return;
     }
 
@@ -490,7 +490,7 @@ public class PreNotificationControl extends DruckMailControl
     if (aa == Ct1Ausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei w‰hlen.");
+      fd.setText("SEPA-Ausgabedatei w√§hlen.");
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -524,7 +524,7 @@ public class PreNotificationControl extends DruckMailControl
     Ct1Ueberweisung ct1ueberweisung = new Ct1Ueberweisung();
     int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
-    GUI.getStatusBar().setSuccessText("Anzahl ‹berweisungen: " + anzahl);
+    GUI.getStatusBar().setSuccessText("Anzahl √úberweisungen: " + anzahl);
   }
 
   private void generiereEMail(Object currentObject) throws IOException
@@ -556,7 +556,7 @@ public class PreNotificationControl extends DruckMailControl
       if (abrl.getAbgeschlossen())
       {
         GUI.getStatusBar().setErrorText(
-            "Die ausgew‰hlte Lastschrift ist bereits abgeschlossen");
+            "Die ausgew√§hlte Lastschrift ist bereits abgeschlossen");
         return;
       }
       if (lastschrift.getEmail() != null && !lastschrift.getEmail().isEmpty())
@@ -566,7 +566,7 @@ public class PreNotificationControl extends DruckMailControl
       else
       {
         GUI.getStatusBar()
-            .setErrorText("Die ausgew‰hlte Lastschrift hat keine Mail Adresse");
+            .setErrorText("Die ausgew√§hlte Lastschrift hat keine Mail Adresse");
         return;
       }
     }
@@ -580,7 +580,7 @@ public class PreNotificationControl extends DruckMailControl
         if (abrl.getAbgeschlossen())
         {
           GUI.getStatusBar()
-              .setErrorText("Die ausgew‰hlte Lastschrift mit der Nr "
+              .setErrorText("Die ausgew√§hlte Lastschrift mit der Nr "
                   + lastschrift.getID() + " ist bereits abgeschlossen");
           return;
         }
@@ -592,14 +592,14 @@ public class PreNotificationControl extends DruckMailControl
       if (lastschriften.size() == 0)
       {
         GUI.getStatusBar().setErrorText(
-            "Keine der ausgew‰hlten Lastschriften hat eine Mail Adresse");
+            "Keine der ausgew√§hlten Lastschriften hat eine Mail Adresse");
         return;
       }
     }
     else
     {
       GUI.getStatusBar().setErrorText(
-          "Kein Abrechnungslauf oder keine Lastschrift ausgew‰hlt");
+          "Kein Abrechnungslauf oder keine Lastschrift ausgew√§hlt");
       return;
     }
 
@@ -620,7 +620,7 @@ public class PreNotificationControl extends DruckMailControl
   private void sendeMail(final ArrayList<Lastschrift> lastschriften,
       final String betr, String text) throws RemoteException
   {
-    // ggf. Signatur anh‰ngen
+    // ggf. Signatur anh√§ngen
     if (text.toLowerCase().contains("<html")
         && text.toLowerCase().contains("</body"))
     {
@@ -632,7 +632,7 @@ public class PreNotificationControl extends DruckMailControl
     }
     else
     {
-      // MailSignatur mit Separator einfach anh‰ngen
+      // MailSignatur mit Separator einfach anh√§ngen
       text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;

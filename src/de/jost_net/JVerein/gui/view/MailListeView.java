@@ -40,7 +40,7 @@ public class MailListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Mail Empf‰nger", control.getSuchname());
+    left.addLabelPair("Mail Empf√§nger", control.getSuchname());
     left.addLabelPair("Betreff", control.getSuchtext());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());

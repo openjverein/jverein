@@ -189,7 +189,7 @@ public class MyExtension implements Extension
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbetr‰ge",
+        mitglieder.addChild(new MyItem(mitglieder, "Zusatzbetr√§ge",
             new StartViewAction(ZusatzbetragListeView.class), "euro-sign.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
@@ -200,25 +200,25 @@ public class MyExtension implements Extension
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Lehrg‰nge",
+        mitglieder.addChild(new MyItem(mitglieder, "Lehrg√§nge",
             new StartViewAction(LehrgangListeView.class),
             "chalkboard-teacher.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseins‰tze",
+        mitglieder.addChild(new MyItem(mitglieder, "Arbeitseins√§tze",
             new StartViewAction(ArbeitseinsatzListeView.class),
             "screwdriver.png"));
       }
       jverein.addChild(mitglieder);
 
       NavigationItem buchfuehrung = null;
-      buchfuehrung = new MyItem(buchfuehrung, "Buchf¸hrung", null);
+      buchfuehrung = new MyItem(buchfuehrung, "Buchf√ºhrung", null);
       // Konten
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
           new StartViewAction(KontoListeView.class),
           "system-file-manager.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbest‰nde",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Anfangsbest√§nde",
           new StartViewAction(AnfangsbestandListeView.class),
           "system-file-manager.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Kontensaldo",
@@ -267,14 +267,14 @@ public class MyExtension implements Extension
             "gnome-session-switch.png"));
       }
       // Jahresabschluss
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschl¸sse",
+      buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschl√ºsse",
           new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
 
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
-      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsl‰ufe",
+      abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsl√§ufe",
           new StartViewAction(AbrechnungslaufListeView.class),
           "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
@@ -291,7 +291,7 @@ public class MyExtension implements Extension
             new StartViewAction(AuswertungNichtMitgliedView.class),
             "receipt.png"));
       }
-      auswertung.addChild(new MyItem(auswertung, "Jubil‰en",
+      auswertung.addChild(new MyItem(auswertung, "Jubil√§en",
           new StartViewAction(JubilaeenView.class), "receipt.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
@@ -306,7 +306,7 @@ public class MyExtension implements Extension
           "chart-line.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
       {
-        auswertung.addChild(new MyItem(mitglieder, "Arbeitseins‰tze",
+        auswertung.addChild(new MyItem(mitglieder, "Arbeitseins√§tze",
             new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
             "screwdriver.png"));
       }
@@ -321,7 +321,7 @@ public class MyExtension implements Extension
         mail.addChild(new MyItem(mail, "Mahnungen",
             new StartViewAction(MahnungMailView.class), "document-print.png"));
       }
-      mail.addChild(new MyItem(mail, "Kontoausz¸ge",
+      mail.addChild(new MyItem(mail, "Kontoausz√ºge",
           new StartViewAction(KontoauszugMailView.class),
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
@@ -386,7 +386,7 @@ public class MyExtension implements Extension
                 "wrench.png"));
       }
       administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Buchf¸hrung",
+          .addChild(new MyItem(administrationEinstellungen, "Buchf√ºhrung",
               new StartViewAction(EinstellungenBuchfuehrungView.class),
               "wrench.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -445,7 +445,7 @@ public class MyExtension implements Extension
 
       NavigationItem einstellungenbuchfuehrung = null;
       einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
-          "Buchf¸hrung", null);
+          "Buchf√ºhrung", null);
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Buchungsklassen", new StartViewAction(BuchungsklasseListeView.class),
           "ellipsis-v.png"));
@@ -494,7 +494,7 @@ public class MyExtension implements Extension
       jverein.addChild(new MyItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
       jverein.addChild(
-          new MyItem(jverein, "‹ber", new AboutAction(), "gtk-info.png"));
+          new MyItem(jverein, "√úber", new AboutAction(), "gtk-info.png"));
     }
     catch (Exception e)
     {

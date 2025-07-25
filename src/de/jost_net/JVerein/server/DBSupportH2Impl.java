@@ -78,7 +78,7 @@ public class DBSupportH2Impl extends AbstractDBSupportImpl
   @Override
   public String getJdbcPassword()
   {
-    // Zunächst "schlichte" Version: Passwort wird hart codiert
+    // ZunÃ¤chst "schlichte" Version: Passwort wird hart codiert
     return "jverein";
     // String password = JVereinDBService.SETTINGS.getString(
     // "database.driver.h2.encryption.encryptedpassword", null);
@@ -177,7 +177,7 @@ public class DBSupportH2Impl extends AbstractDBSupportImpl
       }
       catch (Exception e2)
       {
-        Logger.error("Datenbankupdate kann nicht ausgeführt werden.", e2);
+        Logger.error("Datenbankupdate kann nicht ausgefÃ¼hrt werden.", e2);
         throw new ApplicationException(e2);
       }
     }

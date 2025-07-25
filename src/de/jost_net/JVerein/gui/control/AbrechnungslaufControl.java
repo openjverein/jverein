@@ -141,7 +141,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
     faelligkeit = new LabelInput(new JVDateFormatTTMMJJJJ()
         .format(getAbrechnungslauf().getFaelligkeit()));
-    faelligkeit.setName("F‰lligkeit");
+    faelligkeit.setName("F√§lligkeit");
     return faelligkeit;
   }
 
@@ -207,7 +207,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     String zs = "";
     if (getAbrechnungslauf().getZusatzbetraege())
     {
-      zs += "Zusatzbetr‰ge ";
+      zs += "Zusatzbetr√§ge ";
     }
     if (getAbrechnungslauf().getKursteilnehmer())
     {
@@ -320,7 +320,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
-    // Es kann nur die Bemerkung ver‰ndert werden
+    // Es kann nur die Bemerkung ver√§ndert werden
     Abrechnungslauf al = getAbrechnungslauf();
     al.setBemerkung((String) getBemerkung().getValue());
     return al;
@@ -367,7 +367,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Modus", "modus",
           new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
-      abrechnungslaufList.addColumn("F‰lligkeit", "faelligkeit",
+      abrechnungslaufList.addColumn("F√§lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Stichtag", "stichtag",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -378,7 +378,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
-        abrechnungslaufList.addColumn("Zusatzbetr‰ge", "zusatzbetraege",
+        abrechnungslaufList.addColumn("Zusatzbetr√§ge", "zusatzbetraege",
             new JaNeinFormatter());
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))

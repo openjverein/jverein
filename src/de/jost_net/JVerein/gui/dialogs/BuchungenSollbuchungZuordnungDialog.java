@@ -126,9 +126,9 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   private DateInput createDateInput(Date date, boolean isStart)
   {
     DateInput returnValue = new DateInput(date, new JVDateFormatTTMMJJJJ());
-    String typeOfInput = isStart ? "Be≠ginn" : "Ende";
+    String typeOfInput = isStart ? "Be¬≠ginn" : "Ende";
     returnValue.setTitle(typeOfInput + " des Suchbereichs");
-    returnValue.setText("Bitte " + typeOfInput + " des Suchbereichs w‰hlen");
+    returnValue.setText("Bitte " + typeOfInput + " des Suchbereichs w√§hlen");
     returnValue.setComment("*)");
     return returnValue;
   }
@@ -141,7 +141,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   {
     Container group = new SimpleContainer(parent);
     group.addText(
-        "Bitte w‰hlen Sie den Suchzeitraum und die gew¸nschte Zuordnungsart aus",
+        "Bitte w√§hlen Sie den Suchzeitraum und die gew√ºnschte Zuordnungsart aus",
         true);
 
     group.addLabelPair("Startdatum", dateFrom);
@@ -313,7 +313,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               && uniqueNames.isEmpty() && uniqueZweck.isEmpty())
           {
             GUI.getStatusBar().setErrorText(
-                "Es wurden keine eindeutigen Mitglieder zum Zuordnen in den gew‰hlten Zeitraum gefunden.");
+                "Es wurden keine eindeutigen Mitglieder zum Zuordnen in den gew√§hlten Zeitraum gefunden.");
             return;
           }
 
@@ -379,7 +379,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         {
           Logger.error("error while opening a dialog", e);
           throw new ApplicationException(
-              "Fehler bei der Durchf¸hrung der Zuordnung (Best‰tigungsdialog)",
+              "Fehler bei der Durchf√ºhrung der Zuordnung (Best√§tigungsdialog)",
               e);
         }
       }
@@ -429,7 +429,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     if (mitgliedsId != null)
     {
       // wir wollen das nicht nochmal mit der Buchung probieren, da dies das
-      // gleiche Ergebnis w‰re
+      // gleiche Ergebnis w√§re
       processed = true;
 
       ResultSetExtractor rs = new ResultSetExtractor()
@@ -478,7 +478,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
           + Sollbuchung.TABLE_NAME_ID + " ORDER BY a.stichtag, "
           + Sollbuchung.TABLE_NAME_ID;
       Einstellungen.getDBService().execute(sql, new Object[] { dateFromInput,
-          dateUntilInput, mitgliedsId, Zahlungsweg.‹BERWEISUNG }, rs);
+          dateUntilInput, mitgliedsId, Zahlungsweg.√úBERWEISUNG }, rs);
     }
 
     return processed;

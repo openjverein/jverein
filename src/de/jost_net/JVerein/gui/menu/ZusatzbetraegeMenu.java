@@ -36,26 +36,26 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Zusatzbeträgen.
+ * Kontext-Menu zu den ZusatzbetrÃ¤gen.
  */
 public class ZusatzbetraegeMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der ZusatzbetrÃ¤ge.
    */
   public ZusatzbetraegeMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
-    addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
+    addItem(new ZusatzbetragWiederholtItem("Vorheriges FÃ¤lligkeitsdatum",
         new ZusatzbetraegeVorherigeFaelligkeitAction(), "office-calendar.png"));
-    addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
+    addItem(new ZusatzbetragWiederholtItem("NÃ¤chstes FÃ¤lligkeitsdatum",
         new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
-    addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
+    addItem(new ZusatzbetragEinmaligItem("Erneut ausfÃ¼hren",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new ZusatzbetragDeleteAction(), "user-trash-full.png"));
     if (table != null)
     {

@@ -55,7 +55,7 @@ public class AfaUtil
       int anzahlBuchungen = 0;
       DBService service;
       Calendar calendar = Calendar.getInstance();
-      // Aktuelles Gesch‰ftsjahr bestimmen
+      // Aktuelles Gesch√§ftsjahr bestimmen
       calendar.setTime(aktuellesGJ.getBeginnGeschaeftsjahr());
       int ersterMonatAktuellesGJ = calendar.get(Calendar.MONTH);
       // AfA Buchungen zu Ende des aktuellen GJ
@@ -193,7 +193,7 @@ public class AfaUtil
         betrag = konto.getAfaStart();
         if ((buchwert - restbuchwert) < betrag)
           betrag = buchwert - restbuchwert;
-        buchung.setZweck("Anteilige Abschreibung f¸r " + monate + " Monate");
+        buchung.setZweck("Anteilige Abschreibung f√ºr " + monate + " Monate");
       }
       else
       {
@@ -301,11 +301,11 @@ public class AfaUtil
       {
         int months = getMonths(konto.getAnschaffung(),
             aktuellesGJ.getEndeGeschaeftsjahr());
-        zweck = "Anteilige Abschreibung f¸r " + months + " Monate";
+        zweck = "Anteilige Abschreibung f√ºr " + months + " Monate";
         betrag = Math.ceil((abbetrag / 12d) * months);
         double kosten = konto.getBetrag();
         // Nachkommastellen der Anschaffungskosten addieren, das ergiebt einen
-        // geraden Betrag f¸r den neuen Buchwert
+        // geraden Betrag f√ºr den neuen Buchwert
         betrag = betrag + (kosten - (int) kosten);
       }
 
@@ -355,7 +355,7 @@ public class AfaUtil
       if (!anfangsbestand.hasNext())
       {
         monitor.setStatusText("Konto " + konto.getNummer() + ": "
-            + "F¸r das Konto existiert kein Anfangsbestand f¸r das Gesch‰ftsjahr");
+            + "F√ºr das Konto existiert kein Anfangsbestand f√ºr das Gesch√§ftsjahr");
         return 0d;
       }
       else

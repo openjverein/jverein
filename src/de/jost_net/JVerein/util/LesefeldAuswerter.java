@@ -30,19 +30,19 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 
 /**
- * Bietet Funktionalität rund um Lesefelder.
+ * Bietet FunktionalitÃ¤t rund um Lesefelder.
  * 
- * Lesefelder werden durch Skripte konfiguriert. Jedes Skript kann für jedes
- * Mitglied aufgerufen werden und erstellt so für jedes Mitglied ein Feld, das
- * nur gelesen werden kann. Skripte können auf alle Daten des jeweiligen
+ * Lesefelder werden durch Skripte konfiguriert. Jedes Skript kann fÃ¼r jedes
+ * Mitglied aufgerufen werden und erstellt so fÃ¼r jedes Mitglied ein Feld, das
+ * nur gelesen werden kann. Skripte kÃ¶nnen auf alle Daten des jeweiligen
  * Mitgliedes zugreifen und diese weiterverarbeiten.
  * 
  * Beispiel: Skript: String mein_name = mitglied_vorname;
- * return(mein_name.substring(0, 3)); Ausgabe für Mitlied... Beate --> Bea
+ * return(mein_name.substring(0, 3)); Ausgabe fÃ¼r Mitlied... Beate --> Bea
  * Christian --> Chr
  * 
- * Die Daten des jeweiligen Mitgliedes müssen gesetzt werden mit: setMap()
- * Außerdem müssen die aktuellen Lesefelder-Skripte geladen werden. Dies
+ * Die Daten des jeweiligen Mitgliedes mÃ¼ssen gesetzt werden mit: setMap()
+ * AuÃŸerdem mÃ¼ssen die aktuellen Lesefelder-Skripte geladen werden. Dies
  * geschieht mit: setLesefelderDefinitions() oder
  * setLesefelderDefinitionsFromDatabase()
  * 
@@ -61,7 +61,7 @@ public class LesefeldAuswerter
 
   List<Lesefeld> lesefelder;
 
-  // Name des aktuellen Mitgliedes für Debug-Zwecke:
+  // Name des aktuellen Mitgliedes fÃ¼r Debug-Zwecke:
   String vornamename = "";
 
   /**
@@ -90,8 +90,8 @@ public class LesefeldAuswerter
 
   /**
    * Nimmt eine map mit Mitgliedsdaten entgegen und macht es dem Interpreter
-   * verfügbar. map enthält Zuordnung von Variablen-Name zu Variablen-Inhalt.
-   * map kann direkt von einem Mitglied-Objekt über die Funktion getMap(null,
+   * verfÃ¼gbar. map enthÃ¤lt Zuordnung von Variablen-Name zu Variablen-Inhalt.
+   * map kann direkt von einem Mitglied-Objekt Ã¼ber die Funktion getMap(null,
    * true) erhalten werden.
    * 
    * @param map
@@ -101,12 +101,12 @@ public class LesefeldAuswerter
   {
     vornamename = (String) map.get("mitglied_vornamename");
 
-    // Mache alle Variablen aus map in BeanScript verfügbar.
+    // Mache alle Variablen aus map in BeanScript verfÃ¼gbar.
     // '.', '-' und ' ' werden ersetzt durch '_'.
     for (String key : map.keySet())
     {
 
-      // TODO: gibt es noch mehr Zeichen, die ersetzt werden müssen?
+      // TODO: gibt es noch mehr Zeichen, die ersetzt werden mÃ¼ssen?
       String keyNormalized = key.replace("-", "_").replace(".", "_")
           .replace(" ", "_");
 
@@ -133,7 +133,7 @@ public class LesefeldAuswerter
   }
 
   /**
-   * Liest alle Lesefelder aus Datenbank um sie später wiederzuverwenden (z.B.
+   * Liest alle Lesefelder aus Datenbank um sie spÃ¤ter wiederzuverwenden (z.B.
    * von getLesefelderMap()).
    * 
    * @throws RemoteException
@@ -169,9 +169,9 @@ public class LesefeldAuswerter
   /**
    * Evaluiert alle Lesefelder-Definitionen, die mit
    * readLesefelderDefinitionsFromDatabase() oder setLesefelderDefinitions()
-   * gesetzt wurden. Dabei werden alle Mitglieder-Variablen berücksichtig, die
+   * gesetzt wurden. Dabei werden alle Mitglieder-Variablen berÃ¼cksichtig, die
    * vorher mit setMap() gesetzt wurden. Evaluation-Ausnahmen (EvalError) werden
-   * abgefangen und ignoriert (kein Eintrag in Rückgabe map)
+   * abgefangen und ignoriert (kein Eintrag in RÃ¼ckgabe map)
    * 
    * @return Liste von Mitglieder-Lesefelder-Variablen
    * @throws RemoteException
@@ -191,7 +191,7 @@ public class LesefeldAuswerter
           lesefeld.getEvaluatedContent());
     }
     Logger.debug(
-        String.format("Lesefeld-Variablen für Mitglied %s:", vornamename));
+        String.format("Lesefeld-Variablen fÃ¼r Mitglied %s:", vornamename));
     for (String key : map.keySet())
     {
       Logger.debug(key + "=" + map.get(key));
@@ -202,7 +202,7 @@ public class LesefeldAuswerter
   /**
    * Liefert geladene Lesefelder. Wurde keine geladen (mit
    * setLesefelderDefinitions*()-Funktionen, liefert getLesefelder() null
-   * zurück.
+   * zurÃ¼ck.
    * 
    * @return geladene Lesefelder.
    */
@@ -213,11 +213,11 @@ public class LesefeldAuswerter
 
   /**
    * Evaluiert Skript script. Dabei werden alle Mitglieder-Variablen
-   * berücksichtig, die vorher mit setMap() gesetzt wurden.
+   * berÃ¼cksichtig, die vorher mit setMap() gesetzt wurden.
    * 
    * @param script
    *          Auszuwertendes Skript.
-   * @return Ergebnis der Skript-Ausführung
+   * @return Ergebnis der Skript-AusfÃ¼hrung
    * @throws EvalError
    */
   public Object eval(String script) throws EvalError
@@ -228,7 +228,7 @@ public class LesefeldAuswerter
   /**
    * Wertet das Skript des Lesefeldes lesefeld aus und speichert den Inhalt in
    * lesefeld.evaluatedContent. Dabei werden alle Mitglieder-Variablen
-   * berücksichtig, die vorher mit setMap() gesetzt wurden.
+   * berÃ¼cksichtig, die vorher mit setMap() gesetzt wurden.
    * 
    * @param lesefeld
    *          Auszuwertendes Lesefeld
@@ -258,7 +258,7 @@ public class LesefeldAuswerter
   /**
    * Wertet Skripte aller geladenen Lesefelder aus und speichert den Inhalt
    * jeweils in lesefeld.evaluatedContent. Dabei werden alle
-   * Mitglieder-Variablen berücksichtig, die vorher mit setMap() gesetzt wurden.
+   * Mitglieder-Variablen berÃ¼cksichtig, die vorher mit setMap() gesetzt wurden.
    * 
    * @throws RemoteException
    */

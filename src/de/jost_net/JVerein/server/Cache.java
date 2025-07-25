@@ -122,7 +122,7 @@ class Cache
       }
       caches.put(type, cache);
     }
-    cache.touch(); // hier nötig wenn das erstellen des Caches lange gedauert
+    cache.touch(); // hier nÃ¶tig wenn das erstellen des Caches lange gedauert
                    // hat
     return cache;
   }

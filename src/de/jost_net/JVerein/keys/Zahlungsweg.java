@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schlüssel Zahlungsweg
+ * SchlÃ¼ssel Zahlungsweg
  */
 public class Zahlungsweg
 {
@@ -28,7 +28,7 @@ public class Zahlungsweg
 
   public static final int BASISLASTSCHRIFT = 1;
 
-  public static final int ÜBERWEISUNG = 2;
+  public static final int ÃœBERWEISUNG = 2;
 
   public static final int BARZAHLUNG = 3;
 
@@ -59,8 +59,8 @@ public class Zahlungsweg
         return "Standard";
       case BASISLASTSCHRIFT:
         return "Basislastschrift";
-      case ÜBERWEISUNG:
-        return "Überweisung";
+      case ÃœBERWEISUNG:
+        return "Ãœberweisung";
       case BARZAHLUNG:
         return "Barzahlung";
       case VOLLZAHLER:
@@ -74,7 +74,7 @@ public class Zahlungsweg
   {
     ArrayList<Zahlungsweg> ret = new ArrayList<>();
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
-    ret.add(new Zahlungsweg(ÜBERWEISUNG));
+    ret.add(new Zahlungsweg(ÃœBERWEISUNG));
     ret.add(new Zahlungsweg(BARZAHLUNG));
     if (mitVollzahler)
       ret.add(new Zahlungsweg(VOLLZAHLER));

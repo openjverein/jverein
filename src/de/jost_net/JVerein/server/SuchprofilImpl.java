@@ -58,7 +58,7 @@ public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
     {
       if (getInhalt() == null)
       {
-        throw new ApplicationException("Bitte gültigen Dateinamen angeben!");
+        throw new ApplicationException("Bitte gÃ¼ltigen Dateinamen angeben!");
       }
     }
     catch (RemoteException e)

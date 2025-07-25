@@ -79,7 +79,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl
   @Override
   public String getName()
   {
-    return "Datenbank-Service für JVerein";
+    return "Datenbank-Service fÃ¼r JVerein";
   }
 
   @Override
@@ -187,7 +187,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl
   // .getPlugin(JVereinPlugin.class).getResources().getI18N();
   // ProgressMonitor monitor = Application.getCallback().getStartupMonitor();
   // monitor.setStatusText(i18n.tr(
-  // "Führe JVerein-Update durch: von {0} zu {1}", new String[] {
+  // "FÃ¼hre JVerein-Update durch: von {0} zu {1}", new String[] {
   // df.format(oldVersion), df.format(newVersion) }));
   //
   // this.driver.execute(getConnection(), f);

@@ -45,8 +45,8 @@ public class LastschriftListeView extends AbstractView
     left.addInput(control.getMitgliedArt());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Fälligkeit von", control.getDatumvon());
-    right.addLabelPair("Fälligkeit bis", control.getDatumbis());
+    right.addLabelPair("FÃ¤lligkeit von", control.getDatumvon());
+    right.addLabelPair("FÃ¤lligkeit bis", control.getDatumbis());
     right.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
 
     ButtonArea fbuttons = new ButtonArea();
@@ -59,8 +59,8 @@ public class LastschriftListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor.setToolTipText("Datumsbereich vowÃ¤rts");
 
     control.getLastschriftList().paint(this.getParent());
 

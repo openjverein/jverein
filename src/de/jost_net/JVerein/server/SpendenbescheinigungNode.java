@@ -59,13 +59,13 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   private int nodetype = NONE;
 
   /**
-   * Selektiert über die Buchungen mit einer Buchungsart, die als Spende
+   * Selektiert Ã¼ber die Buchungen mit einer Buchungsart, die als Spende
    * markiert ist, alle Mitglieder, die eine Buchung in Sollbuchung eingetragen
-   * haben. Die Buchungen dürfen noch nicht auf einer Spendenbescheinigung
+   * haben. Die Buchungen dÃ¼rfen noch nicht auf einer Spendenbescheinigung
    * eingetragen sein. Es werden nur die Mitglieder selektiert, bei denen auch
-   * eine Adresse (Straße, PLZ, Ort) eingetragen ist. Zusätzlich muss die Summe
-   * der Buchungen größer gleich dem in den Einstellungen hinterlegten
-   * Mindestbetrag für Spendenbescheinigungen sein.
+   * eine Adresse (StraÃŸe, PLZ, Ort) eingetragen ist. ZusÃ¤tzlich muss die Summe
+   * der Buchungen grÃ¶ÃŸer gleich dem in den Einstellungen hinterlegten
+   * Mindestbetrag fÃ¼r Spendenbescheinigungen sein.
    * 
    * @param jahr
    *          Das Jahr der Buchung
@@ -122,7 +122,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
 
   /**
    * Selektiert zu einem Mitglied die Buchungen mit einer Buchungsart, die als
-   * Spende markiert sind. Die Buchungen dürfen noch nicht auf einer
+   * Spende markiert sind. Die Buchungen dÃ¼rfen noch nicht auf einer
    * Spendenbescheinigung eingetragen sein.
    * 
    * @param mitglied

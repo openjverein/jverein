@@ -63,7 +63,7 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
           + "(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0 "
           + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
           + "CAST(buchung.betrag * 100 / (100 + "
-          // Anlagenkonto immer Bruttobeträge.
+          // Anlagenkonto immer BruttobetrÃ¤ge.
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
@@ -76,7 +76,7 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
           + "(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0 "
           + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
           + "CAST(buchung.betrag * 100 / (100 + "
-          // Anlagenkonto immer Bruttobeträge.
+          // Anlagenkonto immer BruttobetrÃ¤ge.
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"

@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -39,11 +39,11 @@ public class Update0439 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Diese Migration ist für den Fall, dass die korrigierte Migration
-    // Update0430 nicht ausgefürt wird weil schon mit der alten Version
+    // Diese Migration ist fÃ¼r den Fall, dass die korrigierte Migration
+    // Update0430 nicht ausgefÃ¼rt wird weil schon mit der alten Version
     // migriert wurde z.B. mit einem Nightly Build.
-    // Weil wegen gelöschter Buchungsklassen die Integrität verletzt sein
-    // könnte, muss der Foreign Key mit NOCHECK erzeugt werden
+    // Weil wegen gelÃ¶schter Buchungsklassen die IntegritÃ¤t verletzt sein
+    // kÃ¶nnte, muss der Foreign Key mit NOCHECK erzeugt werden
 
     createForeignKeyIfNotExistsNocheck("fkKonto1", "konto", "buchungsart",
         "buchungsart", "id", "SET NULL", "NO ACTION");

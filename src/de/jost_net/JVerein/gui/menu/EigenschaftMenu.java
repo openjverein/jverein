@@ -38,7 +38,7 @@ public class EigenschaftMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(EigenschaftDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new EigenschaftDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new EigenschaftDeleteAction(),
         "user-trash-full.png"));
   }
 }

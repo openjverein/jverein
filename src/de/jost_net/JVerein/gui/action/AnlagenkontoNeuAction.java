@@ -37,7 +37,7 @@ public class AnlagenkontoNeuAction implements Action
 
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewÃ¤hlt");
     }
     Buchung buchung = (Buchung) context;
     Konto konto = null;
@@ -50,7 +50,7 @@ public class AnlagenkontoNeuAction implements Action
 
       if (konto != null && !konto.isNewObject())
       {
-        // Anfangsbestand von 0 für das Anlagegut erstellen.
+        // Anfangsbestand von 0 fÃ¼r das Anlagegut erstellen.
         Anfangsbestand anf = (Anfangsbestand) Einstellungen.getDBService()
             .createObject(Anfangsbestand.class, null);
         anf.setKonto(konto);
@@ -64,7 +64,7 @@ public class AnlagenkontoNeuAction implements Action
             .createObject(Buchung.class, null);
         bu.setKonto(konto);
         bu.setName(buchung.getName());
-        // Als Betrag müssen wir den Nettobetrag nehmen.
+        // Als Betrag mÃ¼ssen wir den Nettobetrag nehmen.
         bu.setBetrag(-buchung.getNetto());
         bu.setZweck(buchung.getZweck());
         bu.setDatum(buchung.getDatum());

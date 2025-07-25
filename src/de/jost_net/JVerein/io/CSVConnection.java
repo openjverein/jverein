@@ -193,7 +193,7 @@ public class CSVConnection
     {
       Logger.error("Fehler", e);
       throw new SQLException(
-          "Konnte Anzahl Daten nicht ermitteln - Häufiger Grund eine Leerstelle vor/nach einen Semikolon, siehe Stacktrace wegen der Zeile");
+          "Konnte Anzahl Daten nicht ermitteln - HÃ¤ufiger Grund eine Leerstelle vor/nach einen Semikolon, siehe Stacktrace wegen der Zeile");
     }
     return result;
   }

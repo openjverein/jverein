@@ -35,7 +35,7 @@ public class MitgliedInput
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-        // Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
+        // Hole alle Mitglieder aus Datenbank um sie spÃ¤ter anzuzeigen.
         DBIterator<Mitglied> it = Einstellungen.getDBService()
             .createList(Mitglied.class);
         it.setOrder("order by name, vorname");
@@ -44,7 +44,7 @@ public class MitgliedInput
         {
           mitgliederList.add(it.next());
         }
-        // Das erste Mitglied wird ausgewählt wenn nichts übergeben
+        // Das erste Mitglied wird ausgewÃ¤hlt wenn nichts Ã¼bergeben
         Mitglied selectedMitglied = mitglied;
         if (selectedMitglied == null && !mitgliederList.isEmpty())
         {

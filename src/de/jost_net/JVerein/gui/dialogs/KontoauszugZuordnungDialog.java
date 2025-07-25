@@ -71,12 +71,12 @@ public class KontoauszugZuordnungDialog extends AbstractDialog<Object>
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Auszug", getAuszugsnummer());
     group.addLabelPair("Blatt", getBlattnummer());
-    group.addLabelPair("Kontoauszugsinformationen überschreiben",
+    group.addLabelPair("Kontoauszugsinformationen Ã¼berschreiben",
         getUeberschreiben());
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Übernehmen", new Action()
+    buttons.addButton("Ãœbernehmen", new Action()
     {
 
       @Override

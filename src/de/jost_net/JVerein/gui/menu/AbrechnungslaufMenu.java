@@ -35,13 +35,13 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Abrechnungsl‰ufen
+ * Kontext-Menu zu den Abrechnungsl√§ufen
  */
 public class AbrechnungslaufMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Abrechnungl‰ufe
+   * Erzeugt ein Kontext-Menu fuer die Liste der Abrechnungl√§ufe
    */
   public AbrechnungslaufMenu(JVereinTablePart part)
   {
@@ -53,14 +53,14 @@ public class AbrechnungslaufMenu extends ContextMenu
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new AbgeschlossenDisabledItem("Lˆschen",
+    addItem(new AbgeschlossenDisabledItem("L√∂schen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
-        addItem(new AbgeschlossenDisabledItem("Abschlieﬂen",
+        addItem(new AbgeschlossenDisabledItem("Abschlie√üen",
             new AbrechnungslaufAbschliessenAction(), "lock.png"));
       }
     }

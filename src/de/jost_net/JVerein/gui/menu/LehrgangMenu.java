@@ -27,19 +27,19 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
- * Kontext-Menu zu den Lehrgängen
+ * Kontext-Menu zu den LehrgÃ¤ngen
  */
 public class LehrgangMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Lehrgänge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der LehrgÃ¤nge.
    */
   public LehrgangMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(LehrgangDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new LehrgangDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new LehrgangDeleteAction(),
         "user-trash-full.png"));
     if (part != null)
     {

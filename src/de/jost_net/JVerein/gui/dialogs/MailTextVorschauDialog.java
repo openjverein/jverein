@@ -112,7 +112,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       mitglied.addListener(new MitgliedListener());
       if (mitglied instanceof SelectInput)
       {
-        ((SelectInput) mitglied).setPleaseChoose("Optional ausw‰hlen");
+        ((SelectInput) mitglied).setPleaseChoose("Optional ausw√§hlen");
         ((SelectInput) mitglied).setPreselected(null);
       }
       container.addLabelPair("Mitglied", mitglied);
@@ -127,7 +127,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       {
         mitglied.disable();
       }
-      container.addLabelPair("Empf‰nger", mitglied);
+      container.addLabelPair("Empf√§nger", mitglied);
     }
 
     betreff = new TextInput(em.evalBetreff(betreffString));
@@ -138,7 +138,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     container.addLabelPair("Text", text);
 
     ButtonArea b = new ButtonArea();
-    b.addButton("Schlieﬂen", context -> close(), null, false,
+    b.addButton("Schlie√üen", context -> close(), null, false,
         "process-stop.png");
     b.paint(parent);
 

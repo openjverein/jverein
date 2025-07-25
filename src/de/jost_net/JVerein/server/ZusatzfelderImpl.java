@@ -229,7 +229,7 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
         case Datentyp.ZEICHENFOLGE:
           return getFeld();
         default:
-          return "ungültiger Datentyp";
+          return "ungÃ¼ltiger Datentyp";
       }
     }
     catch (RemoteException e)

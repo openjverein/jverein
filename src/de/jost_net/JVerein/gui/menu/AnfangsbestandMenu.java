@@ -27,19 +27,19 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Anfangsbeständen.
+ * Kontext-Menu zu den AnfangsbestÃ¤nden.
  */
 public class AnfangsbestandMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der ZusatzbetrÃ¤ge.
    */
   public AnfangsbestandMenu()
   {
     addItem(new SingleAnfangsbestandItem("Bearbeiten",
         new AnfangsbestandDetailAction(), "text-x-generic.png"));
-    addItem(new SingleAnfangsbestandItem("Löschen",
+    addItem(new SingleAnfangsbestandItem("LÃ¶schen",
         new AnfangsbestandDeleteAction(), "user-trash-full.png"));
   }
 

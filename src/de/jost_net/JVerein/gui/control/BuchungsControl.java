@@ -159,7 +159,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private TextAreaInput kommentar;
 
-  // Definition für beide Auswahlvarianten (SelectInput und
+  // Definition fÃ¼r beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
 
@@ -217,7 +217,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public enum Kontenfilter
   {
-    GELDKONTO, // Beinhaltet Rückstellungen
+    GELDKONTO, // Beinhaltet RÃ¼ckstellungen
     ANLAGEKONTO,
     ALLE
   }
@@ -332,7 +332,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     else
     {
-      // Nötig um für den Check den letzten gesetzten Wert zu löschen
+      // NÃ¶tig um fÃ¼r den Check den letzten gesetzten Wert zu lÃ¶schen
       b.setBetragNull();
     }
     b.setZweck((String) getZweck().getValue());
@@ -493,7 +493,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     Date d = getBuchung().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     datum.setMandatory(true);
     return datum;
   }
@@ -776,7 +776,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         getBuchung().getProjekt());
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
-    projekt.setPleaseChoose("Bitte auswählen");
+    projekt.setPleaseChoose("Bitte auswÃ¤hlen");
     return projekt;
   }
 
@@ -800,7 +800,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public Button getSammelueberweisungButton()
   {
-    sammelueberweisungButton = new Button("Sammelüberweisung", new Action()
+    sammelueberweisungButton = new Button("SammelÃ¼berweisung", new Action()
     {
 
       @Override
@@ -891,7 +891,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     suchprojekt = new SelectInput(projektliste, p);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
-    suchprojekt.setPleaseChoose("Keine Einschränkung");
+    suchprojekt.setPleaseChoose("Keine EinschrÃ¤nkung");
     return suchprojekt;
   }
 
@@ -1001,7 +1001,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum");
-    this.vondatum.setText("Bitte Anfangsdatum wählen");
+    this.vondatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.vondatum.setMandatory(true);
     return vondatum;
   }
@@ -1029,7 +1029,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Anfangsdatum");
-    this.bisdatum.setText("Bitte Anfangsdatum wählen");
+    this.bisdatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.bisdatum.setMandatory(true);
     return bisdatum;
   }
@@ -1165,7 +1165,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         b.plausi();
         SplitbuchungsContainer.add(b);
-        GUI.getStatusBar().setSuccessText("Buchung übernommen");
+        GUI.getStatusBar().setSuccessText("Buchung Ã¼bernommen");
       }
     }
     catch (RemoteException ex)
@@ -1208,7 +1208,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       if (konto == null)
       {
         throw new ApplicationException(
-            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+            "Kein Konto AusgewÃ¤hlt. Ggfs. erst unter BuchfÃ¼hrung->Konten ein Konto anlegen.");
       }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
@@ -1237,7 +1237,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewähltes Projekt kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hltes Projekt kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1255,7 +1255,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1276,7 +1276,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1286,7 +1286,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   {
     params = new TreeMap<>();
 
-    // Werte speichern und Parameter füllen
+    // Werte speichern und Parameter fÃ¼llen
     Date dv = null;
     if (isVondatumAktiv())
     {
@@ -1380,7 +1380,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
       if (ungeprueft)
       {
-        params.put("Nur ungeprüfte ", ungeprueft.toString());
+        params.put("Nur ungeprÃ¼fte ", ungeprueft.toString());
       }
     }
     String suchtext = null;
@@ -1456,7 +1456,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList = new BuchungListTablePart(buchungen,
           new BuchungAction(false, null));
       buchungsList.addColumn("Nr", "id-int");
-      buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
+      buchungsList.addColumn("GeprÃ¼ft", "geprueft", new Formatter()
       {
         @Override
         public String format(Object o)
@@ -1721,7 +1721,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -1759,7 +1759,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       final List<Buchung> buchungen = query.get();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -1830,14 +1830,14 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
           BuchungsjournalSortDialog.POSITION_CENTER);
 
-      // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
+      // 20220823: sbuer: Statische Variablen fuer neue SortiermÃ¶glichkeiten
       String sort = djs.open();
       if (djs.getClosed())
         return;
       query.setOrdername(sort);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -2037,7 +2037,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Status der aktuellen Buchung kann nicht geprüft werden.", e);
+          "Status der aktuellen Buchung kann nicht geprÃ¼ft werden.", e);
     }
     return true;
   }
@@ -2077,7 +2077,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Status der aktuellen Buchung kann nicht geprüft werden.", e);
+          "Status der aktuellen Buchung kann nicht geprÃ¼ft werden.", e);
     }
     return false;
   }

@@ -53,7 +53,7 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück, Meier, Dr. Willi
+   * Gibt den Namen aufbereitet zurÃ¼ck, Meier, Dr. Willi
    */
   public static String getNameVorname(IAdresse adr) throws RemoteException
   {
@@ -67,7 +67,7 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück, Nr. - Meier, Dr. Willi
+   * Gibt den Namen aufbereitet zurÃ¼ck, Nr. - Meier, Dr. Willi
    */
   public static String getIdNameVorname(Mitglied mitglied)
       throws RemoteException
@@ -84,7 +84,7 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück: Dr. Willi Meier
+   * Gibt den Namen aufbereitet zurÃ¼ck: Dr. Willi Meier
    */
   public static String getVornameName(IAdresse adr) throws RemoteException
   {

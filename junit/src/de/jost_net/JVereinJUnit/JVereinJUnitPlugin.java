@@ -19,7 +19,7 @@ package de.jost_net.JVereinJUnit;
 import de.willuhn.jameica.plugin.AbstractPlugin;
 
 /**
- * Launcher für das JVerein-JUnit-Test-Plugin.
+ * Launcher fÃ¼r das JVerein-JUnit-Test-Plugin.
  */
 public class JVereinJUnitPlugin extends AbstractPlugin
 {

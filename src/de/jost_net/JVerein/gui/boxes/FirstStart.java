@@ -129,7 +129,7 @@ public class FirstStart extends AbstractBox
       desc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
       desc.setText("Die allgemeinen Daten des Vereins "
           + "(Name, eigene Bankverbindung) sowie Parameter zur Steuerung des Verhaltens von JVerein "
-          + "sind in den Einstellungen zu erfassen. Außerdem müssen Beitragsgruppen erfasst werden. ");
+          + "sind in den Einstellungen zu erfassen. AuÃŸerdem mÃ¼ssen Beitragsgruppen erfasst werden. ");
     }
 
     ButtonArea buttons = new ButtonArea();

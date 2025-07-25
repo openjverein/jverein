@@ -281,12 +281,12 @@ public class BuchungQuery
             it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSER:
+          case GRÃ–SSER:
           {
             it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSERGLEICH:
+          case GRÃ–SSERGLEICH:
           {
             it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
             break;
@@ -366,7 +366,7 @@ public class BuchungQuery
         new JVDateFormatTTMMJJJJ().format(getDatumbis()));
     if (getKonto() != null)
     {
-      subtitle += " " + String.format("für Konto %s - %s",
+      subtitle += " " + String.format("fÃ¼r Konto %s - %s",
           getKonto().getNummer(), getKonto().getBezeichnung());
     }
     if (getProjekt() != null)

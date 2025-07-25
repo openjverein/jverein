@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.control.listener;
 
 /**
  * Der Listener wird aufgerufen, wenn eine Tree-Spalte/-Zelle bearbeitet werden
- * soll. Wenn der Listener <code>false</code> zurück gibt, wird das Bearbeiten
+ * soll. Wenn der Listener <code>false</code> zurÃ¼ck gibt, wird das Bearbeiten
  * abgebrochen.
  */
 public interface TreeEditListener

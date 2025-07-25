@@ -71,7 +71,7 @@ public class MitgliedVCardQRCodeAction implements Action
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (OperationCanceledException oce)

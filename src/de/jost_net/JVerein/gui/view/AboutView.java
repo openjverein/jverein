@@ -43,7 +43,7 @@ public class AboutView extends AbstractDialog<Object>
   {
     super(position);
     this.setSize(460, SWT.DEFAULT);
-    this.setTitle("‹ber");
+    this.setTitle("√úber");
   }
 
   @Override
@@ -55,7 +55,7 @@ public class AboutView extends AbstractDialog<Object>
     SimpleContainer container = new SimpleContainer(parent);
     FormTextPart text = new FormTextPart();
     text.setText("<form>"
-        + "<p><b>Plugin f¸r die Vereinsverwaltung unter Jameica</b></p>"
+        + "<p><b>Plugin f√ºr die Vereinsverwaltung unter Jameica</b></p>"
         + "<p>Lizenz: GPLv3 https://www.gnu.org/licenses/gpl-3.0.html</p>"
         + "<p>Web: https://openjverein.github.io</p>"
         + "<p>Forum: https://jverein-forum.de</p>"
@@ -86,7 +86,7 @@ public class AboutView extends AbstractDialog<Object>
         new LabelInput("" + p.getResources().getWorkPath()));
 
     ButtonArea buttons = group.createButtonArea(1);
-    buttons.addButton(i18n.tr("Schlieﬂen"), new Action()
+    buttons.addButton(i18n.tr("Schlie√üen"), new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -106,6 +106,6 @@ public class AboutView extends AbstractDialog<Object>
 
   public String getHelp()
   {
-    return "<form><p><span color=\"header\" font=\"header\">‹ber</span></p></form>";
+    return "<form><p><span color=\"header\" font=\"header\">√úber</span></p></form>";
   }
 }

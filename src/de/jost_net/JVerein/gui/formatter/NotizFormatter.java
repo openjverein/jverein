@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -27,7 +27,7 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 
 /**
  * Formatieren von einer mehrzeiligen Notiz zur Anzeige in einer Listenspalte.
- * Es wird nur die erste Zeile angezeigt, zusätzlich kann die maximale Länge (in
+ * Es wird nur die erste Zeile angezeigt, zusÃ¤tzlich kann die maximale LÃ¤nge (in
  * Zeichen) angegeben werden. Sind mehr Zeichen vorhanden, wird ein
  * Ellipsis-Zeichen zur Markierung der Auslassung angezeigt.
  * 
@@ -55,7 +55,7 @@ public class NotizFormatter implements Formatter
     String[] lines = notiz.split("\r?\n|\r");
     if ((maxlength != null) && (lines[0].length() > maxlength))
     {
-      // Abschneiden und Ellipsis anhängen
+      // Abschneiden und Ellipsis anhÃ¤ngen
       return lines[0].substring(0, maxlength - 1) + "\u2026";
     }
     if (lines.length > 1)

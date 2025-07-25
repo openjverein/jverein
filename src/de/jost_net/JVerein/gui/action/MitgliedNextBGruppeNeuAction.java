@@ -46,7 +46,7 @@ public class MitgliedNextBGruppeNeuAction implements Action
       if (mitglied.isNewObject())
       {
         GUI.getView().setErrorText(
-            "Bitte erst das Mitglied speichern bevor eine n‰chste Beitragsgruppe angelegt werden kann!");
+            "Bitte erst das Mitglied speichern bevor eine n√§chste Beitragsgruppe angelegt werden kann!");
       }
       else
       {

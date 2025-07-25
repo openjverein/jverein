@@ -10,8 +10,8 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBObject;
 
 /**
- * Hilfsobjekt für den ExtendedDBIterator. Dieses Object enthält alle geholten
- * Attribute. diese können mittels <code>getAttribute("name")</code>,
+ * Hilfsobjekt fÃ¼r den ExtendedDBIterator. Dieses Object enthÃ¤lt alle geholten
+ * Attribute. diese kÃ¶nnen mittels <code>getAttribute("name")</code>,
  * <code>getDouble("name")</code> oder <code>getInteger("name")</code> geholt
  * werden.
  */

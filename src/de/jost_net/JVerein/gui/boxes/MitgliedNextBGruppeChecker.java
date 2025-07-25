@@ -75,7 +75,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim löschen ", e);
+      Logger.error("Fehler beim lÃ¶schen ", e);
       e.printStackTrace();
     }
     isAktiv = mussMitgliedGeaendertWerden();
@@ -137,7 +137,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
         "Mitgliederdaten wollen angepasst werden:", true);
     labelGroup.addPart(getListeZuAendern());
     ButtonArea buttonArea = new ButtonArea();
-    buttonArea.addButton(new Button("Alle Änderungen durchführen",
+    buttonArea.addButton(new Button("Alle Ã„nderungen durchfÃ¼hren",
         new AlleAenderungenDurchfuehrenAction(), null, false, "ok.png"));
     labelGroup.addButtonArea(buttonArea);
   }
@@ -183,10 +183,10 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     public ListenContextMenu()
     {
-      addItem(new CheckedContextMenuItem("Änderung durchführen",
+      addItem(new CheckedContextMenuItem("Ã„nderung durchfÃ¼hren",
           new AenderungDurchfuehrenAction()));
       addItem(ContextMenuItem.SEPARATOR);
-      addItem(new ContextMenuItem("Alle Änderungen durchführen",
+      addItem(new ContextMenuItem("Alle Ã„nderungen durchfÃ¼hren",
           new AlleAenderungenDurchfuehrenAction()));
     }
   }
@@ -197,7 +197,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     public void handleAction(Object context) throws ApplicationException
     {
       if (context == null || !(context instanceof MitgliedNextBGruppe))
-        throw new ApplicationException("Keine Beitragsgruppe ausgewählt");
+        throw new ApplicationException("Keine Beitragsgruppe ausgewÃ¤hlt");
 
       aendernMitglied((MitgliedNextBGruppe) context);
     }
@@ -219,7 +219,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     {
       String name = (String) mitgliedBeitraege
           .getAttribute(MitgliedNextBGruppe.VIEW_NAME_VORNAME);
-      if (fragen("Soll Beitragsgruppe geändert werden für " + name))
+      if (fragen("Soll Beitragsgruppe geÃ¤ndert werden fÃ¼r " + name))
       {
         startTransaktion();
 
@@ -231,8 +231,8 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     catch (RemoteException ex)
     {
       rollbackTransaktion();
-      Logger.error("Ein Mitglied kann nicht geändert werden", ex);
-      throw new ApplicationException("Änderung kann nicht durchgeführt werden",
+      Logger.error("Ein Mitglied kann nicht geÃ¤ndert werden", ex);
+      throw new ApplicationException("Ã„nderung kann nicht durchgefÃ¼hrt werden",
           ex);
     }
     catch (ApplicationException ex)
@@ -246,7 +246,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     try
     {
-      if (fragen("Sollen alle gezeigten Mitglieder geändert werden ?"))
+      if (fragen("Sollen alle gezeigten Mitglieder geÃ¤ndert werden ?"))
       {
         startTransaktion();
 
@@ -263,8 +263,8 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     catch (RemoteException ex)
     {
       rollbackTransaktion();
-      Logger.error("Mitglieder können nicht geändert werden", ex);
-      throw new ApplicationException("Änderung kann nicht durchgeführt werden",
+      Logger.error("Mitglieder kÃ¶nnen nicht geÃ¤ndert werden", ex);
+      throw new ApplicationException("Ã„nderung kann nicht durchgefÃ¼hrt werden",
           ex);
     }
     catch (ApplicationException ex)
@@ -279,7 +279,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     try
     {
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Beitragsgruppe ändern");
+      d.setTitle("Beitragsgruppe Ã¤ndern");
       d.setText(text);
       Boolean choice = (Boolean) d.open();
       return choice.booleanValue();
@@ -288,7 +288,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     {
       Logger.error("YesNoDialog kann nicht gestartet werden", ex);
       throw new ApplicationException(
-          "Fehler in der Benutzerschnittstelle. Aktion kann nicht durchgeführt werden",
+          "Fehler in der Benutzerschnittstelle. Aktion kann nicht durchgefÃ¼hrt werden",
           ex);
     }
   }
@@ -298,7 +298,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
   {
     Mitglied mitglied = mitgliedBeitraege.getMitglied();
     Beitragsgruppe beitragsGruppe = mitgliedBeitraege.getBeitragsgruppe();
-    // Wenn es bisher ein angehöriger war und jetzt nicht mehr zahlerid
+    // Wenn es bisher ein angehÃ¶riger war und jetzt nicht mehr zahlerid
     // entfernen
     if (mitglied.getBeitragsgruppe()
         .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
@@ -306,7 +306,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
             .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       mitglied.setVollZahlerID(null);
-      // Bei Zahlung über Vollzahler Zahlungsweg umstellen
+      // Bei Zahlung Ã¼ber Vollzahler Zahlungsweg umstellen
       if (mitglied.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
         mitglied.setZahlungsweg(
             (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
@@ -365,7 +365,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     catch (RemoteException ex)
     {
       throw new ApplicationException(
-          "Transaktion kann nicht zurück gerollt werden", ex);
+          "Transaktion kann nicht zurÃ¼ck gerollt werden", ex);
     }
   }
 }

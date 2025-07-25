@@ -48,7 +48,7 @@ public class QRCodeImageDialog extends AbstractDialog<Object>
   {
     image.paint(parent);
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Schlieﬂen", new Action()
+    buttons.addButton("Schlie√üen", new Action()
     {
       @Override
       public void handleAction(Object context)

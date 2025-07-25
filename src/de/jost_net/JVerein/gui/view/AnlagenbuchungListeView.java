@@ -100,8 +100,8 @@ public class AnlagenbuchungListeView extends AbstractView
     }, null, true, "search.png");
     buttons1.addButton(suchen);
     tabAllgemein.addButtonArea(buttons1);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor.setToolTipText("Datumsbereich vowÃ¤rts");
 
     // Zweiter Tab
     final BuchungsHeaderControl headerControl = new BuchungsHeaderControl(this,

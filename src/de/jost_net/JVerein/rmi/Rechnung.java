@@ -33,8 +33,8 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public void setFormular(Formular formular) throws RemoteException;
 
   /**
-   * Füllt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
-   * Formular müssen selbst hinzugefügt werden
+   * FÃ¼llt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
+   * Formular mÃ¼ssen selbst hinzugefÃ¼gt werden
    * 
    * @param mk
    *          die Sollbuchung aus der eine Rechnung erstellt werden soll

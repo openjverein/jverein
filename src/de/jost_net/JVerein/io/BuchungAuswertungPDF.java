@@ -148,7 +148,7 @@ public class BuchungAuswertungPDF
             || nichtLeer;
       }
       // Buchungen ohne Buchungsarten, wenn explizite Buchungsart angegeben ist,
-      // dann nur wenn auch ohne Buchungsart ausgew‰hlt ist (ID == null)
+      // dann nur wenn auch ohne Buchungsart ausgew√§hlt ist (ID == null)
       if (query.getBuchungsart() == null || (query.getBuchungsart() != null
           && query.getBuchungsart().getID() == null))
       {

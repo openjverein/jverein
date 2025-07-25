@@ -67,7 +67,7 @@ public class MitgliedNextBGruppePart implements Part
 
     tab = new TabFolder(cont.getComposite(), SWT.NONE);
     tab.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    TabGroup tg1 = new TabGroup(tab, "Zukünftige Beitragsgruppen");
+    TabGroup tg1 = new TabGroup(tab, "ZukÃ¼nftige Beitragsgruppen");
 
     control.getMitgliedBeitraegeTabelle().paint(tg1.getComposite());
   }

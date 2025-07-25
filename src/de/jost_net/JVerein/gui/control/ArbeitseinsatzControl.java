@@ -191,7 +191,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
 
     suchjahr = new SelectInput(jahre, settings.getInt("jahr", jahre.get(0)));
-    // suchjahr.setPleaseChoose("Bitte ausw‰hlen");
+    // suchjahr.setPleaseChoose("Bitte ausw√§hlen");
     suchjahr.setPreselected(settings.getInt("jahr", bis.get(Calendar.YEAR)));
     suchjahr.addListener(new FilterListener());
     return suchjahr;
@@ -213,7 +213,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatz¸berpr¸fung");
+              "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatz√ºberpr√ºfung");
         }
       }
     }, null, false, "file-pdf.png");
@@ -236,7 +236,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatz¸berpr¸fung");
+              "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatz√ºberpr√ºfung");
         }
       }
     }, null, false, "xsd.png");
@@ -245,7 +245,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
 
   public Button getArbeitseinsatzAusgabeButton()
   {
-    Button b = new Button("Zusatzbetr‰ge generieren", new Action()
+    Button b = new Button("Zusatzbetr√§ge generieren", new Action()
     {
 
       @Override
@@ -269,7 +269,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   private void startePDFAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -305,7 +305,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
         {
           FileOutputStream fos = new FileOutputStream(file);
           Reporter reporter = new Reporter(fos,
-              String.format("Arbeitseins‰tze %d", jahr), sub, it.size());
+              String.format("Arbeitseins√§tze %d", jahr), sub, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Sollstunden", Element.ALIGN_RIGHT, 30,
@@ -372,7 +372,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   private void starteCSVAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -494,7 +494,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
             zb.store();
           }
-          GUI.getStatusBar().setSuccessText("Liste Arbeitseins‰tze gestartet");
+          GUI.getStatusBar().setSuccessText("Liste Arbeitseins√§tze gestartet");
           GUI.getCurrentView().reload();
         }
         catch (Exception e)

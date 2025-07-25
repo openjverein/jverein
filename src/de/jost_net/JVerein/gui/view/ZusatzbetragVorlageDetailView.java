@@ -38,10 +38,10 @@ public class ZusatzbetragVorlageDetailView extends AbstractDetailView
     control = new ZusatzbetragVorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
-    group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));
-    group.addLabelPair("Nächste Fälligkeit", control.getFaelligkeit());
+    group.addLabelPair("Erste FÃ¤lligkeit ", control.getStartdatum(true));
+    group.addLabelPair("NÃ¤chste FÃ¤lligkeit", control.getFaelligkeit());
     group.addLabelPair("Intervall", control.getIntervall());
-    group.addLabelPair("Nicht mehr ausführen ab", control.getEndedatum());
+    group.addLabelPair("Nicht mehr ausfÃ¼hren ab", control.getEndedatum());
     group.addLabelPair("Buchungstext", control.getBuchungstext());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());

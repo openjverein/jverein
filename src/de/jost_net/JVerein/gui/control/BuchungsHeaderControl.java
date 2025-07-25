@@ -81,7 +81,7 @@ public class BuchungsHeaderControl extends AbstractControl
 
       it.join("anfangsbestand", "anfangsbestand.konto = konto.id");
 
-      // Hier müssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
+      // Hier mÃ¼ssen wir zwischen H2 und MySQL unterscheiden, da es nicht die
       // gleichen Funktionen gibt
       String filter = "konto.id = buchung.konto AND buchung.datum >= anfangsbestand.datum";
       if (JVereinDBService.SETTINGS.getString("database.driver", "h2")

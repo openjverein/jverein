@@ -35,7 +35,7 @@ public class ArbeitseinsatzListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Arbeitseins‰tze");
+    GUI.getView().setTitle("Arbeitseins√§tze");
 
     final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
 
@@ -60,8 +60,8 @@ public class ArbeitseinsatzListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zur¸ck");
-    vor.setToolTipText("Datumsbereich vow‰rts");
+    zurueck.setToolTipText("Datumsbereich zur√ºck");
+    vor.setToolTipText("Datumsbereich vow√§rts");
 
     control.getArbeitseinsatzTable().paint(this.getParent());
 

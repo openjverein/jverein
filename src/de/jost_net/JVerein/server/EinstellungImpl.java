@@ -98,7 +98,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
             }
             if (!found)
               throw new ApplicationException(
-                  "Keine passende Altersstufe gefunden für " + i + " Jahre");
+                  "Keine passende Altersstufe gefunden fÃ¼r " + i + " Jahre");
           }
         }
         catch (RuntimeException e)
@@ -107,7 +107,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
         }
       }
 
-      // Begin-Geschäftsjahr
+      // Begin-GeschÃ¤ftsjahr
       if (hasChanged(Property.BEGINNGESCHAEFTSJAHR.getKey()))
       {
         try
@@ -118,7 +118,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
         }
         catch (ParseException e)
         {
-          throw new ApplicationException("Ungültiges Datumsformat: "
+          throw new ApplicationException("UngÃ¼ltiges Datumsformat: "
               + getAttribute(Property.BEGINNGESCHAEFTSJAHR.getKey()));
         }
       }
@@ -144,12 +144,12 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
         if (!JVereinPlugin.isArchiveServiceActive())
         {
           throw new ApplicationException(
-              "Plugin jameica.messaging ist nicht installiert oder im LAN verfügbar!"
-                  + " Wird zur Dokumentenspeicherung benötigt!");
+              "Plugin jameica.messaging ist nicht installiert oder im LAN verfÃ¼gbar!"
+                  + " Wird zur Dokumentenspeicherung benÃ¶tigt!");
         }
       }
 
-      // Jubiläen
+      // JubilÃ¤en
       if (hasChanged(Property.JUBILAEEN.getKey())
           || hasChanged(Property.ALTERSJUBILAEEN.getKey()))
       {
@@ -172,7 +172,7 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
               Property.SPENDENBESCHEINIGUNGMINBETRAG.getKey()) < 0.01d)
       {
         throw new ApplicationException(
-            "Mindestbetrag für Spendenbescheinigungen darf nicht kleiner als 0.01 sein");
+            "Mindestbetrag fÃ¼r Spendenbescheinigungen darf nicht kleiner als 0.01 sein");
       }
     }
     catch (RemoteException e)

@@ -28,7 +28,7 @@ public interface JVereinDBObject extends DBObject
 {
   /**
    * Prueft, ob das Objekt seit dem Laden geaendert wurde. Da hasChanged
-   * protected ist, muss der Aufruf über diese Funktion erfolgen
+   * protected ist, muss der Aufruf Ã¼ber diese Funktion erfolgen
    * 
    * @return true, wenn es geaendert wurde.
    * @throws RemoteException

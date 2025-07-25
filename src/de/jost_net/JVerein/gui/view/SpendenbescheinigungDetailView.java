@@ -73,8 +73,8 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     right.addHeadline("Betrag");
     right.addLabelPair("Betrag", control.getBetrag());
 
-    right.addHeadline("Ersatz für Aufwendungen");
-    right.addLabelPair("Ersatz für Aufwendungen",
+    right.addHeadline("Ersatz fÃ¼r Aufwendungen");
+    right.addLabelPair("Ersatz fÃ¼r Aufwendungen",
         control.getErsatzAufwendungen());
 
     right.addHeadline("Formular");
@@ -90,7 +90,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     if (control.getSpendenbescheinigung()
         .getSpendenart() == Spendenart.GELDSPENDE)
     {
-      // Buchnungen nur für Geldspenden
+      // Buchnungen nur fÃ¼r Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
       grBuchungen.addPart(control.getBuchungListPart());

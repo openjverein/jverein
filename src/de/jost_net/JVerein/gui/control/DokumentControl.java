@@ -160,7 +160,7 @@ public class DokumentControl extends AbstractControl
       if (file.isDirectory())
       {
         throw new ApplicationException(
-            "Verzeichnisse können nicht gespeichert werden.");
+            "Verzeichnisse kÃ¶nnen nicht gespeichert werden.");
       }
       if (!file.exists())
       {
@@ -185,7 +185,7 @@ public class DokumentControl extends AbstractControl
       doc.setUUID(uuid);
       doc.setDatum((Date) dopa.getDatum().getValue());
       doc.store();
-      // Zusätzliche Eigenschaft speichern
+      // ZusÃ¤tzliche Eigenschaft speichern
       Map<String, String> map = new HashMap<>();
       map.put("filename", file.getName());
       qm = new QueryMessage(uuid, map);

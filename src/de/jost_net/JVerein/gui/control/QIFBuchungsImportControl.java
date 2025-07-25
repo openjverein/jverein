@@ -169,7 +169,7 @@ public class QIFBuchungsImportControl extends AbstractControl
   {
     if (null == eroffnungsDatum)
     {
-      eroffnungsDatum = new DateAnzeigeInput(" - ", "wurde Konto eröffnet");
+      eroffnungsDatum = new DateAnzeigeInput(" - ", "wurde Konto erÃ¶ffnet");
     }
     return eroffnungsDatum;
   }
@@ -229,8 +229,8 @@ public class QIFBuchungsImportControl extends AbstractControl
   {
     if (null == processDatum)
     {
-      processDatum = new DateAnzeigeInput("Noch nicht übernommen..",
-          "Buchungen wurden übernommen.");
+      processDatum = new DateAnzeigeInput("Noch nicht Ã¼bernommen..",
+          "Buchungen wurden Ã¼bernommen.");
     }
     return processDatum;
   }
@@ -613,7 +613,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       catch (RemoteException ex)
       {
         throw new ApplicationException(
-            "Fehler beim Übernehmen der externen Buchungen!!", ex);
+            "Fehler beim Ãœbernehmen der externen Buchungen!!", ex);
       }
       finally
       {
@@ -677,7 +677,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       {
         buchungenUebernehmen(importHead);
       }
-      zeigeMeldung("Alle Buchungen erfolgreich übernommen!");
+      zeigeMeldung("Alle Buchungen erfolgreich Ã¼bernommen!");
     }
 
     private void buchungenUebernehmen(QIFImportHead importHead)
@@ -685,7 +685,7 @@ public class QIFBuchungsImportControl extends AbstractControl
     {
       Konto konto = importHead.getKonto();
       zeigeMeldung(
-          "Buchungen werden übernommen für Konto : " + konto.getBezeichnung());
+          "Buchungen werden Ã¼bernommen fÃ¼r Konto : " + konto.getBezeichnung());
       DBIterator<QIFImportPos> iteratorQIFImportPos = loadExterneBuchungen(
           importHead);
       speichernKontoeroeffnung(konto, importHead);
@@ -739,7 +739,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       sollb.setDatum(buchung.getDatum());
       sollb.setMitglied(mitglied);
       sollb.setZahler(mitglied);
-      sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+      sollb.setZahlungsweg(Zahlungsweg.ÃœBERWEISUNG);
       sollb.setZweck1(buchung.getZweck());
       sollb.store();
 
@@ -831,11 +831,11 @@ public class QIFBuchungsImportControl extends AbstractControl
     private void frageBenutzer() throws ApplicationException
     {
       super.frageBenutzer("Externe Buchungen importieren",
-          "Sollen die externen Buchungen nach JVerein übernommen werden?\n"
+          "Sollen die externen Buchungen nach JVerein Ã¼bernommen werden?\n"
               + "Anzahl Konten : " + importHeadList.size() + "\n"
               + "Anzahl Buchungen : " + buchungen + "\n\n"
               + "Sie sollten alle QIF Dateien importiert haben bevor diese Funktion gestartet wird,\n"
-              + "weil für alte Buchungsjahre ein Jahresabschluss gemacht wird.");
+              + "weil fÃ¼r alte Buchungsjahre ein Jahresabschluss gemacht wird.");
     }
 
     private void init()
@@ -860,7 +860,7 @@ public class QIFBuchungsImportControl extends AbstractControl
 
     private void pruefenPosDaten() throws RemoteException, ApplicationException
     {
-      zeigeMeldung("Prüfe externe Buchungspositionen ..");
+      zeigeMeldung("PrÃ¼fe externe Buchungspositionen ..");
 
       DBIterator<QIFImportPos> posIterator = Einstellungen.getDBService()
           .createList(QIFImportPos.class);
@@ -871,7 +871,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       }
       if (buchungen == 0)
         throw new ApplicationException(
-            "Es gibt keine externen Buchungen zum Übernehmen!");
+            "Es gibt keine externen Buchungen zum Ãœbernehmen!");
     }
 
     private void pruefenPosDaten(QIFImportPos importPos)
@@ -894,7 +894,7 @@ public class QIFBuchungsImportControl extends AbstractControl
 
     private void pruefenHeadDaten() throws RemoteException, ApplicationException
     {
-      zeigeMeldung("Prüfe Externe Daten ..");
+      zeigeMeldung("PrÃ¼fe Externe Daten ..");
       DBIterator<QIFImportHead> headIterator = Einstellungen.getDBService()
           .createList(QIFImportHead.class);
       while (headIterator.hasNext())
@@ -924,28 +924,28 @@ public class QIFBuchungsImportControl extends AbstractControl
     private void pruefeKontoHatAnfangsbestand(Konto konto)
         throws RemoteException, ApplicationException
     {
-      zeigeMeldung("Prüfe JVereins Konto Anfangsbestand ..");
+      zeigeMeldung("PrÃ¼fe JVereins Konto Anfangsbestand ..");
       DBIterator<QIFImportHead> iteratorBuchungsListe = Einstellungen
           .getDBService().createList(Anfangsbestand.class);
       iteratorBuchungsListe.addFilter("KONTO = ?", konto.getID());
       int anzahl = iteratorBuchungsListe.size();
       if (anzahl > 0)
         throw new ApplicationException(
-            "Import nicht möglich!! Das JVereins Konto "
+            "Import nicht mÃ¶glich!! Das JVereins Konto "
                 + konto.getBezeichnung() + " hat bereits Anfangsbestand");
     }
 
     private void pruefeKontoIstLeer(Konto konto)
         throws RemoteException, ApplicationException
     {
-      zeigeMeldung("Prüfe JVereins Konten ..");
+      zeigeMeldung("PrÃ¼fe JVereins Konten ..");
       DBIterator<Buchung> iteratorBuchungsListe = Einstellungen.getDBService()
           .createList(Buchung.class);
       iteratorBuchungsListe.addFilter("KONTO = ?", konto.getID());
       int anzahl = iteratorBuchungsListe.size();
       if (anzahl > 0)
         throw new ApplicationException(
-            "Import nicht möglich!! Das JVereins Konto "
+            "Import nicht mÃ¶glich!! Das JVereins Konto "
                 + konto.getBezeichnung() + " hat bereits " + anzahl
                 + " Buchungen.");
     }
@@ -996,8 +996,8 @@ public class QIFBuchungsImportControl extends AbstractControl
 
   /***
    * Wir verwenden zum Speichern eine eigen Buchung.class weil wir Buchungen
-   * importieren wollen die auch älter als 10 Jahre sind aber das Original
-   * Objekt nicht ändern werden.
+   * importieren wollen die auch Ã¤lter als 10 Jahre sind aber das Original
+   * Objekt nicht Ã¤ndern werden.
    * 
    * @author Rolf Mamat
    * 
@@ -1131,8 +1131,8 @@ public class QIFBuchungsImportControl extends AbstractControl
     private void frageBenutzer(DBIterator<QIFImportHead> itHeader)
         throws RemoteException, ApplicationException
     {
-      super.frageBenutzer("Alle Imports löschen",
-          "Sollen alle " + itHeader.size() + " Imports gelöscht werden?");
+      super.frageBenutzer("Alle Imports lÃ¶schen",
+          "Sollen alle " + itHeader.size() + " Imports gelÃ¶scht werden?");
     }
 
     private DBIterator<QIFImportHead> checkHeader()
@@ -1142,7 +1142,7 @@ public class QIFBuchungsImportControl extends AbstractControl
           .createList(QIFImportHead.class);
       if (iterator.size() == 0)
         throw new ApplicationException(
-            "Es gibt keine Imports die gelöscht werden könnten.");
+            "Es gibt keine Imports die gelÃ¶scht werden kÃ¶nnten.");
       return iterator;
     }
   }
@@ -1174,23 +1174,23 @@ public class QIFBuchungsImportControl extends AbstractControl
 
     private void frageBenutzer() throws RemoteException, ApplicationException
     {
-      super.frageBenutzer("Externe Buchungen löschen",
+      super.frageBenutzer("Externe Buchungen lÃ¶schen",
           "Sollen die importierten Daten des Kontos " + headerSelected.getName()
-              + " gelöscht werden?");
+              + " gelÃ¶scht werden?");
     }
 
     private void checkAuswahl() throws ApplicationException
     {
       if (null == headerSelected)
         throw new ApplicationException(
-            "Kein externes Konto zum Löschen ausgewählt!");
+            "Kein externes Konto zum LÃ¶schen ausgewÃ¤hlt!");
     }
   }
 
   /***
    * Diese Klasse bietet einen Rahmen in dem Aktionen in einer Datenbank
-   * Transaktion ablaufen. Im Fehlerfall wird alles zurück gerollt im Gutfall
-   * werden die Änderungen commited
+   * Transaktion ablaufen. Im Fehlerfall wird alles zurÃ¼ck gerollt im Gutfall
+   * werden die Ã„nderungen commited
    * 
    * @author Rolf Mamat
    * 
@@ -1232,7 +1232,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       }
       catch (RemoteException ex)
       {
-        final String meldung = "Transaction kann nicht zurück gerollt werden!!";
+        final String meldung = "Transaction kann nicht zurÃ¼ck gerollt werden!!";
         Logger.error(meldung, ex);
         GUI.getStatusBar().setErrorText(meldung);
       }

@@ -28,7 +28,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Suchprofiles
+ * LÃ¶schen eines Suchprofiles
  */
 public class SuchprofilDeleteAction implements Action
 {
@@ -54,7 +54,7 @@ public class SuchprofilDeleteAction implements Action
     }
     if (context == null || !(context instanceof Suchprofil))
     {
-      throw new ApplicationException("Kein Suchprofil ausgewählt");
+      throw new ApplicationException("Kein Suchprofil ausgewÃ¤hlt");
     }
     try
     {
@@ -65,8 +65,8 @@ public class SuchprofilDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Suchprofil löschen");
-      d.setText(("Wollen Sie dieses Suchprofil wirklich löschen?"));
+      d.setTitle("Suchprofil lÃ¶schen");
+      d.setText(("Wollen Sie dieses Suchprofil wirklich lÃ¶schen?"));
 
       try
       {
@@ -78,7 +78,7 @@ public class SuchprofilDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Suchprofiles", e);
+        Logger.error("Fehler beim LÃ¶schen des Suchprofiles", e);
         return;
       }
       if (control.getSettings().getString("id", "").equals(sp.getID()))
@@ -87,11 +87,11 @@ public class SuchprofilDeleteAction implements Action
         control.getSettings().setAttribute("profilname", "");
       }
       sp.delete();
-      GUI.getStatusBar().setSuccessText("Suchprofil gelöscht.");
+      GUI.getStatusBar().setSuccessText("Suchprofil gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Suchprofiles";
+      String fehler = "Fehler beim LÃ¶schen des Suchprofiles";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

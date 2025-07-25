@@ -40,11 +40,11 @@ public class KursteilnehmerMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(KursteilnehmerDetailView.class, table),
         "text-x-generic.png"));
-    addItem(new CheckedSingleContextMenuItem("Abbuchungsdatum löschen",
+    addItem(new CheckedSingleContextMenuItem("Abbuchungsdatum lÃ¶schen",
         new KursteilnehmerAbuResetAction(table), "user-trash-full.png"));
-    addItem(new CheckedSingleContextMenuItem("Zu Mitglied übernehmen",
+    addItem(new CheckedSingleContextMenuItem("Zu Mitglied Ã¼bernehmen",
         new KursteilnehmerWirdMitgliedAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new KursteilnehmerDeleteAction(), "user-trash-full.png"));
   }
 }

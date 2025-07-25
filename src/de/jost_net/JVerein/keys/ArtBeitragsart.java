@@ -24,7 +24,7 @@ public enum ArtBeitragsart
 {
 
   NORMAL(0, "Normal"),
-  FAMILIE_ANGEHOERIGER(2, "Familienangehöriger");
+  FAMILIE_ANGEHOERIGER(2, "FamilienangehÃ¶riger");
 
   private final String text;
 

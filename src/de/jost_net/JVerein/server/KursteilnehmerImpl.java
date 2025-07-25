@@ -135,7 +135,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     }
     if (getBetrag() <= 0)
     {
-      throw new ApplicationException("Bitte Betrag größer als 0 eingeben");
+      throw new ApplicationException("Bitte Betrag grÃ¶ÃŸer als 0 eingeben");
     }
   }
 

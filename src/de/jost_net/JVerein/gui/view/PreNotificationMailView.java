@@ -96,12 +96,12 @@ public class PreNotificationMailView extends AbstractView
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
     buttons1.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
     addButtonArea(buttons1, grtabMailPDF.getComposite());
 
-    TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
+    TabGroup tab2 = new TabGroup(folder, "1 ct-Ãœberweisung");
     SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
 
     grtab2.addInput(control.getct1Ausgabe());

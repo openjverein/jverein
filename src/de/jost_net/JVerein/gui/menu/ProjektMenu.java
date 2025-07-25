@@ -37,7 +37,7 @@ public class ProjektMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ProjektDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new ProjektDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new ProjektDeleteAction(),
         "user-trash-full.png"));
   }
 }

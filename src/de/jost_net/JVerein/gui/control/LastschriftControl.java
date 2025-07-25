@@ -113,7 +113,7 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    lastschriftList.addColumn("F‰lligkeit", "faelligkeit",
+    lastschriftList.addColumn("F√§lligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("IBAN", "iban", new IbanFormatter());
     lastschriftList.addColumn("Mandat", "mandatid");
@@ -329,7 +329,7 @@ public class LastschriftControl extends FilterControl
       return strasse;
     }
     strasse = new TextInput(getLastschrift().getStrasse(), 40);
-    strasse.setName("Straﬂe");
+    strasse.setName("Stra√üe");
     strasse.setEnabled(false);
     return strasse;
   }
@@ -474,7 +474,7 @@ public class LastschriftControl extends FilterControl
       String g = getLastschrift().getGeschlecht();
       if (g.equals(GeschlechtInput.MAENNLICH))
       {
-        text = "M‰nnlich";
+        text = "M√§nnlich";
       }
       else if (g.equals(GeschlechtInput.WEIBLICH))
       {

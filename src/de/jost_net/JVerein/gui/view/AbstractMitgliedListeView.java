@@ -68,7 +68,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
         rs);
     if (anzahlbeitragsgruppe.longValue() == 0)
     {
-      new LabelInput("Noch keine Beitragsgruppe erfaﬂt. Bitte unter "
+      new LabelInput("Noch keine Beitragsgruppe erfa√üt. Bitte unter "
           + "Administration|Beitragsgruppen erfassen.").paint(getParent());
     }
     rs = new ResultSetExtractor()

@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  * 
- * Erstellt von Rüdiger Wurth
+ * Erstellt von RÃ¼diger Wurth
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
@@ -42,7 +42,7 @@ public class MitgliedLastschriftAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
     }
     Mitglied m = null; // Mitglied
     Mitglied mZ = null; // Zahler
@@ -59,8 +59,8 @@ public class MitgliedLastschriftAction implements Action
         mZ = (Mitglied) Einstellungen.getDBService()
             .createObject(Mitglied.class, m.getVollZahlerID() + "");
 
-        if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
-            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
+        if (!AbrechnungSEPAControl.confirmDialog("FamilienangehÃ¶riger",
+            "Dieses Mitglied ist ein FamilienangehÃ¶riger.\n\n"
                 + "Als Konto wird das Konto des Zahlers belastet:\n"
                 + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
@@ -82,7 +82,7 @@ public class MitgliedLastschriftAction implements Action
         sl = (SepaLastschrift) Settings.getDBService()
             .createObject(SepaLastschrift.class, null);
 
-        // Gläubiger-ID
+        // GlÃ¤ubiger-ID
         sl.setCreditorId(
             (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
 

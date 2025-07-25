@@ -77,9 +77,9 @@ public class JahresabschlussDetailView extends AbstractView
     if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addLabelPair("Rest Verwendungsr¸ckstand \naus dem Vorjahr",
+      right.addLabelPair("Rest Verwendungsr√ºckstand \naus dem Vorjahr",
           control.getVerwendungsrueckstand());
-      right.addLabelPair("Zwanghafte satzungsgem‰ﬂe\nWeitergabe von Mitteln",
+      right.addLabelPair("Zwanghafte satzungsgem√§√üe\nWeitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
     }
 

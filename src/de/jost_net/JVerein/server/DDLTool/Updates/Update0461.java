@@ -46,7 +46,7 @@ public class Update0461 extends AbstractDDLUpdate
     // Den Zahler auf Mitglied setzen bei bestehenden Sollbuchungen
     execute("update mitgliedskonto set zahler = mitglied ");
 
-    // Spendenbescheinigung nicht löschen wenn Zahler gelöscht wird
+    // Spendenbescheinigung nicht lÃ¶schen wenn Zahler gelÃ¶scht wird
     execute(dropForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung"));
     execute(createForeignKey("fkSpendenbescheinigung2", "spendenbescheinigung",
         "mitglied", "mitglied", "id", "SET NULL", "NO ACTION"));

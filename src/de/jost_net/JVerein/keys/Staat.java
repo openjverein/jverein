@@ -23,17 +23,17 @@ public enum Staat
 
   AB("ABCHASIEN"),
   AF("AFGANISTAN"),
-  EG("ƒGYPTEN"),
+  EG("√ÑGYPTEN"),
   AL("ALBANIEN"),
   DZ("ALGERIEN"),
   AD("ANDORRA"),
   AO("ANGOLA"),
   AG("ANTIGUA UND BARBUDA"),
-  GQ("ƒQUATORIALGUINEA"),
+  GQ("√ÑQUATORIALGUINEA"),
   AR("ARGENTINIEN"),
   AM("ARMENIEN"),
   AZ("ASERBAIDSCHAN"),
-  ET("ƒTHIOPIEN"),
+  ET("√ÑTHIOPIEN"),
   AU("AUSTRALIEN"),
   BS("BAHAMAS"),
   BH("BAHRAIN"),
@@ -44,7 +44,7 @@ public enum Staat
   BZ("BELIZE"),
   BJ("BENIN"),
   // Bergkarabach (Armenien/Aserbaidschan)
-  // AR("BERGKARABACH"),Kein ISO oder ISO ‰hnlicher Code vorhanden
+  // AR("BERGKARABACH"),Kein ISO oder ISO √§hnlicher Code vorhanden
   BT("BHUTAN"),
   BO("BOLIVIEN"),
   BA("BOSNIEN UND HERZEGOWINA"),
@@ -58,8 +58,8 @@ public enum Staat
   CL("CHILE"),
   CN("CHINA"),
   CR("COSTA RICA"),
-  CI("C‘TE D`IVOIRE"),
-  DK("DƒNEMARK"),
+  CI("C√îTE D`IVOIRE"),
+  DK("D√ÑNEMARK"),
   CD("DEMOKRATISCHE REPUBLIK KONGO"),
   DE("DEUTSCHLAND"),
   DM("DOMINICA"),
@@ -148,13 +148,13 @@ public enum Staat
   NE("NIGER"),
   NG("NIGERIA"),
   MK("NORDMAZEDONIEN"),
-  // Nordzypern (T¸rkei)
+  // Nordzypern (T√ºrkei)
   CTR("NORDZYPERN"),
   NO("NORWEGEN"),
   OM("OMAN"),
-  AT("÷STERREICH"),
+  AT("√ñSTERREICH"),
   PK("PAKISTAN"),
-  PS("PALƒSTINA"),
+  PS("PAL√ÑSTINA"),
   PW("PALAU"),
   PA("PANAMA"),
   PG("PAPUA-NEUGUINEA"),
@@ -164,13 +164,13 @@ public enum Staat
   PL("POLEN"),
   PT("PORTUGAL"),
   RW("RUANDA"),
-  RO("RUMƒNIEN"),
+  RO("RUM√ÑNIEN"),
   RU("RUSSLAND"),
   SB("SALOMONEN"),
   ZM("SAMBIA"),
   WS("SAMOA"),
   SM("SAN MARINO"),
-  ST("S√O TOM… UND PRÕNCIPE"),
+  ST("S√ÉO TOM√â UND PR√çNCIPE"),
   SA("SAUDI-ARABIEN"),
   SE("SCHWEDEN"),
   CH("SCHWEIZ"),
@@ -188,12 +188,12 @@ public enum Staat
   KN("ST. KITTS UND NEVIS"),
   LC("ST. LUCIA"),
   VC("ST. VINCENT UND DIE GRENADINEN"),
-  ZA("S‹DAFRIKA"),
+  ZA("S√úDAFRIKA"),
   SD("SUDAN"),
-  KR("S‹DKOREA"),
-  // S¸dossetien (Georgien)
-  SOS("S‹DOSSETIEN"),
-  SS("S‹DSUDAN"),
+  KR("S√úDKOREA"),
+  // S√ºdossetien (Georgien)
+  SOS("S√úDOSSETIEN"),
+  SS("S√úDSUDAN"),
   SR("SURINAME"),
   SY("SYRIEN"),
   TJ("TADSCHIKISTAN"),
@@ -209,7 +209,7 @@ public enum Staat
   TD("TSCHAD"),
   CZ("TSCHECHIEN"),
   TN("TUNESIEN"),
-  TR("T‹RKEI"),
+  TR("T√úRKEI"),
   TM("TURKMENISTAN"),
   TV("TUVALU"),
   UG("UGANDA"),
@@ -222,7 +222,7 @@ public enum Staat
   VE("VENEZUELA"),
   AE("VEREINIGTE ARABISCHE EMIRATE"),
   US("VEREINIGTE STAATEN"),
-  GB("VEREINIGTES K÷NIGREICH"),
+  GB("VEREINIGTES K√ñNIGREICH"),
   VN("VIETNAM"),
   CF("ZENTRALAFRIKANISCHE REPUBLIK"),
   CY("ZYPERN");
@@ -283,7 +283,7 @@ public enum Staat
       return Staat.getByKey(code).getText();
     }
     // Wenn der Code nicht vorhanden ist, nehmen wir
-    // zur Kompatibilit‰t den Text wie er in der DB Steht
+    // zur Kompatibilit√§t den Text wie er in der DB Steht
     return code;
   }
 

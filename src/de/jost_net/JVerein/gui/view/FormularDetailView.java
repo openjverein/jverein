@@ -57,7 +57,7 @@ public class FormularDetailView extends AbstractDetailView
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fortlaufende Nr.", control.getZaehler());
-    right.addLabelPair("Formularverknüpfung", control.getFormlink());
+    right.addLabelPair("FormularverknÃ¼pfung", control.getFormlink());
 
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
 

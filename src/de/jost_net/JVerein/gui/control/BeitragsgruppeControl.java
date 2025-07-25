@@ -392,7 +392,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -552,7 +552,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
         beitragsgruppeList.addColumn("Betrag halbj.", "betraghalbjaehrlich",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        beitragsgruppeList.addColumn("Betrag j‰hrlich", "betragjaehrlich",
+        beitragsgruppeList.addColumn("Betrag j√§hrlich", "betragjaehrlich",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
         break;
     }
@@ -593,7 +593,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     }
     beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
         new JaNeinFormatter());
-    beitragsgruppeList.addColumn("Sekund‰r", "sekundaer",
+    beitragsgruppeList.addColumn("Sekund√§r", "sekundaer",
         new JaNeinFormatter());
     beitragsgruppeList.addColumn("Beitragsart", "beitragsart", new Formatter()
     {

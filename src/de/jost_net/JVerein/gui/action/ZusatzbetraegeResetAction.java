@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ausführungsdatum eines Zusatzbetrages entfernen.
+ * AusfÃ¼hrungsdatum eines Zusatzbetrages entfernen.
  */
 public class ZusatzbetraegeResetAction implements Action
 {
@@ -36,7 +36,7 @@ public class ZusatzbetraegeResetAction implements Action
   {
     if (context == null || !(context instanceof Zusatzbetrag))
     {
-      throw new ApplicationException("Kein Zusatzbetrag ausgewählt");
+      throw new ApplicationException("Kein Zusatzbetrag ausgewÃ¤hlt");
     }
     try
     {
@@ -46,9 +46,9 @@ public class ZusatzbetraegeResetAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Ausführungsdatum zurücksetzen");
+      d.setTitle("AusfÃ¼hrungsdatum zurÃ¼cksetzen");
       d.setText(
-          "Wollen Sie das Ausführungsdatum dieses Zusatzbetrages wirklich zurücksetzen?");
+          "Wollen Sie das AusfÃ¼hrungsdatum dieses Zusatzbetrages wirklich zurÃ¼cksetzen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -62,11 +62,11 @@ public class ZusatzbetraegeResetAction implements Action
       }
       z.setAusfuehrung(null);
       z.store();
-      GUI.getStatusBar().setSuccessText("Ausführungsdatum zurückgesetzt.");
+      GUI.getStatusBar().setSuccessText("AusfÃ¼hrungsdatum zurÃ¼ckgesetzt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Zurücksetzen des Ausführungsdatums des Zusatzbetrages.";
+      String fehler = "Fehler beim ZurÃ¼cksetzen des AusfÃ¼hrungsdatums des Zusatzbetrages.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

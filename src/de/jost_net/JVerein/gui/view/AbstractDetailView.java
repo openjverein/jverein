@@ -36,7 +36,7 @@ public abstract class AbstractDetailView extends AbstractView
 {
 
   /**
-   * Diese Funktion muss implementiert werden und den Controller zurückliefern
+   * Diese Funktion muss implementiert werden und den Controller zurÃ¼ckliefern
    * 
    * @return Savable das Control
    */
@@ -60,8 +60,8 @@ public abstract class AbstractDetailView extends AbstractView
       }
 
       // Wenn beim prepareStore() eine Exception geworfen wird, ist es
-      // warscheinlich, dass etwas ungültiges eingegeben wurde. Also wurde etwas
-      // verändert und wir fragen auch nach.
+      // warscheinlich, dass etwas ungÃ¼ltiges eingegeben wurde. Also wurde etwas
+      // verÃ¤ndert und wir fragen auch nach.
       if (error || o.isChanged() || getControl().hasChanged())
       {
         ViewVerlassenDialog dialog = new ViewVerlassenDialog(
@@ -84,7 +84,7 @@ public abstract class AbstractDetailView extends AbstractView
               GUI.getStatusBar().setErrorText(e.getMessage());
               throw new OperationCanceledException(e);
             }
-            // Einen MessageConsumer anhängen, damit die Erfolgsmeldung nach dem
+            // Einen MessageConsumer anhÃ¤ngen, damit die Erfolgsmeldung nach dem
             // Laden der neuen View angezeigt wird.
             Application.getMessagingFactory()
                 .getMessagingQueue("jameica.gui.view.bind")
@@ -108,7 +108,7 @@ public abstract class AbstractDetailView extends AbstractView
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim testen auf Änderungen: ";
+      String fehler = "Fehler beim testen auf Ã„nderungen: ";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler + e.getMessage());
     }

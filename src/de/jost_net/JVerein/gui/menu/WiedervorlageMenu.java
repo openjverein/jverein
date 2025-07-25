@@ -49,9 +49,9 @@ public class WiedervorlageMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(), "check.png"));
-    addItem(new WiedervorlageErledigtItem("Erledigung löschen",
+    addItem(new WiedervorlageErledigtItem("Erledigung lÃ¶schen",
         new WiedervorlageErledigungDeleteAction(), "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
     if (table != null)
     {

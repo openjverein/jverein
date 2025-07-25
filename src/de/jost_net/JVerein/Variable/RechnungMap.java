@@ -132,7 +132,7 @@ public class RechnungMap extends AbstractMap
 
     // Deise Felder gibt es nicht mehr in der Form, damit bei alten
     // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
-    // hinzufügen
+    // hinzufÃ¼gen
     map.put(RechnungVar.DIFFERENZ.getName(), "");
     map.put(RechnungVar.MK_IST.getName(), "");
 
@@ -187,7 +187,7 @@ public class RechnungMap extends AbstractMap
             .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
-      case Zahlungsweg.ÜBERWEISUNG:
+      case Zahlungsweg.ÃœBERWEISUNG:
       {
         zahlungsweg = (String) Einstellungen
             .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
@@ -261,7 +261,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.NAME.getName(), "Wichtig");
     map.put(RechnungVar.VORNAME.getName(), "Willi");
     map.put(RechnungVar.STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei MÃ¼ller");
     map.put(RechnungVar.PLZ.getName(), "12345");
     map.put(RechnungVar.ORT.getName(), "Testenhausen");
     map.put(RechnungVar.STAAT.getName(), "Deutschland");
@@ -276,9 +276,9 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(RechnungVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
-        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     return map;
   }

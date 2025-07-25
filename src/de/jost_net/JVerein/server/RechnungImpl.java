@@ -364,7 +364,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
 
     if (mitglied == null)
     {
-      throw new ApplicationException("Sollbuchung enth‰lt kein Mitglied.");
+      throw new ApplicationException("Sollbuchung enth√§lt kein Mitglied.");
     }
     setMitglied(Integer.parseInt(mitglied.getID()));
 

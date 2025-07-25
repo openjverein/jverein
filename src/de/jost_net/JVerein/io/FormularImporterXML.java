@@ -48,12 +48,12 @@ public class FormularImporterXML implements Importer
 
     if (file == null)
     {
-      throw new ApplicationException("Keine zu importierende Datei ausgew‰hlt");
+      throw new ApplicationException("Keine zu importierende Datei ausgew√§hlt");
     }
 
     if (format == null)
     {
-      throw new ApplicationException("Kein Datei-Format ausgew‰hlt");
+      throw new ApplicationException("Kein Datei-Format ausgew√§hlt");
     }
 
     HashMap<String, HashMap<String, String>> foreignMap = getForeignMap();
@@ -71,7 +71,7 @@ public class FormularImporterXML implements Importer
             .getDBService().createObject(
                 (Class<AbstractDBObject>) loader.loadClass(type), null);
         object.setID(id); // ID setzen, sie muss vor dem Speichern wieder
-                          // entfernt werden um nichts zu ¸berschreiben
+                          // entfernt werden um nichts zu √ºberschreiben
 
         Iterator<?> i = values.keySet().iterator();
         while (i.hasNext())
@@ -163,7 +163,7 @@ public class FormularImporterXML implements Importer
       DBTransaction.commit();
       if (monitor != null)
       {
-        monitor.setStatusText(created + " Datens‰tze erfolgreich importiert");
+        monitor.setStatusText(created + " Datens√§tze erfolgreich importiert");
         monitor.setPercentComplete(100);
       }
     }

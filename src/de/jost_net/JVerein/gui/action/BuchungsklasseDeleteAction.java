@@ -31,7 +31,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Buchungsklasse.
+ * LÃ¶schen einer Buchungsklasse.
  */
 public class BuchungsklasseDeleteAction implements Action
 {
@@ -40,7 +40,7 @@ public class BuchungsklasseDeleteAction implements Action
   {
     if (context == null || !(context instanceof Buchungsklasse))
     {
-      throw new ApplicationException("Keine Buchungsklasse ausgewählt");
+      throw new ApplicationException("Keine Buchungsklasse ausgewÃ¤hlt");
     }
     try
     {
@@ -49,7 +49,7 @@ public class BuchungsklasseDeleteAction implements Action
       {
         return;
       }
-      // Prüfen ob Buchungsklasse schon verwendet wird
+      // PrÃ¼fen ob Buchungsklasse schon verwendet wird
       DBService service = Einstellungen.getDBService();
       String sql = "SELECT buchungsart.id from buchungsart "
           + "WHERE (buchungsklasse = ?) ";
@@ -70,7 +70,7 @@ public class BuchungsklasseDeleteAction implements Action
       if (benutzt)
       {
         throw new ApplicationException(
-            "Die Buchungsklasse wird von einer Buchungsart benutzt und kann nicht gelöscht werden");
+            "Die Buchungsklasse wird von einer Buchungsart benutzt und kann nicht gelÃ¶scht werden");
       }
 
       service = Einstellungen.getDBService();
@@ -92,12 +92,12 @@ public class BuchungsklasseDeleteAction implements Action
       if (benutzt)
       {
         throw new ApplicationException(
-            "Die Buchungsklasse wird von einem Anlagenkonto benutzt und kann nicht gelöscht werden");
+            "Die Buchungsklasse wird von einem Anlagenkonto benutzt und kann nicht gelÃ¶scht werden");
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Buchungsklasse löschen");
-      d.setText("Wollen Sie diese Buchungsklasse wirklich löschen?");
+      d.setTitle("Buchungsklasse lÃ¶schen");
+      d.setText("Wollen Sie diese Buchungsklasse wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -106,16 +106,16 @@ public class BuchungsklasseDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Buchungsklasse", e);
+        Logger.error("Fehler beim LÃ¶schen der Buchungsklasse", e);
         return;
       }
 
       b.delete();
-      GUI.getStatusBar().setSuccessText("Buchungsklasse gelöscht.");
+      GUI.getStatusBar().setSuccessText("Buchungsklasse gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchungsklasse.";
+      String fehler = "Fehler beim LÃ¶schen der Buchungsklasse.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -62,7 +62,7 @@ import de.willuhn.util.ProgressMonitor;
 
 /**
  * Versand von Mails mit Anhang aus einer Zip-Datei an die Mitglieder. Wird z.
- * B. für den Rechnungsversand gebraucht<br>
+ * B. fÃ¼r den Rechnungsversand gebraucht<br>
  */
 public class ZipMailer
 {
@@ -70,8 +70,8 @@ public class ZipMailer
    * Sendet die Mail mit den Dateien aus dem Zip an alle Empfnger
    * 
    * @param zipfile
-   *          das Archiv mit allen PDFs (o.ä.) die an die Mitglieder verschickt
-   *          werden sollen. Die Dateien darin müssen den Dateinamen in der Form
+   *          das Archiv mit allen PDFs (o.Ã¤.) die an die Mitglieder verschickt
+   *          werden sollen. Die Dateien darin mÃ¼ssen den Dateinamen in der Form
    *          MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf haben.
    * @param betreff
    *          Betreff der Mail
@@ -82,7 +82,7 @@ public class ZipMailer
   public ZipMailer(final File zipfile, final String betreff, String text)
       throws RemoteException
   {
-    // ggf. Signatur anhängen
+    // ggf. Signatur anhÃ¤ngen
     if (text.toLowerCase().contains("<html")
         && text.toLowerCase().contains("</body"))
     {
@@ -94,7 +94,7 @@ public class ZipMailer
     }
     else
     {
-      // MailSignatur mit Separator einfach anhängen
+      // MailSignatur mit Separator einfach anhÃ¤ngen
       text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;
@@ -157,7 +157,7 @@ public class ZipMailer
               if (teile.length != 5)
               {
                 throw new ApplicationException(
-                    "Ungültiger Dateiname: " + currentEntry);
+                    "UngÃ¼ltiger Dateiname: " + currentEntry);
               }
 
               String id = teile[0];
@@ -169,7 +169,7 @@ public class ZipMailer
               Rechnung re = null;
               Spendenbescheinigung spb = null;
 
-              // Mitglied Map hinzufügen
+              // Mitglied Map hinzufÃ¼gen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               map = new MitgliedMap().getMap(m, map);

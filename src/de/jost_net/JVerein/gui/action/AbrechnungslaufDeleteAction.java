@@ -39,7 +39,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Abrechnungslaufes
+ * LÃ¶schen eines Abrechnungslaufes
  */
 public class AbrechnungslaufDeleteAction implements Action
 {
@@ -48,7 +48,7 @@ public class AbrechnungslaufDeleteAction implements Action
   {
     if (context == null || !(context instanceof Abrechnungslauf))
     {
-      throw new ApplicationException("Keinen Abrechnungslauf ausgewählt");
+      throw new ApplicationException("Keinen Abrechnungslauf ausgewÃ¤hlt");
     }
     try
     {
@@ -58,15 +58,15 @@ public class AbrechnungslaufDeleteAction implements Action
         return;
       }
 
-      // Prüfe, ob der Abrechnungslauf als abgeschlossen gekennzeichnet ist.
-      // In diesem Fall darf er nicht gelöscht werden!
+      // PrÃ¼fe, ob der Abrechnungslauf als abgeschlossen gekennzeichnet ist.
+      // In diesem Fall darf er nicht gelÃ¶scht werden!
       if (abrl.getAbgeschlossen())
       {
         throw new ApplicationException(
-            "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+            "Abgeschlossene AbrechnungslÃ¤ufe kÃ¶nnen nicht gelÃ¶scht werden!");
       }
 
-      // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
+      // PrÃ¼fe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
       final DBService service = Einstellungen.getDBService();
       String sql1 = "SELECT jahresabschluss.bis from jahresabschluss "
           + "order by jahresabschluss.bis desc";
@@ -85,7 +85,7 @@ public class AbrechnungslaufDeleteAction implements Action
             }
           });
       if (bis != null)
-      // Es gibt Jahresabschlüsse und bis ist das letzte Datum
+      // Es gibt JahresabschlÃ¼sse und bis ist das letzte Datum
       {
         // Check ob eine Buchung des Abrechnungslaufen vor dem bis Datum liegt
         String sql2 = "SELECT DISTINCT buchung.id from buchung "
@@ -107,7 +107,7 @@ public class AbrechnungslaufDeleteAction implements Action
         if (abgeschlossen)
         {
           throw new ApplicationException(
-              "Der Abrechnungslauf enthält abgeschlossene Buchungen und kann darum nicht gelöscht werden!");
+              "Der Abrechnungslauf enthÃ¤lt abgeschlossene Buchungen und kann darum nicht gelÃ¶scht werden!");
         }
       }
 
@@ -153,33 +153,33 @@ public class AbrechnungslaufDeleteAction implements Action
       String text = "";
       if (!spendenbescheinigung && !rechnung)
       {
-        text = "Wollen Sie diesen Abrechnungslauf wirklich löschen?";
+        text = "Wollen Sie diesen Abrechnungslauf wirklich lÃ¶schen?";
       }
       else if (!spendenbescheinigung && rechnung)
       {
-        text = "Der Abrechnungslauf enthält Sollbuchungen denen eine "
+        text = "Der Abrechnungslauf enthÃ¤lt Sollbuchungen denen eine "
             + "Rechnung zugeordnet ist.\n"
-            + "Sie können nur zusammen gelöscht werden.\n"
-            + "Abrechnungslauf und Rechnungen löschen?";
+            + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+            + "Abrechnungslauf und Rechnungen lÃ¶schen?";
       }
       else if (spendenbescheinigung && !rechnung)
       {
-        text = "Der Abrechnungslauf enthält Buchungen denen eine "
+        text = "Der Abrechnungslauf enthÃ¤lt Buchungen denen eine "
             + "Spendenbescheinigung zugeordnet ist.\n"
-            + "Sie können nur zusammen gelöscht werden.\n"
-            + "Abrechnungslauf und Spendenbescheinigungen löschen?";
+            + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+            + "Abrechnungslauf und Spendenbescheinigungen lÃ¶schen?";
       }
       else if (spendenbescheinigung && rechnung)
       {
-        text = "Der Abrechnungslauf enthält Buchungen denen eine "
+        text = "Der Abrechnungslauf enthÃ¤lt Buchungen denen eine "
             + "Spendenbescheinigung zugeordnet ist\n"
             + "und Sollbuchungen denen eine Rechnung zugeordnet ist.\n"
-            + "Sie können nur zusammen gelöscht werden.\n"
-            + "Abrechnungslauf, Spendenbescheinigungen und Rechnungen löschen?";
+            + "Sie kÃ¶nnen nur zusammen gelÃ¶scht werden.\n"
+            + "Abrechnungslauf, Spendenbescheinigungen und Rechnungen lÃ¶schen?";
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle(String.format("Abrechnungslauf %s löschen", abrl.getID()));
+      d.setTitle(String.format("Abrechnungslauf %s lÃ¶schen", abrl.getID()));
       d.setText(text);
 
       try
@@ -192,7 +192,7 @@ public class AbrechnungslaufDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen eines Abrechnungslaufes", e);
+        Logger.error("Fehler beim LÃ¶schen eines Abrechnungslaufes", e);
         return;
       }
 
@@ -211,7 +211,7 @@ public class AbrechnungslaufDeleteAction implements Action
         catch (RemoteException ignore)
         {
           // Ignorieren, da die Exception auftritt, wenn die Buchung bereits
-          // gelöscht wurde, z. B. bei Splitbuchungen.
+          // gelÃ¶scht wurde, z. B. bei Splitbuchungen.
         }
       }
       DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
@@ -240,8 +240,8 @@ public class AbrechnungslaufDeleteAction implements Action
         }
         catch (RemoteException e)
         {
-          // Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
-          // nicht weiter zurückgesetzt werden kann
+          // Ignorieren, da die Exeption auftritt wenn das FÃ¤lligkeitsdatum
+          // nicht weiter zurÃ¼ckgesetzt werden kann
         }
         z.setAusfuehrung(za.getLetzteAusfuehrung());
         z.store();
@@ -260,11 +260,11 @@ public class AbrechnungslaufDeleteAction implements Action
         }
       }
       abrl.delete();
-      GUI.getStatusBar().setSuccessText("Abrechnungslauf gelöscht.");
+      GUI.getStatusBar().setSuccessText("Abrechnungslauf gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen eines Abrechnungslaufes";
+      String fehler = "Fehler beim LÃ¶schen eines Abrechnungslaufes";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

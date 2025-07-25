@@ -69,7 +69,7 @@ public class MitgliedMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu für die Liste der Mitglieder.
+   * Erzeugt ein Kontext-Menu fÃ¼r die Liste der Mitglieder.
    * 
    * @throws RemoteException
    */
@@ -117,7 +117,7 @@ public class MitgliedMenu extends ContextMenu
                 SimpleDialog sd = new SimpleDialog(
                     SimpleDialog.POSITION_CENTER);
                 sd.setText(
-                    "Bitte die für Mitglieder erforderlichen Daten nacherfassen.");
+                    "Bitte die fÃ¼r Mitglieder erforderlichen Daten nacherfassen.");
                 sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
                 sd.setSize(400, SWT.DEFAULT);
                 sd.setTitle("Daten nacherfassen");
@@ -176,7 +176,7 @@ public class MitgliedMenu extends ContextMenu
                 m.setKuendigung("");
                 m.setVollZahlerID(null);
                 DBService service = Einstellungen.getDBService();
-                // Sekundäre Beitragsgruppen löschen
+                // SekundÃ¤re Beitragsgruppen lÃ¶schen
                 DBIterator<SekundaereBeitragsgruppe> sit = service
                     .createList(SekundaereBeitragsgruppe.class);
                 sit.addFilter("mitglied = ? ", m.getID());
@@ -184,7 +184,7 @@ public class MitgliedMenu extends ContextMenu
                 {
                   sit.next().delete();
                 }
-                // Zukünftige Beitragsgruppen löschen
+                // ZukÃ¼nftige Beitragsgruppen lÃ¶schen
                 DBIterator<MitgliedNextBGruppe> mit = service
                     .createList(MitgliedNextBGruppe.class);
                 mit.addFilter(MitgliedNextBGruppe.COL_MITGLIED + " = ? ",
@@ -204,12 +204,12 @@ public class MitgliedMenu extends ContextMenu
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      addItem(new CheckedContextMenuItem("Löschen",
+      addItem(new CheckedContextMenuItem("LÃ¶schen",
           new NichtMitgliedDeleteAction(), "user-trash-full.png"));
     }
     else
     {
-      addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
+      addItem(new CheckedContextMenuItem("LÃ¶schen", new MitgliedDeleteAction(),
           "user-trash-full.png"));
     }
     addItem(ContextMenuItem.SEPARATOR);

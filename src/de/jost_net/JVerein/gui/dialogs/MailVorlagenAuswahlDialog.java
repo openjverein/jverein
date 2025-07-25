@@ -29,7 +29,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, ueber den die Vorlage für eine Mail ausgewählt werden kann.
+ * Ein Dialog, ueber den die Vorlage fÃ¼r eine Mail ausgewÃ¤hlt werden kann.
  */
 public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
 {

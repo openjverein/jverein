@@ -52,7 +52,7 @@ public class VollzahlerInput
     {
       case AbstractInputAuswahl.ComboBox:
         StringBuffer cond = new StringBuffer();
-        // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
+        // Beitragsgruppen ermitteln, die Zahler fÃ¼r andere Mitglieder sind
         DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
             .createList(Beitragsgruppe.class);
         bg.addFilter("beitragsart != ?",
@@ -78,7 +78,7 @@ public class VollzahlerInput
             zhl != null ? PseudoIterator.asList(zhl) : null, zahlmitglied);
         ((SelectNoScrollInput) mitgliedInput).setAttribute("namevorname");
         ((SelectNoScrollInput) mitgliedInput)
-            .setPleaseChoose("Bitte auswählen");
+            .setPleaseChoose("Bitte auswÃ¤hlen");
         break;
       case AbstractInputAuswahl.SearchInput:
       default:

@@ -110,7 +110,7 @@ public class BackupCreateAction implements Action
         + new JVDateFormatJJJJMMTT().format(new Date()) + ".xml");
     fd.setFilterExtensions(new String[] { "*.xml" });
     fd.setText(
-        "Bitte wählen Sie die Datei, in der das Backup gespeichert wird");
+        "Bitte wÃ¤hlen Sie die Datei, in der das Backup gespeichert wird");
     String f = fd.open();
     if (f == null || f.length() == 0)
       return;
@@ -119,7 +119,7 @@ public class BackupCreateAction implements Action
     try
     {
       if (file.exists() && !Application.getCallback()
-          .askUser("Datei existiert bereits. Überschreiben?"))
+          .askUser("Datei existiert bereits. Ãœberschreiben?"))
         return;
     }
     catch (ApplicationException ae)
@@ -219,7 +219,7 @@ public class BackupCreateAction implements Action
           backup(MailImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Mailanhänge");
+          monitor.setStatusText("Speichere MailanhÃ¤nge");
           backup(MailAnhangImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -231,15 +231,15 @@ public class BackupCreateAction implements Action
           backup(ProjektImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Informationen über QIF-Header");
+          monitor.setStatusText("Speichere Informationen Ã¼ber QIF-Header");
           backup(QIFImportHeadImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Informationen über QIF-Positionen");
+          monitor.setStatusText("Speichere Informationen Ã¼ber QIF-Positionen");
           backup(QIFImportPosImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Anfangsbestände");
+          monitor.setStatusText("Speichere AnfangsbestÃ¤nde");
           backup(AnfangsbestandImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -268,7 +268,7 @@ public class BackupCreateAction implements Action
           monitor.addPercentComplete(1);
 
           monitor.setStatusText(
-              "Speichere Informationen über zukünftige Beitragsgruppen");
+              "Speichere Informationen Ã¼ber zukÃ¼nftige Beitragsgruppen");
           backup(MitgliedNextBGruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -292,12 +292,12 @@ public class BackupCreateAction implements Action
           backup(WiedervorlageImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Zusatzbeträge");
+          monitor.setStatusText("Speichere ZusatzbetrÃ¤ge");
           backup(ZusatzbetragImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText(
-              "Speichere Informatioen über Abrechnungsläufe von Zusatzbeträgen");
+              "Speichere Informatioen Ã¼ber AbrechnungslÃ¤ufe von ZusatzbetrÃ¤gen");
           backup(ZusatzbetragAbrechnungslaufImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -305,11 +305,11 @@ public class BackupCreateAction implements Action
           backup(ZusatzfelderImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Arbeitseinsätze");
+          monitor.setStatusText("Speichere ArbeitseinsÃ¤tze");
           backup(ArbeitseinsatzImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Jahresabschlüsse");
+          monitor.setStatusText("Speichere JahresabschlÃ¼sse");
           backup(JahresabschlussImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -329,16 +329,16 @@ public class BackupCreateAction implements Action
           backup(LastschriftImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Lehrgänge");
+          monitor.setStatusText("Speichere LehrgÃ¤nge");
           backup(LehrgangImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Mailempfänger");
+          monitor.setStatusText("Speichere MailempfÃ¤nger");
           backup(MailEmpfaengerImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText(
-              "Speichere Sekundäre Beitragsgruppen der Mitglieder");
+              "Speichere SekundÃ¤re Beitragsgruppen der Mitglieder");
           backup(SekundaereBeitragsgruppeImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -425,7 +425,7 @@ public class BackupCreateAction implements Action
       {
         Logger.error("error while writing object " + BeanUtil.toString(o)
             + " - skipping", e);
-        monitor.log(String.format("  %s fehlerhaft (%s), überspringe",
+        monitor.log(String.format("  %s fehlerhaft (%s), Ã¼berspringe",
             BeanUtil.toString(o), e.getMessage()));
       }
     }

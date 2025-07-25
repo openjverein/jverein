@@ -114,7 +114,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
       dirName = "";
     }
 
-    GUI.getView().setTitle("Vorlagen für Mitglieder-Auswertung");
+    GUI.getView().setTitle("Vorlagen fÃ¼r Mitglieder-Auswertung");
 
     final Composite parent = this.getParent();
     parent.setLayout(new GridLayout(2, false));
@@ -149,7 +149,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
 
     // ------------------------------------------------
     // Bereich mit
-    // links: Liste mit verfügbaren Feldnamen
+    // links: Liste mit verfÃ¼gbaren Feldnamen
     // rechts: Tabelle mit Zuordnung Feldname zu Username
     // ------------------------------------------------
     final List list = new List(parent, SWT.BORDER | SWT.SINGLE | SWT.V_SCROLL);
@@ -185,7 +185,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     // ------------------------------------------------
     // Bereich mit Buttons
     // ------------------------------------------------
-    // Anmerkung: Klasse ButtonArea wird nicht verwendet, da keine Möglichkeit
+    // Anmerkung: Klasse ButtonArea wird nicht verwendet, da keine MÃ¶glichkeit
     // zum disable/enable der Buttons
     Composite compButtons = new Composite(parent, SWT.NONE);
     compButtons.setLayout(new RowLayout());
@@ -389,8 +389,8 @@ public class AuswertungVorlagenCsvView extends AbstractView
         }
         else
         {
-          // Source ist Tabelle: Anwender will Reihenfolge der Tabelleneinträge
-          // ändern
+          // Source ist Tabelle: Anwender will Reihenfolge der TabelleneintrÃ¤ge
+          // Ã¤ndern
           sourceIndex = Integer.parseInt(data.substring(1));
           TableItem sourceItem = csvTable.getItem(sourceIndex);
           csvname = sourceItem.getText(0);
@@ -406,7 +406,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
           targetIndex = csvTable.indexOf(targetItem);
         }
 
-        // Prüfe ob Source bereits in der Tabelle
+        // PrÃ¼fe ob Source bereits in der Tabelle
         if (sourceIndex == -1)
         {
           // Source war ein Listeneintag (links), kein Tabelleneintrag (rechts)
@@ -425,10 +425,10 @@ public class AuswertungVorlagenCsvView extends AbstractView
         // neuer Eintrag
         addItem(csvname, username, targetIndex);
 
-        // Source item löschen, falls Source ebenfalls Tabelle war (Reihenfolge)
+        // Source item lÃ¶schen, falls Source ebenfalls Tabelle war (Reihenfolge)
         if (sourceIndex >= 0)
         {
-          // beachte Source über oder unter Target?
+          // beachte Source Ã¼ber oder unter Target?
           if (sourceIndex > targetIndex)
           {
             sourceIndex++;
@@ -447,7 +447,7 @@ public class AuswertungVorlagenCsvView extends AbstractView
     if (this.dirName.isEmpty())
     {
       // kein Verzeichnis unter Einstellungen angegeben
-      label.setText("kein Verzeichnis gewählt (Einstellungen->Dateinamen)");
+      label.setText("kein Verzeichnis gewÃ¤hlt (Einstellungen->Dateinamen)");
       label.setForeground(Color.ERROR.getSWTColor());
     }
     else
@@ -455,8 +455,8 @@ public class AuswertungVorlagenCsvView extends AbstractView
       File dirFile = new File(dirName);
       if (!dirFile.isDirectory())
       {
-        // ungültiges Verzeichnis unter Einstellungen angegeben
-        label.setText("Verzeichnis ungültig: " + dirName);
+        // ungÃ¼ltiges Verzeichnis unter Einstellungen angegeben
+        label.setText("Verzeichnis ungÃ¼ltig: " + dirName);
         label.setForeground(Color.ERROR.getSWTColor());
         dirName = "";
       }

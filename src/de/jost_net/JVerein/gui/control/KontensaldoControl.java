@@ -118,8 +118,8 @@ public class KontensaldoControl extends AbstractSaldoControl
     if (mitSteuer)
     {
       // Bei Umbuchungen vom Geldkonto den Steueranteil nicht bei den
-      // Umbuchungen sondern bei den Einnahmen/Ausgaben aufführen.
-      // Alte Steuerbuchungen mit dependencyid berücksichtigen wir dabei nicht
+      // Umbuchungen sondern bei den Einnahmen/Ausgaben auffÃ¼hren.
+      // Alte Steuerbuchungen mit dependencyid berÃ¼cksichtigen wir dabei nicht
       it.addColumn(
           "sum(case when buchungsart.art = ? then buchung.betrag else 0 end "
               + "- case when (dependencyid is null or dependencyid = -1)"
@@ -266,12 +266,12 @@ public class KontensaldoControl extends AbstractSaldoControl
             + (ohneBuchungsart == null ? 0 : ohneBuchungsart);
         o.setAttribute(ENDBESTAND, endbestand);
 
-        // Die Art des Eintrags ist hier immer "Detail" (Wird für die Summen in
-        // der Fußzeile benötigt)
+        // Die Art des Eintrags ist hier immer "Detail" (Wird fÃ¼r die Summen in
+        // der FuÃŸzeile benÃ¶tigt)
         o.setAttribute(ART, ART_DETAIL);
 
         // Summen aller Konten ermitteln.
-        // Konten über dem Limit nicht mitzählen.
+        // Konten Ã¼ber dem Limit nicht mitzÃ¤hlen.
         if (kontoart < Kontoart.LIMIT.getKey())
         {
           summeAnfangsbestand += anfangsbestand;
@@ -282,7 +282,7 @@ public class KontensaldoControl extends AbstractSaldoControl
           jahressaldo += endbestand - anfangsbestand;
         }
 
-        // Die Summen für das Summen Anlagenkonto bestimmen
+        // Die Summen fÃ¼r das Summen Anlagenkonto bestimmen
         if (summensaldo && kontoart == Kontoart.ANLAGE.getKey())
         {
           summenAnlageAnfangsbestand += anfangsbestand;
@@ -291,7 +291,7 @@ public class KontensaldoControl extends AbstractSaldoControl
           summenAnlageUmbuchungen += umbuchungen;
           summenAnlageEndbestand += endbestand;
         }
-        // Die Konten über dem Limit gesondert ausgeben
+        // Die Konten Ã¼ber dem Limit gesondert ausgeben
         else if (kontoart > Kontoart.LIMIT.getKey())
         {
           zeilenUeberLimit.add(o);
@@ -329,22 +329,22 @@ public class KontensaldoControl extends AbstractSaldoControl
     summe.setAttribute(ART, ART_GESAMTSALDOFOOTER);
     zeilen.add(summe);
 
-    // Überschuss/Verlust Zeile
+    // Ãœberschuss/Verlust Zeile
     PseudoDBObject gv = new PseudoDBObject();
-    gv.setAttribute(GRUPPE, "Überschuss/Verlust(-)");
+    gv.setAttribute(GRUPPE, "Ãœberschuss/Verlust(-)");
     gv.setAttribute(ENDBESTAND, jahressaldo);
     gv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
     zeilen.add(gv);
 
-    // Konten ohne Berücksichtigung im Saldo
+    // Konten ohne BerÃ¼cksichtigung im Saldo
     if (zeilenUeberLimit.size() > 0)
     {
       // Leerzeile als Trenner
       zeilen.add(new PseudoDBObject());
 
-      // Konten ohne Berücksichtigung im Saldo
+      // Konten ohne BerÃ¼cksichtigung im Saldo
       PseudoDBObject ohne = new PseudoDBObject();
-      ohne.setAttribute(GRUPPE, "Konten ohne Berücksichtigung im Saldo:");
+      ohne.setAttribute(GRUPPE, "Konten ohne BerÃ¼cksichtigung im Saldo:");
       zeilen.add(ohne);
 
       zeilen.addAll(zeilenUeberLimit);

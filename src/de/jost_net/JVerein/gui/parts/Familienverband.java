@@ -55,8 +55,8 @@ public class Familienverband implements Part
   }
 
   /**
-   * Zeichnet den Familienverband Part. Die Ausgabe hängt von Feld visible ab,
-   * das über die Funktion setVisible(boolean) gesetzt wird.
+   * Zeichnet den Familienverband Part. Die Ausgabe hÃ¤ngt von Feld visible ab,
+   * das Ã¼ber die Funktion setVisible(boolean) gesetzt wird.
    */
   @Override
   public void paint(Composite parent) throws RemoteException
@@ -88,7 +88,7 @@ public class Familienverband implements Part
       TabGroup tg2 = new TabGroup(tab, "Vollzahlendes Familienmitglied");
       // erstelle neuen zahler: (force == true)
       control.getZahler(true)
-          .setComment("Nur für Beitragsgruppenart: \"Familienangehörige\"");
+          .setComment("Nur fÃ¼r Beitragsgruppenart: \"FamilienangehÃ¶rige\"");
       tg2.addLabelPair("Vollzahler", control.getZahler());
 
       if (gruppe != null)
@@ -109,7 +109,7 @@ public class Familienverband implements Part
 
   /**
    * Aktiviert den ersten Tab, wenn Beitragsgruppe FAMILIE_ZAHLER ist, ansonsten
-   * den zweiten Tab. So kann für Mitglieder deren Beitragsgruppe
+   * den zweiten Tab. So kann fÃ¼r Mitglieder deren Beitragsgruppe
    * FAMILIE_ANGEHOERIGER direkt auf dem zweiten Tab ihr Familien-Zahler
    * eingestellt werden.
    * 

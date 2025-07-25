@@ -112,7 +112,7 @@ public class MitgliedMailSendenAction implements Action
       }
       else
       {
-        throw new ApplicationException("Keinen Empf‰nger ausgew‰hlt");
+        throw new ApplicationException("Keinen Empf√§nger ausgew√§hlt");
       }
     }
     catch (OperationCanceledException oce)

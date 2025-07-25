@@ -222,7 +222,7 @@ public class JVereinUpdateProvider
     }
     catch (SQLException e)
     {
-      Logger.error("Versionsnummer kann nicht eingefügt werden.", e);
+      Logger.error("Versionsnummer kann nicht eingefÃ¼gt werden.", e);
       throw new ApplicationException(
           "Versionsnummer kann nicht gespeichert werden.");
     }
@@ -304,7 +304,7 @@ public class JVereinUpdateProvider
       catch (Exception e)
       {
         Logger.error("unable to execute update", e);
-        throw new ApplicationException("Fehler beim Ausführen des Updates", e);
+        throw new ApplicationException("Fehler beim AusfÃ¼hren des Updates", e);
       }
     }
   }
@@ -4324,7 +4324,7 @@ public class JVereinUpdateProvider
 
     final String BETRAG = "Betrag";
 
-    final String KUENDIGUNG = "Kündigung";
+    final String KUENDIGUNG = "KÃ¼ndigung";
     final String sql1 = "UPDATE formularfeld SET name = '";
     final String sql2 = "' WHERE name = '";
     final String sql3 = "';\n";
@@ -7178,7 +7178,7 @@ public class JVereinUpdateProvider
     catch (SQLException e)
     {
       Logger.error(
-          "Datenbankupdate 358: Auslesen der Emailpasswörter fehlgeschlagen. Fehler wird ignoriert, Passwörter in Einstellungsmaske bitte neu eingeben.");
+          "Datenbankupdate 358: Auslesen der EmailpasswÃ¶rter fehlgeschlagen. Fehler wird ignoriert, PasswÃ¶rter in Einstellungsmaske bitte neu eingeben.");
     }
 
     try
@@ -7190,7 +7190,7 @@ public class JVereinUpdateProvider
     catch (Exception e)
     {
       Logger.error(
-          "Datenbankupdate 358: Speichern der Emailpasswörter in Wallet fehlgeschlagen.");
+          "Datenbankupdate 358: Speichern der EmailpasswÃ¶rter in Wallet fehlgeschlagen.");
     }
 
     Map<String, String> statements = new HashMap<String, String>();

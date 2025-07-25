@@ -51,13 +51,13 @@ public class WiedervorlageNeuAction implements Action
         if (m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann können Wiedervorlagen aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann kÃ¶nnen Wiedervorlagen aufgenommen werden.");
         }
         w.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgewählt");
+        throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
       }
     }
     catch (RemoteException e)

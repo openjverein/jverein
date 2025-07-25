@@ -36,7 +36,7 @@ public class SteuerInput extends SelectInput
    * Steuer Select Input
    * 
    * @param def
-   *          die vorausgew‰hlte Steuer
+   *          die vorausgew√§hlte Steuer
    * @throws RemoteException
    */
   public SteuerInput(Steuer def) throws RemoteException
@@ -47,7 +47,7 @@ public class SteuerInput extends SelectInput
   /**
    * @return initialisiert die Liste der Optionen.
    * @param def
-   *          Die Vorausgew‰hlte Steuer (Wird immer angezeigt, auch wen inaktiv)
+   *          Die Vorausgew√§hlte Steuer (Wird immer angezeigt, auch wen inaktiv)
    * @throws RemoteException
    */
   private static GenericIterator<Steuer> init(Steuer def) throws RemoteException

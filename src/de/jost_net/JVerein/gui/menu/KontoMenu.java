@@ -40,7 +40,7 @@ public class KontoMenu extends ContextMenu
         new EditAction(KontoDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new KontoDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new KontoDeleteAction(),
         "user-trash-full.png"));
   }
 }

@@ -32,7 +32,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Formulares
+ * LÃ¶schen eines Formulares
  */
 public class FormularDeleteAction implements Action
 {
@@ -47,7 +47,7 @@ public class FormularDeleteAction implements Action
     }
     if (context == null || !(context instanceof Formular))
     {
-      throw new ApplicationException("Kein Formular ausgewählt");
+      throw new ApplicationException("Kein Formular ausgewÃ¤hlt");
     }
     try
     {
@@ -63,7 +63,7 @@ public class FormularDeleteAction implements Action
       if (spb.size() > 0)
       {
         throw new ApplicationException(String.format(
-            "Forular '%s' kann nicht gelöscht werden. Es ist bei %d Spendenbescheinigung(en) hinterlegt.",
+            "Forular '%s' kann nicht gelÃ¶scht werden. Es ist bei %d Spendenbescheinigung(en) hinterlegt.",
             f.getBezeichnung(), spb.size()));
       }
 
@@ -71,9 +71,9 @@ public class FormularDeleteAction implements Action
       if (f.hasFormlinks())
       {
         SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
-        sd.setTitle("Formularabhängigkeit");
+        sd.setTitle("FormularabhÃ¤ngigkeit");
         sd.setText(String.format(
-            "Das Formular kann nicht gelöscht werden. Es ist noch mit %d Formular(en) verknüpft.",
+            "Das Formular kann nicht gelÃ¶scht werden. Es ist noch mit %d Formular(en) verknÃ¼pft.",
             f.getLinked().size()));
         try
         {
@@ -93,9 +93,9 @@ public class FormularDeleteAction implements Action
             .createObject(Formular.class, String.valueOf(formlink));
 
         SimpleDialog sd = new SimpleDialog(AbstractDialog.POSITION_CENTER);
-        sd.setTitle("Formularabhängigkeit");
+        sd.setTitle("FormularabhÃ¤ngigkeit");
         sd.setText(String.format(
-            "Das Formular kann nicht gelöscht werden. Es ist mit dem Formular \"%s\" verknüpft.",
+            "Das Formular kann nicht gelÃ¶scht werden. Es ist mit dem Formular \"%s\" verknÃ¼pft.",
             fo.getBezeichnung()));
         try
         {
@@ -109,8 +109,8 @@ public class FormularDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Formular löschen");
-      d.setText(("Wollen Sie dieses Formular wirklich löschen?"));
+      d.setTitle("Formular lÃ¶schen");
+      d.setText(("Wollen Sie dieses Formular wirklich lÃ¶schen?"));
 
       try
       {
@@ -122,15 +122,15 @@ public class FormularDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Formulares", e);
+        Logger.error("Fehler beim LÃ¶schen des Formulares", e);
         return;
       }
       f.delete();
-      GUI.getStatusBar().setSuccessText("Formular gelöscht.");
+      GUI.getStatusBar().setSuccessText("Formular gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Formulars";
+      String fehler = "Fehler beim LÃ¶schen des Formulars";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

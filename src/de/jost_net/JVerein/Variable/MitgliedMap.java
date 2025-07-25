@@ -226,7 +226,7 @@ public class MitgliedMap extends AbstractMap
         zahlungsweg = (String) Einstellungen
             .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
-      case Zahlungsweg.ÜBERWEISUNG:
+      case Zahlungsweg.ÃœBERWEISUNG:
         zahlungsweg = (String) Einstellungen
             .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
@@ -329,7 +329,7 @@ public class MitgliedMap extends AbstractMap
 
     if (!ohneLesefelder)
     {
-      // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+      // FÃ¼ge Lesefelder diesem Mitglied-Objekt hinzu.
       LesefeldAuswerter l = new LesefeldAuswerter();
       l.setLesefelderDefinitionsFromDatabase();
       l.setMap(map);
@@ -376,7 +376,7 @@ public class MitgliedMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei MÃ¼ller");
     map.put(MitgliedVar.MITGLIEDSTYP.getName(), "1");
     map.put(MitgliedVar.ANREDE.getName(), "Herrn");
     map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
@@ -395,7 +395,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
     map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
     map.put(MitgliedVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
     map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
     map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
@@ -451,7 +451,7 @@ public class MitgliedMap extends AbstractMap
         Zahlungstermin.HALBJAEHRLICH4.toString());
     map.put(MitgliedVar.ZAHLUNGSWEG.getName(), "2");
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
-        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto.");
     map.put(MitgliedVar.ZAHLERID.getName(), "123456");
 
     // Liste der Felddefinitionen
@@ -501,7 +501,7 @@ public class MitgliedMap extends AbstractMap
       map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
     }
 
-    // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+    // FÃ¼ge Lesefelder diesem Mitglied-Objekt hinzu.
     LesefeldAuswerter l = new LesefeldAuswerter();
     l.setLesefelderDefinitionsFromDatabase();
     l.setMap(map);

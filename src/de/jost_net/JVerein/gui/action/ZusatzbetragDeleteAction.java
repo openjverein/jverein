@@ -49,13 +49,13 @@ public class ZusatzbetragDeleteAction implements Action
     }
     if (z == null)
     {
-      throw new ApplicationException("Keinen Zusatzbetrag ausgewählt");
+      throw new ApplicationException("Keinen Zusatzbetrag ausgewÃ¤hlt");
     }
 
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Zusatzbetrag löschen");
-    d.setText(String.format("Wollen Sie %d %s wirklich löschen?", z.length,
-        (z.length == 1 ? "Zusatzbetrag" : "Zusatzbeträge")));
+    d.setTitle("Zusatzbetrag lÃ¶schen");
+    d.setText(String.format("Wollen Sie %d %s wirklich lÃ¶schen?", z.length,
+        (z.length == 1 ? "Zusatzbetrag" : "ZusatzbetrÃ¤ge")));
     Boolean choice;
     try
     {
@@ -81,11 +81,11 @@ public class ZusatzbetragDeleteAction implements Action
 
         z1.delete();
       }
-      GUI.getStatusBar().setSuccessText("gelöscht.");
+      GUI.getStatusBar().setSuccessText("gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen von Zusatzbeträgen.";
+      String fehler = "Fehler beim LÃ¶schen von ZusatzbetrÃ¤gen.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

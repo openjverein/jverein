@@ -163,13 +163,13 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
           @SuppressWarnings("rawtypes")
           List items = spbTree.getItems();
 
-          // Baum Spendenbescheinigungen enthält keine Einträge
+          // Baum Spendenbescheinigungen enthÃ¤lt keine EintrÃ¤ge
           if (items == null)
             return;
 
           SpendenbescheinigungNode spn = (SpendenbescheinigungNode) items
               .get(0);
-          // Loop über die Mitglieder
+          // Loop Ã¼ber die Mitglieder
           @SuppressWarnings("rawtypes")
           GenericIterator it1 = spn.getChildren();
           while (it1.hasNext())
@@ -189,7 +189,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             spbescheinigung.setBezeichnungSachzuwendung("");
             spbescheinigung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
             spbescheinigung.setUnterlagenWertermittlung(false);
-            // Loop über die Buchungen eines Mitglieds
+            // Loop Ã¼ber die Buchungen eines Mitglieds
             @SuppressWarnings("rawtypes")
             GenericIterator it2 = sp1.getChildren();
             while (it2.hasNext())

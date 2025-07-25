@@ -153,19 +153,19 @@ public class AbrechnungSEPAParam
           konto = (Konto) d.open();
           if (konto == null)
           {
-            throw new ApplicationException("Bitte w‰hlen Sie ein Konto aus");
+            throw new ApplicationException("Bitte w√§hlen Sie ein Konto aus");
           }
         }
       }
       catch (OperationCanceledException e)
       {
-        throw new ApplicationException("Bitte w‰hlen Sie ein Konto aus");
+        throw new ApplicationException("Bitte w√§hlen Sie ein Konto aus");
       }
       catch (Exception e)
       {
         Logger.error("Fehler", e);
         throw new ApplicationException(
-            "Hibiscus-Datenbank kann nicht geˆffnet werden.");
+            "Hibiscus-Datenbank kann nicht ge√∂ffnet werden.");
       }
     }
     else

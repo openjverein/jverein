@@ -33,7 +33,7 @@ public class SpendenbescheinigungDeleteAction implements Action
 {
 
   /**
-   * Löschen von einer oder mehreren Spendenbescheinigungen, die in der View
+   * LÃ¶schen von einer oder mehreren Spendenbescheinigungen, die in der View
    * markiert sind.
    */
   @Override
@@ -47,7 +47,7 @@ public class SpendenbescheinigungDeleteAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
+      throw new ApplicationException("Keine Spendenbescheinigung ausgewÃ¤hlt");
     }
     else if (context instanceof Spendenbescheinigung)
     {
@@ -65,9 +65,9 @@ public class SpendenbescheinigungDeleteAction implements Action
     {
       String mehrzahl = spbArr.length > 1 ? "en" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Spendenbescheinigung" + mehrzahl + " löschen");
+      d.setTitle("Spendenbescheinigung" + mehrzahl + " lÃ¶schen");
       d.setText("Wollen Sie die Spendenbescheinigung" + mehrzahl
-          + " wirklich löschen?");
+          + " wirklich lÃ¶schen?");
 
       try
       {
@@ -79,7 +79,7 @@ public class SpendenbescheinigungDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Spendenbescheinigung" + mehrzahl,
+        Logger.error("Fehler beim LÃ¶schen der Spendenbescheinigung" + mehrzahl,
             e);
         return;
       }
@@ -92,11 +92,11 @@ public class SpendenbescheinigungDeleteAction implements Action
         spb.delete();
       }
       GUI.getStatusBar()
-          .setSuccessText("Spendenbescheinigung" + mehrzahl + "  gelöscht.");
+          .setSuccessText("Spendenbescheinigung" + mehrzahl + "  gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Spendenbescheinigung";
+      String fehler = "Fehler beim LÃ¶schen der Spendenbescheinigung";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

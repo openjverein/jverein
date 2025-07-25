@@ -92,7 +92,7 @@ public class MitgliedschaftsjubilaeumExportPDF
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
     Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d-j‰hriges Jubil‰um", jahrgang),
+        "\n" + String.format("%d-j√§hriges Jubil√§um", jahrgang),
         Reporter.getFreeSans(11));
     reporter.add(pHeader);
     reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,

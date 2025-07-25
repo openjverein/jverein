@@ -40,7 +40,7 @@ public class FormularLinkFormatter implements Formatter
             .createObject(Formular.class, o.toString());
         if (f == null)
         {
-          return "Das Formular mit der ID " + o.toString() + " wurde gelöscht.";
+          return "Das Formular mit der ID " + o.toString() + " wurde gelÃ¶scht.";
         }
         return f.getBezeichnung();
       }

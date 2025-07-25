@@ -38,7 +38,7 @@ public class FelddefinitionMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ZusatzfeldDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new FelddefinitionDeleteAction(), "user-trash-full.png"));
   }
 }

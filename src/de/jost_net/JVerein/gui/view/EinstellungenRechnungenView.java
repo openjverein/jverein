@@ -37,15 +37,15 @@ public class EinstellungenRechnungenView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair("Text Abbuchung", control.getRechnungTextAbbuchung());
-    cont.addLabelPair("Text Überweisung",
+    cont.addLabelPair("Text Ãœberweisung",
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
-    cont.addLabelPair("Länge Rechnungsnummer", control.getZaehlerLaenge());
+    cont.addLabelPair("LÃ¤nge Rechnungsnummer", control.getZaehlerLaenge());
 
     cont.addHeadline("QR-Code");
-    cont.addLabelPair("Kantenlänge QR-Code", control.getQRCodeSizeInMm());
+    cont.addLabelPair("KantenlÃ¤nge QR-Code", control.getQRCodeSizeInMm());
     cont.addLabelPair("Verwendungszweck", control.getQRCodeVerwendungszweck());
-    cont.addLabelPair("Verwendungszweck hinzufügen",
+    cont.addLabelPair("Verwendungszweck hinzufÃ¼gen",
         control.getQRCodePrintVerwendungszweck());
     cont.addLabelPair("Bei einzelner Position Verwendungszweck ersetzen",
         control.getQRCodeSingle());
@@ -55,8 +55,8 @@ public class EinstellungenRechnungenView extends AbstractView
         control.getQRCodeMemberNr());
     cont.addLabelPair("Information an Mitglied in QR-Code",
         control.getQRCodeInfoToMember());
-    cont.addLabelPair("Texte in QR-Code kürzen", control.getQRCodeKuerzen());
-    cont.addLabelPair("Beschreibungstext für QR-Code",
+    cont.addLabelPair("Texte in QR-Code kÃ¼rzen", control.getQRCodeKuerzen());
+    cont.addLabelPair("Beschreibungstext fÃ¼r QR-Code",
         control.getQRCodeIntro());
 
     ButtonArea buttons = new ButtonArea();

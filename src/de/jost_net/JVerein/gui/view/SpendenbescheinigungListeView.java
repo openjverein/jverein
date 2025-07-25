@@ -72,10 +72,10 @@ public class SpendenbescheinigungListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Bescheinigung Datumsbereich zurück");
-    vor1.setToolTipText("Bescheinigung Datumsbereich vowärts");
-    zurueck2.setToolTipText("Spende Datumsbereich zurück");
-    vor2.setToolTipText("Spende Datumsbereich vowärts");
+    zurueck1.setToolTipText("Bescheinigung Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Bescheinigung Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Spende Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Spende Datumsbereich vowÃ¤rts");
 
     control.getSpendenbescheinigungList().paint(this.getParent());
 

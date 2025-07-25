@@ -120,27 +120,27 @@ public class DefaultZusatzbetraegeImport implements Importer
       if (b_mitgliedsnummer && b_extmitgliedsnummer)
       {
         throw new ApplicationException(
-            "Spaltenüberschrift muss entweder nur Mitglieds_Nr"
+            "SpaltenÃ¼berschrift muss entweder nur Mitglieds_Nr"
                 + " oder Ext_Mitglieds_Nr zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if ((b_mitgliedsnummer || b_extmitgliedsnummer)
           && (b_nachname || b_vorname))
       {
         throw new ApplicationException(
-            "Spaltenüberschrift muss entweder Angaben zur Mitgliedsnummer"
+            "SpaltenÃ¼berschrift muss entweder Angaben zur Mitgliedsnummer"
                 + " oder Nachname und Vorname zur Zuordnung des Mitglieds enthalten. Es ist beides vorhanden. Abbruch!");
       }
       if (!b_mitgliedsnummer && !b_extmitgliedsnummer
           && (!b_nachname || !b_vorname))
       {
         throw new ApplicationException(
-            "Spaltenüberschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"
+            "SpaltenÃ¼berschrift muss entweder Mitglieds_Nr, Ext_Mitglieds_Nr"
                 + " oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
       }
 
       List<Zusatzbetrag> zusatzbetraegeList = new ArrayList<>();
       monitor.setStatusText(
-          "Überprüfung der Spaltenüberschriften erfolgreich abgeschlossen.");
+          "ÃœberprÃ¼fung der SpaltenÃ¼berschriften erfolgreich abgeschlossen.");
 
       int anz = 0;
       while (results.next())
@@ -184,13 +184,13 @@ public class DefaultZusatzbetraegeImport implements Importer
         if (list.size() == 0)
         {
           throw new ApplicationException(String.format(
-              "Für die Importzeile %d (%s) kein Mitglied in JVerein-Datenbank gefunden. Abbruch!",
+              "FÃ¼r die Importzeile %d (%s) kein Mitglied in JVerein-Datenbank gefunden. Abbruch!",
               anz, mitgliedIdString));
         }
         else if (list.size() > 1)
         {
           throw new ApplicationException(String.format(
-              "Für die Importzeile %d (%s) mehr als ein Mitglied gefunden. Abbruch!",
+              "FÃ¼r die Importzeile %d (%s) mehr als ein Mitglied gefunden. Abbruch!",
               anz, mitgliedIdString));
         }
         else
@@ -204,8 +204,8 @@ public class DefaultZusatzbetraegeImport implements Importer
           if (betrag == 0)
           {
             throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte die Fließkommazahl in der Spalte Betrag"
-                    + " nicht verarbeitet werden. Zahl muss größer 0 sein. Abbruch!",
+                "FÃ¼r die Importzeile %d (%s) konnte die FlieÃŸkommazahl in der Spalte Betrag"
+                    + " nicht verarbeitet werden. Zahl muss grÃ¶ÃŸer 0 sein. Abbruch!",
                 anz, mitgliedIdString));
           }
           zus.setBetrag(betrag);
@@ -213,22 +213,22 @@ public class DefaultZusatzbetraegeImport implements Importer
           if (buchungstext.length() > 140)
           {
             throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte der Text in der Spalte Buchungstext nicht verarbeitet werden."
-                    + " Länge des Buchungstextes ist auf 140 Zeichen begrenzt. Abbruch!",
+                "FÃ¼r die Importzeile %d (%s) konnte der Text in der Spalte Buchungstext nicht verarbeitet werden."
+                    + " LÃ¤nge des Buchungstextes ist auf 140 Zeichen begrenzt. Abbruch!",
                 anz, mitgliedIdString));
           }
           zus.setBuchungstext(buchungstext);
           try
           {
             Date d = de.jost_net.JVerein.util.Datum
-                .toDate(results.getString("Fälligkeit"));
+                .toDate(results.getString("FÃ¤lligkeit"));
             zus.setFaelligkeit(d);
             zus.setStartdatum(d);
           }
           catch (ParseException e)
           {
             throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
+                "FÃ¼r die Importzeile %d (%s) konnte das Datum in der Spalte FÃ¤lligkeit nicht verarbeitet werden. Abbruch!",
                 anz, mitgliedIdString));
           }
 
@@ -236,8 +236,8 @@ public class DefaultZusatzbetraegeImport implements Importer
           if (intervall < 0)
           {
             throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte die Zahl in der Spalte Intervall nicht verarbeitet werden."
-                    + " Zahl muss größer oder gleich 0 sein. Abbruch!",
+                "FÃ¼r die Importzeile %d (%s) konnte die Zahl in der Spalte Intervall nicht verarbeitet werden."
+                    + " Zahl muss grÃ¶ÃŸer oder gleich 0 sein. Abbruch!",
                 anz, mitgliedIdString));
           }
           zus.setIntervall(intervall);
@@ -254,7 +254,7 @@ public class DefaultZusatzbetraegeImport implements Importer
           catch (ParseException e)
           {
             throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
+                "FÃ¼r die Importzeile %d (%s) konnte das Datum in der Spalte FÃ¤lligkeit nicht verarbeitet werden. Abbruch!",
                 anz, mitgliedIdString));
           }
           catch (SQLException e)
@@ -311,7 +311,7 @@ public class DefaultZusatzbetraegeImport implements Importer
               if (ba == null)
               {
                 throw new ApplicationException(
-                    "Steuer nur möglich, wenn auch eine Buchungsart angegeben ist.");
+                    "Steuer nur mÃ¶glich, wenn auch eine Buchungsart angegeben ist.");
               }
               it.addFilter("buchungsart.art = ?", ba.getArt());
               it.addFilter("satz = ?", steuer);
@@ -328,7 +328,7 @@ public class DefaultZusatzbetraegeImport implements Importer
                     break;
                   case ArtBuchungsart.UMBUCHUNG:
                     throw new ApplicationException(
-                        "Steuer bei Umbuchungen ist bei Zusatzbeträgen nicht möglich");
+                        "Steuer bei Umbuchungen ist bei ZusatzbetrÃ¤gen nicht mÃ¶glich");
                 }
                 throw new ApplicationException(String.format(
                     steuerart + " mit dem Satz %s%% nicht gefunden.", steuer));
@@ -352,9 +352,9 @@ public class DefaultZusatzbetraegeImport implements Importer
           zusatzbetraegeList.add(zus);
         }
 
-        // überprüfen und parsen der Daten beendet.
+        // Ã¼berprÃ¼fen und parsen der Daten beendet.
         monitor.setStatusText(String.format(
-            "Überprüfen aller Zusatzbeiträge erfolgreich abschlossen. %d Zusatzbeiträge werden importiert...",
+            "ÃœberprÃ¼fen aller ZusatzbeitrÃ¤ge erfolgreich abschlossen. %d ZusatzbeitrÃ¤ge werden importiert...",
             anz));
         int count = 0;
         for (Zusatzbetrag zusatzbetrag : zusatzbetraegeList)
@@ -364,7 +364,7 @@ public class DefaultZusatzbetraegeImport implements Importer
               10 + (count * 90 / zusatzbetraegeList.size()));
           zusatzbetrag.store();
           monitor.setStatusText(String.format(
-              "Zusatzbeitrag für Mitglied %s erfolgreich importiert.",
+              "Zusatzbeitrag fÃ¼r Mitglied %s erfolgreich importiert.",
               Adressaufbereitung.getNameVorname(zusatzbetrag.getMitglied())));
         }
         monitor.setStatusText("Import komplett abgeschlossen.");
@@ -393,7 +393,7 @@ public class DefaultZusatzbetraegeImport implements Importer
       }
       catch (SQLException e)
       {
-        Logger.error("Fehler beim Schließen von ResultSet results", e);
+        Logger.error("Fehler beim SchlieÃŸen von ResultSet results", e);
       }
       try
       {
@@ -404,7 +404,7 @@ public class DefaultZusatzbetraegeImport implements Importer
       }
       catch (SQLException e)
       {
-        Logger.error("Fehler beim Schließen von Statement stmt", e);
+        Logger.error("Fehler beim SchlieÃŸen von Statement stmt", e);
       }
       try
       {
@@ -413,7 +413,7 @@ public class DefaultZusatzbetraegeImport implements Importer
       }
       catch (SQLException e)
       {
-        Logger.error("Fehler beim Schließen von Connection conn", e);
+        Logger.error("Fehler beim SchlieÃŸen von Connection conn", e);
       }
     }
   }
@@ -421,7 +421,7 @@ public class DefaultZusatzbetraegeImport implements Importer
   @Override
   public String getName()
   {
-    return "Default-Zusatzbeträge";
+    return "Default-ZusatzbetrÃ¤ge";
   }
 
   public boolean hasFileDialog()

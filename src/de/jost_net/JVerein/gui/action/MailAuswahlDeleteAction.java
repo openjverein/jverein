@@ -44,7 +44,7 @@ public class MailAuswahlDeleteAction implements Action
     MailEmpfaenger[] empfaenger = null;
     if (context == null)
     {
-      throw new ApplicationException("Keinen Empf‰nger ausgew‰hlt");
+      throw new ApplicationException("Keinen Empf√§nger ausgew√§hlt");
     }
     else if (context instanceof MailEmpfaenger)
     {
@@ -67,7 +67,7 @@ public class MailAuswahlDeleteAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim entfernen des MailEmpf‰ngers";
+      String fehler = "Fehler beim entfernen des MailEmpf√§ngers";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -211,7 +211,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
       if (getGesperrt().booleanValue())
         return null;
       if (getMitgliedZuordenbar().booleanValue())
-        return "Buchung im Mitgliedskonto möglich";
+        return "Buchung im Mitgliedskonto mÃ¶glich";
       return " - ";
     }
     if (VIEW_SALDO.equals(fieldName))
@@ -290,7 +290,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     }
     catch (RemoteException ex)
     {
-      throw new ApplicationException("Defaultwerte können nicht gesetzt werden",
+      throw new ApplicationException("Defaultwerte kÃ¶nnen nicht gesetzt werden",
           ex);
     }
   }

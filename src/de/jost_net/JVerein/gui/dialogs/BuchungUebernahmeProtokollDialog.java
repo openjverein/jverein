@@ -55,7 +55,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(650, 400);
-    this.setTitle("Buchungsübernahme Hibiscus->JVerein");
+    this.setTitle("BuchungsÃ¼bernahme Hibiscus->JVerein");
     this.buchungen = buchungen;
     this.fehlerbuchung = fehlerbuchung;
     this.exception = exeption;
@@ -64,7 +64,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    // LabelGroup group = new LabelGroup(parent, "Übernommene Buchungen");
+    // LabelGroup group = new LabelGroup(parent, "Ãœbernommene Buchungen");
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");

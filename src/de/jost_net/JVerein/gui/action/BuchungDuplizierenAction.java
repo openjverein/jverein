@@ -31,7 +31,7 @@ public class BuchungDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
     Buchung b = (Buchung) context;
     try

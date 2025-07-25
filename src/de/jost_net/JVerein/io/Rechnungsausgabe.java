@@ -89,7 +89,7 @@ public class Rechnungsausgabe
     }
 
     Formular formular = null;
-    // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
+    // Bei Mahnung ist Formular nÃ¶tig, bei Rechnung ist es individuell in der
     // Rechnung angegeben
     if (typ == TYP.MAHNUNG)
     {
@@ -97,7 +97,7 @@ public class Rechnungsausgabe
           .getValue();
       if (form == null)
       {
-        throw new IOException("Kein Mahnungsformular ausgewählt");
+        throw new IOException("Kein Mahnungsformular ausgewÃ¤hlt");
       }
       formular = (Formular) Einstellungen.getDBService()
           .createObject(Formular.class, form.getID());
@@ -179,7 +179,7 @@ public class Rechnungsausgabe
   private File getDateiAuswahl(String extension) throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = control.getSettings().getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)

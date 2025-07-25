@@ -39,7 +39,7 @@ public class BuchungsZweckKorrektur
 }
 
 // Dummy Klasse um die Methode "VerwendungszweckUtil.getTag(t, Tag.SVWZ)"
-// verwenden zu können
+// verwenden zu kÃ¶nnen
 final class Verwendungszweck implements Transfer
 {
   String zweck = null;

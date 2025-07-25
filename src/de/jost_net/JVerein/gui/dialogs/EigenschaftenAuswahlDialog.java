@@ -58,7 +58,7 @@ public class EigenschaftenAuswahlDialog
   private EigenschaftenAuswahlParameter param;
 
   /**
-   * Eigenschaften oder Eigenschaftengruppen auswählen
+   * Eigenschaften oder Eigenschaftengruppen auswÃ¤hlen
    * 
    * @param defaults
    *          Liste der Eigenschaften-IDs durch Komma separiert.
@@ -66,7 +66,7 @@ public class EigenschaftenAuswahlDialog
    *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1
    *          ignoriert werden. true: ignorieren
    * @param verknuepfung
-   *          Spezifiziert ob der Input Verknüpfung (UND,ODER) im Dialog
+   *          Spezifiziert ob der Input VerknÃ¼pfung (UND,ODER) im Dialog
    *          angezeigt werden soll.
    * @param control
    *          Control welches den EigenschaftenAuswahlTree liefert.
@@ -88,7 +88,7 @@ public class EigenschaftenAuswahlDialog
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
     this.verknuepfung = verknuepfung;
-    setTitle("Eigenschaften auswählen ");
+    setTitle("Eigenschaften auswÃ¤hlen ");
     this.control = control;
     this.setDefaults(defaults);
     this.onlyChecked = onlyChecked;
@@ -182,7 +182,7 @@ public class EigenschaftenAuswahlDialog
     werte.add("oder");
     eigenschaftenverknuepfung = new SelectInput(werte,
         control.getEigenschaftenVerknuepfung());
-    eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
+    eigenschaftenverknuepfung.setName("Gruppen-VerknÃ¼pfung");
     return eigenschaftenverknuepfung;
   }
 
@@ -197,7 +197,7 @@ public class EigenschaftenAuswahlDialog
     {
       for (Mitglied mitglied : mitglieder)
       {
-        // 1. Prüfen auf Pflicht
+        // 1. PrÃ¼fen auf Pflicht
         // Erst alle Pflicht Gruppen auf false setzten
         pflichtgruppenMap.clear();
         for (EigenschaftGruppe eg : pflichtgruppen)
@@ -244,7 +244,7 @@ public class EigenschaftenAuswahlDialog
     {
       for (Mitglied mitglied : mitglieder)
       {
-        // 2. Prüfen auf Max1
+        // 2. PrÃ¼fen auf Max1
         // Max eine Eigenschaft pro Gruppe
         max1gruppenMap.clear();
         for (EigenschaftGruppe eg : max1gruppen)
@@ -252,7 +252,7 @@ public class EigenschaftenAuswahlDialog
           max1gruppenMap.put(eg.getID(), Boolean.valueOf(false));
         }
         // Gesetzte Eigenschaften Gruppen bestimmen
-        // Es darf höchstens eine Eigenschaft im Mitglied gesetzt sein
+        // Es darf hÃ¶chstens eine Eigenschaft im Mitglied gesetzt sein
         // Hier nur gesetzte Werte ohne "+" und "-", "+" kommt nachher
         for (Long[] eigenschaften : root.getEigenschaften())
         {

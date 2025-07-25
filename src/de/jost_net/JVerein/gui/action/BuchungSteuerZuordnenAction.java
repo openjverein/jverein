@@ -43,7 +43,7 @@ public class BuchungSteuerZuordnenAction implements Action
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung(en) ausgewÃ¤hlt");
     }
     try
     {
@@ -76,7 +76,7 @@ public class BuchungSteuerZuordnenAction implements Action
       }
       catch (Exception e)
       {
-        String fehler = "Fehler beim öffnen des SteuerZuordnen Dialogs";
+        String fehler = "Fehler beim Ã¶ffnen des SteuerZuordnen Dialogs";
         Logger.error(fehler, e);
         throw new ApplicationException(fehler);
       }
@@ -131,7 +131,7 @@ public class BuchungSteuerZuordnenAction implements Action
               {
                 monitor.setPercentComplete(100);
                 monitor.setStatusText("Steuer aus " + count
-                    + " Buchungen entfernt, " + skip + " übersprungen.");
+                    + " Buchungen entfernt, " + skip + " Ã¼bersprungen.");
               }
             }
             else
@@ -193,7 +193,7 @@ public class BuchungSteuerZuordnenAction implements Action
               {
                 monitor.setPercentComplete(100);
                 monitor.setStatusText("Steuer " + count
-                    + " Buchungen zugeordnet, " + skip + " übersprungen.");
+                    + " Buchungen zugeordnet, " + skip + " Ã¼bersprungen.");
               }
             }
           }

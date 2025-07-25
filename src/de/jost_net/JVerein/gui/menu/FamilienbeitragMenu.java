@@ -25,7 +25,7 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Famlienbeitr‰gen.
+ * Kontext-Menu zu den Famlienbeitr√§gen.
  */
 public class FamilienbeitragMenu extends ContextMenu
 {

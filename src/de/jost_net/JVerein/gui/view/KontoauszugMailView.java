@@ -41,7 +41,7 @@ public class KontoauszugMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Kontoauszüge");
+    GUI.getView().setTitle("KontoauszÃ¼ge");
 
     final SollbuchungControl control = new SollbuchungControl(this);
     control.init("kontoauszug.", null, null);
@@ -110,7 +110,7 @@ public class KontoauszugMailView extends AbstractView
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(
         control.getStartKontoauszugButton(this.getCurrentObject(), control));

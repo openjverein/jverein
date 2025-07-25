@@ -49,7 +49,7 @@ public class AbrechnungslaufPDF
           + new JVDateFormatTTMMJJJJ().format(lauf.getDatum());
       Reporter reporter = new Reporter(fos, title, subtitle, it.size());
 
-      reporter.addHeaderColumn("Fälligkeit", Element.ALIGN_CENTER, 80,
+      reporter.addHeaderColumn("FÃ¤lligkeit", Element.ALIGN_CENTER, 80,
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 190,
           BaseColor.LIGHT_GRAY);

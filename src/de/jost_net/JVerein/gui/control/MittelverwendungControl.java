@@ -81,7 +81,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   private static final String ANZAHL = "anzahl";
 
   /**
-   * Einrückung der Spalten
+   * EinrÃ¼ckung der Spalten
    */
   private static String BLANKS = "          ";
 
@@ -221,7 +221,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       }
 
       // Der aktuelle Mittelverwendungsreport ist ein Jahr nach dem letzten
-      // Jahresabschluss, wir erlauben das Rücksetzen z.B. wegen
+      // Jahresabschluss, wir erlauben das RÃ¼cksetzen z.B. wegen
       // Unterschreiten der 45.000 EUR Einnahmen Grenze
       if (abschlussvon.equals(jahresabschluesse.get(0).getVon()))
       {
@@ -287,7 +287,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Den TablePart für die Saldobasierte Mittelverwendung holen
+   * Den TablePart fÃ¼r die Saldobasierte Mittelverwendung holen
    * 
    * @return TablePart
    * @throws ApplicationException
@@ -330,7 +330,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Den TablePart für die Zuflussbsiere Mittelverwendung holen
+   * Den TablePart fÃ¼r die Zuflussbsiere Mittelverwendung holen
    * 
    * @return TablePart
    * @throws ApplicationException
@@ -391,11 +391,11 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Die Liste für die Zuflussbasierte Mittelverwendung holen
+   * Die Liste fÃ¼r die Zuflussbasierte Mittelverwendung holen
    * 
    * @param datumvon
    * @param datumbis
-   * @return Die Liste der Einträge
+   * @return Die Liste der EintrÃ¤ge
    * @throws RemoteException
    */
   public ArrayList<PseudoDBObject> getMittelverwendungFlowList(Date datumvon,
@@ -413,12 +413,12 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
 
-    // Schritt 1: Berechnung des Verwendungsrückstand(+)/-überhang(-)
+    // Schritt 1: Berechnung des VerwendungsrÃ¼ckstand(+)/-Ã¼berhang(-)
     // am Ende des letzten GJ
     // Vorhandene Geldmittel zum Ende des letzten GJ sind zu verwenden
     // Vorhandene zweckfremde Anlagen sind zu verwenden
-    // Nicht der zeitnahen Mittelverwendung unterliegende Mittel (Rücklagen)
-    // zum Ende des letzten GJ können abgezogen werden
+    // Nicht der zeitnahen Mittelverwendung unterliegende Mittel (RÃ¼cklagen)
+    // zum Ende des letzten GJ kÃ¶nnen abgezogen werden
     ExtendedDBIterator<PseudoDBObject> anfangsbestandIt = new ExtendedDBIterator<>(
         "anfangsbestand");
     anfangsbestandIt.addColumn(
@@ -437,7 +437,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     anfangsbestand.setAttribute(NR, pos++);
     anfangsbestand.setAttribute(ART, ART_DETAIL);
     anfangsbestand.setAttribute(GRUPPE,
-        "Verwendungsrückstand(+)/-überhang(-) zu Beginn des aktuellen GJ "
+        "VerwendungsrÃ¼ckstand(+)/-Ã¼berhang(-) zu Beginn des aktuellen GJ "
             + aktuellesGJ);
     zeilen.add(anfangsbestand);
 
@@ -445,7 +445,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         ? anfangsbestand.getDouble(BETRAG)
         : 0d;
 
-    // Der in dem Rückstand enthaltene Rückstand aus dem vorletzten Jahr
+    // Der in dem RÃ¼ckstand enthaltene RÃ¼ckstand aus dem vorletzten Jahr
     Double rueckstandVorVorjahr = 0d;
     Double zwanghafteWeitergabeVorjahr = 0d;
     DBIterator<Jahresabschluss> jahresabschluesse = Einstellungen.getDBService()
@@ -463,7 +463,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ja.setAttribute(ART, ART_DETAIL);
     ja.setAttribute(BETRAG, rueckstandVorVorjahr);
     ja.setAttribute(GRUPPE, BLANKS
-        + "- Darin enthaltener Rest des Verwendungsrückstand aus dem vorletzten GJ "
+        + "- Darin enthaltener Rest des VerwendungsrÃ¼ckstand aus dem vorletzten GJ "
         + vorletztesGJ);
     zeilen.add(ja);
 
@@ -472,15 +472,15 @@ public class MittelverwendungControl extends AbstractSaldoControl
     jaRueck.setAttribute(ART, ART_DETAIL);
     jaRueck.setAttribute(BETRAG, zwanghafteWeitergabeVorjahr);
     jaRueck.setAttribute(GRUPPE, BLANKS
-        + "- Überfällige zwanghafte satzungsgemäße Weitergabe von Mitteln aus den letzten GJ "
+        + "- ÃœberfÃ¤llige zwanghafte satzungsgemÃ¤ÃŸe Weitergabe von Mitteln aus den letzten GJ "
         + letztesGJ);
     zeilen.add(jaRueck);
 
     // Schritt 2: Mittel Zufluss
-    // Summe Zuflüsse durch Umbuchung
+    // Summe ZuflÃ¼sse durch Umbuchung
     // Auszahlung aus Fremdkapital z.B. Darlehen,
-    // Rückbuchung von zweckgebundenen Anlagen
-    // Summe aller Zuflüsse bei Geldkonten und Anlagen (=Sachspenden)
+    // RÃ¼ckbuchung von zweckgebundenen Anlagen
+    // Summe aller ZuflÃ¼sse bei Geldkonten und Anlagen (=Sachspenden)
     ExtendedDBIterator<PseudoDBObject> flussIt = new ExtendedDBIterator<>(
         "buchung");
 
@@ -500,8 +500,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
         Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
         Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-    // Summe aller Abflüsse bei Geldkonten
-    // Summe der Abflüsse bei Umbuchung
+    // Summe aller AbflÃ¼sse bei Geldkonten
+    // Summe der AbflÃ¼sse bei Umbuchung
     // Tilgung Verbindlichkeiten z.B. Darlehen,
     // Erwerb zweckgebundener Anlagen
     flussIt.addColumn("SUM(COALESCE("
@@ -519,7 +519,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
 
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
-      // Die Steuer bei Veräußerung von Anlagevermögen mit Steuer
+      // Die Steuer bei VerÃ¤uÃŸerung von AnlagevermÃ¶gen mit Steuer
       // Steuer Einnahmen bei Umbuchungen > 0 auf dem Geldkonto
       flussIt.addColumn("SUM(COALESCE("
           + "CASE WHEN buchungsart.art = ? AND konto.kontoart = ? AND buchung.betrag > 0 "
@@ -527,7 +527,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           + ",0)) AS steuereinnahme", ArtBuchungsart.UMBUCHUNG,
           Kontoart.GELD.getKey());
 
-      // Die Steuer bei Kauf von Anlagevermögen mit Steuer
+      // Die Steuer bei Kauf von AnlagevermÃ¶gen mit Steuer
       // Steuer Ausgabe bei Umbuchungen < 0 auf dem Geldkonto
       flussIt.addColumn("SUM(COALESCE("
           + "CASE WHEN buchungsart.art = ? AND konto.kontoart = ? AND buchung.betrag < 0 "
@@ -535,7 +535,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           + ",0)) AS steuerausgabe", ArtBuchungsart.UMBUCHUNG,
           Kontoart.GELD.getKey());
 
-      // Je nach Einstellung Steuer an Buchungsart oder Buchung hängen
+      // Je nach Einstellung Steuer an Buchungsart oder Buchung hÃ¤ngen
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         flussIt.leftJoin("steuer", "steuer.id = buchung.steuer");
@@ -584,7 +584,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     zuVerwenden.setAttribute(NR, pos++);
     zuVerwenden.setAttribute(ART, ART_SALDOFOOTER);
     zuVerwenden.setAttribute(GRUPPE,
-        BLANKS + "Zu verwendende Mittel im aktuellen GJ und nächstem GJ");
+        BLANKS + "Zu verwendende Mittel im aktuellen GJ und nÃ¤chstem GJ");
     zuVerwenden.setAttribute(SUMME, zufuehrung + vorhandeneMittel);
     zeilen.add(zuVerwenden);
 
@@ -599,7 +599,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     abfluss.setAttribute(BETRAG, verwendung);
     zeilen.add(abfluss);
 
-    // Rücklagen
+    // RÃ¼cklagen
     ExtendedDBIterator<PseudoDBObject> ruecklageIt = new ExtendedDBIterator<>(
         "buchung");
     ruecklageIt.addColumn("SUM(buchung.betrag) as " + BETRAG);
@@ -638,7 +638,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
           summeZuRuecklagen += o.getDouble(BETRAG);
           o.setAttribute(NR, pos++);
           o.setAttribute(ART, ART_DETAIL);
-          o.setAttribute(GRUPPE, "Zuführung "
+          o.setAttribute(GRUPPE, "ZufÃ¼hrung "
               + Kontoart.getByKey(o.getInteger(KONTOART)).getText());
           zeilen.add(o);
           break;
@@ -669,7 +669,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     rueckstand.setAttribute(NR, pos++);
     rueckstand.setAttribute(ART, ART_SALDOFOOTER);
     rueckstand.setAttribute(GRUPPE,
-        "Verwendungsrückstand(+)/-überhang(-) zum Ende des aktuellen GJ "
+        "VerwendungsrÃ¼ckstand(+)/-Ã¼berhang(-) zum Ende des aktuellen GJ "
             + aktuellesGJ);
     rueckstand.setAttribute(SUMME, zufuehrung + vorhandeneMittel - verwendung
         - summeZuRuecklagen + summeEntRuecklagen);
@@ -686,9 +686,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
         vorhandeneMittel - rueckstandVorVorjahr - zwanghafteWeitergabeVorjahr,
         0);
     zwanghafteWeitergabeNeu = 0.0;
-    rueckstandVorjahrNeu = 0.0; // Rest aus Rückstand Vorjahr
-    // Der Rückstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
-    // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemäßen
+    rueckstandVorjahrNeu = 0.0; // Rest aus RÃ¼ckstand Vorjahr
+    // Der RÃ¼ckstand aus dem vorletzten Jahr muss ganz aufgebraucht werden,
+    // ansonsten unterliegt der Restbetrag der zwanghaften satzungsgemÃ¤ÃŸen
     // Weitergabe von Mitteln
 
     if (zwanghafteWeitergabeVorjahr > ausgaben)
@@ -710,7 +710,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     rueckstandLetztesGJ.setAttribute(NR, pos++);
     rueckstandLetztesGJ.setAttribute(ART, ART_DETAIL);
     rueckstandLetztesGJ.setAttribute(GRUPPE,
-        BLANKS + "- Darin enthaltener Verwendungsrückstand aus dem letzten GJ "
+        BLANKS + "- Darin enthaltener VerwendungsrÃ¼ckstand aus dem letzten GJ "
             + letztesGJ);
     rueckstandLetztesGJ.setAttribute(BETRAG, rueckstandVorjahrNeu);
     zeilen.add(rueckstandLetztesGJ);
@@ -719,7 +719,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     ueberfaellig.setAttribute(NR, pos++);
     ueberfaellig.setAttribute(ART, ART_DETAIL);
     ueberfaellig.setAttribute(GRUPPE, BLANKS
-        + "- Überfällige zwanghafte satzungsgemäße Weitergabe von Mitteln");
+        + "- ÃœberfÃ¤llige zwanghafte satzungsgemÃ¤ÃŸe Weitergabe von Mitteln");
     ueberfaellig.setAttribute(BETRAG, zwanghafteWeitergabeNeu);
     zeilen.add(ueberfaellig);
 
@@ -764,7 +764,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         o.setAttribute(NR, pos++);
         o.setAttribute(ART, ART_SALDOFOOTER);
         o.setAttribute(GRUPPE,
-            "Buchungen ohne Buchungsart bei Rücklagen und Vermögen: "
+            "Buchungen ohne Buchungsart bei RÃ¼cklagen und VermÃ¶gen: "
                 + o.getInteger(ANZAHL));
         zeilen.add(o);
       }
@@ -773,9 +773,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Die Liste für die Saldobasierte Mittelverwendung holen
+   * Die Liste fÃ¼r die Saldobasierte Mittelverwendung holen
    * 
-   * @return Die Liste der Einträge
+   * @return Die Liste der EintrÃ¤ge
    * @throws RemoteException
    */
   public ArrayList<PseudoDBObject> getMittelverwendungSaldoList()
@@ -799,9 +799,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
     Double summeVermoegen = 0d;
     Double summeFreieMittel = 0d;
 
-    // Wir fügen dem iterator noch einen Dummy Eintrag eines Kontos über dem
+    // Wir fÃ¼gen dem iterator noch einen Dummy Eintrag eines Kontos Ã¼ber dem
     // Limit hinzu, so wird sichergestellt, dass die Summen auch immer angezeigt
-    // werden, ohne den Code doppelt schreiben müssen.
+    // werden, ohne den Code doppelt schreiben mÃ¼ssen.
     @SuppressWarnings("unchecked")
     List<PseudoDBObject> list = PseudoIterator.asList(it);
     PseudoDBObject dummy = new PseudoDBObject();
@@ -840,7 +840,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         PseudoDBObject gesamtSaldo = new PseudoDBObject();
         gesamtSaldo.setAttribute(ART, ART_SALDOFOOTER);
-        gesamtSaldo.setAttribute(GRUPPE, "Gesamtvermögen");
+        gesamtSaldo.setAttribute(GRUPPE, "GesamtvermÃ¶gen");
         gesamtSaldo.setAttribute(SUMME, summeVermoegen);
         zeilen.add(gesamtSaldo);
 
@@ -860,7 +860,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         {
           PseudoDBObject mittel = new PseudoDBObject();
           mittel.setAttribute(ART, ART_SALDOFOOTER);
-          mittel.setAttribute(GRUPPE, "Nutzungsgebundenes Anlagevermögen");
+          mittel.setAttribute(GRUPPE, "Nutzungsgebundenes AnlagevermÃ¶gen");
           mittel.setAttribute(SUMME, summeAnlagenGebunden);
           zeilen.add(mittel);
         }
@@ -872,17 +872,17 @@ public class MittelverwendungControl extends AbstractSaldoControl
           mittel.setAttribute(SUMME, summeFremdkapital);
           zeilen.add(mittel);
         }
-        // Diese Summen gehören auch zu den freien Mitteln.
+        // Diese Summen gehÃ¶ren auch zu den freien Mitteln.
         summeFreieMittel += summeAnlagenGebunden + summeFremdkapital;
       }
 
-      // Bei bei Konten über dem Limit vor neuer Anlagenklasse Summe ausgeben.
+      // Bei bei Konten Ã¼ber dem Limit vor neuer Anlagenklasse Summe ausgeben.
       if (!kontoklasse.equals(kontoklasseAlt) && kontoklasseAlt != null
           && kontoart > Kontoart.LIMIT.getKey())
       {
         PseudoDBObject saldo = new PseudoDBObject();
         saldo.setAttribute(ART, ART_SALDOFOOTER);
-        saldo.setAttribute(GRUPPE, "Summe Rücklagen " + kontoklasseAlt);
+        saldo.setAttribute(GRUPPE, "Summe RÃ¼cklagen " + kontoklasseAlt);
         saldo.setAttribute(SUMME, summeAnlageklasse);
         zeilen.add(saldo);
 
@@ -902,12 +902,12 @@ public class MittelverwendungControl extends AbstractSaldoControl
         // Bei AnlagenSummenKonto keinen Head anzeigen
         if (!anlagenSummenkonto || kontoart != Kontoart.ANLAGE.getKey())
         {
-          // Als erstes Header Vermögen anzeigen
+          // Als erstes Header VermÃ¶gen anzeigen
           if (kontoartAlt == null)
           {
             PseudoDBObject head = new PseudoDBObject();
             head.setAttribute(ART, ART_HEADER);
-            head.setAttribute(GRUPPE, "Liste an Vermögen:");
+            head.setAttribute(GRUPPE, "Liste an VermÃ¶gen:");
             zeilen.add(head);
           }
 
@@ -919,13 +919,13 @@ public class MittelverwendungControl extends AbstractSaldoControl
         }
         kontoartAlt = kontoart;
       }
-      // Bei Konten über dem Limit nach Klasse gruppieren.
+      // Bei Konten Ã¼ber dem Limit nach Klasse gruppieren.
       if (!kontoklasse.equals(kontoklasseAlt)
           && kontoart > Kontoart.LIMIT.getKey())
       {
         PseudoDBObject kontoarthead = new PseudoDBObject();
         kontoarthead.setAttribute(ART, ART_HEADER);
-        kontoarthead.setAttribute(GRUPPE, "Rücklagen " + kontoklasse);
+        kontoarthead.setAttribute(GRUPPE, "RÃ¼cklagen " + kontoklasse);
         zeilen.add(kontoarthead);
         kontoklasseAlt = kontoklasse;
         kontoartAlt = kontoart;
@@ -977,7 +977,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     PseudoDBObject rueckstand = new PseudoDBObject();
     rueckstand.setAttribute(ART, ART_SALDOFOOTER);
     rueckstand.setAttribute(GRUPPE,
-        "Verwendungsrückstand(+)/-überhang(-) zum Ende des GJ");
+        "VerwendungsrÃ¼ckstand(+)/-Ã¼berhang(-) zum Ende des GJ");
     rueckstand.setAttribute(SUMME, summeVermoegen - summeFreieMittel);
     zeilen.add(rueckstand);
 
@@ -1007,7 +1007,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         "COALESCE(anfangsbestand.betrag,0) + COALESCE(sum(buchung.betrag),0) as "
             + BETRAG);
 
-    // join Anfangsbestand und Buchung für Summe.
+    // join Anfangsbestand und Buchung fÃ¼r Summe.
     it.leftJoin("anfangsbestand",
         "anfangsbestand.konto = konto.id AND anfangsbestand.datum = ?",
         getDatumvon().getDate());
@@ -1043,7 +1043,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
     return it;
   }
 
-  // Überschrieben um beide TableParts neu zu laden.
+  // Ãœberschrieben um beide TableParts neu zu laden.
   @Override
   public void reloadList() throws ApplicationException
   {
@@ -1081,7 +1081,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Setzt den ausgewählten TAB
+   * Setzt den ausgewÃ¤hlten TAB
    * 
    * @param tab
    */
@@ -1111,7 +1111,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   /**
-   * Liefert den Rückstand des VOrjahres
+   * Liefert den RÃ¼ckstand des VOrjahres
    * 
    * @return
    */

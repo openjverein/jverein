@@ -45,20 +45,20 @@ public class AbrechnungSEPAView extends AbstractView
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
 
     left.addLabelPair("Modus", control.getAbbuchungsmodus());
-    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
+    left.addLabelPair("FÃ¤lligkeit", control.getFaelligkeit());
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
       left.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
     }
-    left.addLabelPair("Stichtag¹", control.getStichtag());
+    left.addLabelPair("StichtagÂ¹", control.getStichtag());
     left.addLabelPair("Von Eintrittsdatum", control.getVondatum());
     left.addLabelPair("Von Eingabedatum", control.getVonEingabedatum());
     left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
-    left.addLabelPair("Zahlungsgrund für Beiträge", control.getZahlungsgrund());
+    left.addLabelPair("Zahlungsgrund fÃ¼r BeitrÃ¤ge", control.getZahlungsgrund());
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
-      left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
+      left.addLabelPair("ZusatzbetrÃ¤ge", control.getZusatzbetrag());
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
     {
@@ -70,7 +70,7 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addHeadline("Lastschriften");
     rigth.addLabelPair("Kompakte Abbuchung(en)",
         control.getKompakteAbbuchung());
-    rigth.addLabelPair("SEPA-Check temporär deaktivieren",
+    rigth.addLabelPair("SEPA-Check temporÃ¤r deaktivieren",
         control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
@@ -78,7 +78,7 @@ public class AbrechnungSEPAView extends AbstractView
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       rigth.addHeadline("Rechnungen");
-      rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+      rigth.addLabelPair("Rechnung(en) erstellenÂ²", control.getRechnung());
       rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
       rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
       rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
@@ -86,9 +86,9 @@ public class AbrechnungSEPAView extends AbstractView
 
     group.addSeparator();
     group.addText(
-        "¹) Für die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. "
-            + "Und für Berechnung ob Zusatzbeträge fällig sind.\n"
-            + "²) Es wird für jede (zusammengefasste) Sollbuchung eine separate Rechnung erstellt.",
+        "Â¹) FÃ¼r die Berechnung, ob ein Mitglied bereits eingetreten oder ausgetreten ist. "
+            + "Und fÃ¼r Berechnung ob ZusatzbetrÃ¤ge fÃ¤llig sind.\n"
+            + "Â²) Es wird fÃ¼r jede (zusammengefasste) Sollbuchung eine separate Rechnung erstellt.",
         true);
 
     ButtonArea buttons = new ButtonArea();

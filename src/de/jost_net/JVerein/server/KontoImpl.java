@@ -105,7 +105,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       if (getBezeichnung().length() > 255)
       {
         throw new ApplicationException(
-            "Maximale L‰nge der Bezeichnung: 255 Zeichen");
+            "Maximale L√§nge der Bezeichnung: 255 Zeichen");
       }
       if (getNummer() == null || getNummer().length() == 0)
       {
@@ -133,7 +133,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
         }
         if (getAnlagenzweck() == null)
         {
-          throw new ApplicationException("Bitte Anlagen Zweck ausw‰hlen");
+          throw new ApplicationException("Bitte Anlagen Zweck ausw√§hlen");
         }
         if (getAfaMode() == null)
         {
@@ -165,7 +165,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
    * @param konto
    *          id des Kontos
    * @param datum
-   * @return dibt den Kontostand am anfang des angegebenen Tages zur¸ck, also
+   * @return dibt den Kontostand am anfang des angegebenen Tages zur√ºck, also
    *         ohne die Buchungen des angegebenen Tages
    * @throws RemoteException
    */
@@ -186,7 +186,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     {
       Anfangsbestand a = it.next();
 
-      // Anfangsbestand = vorhandener Anfangsbestand + Ums‰tze bis "bis"
+      // Anfangsbestand = vorhandener Anfangsbestand + Ums√§tze bis "bis"
       ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
           "buchung");
       summeIt.addColumn("sum(betrag) as summe");
@@ -215,13 +215,13 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     it.setLimit(1);
 
     // Anfangsstand ist vorhanden und es gibt keinen Anfangsstand vorher
-    // Dann muﬂ das Konto im Bereich erzeugt worden sein oder es gibt keinen
-    // fr¸heren Anfangsstand. Dann zur¸ckrechnen
+    // Dann mu√ü das Konto im Bereich erzeugt worden sein oder es gibt keinen
+    // fr√ºheren Anfangsstand. Dann zur√ºckrechnen
     if (it.hasNext())
     {
       Anfangsbestand a = it.next();
 
-      // Anfangsbestand = vorhandener Anfangsbestand - Ums‰tze davor.
+      // Anfangsbestand = vorhandener Anfangsbestand - Ums√§tze davor.
       ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
           "buchung");
       summeIt.addColumn("sum(betrag) as summe");

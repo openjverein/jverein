@@ -97,7 +97,7 @@ public class LehrgangControl extends FilterControl implements Savable
     lehrgangsart = new SelectInput(
         it != null ? PseudoIterator.asList(it) : null,
         getLehrgang().getLehrgangsart());
-    lehrgangsart.setPleaseChoose("Bitte ausw‰hlen");
+    lehrgangsart.setPleaseChoose("Bitte ausw√§hlen");
     lehrgangsart.addListener(new Listener()
     {
 
@@ -135,7 +135,7 @@ public class LehrgangControl extends FilterControl implements Savable
 
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Datum");
-    this.von.setText("Bitte (Beginn-)Datum w‰hlen");
+    this.von.setText("Bitte (Beginn-)Datum w√§hlen");
     von.setMandatory(true);
     return von;
   }
@@ -151,7 +151,7 @@ public class LehrgangControl extends FilterControl implements Savable
 
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Datum");
-    this.bis.setText("Bitte Ende-Datum w‰hlen");
+    this.bis.setText("Bitte Ende-Datum w√§hlen");
     return bis;
   }
 

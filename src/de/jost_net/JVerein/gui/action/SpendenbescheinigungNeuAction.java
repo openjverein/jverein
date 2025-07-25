@@ -76,7 +76,7 @@ public class SpendenbescheinigungNeuAction implements Action
       {
         MitgliedskontoNode mkn = (MitgliedskontoNode) context;
 
-        // Istbuchung in Mitgliedskonto ausgew‰hlt
+        // Istbuchung in Mitgliedskonto ausgew√§hlt
         if (mkn.getType() == MitgliedskontoNode.IST)
         {
           // Buchung eintragen
@@ -104,7 +104,7 @@ public class SpendenbescheinigungNeuAction implements Action
             spb.setAutocreate(Boolean.TRUE);
           }
         }
-        // Mitglied in Mitgliedskonto ausgew‰hlt
+        // Mitglied in Mitgliedskonto ausgew√§hlt
         else if (mkn.getType() == MitgliedskontoNode.MITGLIED)
         {
           if (mkn.getMitglied() != null)

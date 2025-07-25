@@ -50,7 +50,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     if (context == null
         || (!(context instanceof Mitglied) && !(context instanceof Mitglied[])))
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
     }
     Mitglied[] mitglieder = null;
     if (context instanceof Mitglied)
@@ -135,7 +135,7 @@ public class MitgliedEigenschaftZuordnungAction implements Action
       return;
     }
     GUI.getStatusBar().setSuccessText(String.format(
-        "%d Eigenschaft(en) angelegt, %d waren bereits vorhanden, %d wurden gelöscht.",
+        "%d Eigenschaft(en) angelegt, %d waren bereits vorhanden, %d wurden gelÃ¶scht.",
         anzErfolgreich, anzBereitsVorhanden, anzGeloescht));
   }
 

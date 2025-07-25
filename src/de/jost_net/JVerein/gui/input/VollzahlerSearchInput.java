@@ -46,7 +46,7 @@ public class VollzahlerSearchInput extends SearchInput
     try
     {
       StringBuffer cond = new StringBuffer();
-      // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
+      // Beitragsgruppen ermitteln, die Zahler fÃ¼r andere Mitglieder sind
       DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
       bg.addFilter("beitragsart != ?",

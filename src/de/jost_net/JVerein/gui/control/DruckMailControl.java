@@ -22,7 +22,7 @@ public abstract class DruckMailControl extends FilterControl
 
   public static final String EMAIL = "Mail";
 
-  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empf‰nger)";
+  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empf√§nger)";
 
   public static final String PDF2 = "PDF (Alle)";
 

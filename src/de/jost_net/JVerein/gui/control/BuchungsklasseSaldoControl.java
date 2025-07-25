@@ -304,7 +304,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
       // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
-      // unterstützen)
+      // unterstÃ¼tzen)
       ExtendedDBIterator<PseudoDBObject> ohneBaIt = new ExtendedDBIterator<>(
           "buchung");
       ohneBaIt.addColumn("count(*) AS anzahl");
@@ -401,7 +401,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
       // hinzurechnen
       it.addColumn("COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
-          // Anlagenkonto immer Bruttobeträge.
+          // Anlagenkonto immer BruttobetrÃ¤ge.
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
@@ -461,7 +461,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           StatusBuchungsart.INACTIVE);
     }
 
-    // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
+    // FÃ¼r die SteuerbtrÃ¤ge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
       String subselect = "(SELECT steuer.buchungsart, "
@@ -470,8 +470,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
-      // Wenn die Steuer in der Buchung steht, können wir sie direkt nehmen,
-      // sonst müssen wir den Umweg über die Buchungsart nehmen.
+      // Wenn die Steuer in der Buchung steht, kÃ¶nnen wir sie direkt nehmen,
+      // sonst mÃ¼ssen wir den Umweg Ã¼ber die Buchungsart nehmen.
       if (steuerInBuchung)
       {
         subselect += " JOIN steuer ON steuer.id = buchung.steuer ";

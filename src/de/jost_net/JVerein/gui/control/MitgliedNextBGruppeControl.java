@@ -186,7 +186,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setMandatory(true);
     beitragsgruppe.setAttribute("bezeichnung");
-    beitragsgruppe.setPleaseChoose("Bitte auswählen");
+    beitragsgruppe.setPleaseChoose("Bitte auswÃ¤hlen");
     beitragsgruppe.setComment("");
     return beitragsgruppe;
   }
@@ -224,7 +224,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
         .setBeitragsgruppe((Beitragsgruppe) beitragsgruppe.getValue());
     mitgliedsBeitragsgruppe.store();
     GUI.getStatusBar()
-        .setSuccessText("Zukünftige Beitragsgruppe gespeichert!!");
+        .setSuccessText("ZukÃ¼nftige Beitragsgruppe gespeichert!!");
   }
 
 }

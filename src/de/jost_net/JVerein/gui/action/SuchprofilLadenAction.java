@@ -34,7 +34,7 @@ public class SuchprofilLadenAction implements Action
   {
     if (context == null)
     {
-      throw new ApplicationException("Kein Suchprofil ausgew‰hlt!");
+      throw new ApplicationException("Kein Suchprofil ausgew√§hlt!");
     }
     if (!(context instanceof Suchprofil))
     {

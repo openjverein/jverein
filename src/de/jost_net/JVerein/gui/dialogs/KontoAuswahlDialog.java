@@ -85,7 +85,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    LabelGroup group = new LabelGroup(parent, "Verfügbare Konten");
+    LabelGroup group = new LabelGroup(parent, "VerfÃ¼gbare Konten");
     box = new CheckboxInput(nurAktuelleKonten);
     box.addListener(new Listener()
     {
@@ -106,7 +106,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
 
     if (text == null || text.length() == 0)
     {
-      text = "  Bitte wählen Sie das gewünschte Konto aus.";
+      text = "  Bitte wÃ¤hlen Sie das gewÃ¼nschte Konto aus.";
     }
     group.addText(text, true);
 
@@ -115,7 +115,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       @Override
       public void handleAction(Object context)
       {
-        // wenn kein Konto ausgewählt sein darf, wird null zurückgegeben.
+        // wenn kein Konto ausgewÃ¤hlt sein darf, wird null zurÃ¼ckgegeben.
         if (context == null && keinkonto)
         {
           choosen = null;
@@ -137,7 +137,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     konten.paint(parent);
 
     ButtonArea b = new ButtonArea();
-    b.addButton(i18n.tr("Übernehmen"), new Action()
+    b.addButton(i18n.tr("Ãœbernehmen"), new Action()
     {
 
       @Override

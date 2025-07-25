@@ -35,7 +35,7 @@ import de.willuhn.logging.Logger;
 
 /**
  * Sucht das Geldinstitut zur eingegebenen IBAN und zeigt es als Kommentar
- * hinter dem Feld an. -Prüft die IBAN -Ermittelt die BIC
+ * hinter dem Feld an. -PrÃ¼ft die IBAN -Ermittelt die BIC
  */
 
 public class IBANListener implements Listener

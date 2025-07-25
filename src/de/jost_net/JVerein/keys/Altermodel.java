@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Gegen welches Datum wird das Alter des Mitglieds für die Anzeige berechnet.
+ * Gegen welches Datum wird das Alter des Mitglieds fÃ¼r die Anzeige berechnet.
  */
 public class Altermodel
 {

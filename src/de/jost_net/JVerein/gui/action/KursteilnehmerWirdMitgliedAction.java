@@ -34,7 +34,7 @@ public class KursteilnehmerWirdMitgliedAction implements Action
   {
     if (context == null || !(context instanceof Kursteilnehmer))
     {
-      throw new ApplicationException("keinen Kursteilnehmer ausgew‰hlt");
+      throw new ApplicationException("keinen Kursteilnehmer ausgew√§hlt");
     }
     Kursteilnehmer k = (Kursteilnehmer) context;
     try

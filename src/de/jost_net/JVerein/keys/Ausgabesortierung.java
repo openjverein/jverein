@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung f¸r Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung f√ºr Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -34,7 +34,7 @@ public enum Ausgabesortierung
 {
 
   NAME(1, "Nach Name und Vorname"), //
-  PLZ(2, "Nach Postleitzahl und Straﬂe");
+  PLZ(2, "Nach Postleitzahl und Stra√üe");
 
   private final String text;
 

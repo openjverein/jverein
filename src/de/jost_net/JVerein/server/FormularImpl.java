@@ -60,7 +60,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     {
       if (getInhalt() == null)
       {
-        throw new ApplicationException("Bitte gültigen Dateinamen angeben!");
+        throw new ApplicationException("Bitte gÃ¼ltigen Dateinamen angeben!");
       }
       DBIterator<Formular> it = Einstellungen.getDBService()
           .createList(Formular.class);

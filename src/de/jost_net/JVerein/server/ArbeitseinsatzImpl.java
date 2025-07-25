@@ -76,7 +76,7 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
             Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD)
         {
           throw new ApplicationException(
-              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern");
+              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung Ã¤ndern");
         }
       }
       if (getDatum() == null)

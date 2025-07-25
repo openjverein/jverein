@@ -85,21 +85,21 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(
-            "Buchung kann nicht gelöscht werden weil sie zu einer "
-                + "Spendenbescheinigung gehört");
+            "Buchung kann nicht gelÃ¶scht werden weil sie zu einer "
+                + "Spendenbescheinigung gehÃ¶rt");
       }
     }
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Spendenbescheinigung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber
+      // Das passiert wenn sie kurz vorher gelÃ¶scht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Buchung kann nicht gelöscht werden. Siehe system log");
+          "Buchung kann nicht gelÃ¶scht werden. Siehe system log");
     }
   }
 
@@ -146,10 +146,10 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     if (cal1.before(cal2))
     {
       throw new ApplicationException(
-          "Buchungsdatum liegt mehr als 50 Jahre zurück");
+          "Buchungsdatum liegt mehr als 50 Jahre zurÃ¼ck");
     }
 
-    /* Prüfung des Projektes */
+    /* PrÃ¼fung des Projektes */
     Projekt projekt = getProjekt();
     if (projekt != null)
     {
@@ -181,14 +181,14 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (getBuchungsart() == null)
       {
         throw new ApplicationException(
-            "Buchungsart kann nicht gelöscht werden da "
+            "Buchungsart kann nicht gelÃ¶scht werden da "
                 + "eine Spendenbescheinigung zugeordnet ist!");
       }
       if (getBuchungsart() != null && !getBuchungsart().getSpende())
       {
         throw new ApplicationException(
             "Buchungsart kann nicht in eine Buchungsart ohne der Eigenschaft Spende "
-                + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
+                + "geÃ¤ndert werden da eine Spendenbescheinigung zugeordnet ist!");
       }
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
@@ -197,7 +197,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
           && !getKonto().getKontoArt().equals(Kontoart.GELD))
       {
         throw new ApplicationException(
-            "Steuer ist nur bei Buchungen auf Geldkonten möglich.");
+            "Steuer ist nur bei Buchungen auf Geldkonten mÃ¶glich.");
       }
       if (getSteuer() != null && getBuchungsart() != null
           && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
@@ -206,12 +206,12 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         {
           case ArtBuchungsart.AUSGABE:
             throw new ApplicationException(
-                "Umsatzsteuer statt Vorsteuer gewählt.");
+                "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
           case ArtBuchungsart.EINNAHME:
             throw new ApplicationException(
-                "Vorsteuer statt Umsatzsteuer gewählt.");
-          // Umbuchung ist bei Anlagebuchungen möglich,
-          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+          // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
           case ArtBuchungsart.UMBUCHUNG:
             break;
         }
@@ -221,7 +221,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
               || getBuchungsart().getAbschreibung()))
       {
         throw new ApplicationException(
-            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+            "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
       }
     }
   }
@@ -672,7 +672,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       return brutto;
     }
 
-    // Bei Anlagekonten gibt es nur Brutto Beträeg
+    // Bei Anlagekonten gibt es nur Brutto BetrÃ¤eg
     if (getKonto() != null && getKonto().getKontoArt().equals(Kontoart.ANLAGE))
     {
       return brutto;
@@ -985,13 +985,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
       }
     }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // Wird eine Abschreibung wÃ¤hrend des Jahresabschlusses generiert muss
     // zuerst der
     // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
     // gespeichert
     // werden kann. Dann muss man die Buchung auch bei bestehendem
     // Jahresabschluss speichern
-    // können. In diesem Fall wird mit check false gespeichert.
+    // kÃ¶nnen. In diesem Fall wird mit check false gespeichert.
     super.store();
   }
 

@@ -68,7 +68,7 @@ public class MitgliederStatistik
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("m‰nnlich", Element.ALIGN_CENTER, 30,
+      reporter.addHeaderColumn("m√§nnlich", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
@@ -95,7 +95,7 @@ public class MitgliederStatistik
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("m‰nnlich", Element.ALIGN_CENTER, 30,
+      reporter.addHeaderColumn("m√§nnlich", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);

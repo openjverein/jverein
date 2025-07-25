@@ -9,8 +9,8 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 
 /**
- * Hilfsiterator um Benutzerdefiniert SQL Listen zu Holen. Hier können auch
- * komplexere SQL Selects ausgefürt werden mit Agregatfunktionen, Group By,
+ * Hilfsiterator um Benutzerdefiniert SQL Listen zu Holen. Hier kÃ¶nnen auch
+ * komplexere SQL Selects ausgefÃ¼rt werden mit Agregatfunktionen, Group By,
  * Rollup, Having, Left Join.
  * 
  * @param <T>
@@ -55,8 +55,8 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   private boolean initialized = false;
 
   /**
-   * Hilfsiterator um Benutzerdefiniert SQL Listen zu Holen Hier können auch
-   * komplexere SQL Selects ausgefürt werden mit Agregatfunktionen, Group By,
+   * Hilfsiterator um Benutzerdefiniert SQL Listen zu Holen Hier kÃ¶nnen auch
+   * komplexere SQL Selects ausgefÃ¼rt werden mit Agregatfunktionen, Group By,
    * Rollup, Having, Left Join
    * 
    * @param table
@@ -69,7 +69,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Fügt dem Querry eine Spalte hinzu Hier können einfache Spaltennamen wie
+   * FÃ¼gt dem Querry eine Spalte hinzu Hier kÃ¶nnen einfache Spaltennamen wie
    * "buchung" oder "buchungen.name" aber auch Agregatfunktionen wie "count(id)"
    * oder "sum(betrag) as summe" verwendet werden.
    * 
@@ -115,7 +115,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Fügt eine GroupBy definition hinzu
+   * FÃ¼gt eine GroupBy definition hinzu
    * 
    * @param having
    *          die GROUP BY spalte
@@ -137,7 +137,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Fügt eine Having bedingung hinzu
+   * FÃ¼gt eine Having bedingung hinzu
    * 
    * @param having
    *          die HAVING bedingung
@@ -244,8 +244,8 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Fügt einen JOIN hinzu Es ist auch AS erlaubt, zB. "buchung as
-   * steuerbuchung", auch subselects sind möglich "(SELECT COUNT(*) FROM
+   * FÃ¼gt einen JOIN hinzu Es ist auch AS erlaubt, zB. "buchung as
+   * steuerbuchung", auch subselects sind mÃ¶glich "(SELECT COUNT(*) FROM
    * buchung) as anzahl"
    * 
    * @param table
@@ -254,7 +254,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
    *          Die on clausel
    * @param p...
    *          Objekt-Array um zusaetzliche Parameter anzugeben, mit denen dann
-   *          ein PreparedStatement gefüllt wird.
+   *          ein PreparedStatement gefÃ¼llt wird.
    * @throws RemoteException
    */
   public void join(String table, String on, Object... p) throws RemoteException
@@ -277,8 +277,8 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Fügt einen LEFT JOIN hinzu Es ist auch AS erlaubt, zB. "buchung as
-   * steuerbuchung", auch subselects sind möglich "(SELECT COUNT(*) FROM
+   * FÃ¼gt einen LEFT JOIN hinzu Es ist auch AS erlaubt, zB. "buchung as
+   * steuerbuchung", auch subselects sind mÃ¶glich "(SELECT COUNT(*) FROM
    * buchung) as anzahl"
    * 
    * @param table
@@ -287,7 +287,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
    *          Die on clausel
    * @param p...
    *          Objekt-Array um zusaetzliche Parameter anzugeben, mit denen dann
-   *          ein PreparedStatement gefüllt wird.
+   *          ein PreparedStatement gefÃ¼llt wird.
    * @throws RemoteException
    */
   public void leftJoin(String table, String on, Object... p)
@@ -311,7 +311,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   }
 
   /**
-   * Baut das SQL-Statement für die Liste zusammen.
+   * Baut das SQL-Statement fÃ¼r die Liste zusammen.
    * 
    * @return das erzeugte Statement.
    */
@@ -374,7 +374,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
     if (this.initialized)
       return; // allready initialzed
 
-    // Die Parameter in der richtigen Reihenfolge hinzufügen
+    // Die Parameter in der richtigen Reihenfolge hinzufÃ¼gen
     params.addAll(joinParams);
     params.addAll(whereParams);
     params.addAll(havingParams);

@@ -90,7 +90,7 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   @Override
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
-    Logger.debug(String.format("Altersjubil‰um, Jahrgang=%d", jahrgang));
+    Logger.debug(String.format("Altersjubil√§um, Jahrgang=%d", jahrgang));
     Paragraph pHeader = new Paragraph(
         "\n" + String.format("%d. Geburtstag", jahrgang),
         Reporter.getFreeSans(11));

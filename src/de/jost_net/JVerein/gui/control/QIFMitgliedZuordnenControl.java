@@ -223,7 +223,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
         iteratorMitglieder != null ? PseudoIterator.asList(iteratorMitglieder)
             : null);
     selMitglied.setComment(
-        Integer.toString(iAnzahl) + " Mitglieder zur Auswahl mˆglich..");
+        Integer.toString(iAnzahl) + " Mitglieder zur Auswahl m√∂glich..");
     mitgliederGeladen = true;
   }
 
@@ -281,7 +281,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     }
     mitgliederInput = new SelectInput((Object[]) null, null);
     mitgliederInput.setAttribute("namevorname");
-    mitgliederInput.setPleaseChoose("Bitte ausw‰hlen");
+    mitgliederInput.setPleaseChoose("Bitte ausw√§hlen");
     mitgliederInput.setComment(" ");
     return mitgliederInput;
   }
@@ -323,7 +323,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     {
       if (null == mitglied)
       {
-        GUI.getStatusBar().setErrorText("Keine JVerein Mitglied gew‰hlt!!");
+        GUI.getStatusBar().setErrorText("Keine JVerein Mitglied gew√§hlt!!");
         return false;
       }
       return true;

@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Action, ueber die Zusatzbetr‰ge importiert werden koennen. Der
+ * Action, ueber die Zusatzbetr√§ge importiert werden koennen. Der
  * Context-Parameter wird ignoriert.
  */
 public class ZusatzbetraegeImportAction implements Action
@@ -57,7 +57,7 @@ public class ZusatzbetraegeImportAction implements Action
     {
       Logger.error("error while importing transfers", e);
       GUI.getStatusBar()
-          .setErrorText("Fehler beim Importieren der Zusatzbetr‰ge");
+          .setErrorText("Fehler beim Importieren der Zusatzbetr√§ge");
     }
   }
 

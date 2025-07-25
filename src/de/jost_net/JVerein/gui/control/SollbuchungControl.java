@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe, Leonardo Mörlein
+ * Copyright (c) by Heiner Jostkleigrewe, Leonardo MÃ¶rlein
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -91,7 +91,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     EGAL("Egal"),
     FEHLBETRAG("Fehlbetrag"),
-    UEBERZAHLUNG("Überzahlung");
+    UEBERZAHLUNG("Ãœberzahlung");
 
     private final String titel;
 
@@ -206,7 +206,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     this.datum.addListener(new Listener()
     {
 
@@ -300,7 +300,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return spezialsuche;
   }
 
-  // Für SollbuchungAuswahlDialog
+  // FÃ¼r SollbuchungAuswahlDialog
   public TextInput getSuchName1(boolean newcontrol)
   {
     if (!newcontrol && suchname != null)
@@ -312,7 +312,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return suchname;
   }
 
-  // Für SollbuchungAuswahlDialog
+  // FÃ¼r SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -352,7 +352,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+            "Sollbuchung kann nicht geÃ¤ndert werden, es existiert eine Rechnung darÃ¼ber.");
       sollb.store();
     }
     catch (RemoteException e)
@@ -689,7 +689,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return button;
   }
 
-  // Für Sollbuchungen View
+  // FÃ¼r Sollbuchungen View
   @Override
   public void TabRefresh()
   {
@@ -828,7 +828,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       // Aufruf aus Mitglieder View
       if (mitglieder != null)
       {
-        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt"
+        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewÃ¤hlt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
         for (Mitglied m : mitglieder)
         {
@@ -865,7 +865,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
       if (mitglied instanceof SelectInput)
       {
-        ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
+        ((SelectInput) mitglied).setPleaseChoose("Bitte auswÃ¤hlen");
         ((SelectInput) mitglied).setPreselected(null);
       }
     }
@@ -884,7 +884,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     if (zahler instanceof SelectInput)
     {
-      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswÃ¤hlen");
       if (getSollbuchung().getZahler() == null)
       {
         ((SelectInput) zahler).setPreselected(null);
@@ -911,7 +911,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlter Zahler kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -922,7 +922,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
-          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung Ã¼ber diese Sollbuchung erstellt.");
       return true;
     }
     return false;

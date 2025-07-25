@@ -48,7 +48,7 @@ public class LastschriftMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new LastschriftDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",

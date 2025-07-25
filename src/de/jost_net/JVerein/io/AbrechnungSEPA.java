@@ -115,18 +115,18 @@ public class AbrechnungSEPA
     Konto konto = getKonto();
     ArrayList<JVereinZahler> zahlerarray = new ArrayList<>();
 
-    // Mitglieder abrechnen und zahlerMap füllen
+    // Mitglieder abrechnen und zahlerMap fÃ¼llen
     abrechnenMitglieder(param, monitor);
 
     if (param.zusatzbetraege)
     {
-      // Zusatzbetraege abrechnen und zahlerMap füllen
+      // Zusatzbetraege abrechnen und zahlerMap fÃ¼llen
       abbuchenZusatzbetraege(param, abrl, monitor);
     }
 
     if (param.kursteilnehmer)
     {
-      // Kursteilnehmer direkt in zahlerarray da es für jeden nur eine
+      // Kursteilnehmer direkt in zahlerarray da es fÃ¼r jeden nur eine
       // Lastschrift geben kann
       zahlerarray = abbuchenKursteilnehmer(param, abrl, konto, monitor);
     }
@@ -168,7 +168,7 @@ public class AbrechnungSEPA
       {
         for (JVereinZahler zahler : zahlerList)
         {
-          // Für jede Buchung eine Sollbuchung mit einer Sollbuchungsposition.
+          // FÃ¼r jede Buchung eine Sollbuchung mit einer Sollbuchungsposition.
           ArrayList<SollbuchungPosition> spArray = new ArrayList<>();
           spArray.add(getSollbuchungPosition(zahler));
 
@@ -177,7 +177,7 @@ public class AbrechnungSEPA
                   zahler.getZahlungsweg().getKey(), zahler.getMitglied(),
                   spArray, param.faelligkeit, abrl, konto, param, null));
 
-          // Ohne kompakte Abbuchung zahlerarray direkt füllen
+          // Ohne kompakte Abbuchung zahlerarray direkt fÃ¼llen
           if (!param.kompakteabbuchung && zahler.getZahlungsweg()
               .getKey() == Zahlungsweg.BASISLASTSCHRIFT)
           {
@@ -245,7 +245,7 @@ public class AbrechnungSEPA
               catch (SEPAException se)
               {
                 throw new ApplicationException(
-                    "Ungültiger Betrag: " + zahler.getBetrag());
+                    "UngÃ¼ltiger Betrag: " + zahler.getBetrag());
               }
             }
           }
@@ -286,7 +286,7 @@ public class AbrechnungSEPA
               .length() == 0)
       {
         throw new ApplicationException(
-            "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
+            "GlÃ¤ubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
                 + " http://www.oenb.at/idakilz/cid?lang=de beantragen und unter"
                 + " Administration|Einstellungen|Allgemein eintragen.\n"
                 + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.");
@@ -295,7 +295,7 @@ public class AbrechnungSEPA
       if (param.faelligkeit.before(new Date()))
       {
         throw new ApplicationException(
-            "Fälligkeit muss bei Lastschriften in der Zukunft liegen");
+            "FÃ¤lligkeit muss bei Lastschriften in der Zukunft liegen");
       }
 
       Basislastschrift lastschrift = new Basislastschrift();
@@ -320,7 +320,7 @@ public class AbrechnungSEPA
         ls.store();
       }
 
-      // Gegenbuchung für die Sollbuchungen schreiben
+      // Gegenbuchung fÃ¼r die Sollbuchungen schreiben
       if (!summelastschriften.equals(BigDecimal.valueOf(0)))
       {
         writeSollbuchung(null, Zahlungsweg.BASISLASTSCHRIFT, null, null,
@@ -346,14 +346,14 @@ public class AbrechnungSEPA
 
       if (param.pdffileRCUR != null)
       {
-        // Nur für die PDF-Erzeugung müssen die Zahler in der Lastschrift
+        // Nur fÃ¼r die PDF-Erzeugung mÃ¼ssen die Zahler in der Lastschrift
         // enthalten sein
         for (JVereinZahler z : zahlerarray)
         {
           lastschrift.add(z);
         }
-        // Das für die
-        // PDF-Erzeugung benötigte Datum wird erst in write gesetzt
+        // Das fÃ¼r die
+        // PDF-Erzeugung benÃ¶tigte Datum wird erst in write gesetzt
         File temp_file = Files.createTempFile("jv", ".xml").toFile();
         lastschrift.write(temp_file);
         temp_file.delete();
@@ -361,7 +361,7 @@ public class AbrechnungSEPA
         ausdruckenSEPA(lastschrift, param.pdffileRCUR);
       }
     }
-    monitor.setStatusText(counter + " abgerechnete Fälle");
+    monitor.setStatusText(counter + " abgerechnete FÃ¤lle");
   }
 
   private void abrechnenMitglieder(AbrechnungSEPAParam param,
@@ -381,14 +381,14 @@ public class AbrechnungSEPA
       list.addFilter("(austritt is null or austritt > ?)",
           new java.sql.Date(param.stichtag.getTime()));
       // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berücksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
+      // berÃ¼cksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
       if (param.bisdatum != null)
       {
         list.addFilter("(austritt <= ?)",
             new java.sql.Date(param.bisdatum.getTime()));
       }
       // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
+      // berÃ¼cksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
       if (param.vondatum != null)
       {
         list.addFilter("eintritt >= ?",
@@ -448,7 +448,7 @@ public class AbrechnungSEPA
 
       list.setOrder("ORDER BY zahlungsweg, name, vorname");
 
-      // Sätze im Resultset
+      // SÃ¤tze im Resultset
       int count = 0;
       while (list.hasNext())
       {
@@ -577,7 +577,7 @@ public class AbrechnungSEPA
           BigDecimal.valueOf(betr).setScale(2, RoundingMode.HALF_UP));
       if (mZahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        IBAN i = new IBAN(mZahler.getIban()); // Prüfung der IBAN
+        IBAN i = new IBAN(mZahler.getIban()); // PrÃ¼fung der IBAN
         zahler.setIban(mZahler.getIban());
         // Wenn BIC nicht vorhanden versuchen sie automatisch zu ermitteln
         if (mZahler.getBic() == null || mZahler.getBic().length() == 0)
@@ -588,7 +588,7 @@ public class AbrechnungSEPA
         {
           zahler.setBic(mZahler.getBic());
         }
-        new BIC(zahler.getBic()); // Prüfung des BIC
+        new BIC(zahler.getBic()); // PrÃ¼fung des BIC
         zahler.setMandatid(mZahler.getMandatID());
         zahler.setMandatdatum(mZahler.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
@@ -1177,7 +1177,7 @@ public class AbrechnungSEPA
       sollb.setZahlerId(zahlerId);
       sollb.setDatum(datum);
       sollb.setMitglied((Mitglied) adress);
-      // Zweck wird später gefüllt, es muss aber schon was drin stehen damit
+      // Zweck wird spÃ¤ter gefÃ¼llt, es muss aber schon was drin stehen damit
       // gespeichert werden kann
       sollb.setZweck1(" ");
       sollb.setBetrag(0d);
@@ -1197,7 +1197,7 @@ public class AbrechnungSEPA
         Formular form = param.rechnungsformular;
         if (form == null)
         {
-          throw new ApplicationException("Kein Rechnungs-Formular ausgewählt");
+          throw new ApplicationException("Kein Rechnungs-Formular ausgewÃ¤hlt");
         }
 
         re = (Rechnung) Einstellungen.getDBService()
@@ -1301,7 +1301,7 @@ public class AbrechnungSEPA
   private void checkSEPA(AbrechnungSEPAParam param, Mitglied m,
       ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
-    // Wenn nicht Basislastschrift, dann kein Check nötig
+    // Wenn nicht Basislastschrift, dann kein Check nÃ¶tig
     if (m.getZahlungsweg() == null
         || m.getZahlungsweg() != Zahlungsweg.BASISLASTSCHRIFT)
     {

@@ -67,9 +67,9 @@ public class BuchungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false, control.getBuchungsList()),
         "text-x-generic.png"));
-    addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"geprÃ¼ft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
-    addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"ungeprÃ¼ft\" markieren",
         new BuchungGeprueftAction(false), "edit-undo.png", true));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
@@ -80,9 +80,9 @@ public class BuchungMenu extends ContextMenu
     }
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
-    addItem(new AufloesenItem("Auflösen",
+    addItem(new AufloesenItem("AuflÃ¶sen",
         new SplitbuchungBulkAufloesenAction(control), "unlocked.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+    addItem(new BuchungItem("LÃ¶schen", new BuchungDeleteAction(false),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
@@ -146,7 +146,7 @@ public class BuchungMenu extends ContextMenu
         && syntax.getManifest().getVersion().compliesTo("2.10.5+"))
     {
       addItem(ContextMenuItem.SEPARATOR);
-      addItem(new CheckedContextMenuItem("In SynTAX übernehmen",
+      addItem(new CheckedContextMenuItem("In SynTAX Ã¼bernehmen",
           new SyntaxExportAction(), "document-save.png"));
     }
   }

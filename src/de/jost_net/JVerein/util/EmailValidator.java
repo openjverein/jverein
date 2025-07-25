@@ -30,7 +30,7 @@ public class EmailValidator
     }
     catch (AddressException e)
     {
-      Logger.error("Ungültige E-Mail-Adresse \"" + emailAddress + "\"", e);
+      Logger.error("UngÃ¼ltige E-Mail-Adresse \"" + emailAddress + "\"", e);
       return false;
     }
     return true;

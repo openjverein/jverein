@@ -36,8 +36,8 @@ public class SplitbuchungAufloesenAction implements Action
   public void handleAction(Object context)
   {
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Splitbuchung auflösen");
-    d.setText("Wollen Sie die Splitbuchung auflösen?");
+    d.setTitle("Splitbuchung auflÃ¶sen");
+    d.setText("Wollen Sie die Splitbuchung auflÃ¶sen?");
     try
     {
       Boolean choice = (Boolean) d.open();
@@ -50,7 +50,7 @@ public class SplitbuchungAufloesenAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Auflösen der Splituchung.";
+      String fehler = "Fehler beim AuflÃ¶sen der Splituchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

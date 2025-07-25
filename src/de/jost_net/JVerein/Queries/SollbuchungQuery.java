@@ -233,11 +233,11 @@ public class SollbuchungQuery
       return sollbuchungen;
     }
 
-    // Eine Differenz ist ausgewählt
+    // Eine Differenz ist ausgewÃ¤hlt
     final DBService service = Einstellungen.getDBService();
 
-    // Suche nach dem Zahler, der LEFT JOIN beim Mitglied behält auch
-    // Sollbuchungen bei denen kein Zahler gesetzt ist. Er könnte gelöscht
+    // Suche nach dem Zahler, der LEFT JOIN beim Mitglied behÃ¤lt auch
+    // Sollbuchungen bei denen kein Zahler gesetzt ist. Er kÃ¶nnte gelÃ¶scht
     // worden sein, aber die Sollbuchung existiert noch und evtl.
     // musss eine Buchung zugeordnet werden
     StringBuilder sql = new StringBuilder(
@@ -503,11 +503,11 @@ public class SollbuchungQuery
 
   public String reduceWord(String word)
   {
-    // We replace "ue" -> "u" and "ü" -> "u", because some bank institutions
-    // remove the dots "ü" -> "u". So we get "u" == "ü" == "ue".
-    return word.toLowerCase().replaceAll("ä", "a").replaceAll("ae", "a")
-        .replaceAll("ö", "o").replaceAll("oe", "o").replaceAll("ü", "u")
-        .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s");
+    // We replace "ue" -> "u" and "Ã¼" -> "u", because some bank institutions
+    // remove the dots "Ã¼" -> "u". So we get "u" == "Ã¼" == "ue".
+    return word.toLowerCase().replaceAll("Ã¤", "a").replaceAll("ae", "a")
+        .replaceAll("Ã¶", "o").replaceAll("oe", "o").replaceAll("Ã¼", "u")
+        .replaceAll("ue", "u").replaceAll("ÃŸ", "s").replaceAll("ss", "s");
   }
 
 }

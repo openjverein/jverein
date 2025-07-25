@@ -46,7 +46,7 @@ import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung und
- * Sollbuchung anzeigt und bei Bestätigung persistiert
+ * Sollbuchung anzeigt und bei BestÃ¤tigung persistiert
  */
 public class BuchungenSollbuchungZuordnungVorschauDialog
     extends AbstractDialog<Object>
@@ -58,7 +58,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(1400, 400);
-    this.setTitle("Buchungszuordnung bestätigen");
+    this.setTitle("Buchungszuordnung bestÃ¤tigen");
     this.assignedBooking = assignedBooking;
   }
 
@@ -154,13 +154,13 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
       new StartViewAction(BuchungListeView.class).handleAction(this);
 
       GUI.getStatusBar()
-          .setSuccessText("Die Zuordnung wurde erfolgreich durchgeführt");
+          .setSuccessText("Die Zuordnung wurde erfolgreich durchgefÃ¼hrt");
     }
     catch (RemoteException e)
     {
       Logger.error("error while assignment", e);
       throw new ApplicationException(
-          "Fehler bei der Durchführung der Zuordnung", e);
+          "Fehler bei der DurchfÃ¼hrung der Zuordnung", e);
     }
 
     close();

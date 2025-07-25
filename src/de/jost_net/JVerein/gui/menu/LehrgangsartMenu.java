@@ -38,7 +38,7 @@ public class LehrgangsartMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(LehrgangsartDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new LehrgangsartDeleteAction(), "user-trash-full.png"));
   }
 }

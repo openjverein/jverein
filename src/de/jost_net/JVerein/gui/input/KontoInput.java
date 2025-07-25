@@ -51,7 +51,7 @@ public class KontoInput extends SelectInput
   {
     super(init(), konto);
     setName(i18n.tr("Konto"));
-    setPleaseChoose(i18n.tr("Bitte ausw‰hlen"));
+    setPleaseChoose(i18n.tr("Bitte ausw√§hlen"));
   }
 
   /**

@@ -367,7 +367,7 @@ public class MitgliedQuery
       }
       catch (NullPointerException e)
       {
-        // Workaround für einen Bug in IntegerInput
+        // Workaround fÃ¼r einen Bug in IntegerInput
       }
     }
     if (control.isSuchMitgliedsnummerActive())

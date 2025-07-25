@@ -40,7 +40,7 @@ public class ZusatzfeldDetailView extends AbstractDetailView
     group.addLabelPair("Name", control.getName(true));
     group.addLabelPair("Label", control.getLabel());
     group.addLabelPair("Datentyp", control.getDatentyp());
-    group.addLabelPair("Länge", control.getLaenge());
+    group.addLabelPair("LÃ¤nge", control.getLaenge());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

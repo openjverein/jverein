@@ -71,7 +71,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
       // Checken, welchen von beiden Treibern wir haben
       try
       {
-        // Können wir den neuen laden?
+        // KÃ¶nnen wir den neuen laden?
         Class.forName(DRIVER_MYSQL);
         driver = DRIVER_MYSQL;
       }
@@ -129,7 +129,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
       }
       catch (Exception e2)
       {
-        Logger.error("Datenbankupdate kann nicht ausgeführt werden.", e2);
+        Logger.error("Datenbankupdate kann nicht ausgefÃ¼hrt werden.", e2);
         throw new ApplicationException(e2);
       }
     }

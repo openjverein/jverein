@@ -71,11 +71,11 @@ public class MailAnhangImpl extends AbstractDBObject
 
   private void dateinameCheck(String dateiname) throws ApplicationException
   {
-    // Länge des Dateinamens auf 100 Zeichen begrenzt:
+    // LÃ¤nge des Dateinamens auf 100 Zeichen begrenzt:
     // JVereinUpdateProvider: update0438(Mailanhang speichern)
     if (dateiname.length() > 100)
       throw new ApplicationException(String.format(
-          "Maximale Länge (100) des Dateinamens von Mail-Anhang überschritten. (%d, %s...)",
+          "Maximale LÃ¤nge (100) des Dateinamens von Mail-Anhang Ã¼berschritten. (%d, %s...)",
           dateiname.length(), dateiname.substring(0, 100)));
   }
 

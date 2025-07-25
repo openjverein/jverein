@@ -207,7 +207,7 @@ public class FormularControl extends FormularPartControl implements Savable
     // Deactivate the select box if it has linked forms
     if (currentForm.hasFormlinks())
     {
-      formlink.setPleaseChoose("Verknüpft");
+      formlink.setPleaseChoose("VerknÃ¼pft");
       formlink.disable();
     }
     else
@@ -281,7 +281,7 @@ public class FormularControl extends FormularPartControl implements Savable
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
     formularList.addColumn("Fortlaufende Nr.", "zaehler");
-    formularList.addColumn("Verknüpft mit", "formlink",
+    formularList.addColumn("VerknÃ¼pft mit", "formlink",
         new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this, formularList));

@@ -71,7 +71,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
         char c = testString.charAt(i);
         if (validChars.indexOf(c) == -1)
           throw new ApplicationException(String.format(
-              "Ungültiges Zeichen (%s) im Feldnamen an Position %d", c, i));
+              "UngÃ¼ltiges Zeichen (%s) im Feldnamen an Position %d", c, i));
       }
       Mitglied m = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, null);
@@ -88,7 +88,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
       if (getDatentyp() == Datentyp.ZEICHENFOLGE
           && (getLaenge() < 1 || getLaenge() > 1000))
       {
-        throw new ApplicationException("Ungültige Feldlänge");
+        throw new ApplicationException("UngÃ¼ltige FeldlÃ¤nge");
       }
     }
     catch (RemoteException e)

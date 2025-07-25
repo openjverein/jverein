@@ -35,7 +35,7 @@ public class Update0462 extends AbstractDDLUpdate
     }
     catch (Exception e)
     {
-      // Es gab zwischendurch schon ein Nightly wo das Attribut gelöscht wurde
+      // Es gab zwischendurch schon ein Nightly wo das Attribut gelÃ¶scht wurde
       // Das war mit der ersten Version von Update0453
       // Dann ist es schon nicht mehr da
     }

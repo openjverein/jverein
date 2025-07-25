@@ -97,7 +97,7 @@ public class FamilienbeitragNode implements GenericObjectNode
       while (it2.hasNext())
       {
         Mitglied m = it2.next();
-        // nur anzeigen wenn es angehörige gibt
+        // nur anzeigen wenn es angehÃ¶rige gibt
         if (!set.contains(m.getID()))
           continue;
         FamilienbeitragNode fbn = new FamilienbeitragNode(this, m);
@@ -180,7 +180,7 @@ public class FamilienbeitragNode implements GenericObjectNode
     {
       if (mitglied == null)
       {
-        return "Familienbeiträge";
+        return "FamilienbeitrÃ¤ge";
       }
       Date d = null;
       if (getMitglied().getAustritt() != null)

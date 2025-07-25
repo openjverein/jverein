@@ -107,7 +107,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     group.addLabelPair("", getMessage());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("‹bernehmen", new Action()
+    buttons.addButton("√úbernehmen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -230,7 +230,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Anlagensart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Anlagensart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -259,7 +259,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
           list != null ? PseudoIterator.asList(list) : null, null);
     }
     buchungsklasse.setAttribute(control.getBuchungartAttribute());
-    buchungsklasse.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsklasse.setPleaseChoose("Bitte ausw√§hlen");
     return buchungsklasse;
   }
 
@@ -276,7 +276,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -306,7 +306,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -337,7 +337,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         });
     if (!exist)
       message = new LabelInput(
-          " *Beim ersten Anlagenkonto bitte JVerein neu starten um die ƒnderungen anzuwenden");
+          " *Beim ersten Anlagenkonto bitte JVerein neu starten um die √Ñnderungen anzuwenden");
     else
       message = new LabelInput("");
     message.setColor(Color.ERROR);

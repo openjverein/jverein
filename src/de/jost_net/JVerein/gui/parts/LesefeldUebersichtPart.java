@@ -39,9 +39,9 @@ import de.willuhn.util.ApplicationException;
 
 /**
  * Listet Namen der definierten Lesefelder und zeigt der Inhalt dieser
- * Lesefelder für ein auswählbares Mitglied an. Für jedes Lesefeld wird ein
- * Bearbeiten- und Löschen-Knopf angezeigt. Als Part implementiert um es ggf.
- * einfach verschieben zu können.
+ * Lesefelder fÃ¼r ein auswÃ¤hlbares Mitglied an. FÃ¼r jedes Lesefeld wird ein
+ * Bearbeiten- und LÃ¶schen-Knopf angezeigt. Als Part implementiert um es ggf.
+ * einfach verschieben zu kÃ¶nnen.
  * 
  * @author Julian
  */
@@ -57,12 +57,12 @@ public class LesefeldUebersichtPart implements Part
   private AbstractInput mitglied;
 
   /**
-   * Mit selectedMitglied kann ein beliebiges Mitglied in der GUI ausgwählt
+   * Mit selectedMitglied kann ein beliebiges Mitglied in der GUI ausgwÃ¤hlt
    * werden. Ist selectedMitglied==null, wird das erste gefunde Mitglied
-   * ausgewählt.
+   * ausgewÃ¤hlt.
    * 
    * @param selectedMitglied
-   *          Auszuwählendes Mitglied.
+   *          AuszuwÃ¤hlendes Mitglied.
    */
   public LesefeldUebersichtPart(Mitglied selectedMitglied)
   {
@@ -84,7 +84,7 @@ public class LesefeldUebersichtPart implements Part
       selectedMitglied = (Mitglied) getMitglied().getValue();
     }
     // LesefelderListeLayout
-    // darf nur über die Funktionen
+    // darf nur Ã¼ber die Funktionen
     // addLesefeldEinstellungRow(), updateLesefeldEinstellungRow()
     // und deleteLesefeldEinstellungRow()
     // manipuliert werden.
@@ -112,7 +112,7 @@ public class LesefeldUebersichtPart implements Part
   }
 
   /**
-   * Fügt neue GUI-Elemente hinzu für ein neues Lesefeld.
+   * FÃ¼gt neue GUI-Elemente hinzu fÃ¼r ein neues Lesefeld.
    * 
    * @param lesefeld
    *          Anzuzeigendes, neues Lesefeld.
@@ -136,8 +136,8 @@ public class LesefeldUebersichtPart implements Part
         null, false, "text-x-generic.png");
     lesefelderListeLayout.add(button);
 
-    // Löschen-Button
-    button = new Button("Löschen", new DeleteLesefeldAction(lesefeld), null,
+    // LÃ¶schen-Button
+    button = new Button("LÃ¶schen", new DeleteLesefeldAction(lesefeld), null,
         false, "list-remove.png");
     lesefelderListeLayout.add(button);
   }
@@ -186,11 +186,11 @@ public class LesefeldUebersichtPart implements Part
   }
 
   /**
-   * Löscht GUI-Elemente von Lesefeld lf, die von addLesefeldEinstellungRow()
+   * LÃ¶scht GUI-Elemente von Lesefeld lf, die von addLesefeldEinstellungRow()
    * erzeugt wurden.
    * 
    * @param lf
-   *          Zu löschendes Lesefeld.
+   *          Zu lÃ¶schendes Lesefeld.
    * @throws RemoteException
    */
   private void deleteLesefeldEinstellungRow(Lesefeld lf) throws RemoteException
@@ -227,7 +227,7 @@ public class LesefeldUebersichtPart implements Part
 
   /**
    * Veranlasst das Neu-Zeichen (inklusive Aktualisieren des Inhaltes,
-   * Größenanpassung und Ausrichtung) der GUI-Elemente für die Lesefelder.
+   * GrÃ¶ÃŸenanpassung und Ausrichtung) der GUI-Elemente fÃ¼r die Lesefelder.
    */
   private void updateView()
   {
@@ -280,12 +280,12 @@ public class LesefeldUebersichtPart implements Part
       if (selectedMitglied != null)
         openEditLesefeldDialog(lesefeld);
       else
-        throw new ApplicationException("Bitte Mitglied auswählen");
+        throw new ApplicationException("Bitte Mitglied auswÃ¤hlen");
     }
   }
 
   /**
-   * Öffnet eine neue View zum Editieren einer Lesefeld-Definition.
+   * Ã–ffnet eine neue View zum Editieren einer Lesefeld-Definition.
    * 
    * @param lesefeld
    *          Zu bearbeitendes Lesefeld oder null, wenn diese Lesefeld angelegt
@@ -315,8 +315,8 @@ public class LesefeldUebersichtPart implements Part
     {
       /* Sicherheitsnachfrage */
       YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
-      ynd.setText("Achtung! Lesefeld wird gelöscht. Weiter?");
-      ynd.setTitle("Löschen");
+      ynd.setText("Achtung! Lesefeld wird gelÃ¶scht. Weiter?");
+      ynd.setTitle("LÃ¶schen");
       Boolean choice;
       try
       {
@@ -337,7 +337,7 @@ public class LesefeldUebersichtPart implements Part
       }
       catch (RemoteException e)
       {
-        String fehler = "Fehler beim Löschen des Lesefeldes";
+        String fehler = "Fehler beim LÃ¶schen des Lesefeldes";
         Logger.error(fehler, e);
         GUI.getStatusBar().setErrorText(fehler);
       }
@@ -385,7 +385,7 @@ public class LesefeldUebersichtPart implements Part
       }
       catch (RemoteException e)
       {
-        String fehler = "Fehler beim Auswählen des Mitgliedes";
+        String fehler = "Fehler beim AuswÃ¤hlen des Mitgliedes";
         Logger.error(fehler, e);
         GUI.getStatusBar().setErrorText(fehler);
       }

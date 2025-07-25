@@ -69,7 +69,7 @@ public class BackupRestoreAction implements Action
     {
       if (Einstellungen.getDBService().createList(Einstellung.class).size() > 0)
       {
-        String text = "Die JVerein-Datenbank enthält bereits Daten.\n"
+        String text = "Die JVerein-Datenbank enthÃ¤lt bereits Daten.\n"
             + "Das Backup kann nur in eine neue JVerein-Installation importiert werden.";
         Application.getCallback().notifyUser(text);
         return;
@@ -77,7 +77,7 @@ public class BackupRestoreAction implements Action
 
       DBTransaction.starten();
 
-      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys
+      // Vom System eingefÃ¼gte SÃ¤tze lÃ¶schen. Ansonsten gibt es duplicate keys
       DBIterator<EigenschaftGruppe> iteigr = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
       while (iteigr.hasNext())
@@ -97,7 +97,7 @@ public class BackupRestoreAction implements Action
     fd.setFileName(
         "jverein-" + new JVDateFormatJJJJMMTT().format(new Date()) + ".xml");
     fd.setFilterExtensions(new String[] { "*.xml" });
-    fd.setText("Bitte wählen Sie die Backup-Datei aus");
+    fd.setText("Bitte wÃ¤hlen Sie die Backup-Datei aus");
     String f = fd.open();
     if (f == null || f.length() == 0)
     {
@@ -129,13 +129,13 @@ public class BackupRestoreAction implements Action
         final ClassLoader loader = Application.getPluginLoader()
             .getPlugin(JVereinPlugin.class).getManifest().getClassLoader();
 
-        // Prüfen ob eine H2 DB verwendet wird, sonst ist es mysql/mariadb
+        // PrÃ¼fen ob eine H2 DB verwendet wird, sonst ist es mysql/mariadb
         boolean h2driver = JVereinDBService.SETTINGS
             .getString("database.driver", "H2").toLowerCase()
             .indexOf("h2") >= 0;
         try
         {
-          // FOreign Key Check vorübergehend deaktiieren
+          // FOreign Key Check vorÃ¼bergehend deaktiieren
           if (h2driver)
           {
             Einstellungen.getDBService()
@@ -241,7 +241,7 @@ public class BackupRestoreAction implements Action
               {
                 Logger.error("unable to import " + o.getClass().getName() + ":"
                     + o.getID() + ", skipping", e);
-                monitor.log(String.format("  %s fehlerhaft %s, überspringe",
+                monitor.log(String.format("  %s fehlerhaft %s, Ã¼berspringe",
                     BeanUtil.toString(o), e.getMessage()));
               }
             }

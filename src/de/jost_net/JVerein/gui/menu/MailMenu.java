@@ -34,7 +34,7 @@ public class MailMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(MailDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new MailDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new MailDeleteAction(),
         "user-trash-full.png"));
   }
 }

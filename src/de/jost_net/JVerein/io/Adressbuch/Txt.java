@@ -33,7 +33,7 @@ public class Txt
 
   public Txt(File file, String separator) throws IOException
   {
-    // Vermerk für mich: Encodings siehe
+    // Vermerk fÃ¼r mich: Encodings siehe
     // http://www.cafeconleche.org/books/xmljava/chapters/ch03s03.html
     out = new OutputStreamWriter(
         new BufferedOutputStream(new FileOutputStream(file)));

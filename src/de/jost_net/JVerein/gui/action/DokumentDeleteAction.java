@@ -29,7 +29,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen von Dokumenten
+ * LÃ¶schen von Dokumenten
  */
 public class DokumentDeleteAction implements Action
 {
@@ -44,7 +44,7 @@ public class DokumentDeleteAction implements Action
     }
     if (context == null || !(context instanceof AbstractDokument))
     {
-      throw new ApplicationException("Kein Dokument ausgewählt");
+      throw new ApplicationException("Kein Dokument ausgewÃ¤hlt");
     }
     try
     {
@@ -54,8 +54,8 @@ public class DokumentDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Dokument löschen");
-      d.setText("Wollen Sie dieses Dokument wirklich löschen?");
+      d.setTitle("Dokument lÃ¶schen");
+      d.setText("Wollen Sie dieses Dokument wirklich lÃ¶schen?");
 
       try
       {
@@ -71,14 +71,14 @@ public class DokumentDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Dokuments", e);
+        Logger.error("Fehler beim LÃ¶schen des Dokuments", e);
         return;
       }
-      GUI.getStatusBar().setSuccessText("Dokument gelöscht.");
+      GUI.getStatusBar().setSuccessText("Dokument gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Dokuments";
+      String fehler = "Fehler beim LÃ¶schen des Dokuments";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -53,7 +53,7 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       if (getJVereinid() > 0)
       {
         throw new ApplicationException(
-            "Dieser Datensatz darf nicht gelöscht werden!");
+            "Dieser Datensatz darf nicht gelÃ¶scht werden!");
       }
     }
     catch (RemoteException e)

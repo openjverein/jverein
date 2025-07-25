@@ -47,7 +47,7 @@ public class FreiesFormularAusgabe
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
     if (formular == null)
     {
-      GUI.getStatusBar().setErrorText("Kein Formular ausgewählt.");
+      GUI.getStatusBar().setErrorText("Kein Formular ausgewÃ¤hlt.");
       return;
     }
 
@@ -135,7 +135,7 @@ public class FreiesFormularAusgabe
   File getDateiAuswahl(String extension, String name) throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = control.getSettings().getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)

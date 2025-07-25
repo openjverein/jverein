@@ -44,7 +44,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
     if (context == null
         || !(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung(en) ausgewÃ¤hlt");
     }
     try
     {
@@ -92,7 +92,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           sollb.setDatum(b[0].getDatum());
           sollb.setMitglied(m);
           sollb.setZahlerId(m.getZahlerID());
-          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+          sollb.setZahlungsweg(Zahlungsweg.ÃœBERWEISUNG);
           sollb.setZweck1(b[0].getZweck());
           sollb.store();
 
@@ -125,14 +125,14 @@ public class BuchungSollbuchungZuordnungAction implements Action
           if (b.length > 1)
           {
             throw new ApplicationException(
-                "Mehrere Buchungen mehreren Sollbuchungen zuordnen nicht möglich!");
+                "Mehrere Buchungen mehreren Sollbuchungen zuordnen nicht mÃ¶glich!");
           }
           if (b[0].getSplitTyp() != null
               && (b[0].getSplitTyp() == SplitbuchungTyp.GEGEN
                   || b[0].getSplitTyp() == SplitbuchungTyp.HAUPT))
           {
             throw new ApplicationException(
-                "Haupt- oder Gegen-Buchungen können nicht mehreren Sollbuchungen zugeordnet werden!");
+                "Haupt- oder Gegen-Buchungen kÃ¶nnen nicht mehreren Sollbuchungen zugeordnet werden!");
           }
 
           b[0].transactionBegin();
@@ -214,7 +214,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
 
         if (sollb == null)
         {
-          GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht");
+          GUI.getStatusBar().setSuccessText("Sollbuchung gelÃ¶scht");
         }
         else
         {

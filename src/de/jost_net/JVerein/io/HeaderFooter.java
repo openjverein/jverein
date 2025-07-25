@@ -28,8 +28,8 @@ import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Ersatz für die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
- * nur für den Footer gebraucht.
+ * Ersatz fÃ¼r die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
+ * nur fÃ¼r den Footer gebraucht.
  */
 class HeaderFooter extends PdfPageEventHelper
 {

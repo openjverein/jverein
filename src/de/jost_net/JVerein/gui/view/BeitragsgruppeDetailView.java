@@ -48,7 +48,7 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
     {
-      group.addLabelPair("Sekund‰re Beitragsgruppe", control.getSekundaer());
+      group.addLabelPair("Sekund√§re Beitragsgruppe", control.getSekundaer());
     }
 
     switch (Beitragsmodel.getByKey(
@@ -63,11 +63,11 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
       case FLEXIBEL:
       {
         group.addLabelPair("Betrag monatlich", control.getBetragMonatlich());
-        group.addLabelPair("Betrag viertelj‰hrlich",
+        group.addLabelPair("Betrag viertelj√§hrlich",
             control.getBetragVierteljaehrlich());
-        group.addLabelPair("Betrag halbj‰hrlich",
+        group.addLabelPair("Betrag halbj√§hrlich",
             control.getBetragHalbjaehrlich());
-        group.addLabelPair("Betrag j‰hrlich", control.getBetragJaehrlich());
+        group.addLabelPair("Betrag j√§hrlich", control.getBetragJaehrlich());
         break;
       }
     }
@@ -95,7 +95,7 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         SimpleVerticalContainer svc = new SimpleVerticalContainer(
             cont.getComposite(), true, 3);
         svc.addCheckbox(control.getIsAltersstaffel(),
-            "Nach Alter gestaffelte Beitr‰ge verwenden");
+            "Nach Alter gestaffelte Beitr√§ge verwenden");
         for (Input inp : altersstaffel)
         {
           svc.addInput(inp);

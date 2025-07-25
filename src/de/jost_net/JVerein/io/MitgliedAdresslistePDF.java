@@ -110,7 +110,7 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
       report.addParams(params);
       report.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d SÃ¤tze.", list.size()));
     }
     catch (Exception e)
     {
