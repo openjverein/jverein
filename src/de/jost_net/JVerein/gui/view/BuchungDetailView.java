@@ -72,7 +72,7 @@ public class BuchungDetailView extends AbstractDetailView
       {
         control.buchungSpeichern();
 
-        // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
+        // Bei Splitbuchungen nach dem Speichern zurÃ¼ck zu SplitÃ¼bersicht
         if (!speicherung)
         {
           GUI.startPreviousView();
@@ -106,7 +106,7 @@ public class BuchungDetailView extends AbstractDetailView
         {
           new BuchungNeuAction(control).handleAction(null);
         }
-        GUI.getStatusBar().setSuccessText("Buchung übernommen");
+        GUI.getStatusBar().setSuccessText("Buchung Ã¼bernommen");
       }
       catch (Exception e)
       {
@@ -128,7 +128,7 @@ public class BuchungDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
-    // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
+    // Bei Splitbuchunge Funktioniert die Ã„nderungsÃ¼berwachung nicht, da nicht
     // direkt gespeichert wird.
     try
     {

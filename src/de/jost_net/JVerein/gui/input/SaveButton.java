@@ -43,8 +43,7 @@ public class SaveButton extends Button
       }
       catch (ApplicationException ae)
       {
-        GUI.getStatusBar()
-            .setErrorText(ae.getMessage());
+        GUI.getStatusBar().setErrorText(ae.getMessage());
       }
     }, null, true, "document-save.png");
   }

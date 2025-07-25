@@ -52,8 +52,8 @@ public class KontenrahmenImportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim Importieren von Kontenrahmen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren von Kontenrahmen");
     }
   }
 

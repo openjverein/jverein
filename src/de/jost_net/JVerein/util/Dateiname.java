@@ -24,7 +24,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 
 /**
  * <p>
- * Generierung eines Dateinamens unter Berücksichtigung von vorgegebener
+ * Generierung eines Dateinamens unter BerÃ¼cksichtigung von vorgegebener
  * Variablen
  * </p>
  * 
@@ -33,17 +33,18 @@ import de.jost_net.JVerein.rmi.Mitglied;
  * <dd>Aufgabe (z. B. auswertung, abbuchung)</dd>
  * <dt>d$</dt>
  * <dd>Aktuelles Datum (z. B. 20080101) oder das Datum des Dokumentes, wenn
- * übergeben</dd>
+ * Ã¼bergeben</dd>
  * <dt>$z</dt>
- * <dd>Aktuelle Zeit (z. B. 120503) oder vom übergebenen Datum</dd>
+ * <dd>Aktuelle Zeit (z. B. 120503) oder vom Ã¼bergebenen Datum</dd>
  * <dt>$s</dt>
- * <dd>Sortierung. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
+ * <dd>Sortierung. Wird nicht immer gefÃ¼llt. Ggfls. Leerstring.</dd>
  * <dt>$n</dt>
- * <dd>Name des Mitglieds. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
+ * <dd>Name des Mitglieds. Wird nicht immer gefÃ¼llt. Ggfls. Leerstring.</dd>
  * <dt>$v</dt>
- * <dd>Vorname des Mitglieds. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
+ * <dd>Vorname des Mitglieds. Wird nicht immer gefÃ¼llt. Ggfls. Leerstring.</dd>
  * <dt>$o</dt>
- * <dd>Bezeichnung des Dokuments. Wird nicht immer gefüllt. Ggfls. Leerstring.</dd>
+ * <dd>Bezeichnung des Dokuments. Wird nicht immer gefÃ¼llt. Ggfls.
+ * Leerstring.</dd>
  * </dl>
  */
 
@@ -84,21 +85,21 @@ public class Dateiname
   }
 
   /**
-   * Konstruktor für die Erzeugung eines Dateinames für ein Mitgliedsdokument
+   * Konstruktor fÃ¼r die Erzeugung eines Dateinames fÃ¼r ein Mitgliedsdokument
    * 
    * @param mitglied
-   *        Das Mitglied
+   *          Das Mitglied
    * @param datum
-   *        Datum des Dokuments
+   *          Datum des Dokuments
    * @param aufgabe
-   *        Aufgabe (z.B. Spendenbescheinigung)
+   *          Aufgabe (z.B. Spendenbescheinigung)
    * @param muster
-   *        Dateinamenmuster
+   *          Dateinamenmuster
    * @param extension
-   *        Extension der Datei
+   *          Extension der Datei
    */
-  public Dateiname(Mitglied mitglied, Date datum, String aufgabe,
-      String muster, String extension)
+  public Dateiname(Mitglied mitglied, Date datum, String aufgabe, String muster,
+      String extension)
   {
     this.mitgliedName = "";
     this.mitgliedVorname = "";
@@ -125,20 +126,20 @@ public class Dateiname
   }
 
   /**
-   * Konstruktor für die Erzeugung eines Dateinames für ein Mitglied
+   * Konstruktor fÃ¼r die Erzeugung eines Dateinames fÃ¼r ein Mitglied
    * 
    * @param name
-   *        Name des Mitglieds
+   *          Name des Mitglieds
    * @param vorname
-   *        Vorname des Mitglieds
+   *          Vorname des Mitglieds
    * @param datum
-   *        Datum des Dokuments
+   *          Datum des Dokuments
    * @param aufgabe
-   *        Aufgabe (z.B. Spendenbescheinigung)
+   *          Aufgabe (z.B. Spendenbescheinigung)
    * @param muster
-   *        Dateinamenmuster
+   *          Dateinamenmuster
    * @param extension
-   *        Extension der Datei
+   *          Extension der Datei
    */
   public Dateiname(String name, String vorname, Date datum, String aufgabe,
       String muster, String extension)
@@ -156,8 +157,8 @@ public class Dateiname
   }
 
   /**
-   * Gibt den aufbereiteten String zurück. Wurde ein leeres Muster übergeben,
-   * wird ein Leerstring zurückgegeben.
+   * Gibt den aufbereiteten String zurÃ¼ck. Wurde ein leeres Muster Ã¼bergeben,
+   * wird ein Leerstring zurÃ¼ckgegeben.
    */
   public String get()
   {
@@ -170,8 +171,8 @@ public class Dateiname
       ret = ret.replace("z$", new SimpleDateFormat("HHmmss").format(datum));
       ret = ret.replace("s$", sortierung);
       // n$ = Name, v$ = Vorname, d$ = Datum
-      ret = ret.replace("o$", aufgabe); // wird für den Umstieg von 2.0 -> 2.1
-                                        // zur Kompatibilität benötigt.
+      ret = ret.replace("o$", aufgabe); // wird fÃ¼r den Umstieg von 2.0 -> 2.1
+                                        // zur KompatibilitÃ¤t benÃ¶tigt.
       ret = ret.replace("n$", mitgliedName);
       ret = ret.replace("v$", mitgliedVorname);
       ret = ret.replace("/", " ");

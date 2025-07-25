@@ -33,122 +33,112 @@ public class Update0450 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     {
-      //Tebelle rechnung
+      // Tebelle rechnung
       Table t = new Table("rechnung");
       Column pk = new Column("id", COLTYPE.BIGINT, 10, null, true, true);
       t.add(pk);
       t.setPrimaryKey(pk);
-      
-      Column datum = new Column("datum", COLTYPE.DATE, 10, null, true,
-          false);
+
+      Column datum = new Column("datum", COLTYPE.DATE, 10, null, true, false);
       t.add(datum);
-      
-      Column mitglied = new Column("mitglied", COLTYPE.BIGINT, 10,
-          null, true, false);
+
+      Column mitglied = new Column("mitglied", COLTYPE.BIGINT, 10, null, true,
+          false);
       t.add(mitglied);
-      
-      Column formular = new Column("formular", COLTYPE.BIGINT, 10,
-          null, true, false);
+
+      Column formular = new Column("formular", COLTYPE.BIGINT, 10, null, true,
+          false);
       t.add(formular);
-      
-      Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10,
-          null, true, false);
+
+      Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10, null, true,
+          false);
       t.add(betrag);
-      
-      Column personenart = new Column("personenart", COLTYPE.VARCHAR, 1,
-          null, false, false);
+
+      Column personenart = new Column("personenart", COLTYPE.VARCHAR, 1, null,
+          false, false);
       t.add(personenart);
-      
-      Column anrede = new Column("anrede", COLTYPE.VARCHAR, 40,
-          null, false, false);
+
+      Column anrede = new Column("anrede", COLTYPE.VARCHAR, 40, null, false,
+          false);
       t.add(anrede);
-      
-      Column titel = new Column("titel", COLTYPE.VARCHAR, 40,
-          null, false, false);
+
+      Column titel = new Column("titel", COLTYPE.VARCHAR, 40, null, false,
+          false);
       t.add(titel);
-      
-      Column name = new Column("name", COLTYPE.VARCHAR, 40,
-          null, true, false);
+
+      Column name = new Column("name", COLTYPE.VARCHAR, 40, null, true, false);
       t.add(name);
-      
-      Column vorname = new Column("vorname", COLTYPE.VARCHAR, 40,
-          null, false, false);
+
+      Column vorname = new Column("vorname", COLTYPE.VARCHAR, 40, null, false,
+          false);
       t.add(vorname);
 
-      Column strasse = new Column("strasse", COLTYPE.VARCHAR, 40,
-          null, false, false);
+      Column strasse = new Column("strasse", COLTYPE.VARCHAR, 40, null, false,
+          false);
       t.add(strasse);
 
-      Column adressierungszusatz = new Column("adressierungszusatz", COLTYPE.VARCHAR, 40,
-          null, false, false);
+      Column adressierungszusatz = new Column("adressierungszusatz",
+          COLTYPE.VARCHAR, 40, null, false, false);
       t.add(adressierungszusatz);
 
-      Column plz = new Column("plz", COLTYPE.VARCHAR, 10,
-          null, false, false);
+      Column plz = new Column("plz", COLTYPE.VARCHAR, 10, null, false, false);
       t.add(plz);
 
-      Column ort = new Column("ort", COLTYPE.VARCHAR, 40,
-          null, false, false);
+      Column ort = new Column("ort", COLTYPE.VARCHAR, 40, null, false, false);
       t.add(ort);
 
-      Column staat = new Column("staat", COLTYPE.VARCHAR, 50,
-          null, false, false);
+      Column staat = new Column("staat", COLTYPE.VARCHAR, 50, null, false,
+          false);
       t.add(staat);
-      
-      Column geschlecht = new Column("geschlecht", COLTYPE.VARCHAR, 1,
-          null, false, false);
+
+      Column geschlecht = new Column("geschlecht", COLTYPE.VARCHAR, 1, null,
+          false, false);
       t.add(geschlecht);
-      
-      Column mandatid = new Column("mandatid", COLTYPE.VARCHAR, 10,
-          null, false, false);
+
+      Column mandatid = new Column("mandatid", COLTYPE.VARCHAR, 10, null, false,
+          false);
       t.add(mandatid);
-      
-      Column mandatdatum = new Column("mandatdatum", COLTYPE.DATE, 10,
-          null, false, false);
+
+      Column mandatdatum = new Column("mandatdatum", COLTYPE.DATE, 10, null,
+          false, false);
       t.add(mandatdatum);
-      
-      Column bic = new Column("bic", COLTYPE.VARCHAR, 11,
-          null, false, false);
+
+      Column bic = new Column("bic", COLTYPE.VARCHAR, 11, null, false, false);
       t.add(bic);
-      
-      Column iban = new Column("iban", COLTYPE.VARCHAR, 34,
-          null, false, false);
+
+      Column iban = new Column("iban", COLTYPE.VARCHAR, 34, null, false, false);
       t.add(iban);
 
       execute(this.createTable(t));
-      
-      //Indexes und ForeignKeys in rechnung
+
+      // Indexes und ForeignKeys in rechnung
       Index idx = new Index("ixRechnung1", false);
       idx.add(mitglied);
       execute(idx.getCreateIndex("rechnung"));
-      
-      execute(this.createForeignKey("fk_rechnung",
-              "rechnung", "mitglied", "mitglied", "id",
-              "CASCADE", "RESTRICT"));
-      
+
+      execute(this.createForeignKey("fk_rechnung", "rechnung", "mitglied",
+          "mitglied", "id", "CASCADE", "RESTRICT"));
+
       idx = new Index("ixRechnung2", false);
       idx.add(formular);
       execute(idx.getCreateIndex("rechnung"));
-      
-      execute(this.createForeignKey("fk_rechnung2",
-              "rechnung", "formular", "formular", "id",
-              "RESTRICT", "RESTRICT"));
-      
-      
-      //Spalte rechnung in mitgliedskonto
+
+      execute(this.createForeignKey("fk_rechnung2", "rechnung", "formular",
+          "formular", "id", "RESTRICT", "RESTRICT"));
+
+      // Spalte rechnung in mitgliedskonto
       Column col = new Column("rechnung", COLTYPE.BIGINT, 0, null, false,
           false);
       execute(addColumn("mitgliedskonto", col));
-      
-      //Index und ForeignKey in mitgliedskonto
+
+      // Index und ForeignKey in mitgliedskonto
       idx = new Index("ixMitgliedskonto5", false);
       idx.add(col);
       execute(idx.getCreateIndex("mitgliedskonto"));
-      
-      execute(this.createForeignKey("fkMitgliedskonto5",
-              "mitgliedskonto", "rechnung", "rechnung", "id",
-              "SET NULL", "RESTRICT"));
-      
+
+      execute(this.createForeignKey("fkMitgliedskonto5", "mitgliedskonto",
+          "rechnung", "rechnung", "id", "SET NULL", "RESTRICT"));
+
     }
   }
 }

@@ -60,7 +60,7 @@ public class BuchungAction implements Action
     }
     else
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
     try
     {

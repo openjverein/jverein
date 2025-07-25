@@ -33,7 +33,7 @@ public class MitgliedNextBGruppeLoeschenAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     if (context == null || !(context instanceof MitgliedNextBGruppe))
-      throw new ApplicationException("Keine Beitragsgruppe ausgewählt");
+      throw new ApplicationException("Keine Beitragsgruppe ausgewÃ¤hlt");
 
     try
     {
@@ -44,14 +44,14 @@ public class MitgliedNextBGruppeLoeschenAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Beitragsgruppe löschen");
-      d.setText("Zukünfigte Beitragsgruppe für Mitglied löschen?");
+      d.setTitle("Beitragsgruppe lÃ¶schen");
+      d.setText("ZukÃ¼nfigte Beitragsgruppe fÃ¼r Mitglied lÃ¶schen?");
       Boolean choice = (Boolean) d.open();
       if (!choice.booleanValue())
         return;
 
       k.delete();
-      GUI.getStatusBar().setSuccessText("Zukünftige Beitragsgruppe gelöscht.");
+      GUI.getStatusBar().setSuccessText("ZukÃ¼nftige Beitragsgruppe gelÃ¶scht.");
     }
     catch (Exception e)
     {

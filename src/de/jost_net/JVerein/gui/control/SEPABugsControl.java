@@ -118,7 +118,7 @@ public class SEPABugsControl extends AbstractControl
     if (ls.getMandatDatum().equals(Einstellungen.NODATE))
     {
       bugs.add(new Bug(ls,
-          "Für die Basislastschrift fehlt das Mandatsdatum. Keine Lastschrift",
+          "FÃ¼r die Basislastschrift fehlt das Mandatsdatum. Keine Lastschrift",
           Bug.HINT));
     }
     else if (ls.getMandatDatum().after(new Date()))
@@ -134,7 +134,7 @@ public class SEPABugsControl extends AbstractControl
     }
     catch (SEPAException e)
     {
-      bugs.add(new Bug(ls, "Ungültige IBAN " + ls.getIban(), Bug.ERROR));
+      bugs.add(new Bug(ls, "UngÃ¼ltige IBAN " + ls.getIban(), Bug.ERROR));
     }
     try
     {
@@ -142,7 +142,7 @@ public class SEPABugsControl extends AbstractControl
     }
     catch (Exception e)
     {
-      bugs.add(new Bug(ls, "Ungültige BIC " + ls.getBic(), Bug.ERROR));
+      bugs.add(new Bug(ls, "UngÃ¼ltige BIC " + ls.getBic(), Bug.ERROR));
     }
     // if (bic != null && iban != null)
     // {
@@ -158,7 +158,7 @@ public class SEPABugsControl extends AbstractControl
         && ls.getLetzteLastschrift().before(sepagueltigkeit))
     {
       bugs.add(new Bug(ls,
-          "Letzte Lastschrift ist älter als 36 Monate. Neues Mandat anfordern und eingeben.",
+          "Letzte Lastschrift ist Ã¤lter als 36 Monate. Neues Mandat anfordern und eingeben.",
           Bug.ERROR));
     }
   }

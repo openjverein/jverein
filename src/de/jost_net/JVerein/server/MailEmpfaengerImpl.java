@@ -25,8 +25,8 @@ import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.db.AbstractDBObject;
 
-public class MailEmpfaengerImpl extends AbstractDBObject implements
-    MailEmpfaenger, Comparable<MailEmpfaenger>
+public class MailEmpfaengerImpl extends AbstractDBObject
+    implements MailEmpfaenger, Comparable<MailEmpfaenger>
 {
 
   private static final long serialVersionUID = 1L;
@@ -57,7 +57,7 @@ public class MailEmpfaengerImpl extends AbstractDBObject implements
   @Override
   protected void insertCheck()
   {
-    // 
+    //
   }
 
   @Override
@@ -94,11 +94,11 @@ public class MailEmpfaengerImpl extends AbstractDBObject implements
     Object o = super.getAttribute("mitglied");
     if (o == null)
       return null;
-   
-    if(o instanceof Mitglied)
-      return (Mitglied)o;
-    
-    Cache cache = Cache.get(Mitglied.class,true);
+
+    if (o instanceof Mitglied)
+      return (Mitglied) o;
+
+    Cache cache = Cache.get(Mitglied.class, true);
     return (Mitglied) cache.get(o);
   }
 

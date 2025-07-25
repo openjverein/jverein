@@ -30,7 +30,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Felddefiniton
+ * LÃ¶schen einer Felddefiniton
  */
 public class FelddefinitionDeleteAction implements Action
 {
@@ -45,7 +45,7 @@ public class FelddefinitionDeleteAction implements Action
     }
     if (context == null || !(context instanceof Felddefinition))
     {
-      throw new ApplicationException("Keine Felddefinition ausgewählt");
+      throw new ApplicationException("Keine Felddefinition ausgewÃ¤hlt");
     }
     try
     {
@@ -58,9 +58,9 @@ public class FelddefinitionDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Felddefinition löschen");
+      d.setTitle("Felddefinition lÃ¶schen");
       d.setText("Das Feld ist bei " + it.size()
-          + " Mitgliedern gespeichert. Wollen Sie diese Felddefinition wirklich löschen?");
+          + " Mitgliedern gespeichert. Wollen Sie diese Felddefinition wirklich lÃ¶schen?");
 
       try
       {
@@ -72,7 +72,7 @@ public class FelddefinitionDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Felddefinition", e);
+        Logger.error("Fehler beim LÃ¶schen der Felddefinition", e);
         return;
       }
       while (it.hasNext())
@@ -83,11 +83,11 @@ public class FelddefinitionDeleteAction implements Action
         zf2.delete();
       }
       fd.delete();
-      GUI.getStatusBar().setSuccessText("Felddefinition gelöscht.");
+      GUI.getStatusBar().setSuccessText("Felddefinition gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Felddefinition";
+      String fehler = "Fehler beim LÃ¶schen der Felddefinition";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

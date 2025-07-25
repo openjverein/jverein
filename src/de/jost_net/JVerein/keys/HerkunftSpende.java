@@ -52,9 +52,9 @@ public class HerkunftSpende
     switch (key)
     {
       case BETRIEBSVERMOEGEN:
-        return "Betriebsvermögen";
+        return "BetriebsvermÃ¶gen";
       case PRIVATVERMOEGEN:
-        return "Privatvermögen";
+        return "PrivatvermÃ¶gen";
       case KEINEANGABEN:
         return "Keine Angaben";
       default:

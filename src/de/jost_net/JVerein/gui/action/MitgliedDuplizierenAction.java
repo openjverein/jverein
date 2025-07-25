@@ -33,7 +33,7 @@ public class MitgliedDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("kein Mitglied ausgew√§hlt");
     }
     Mitglied m;
     try
@@ -51,8 +51,8 @@ public class MitgliedDuplizierenAction implements Action
     }
     catch (Exception e)
     {
-      throw new ApplicationException(
-          "Fehler beim duplizieren eines Mitgliedes", e);
+      throw new ApplicationException("Fehler beim duplizieren eines Mitgliedes",
+          e);
     }
   }
 }

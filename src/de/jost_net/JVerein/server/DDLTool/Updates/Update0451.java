@@ -30,10 +30,10 @@ public class Update0451 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("zusatzabbuchung", new Column("zahlungsweg",
-        COLTYPE.INTEGER, 1, "0", true, false)));
+    execute(addColumn("zusatzabbuchung",
+        new Column("zahlungsweg", COLTYPE.INTEGER, 1, "0", true, false)));
 
-    execute(addColumn("zusatzbetragvorlage", new Column("zahlungsweg",
-        COLTYPE.INTEGER, 1, "0", true, false)));
+    execute(addColumn("zusatzbetragvorlage",
+        new Column("zahlungsweg", COLTYPE.INTEGER, 1, "0", true, false)));
   }
 }

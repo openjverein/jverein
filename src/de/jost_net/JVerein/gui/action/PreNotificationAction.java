@@ -28,8 +28,8 @@ public class PreNotificationAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context != null && (context instanceof Abrechnungslauf ||
-        context instanceof Lastschrift || context instanceof Lastschrift[]))
+    if (context != null && (context instanceof Abrechnungslauf
+        || context instanceof Lastschrift || context instanceof Lastschrift[]))
     {
       GUI.startView(PreNotificationMailView.class.getName(), context);
     }

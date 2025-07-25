@@ -29,7 +29,7 @@ public class Update0481 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-      execute("INSERT INTO einstellungneu (name,wert)"
+    execute("INSERT INTO einstellungneu (name,wert)"
         + " SELECT 'optiertpflicht',wert FROM einstellungneu WHERE name = 'optiert' "
         + "AND not exists(select * from einstellungneu where name = 'optiertpflicht')");
   }

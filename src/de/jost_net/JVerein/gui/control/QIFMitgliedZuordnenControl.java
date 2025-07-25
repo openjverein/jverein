@@ -219,9 +219,11 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     Logger.info("Mitglieder zur Auswahl geladen. Anzahl : " + iAnzahl);
 
     SelectInput selMitglied = getMitgliederInput();
-    selMitglied.setList(iteratorMitglieder != null ? PseudoIterator.asList(iteratorMitglieder) : null);
+    selMitglied.setList(
+        iteratorMitglieder != null ? PseudoIterator.asList(iteratorMitglieder)
+            : null);
     selMitglied.setComment(
-        Integer.toString(iAnzahl) + " Mitglieder zur Auswahl mˆglich..");
+        Integer.toString(iAnzahl) + " Mitglieder zur Auswahl m√∂glich..");
     mitgliederGeladen = true;
   }
 
@@ -230,7 +232,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
   {
     DBIterator<Mitglied> iteratorMitglieder = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    if (getCBValueAlleMitgliederZeigen() == false)
+    if (!getCBValueAlleMitgliederZeigen())
     {
       iteratorMitglieder.addFilter(getWhere(externerName));
     }
@@ -279,7 +281,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     }
     mitgliederInput = new SelectInput((Object[]) null, null);
     mitgliederInput.setAttribute("namevorname");
-    mitgliederInput.setPleaseChoose("Bitte ausw‰hlen");
+    mitgliederInput.setPleaseChoose("Bitte ausw√§hlen");
     mitgliederInput.setComment(" ");
     return mitgliederInput;
   }
@@ -321,7 +323,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     {
       if (null == mitglied)
       {
-        GUI.getStatusBar().setErrorText("Keine JVerein Mitglied gew‰hlt!!");
+        GUI.getStatusBar().setErrorText("Keine JVerein Mitglied gew√§hlt!!");
         return false;
       }
       return true;
@@ -374,7 +376,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
     {
       QIFImportPos pos = (QIFImportPos) it.next();
       String name = pos.getName();
-      if (letzterName.equals(name) == false)
+      if (!letzterName.equals(name))
       {
         letzterName = new String(name);
         l.add(pos);
@@ -418,7 +420,7 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
   {
     try
     {
-      if (getCBValueAlleMitgliederZeigen() == false)
+      if (!getCBValueAlleMitgliederZeigen())
         mitgliederGeladen = false;
 
       qifImportPos = (QIFImportPos) distinctExternNameListTable.getSelection();

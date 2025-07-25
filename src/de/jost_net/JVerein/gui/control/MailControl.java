@@ -63,8 +63,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl
-    implements IMailControl, Savable
+public class MailControl extends FilterControl implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -273,7 +272,7 @@ public class MailControl extends FilterControl
           {
             SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
             d.setTitle("Mail bereits versendet");
-            d.setText("Mail wurde bereits an alle Empf‰nger versendet!");
+            d.setText("Mail wurde bereits an alle Empf√§nger versendet!");
             try
             {
               d.open();
@@ -288,9 +287,10 @@ public class MailControl extends FilterControl
           {
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail senden?");
-            d.setText(
-                "Diese Mail wurde bereits an " + (getMail().getEmpfaenger()
-                    .size() - toBeSentCount) + " der gew‰hlten Empf‰nger versendet. Wollen Sie diese Mail an alle weiteren " + toBeSentCount + " Empf‰nger senden?");
+            d.setText("Diese Mail wurde bereits an "
+                + (getMail().getEmpfaenger().size() - toBeSentCount)
+                + " der gew√§hlten Empf√§nger versendet. Wollen Sie diese Mail an alle weiteren "
+                + toBeSentCount + " Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -338,7 +338,7 @@ public class MailControl extends FilterControl
           if (mail.getTxt().length() > 10000)
           {
             throw new ApplicationException(
-                "Maximale L‰nge des Textes 10.000 Zeichen");
+                "Maximale L√§nge des Textes 10.000 Zeichen");
           }
 
           boolean mailAlreadySent = false;
@@ -355,7 +355,7 @@ public class MailControl extends FilterControl
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail erneut senden?");
             d.setText(
-                "An mindestens einen Empf‰nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf‰nger senden?");
+                "An mindestens einen Empf√§nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -410,14 +410,14 @@ public class MailControl extends FilterControl
   }
 
   /**
-   * Versende Mail an Empf‰nger. Wenn erneutSenden==false wird Mail nur an
-   * Empf‰nger versendet, die Mail noch nicht erhalten haben.
+   * Versende Mail an Empf√§nger. Wenn erneutSenden==false wird Mail nur an
+   * Empf√§nger versendet, die Mail noch nicht erhalten haben.
    */
   private void sendeMail(final boolean erneutSenden) throws RemoteException
   {
     String text = getTxtString();
-    if (text.toLowerCase().contains("<html") && text.toLowerCase()
-        .contains("</body"))
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
@@ -448,7 +448,8 @@ public class MailControl extends FilterControl
               (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
               Einstellungen.getSmtpAuthPwd(),
               (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
-              (String) Einstellungen.getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen
+                  .getEinstellung(Property.SMTPFROMANZEIGENAME),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
               (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
               (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
@@ -499,7 +500,7 @@ public class MailControl extends FilterControl
               }
               else
               {
-                monitor.log(empf.getMailAdresse() + " - ¸bersprungen");
+                monitor.log(empf.getMailAdresse() + " - √ºbersprungen");
               }
             }
             catch (Exception e)
@@ -508,8 +509,8 @@ public class MailControl extends FilterControl
               monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
             }
             zae++;
-            double proz = (double) zae / (double) getMail().getEmpfaenger()
-                .size() * 100d;
+            double proz = (double) zae
+                / (double) getMail().getEmpfaenger().size() * 100d;
             monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
@@ -647,6 +648,7 @@ public class MailControl extends FilterControl
     return mailsList;
   }
 
+  @Override
   public void TabRefresh()
   {
     try

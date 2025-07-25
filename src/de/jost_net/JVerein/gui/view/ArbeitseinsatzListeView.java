@@ -35,7 +35,7 @@ public class ArbeitseinsatzListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Arbeitseins‰tze");
+    GUI.getView().setTitle("Arbeitseins√§tze");
 
     final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
 
@@ -45,11 +45,11 @@ public class ArbeitseinsatzListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Bemerkung", control.getSuchtext());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -60,8 +60,8 @@ public class ArbeitseinsatzListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zur¸ck");
-    vor.setToolTipText("Datumsbereich vow‰rts");
+    zurueck.setToolTipText("Datumsbereich zur√ºck");
+    vor.setToolTipText("Datumsbereich vow√§rts");
 
     control.getArbeitseinsatzTable().paint(this.getParent());
 
@@ -69,8 +69,8 @@ public class ArbeitseinsatzListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons.addButton("Auswertung",
-        new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
-        control, false, "screwdriver.png");
+        new StartViewAction(ArbeitseinsatzUeberpruefungView.class), control,
+        false, "screwdriver.png");
     buttons.addButton("Neu",
         new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class),
         control, false, "document-new.png");

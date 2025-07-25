@@ -23,8 +23,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.willuhn.datasource.db.AbstractDBObject;
 
-public class SekundaereBeitragsgruppeImpl extends AbstractDBObject implements
-    SekundaereBeitragsgruppe
+public class SekundaereBeitragsgruppeImpl extends AbstractDBObject
+    implements SekundaereBeitragsgruppe
 {
 
   private static final long serialVersionUID = 380278347818535726L;

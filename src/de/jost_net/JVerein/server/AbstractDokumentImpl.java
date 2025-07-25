@@ -22,8 +22,8 @@ import java.util.Date;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.willuhn.datasource.db.AbstractDBObject;
 
-public abstract class AbstractDokumentImpl extends AbstractDBObject implements
-    AbstractDokument
+public abstract class AbstractDokumentImpl extends AbstractDBObject
+    implements AbstractDokument
 {
 
   private static final long serialVersionUID = 1L;

@@ -24,7 +24,17 @@ public class SimpleVerticalContainer extends Container
 
     private enum GUIElementTypes
     {
-      BUTTONAREA, CHECKBOX, HEADLINE, INPUT, LABELPAIRINPUT, LABELPAIRSTRING, PART, RADIOINPUT, SEPARATOR, TEXT, TEXTCOLOR
+      BUTTONAREA,
+      CHECKBOX,
+      HEADLINE,
+      INPUT,
+      LABELPAIRINPUT,
+      LABELPAIRSTRING,
+      PART,
+      RADIOINPUT,
+      SEPARATOR,
+      TEXT,
+      TEXTCOLOR
     }
 
     public GUIElementTypes guiElementType;
@@ -51,8 +61,8 @@ public class SimpleVerticalContainer extends Container
   private boolean arrangingStarted = false;
 
   /**
-   * Erzeugt einen neuen Container mit cols Spalten. GUI-Elemente werden über
-   * dieselben Funktionen hingefügt wie bei einem normalen Container. Jedoch
+   * Erzeugt einen neuen Container mit cols Spalten. GUI-Elemente werden Ã¼ber
+   * dieselben Funktionen hingefÃ¼gt wie bei einem normalen Container. Jedoch
    * werden die Elemente spaltenweise angeordnet. Damit bekannt ist, wie viele
    * Elemente jede Spalte enthalten muss, werden erst beim Aufruf von Funktion
    * arrangeVertically() die Elemente gezeichnet.
@@ -72,8 +82,8 @@ public class SimpleVerticalContainer extends Container
   }
 
   /**
-   * Erzeugt einen neuen Container mit cols Spalten. GUI-Elemente werden über
-   * dieselben Funktionen hingefügt wie bei einem normalen Container. Jedoch
+   * Erzeugt einen neuen Container mit cols Spalten. GUI-Elemente werden Ã¼ber
+   * dieselben Funktionen hingefÃ¼gt wie bei einem normalen Container. Jedoch
    * werden die Elemente Spaltenweise angeordnet. Damit bekannt ist, wie viele
    * Elemente jede Spalte enthalten muss, werden erst bei Aufruf von Funktion
    * arrangeVertically() die Elemente gezeichnet.
@@ -87,7 +97,7 @@ public class SimpleVerticalContainer extends Container
    * @param cols
    *          Anzahl der Spalten.
    * @param headlineFullWidth
-   *          true, wenn die Headline über alle Spalten gezeichnet werden soll.
+   *          true, wenn die Headline Ã¼ber alle Spalten gezeichnet werden soll.
    *          Wenn false, wird die Headline innerhalb der Spalten gezeichnet.
    */
   public SimpleVerticalContainer(Composite parent, boolean fullSize, int cols,

@@ -65,14 +65,14 @@ public class SteuerZuordnungDialog extends AbstractDialog<Steuer>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Steuer", getSteuerAuswahl());
-    group.addLabelPair("Steuer ¸berschreiben", getUeberschreiben());
+    group.addLabelPair("Steuer √ºberschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("‹bernehmen", context -> {
+    buttons.addButton("√úbernehmen", context -> {
       if (steuerInput.getValue() == null)
       {
-        status.setValue("Bitte Steuer ausw‰hlen");
+        status.setValue("Bitte Steuer ausw√§hlen");
         status.setColor(Color.ERROR);
         return;
       }

@@ -64,18 +64,18 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
           BaseColor.LIGHT_GRAY);
       if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
       {
-        report.addHeaderColumn("Eintritt / \nAustritt / \nKündigung"
-            + ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
-                ? ("/\n" + "Sterbedatum")
-                : ""),
-            Element.ALIGN_CENTER, 30, BaseColor.LIGHT_GRAY);
+        report
+            .addHeaderColumn(
+                "Eintritt / \nAustritt / \nKÃ¼ndigung"
+                    + ((Boolean) Einstellungen.getEinstellung(
+                        Property.STERBEDATUM) ? ("/\n" + "Sterbedatum") : ""),
+                Element.ALIGN_CENTER, 30, BaseColor.LIGHT_GRAY);
       }
       report.addHeaderColumn(
 
           "Beitragsgruppe /\nEigenschaften"
-              + ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
-                  ? "\nMitgliedsnummer"
-                  : ""),
+              + ((Boolean) Einstellungen.getEinstellung(
+                  Property.EXTERNEMITGLIEDSNUMMER) ? "\nMitgliedsnummer" : ""),
           Element.ALIGN_CENTER, 60, BaseColor.LIGHT_GRAY);
       report.createHeader(100, Element.ALIGN_CENTER);
 
@@ -155,7 +155,8 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         }
 
         zelle = "";
-        if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           zelle += (m.getExterneMitgliedsnummer() != null
               ? m.getExterneMitgliedsnummer()
@@ -174,7 +175,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       report.closeTable();
       report.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d SÃ¤tze.", list.size()));
     }
     catch (Exception e)
     {

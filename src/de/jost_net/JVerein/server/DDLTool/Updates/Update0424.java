@@ -40,5 +40,5 @@ public class Update0424 extends AbstractDDLUpdate
     execute(addColumn("formular",
         new Column("formlink", COLTYPE.BIGINT, 0, "NULL", false, false)));
   }
-  
+
 }

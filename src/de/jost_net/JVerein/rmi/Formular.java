@@ -44,9 +44,9 @@ public interface Formular extends JVereinDBObject
   public Long getFormlink() throws RemoteException;
 
   public void setFormlink(Long formlink) throws RemoteException;
-  
+
   public boolean hasFormlinks() throws RemoteException;
-  
+
   public DBIterator<Formular> getLinked() throws RemoteException;
 
   public void setZaehlerToFormlink(int zaehler) throws RemoteException;

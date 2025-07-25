@@ -52,24 +52,25 @@ public class BuchungsartSearchInput extends SearchInput
     super();
     this.art = art;
   }
-  
+
   private int unterdrueckunglaenge = 0;
-  
-  private  buchungsarttyp art;
-  
+
+  private buchungsarttyp art;
+
   @Override
   @SuppressWarnings("rawtypes")
   public List startSearch(String text)
   {
     try
     {
-      unterdrueckunglaenge = (Integer) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGLAENGE);
-      if (unterdrueckunglaenge > 0 )
+      unterdrueckunglaenge = (Integer) Einstellungen
+          .getEinstellung(Property.UNTERDRUECKUNGLAENGE);
+      if (unterdrueckunglaenge > 0)
       {
         final DBService service = Einstellungen.getDBService();
         Calendar cal = Calendar.getInstance();
         Date db = cal.getTime();
-        cal.add(Calendar.MONTH, - unterdrueckunglaenge);
+        cal.add(Calendar.MONTH, -unterdrueckunglaenge);
         Date dv = cal.getTime();
 
         String sql;
@@ -104,7 +105,8 @@ public class BuchungsartSearchInput extends SearchInput
           text = "%" + text.toUpperCase() + "%";
           sql += "AND (UPPER(buchungsart.bezeichnung) like ? or buchungsart.nummer like ?) ";
         }
-        if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
         {
           sql += "ORDER BY nummer";
         }
@@ -115,13 +117,14 @@ public class BuchungsartSearchInput extends SearchInput
         ResultSetExtractor rs = new ResultSetExtractor()
         {
           @Override
-          public Object extract(ResultSet rs) throws RemoteException, SQLException
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
           {
             ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
             while (rs.next())
             {
-              list.add(
-                  (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+              list.add((Buchungsart) service.createObject(Buchungsart.class,
+                  rs.getString(1)));
             }
             return list;
           }
@@ -130,21 +133,21 @@ public class BuchungsartSearchInput extends SearchInput
         if (text != null)
         {
           @SuppressWarnings("unchecked")
-          ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE,
-                  text, text }, rs);
+          ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service
+              .execute(sql, new Object[] { dv, db, StatusBuchungsart.AUTO,
+                  StatusBuchungsart.ACTIVE, text, text }, rs);
           return result;
         }
         else
         {
           @SuppressWarnings("unchecked")
-          ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE
-                  }, rs);
+          ArrayList<Buchungsart> result = (ArrayList<Buchungsart>) service
+              .execute(sql, new Object[] { dv, db, StatusBuchungsart.AUTO,
+                  StatusBuchungsart.ACTIVE }, rs);
           return result;
         }
       }
-      else 
+      else
       {
         DBIterator result = Einstellungen.getDBService()
             .createList(Buchungsart.class);
@@ -165,7 +168,8 @@ public class BuchungsartSearchInput extends SearchInput
           result.addFilter("(UPPER(bezeichnung) like ? or nummer like ?)",
               new Object[] { text, text });
         }
-        if ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
         {
           result.setOrder("ORDER BY nummer");
         }
@@ -173,7 +177,7 @@ public class BuchungsartSearchInput extends SearchInput
         {
           result.setOrder("ORDER BY bezeichnung");
         }
-        
+
         return result != null ? PseudoIterator.asList(result) : null;
       }
     }

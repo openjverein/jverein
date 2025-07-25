@@ -74,10 +74,10 @@ public class MitgliederImport implements Importer
       {
         results.findColumn("id");
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle("Mitglieder überschreiben");
+        dialog.setTitle("Mitglieder Ã¼berschreiben");
         dialog.setText("In der Importdatei ist die Spalte \"id\" vorhanden,\n"
             + "es werden die Felder der existierenden Mitglieder mit dieser ID\n"
-            + "geändert und ggf. geleert.\n" + "Soll fortgefahren werden?");
+            + "geÃ¤ndert und ggf. geleert.\n" + "Soll fortgefahren werden?");
         if (!(boolean) dialog.open())
         {
           throw new ApplicationException("Import abgebrochen");
@@ -154,7 +154,7 @@ public class MitgliederImport implements Importer
         try
         {
           // Wenn die Spalte id existiert, sollen bestehende Mitglieder
-          // überschrieben werden, dann nehmen wir die ID
+          // Ã¼berschrieben werden, dann nehmen wir die ID
           id = results.getString("id");
         }
         catch (SQLException ignore)
@@ -164,7 +164,7 @@ public class MitgliederImport implements Importer
         try
         {
           m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, id);
+              .createObject(Mitglied.class, id);
         }
         catch (ObjectNotFoundException e)
         {
@@ -214,7 +214,7 @@ public class MitgliederImport implements Importer
         {
           if (id == null)
           {
-            // Wenn Personenart nicht vorhanden speichern wir es als natürliche
+            // Wenn Personenart nicht vorhanden speichern wir es als natÃ¼rliche
             // Person
             m.setPersonenart("N");
           }
@@ -248,7 +248,7 @@ public class MitgliederImport implements Importer
               catch (ParseException e)
               {
                 throw new ApplicationException("Zeile " + anz
-                    + ": Ungültiges Datumsformat für eintritt: " + eintritt);
+                    + ": UngÃ¼ltiges Datumsformat fÃ¼r eintritt: " + eintritt);
               }
             }
             else
@@ -282,7 +282,7 @@ public class MitgliederImport implements Importer
             catch (ParseException e)
             {
               throw new ApplicationException("Zeile " + anz
-                  + ": Ungültiges Datumsformat für austritt: " + austritt);
+                  + ": UngÃ¼ltiges Datumsformat fÃ¼r austritt: " + austritt);
             }
           }
         }
@@ -307,7 +307,7 @@ public class MitgliederImport implements Importer
 
         try
         {
-          // Beitragsgruppe nur bei Mitgliedern möglich
+          // Beitragsgruppe nur bei Mitgliedern mÃ¶glich
           if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             String beitragsgruppe = results.getString("beitragsgruppe");
@@ -339,7 +339,8 @@ public class MitgliederImport implements Importer
 
         try
         {
-          if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
           {
             String individuellerBeitrag = results
                 .getString("individuellerbeitrag");
@@ -365,17 +366,18 @@ public class MitgliederImport implements Importer
           {
             if (Zahlungsweg.get(Integer.parseInt(zahlungsweg)) == null)
               throw new ApplicationException(
-                  "Zeile " + anz + ": Zahlungsweg ungültig: " + zahlungsweg);
+                  "Zeile " + anz + ": Zahlungsweg ungÃ¼ltig: " + zahlungsweg);
             if (Integer.parseInt(zahlungsweg) == 4 && m.getBeitragsgruppe()
                 .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
               throw new ApplicationException(
                   "Zeile " + anz + ": Zahlungsweg VOLLZAHLER(" + 4
-                      + ") nur für Familienangehörige");
+                      + ") nur fÃ¼r FamilienangehÃ¶rige");
             m.setZahlungsweg(Integer.parseInt(zahlungsweg));
           }
           else
           {
-            m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
         catch (SQLException e)
@@ -383,7 +385,8 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             // Wenn nicht vorhanden Standartwert aus Einstellungen nehmen
-            m.setZahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
 
@@ -400,7 +403,7 @@ public class MitgliederImport implements Importer
                 if (Zahlungsrhythmus
                     .get(Integer.parseInt(zahlungsrhythmus)) == null)
                   throw new ApplicationException("Zeile " + anz
-                      + ": Ungültiger Zahlungsrythmus: " + zahlungsrhythmus);
+                      + ": UngÃ¼ltiger Zahlungsrythmus: " + zahlungsrhythmus);
                 m.setZahlungsrhythmus(Integer.parseInt(zahlungsrhythmus));
               }
               catch (NumberFormatException e)
@@ -417,7 +420,7 @@ public class MitgliederImport implements Importer
                   }
                   if (!found)
                     throw new ApplicationException("Zeile " + anz
-                        + ": Ungültiger Zahlungsrythmus: " + zahlungsrhythmus);
+                        + ": UngÃ¼ltiger Zahlungsrythmus: " + zahlungsrhythmus);
                 }
               }
             }
@@ -449,7 +452,7 @@ public class MitgliederImport implements Importer
               if (Zahlungstermin
                   .getByKey(Integer.parseInt(zahlungstermin)) == null)
                 throw new ApplicationException("Zeile " + anz
-                    + ": Ungültiger Zahlungstermin: " + zahlungstermin);
+                    + ": UngÃ¼ltiger Zahlungstermin: " + zahlungstermin);
               m.setZahlungstermin(Integer.parseInt(zahlungstermin));
             }
             else
@@ -506,7 +509,7 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig. 0 als default nehmen
+          // Nur bei Zahlungsweg Lastschrift nÃ¶tig. 0 als default nehmen
           if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
@@ -528,7 +531,7 @@ public class MitgliederImport implements Importer
             {
               if (e.getFehler() == SEPAException.Fehler.UNGUELTIGES_LAND)
                 throw new ApplicationException("Zeile " + anz
-                    + ": IBAN Ungültiges Land: " + e.getMessage());
+                    + ": IBAN UngÃ¼ltiges Land: " + e.getMessage());
               else
                 throw new ApplicationException(e.getMessage());
             }
@@ -541,7 +544,7 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig
+          // Nur bei Zahlungsweg Lastschrift nÃ¶tig
           if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
@@ -584,7 +587,7 @@ public class MitgliederImport implements Importer
           {
             if (!EmailValidator.isValid(email))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültige Email: " + email);
+                  "Zeile " + anz + ": UngÃ¼ltige Email: " + email);
             m.setEmail(email);
           }
         }
@@ -597,7 +600,8 @@ public class MitgliederImport implements Importer
           }
         }
 
-        if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           try
           {
@@ -635,14 +639,17 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+          else if ((Boolean) Einstellungen
+              .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
-          if (id == null && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
+          if (id == null
+              && (Boolean) Einstellungen
+                  .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException("Geburtsdatum fehlt");
         }
@@ -656,7 +663,7 @@ public class MitgliederImport implements Importer
                 && !geschlecht.toLowerCase().equals("w")
                 && !geschlecht.toLowerCase().equals("o"))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültiges Geschlecht: " + geschlecht);
+                  "Zeile " + anz + ": UngÃ¼ltiges Geschlecht: " + geschlecht);
             m.setGeschlecht(geschlecht.toLowerCase());
           }
           else
@@ -713,7 +720,7 @@ public class MitgliederImport implements Importer
           {
             if (!EmailValidator.isValid(ktoiemail))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültige Email: " + ktoiemail);
+                  "Zeile " + anz + ": UngÃ¼ltige Email: " + ktoiemail);
             m.setKtoiEmail(ktoiemail);
           }
         }
@@ -884,7 +891,7 @@ public class MitgliederImport implements Importer
                 && !ktoigeschlecht.toLowerCase().equals("w")
                 && !ktoigeschlecht.toLowerCase().equals("o"))
               throw new ApplicationException("Zeile " + anz
-                  + ": Ungültiges Geschlecht: " + ktoigeschlecht);
+                  + ": UngÃ¼ltiges Geschlecht: " + ktoigeschlecht);
             m.setKtoiGeschlecht(ktoigeschlecht);
           }
         }
@@ -1160,12 +1167,12 @@ public class MitgliederImport implements Importer
           {
             if (zusatzfeld == null)
             {
-              zusatzfeld = (Zusatzfelder) Einstellungen
-                  .getDBService().createObject(Zusatzfelder.class, null);
+              zusatzfeld = (Zusatzfelder) Einstellungen.getDBService()
+                  .createObject(Zusatzfelder.class, null);
               zusatzfeld.setMitglied(Integer.parseInt(m.getID()));
               zusatzfeld.setFelddefinition(Integer.parseInt(f.getID()));
             }
-            
+
             switch (f.getDatentyp())
             {
               case Datentyp.DATUM:
@@ -1177,7 +1184,7 @@ public class MitgliederImport implements Importer
                 catch (ParseException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datumsformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datumsformat " + inhalt);
                 }
                 break;
               case Datentyp.GANZZAHL:
@@ -1188,7 +1195,7 @@ public class MitgliederImport implements Importer
                 catch (NumberFormatException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.JANEIN:
@@ -1206,7 +1213,7 @@ public class MitgliederImport implements Importer
                 else
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.WAEHRUNG:
@@ -1218,7 +1225,7 @@ public class MitgliederImport implements Importer
                 catch (NumberFormatException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.ZEICHENFOLGE:
@@ -1228,7 +1235,7 @@ public class MitgliederImport implements Importer
             zusatzfeld.store();
           }
           // Wenn bei Existierenden Mitgliedern das Zusatzfeld in der
-          // Importdatei leer ist, wird es gelöscht
+          // Importdatei leer ist, wird es gelÃ¶scht
           else if (id != null && zusatzfeld != null)
           {
             zusatzfeld.delete();
@@ -1271,7 +1278,7 @@ public class MitgliederImport implements Importer
             eigenschaften.delete();
           }
         }
-        // Sekundaere-Beitragsgruppe nur bei Mitgliedern möglich
+        // Sekundaere-Beitragsgruppe nur bei Mitgliedern mÃ¶glich
         if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           for (Beitragsgruppe bg : sekundaerList)
@@ -1304,7 +1311,7 @@ public class MitgliederImport implements Importer
                 sekundaer.store();
               }
             }
-            // Ggf. vorhandene Sekundäre Beitragsgruppe entfernen
+            // Ggf. vorhandene SekundÃ¤re Beitragsgruppe entfernen
             else if (id != null && sekundaer != null)
             {
               sekundaer.delete();
@@ -1318,7 +1325,7 @@ public class MitgliederImport implements Importer
         }
         else
         {
-          text = "Mitglied %s geändert.";
+          text = "Mitglied %s geÃ¤ndert.";
         }
         monitor.setStatusText(
             String.format(text, Adressaufbereitung.getNameVorname(m)));

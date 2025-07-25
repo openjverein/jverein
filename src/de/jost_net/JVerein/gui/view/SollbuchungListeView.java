@@ -68,8 +68,8 @@ public class SollbuchungListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor.setToolTipText("Datumsbereich vowÃ¤rts");
 
     control.getSollbuchungenList(null, false).paint(this.getParent());
 

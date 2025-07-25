@@ -33,10 +33,10 @@ public class Update0472 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung",
-        new Column("spendenbescheinigungenanzeigen", COLTYPE.BOOLEAN, 0, "0",
-            false, false)));
-    
+    execute(
+        addColumn("einstellung", new Column("spendenbescheinigungenanzeigen",
+            COLTYPE.BOOLEAN, 0, "0", false, false)));
+
     execute("UPDATE einstellung SET spendenbescheinigungenanzeigen = CASE "
         + "WHEN EXISTS (SELECT 1 FROM spendenbescheinigung) THEN 1 ELSE 0 "
         + "END;");

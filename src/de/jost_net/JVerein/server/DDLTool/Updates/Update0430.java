@@ -31,16 +31,16 @@ public class Update0430 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("konto", new Column("buchungsart",
-        COLTYPE.BIGINT, 0, null, false, false)));
-    
+    execute(addColumn("konto",
+        new Column("buchungsart", COLTYPE.BIGINT, 0, null, false, false)));
+
     Index idx = new Index("ixKonto1", false);
     Column col = new Column("buchungsart", COLTYPE.BIGINT, 0, null, false,
         false);
     idx.add(col);
     execute(idx.getCreateIndex("konto"));
 
-    execute(createForeignKey("fkKonto1", "konto",
-        "buchungsart", "buchungsart", "id", "SET NULL", "NO ACTION"));
+    execute(createForeignKey("fkKonto1", "konto", "buchungsart", "buchungsart",
+        "id", "SET NULL", "NO ACTION"));
   }
 }

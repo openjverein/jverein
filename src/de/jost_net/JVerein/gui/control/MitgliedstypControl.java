@@ -35,8 +35,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypControl extends VorZurueckControl
-    implements Savable
+public class MitgliedstypControl extends VorZurueckControl implements Savable
 {
   private de.willuhn.jameica.system.Settings settings;
 
@@ -100,6 +99,7 @@ public class MitgliedstypControl extends VorZurueckControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

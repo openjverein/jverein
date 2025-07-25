@@ -52,11 +52,11 @@ public class EditAction implements Action
   {
     if (context == null)
     {
-      throw new ApplicationException("Kein Objekt ausgew‰hlt");
+      throw new ApplicationException("Kein Objekt ausgew√§hlt");
     }
     if (context instanceof Object[])
     {
-      throw new ApplicationException("Mehrere Objekte ausgew‰hlt");
+      throw new ApplicationException("Mehrere Objekte ausgew√§hlt");
     }
     if (part != null)
     {

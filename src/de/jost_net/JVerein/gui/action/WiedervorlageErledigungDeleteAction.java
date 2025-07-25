@@ -27,7 +27,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Erledigungsdatum einer Wiedervorlage zurücksetzen.
+ * Erledigungsdatum einer Wiedervorlage zurÃ¼cksetzen.
  */
 public class WiedervorlageErledigungDeleteAction implements Action
 {
@@ -37,7 +37,7 @@ public class WiedervorlageErledigungDeleteAction implements Action
   {
     if (context == null || !(context instanceof Wiedervorlage))
     {
-      throw new ApplicationException("Keine Wiedervorlage ausgewählt");
+      throw new ApplicationException("Keine Wiedervorlage ausgewÃ¤hlt");
     }
     try
     {
@@ -48,7 +48,8 @@ public class WiedervorlageErledigungDeleteAction implements Action
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Wiedervorlage");
-      d.setText("Wollen Sie das Erledigungsdatum der Wiedervorlage wirklich entfernen?");
+      d.setText(
+          "Wollen Sie das Erledigungsdatum der Wiedervorlage wirklich entfernen?");
       try
       {
         Boolean choice = (Boolean) d.open();

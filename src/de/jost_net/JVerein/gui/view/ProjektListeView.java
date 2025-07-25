@@ -47,7 +47,7 @@ public class ProjektListeView extends AbstractView
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Startdatum von", control.getDatumvon());
     middle.addLabelPair("Startdatum bis", control.getDatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Endedatum von", control.getEingabedatumvon());
     right.addLabelPair("Endedatum bis", control.getEingabedatumbis());
@@ -68,19 +68,18 @@ public class ProjektListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Start Datumsbereich zurück");
-    vor1.setToolTipText("Start Datumsbereich vowärts");
-    zurueck2.setToolTipText("Ende Datumsbereich zurück");
-    vor2.setToolTipText("Ende Datumsbereich vowärts");
-    
+    zurueck1.setToolTipText("Start Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Start Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Ende Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Ende Datumsbereich vowÃ¤rts");
+
     control.getProjektList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PROJEKTE, false, "question-circle.png");
     buttons.addButton("Neu",
-        new NewAction(ProjektDetailView.class, Projekt.class),
-        null, false,
+        new NewAction(ProjektDetailView.class, Projekt.class), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

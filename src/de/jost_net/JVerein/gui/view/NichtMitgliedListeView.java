@@ -49,7 +49,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
-    
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED));
     left.addInput(control.getSuchname());
@@ -66,11 +66,11 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
       middle.addInput(zusatzfelderInput);
       control.updateZusatzfelderAuswahlTooltip();
     }
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
-    
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getResetButton());
     buttons.addButton(control.getSuchenButton());

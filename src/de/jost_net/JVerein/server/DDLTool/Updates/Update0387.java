@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -40,7 +40,7 @@ public class Update0387 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Einstellung für die Auswahlliste(n) der Buchungsart
+    // Einstellung fÃ¼r die Auswahlliste(n) der Buchungsart
     // 1 - Standard: Nur Bezeichnung anzeigen, aufsteigend sortiert
     // 2 - Nummer und Bezeichnung anzeigen, sortiert nach Nummer
     execute(addColumn("einstellung",

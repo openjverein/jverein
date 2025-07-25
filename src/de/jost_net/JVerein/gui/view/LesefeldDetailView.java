@@ -129,8 +129,8 @@ public class LesefeldDetailView extends AbstractView
         if (lesefeld.getBezeichnung().equals(textInputScriptName.getValue()))
         {
           String currentid = lesefeld.getID();
-          if (this.lesefeld == null || !this.lesefeld.getID()
-              .equalsIgnoreCase(currentid))
+          if (this.lesefeld == null
+              || !this.lesefeld.getID().equalsIgnoreCase(currentid))
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");
@@ -141,13 +141,13 @@ public class LesefeldDetailView extends AbstractView
 
       // erstelle neues lesefeld, wenn nötig.
       if (lesefeld == null)
-        lesefeld = Einstellungen.getDBService()
-            .createObject(Lesefeld.class, null);
+        lesefeld = Einstellungen.getDBService().createObject(Lesefeld.class,
+            null);
 
       lesefeld.setBezeichnung((String) textInputScriptName.getValue());
       lesefeld.setScript((String) textAreaInputScriptCode.getValue());
-      lesefeld.setEvaluatedContent(
-          (String) textAreaInputScriptResult.getValue());
+      lesefeld
+          .setEvaluatedContent((String) textAreaInputScriptResult.getValue());
     }
     catch (RemoteException e)
     {
@@ -164,7 +164,7 @@ public class LesefeldDetailView extends AbstractView
    * zurück in die GUI.
    *
    * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *     Skript-Ausgabe-Feld geschrieben).
+   *         Skript-Ausgabe-Feld geschrieben).
    */
   private boolean updateScriptResult()
   {
@@ -255,8 +255,8 @@ public class LesefeldDetailView extends AbstractView
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        lesefeldAuswerter.setMap(
-            new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
         updateScriptResult();
       }
       catch (RemoteException e)

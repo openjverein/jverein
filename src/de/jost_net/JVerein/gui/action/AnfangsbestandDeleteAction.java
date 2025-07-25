@@ -28,7 +28,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Anfangsbestandes
+ * LÃ¶schen eines Anfangsbestandes
  */
 public class AnfangsbestandDeleteAction implements Action
 {
@@ -42,7 +42,7 @@ public class AnfangsbestandDeleteAction implements Action
     }
     if (context == null || !(context instanceof Anfangsbestand))
     {
-      throw new ApplicationException("Keinen Anfangsbestand ausgewählt");
+      throw new ApplicationException("Keinen Anfangsbestand ausgewÃ¤hlt");
     }
     try
     {
@@ -66,8 +66,8 @@ public class AnfangsbestandDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Anfangsbestand löschen");
-      d.setText("Wollen Sie diesen Anfangsbestand wirklich löschen?");
+      d.setTitle("Anfangsbestand lÃ¶schen");
+      d.setText("Wollen Sie diesen Anfangsbestand wirklich lÃ¶schen?");
 
       try
       {
@@ -77,15 +77,15 @@ public class AnfangsbestandDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Anfangsbestandes: ", e);
+        Logger.error("Fehler beim LÃ¶schen des Anfangsbestandes: ", e);
         return;
       }
       a.delete();
-      GUI.getStatusBar().setSuccessText("Anfangsbestand gelöscht.");
+      GUI.getStatusBar().setSuccessText("Anfangsbestand gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Anfangsbestandes";
+      String fehler = "Fehler beim LÃ¶schen des Anfangsbestandes";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

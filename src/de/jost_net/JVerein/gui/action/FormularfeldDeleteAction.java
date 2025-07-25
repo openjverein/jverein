@@ -27,7 +27,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Formularfeldes
+ * LÃ¶schen eines Formularfeldes
  */
 public class FormularfeldDeleteAction implements Action
 {
@@ -42,7 +42,7 @@ public class FormularfeldDeleteAction implements Action
     }
     if (context == null || !(context instanceof Formularfeld))
     {
-      throw new ApplicationException("Kein Formularfeld ausgewählt");
+      throw new ApplicationException("Kein Formularfeld ausgewÃ¤hlt");
     }
     try
     {
@@ -53,8 +53,8 @@ public class FormularfeldDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Formularfeld löschen");
-      d.setText("Wollen Sie dieses Formularfeld wirklich löschen?");
+      d.setTitle("Formularfeld lÃ¶schen");
+      d.setText("Wollen Sie dieses Formularfeld wirklich lÃ¶schen?");
 
       try
       {
@@ -66,15 +66,15 @@ public class FormularfeldDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Formularfeldes", e);
+        Logger.error("Fehler beim LÃ¶schen des Formularfeldes", e);
         return;
       }
       f.delete();
-      GUI.getStatusBar().setSuccessText("Formularfeld gelöscht.");
+      GUI.getStatusBar().setSuccessText("Formularfeld gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Formularfeldes";
+      String fehler = "Fehler beim LÃ¶schen des Formularfeldes";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

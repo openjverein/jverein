@@ -71,7 +71,7 @@ public class SollbuchungExportAction implements Action
   }
 
   /**
-   * Der Exporter bekommt seine Instanz bereits ziemlich früh, deshalb suchen
+   * Der Exporter bekommt seine Instanz bereits ziemlich frÃ¼h, deshalb suchen
    * wir hier unseren um den Typ zu setzen.
    */
   private void initExporter()
@@ -101,8 +101,9 @@ public class SollbuchungExportAction implements Action
 
   public enum EXPORT_TYP
   {
-    MITGLIEDSKONTO("Sollbuchungen"), MAHNUNGEN("Mahnungen"), RECHNUNGEN(
-        "Rechnungen");
+    MITGLIEDSKONTO("Sollbuchungen"),
+    MAHNUNGEN("Mahnungen"),
+    RECHNUNGEN("Rechnungen");
 
     private final String titel;
 

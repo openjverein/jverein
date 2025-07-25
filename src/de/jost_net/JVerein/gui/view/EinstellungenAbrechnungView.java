@@ -41,26 +41,28 @@ public class EinstellungenAbrechnungView extends AbstractView
     cont.addInput(control.getZahlungsweg());
     cont.addInput(control.getSEPADatumOffset());
     cont.addInput(control.getDefaultSEPALand());
-    cont.addLabelPair("SEPA XML-Version - 1ct Überweisung",
+    cont.addLabelPair("SEPA XML-Version - 1ct Ãœberweisung",
         control.getCt1SepaVersion());
     cont.addLabelPair("SEPA XML-Version - Lastschrift",
         control.getSepaVersion());
-    cont.addLabelPair("Verrechnungskonto für Lastschriften",
+    cont.addLabelPair("Verrechnungskonto fÃ¼r Lastschriften",
         control.getVerrechnungskonto());
     cont.addLabelPair("Arbeitsstunden Modell",
         control.getArbeitsstundenmodel());
-    cont.addLabelPair("Altersstufen für gestaffelte Beiträge",control.getBeitragAltersgruppen());
-    cont.addLabelPair("Abrechnungslauf abschließen",
+    cont.addLabelPair("Altersstufen fÃ¼r gestaffelte BeitrÃ¤ge",
+        control.getBeitragAltersgruppen());
+    cont.addLabelPair("Abrechnungslauf abschlieÃŸen",
         control.getAbrlAbschliessen());
     cont.addSeparator();
     cont.addHeadline(
-        "ACHTUNG! Nur ändern, wenn noch keine SEPA-Lastschriften durchgeführt wurden!");
-    cont.addLabelPair("Quelle für SEPA-Mandatsreferenz (*)",
+        "ACHTUNG! Nur Ã¤ndern, wenn noch keine SEPA-Lastschriften durchgefÃ¼hrt wurden!");
+    cont.addLabelPair("Quelle fÃ¼r SEPA-Mandatsreferenz (*)",
         control.getSepamandatidsourcemodel());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_ABRECHNUNG, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_ABRECHNUNG, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

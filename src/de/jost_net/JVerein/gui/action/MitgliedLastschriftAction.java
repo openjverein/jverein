@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  * 
- * Erstellt von Rüdiger Wurth
+ * Erstellt von RÃ¼diger Wurth
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
@@ -42,7 +42,7 @@ public class MitgliedLastschriftAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
     }
     Mitglied m = null; // Mitglied
     Mitglied mZ = null; // Zahler
@@ -52,14 +52,15 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER && m.getVollZahlerID() != null)
+      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER
+          && m.getVollZahlerID() != null)
       {
         // Mitglied ist Familienangehoeriger, hat also anderen Zahler
-        mZ = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, m.getVollZahlerID() + "");
+        mZ = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, m.getVollZahlerID() + "");
 
-        if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
-            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
+        if (!AbrechnungSEPAControl.confirmDialog("FamilienangehÃ¶riger",
+            "Dieses Mitglied ist ein FamilienangehÃ¶riger.\n\n"
                 + "Als Konto wird das Konto des Zahlers belastet:\n"
                 + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
@@ -78,11 +79,12 @@ public class MitgliedLastschriftAction implements Action
       // pruefe Kontoinformationen
       if (checkSEPA(mZ))
       {
-        sl = (SepaLastschrift) Settings.getDBService().createObject(
-            SepaLastschrift.class, null);
+        sl = (SepaLastschrift) Settings.getDBService()
+            .createObject(SepaLastschrift.class, null);
 
-        // Gläubiger-ID
-        sl.setCreditorId((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
+        // GlÃ¤ubiger-ID
+        sl.setCreditorId(
+            (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
 
         // Kontodaten: Name, BIC, IBAN
         sl.setGegenkontoName(
@@ -96,13 +98,14 @@ public class MitgliedLastschriftAction implements Action
         sl.setSequenceType(SepaLastSequenceType.RCUR);
 
         // Verwendungszweck vorbelegen: "Mitgliedsnummer/Mitgliedsname"
-        // Voranstellen eines Strings der zwingend ge?ndert werden muss,
+        // Voranstellen eines Strings der zwingend geÃ¤ndert werden muss,
         // damit der Anwender nicht vergisst den Verwendungszweck
         // korrekt einzugeben
-        String verwendungszweck = "#ANPASSEN# "
-            + ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER) ? m
-                .getExterneMitgliedsnummer() : m.getID()) + "/"
-            + Adressaufbereitung.getNameVorname(m);
+        String verwendungszweck = "#ANPASSEN# " + ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+                ? m.getExterneMitgliedsnummer()
+                : m.getID())
+            + "/" + Adressaufbereitung.getNameVorname(m);
         sl.setZweck(verwendungszweck);
 
         GUI.startView(

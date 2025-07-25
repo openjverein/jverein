@@ -133,7 +133,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     zweck.setMandatory(false);
     right.addLabelPair("Zweck", zweck);
     right.addLabelPair("Buchungsart", sollbPosControl.getBuchungsart());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       right.addLabelPair("Buchungsklasse", sollbPosControl.getBuchungsklasse());
     }
@@ -143,7 +144,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    // Speichern und zurück zum View
+    // Speichern und zurÃ¼ck zum View
     buttons.addButton("Speichern", new Action()
     {
 

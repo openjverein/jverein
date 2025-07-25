@@ -28,14 +28,14 @@ import de.willuhn.jameica.gui.input.SelectInput;
 
 public class MitgliedInput
 {
-  
+
   public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
       Mitglied mitglied, int auswahl) throws RemoteException
   {
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-        //Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
+        // Hole alle Mitglieder aus Datenbank um sie spÃ¤ter anzuzeigen.
         DBIterator<Mitglied> it = Einstellungen.getDBService()
             .createList(Mitglied.class);
         it.setOrder("order by name, vorname");
@@ -44,13 +44,14 @@ public class MitgliedInput
         {
           mitgliederList.add(it.next());
         }
-        // Das erste Mitglied wird ausgewählt wenn nichts übergeben
+        // Das erste Mitglied wird ausgewÃ¤hlt wenn nichts Ã¼bergeben
         Mitglied selectedMitglied = mitglied;
         if (selectedMitglied == null && !mitgliederList.isEmpty())
         {
           selectedMitglied = mitgliederList.get(0);
         }
-        mitgliedInput = new SelectInput(mitgliederList.toArray(), selectedMitglied);
+        mitgliedInput = new SelectInput(mitgliederList.toArray(),
+            selectedMitglied);
         break;
       case AbstractInputAuswahl.SearchInput:
       default:

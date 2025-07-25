@@ -100,8 +100,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           return;
         }
       };
-      saldoList.addColumn(gruppenBezeichnung, GRUPPE, null,
-          false);
+      saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
       saldoList.addColumn("Buchungsart", BUCHUNGSART);
       saldoList.addColumn("Einnahmen", EINNAHMEN,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
@@ -305,7 +304,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       // Ggf. die Anzahl und Summe nicht zugeordneter Buchungen anzeigen.
       // (Geht nicht mit im oberen Query, da MySQL und H2 kein FULL JOIN
-      // unterstützen)
+      // unterstÃ¼tzen)
       ExtendedDBIterator<PseudoDBObject> ohneBaIt = new ExtendedDBIterator<>(
           "buchung");
       ohneBaIt.addColumn("count(*) AS anzahl");
@@ -335,9 +334,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     PseudoDBObject saldogv = new PseudoDBObject();
     saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
     saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
-    saldogv.setAttribute(EINNAHMEN,
-        einnahmenGesamt + ausgabenGesamt + umbuchungenGesamt
-            + summeOhneBuchungsart);
+    saldogv.setAttribute(EINNAHMEN, einnahmenGesamt + ausgabenGesamt
+        + umbuchungenGesamt + summeOhneBuchungsart);
     zeilen.add(saldogv);
 
     return zeilen;
@@ -352,7 +350,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    final boolean unterdrueckung = (Boolean) Einstellungen.getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
+    final boolean unterdrueckung = (Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
     final boolean klasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
@@ -401,15 +400,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
       // hinzurechnen
-      it.addColumn(
-          "COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
-              // Anlagenkonto immer Bruttobeträge.
-              // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
-              // Netto zu berehnen.
-              + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-              + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
-              + SUMME,
-          Kontoart.ANLAGE.getKey());
+      it.addColumn("COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer BruttobetrÃ¤ge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
+          + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
+          + SUMME, Kontoart.ANLAGE.getKey());
     }
     else
     {
@@ -464,18 +461,17 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           StatusBuchungsart.INACTIVE);
     }
 
-    // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
+    // FÃ¼r die SteuerbtrÃ¤ge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
       String subselect = "(SELECT steuer.buchungsart, "
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
-          + "buchung.projekt "
-          + " FROM buchung"
+          + "buchung.projekt " + " FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
-      // Wenn die Steuer in der Buchung steht, können wir sie direkt nehmen,
-      // sonst müssen wir den Umweg über die Buchungsart nehmen.
+      // Wenn die Steuer in der Buchung steht, kÃ¶nnen wir sie direkt nehmen,
+      // sonst mÃ¼ssen wir den Umweg Ã¼ber die Buchungsart nehmen.
       if (steuerInBuchung)
       {
         subselect += " JOIN steuer ON steuer.id = buchung.steuer ";
@@ -490,9 +486,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
           + " GROUP BY steuer.buchungsart, buchung.projekt) AS st ";
       it.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
-          Kontoart.LIMIT.getKey(),
-          Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
-          getDatumbis().getDate());
+          Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
+          getDatumvon().getDate(), getDatumbis().getDate());
     }
     return it;
   }

@@ -31,13 +31,13 @@ public class BuchungDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
     Buchung b = (Buchung) context;
     try
     {
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          null);
+      Buchung bu = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       bu.setKonto(b.getKonto());
       bu.setName(b.getName());
       bu.setIban(b.getIban());
@@ -59,7 +59,8 @@ public class BuchungDuplizierenAction implements Action
     }
     catch (Exception e)
     {
-      throw new ApplicationException("Fehler beim duplizieren einer Buchung", e);
+      throw new ApplicationException("Fehler beim duplizieren einer Buchung",
+          e);
     }
   }
 }

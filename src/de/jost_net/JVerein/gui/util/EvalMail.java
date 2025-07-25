@@ -72,9 +72,8 @@ public class EvalMail
     this.map = map;
   }
 
-  public String evalBetreff(String betr)
-      throws ParseErrorException, MethodInvocationException,
-      ResourceNotFoundException
+  public String evalBetreff(String betr) throws ParseErrorException,
+      MethodInvocationException, ResourceNotFoundException
   {
     if (context == null)
       return null;
@@ -83,9 +82,8 @@ public class EvalMail
     return wbetr.getBuffer().toString();
   }
 
-  public String evalText(String txt)
-      throws ParseErrorException, MethodInvocationException,
-      ResourceNotFoundException
+  public String evalText(String txt) throws ParseErrorException,
+      MethodInvocationException, ResourceNotFoundException
   {
     if (context == null)
       return null;

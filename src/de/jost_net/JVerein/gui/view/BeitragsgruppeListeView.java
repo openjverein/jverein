@@ -41,8 +41,7 @@ public class BeitragsgruppeListeView extends AbstractView
         DokumentationUtil.BEITRAGSGRUPPEN, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(BeitragsgruppeDetailView.class, Beitragsgruppe.class),
-        null, false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

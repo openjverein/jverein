@@ -93,7 +93,7 @@ public class BuchungListPart extends BuchungListTablePart
       }, false, Column.ALIGN_RIGHT);
     }
     addColumn("Mitglied", Buchung.SOLLBUCHUNG, new SollbuchungFormatter());
-    addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
+    addColumn("Ersatz fÃ¼r Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);
     setRememberColWidths(true);
     setRememberOrder(true);

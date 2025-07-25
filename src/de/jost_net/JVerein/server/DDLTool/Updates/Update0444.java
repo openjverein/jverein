@@ -41,26 +41,23 @@ public class Update0444 extends AbstractDDLUpdate
     Column beitragsgruppe = new Column("beitragsgruppe", COLTYPE.BIGINT, 10,
         null, true, false);
     t.add(beitragsgruppe);
-    Column nummer = new Column("nummer", COLTYPE.BIGINT, 10, null, true,
-        false);
+    Column nummer = new Column("nummer", COLTYPE.BIGINT, 10, null, true, false);
     t.add(nummer);
-    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10, null, true,
-        false);
+    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 10, null, true, false);
     t.add(betrag);
     t.setPrimaryKey(pk);
     execute(this.createTable(t));
-    
-    execute(addColumn("beitragsgruppe", new Column("altersstaffel",
-            COLTYPE.BOOLEAN, 0, "FALSE", true, false)));
-    
+
+    execute(addColumn("beitragsgruppe",
+        new Column("altersstaffel", COLTYPE.BOOLEAN, 0, "FALSE", true, false)));
+
     Index idx = new Index("ixAltersstaffel1", false);
     idx.add(beitragsgruppe);
     execute(idx.getCreateIndex("altersstaffel"));
-    
-    execute(this.createForeignKey("fk_altersstaffel",
-            "altersstaffel", "beitragsgruppe", "beitragsgruppe", "id",
-            "CASCADE", "NO ACTION"));
-    
+
+    execute(this.createForeignKey("fk_altersstaffel", "altersstaffel",
+        "beitragsgruppe", "beitragsgruppe", "id", "CASCADE", "NO ACTION"));
+
     execute(addColumn("einstellung", new Column("beitragaltersstufen",
         COLTYPE.VARCHAR, 200, "'0-6,7-12,13-18,19-99'", false, false)));
   }

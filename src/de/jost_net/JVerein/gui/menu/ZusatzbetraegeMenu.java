@@ -36,28 +36,26 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Zusatzbeträgen.
+ * Kontext-Menu zu den ZusatzbetrÃ¤gen.
  */
 public class ZusatzbetraegeMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der ZusatzbetrÃ¤ge.
    */
   public ZusatzbetraegeMenu(JVereinTablePart table)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
-    addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
-        new ZusatzbetraegeVorherigeFaelligkeitAction(),
-        "office-calendar.png"));
-    addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
-        new ZusatzbetraegeNaechsteFaelligkeitAction(),
-        "office-calendar.png"));
-    addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
+    addItem(new ZusatzbetragWiederholtItem("Vorheriges FÃ¤lligkeitsdatum",
+        new ZusatzbetraegeVorherigeFaelligkeitAction(), "office-calendar.png"));
+    addItem(new ZusatzbetragWiederholtItem("NÃ¤chstes FÃ¤lligkeitsdatum",
+        new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
+    addItem(new ZusatzbetragEinmaligItem("Erneut ausfÃ¼hren",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new ZusatzbetragDeleteAction(), "user-trash-full.png"));
     if (table != null)
     {
@@ -66,8 +64,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
     }
   }
-  
-  private static class ZusatzbetragEinmaligItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragEinmaligItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragEinmaligItem(String text, Action action, String icon)
     {
@@ -93,8 +92,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
       return false;
     }
   }
-  
-  private static class ZusatzbetragWiederholtItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragWiederholtItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragWiederholtItem(String text, Action action, String icon)
     {
@@ -109,7 +109,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
         Zusatzbetrag z = (Zusatzbetrag) o;
         try
         {
-          return z.getIntervall() != IntervallZusatzzahlung.KEIN ;
+          return z.getIntervall() != IntervallZusatzzahlung.KEIN;
         }
         catch (RemoteException e)
         {

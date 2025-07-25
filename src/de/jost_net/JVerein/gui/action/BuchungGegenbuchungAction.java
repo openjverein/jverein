@@ -40,7 +40,7 @@ public class BuchungGegenbuchungAction implements Action
   {
     this.control = control;
   }
-  
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -56,7 +56,7 @@ public class BuchungGegenbuchungAction implements Action
     }
     if (buchungen == null)
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
 
     Konto konto = null;

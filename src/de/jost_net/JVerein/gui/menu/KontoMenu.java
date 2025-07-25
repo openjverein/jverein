@@ -37,11 +37,10 @@ public class KontoMenu extends ContextMenu
   public KontoMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(KontoDetailView.class, part),
-        "text-x-generic.png"));
+        new EditAction(KontoDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new KontoDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new KontoDeleteAction(),
         "user-trash-full.png"));
   }
 }

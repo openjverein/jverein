@@ -30,15 +30,15 @@ import de.willuhn.logging.Logger;
 
 public class VollzahlerSearchInput extends SearchInput
 {
-  
+
   Mitglied mitglied = null;
-  
+
   public VollzahlerSearchInput(Mitglied mitglied)
   {
     super();
     this.mitglied = mitglied;
   }
-  
+
   @Override
   @SuppressWarnings("rawtypes")
   public List startSearch(String text)
@@ -46,10 +46,11 @@ public class VollzahlerSearchInput extends SearchInput
     try
     {
       StringBuffer cond = new StringBuffer();
-      // Beitragsgruppen ermitteln, die Zahler für andere Mitglieder sind
+      // Beitragsgruppen ermitteln, die Zahler fÃ¼r andere Mitglieder sind
       DBIterator<Beitragsgruppe> bg = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
-      bg.addFilter("beitragsart != ?", ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
+      bg.addFilter("beitragsart != ?",
+          ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
       while (bg.hasNext())
       {
         if (cond.length() > 0)
@@ -63,8 +64,8 @@ public class VollzahlerSearchInput extends SearchInput
       DBIterator<Mitglied> zhl = Einstellungen.getDBService()
           .createList(Mitglied.class);
       zhl.addFilter("(" + cond.toString() + ")");
-      if(mitglied.getID() != null)
-        zhl.addFilter("id != ?",mitglied.getID());
+      if (mitglied.getID() != null)
+        zhl.addFilter("id != ?", mitglied.getID());
       MitgliedUtils.setMitglied(zhl);
       if (text != null)
       {

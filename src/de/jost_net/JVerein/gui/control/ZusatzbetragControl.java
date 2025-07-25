@@ -78,8 +78,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends VorZurueckControl
-    implements Savable
+public class ZusatzbetragControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -147,7 +146,7 @@ public class ZusatzbetragControl extends VorZurueckControl
     final Vector<String> werte = new Vector<>();
     werte.addElement("Alle");
     werte.addElement("Aktive");
-    werte.addElement("Noch nicht ausgeführt");
+    werte.addElement("Noch nicht ausgefÃ¼hrt");
 
     String sql = "select ausfuehrung from zusatzabbuchung where ausfuehrung is not null "
         + "group by ausfuehrung order by ausfuehrung desc";
@@ -216,6 +215,7 @@ public class ZusatzbetragControl extends VorZurueckControl
     return z;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -225,7 +225,8 @@ public class ZusatzbetragControl extends VorZurueckControl
       {
         if (getZusatzbetragPart().getMitglied().getValue() != null)
         {
-          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied()
+              .getValue();
           z.setMitglied(Integer.parseInt(m.getID()));
         }
         else
@@ -274,27 +275,28 @@ public class ZusatzbetragControl extends VorZurueckControl
     {
       zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
       zusatzbetraegeList.addColumn("Name", "mitglied");
-      zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+      zusatzbetraegeList.addColumn("Erste FÃ¤lligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+      zusatzbetraegeList.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
-          "ausfuehrung",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
+      zusatzbetraegeList.addColumn("Letzte abgerechnete FÃ¤lligkeit",
+          "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-      zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+      zusatzbetraegeList.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+      {
         @Override
         public String format(Object o)
         {
-          return new Zahlungsweg((Integer)o).getText();
+          return new Zahlungsweg((Integer) o).getText();
         }
       });
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
@@ -325,9 +327,8 @@ public class ZusatzbetragControl extends VorZurueckControl
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
-      zusatzbetraegeList
-          .setAction(
-              new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
+      zusatzbetraegeList.setAction(
+          new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else
@@ -358,9 +359,9 @@ public class ZusatzbetragControl extends VorZurueckControl
     }
     else if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {
-      // zunächst nichts tun
+      // zunÃ¤chst nichts tun
     }
-    else if (this.ausfuehrungSuch.getText().equals("Noch nicht ausgeführt"))
+    else if (this.ausfuehrungSuch.getText().equals("Noch nicht ausgefÃ¼hrt"))
     {
       zusatzbetraege.addFilter("ausfuehrung is null");
     }
@@ -413,7 +414,7 @@ public class ZusatzbetragControl extends VorZurueckControl
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Zusatzbeträge");
+              "Fehler beim Start der PDF-Ausgabe der ZusatzbetrÃ¤ge");
         }
       }
     }, null, true, "file-pdf.png");
@@ -423,7 +424,7 @@ public class ZusatzbetragControl extends VorZurueckControl
   private void starteAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -456,21 +457,19 @@ public class ZusatzbetragControl extends VorZurueckControl
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Zusatzbeträge", "", it.size());
+          Reporter reporter = new Reporter(fos, "ZusatzbetrÃ¤ge", "", it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("NÃ¤chste FÃ¤lligkeit", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Letzte abgerechnete Fälligkeit",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+          reporter.addHeaderColumn("Letzte abgerechnete FÃ¤lligkeit",
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nicht mehr ausführen ab",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+          reporter.addHeaderColumn("Nicht mehr ausfÃ¼hren ab",
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 50,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 30,
@@ -479,7 +478,8 @@ public class ZusatzbetragControl extends VorZurueckControl
           while (it.hasNext())
           {
             Zusatzbetrag z = (Zusatzbetrag) it.next();
-            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn(
                   Adressaufbereitung.getIdNameVorname(z.getMitglied()),

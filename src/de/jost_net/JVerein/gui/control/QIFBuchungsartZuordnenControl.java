@@ -243,9 +243,11 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
     list.addFilter("buchungsklasse.id = buchungsart.buchungsklasse");
     list.setOrder(
         "ORDER BY buchungsklasse.bezeichnung, buchungsart.art, buchungsart.bezeichnung");
-    buchungsartInput = new SelectInput(list != null ? PseudoIterator.asList(list) : null, getAktuelleBuchart());
+    buchungsartInput = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
+        getAktuelleBuchart());
     buchungsartInput.setAttribute("klasse-art-bez");
-    buchungsartInput.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsartInput.setPleaseChoose("Bitte ausw√§hlen");
     buchungsartInput.setComment(" ");
     return buchungsartInput;
   }
@@ -302,7 +304,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
 
       if (null == storeBuchart)
       {
-        GUI.getStatusBar().setErrorText("Keine JVerein Buchungsart gew‰hlt!!");
+        GUI.getStatusBar().setErrorText("Keine JVerein Buchungsart gew√§hlt!!");
         return false;
       }
       return true;
@@ -358,7 +360,7 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
         letzteBuchart = "";
         l.add(pos);
       }
-      else if (letzteBuchart.equals(qifBuchart) == false)
+      else if (!letzteBuchart.equals(qifBuchart))
       {
         letzteBuchart = new String(qifBuchart);
         l.add(pos);

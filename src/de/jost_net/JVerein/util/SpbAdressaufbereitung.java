@@ -57,7 +57,7 @@ public class SpbAdressaufbereitung
       adresse.add(m.getKtoiPlz() + " " + m.getKtoiOrt());
       adresse.add(m.getKtoiStaat());
     }
-    // Alle Zeilen erstmal leer füllen, dait nicht null in der DB steht
+    // Alle Zeilen erstmal leer fÃ¼llen, dait nicht null in der DB steht
     spb.setZeile1("");
     spb.setZeile2("");
     spb.setZeile3("");
@@ -82,10 +82,11 @@ public class SpbAdressaufbereitung
       case 1:
         spb.setZeile1(adresse.get(0));
     }
-    
+
   }
-  
-  private static String getKtoiVornameName(Mitglied mitglied) throws RemoteException
+
+  private static String getKtoiVornameName(Mitglied mitglied)
+      throws RemoteException
   {
     String ret = "";
     if (mitglied.getKtoiPersonenart().equalsIgnoreCase("n"))
@@ -104,7 +105,8 @@ public class SpbAdressaufbereitung
     else
     {
       ret = mitglied.getKtoiName() + (mitglied.getKtoiVorname().length() > 0
-          ? ("\n" + mitglied.getKtoiVorname()) : "");
+          ? ("\n" + mitglied.getKtoiVorname())
+          : "");
     }
     return ret;
   }

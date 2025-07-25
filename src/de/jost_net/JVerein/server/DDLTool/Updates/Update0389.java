@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -40,7 +40,7 @@ public class Update0389 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    // Erweitern der Buchungsart: das bisherig Feld für
+    // Erweitern der Buchungsart: das bisherig Feld fÃ¼r
     // die Bezeichnung aus z.B. SKR03 deutlich zu kurz
     execute(alterColumn("buchungsart",
         new Column("bezeichnung", COLTYPE.VARCHAR, 80, null, false, false)));

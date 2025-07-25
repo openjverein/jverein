@@ -60,7 +60,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     {
       if (getInhalt() == null)
       {
-        throw new ApplicationException("Bitte gültigen Dateinamen angeben!");
+        throw new ApplicationException("Bitte gÃ¼ltigen Dateinamen angeben!");
       }
       DBIterator<Formular> it = Einstellungen.getDBService()
           .createList(Formular.class);
@@ -214,16 +214,16 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     setAttribute("formlink", formlink);
   }
 
-  public DBIterator<Formular> getLinked()
-      throws RemoteException
+  @Override
+  public DBIterator<Formular> getLinked() throws RemoteException
   {
     DBIterator<Formular> formList = Einstellungen.getDBService()
         .createList(Formular.class);
     // In case current form is linked to another form
     if (this.getFormlink() > 0)
     {
-      formList.addFilter("formlink = ? OR id = ?",
-          this.getFormlink(), this.getFormlink());
+      formList.addFilter("formlink = ? OR id = ?", this.getFormlink(),
+          this.getFormlink());
     }
     else
     {
@@ -234,6 +234,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     return formList;
   }
 
+  @Override
   public boolean hasFormlinks() throws RemoteException
   {
     // Return FALSE for new forms
@@ -243,7 +244,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     }
 
     DBIterator<Formular> formList = getLinked();
-    
+
     return Boolean.valueOf(formList.size() > 0);
   }
 

@@ -139,8 +139,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     //
   }
 
-  private DBIterator<Sollbuchung> getIterator(int lauf)
-      throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -156,7 +155,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     if (sollbuchungsList == null)
     {
       sollbuchungsList = new JVereinTablePart(sollbIt, null);
-      sollbuchungsList.addColumn("F‰lligkeit", Sollbuchung.DATUM,
+      sollbuchungsList.addColumn("F√§lligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
       sollbuchungsList.addColumn("Mitglied", Sollbuchung.MITGLIED);
@@ -209,7 +208,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
       DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -218,8 +217,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abrechnungslauf", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -239,8 +238,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     }
   }
 
-  private void auswertungPDF(final DBIterator<Sollbuchung> it,
-      final File file, final Abrechnungslauf lauf)
+  private void auswertungPDF(final DBIterator<Sollbuchung> it, final File file,
+      final Abrechnungslauf lauf)
   {
     BackgroundTask t = new BackgroundTask()
     {

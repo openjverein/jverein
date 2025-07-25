@@ -74,7 +74,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
       if (getTxt().length() > 10000)
       {
         throw new ApplicationException(
-            "Maximale Länge des Textes 10.000 Zeichen");
+            "Maximale LÃ¤nge des Textes 10.000 Zeichen");
       }
     }
     catch (RemoteException e)

@@ -42,7 +42,7 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
   private IXMLElement xmlkl;
 
   private IXMLElement xmlklbarten;
-  
+
   private IXMLElement xmlversion;
 
   @Override
@@ -73,10 +73,10 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
       @Override
       public String[] getFileExtensions()
       {
-        return new String[] { "*.xml"};
+        return new String[] { "*.xml" };
       }
     };
-    return new IOFormat[] { f};
+    return new IOFormat[] { f };
   }
 
   @Override
@@ -117,7 +117,8 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
     xmlba.setAttribute("bezeichnung", buchungsart.getBezeichnung());
     xmlba.setAttribute("art", buchungsart.getArt() + "");
     xmlba.setAttribute("spende", buchungsart.getSpende().toString());
-    xmlba.setAttribute("buchungsklasse", buchungsart.getBuchungsklasse().getNummer() + "");
+    xmlba.setAttribute("buchungsklasse",
+        buchungsart.getBuchungsklasse().getNummer() + "");
     xmlba.setAttribute("steuersatz", buchungsart.getSteuer() == null ? "0"
         : buchungsart.getSteuer().getSatz().toString());
     if (buchungsart.getSteuer() != null)
@@ -126,7 +127,8 @@ public class KontenrahmenExportXMLv2 extends KontenrahmenExport
     else
       xmlba.setAttribute("steuer_buchungsart", "");
     xmlba.setAttribute("status", buchungsart.getStatus() + "");
-    xmlba.setAttribute("abschreibung", buchungsart.getAbschreibung().toString());
+    xmlba.setAttribute("abschreibung",
+        buchungsart.getAbschreibung().toString());
     xmlklbarten.addChild(xmlba);
   }
 

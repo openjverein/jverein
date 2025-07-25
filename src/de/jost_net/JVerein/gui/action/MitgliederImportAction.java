@@ -33,7 +33,8 @@ public class MitgliederImportAction implements Action
     catch (Exception e)
     {
       Logger.error("error while importing transfers", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Importieren von MItgliedern");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren von MItgliedern");
     }
   }
 

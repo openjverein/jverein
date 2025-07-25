@@ -55,7 +55,7 @@ public class QIFBuchungsartZuordnenView extends AbstractView
         detailControl.getBuchungsartInput());
     lblGroup.addLabelPair("Nicht importieren",
         detailControl.getPosSperreInput());
-    lblGroup.addLabelPair("Für Mitgliedskonto",
+    lblGroup.addLabelPair("FÃ¼r Mitgliedskonto",
         detailControl.getMitgliedZuordnenErlaubt());
 
     ButtonArea buttons = new ButtonArea();
@@ -77,7 +77,7 @@ public class QIFBuchungsartZuordnenView extends AbstractView
 
     {
       TabGroup tabBeispiel = new TabGroup(folder, "Beispielbuchungen", true, 1);
-      tabBeispiel.addHeadline("Beispielbuchungen zur gewählten Buchart");
+      tabBeispiel.addHeadline("Beispielbuchungen zur gewÃ¤hlten Buchart");
 
       SimpleContainer labelContainer = new SimpleContainer(
           tabBeispiel.getComposite(), false, 2);

@@ -34,8 +34,8 @@ public class MitgliedNextBGruppeView extends AbstractView
     MitgliedNextBGruppeControl control = new MitgliedNextBGruppeControl(this);
 
     LabelGroup lblGroup = new LabelGroup(getParent(),
-        "Neue Beitragsgruppe für Zukunft");
-    lblGroup.addLabelPair("Für Mitglied", control.getMitgliedsnameInput());
+        "Neue Beitragsgruppe fÃ¼r Zukunft");
+    lblGroup.addLabelPair("FÃ¼r Mitglied", control.getMitgliedsnameInput());
     lblGroup.addLabelPair("Aktuelle Beitragsgruppe",
         control.getBeitragsgruppeAktuellInput());
     lblGroup.addLabelPair("Ab Datum", control.getAbDatumInput());

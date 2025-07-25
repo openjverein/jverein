@@ -54,13 +54,13 @@ public class FormularAnzeigeAction implements Action
       catch (RemoteException e)
       {
         Logger.error("Fehler", e);
-        throw new ApplicationException(
-            "Fehler bei der Anzeige eines Formulars", e);
+        throw new ApplicationException("Fehler bei der Anzeige eines Formulars",
+            e);
       }
     }
     else
     {
-      throw new ApplicationException("Kein Formular zur Anzeige ausgew‰hlt");
+      throw new ApplicationException("Kein Formular zur Anzeige ausgew√§hlt");
     }
     try
     {

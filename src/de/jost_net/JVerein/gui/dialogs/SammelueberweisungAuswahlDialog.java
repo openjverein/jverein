@@ -36,7 +36,7 @@ import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
- * Ein Dialog, ueber den man eine Sammelüberweisung zur Übernahme zur
+ * Ein Dialog, ueber den man eine SammelÃ¼berweisung zur Ãœbernahme zur
  * Splitbuchung
  */
 public class SammelueberweisungAuswahlDialog
@@ -53,7 +53,7 @@ public class SammelueberweisungAuswahlDialog
   {
     super(AbstractDialog.POSITION_CENTER);
 
-    setTitle("Sammelüberweisung auswählen");
+    setTitle("SammelÃ¼berweisung auswÃ¤hlen");
     setSize(650, 350);
     this.master = master;
   }
@@ -63,7 +63,7 @@ public class SammelueberweisungAuswahlDialog
   {
     this.getSammelueberweisungen().paint(parent);
     ButtonArea b = new ButtonArea();
-    b.addButton("Übernehmen", new Action()
+    b.addButton("Ãœbernehmen", new Action()
     {
 
       @Override

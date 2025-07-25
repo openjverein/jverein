@@ -68,7 +68,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht g¸ltig");
+        throw new ApplicationException("Nummer nicht g√ºltig");
       }
       if (getSteuer() != null
           && getSteuer().getBuchungsart().getArt() != getArt())
@@ -77,12 +77,12 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         {
           case ArtBuchungsart.AUSGABE:
             throw new ApplicationException(
-                "Umsatzsteuer statt Vorsteuer gew‰hlt.");
+                "Umsatzsteuer statt Vorsteuer gew√§hlt.");
           case ArtBuchungsart.EINNAHME:
             throw new ApplicationException(
-                "Vorsteuer statt Umsatzsteuer gew‰hlt.");
-          // Umbuchung ist bei Anlagebuchungen mˆglich,
-          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mˆglich
+                "Vorsteuer statt Umsatzsteuer gew√§hlt.");
+          // Umbuchung ist bei Anlagebuchungen m√∂glich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) m√∂glich
           case ArtBuchungsart.UMBUCHUNG:
             break;
         }
@@ -90,7 +90,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       if (getSteuer() != null && (getSpende() || getAbschreibung()))
       {
         throw new ApplicationException(
-            "Bei Spenden und Abschreibungen ist keine Steuer mˆglich.");
+            "Bei Spenden und Abschreibungen ist keine Steuer m√∂glich.");
       }
     }
     catch (RemoteException e)
@@ -111,7 +111,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
           && !(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
 
-        // Pr¸fen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+        // Pr√ºfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
         ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
             "buchung");
         it.addColumn("buchung.id");
@@ -125,10 +125,10 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         if (it.hasNext())
         {
           throw new ApplicationException(
-              "Steuer kann nicht ge‰ndert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+              "Steuer kann nicht ge√§ndert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
         }
 
-        // Pr¸fen ob es eine Rechnung mit dieser Buchungsart gibt
+        // Pr√ºfen ob es eine Rechnung mit dieser Buchungsart gibt
         it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
         it.addColumn(Sollbuchung.TABLE_NAME_ID);
         it.setLimit(1);
@@ -142,7 +142,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         if (it.hasNext())
         {
           throw new ApplicationException(
-              "Steuer kann nicht ge‰ndert werden, es existieren Rechnungen mit dieser Buchungsart.");
+              "Steuer kann nicht ge√§ndert werden, es existieren Rechnungen mit dieser Buchungsart.");
         }
       }
     }
@@ -231,7 +231,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("art", art);
   }
-  
+
   @Override
   public int getStatus() throws RemoteException
   {
@@ -319,7 +319,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("suchbegriff", suchbegriff);
   }
-  
+
   @Override
   public Boolean getAbschreibung() throws RemoteException
   {
@@ -329,7 +329,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public void setAbschreibung(Boolean abschreibung) throws RemoteException
   {
-    setAttribute("abschreibung",abschreibung);
+    setAttribute("abschreibung", abschreibung);
   }
 
   @Override
@@ -344,7 +344,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	  return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("bezeichnungnr"))
@@ -356,7 +356,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("klasse-art-bez"))
@@ -413,7 +413,8 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     super.store();
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
   }
-  
+
+  @Override
   public boolean equals(Object bart)
   {
     try

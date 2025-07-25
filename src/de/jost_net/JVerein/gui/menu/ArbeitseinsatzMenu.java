@@ -27,20 +27,20 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
- * Kontext-Menu zu den Arbeitseinsätzen.
+ * Kontext-Menu zu den ArbeitseinsÃ¤tzen.
  */
 public class ArbeitseinsatzMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Arbeitseinsätze.
+   * Erzeugt ein Kontext-Menu fuer die ArbeitseinsÃ¤tze.
    */
   public ArbeitseinsatzMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ArbeitseinsatzDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new ArbeitseinsatzDeleteAction(), "user-trash-full.png"));
     if (part != null)
     {

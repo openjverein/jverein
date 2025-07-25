@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.BuchungDokument;
 
-public class BuchungDokumentImpl extends AbstractDokumentImpl implements
-    BuchungDokument
+public class BuchungDokumentImpl extends AbstractDokumentImpl
+    implements BuchungDokument
 {
 
   private static final long serialVersionUID = 1L;

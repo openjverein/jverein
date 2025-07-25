@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Steuer.
+ * LÃ¶schen einer Steuer.
  */
 public class SteuerDeleteAction implements Action
 {
@@ -36,7 +36,7 @@ public class SteuerDeleteAction implements Action
     Steuer[] steuern = null;
     if (context == null)
     {
-      throw new ApplicationException("Keine Steuer ausgewählt");
+      throw new ApplicationException("Keine Steuer ausgewÃ¤hlt");
     }
     else if (context instanceof Steuer)
     {
@@ -54,9 +54,8 @@ public class SteuerDeleteAction implements Action
     {
       String mehrzahl = steuern.length > 1 ? "n" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Steuer" + mehrzahl + " löschen");
-      d.setText(
-          "Wollen Sie diese Steuer" + mehrzahl + " wirklich löschen?");
+      d.setTitle("Steuer" + mehrzahl + " lÃ¶schen");
+      d.setText("Wollen Sie diese Steuer" + mehrzahl + " wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -65,7 +64,7 @@ public class SteuerDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Steuer", e);
+        Logger.error("Fehler beim LÃ¶schen der Steuer", e);
         return;
       }
 
@@ -75,12 +74,11 @@ public class SteuerDeleteAction implements Action
           continue;
         s.delete();
       }
-      GUI.getStatusBar()
-          .setSuccessText("Steuer" + mehrzahl + " gelöscht.");
+      GUI.getStatusBar().setSuccessText("Steuer" + mehrzahl + " gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Die Steuer wird bereits benutzt und kann nicht gelöscht werden";
+      String fehler = "Die Steuer wird bereits benutzt und kann nicht gelÃ¶scht werden";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

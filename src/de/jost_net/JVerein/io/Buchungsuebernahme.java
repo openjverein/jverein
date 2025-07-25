@@ -66,9 +66,9 @@ public class Buchungsuebernahme
   {
     try
     {
-      Logger.info("Buchungsübernahme zu JVerein gestartet");
+      Logger.info("BuchungsÃ¼bernahme zu JVerein gestartet");
 
-      // BuchungsartList für automatische Buchungszuordnung bestimmen.
+      // BuchungsartList fÃ¼r automatische Buchungszuordnung bestimmen.
       DBIterator<Buchungsart> buchungsartIt = Einstellungen.getDBService()
           .createList(Buchungsart.class);
       buchungsartIt.addFilter("suchbegriff != '' and suchbegriff is not null");
@@ -76,7 +76,7 @@ public class Buchungsuebernahme
 
       // Protokollliste initialisieren
       buchungen = new ArrayList<>();
-      // Über alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
+      // Ãœber alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
       DBIterator<Konto> hibkto = Einstellungen.getDBService()
           .createList(Konto.class);
       hibkto.addFilter("hibiscusid > 0");
@@ -85,11 +85,11 @@ public class Buchungsuebernahme
         Konto kto = (Konto) hibkto.next();
         leseHibiscus(kto);
       }
-      Logger.info("Buchungsübernahme zu JVerein abgeschlossen");
+      Logger.info("BuchungsÃ¼bernahme zu JVerein abgeschlossen");
     }
     catch (Exception e)
     {
-      Logger.error("Buchungsübernahme zu JVerein fehlerhaft", e);
+      Logger.error("BuchungsÃ¼bernahme zu JVerein fehlerhaft", e);
     }
     try
     {
@@ -192,7 +192,8 @@ public class Buchungsuebernahme
           }
         }
         // Beautify zweck
-        if ((Boolean) Einstellungen.getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
         {
           zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
@@ -201,7 +202,7 @@ public class Buchungsuebernahme
           zweck = zweck.substring(0, 500);
         }
         b.setZweck(zweck);
-        
+
         // Buchungsart automatisch zuordnen
         String suchZweck = u.getGegenkontoNummer() + " " + u.getGegenkontoName()
             + " " + zweck;
@@ -218,7 +219,7 @@ public class Buchungsuebernahme
             break;
           }
         }
-        
+
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());
@@ -242,7 +243,7 @@ public class Buchungsuebernahme
    * @param zweck
    *          der Verwendungszweck etc. der Buchung
    * @param isRegexp
-   *          ist der Suchtext ein regulärer Ausdruck?
+   *          ist der Suchtext ein regulÃ¤rer Ausdruck?
    * @return true wenn der zweck zum suchtext passt
    */
   private boolean match(String suchtext, String zweck, boolean isRegexp)

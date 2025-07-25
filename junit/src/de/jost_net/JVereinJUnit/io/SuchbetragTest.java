@@ -65,7 +65,7 @@ public class SuchbetragTest
   {
     Suchbetrag sb = new Suchbetrag(">1,23");
     Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
-    Assert.assertEquals(Suchstrategie.GRÖSSER, sb.getSuchstrategie());
+    Assert.assertEquals(Suchstrategie.GRÃ–SSER, sb.getSuchstrategie());
   }
 
   @Test
@@ -73,7 +73,7 @@ public class SuchbetragTest
   {
     Suchbetrag sb = new Suchbetrag(">=1,23");
     Assert.assertEquals(BigDecimal.valueOf(1.23), sb.getBetrag());
-    Assert.assertEquals(Suchstrategie.GRÖSSERGLEICH, sb.getSuchstrategie());
+    Assert.assertEquals(Suchstrategie.GRÃ–SSERGLEICH, sb.getSuchstrategie());
   }
 
   @Test
@@ -112,7 +112,7 @@ public class SuchbetragTest
     }
     catch (Exception e)
     {
-      Assert.assertEquals("Wert ungültig", e.getMessage());
+      Assert.assertEquals("Wert ungÃ¼ltig", e.getMessage());
     }
   }
 
@@ -127,7 +127,7 @@ public class SuchbetragTest
     }
     catch (Exception e)
     {
-      Assert.assertEquals("Wert ungültig", e.getMessage());
+      Assert.assertEquals("Wert ungÃ¼ltig", e.getMessage());
     }
   }
 
@@ -142,7 +142,7 @@ public class SuchbetragTest
     }
     catch (Exception e)
     {
-      Assert.assertEquals("Wert ungültig", e.getMessage());
+      Assert.assertEquals("Wert ungÃ¼ltig", e.getMessage());
     }
   }
 
@@ -157,7 +157,7 @@ public class SuchbetragTest
     }
     catch (Exception e)
     {
-      Assert.assertEquals("Wert ungültig", e.getMessage());
+      Assert.assertEquals("Wert ungÃ¼ltig", e.getMessage());
     }
   }
 }

@@ -39,7 +39,7 @@ public class ProjektDeleteAction implements Action
   {
     if (context == null || !(context instanceof Projekt))
     {
-      throw new ApplicationException("Kein Projekt ausgewählt");
+      throw new ApplicationException("Kein Projekt ausgewÃ¤hlt");
     }
     try
     {
@@ -55,12 +55,12 @@ public class ProjektDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Projekt '%s' kann nicht gelöscht werden. Es existieren Buchungen mit diesem Projekt.",
+            "Projekt '%s' kann nicht gelÃ¶scht werden. Es existieren Buchungen mit diesem Projekt.",
             p.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Projekt löschen");
-      d.setText("Wollen Sie dieses Projekt wirklich löschen?");
+      d.setTitle("Projekt lÃ¶schen");
+      d.setText("Wollen Sie dieses Projekt wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -71,16 +71,16 @@ public class ProjektDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Projektes", e);
+        Logger.error("Fehler beim LÃ¶schen des Projektes", e);
         return;
       }
 
       p.delete();
-      GUI.getStatusBar().setSuccessText("Projekt gelöscht.");
+      GUI.getStatusBar().setSuccessText("Projekt gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Projektes.";
+      String fehler = "Fehler beim LÃ¶schen des Projektes.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

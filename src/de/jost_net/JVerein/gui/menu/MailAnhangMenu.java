@@ -23,7 +23,7 @@ import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu Mailanh‰ngen.
+ * Kontext-Menu zu Mailanh√§ngen.
  */
 public class MailAnhangMenu extends ContextMenu
 {

@@ -37,7 +37,7 @@ public class KontoSaldoView extends AbstractView
 
     VonBisPart vpart = new VonBisPart(control, true);
     vpart.paint(this.getParent());
-    
+
     QuickAccessPart part = new QuickAccessPart(control, true);
     part.paint(this.getParent());
 

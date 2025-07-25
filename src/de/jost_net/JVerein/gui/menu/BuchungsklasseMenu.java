@@ -38,7 +38,7 @@ public class BuchungsklasseMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(BuchungsklasseDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new BuchungsklasseDeleteAction(), "user-trash-full.png"));
   }
 }

@@ -50,13 +50,13 @@ public class ArbeitseinsatzNeuAction implements Action
         if (m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann kˆnnen Arbeitseins‰tze aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann k√∂nnen Arbeitseins√§tze aufgenommen werden.");
         }
         aeins.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (RemoteException e)

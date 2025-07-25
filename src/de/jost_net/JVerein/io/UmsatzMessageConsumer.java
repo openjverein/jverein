@@ -26,7 +26,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 
 /**
- * Klasse damit wir ueber importierte Hibiscus-Ums‰tze informiert werden.
+ * Klasse damit wir ueber importierte Hibiscus-Ums√§tze informiert werden.
  */
 
 public class UmsatzMessageConsumer implements MessageConsumer

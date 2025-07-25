@@ -29,7 +29,7 @@ public class Datum
 
   /**
    * Berechnung der Differenz in Monaten zwischen 2 Daten. Die Tagesangaben
-   * bleiben unberücksichtigt.
+   * bleiben unberÃ¼cksichtigt.
    * 
    * @param datum1
    *          von-Datum
@@ -105,7 +105,7 @@ public class Datum
   }
 
   /**
-   * Gibt das heutige Datum zurück. (Ohne Zeitanteil)
+   * Gibt das heutige Datum zurÃ¼ck. (Ohne Zeitanteil)
    */
   public final static Date getHeute()
   {
@@ -166,8 +166,8 @@ public class Datum
   }
 
   /**
-   * Gibt das Alter zum übergebenen Date zurück. oder null falls kein Geburtstag
-   * übergeben wurde oder das Alter < 1 ist.
+   * Gibt das Alter zum Ã¼bergebenen Date zurÃ¼ck. oder null falls kein Geburtstag
+   * Ã¼bergeben wurde oder das Alter < 1 ist.
    * 
    * @param geburtstag
    * @return alter

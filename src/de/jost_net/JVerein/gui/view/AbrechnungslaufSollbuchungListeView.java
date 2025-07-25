@@ -84,7 +84,7 @@ public class AbrechnungslaufSollbuchungListeView extends AbstractView
     sd = (GridData) spalte.getComposite().getLayoutData();
 
     if (breite == 0)
-    { // der ganze Beh‰lter
+    { // der ganze Beh√§lter
       sd.grabExcessHorizontalSpace = true;
       sd.horizontalSpan = 1;
     }

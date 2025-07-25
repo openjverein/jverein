@@ -33,12 +33,10 @@ public class Update0473 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung",
-        new Column("rechnungenanzeigen", COLTYPE.BOOLEAN, 0, "0",
-            false, false)));
-    
+    execute(addColumn("einstellung", new Column("rechnungenanzeigen",
+        COLTYPE.BOOLEAN, 0, "0", false, false)));
+
     execute("UPDATE einstellung SET rechnungenanzeigen = CASE "
-        + "WHEN EXISTS (SELECT 1 FROM rechnung) THEN 1 ELSE 0 "
-        + "END;");
+        + "WHEN EXISTS (SELECT 1 FROM rechnung) THEN 1 ELSE 0 " + "END;");
   }
 }

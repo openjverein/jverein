@@ -47,17 +47,15 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
   }
 
   @Override
-  public void export(ArrayList<PseudoDBObject> zeile,
-      final File file, Date datumvon, Date datumbis)
-      throws ApplicationException
+  public void export(ArrayList<PseudoDBObject> zeile, final File file,
+      Date datumvon, Date datumbis) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
       String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
           + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, title, subtitle,
-          zeile.size());
+      Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
       makeHeader(reporter, umbuchung);
 
       for (PseudoDBObject bkz : zeile)
@@ -129,9 +127,8 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT);
-            reporter
-                .addColumn(
-                    bkz.getInteger(BuchungsklasseSaldoControl.EINNAHMEN));
+            reporter.addColumn(
+                bkz.getInteger(BuchungsklasseSaldoControl.EINNAHMEN));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }

@@ -29,10 +29,11 @@ public class BuchungsuebernahmeAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-  
+
     try
     {
-      BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(BuchungsuebernahmeDialog.POSITION_CENTER);
+      BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(
+          BuchungsuebernahmeDialog.POSITION_CENTER);
       if (d.open())
       {
         new Buchungsuebernahme();
@@ -50,8 +51,9 @@ public class BuchungsuebernahmeAction implements Action
     catch (Exception e)
     {
       Logger.error("Error while importing from Hibiscus", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Importieren von Hibiscus Buchungen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren von Hibiscus Buchungen");
     }
   }
-  
+
 }

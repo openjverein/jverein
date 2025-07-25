@@ -10,8 +10,8 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBObject;
 
 /**
- * Hilfsobjekt für den ExtendedDBIterator. Dieses Object enthält alle geholten
- * Attribute. diese können mittels <code>getAttribute("name")</code>,
+ * Hilfsobjekt fÃ¼r den ExtendedDBIterator. Dieses Object enthÃ¤lt alle geholten
+ * Attribute. diese kÃ¶nnen mittels <code>getAttribute("name")</code>,
  * <code>getDouble("name")</code> oder <code>getInteger("name")</code> geholt
  * werden.
  */
@@ -48,6 +48,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
   /**
    * @see de.willuhn.datasource.GenericObject#getAttribute(java.lang.String)
    */
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if (fieldName == null)
@@ -101,6 +102,7 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
    * @return vorheriger Wert des Feldes.
    * @throws RemoteException
    */
+  @Override
   public Object setAttribute(String fieldName, Object value)
       throws RemoteException
   {

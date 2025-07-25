@@ -49,8 +49,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularControl extends FormularPartControl
-    implements Savable
+public class FormularControl extends FormularPartControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -109,7 +108,8 @@ public class FormularControl extends FormularPartControl
     FormularArt aktuelleFormularArt = getFormular().getArt();
     ArrayList<FormularArt> list = new ArrayList<FormularArt>(
         Arrays.asList(FormularArt.values()));
-    if (!(Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.SPENDENBESCHEINIGUNG)
       {
@@ -186,14 +186,16 @@ public class FormularControl extends FormularPartControl
       @SuppressWarnings("unchecked")
       List<SelectInput> list = formlink.getList();
       int size = list.size();
-      for (int i=0;i<size;++i)
+      for (int i = 0; i < size; ++i)
       {
         Object object = list.get(i);
-        if (object == null) continue;
+        if (object == null)
+          continue;
         // Cast to FormularImpl
         FormularImpl formimpl = (FormularImpl) object;
         // Remove current form object and stop comparing
-        if (Integer.valueOf(formimpl.getID()) == Integer.valueOf(currentForm.getID()))
+        if (Integer.valueOf(formimpl.getID()) == Integer
+            .valueOf(currentForm.getID()))
         {
           list.remove(i);
           formlink.setList(list);
@@ -205,7 +207,7 @@ public class FormularControl extends FormularPartControl
     // Deactivate the select box if it has linked forms
     if (currentForm.hasFormlinks())
     {
-      formlink.setPleaseChoose("Verknüpft");
+      formlink.setPleaseChoose("VerknÃ¼pft");
       formlink.disable();
     }
     else
@@ -241,6 +243,7 @@ public class FormularControl extends FormularPartControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -278,7 +281,7 @@ public class FormularControl extends FormularPartControl
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
     formularList.addColumn("Fortlaufende Nr.", "zaehler");
-    formularList.addColumn("Verknüpft mit", "formlink",
+    formularList.addColumn("VerknÃ¼pft mit", "formlink",
         new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this, formularList));

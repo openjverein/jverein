@@ -29,8 +29,11 @@ public class Update0418 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    if (getDriver()==DRIVER.H2) {
-      execute("CREATE USER readonly PASSWORD 'jverein'; GRANT SELECT ON SCHEMA PUBLIC TO readonly", false);
+    if (getDriver() == DRIVER.H2)
+    {
+      execute(
+          "CREATE USER readonly PASSWORD 'jverein'; GRANT SELECT ON SCHEMA PUBLIC TO readonly",
+          false);
     }
     setNewVersion(nr);
   }

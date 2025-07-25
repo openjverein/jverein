@@ -37,15 +37,15 @@ public class KursteilnehmerDeleteAction implements Action
     Kursteilnehmer[] kursteilnehmer = null;
     if (context == null)
     {
-      throw new ApplicationException("Keinen Kursteilnehmer ausgewählt");
+      throw new ApplicationException("Keinen Kursteilnehmer ausgewÃ¤hlt");
     }
-    else if(context instanceof Kursteilnehmer)
+    else if (context instanceof Kursteilnehmer)
     {
-      kursteilnehmer = new Kursteilnehmer[] {(Kursteilnehmer)context};
+      kursteilnehmer = new Kursteilnehmer[] { (Kursteilnehmer) context };
     }
-    else if(context instanceof Kursteilnehmer[])
+    else if (context instanceof Kursteilnehmer[])
     {
-      kursteilnehmer = (Kursteilnehmer[])context;
+      kursteilnehmer = (Kursteilnehmer[]) context;
     }
     else
     {
@@ -54,8 +54,9 @@ public class KursteilnehmerDeleteAction implements Action
     try
     {
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Kursteilnehmer löschen");
-      d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1?"":"n")+ " Kursteilnehmer wirklich löschen?");
+      d.setTitle("Kursteilnehmer lÃ¶schen");
+      d.setText("Wollen Sie diese" + (kursteilnehmer.length > 1 ? "" : "n")
+          + " Kursteilnehmer wirklich lÃ¶schen?");
 
       try
       {
@@ -65,20 +66,20 @@ public class KursteilnehmerDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Kursteilnehmers", e);
+        Logger.error("Fehler beim LÃ¶schen des Kursteilnehmers", e);
         return;
       }
-      for(Kursteilnehmer kt:kursteilnehmer)
+      for (Kursteilnehmer kt : kursteilnehmer)
       {
-        if(kt.isNewObject())
+        if (kt.isNewObject())
           continue;
         kt.delete();
       }
-      GUI.getStatusBar().setSuccessText("Kursteilnehmer gelöscht.");
+      GUI.getStatusBar().setSuccessText("Kursteilnehmer gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Kursteilnehmers";
+      String fehler = "Fehler beim LÃ¶schen des Kursteilnehmers";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

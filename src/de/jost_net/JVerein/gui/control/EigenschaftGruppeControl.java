@@ -115,6 +115,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

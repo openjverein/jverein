@@ -30,7 +30,7 @@ public enum Adressblatt
   private final String text;
 
   private final int key;
-  
+
   Adressblatt(int key, String text)
   {
     this.key = key;

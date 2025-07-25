@@ -49,7 +49,7 @@ public class JVereinTablePart extends TablePart
   {
     super(list, action);
   }
-  
+
   /**
    * Erzeugt eine neue Standard-Tabelle auf dem uebergebenen Composite.
    * 

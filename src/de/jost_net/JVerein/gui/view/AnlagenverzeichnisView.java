@@ -33,10 +33,10 @@ public class AnlagenverzeichnisView extends AbstractView
     GUI.getView().setTitle("Anlagenverzeichnis");
 
     final AnlagenlisteControl control = new AnlagenlisteControl(this);
-  
+
     VonBisPart vpart = new VonBisPart(control, false);
     vpart.paint(this.getParent());
-    
+
     QuickAccessPart qpart = new QuickAccessPart(control, false);
     qpart.paint(this.getParent());
 

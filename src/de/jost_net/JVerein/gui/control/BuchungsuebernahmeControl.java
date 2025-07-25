@@ -98,11 +98,11 @@ public class BuchungsuebernahmeControl
       }
       if (ue.getHibiscusMaxBuchungID() > ue.getJVereinMaxBuchungID())
       {
-        ue.setBemerkung("Übernahme erforderlich");
+        ue.setBemerkung("Ãœbernahme erforderlich");
       }
       else
       {
-        ue.setBemerkung("Keine Übernahme erforderlich");
+        ue.setBemerkung("Keine Ãœbernahme erforderlich");
       }
       ueko.add(ue);
     }

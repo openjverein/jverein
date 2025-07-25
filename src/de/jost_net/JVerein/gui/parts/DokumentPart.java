@@ -62,7 +62,7 @@ public class DokumentPart implements Part
     }
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum w‰hlen");
+    this.datum.setText("Bitte Datum w√§hlen");
     return datum;
   }
 

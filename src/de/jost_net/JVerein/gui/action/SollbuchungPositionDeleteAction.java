@@ -30,7 +30,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Formularfeldes
+ * LÃ¶schen eines Formularfeldes
  */
 public class SollbuchungPositionDeleteAction implements Action
 {
@@ -45,7 +45,7 @@ public class SollbuchungPositionDeleteAction implements Action
     }
     if (context == null || !(context instanceof SollbuchungPosition))
     {
-      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
+      throw new ApplicationException("Keine Sollbuchungsposition ausgewÃ¤hlt");
     }
     try
     {
@@ -56,8 +56,8 @@ public class SollbuchungPositionDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Sollbuchungsposition löschen");
-      d.setText("Wollen Sie diese Sollbuchungsposition wirklich löschen?");
+      d.setTitle("Sollbuchungsposition lÃ¶schen");
+      d.setText("Wollen Sie diese Sollbuchungsposition wirklich lÃ¶schen?");
 
       try
       {
@@ -69,7 +69,7 @@ public class SollbuchungPositionDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Sollbuchungsposition", e);
+        Logger.error("Fehler beim LÃ¶schen der Sollbuchungsposition", e);
         return;
       }
       position.delete();
@@ -85,11 +85,11 @@ public class SollbuchungPositionDeleteAction implements Action
       sollb.setBetrag(betrag);
       sollb.store();
       GUI.startView(SollbuchungDetailView.class.getName(), sollb);
-      GUI.getStatusBar().setSuccessText("Sollbuchungsposition gelöscht.");
+      GUI.getStatusBar().setSuccessText("Sollbuchungsposition gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Sollbuchungsposition";
+      String fehler = "Fehler beim LÃ¶schen der Sollbuchungsposition";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

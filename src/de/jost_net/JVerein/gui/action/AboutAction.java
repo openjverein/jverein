@@ -38,7 +38,7 @@ public class AboutAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim öffnen des AboutView-Dialoges";
+      String fehler = "Fehler beim Ã¶ffnen des AboutView-Dialoges";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }

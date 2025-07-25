@@ -34,9 +34,9 @@ public class MitgliedMailMenu extends ContextMenu
    */
   public MitgliedMailMenu(MitgliedControl mc)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new MailDetailAction(),
-        "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new MailDetailAction(), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new MailemfaengerDeleteAction(mc), "user-trash-full.png"));
   }
 }

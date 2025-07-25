@@ -54,7 +54,8 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Mitgliedsnummer", "idint", false, true);
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
       }
@@ -90,7 +91,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Name", "name", true, true);
     add("Vorname", "vorname", true, true);
     add("Adressierungszusatz", "adressierungszusatz", false, true);
-    add("Straße", "strasse", true, true);
+    add("StraÃŸe", "strasse", true, true);
     add("PLZ", "plz", false, true);
     add("Ort", "ort", true, true);
     try
@@ -117,7 +118,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Kontoinhaber Name", "ktoiname", false, true);
     add("Kontoinhaber Titel", "ktoititel", false, true);
     add("Kontoinhaber Vorname", "ktoivorname", false, true);
-    add("Kontoinhaber Straße", "ktoistrasse", false, true);
+    add("Kontoinhaber StraÃŸe", "ktoistrasse", false, true);
     add("Kontoinhaber Adressierungszusatz", "ktoiadressierungszsatz", false,
         true);
     add("Kontoinhaber PLZ", "ktoiplz", false, true);
@@ -143,14 +144,15 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Austritt", "austritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
-    add("Kündigung", "kuendigung", false,
+    add("KÃ¼ndigung", "kuendigung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Leitweg ID", "leitwegid", false, true);
     add("Zahler ID", "zahlerid", false, false);
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         add("Individueller Beitrag", "individuellerbeitrag", false, false);
       }
@@ -167,7 +169,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     }
     add("Eingabedatum", "eingabedatum", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    add("Letzte Änderung", "letzteaenderung", false,
+    add("Letzte Ã„nderung", "letzteaenderung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     try
     {

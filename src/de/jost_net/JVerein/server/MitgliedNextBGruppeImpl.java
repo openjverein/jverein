@@ -164,15 +164,15 @@ public class MitgliedNextBGruppeImpl extends AbstractDBObject
       Date abDatum = getAbDatum();
       if (null == abDatum)
         throw new ApplicationException(
-            "Es wurde kein Datum eingegeben ab dem diese Änderung gültig sein soll!");
+            "Es wurde kein Datum eingegeben ab dem diese Ã„nderung gÃ¼ltig sein soll!");
 
       if (abDatum.getTime() < System.currentTimeMillis())
         throw new ApplicationException(
-            "Datum für diesen Datensatz muss in der Zukunft liegen.");
+            "Datum fÃ¼r diesen Datensatz muss in der Zukunft liegen.");
     }
     catch (RemoteException ex)
     {
-      throw new ApplicationException("Daten können nicht geprüft werden", ex);
+      throw new ApplicationException("Daten kÃ¶nnen nicht geprÃ¼ft werden", ex);
     }
   }
 

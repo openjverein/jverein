@@ -52,7 +52,7 @@ public class LastschriftControl extends FilterControl
 {
 
   private TextInput personenart;
-  
+
   private TextInput mitgliedstyp;
 
   private TextInput geschlecht;
@@ -86,7 +86,7 @@ public class LastschriftControl extends FilterControl
   private BICInput bic;
 
   private IBANInput iban;
-  
+
   private Lastschrift lastschrift;
 
   private JVereinTablePart lastschriftList;
@@ -97,7 +97,7 @@ public class LastschriftControl extends FilterControl
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
- 
+
   public Part getLastschriftList() throws RemoteException
   {
     if (lastschriftList != null)
@@ -109,11 +109,11 @@ public class LastschriftControl extends FilterControl
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
-    lastschriftList.addColumn("Email","email");
+    lastschriftList.addColumn("Email", "email");
     lastschriftList.addColumn("Zweck", "verwendungszweck");
     lastschriftList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    lastschriftList.addColumn("F‰lligkeit", "faelligkeit",
+    lastschriftList.addColumn("F√§lligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("IBAN", "iban", new IbanFormatter());
     lastschriftList.addColumn("Mandat", "mandatid");
@@ -130,6 +130,7 @@ public class LastschriftControl extends FilterControl
     return lastschriftList;
   }
 
+  @Override
   public void TabRefresh()
   {
     if (lastschriftList == null)
@@ -151,8 +152,8 @@ public class LastschriftControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
-  private  DBIterator<Lastschrift> getLastschriften() throws RemoteException
+
+  private DBIterator<Lastschrift> getLastschriften() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Lastschrift> lastschriften = service
@@ -188,7 +189,7 @@ public class LastschriftControl extends FilterControl
       if (tmpSuchname.length() > 0)
       {
         lastschriften.addFilter("(lower(lastschrift.name) like ?)",
-            new Object[] { tmpSuchname.toLowerCase() + "%"});
+            new Object[] { tmpSuchname.toLowerCase() + "%" });
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
@@ -197,7 +198,7 @@ public class LastschriftControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         lastschriften.addFilter("(lower(verwendungszweck) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)
@@ -215,12 +216,12 @@ public class LastschriftControl extends FilterControl
       lastschriften.addFilter("abrechnungslauf >= ?",
           new Object[] { (Integer) getIntegerAusw().getValue() });
     }
-    
+
     lastschriften.setOrder("ORDER BY name");
 
     return lastschriften;
   }
-  
+
   public Lastschrift getLastschrift()
   {
     if (lastschrift != null)
@@ -252,7 +253,7 @@ public class LastschriftControl extends FilterControl
     personenart.setEnabled(false);
     return personenart;
   }
-  
+
   public TextInput getMitgliedstyp() throws RemoteException
   {
     if (mitgliedstyp != null)
@@ -328,7 +329,7 @@ public class LastschriftControl extends FilterControl
       return strasse;
     }
     strasse = new TextInput(getLastschrift().getStrasse(), 40);
-    strasse.setName("Straﬂe");
+    strasse.setName("Stra√üe");
     strasse.setEnabled(false);
     return strasse;
   }
@@ -441,7 +442,8 @@ public class LastschriftControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getLastschrift().getIBAN()), getBIC());
+    iban = new IBANInput(HBCIProperties.formatIban(getLastschrift().getIBAN()),
+        getBIC());
     iban.setName("IBAN");
     iban.setEnabled(false);
     return iban;
@@ -472,7 +474,7 @@ public class LastschriftControl extends FilterControl
       String g = getLastschrift().getGeschlecht();
       if (g.equals(GeschlechtInput.MAENNLICH))
       {
-        text = "M‰nnlich";
+        text = "M√§nnlich";
       }
       else if (g.equals(GeschlechtInput.WEIBLICH))
       {

@@ -25,8 +25,7 @@ import de.jost_net.JVerein.rmi.QIFImportHead;
 import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 
-public class QIFImportHeadImpl extends AbstractDBObject implements
-    QIFImportHead
+public class QIFImportHeadImpl extends AbstractDBObject implements QIFImportHead
 {
   private static final long serialVersionUID = 162362596025205401L;
 

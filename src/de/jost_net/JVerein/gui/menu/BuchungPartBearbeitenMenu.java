@@ -36,7 +36,7 @@ public class BuchungPartBearbeitenMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new BuchungAction(false), "text-x-generic.png"));
-    addItem(new CheckedSingleContextMenuItem("Istbuchung von Sollbuchung lösen",
+    addItem(new CheckedSingleContextMenuItem("Istbuchung von Sollbuchung lÃ¶sen",
         new IstbuchungLoesenAction(), "unlocked.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",

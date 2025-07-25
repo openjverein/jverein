@@ -62,7 +62,7 @@ public class KontenrahmenImportXMLv2 implements Importer
 
     // Root-Element "kontenrahmen" ermitteln
     IXMLElement root = (IXMLElement) parser.parse();
-    
+
     // Version lesen
     @SuppressWarnings("rawtypes")
     Enumeration enu = root.enumerateChildren();
@@ -70,8 +70,11 @@ public class KontenrahmenImportXMLv2 implements Importer
     if (ele != null && ele.hasAttribute("version"))
     {
       String version = ele.getAttribute("version", "");
-      if (version != null && !version.isEmpty() && !version.equalsIgnoreCase("2"))
-        throw new ApplicationException("Versions Mismatch: Version 2 erwartet, Version " + version + " gelesen");
+      if (version != null && !version.isEmpty()
+          && !version.equalsIgnoreCase("2"))
+        throw new ApplicationException(
+            "Versions Mismatch: Version 2 erwartet, Version " + version
+                + " gelesen");
     }
     if (ele != null && !ele.hasAttribute("version"))
     {

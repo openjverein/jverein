@@ -28,8 +28,8 @@ import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /**
- * Ersatz für die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
- * nur für den Footer gebraucht.
+ * Ersatz fÃ¼r die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
+ * nur fÃ¼r den Footer gebraucht.
  */
 class HeaderFooter extends PdfPageEventHelper
 {
@@ -63,9 +63,7 @@ class HeaderFooter extends PdfPageEventHelper
     pc.lineTo(right, bottom - 25);
     pc.stroke();
 
-    ColumnText.showTextAligned(
-        pc,
-        Element.ALIGN_CENTER,
+    ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
         new Phrase(footer + " " + writer.getPageNumber(),
             Reporter.getFreeSans(7)),
         (left + right) / 2, bottom - 18, 0);

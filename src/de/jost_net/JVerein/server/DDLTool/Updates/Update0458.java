@@ -31,8 +31,8 @@ public class Update0458 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     {
-      execute(addColumn("konto", new Column("zweck",
-          COLTYPE.INTEGER, 0, "1", false, false)));
+      execute(addColumn("konto",
+          new Column("zweck", COLTYPE.INTEGER, 0, "1", false, false)));
     }
   }
 }

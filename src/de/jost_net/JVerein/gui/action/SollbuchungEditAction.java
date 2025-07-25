@@ -55,7 +55,7 @@ public class SollbuchungEditAction implements Action
     }
     else
     {
-      throw new ApplicationException("Keine Sollbuchung ausgew‰hlt");
+      throw new ApplicationException("Keine Sollbuchung ausgew√§hlt");
     }
     GUI.startView(new SollbuchungDetailView(), sollb);
   }

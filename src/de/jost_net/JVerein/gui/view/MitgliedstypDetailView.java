@@ -51,7 +51,7 @@ public class MitgliedstypDetailView extends AbstractDetailView
     {
       saveButton.setEnabled(false);
       GUI.getStatusBar().setErrorText(
-          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht ver‰ndert werden.");
+          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht ver√§ndert werden.");
     }
     buttons.paint(this.getParent());
   }

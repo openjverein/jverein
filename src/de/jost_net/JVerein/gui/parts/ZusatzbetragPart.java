@@ -67,11 +67,11 @@ public class ZusatzbetragPart implements Part
   private DateInput ausfuehrung = null;
 
   private AbstractInput buchungsart;
-  
+
   private SelectInput buchungsklasse;
-  
+
   private AbstractInput mitglied;
-  
+
   private boolean mitMitglied;
 
   private SelectInput zahlungsweg;
@@ -92,14 +92,15 @@ public class ZusatzbetragPart implements Part
     {
       group.addLabelPair("Mitglied", getMitglied());
     }
-    group.addLabelPair("Erste F‰lligkeit ", getStartdatum(true));
-    group.addLabelPair("N‰chste F‰lligkeit", getFaelligkeit());
+    group.addLabelPair("Erste F√§lligkeit ", getStartdatum(true));
+    group.addLabelPair("N√§chste F√§lligkeit", getFaelligkeit());
     group.addLabelPair("Intervall", getIntervall());
-    group.addLabelPair("Nicht mehr ausf¸hren ab", getEndedatum());
+    group.addLabelPair("Nicht mehr ausf√ºhren ab", getEndedatum());
     group.addLabelPair("Buchungstext", getBuchungstext());
     group.addLabelPair("Betrag", getBetrag());
     group.addLabelPair("Buchungsart", getBuchungsart());
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", getBuchungsklasse());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
@@ -118,8 +119,8 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getFaelligkeit();
 
     this.faelligkeit = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("F‰lligkeit");
-    this.faelligkeit.setText("Bitte F‰lligkeitsdatum w‰hlen");
+    this.faelligkeit.setTitle("F√§lligkeit");
+    this.faelligkeit.setText("Bitte F√§lligkeitsdatum w√§hlen");
     this.faelligkeit.addListener(new Listener()
     {
 
@@ -130,7 +131,7 @@ public class ZusatzbetragPart implements Part
         if (date == null)
         {
           return;
-        }       
+        }
       }
     });
     faelligkeit.setMandatory(true);
@@ -170,7 +171,7 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getStartdatum();
     this.startdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.startdatum.setTitle("Startdatum");
-    this.startdatum.setText("Bitte Startdatum w‰hlen");
+    this.startdatum.setText("Bitte Startdatum w√§hlen");
     this.startdatum.addListener(new Listener()
     {
 
@@ -222,8 +223,8 @@ public class ZusatzbetragPart implements Part
 
     Date d = zusatzbetrag.getEndedatum();
     this.endedatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.endedatum.setTitle("Nicht mehr ausf¸hren ab");
-    this.endedatum.setText("Bitte Endedatum w‰hlen");
+    this.endedatum.setTitle("Nicht mehr ausf√ºhren ab");
+    this.endedatum.setText("Bitte Endedatum w√§hlen");
     this.endedatum.addListener(new Listener()
     {
 
@@ -250,8 +251,8 @@ public class ZusatzbetragPart implements Part
     Date d = zusatzbetrag.getAusfuehrung();
 
     this.ausfuehrung = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.ausfuehrung.setTitle("Ausf¸hrung");
-    this.ausfuehrung.setText("Bitte Ausf¸hrungsdatum w‰hlen");
+    this.ausfuehrung.setTitle("Ausf√ºhrung");
+    this.ausfuehrung.setText("Bitte Ausf√ºhrungsdatum w√§hlen");
     this.ausfuehrung.addListener(new Listener()
     {
 
@@ -277,7 +278,8 @@ public class ZusatzbetragPart implements Part
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -286,8 +288,8 @@ public class ZusatzbetragPart implements Part
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -311,30 +313,31 @@ public class ZusatzbetragPart implements Part
     });
     return buchungsart;
   }
-  
+
   public SelectInput getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        zusatzbetrag.getBuchungsklasse());
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, zusatzbetrag.getBuchungsklasse());
     return buchungsklasse;
   }
-  
+
   public boolean isBuchungsklasseActive()
   {
     return buchungsklasse != null;
   }
-    
+
   public Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (null == buchungsklasse)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -342,12 +345,11 @@ public class ZusatzbetragPart implements Part
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
   }
-  
 
   public SelectInput getZahlungsweg() throws RemoteException
   {
@@ -355,11 +357,12 @@ public class ZusatzbetragPart implements Part
     {
       return zahlungsweg;
     }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),zusatzbetrag.getZahlungsweg());
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),
+        zusatzbetrag.getZahlungsweg());
     zahlungsweg.setPleaseChoose("Standard");
     return zahlungsweg;
   }
-  
+
   public SelectInput getSteuer() throws RemoteException
   {
     if (steuer != null)
@@ -388,7 +391,7 @@ public class ZusatzbetragPart implements Part
 
     if (zusatzbetrag.getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {zusatzbetrag.getMitglied()};
+      Mitglied[] mitgliedArray = { zusatzbetrag.getMitglied() };
       mitglied = new SelectInput(mitgliedArray, zusatzbetrag.getMitglied());
       mitglied.setEnabled(false);
     }
@@ -400,5 +403,5 @@ public class ZusatzbetragPart implements Part
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
 }

@@ -26,7 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Mailanhanges
+ * LÃ¶schen eines Mailanhanges
  */
 public class MailAnhangDeleteAction implements Action
 {
@@ -43,7 +43,7 @@ public class MailAnhangDeleteAction implements Action
   {
     if (context == null || !(context instanceof MailAnhang))
     {
-      throw new ApplicationException("Keinen Mail-Anhang ausgewählt");
+      throw new ApplicationException("Keinen Mail-Anhang ausgewÃ¤hlt");
     }
     try
     {

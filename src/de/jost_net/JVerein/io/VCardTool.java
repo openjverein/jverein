@@ -57,7 +57,7 @@ public class VCardTool
         vcard.setBirthday(bd);
       }
 
-      if(m.getGeschlecht() != null)
+      if (m.getGeschlecht() != null)
       {
         if (m.getGeschlecht().equalsIgnoreCase(GeschlechtInput.MAENNLICH))
         {

@@ -26,13 +26,13 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Jahresabschlüssen.
+ * Kontext-Menu zu den JahresabschlÃ¼ssen.
  */
 public class JahresabschlussMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Jahresabschlüsse
+   * Erzeugt ein Kontext-Menu fuer die Liste der JahresabschlÃ¼sse
    * 
    * @throws RemoteException
    */
@@ -40,7 +40,7 @@ public class JahresabschlussMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new EditAction(JahresabschlussDetailView.class), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new JahresabschlussDeleteAction(), "user-trash-full.png"));
   }
 }

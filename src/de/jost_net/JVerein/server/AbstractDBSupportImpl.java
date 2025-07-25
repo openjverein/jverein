@@ -66,8 +66,8 @@ public abstract class AbstractDBSupportImpl implements DBSupport
     }
     catch (Exception e)
     {
-      throw new RemoteException(
-          "error while executing sql script " + sqlScript, e);
+      throw new RemoteException("error while executing sql script " + sqlScript,
+          e);
     }
     finally
     {

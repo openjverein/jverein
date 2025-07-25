@@ -88,9 +88,11 @@ public class BuchungPart implements Part
     {
       grBuchungsinfos.addLabelPair("Steuer", control.getSteuer());
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      grBuchungsinfos.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+      grBuchungsinfos.addLabelPair("Buchungsklasse",
+          control.getBuchungsklasse());
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {

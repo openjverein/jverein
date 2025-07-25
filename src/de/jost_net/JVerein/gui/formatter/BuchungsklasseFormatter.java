@@ -41,14 +41,14 @@ public class BuchungsklasseFormatter implements Formatter
       switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
-          bez = bk.getNummer() + " - " + bk.getBezeichnung(); 
+          bez = bk.getNummer() + " - " + bk.getBezeichnung();
           break;
         case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-          bez = bk.getBezeichnung() + " (" + bk.getNummer() + ")"; 
-      	  break;
+          bez = bk.getBezeichnung() + " (" + bk.getNummer() + ")";
+          break;
         default:
           bez = bk.getBezeichnung();
-      	  break;
+          break;
       }
     }
     catch (RemoteException e)

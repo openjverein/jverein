@@ -30,33 +30,33 @@ import de.willuhn.logging.Logger;
  */
 public class MitgliedNextBGruppeNeuAction implements Action
 {
-    MitgliedControl control;
-    
-    public MitgliedNextBGruppeNeuAction(MitgliedControl control)
+  MitgliedControl control;
+
+  public MitgliedNextBGruppeNeuAction(MitgliedControl control)
+  {
+    this.control = control;
+  }
+
+  @Override
+  public void handleAction(Object context)
+  {
+    Mitglied mitglied = control.getMitglied();
+    try
     {
-        this.control = control;
+      if (mitglied.isNewObject())
+      {
+        GUI.getView().setErrorText(
+            "Bitte erst das Mitglied speichern bevor eine n√§chste Beitragsgruppe angelegt werden kann!");
+      }
+      else
+      {
+        GUI.startView(MitgliedNextBGruppeView.class.getName(), mitglied);
+      }
     }
-    
-    @Override
-    public void handleAction(Object context) 
+    catch (RemoteException e)
     {
-        Mitglied mitglied = control.getMitglied();
-        try
-        {
-          if (mitglied.isNewObject())
-          {
-            GUI.getView().setErrorText(
-                "Bitte erst das Mitglied speichern bevor eine n‰chste Beitragsgruppe angelegt werden kann!");
-          }
-          else
-          {
-            GUI.startView(MitgliedNextBGruppeView.class.getName(), mitglied);
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
+      Logger.error("Fehler", e);
     }
+  }
 
 }

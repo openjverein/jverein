@@ -65,7 +65,7 @@ public class MitgliedVCardDateiAction implements Action
           }
         }
         FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-        fd.setText("Ausgabedatei w‰hlen.");
+        fd.setText("Ausgabedatei w√§hlen.");
 
         Settings settings = new de.willuhn.jameica.system.Settings(
             this.getClass());
@@ -129,7 +129,7 @@ public class MitgliedVCardDateiAction implements Action
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (Exception e)

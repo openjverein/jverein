@@ -23,7 +23,7 @@ import org.apache.velocity.VelocityContext;
 public class VarTools
 {
   /**
-   * Übertragung einer Map<String, Object> in einen VelocityContext
+   * Ãœbertragung einer Map<String, Object> in einen VelocityContext
    */
   public static void add(VelocityContext context, Map<String, Object> map)
   {

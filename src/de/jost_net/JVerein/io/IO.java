@@ -23,8 +23,8 @@ package de.jost_net.JVerein.io;
 public interface IO
 {
   /**
-   * Liefert einen sprechenden Namen des Exporters/Importers. Z.Bsp.
-   * "Swift MT-940 Format".
+   * Liefert einen sprechenden Namen des Exporters/Importers. Z.Bsp. "Swift
+   * MT-940 Format".
    * 
    * @return Name
    */

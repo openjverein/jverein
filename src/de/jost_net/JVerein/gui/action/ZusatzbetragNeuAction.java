@@ -51,13 +51,13 @@ public class ZusatzbetragNeuAction implements Action
         if (m != null && m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann kˆnnen Zusatzbetr‰ge aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann k√∂nnen Zusatzbetr√§ge aufgenommen werden.");
         }
         z.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (RemoteException e)

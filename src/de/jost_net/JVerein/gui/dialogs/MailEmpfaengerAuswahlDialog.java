@@ -39,7 +39,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein Dialog, ueber den man Empf‰nger f¸r eine Mail ausw‰hlen kann.
+ * Ein Dialog, ueber den man Empf√§nger f√ºr eine Mail ausw√§hlen kann.
  */
 public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
 {
@@ -50,7 +50,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
   {
     super(position);
     this.control = control;
-    setTitle("Mail-Empf‰nger");
+    setTitle("Mail-Empf√§nger");
     setSize(920, 450);
   }
 
@@ -100,7 +100,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
     });
-    
+
     b.addButton("Alle", new Action()
     {
       @Override
@@ -138,7 +138,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
     });
-    
+
     b.addButton("Aktive Mitglieder", new Action()
     {
       @Override
@@ -241,7 +241,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
     b.paint(parent);
 
     ButtonArea c = new ButtonArea();
-    c.addButton("‹bernehmen", new Action()
+    c.addButton("√úbernehmen", new Action()
     {
 
       @Override

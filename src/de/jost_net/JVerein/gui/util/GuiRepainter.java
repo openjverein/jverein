@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.TabFolder;
 public class GuiRepainter
 {
   /***
-   * Nach einem größerem Update des Layouts soll eine Componente neu gezeichnet
+   * Nach einem grÃ¶ÃŸerem Update des Layouts soll eine Componente neu gezeichnet
    * werden. Es wird diejenige mit einem Layout gesucht und dieser mitgeteilt
    * dass wir neu zeichnen wollen.
    * 
@@ -39,7 +39,8 @@ public class GuiRepainter
     {
       if (composite.getLayout() != null)
         composite.layout();
-      if (composite instanceof TabFolder || composite instanceof ScrolledComposite)
+      if (composite instanceof TabFolder
+          || composite instanceof ScrolledComposite)
         return;
       composite = composite.getParent();
     }

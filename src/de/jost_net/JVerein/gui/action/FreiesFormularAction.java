@@ -83,16 +83,16 @@ public class FreiesFormularAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
     }
   }
 
   private void generiereFreiesFormular(Mitglied[] m) throws Exception
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings
-        .getString("lastdir", System.getProperty("user.home"));
+    fd.setText("Ausgabedatei wÃ¤hlen.");
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
     if (path != null && path.length() > 0)
     {
       fd.setFilterPath(path);
@@ -117,8 +117,8 @@ public class FreiesFormularAction implements Action
     FormularAufbereitung fa = new FormularAufbereitung(file, false, false);
     for (Mitglied mi : m)
     {
-      Formular fo = (Formular) Einstellungen.getDBService().createObject(
-          Formular.class, id);
+      Formular fo = (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, id);
       Map<String, Object> map = new MitgliedMap().getMap(mi, null);
       map = new AllgemeineMap().getMap(map);
       fa.writeForm(fo, map);

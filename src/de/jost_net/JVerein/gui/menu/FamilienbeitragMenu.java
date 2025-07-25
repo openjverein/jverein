@@ -25,15 +25,15 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Famlienbeitr‰gen.
+ * Kontext-Menu zu den Famlienbeitr√§gen.
  */
 public class FamilienbeitragMenu extends ContextMenu
 {
 
   public FamilienbeitragMenu()
   {
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen", new MitgliedDetailAction(),
-        "user-friends.png"));
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
     addItem(new AngehoerigerItem("Aus Familienverband entfernen",
         new FamilienmitgliedEntfernenAction(), "user-trash-full.png"));
   }

@@ -72,8 +72,7 @@ public class RechnungMap extends AbstractMap
       buchungDatum.add(sp.getDatum());
       zweck.add(sp.getZweck());
       nettobetrag.add(sp.getNettobetrag());
-      steuersatz.add(
-          "(" + format.format(sp.getSteuersatz()) + "%)");
+      steuersatz.add("(" + format.format(sp.getSteuersatz()) + "%)");
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
@@ -133,7 +132,7 @@ public class RechnungMap extends AbstractMap
 
     // Deise Felder gibt es nicht mehr in der Form, damit bei alten
     // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
-    // hinzufügen
+    // hinzufÃ¼gen
     map.put(RechnungVar.DIFFERENZ.getName(), "");
     map.put(RechnungVar.MK_IST.getName(), "");
 
@@ -168,13 +167,14 @@ public class RechnungMap extends AbstractMap
         VarTools.maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
-    
+
     String zahlungsweg = "";
     switch (re.getZahlungsweg().getKey())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
@@ -183,12 +183,14 @@ public class RechnungMap extends AbstractMap
       }
       case Zahlungsweg.BARZAHLUNG:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
-      case Zahlungsweg.ÜBERWEISUNG:
+      case Zahlungsweg.ÃœBERWEISUNG:
       {
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
       }
     }
@@ -244,7 +246,7 @@ public class RechnungMap extends AbstractMap
       map.put(RechnungVar.BETRAG.getName(),
           new Double[] { 10d, 13.8d, null, 23.8d });
     }
-    
+
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
     map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
@@ -259,7 +261,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.NAME.getName(), "Wichtig");
     map.put(RechnungVar.VORNAME.getName(), "Willi");
     map.put(RechnungVar.STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei MÃ¼ller");
     map.put(RechnungVar.PLZ.getName(), "12345");
     map.put(RechnungVar.ORT.getName(), "Testenhausen");
     map.put(RechnungVar.STAAT.getName(), "Deutschland");
@@ -274,9 +276,9 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(RechnungVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
-        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     return map;
   }

@@ -46,12 +46,12 @@ public class MahnungMailView extends AbstractView
 
     final RechnungControl control = new RechnungControl(this);
     control.init(RechnungControl.TYP.MAHNUNG.name() + ".", null, null);
-    
+
     if (this.getCurrentObject() == null)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
-      
+
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getSuchname());
       left.addInput(control.getMailauswahl());
@@ -64,7 +64,7 @@ public class MahnungMailView extends AbstractView
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());
       right.addInput(control.getDatumbis());
-      
+
       ButtonArea filterbuttons = new ButtonArea();
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
@@ -79,11 +79,11 @@ public class MahnungMailView extends AbstractView
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
-    
+
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
-    //cont.addInput(control.getAusgabesortierung());
-    
+    // cont.addInput(control.getAusgabesortierung());
+
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
     cont.addLabelPair("Text", control.getTxt());
@@ -95,18 +95,21 @@ public class MahnungMailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAHNUNG, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-            control, false, "view-refresh.png"));
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
-        control, false, "edit-copy.png"));
+            control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    /*buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
-        EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false, "document-save.png"));*/
+    /*
+     * buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
+     * EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false,
+     * "document-save.png"));
+     */
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

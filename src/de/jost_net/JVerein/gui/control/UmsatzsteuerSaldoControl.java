@@ -154,7 +154,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       o.setAttribute(ART, ART_DETAIL);
       if (o.getAttribute(STEUER) == null)
       {
-        o.setAttribute(STEUER, "Steuerfreie Umsätze");
+        o.setAttribute(STEUER, "Steuerfreie UmsÃ¤tze");
       }
 
       zeilen.add(o);
@@ -179,7 +179,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     PseudoDBObject saldo = new PseudoDBObject();
     saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
     saldo.setAttribute(GRUPPE,
-        "Verbleibende Umsatzsteuer/Verbleibender Überschuss ");
+        "Verbleibende Umsatzsteuer/Verbleibender Ãœberschuss ");
     saldo.setAttribute(STEUERBETRAG, steuerGesamt);
     zeilen.add(saldo);
 
@@ -220,14 +220,14 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         + "CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? THEN 0 ELSE "
         + "CAST(steuer.satz/100 * buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END "
         // Alte Steuer hinzurechnen
-        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS "
-        + STEUERBETRAG, Kontoart.ANLAGE.getKey());
+        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS " + STEUERBETRAG,
+        Kontoart.ANLAGE.getKey());
 
     it.join("buchung",
         "buchung.buchungsart = buchungsart.id AND buchung.datum >= ? AND buchung.datum <= ?",
         getDatumvon().getDate(), getDatumbis().getDate());
 
-    // Die Steuer-Splitbuchung mit der gleichen dependecy-ID anhängen um die
+    // Die Steuer-Splitbuchung mit der gleichen dependecy-ID anhÃ¤ngen um die
     // alte Steuer zu ermitteln.
     it.leftJoin("buchung as buchung_steuer_alt",
         "buchung_steuer_alt.splitid = buchung.splitid AND buchung_steuer_alt.dependencyid = buchung.dependencyid"

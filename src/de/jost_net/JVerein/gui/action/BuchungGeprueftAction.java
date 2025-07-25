@@ -59,7 +59,8 @@ public class BuchungGeprueftAction implements Action
 
     try
     {
-      boolean sync = (Boolean) Einstellungen.getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN);
+      boolean sync = (Boolean) Einstellungen
+          .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN);
       for (Buchung b : buchungen)
       {
         b.setGeprueft(geprueft);
@@ -67,7 +68,7 @@ public class BuchungGeprueftAction implements Action
 
         // ggfs. mit Hibiscus syncronisieren
         // wir verwenden hier die SynTAX-MessageQueue, da diese bereits
-        // existiert und somit keine Änderung an Hibiscus nötig ist
+        // existiert und somit keine Ã„nderung an Hibiscus nÃ¶tig ist
         if (sync && b.getUmsatzid() != null)
         {
           String hid = b.getUmsatzid().toString();

@@ -41,7 +41,7 @@ public class WiedervorlageList extends TablePart implements Part
 {
 
   private AutoUpdateTablePart wiedervorlageList;
-  
+
   private FilterControl control;
 
   public WiedervorlageList(Action action, FilterControl control)
@@ -67,9 +67,8 @@ public class WiedervorlageList extends TablePart implements Part
       wiedervorlageList.setRememberColWidths(true);
       wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.addFeature(new FeatureSummary());
-      wiedervorlageList
-          .setAction(
-              new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
+      wiedervorlageList.setAction(
+          new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
       VorZurueckControl.setObjektListe(null, null);
     }
     else
@@ -83,24 +82,24 @@ public class WiedervorlageList extends TablePart implements Part
     }
     return wiedervorlageList;
   }
-  
+
   private DBIterator<Wiedervorlage> getIterator() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Wiedervorlage> wiedervorlagen = service
         .createList(Wiedervorlage.class);
-    
+
     wiedervorlagen.join("mitglied");
     wiedervorlagen.addFilter("mitglied.id = wiedervorlage.mitglied");
-    
+
     if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) control.getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        wiedervorlagen.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        wiedervorlagen.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -120,7 +119,7 @@ public class WiedervorlageList extends TablePart implements Part
       if (tmpSuchtext.length() > 0)
       {
         wiedervorlagen.addFilter("(lower(vermerk) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (control.isCheckboxAuswahlAktiv()
@@ -141,7 +140,7 @@ public class WiedervorlageList extends TablePart implements Part
           new Object[] { (Date) control.getEingabedatumbis().getValue() });
     }
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    
+
     return wiedervorlagen;
   }
 

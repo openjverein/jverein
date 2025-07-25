@@ -38,8 +38,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartControl extends VorZurueckControl
-    implements Savable
+public class LehrgangsartControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -101,7 +100,7 @@ public class LehrgangsartControl extends VorZurueckControl
     }
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Von/am");
-    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w‰hlen");
+    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w√§hlen");
     von.setMandatory(true);
     return von;
   }
@@ -119,7 +118,7 @@ public class LehrgangsartControl extends VorZurueckControl
     }
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Bis");
-    this.bis.setText("Bitte Ende der Veranstaltung w‰hlen");
+    this.bis.setText("Bitte Ende der Veranstaltung w√§hlen");
     return bis;
   }
 
@@ -149,6 +148,7 @@ public class LehrgangsartControl extends VorZurueckControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

@@ -30,7 +30,7 @@ public class Update0423 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(alterColumn("einstellung",
-        new Column("smtp_auth_user", COLTYPE.VARCHAR, 140, null, false, false)));
+    execute(alterColumn("einstellung", new Column("smtp_auth_user",
+        COLTYPE.VARCHAR, 140, null, false, false)));
   }
 }

@@ -34,82 +34,79 @@ public class Update0445 extends AbstractDDLUpdate
     {
       execute(addColumn("konto",
           new Column("kommentar", COLTYPE.VARCHAR, 1024, null, false, false)));
-      
-      execute(addColumn("konto", new Column("anlagenkonto",
-          COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
-      
+
+      execute(addColumn("konto", new Column("anlagenkonto", COLTYPE.BOOLEAN, 0,
+          "FALSE", false, false)));
+
       execute(addColumn("einstellung", new Column("summenanlagenkonto",
           COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
-      
-      execute(addColumn("konto", new Column("anlagenart",
-          COLTYPE.BIGINT, 0, null, false, false)));
+
+      execute(addColumn("konto",
+          new Column("anlagenart", COLTYPE.BIGINT, 0, null, false, false)));
       Index idx = new Index("ixKonto2", false);
       Column col = new Column("anlagenart", COLTYPE.BIGINT, 0, null, false,
           false);
       idx.add(col);
       execute(idx.getCreateIndex("konto"));
-      execute(createForeignKey("fkKonto2", "konto",
-          "anlagenart", "buchungsart", "id", "RESTRICT", "NO ACTION"));
-      
-      execute(addColumn("konto", new Column("anlagenklasse",
-          COLTYPE.BIGINT, 0, null, false, false)));
+      execute(createForeignKey("fkKonto2", "konto", "anlagenart", "buchungsart",
+          "id", "RESTRICT", "NO ACTION"));
+
+      execute(addColumn("konto",
+          new Column("anlagenklasse", COLTYPE.BIGINT, 0, null, false, false)));
       idx = new Index("ixKonto3", false);
-      col = new Column("anlagenklasse", COLTYPE.BIGINT, 0, null, false,
-          false);
+      col = new Column("anlagenklasse", COLTYPE.BIGINT, 0, null, false, false);
       idx.add(col);
       execute(idx.getCreateIndex("konto"));
-      execute(createForeignKey("fkKonto3", "konto",
-          "anlagenklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-      
-      execute(addColumn("konto", new Column("afaart",
-          COLTYPE.BIGINT, 0, null, false, false)));
+      execute(createForeignKey("fkKonto3", "konto", "anlagenklasse",
+          "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+
+      execute(addColumn("konto",
+          new Column("afaart", COLTYPE.BIGINT, 0, null, false, false)));
       idx = new Index("ixKonto4", false);
-      col = new Column("afaart", COLTYPE.BIGINT, 0, null, false,
-          false);
+      col = new Column("afaart", COLTYPE.BIGINT, 0, null, false, false);
       idx.add(col);
       execute(idx.getCreateIndex("konto"));
-      execute(createForeignKey("fkKonto4", "konto",
-          "afaart", "buchungsart", "id", "RESTRICT", "NO ACTION"));
-      
+      execute(createForeignKey("fkKonto4", "konto", "afaart", "buchungsart",
+          "id", "RESTRICT", "NO ACTION"));
+
       execute(addColumn("konto",
           new Column("nutzungsdauer", COLTYPE.INTEGER, 1, null, false, false)));
-      
+
       execute(addColumn("konto",
           new Column("betrag", COLTYPE.DOUBLE, 1, null, false, false)));
-      
+
       execute(addColumn("konto",
           new Column("anschaffung", COLTYPE.DATE, 10, null, false, false)));
-      
+
       execute(addColumn("buchungsart", new Column("abschreibung",
           COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
-      
+
       execute(addColumn("konto",
           new Column("afastart", COLTYPE.DOUBLE, 1, null, false, false)));
-      
+
       execute(addColumn("konto",
           new Column("afadauer", COLTYPE.DOUBLE, 1, null, false, false)));
-      
+
       execute(addColumn("konto",
           new Column("afarestwert", COLTYPE.DOUBLE, 1, null, false, false)));
-      
+
       execute(addColumn("konto",
           new Column("afamode", COLTYPE.INTEGER, 1, null, false, false)));
-      
+
       execute(addColumn("einstellung",
           new Column("afarestwert", COLTYPE.DOUBLE, 1, "1.0", false, false)));
-      
+
       execute(addColumn("einstellung", new Column("afainjahresabschluss",
           COLTYPE.BOOLEAN, 0, "TRUE", false, false)));
-      
-      execute(addColumn("buchung", new Column("abschluss",
-          COLTYPE.BIGINT, 0, null, false, false)));
+
+      execute(addColumn("buchung",
+          new Column("abschluss", COLTYPE.BIGINT, 0, null, false, false)));
       idx = new Index("ixBuchung8", false);
-      col = new Column("abschluss", COLTYPE.BIGINT, 0, null, false,
-          false);
+      col = new Column("abschluss", COLTYPE.BIGINT, 0, null, false, false);
       idx.add(col);
       execute(idx.getCreateIndex("buchung"));
-      execute(createForeignKey("fkBuchung8", "buchung",
-          "abschluss", "jahresabschluss", "id", "CASCADE", "NO ACTION"));
+      execute(createForeignKey("fkBuchung8", "buchung", "abschluss",
+          "jahresabschluss", "id", "CASCADE", "NO ACTION"));
     }
   }
 }

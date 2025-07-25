@@ -86,14 +86,14 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-	  Object o = super.getAttribute("abrechnungslauf");
-	  if (o == null)
-	  {
-	    return null;
-	  }
+    Object o = super.getAttribute("abrechnungslauf");
+    if (o == null)
+    {
+      return null;
+    }
 
-	  Cache cache = Cache.get(Abrechnungslauf.class, true);
-	  return (Abrechnungslauf) cache.get(o);
+    Cache cache = Cache.get(Abrechnungslauf.class, true);
+    return (Abrechnungslauf) cache.get(o);
   }
 
   @Override
@@ -386,9 +386,9 @@ public class LastschriftImpl extends AbstractJVereinDBObject
     {
       return (Date) getAbrechnungslauf().getFaelligkeit();
     }
-    else if(fieldName.equals("abrechnungslauf"))
+    else if (fieldName.equals("abrechnungslauf"))
     {
-    	return getAbrechnungslauf();
+      return getAbrechnungslauf();
     }
     else if ("id-int".equals(fieldName))
     {

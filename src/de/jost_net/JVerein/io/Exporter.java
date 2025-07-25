@@ -49,7 +49,7 @@ public interface Exporter extends IO
    * @param format
    *          das vom User ausgewaehlte Export-Format.
    * @param file
-   *          File-Object für die Ausgabe. Der Exporter muss die Datei selbe
+   *          File-Object fÃ¼r die Ausgabe. Der Exporter muss die Datei selbe
    *          erstellen und schliessen!
    * @param monitor
    *          ein Monitor, an den der Exporter Ausgaben ueber seinen

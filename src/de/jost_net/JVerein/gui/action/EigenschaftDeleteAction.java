@@ -31,7 +31,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Eigenschaft.
+ * LÃ¶schen einer Eigenschaft.
  */
 public class EigenschaftDeleteAction implements Action
 {
@@ -46,7 +46,7 @@ public class EigenschaftDeleteAction implements Action
     }
     if (context == null || !(context instanceof Eigenschaft))
     {
-      throw new ApplicationException("Keine Eigenschaft ausgewählt");
+      throw new ApplicationException("Keine Eigenschaft ausgewÃ¤hlt");
     }
     try
     {
@@ -57,12 +57,12 @@ public class EigenschaftDeleteAction implements Action
       }
 
       SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-      d.setTitle("Eigenschaft löschen");
+      d.setTitle("Eigenschaft lÃ¶schen");
       DBIterator<Eigenschaften> it = Einstellungen.getDBService()
           .createList(Eigenschaften.class);
       it.addFilter("eigenschaft = ?", new Object[] { ei.getID() });
       d.setText(String.format(
-          "Die Eigenschaft kann nicht gelöscht werden. Sie ist noch mit %d Mitglied(ern) verknüpft.",
+          "Die Eigenschaft kann nicht gelÃ¶scht werden. Sie ist noch mit %d Mitglied(ern) verknÃ¼pft.",
           it.size()));
       try
       {
@@ -74,30 +74,30 @@ public class EigenschaftDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Eigenschaft", e);
+        Logger.error("Fehler beim LÃ¶schen der Eigenschaft", e);
         return;
       }
 
       try
       {
         YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle("Eigenschaft löschen");
-        dialog.setText("Wollen Sie diese Eigenschaft wirklich löschen?");
+        dialog.setTitle("Eigenschaft lÃ¶schen");
+        dialog.setText("Wollen Sie diese Eigenschaft wirklich lÃ¶schen?");
         Boolean choice = (Boolean) dialog.open();
         if (!choice.booleanValue())
           return;
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Eigenschaft", e);
+        Logger.error("Fehler beim LÃ¶schen der Eigenschaft", e);
         return;
       }
       ei.delete();
-      GUI.getStatusBar().setSuccessText("Eigenschaft gelöscht.");
+      GUI.getStatusBar().setSuccessText("Eigenschaft gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Eigenschaft";
+      String fehler = "Fehler beim LÃ¶schen der Eigenschaft";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -43,13 +43,13 @@ public class JahresabschlussDetailView extends AbstractView
     String text = control.getInfo();
     if (text != null && !text.isEmpty())
     {
-      InfoPanel   info = new InfoPanel();
+      InfoPanel info = new InfoPanel();
       info.setText(text);
       info.setTitle("Info");
       info.setIcon("gtk-info.png");
       info.paint(getParent());
     }
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Jahresabschluss");
     ColumnLayout cl;
     if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
@@ -77,9 +77,9 @@ public class JahresabschlussDetailView extends AbstractView
     if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addLabelPair("Rest Verwendungsr¸ckstand \naus dem Vorjahr",
+      right.addLabelPair("Rest Verwendungsr√ºckstand \naus dem Vorjahr",
           control.getVerwendungsrueckstand());
-      right.addLabelPair("Zwanghafte satzungsgem‰ﬂe\nWeitergabe von Mitteln",
+      right.addLabelPair("Zwanghafte satzungsgem√§√üe\nWeitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
     }
 

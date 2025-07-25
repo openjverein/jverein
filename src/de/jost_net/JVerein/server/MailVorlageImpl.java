@@ -67,7 +67,7 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
       if (getTxt().length() > 10000)
       {
         throw new ApplicationException(
-            "Maximale Länge des Textes 10.000 Zeichen");
+            "Maximale LÃ¤nge des Textes 10.000 Zeichen");
       }
 
     }

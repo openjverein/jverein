@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe, Leonardo Mörlein
+ * Copyright (c) by Heiner Jostkleigrewe, Leonardo MÃ¶rlein
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -85,12 +85,13 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungControl extends DruckMailControl
-    implements Savable
+public class SollbuchungControl extends DruckMailControl implements Savable
 {
   public enum DIFFERENZ
   {
-    EGAL("Egal"), FEHLBETRAG("Fehlbetrag"), UEBERZAHLUNG("Überzahlung");
+    EGAL("Egal"),
+    FEHLBETRAG("Fehlbetrag"),
+    UEBERZAHLUNG("Ãœberzahlung");
 
     private final String titel;
 
@@ -126,7 +127,7 @@ public class SollbuchungControl extends DruckMailControl
   private DecimalInput betrag;
 
   private AbstractInput mitglied;
-  
+
   private AbstractInput zahler;
 
   private Sollbuchung sollbuchung;
@@ -184,6 +185,7 @@ public class SollbuchungControl extends DruckMailControl
     sollbuchung = sollb;
   }
 
+  @Override
   public Settings getSettings()
   {
     return settings;
@@ -204,7 +206,7 @@ public class SollbuchungControl extends DruckMailControl
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     this.datum.addListener(new Listener()
     {
 
@@ -254,7 +256,8 @@ public class SollbuchungControl extends DruckMailControl
 
     zahlungsweg = new SelectInput(weg,
         z == null
-            ? new Zahlungsweg((Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
+            ? new Zahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
     return zahlungsweg;
@@ -297,7 +300,7 @@ public class SollbuchungControl extends DruckMailControl
     return spezialsuche;
   }
 
-  // Für SollbuchungAuswahlDialog
+  // FÃ¼r SollbuchungAuswahlDialog
   public TextInput getSuchName1(boolean newcontrol)
   {
     if (!newcontrol && suchname != null)
@@ -309,7 +312,7 @@ public class SollbuchungControl extends DruckMailControl
     return suchname;
   }
 
-  // Für SollbuchungAuswahlDialog
+  // FÃ¼r SollbuchungAuswahlDialog
   public TextInput getSuchName2(boolean newcontrol)
   {
     if (!newcontrol && suchname2 != null)
@@ -335,6 +338,7 @@ public class SollbuchungControl extends DruckMailControl
     return sollb;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -348,7 +352,7 @@ public class SollbuchungControl extends DruckMailControl
       sollb.setMitglied((Mitglied) getMitglied().getValue());
       if (sollb.getRechnung() != null)
         throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
+            "Sollbuchung kann nicht geÃ¤ndert werden, es existiert eine Rechnung darÃ¼ber.");
       sollb.store();
     }
     catch (RemoteException e)
@@ -383,11 +387,9 @@ public class SollbuchungControl extends DruckMailControl
               }
               if (mkn.getType() == MitgliedskontoNode.SOLL)
               {
-                Sollbuchung sollb = (Sollbuchung) Einstellungen
-                    .getDBService()
+                Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
                     .createObject(Sollbuchung.class, mkn.getID());
-                GUI.startView(
-                    new SollbuchungDetailView(), sollb);
+                GUI.startView(new SollbuchungDetailView(), sollb);
               }
             }
             catch (RemoteException e)
@@ -447,8 +449,8 @@ public class SollbuchungControl extends DruckMailControl
   {
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
-        null).get();
+    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln, null)
+        .get();
     if (sollbuchungenList == null)
     {
       sollbuchungenList = new SollbuchungListTablePart(sollbuchungen, null);
@@ -465,12 +467,12 @@ public class SollbuchungControl extends DruckMailControl
       sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
           new Formatter()
           {
-        @Override
-        public String format(Object o)
-        {
-          return new Zahlungsweg((Integer)o).getText();
-        }
-      });
+            @Override
+            public String format(Object o)
+            {
+              return new Zahlungsweg((Integer) o).getText();
+            }
+          });
       sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -555,7 +557,8 @@ public class SollbuchungControl extends DruckMailControl
     }
   }
 
-  public Part getSollbuchungPositionListPart(boolean hasRechnung) throws RemoteException
+  public Part getSollbuchungPositionListPart(boolean hasRechnung)
+      throws RemoteException
   {
     if (buchungList != null)
     {
@@ -686,7 +689,8 @@ public class SollbuchungControl extends DruckMailControl
     return button;
   }
 
-  // Für Sollbuchungen View
+  // FÃ¼r Sollbuchungen View
+  @Override
   public void TabRefresh()
   {
     if (sollbuchungenList != null)
@@ -786,7 +790,6 @@ public class SollbuchungControl extends DruckMailControl
               return;
             }
 
-
           }
           catch (Exception e)
           {
@@ -825,7 +828,7 @@ public class SollbuchungControl extends DruckMailControl
       // Aufruf aus Mitglieder View
       if (mitglieder != null)
       {
-        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt"
+        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewÃ¤hlt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
         for (Mitglied m : mitglieder)
         {
@@ -853,8 +856,7 @@ public class SollbuchungControl extends DruckMailControl
     if (getSollbuchung().getMitglied() != null)
     {
       Mitglied[] mitgliedArray = { getSollbuchung().getMitglied() };
-      mitglied = new SelectInput(mitgliedArray,
-          getSollbuchung().getMitglied());
+      mitglied = new SelectInput(mitgliedArray, getSollbuchung().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -863,14 +865,14 @@ public class SollbuchungControl extends DruckMailControl
           (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
       if (mitglied instanceof SelectInput)
       {
-        ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
+        ((SelectInput) mitglied).setPleaseChoose("Bitte auswÃ¤hlen");
         ((SelectInput) mitglied).setPreselected(null);
       }
     }
     mitglied.setMandatory(true);
     return mitglied;
   }
-  
+
   public Input getZahler() throws RemoteException
   {
     if (zahler != null)
@@ -882,7 +884,7 @@ public class SollbuchungControl extends DruckMailControl
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     if (zahler instanceof SelectInput)
     {
-      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswÃ¤hlen");
       if (getSollbuchung().getZahler() == null)
       {
         ((SelectInput) zahler).setPreselected(null);
@@ -909,7 +911,7 @@ public class SollbuchungControl extends DruckMailControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlter Zahler kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -920,7 +922,7 @@ public class SollbuchungControl extends DruckMailControl
     if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
-          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung Ã¼ber diese Sollbuchung erstellt.");
       return true;
     }
     return false;

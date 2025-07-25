@@ -42,7 +42,7 @@ public class SplitBuchungDeleteAction implements Action
   {
     if (context == null || !(context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      throw new ApplicationException("Keine Buchung ausgewÃ¤hlt");
     }
     try
     {
@@ -60,7 +60,7 @@ public class SplitBuchungDeleteAction implements Action
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Buchung.";
+      String fehler = "Fehler beim LÃ¶schen der Buchung.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

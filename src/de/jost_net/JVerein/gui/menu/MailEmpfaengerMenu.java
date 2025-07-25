@@ -25,7 +25,7 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
- * Kontext-Menu zur MailEmpf‰nger-Auswahl.
+ * Kontext-Menu zur MailEmpf√§nger-Auswahl.
  */
 public class MailEmpfaengerMenu extends ContextMenu
 {

@@ -29,7 +29,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Arbeitseins‰tze den Mitgliedern zuordnen.
+ * Arbeitseins√§tze den Mitgliedern zuordnen.
  */
 public class MitgliedArbeitseinsatzZuordnungAction implements Action
 {
@@ -40,7 +40,7 @@ public class MitgliedArbeitseinsatzZuordnungAction implements Action
     if (context == null
         || (!(context instanceof Mitglied) && !(context instanceof Mitglied[])))
     {
-      throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("Kein Mitglied ausgew√§hlt");
     }
     Mitglied[] m = null;
     if (context instanceof Mitglied)
@@ -57,7 +57,7 @@ public class MitgliedArbeitseinsatzZuordnungAction implements Action
     try
     {
       Arbeitseinsatz part = maz.open();
-      if(part == null)
+      if (part == null)
         return;
       int count = 0;
       for (Mitglied mit : m)
@@ -72,7 +72,7 @@ public class MitgliedArbeitseinsatzZuordnungAction implements Action
         count++;
       }
       GUI.getStatusBar().setSuccessText(
-          String.format("%d Arbeitseins‰tze gespeichert.", count));
+          String.format("%d Arbeitseins√§tze gespeichert.", count));
     }
     catch (ApplicationException e)
     {

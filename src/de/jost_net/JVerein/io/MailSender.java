@@ -207,10 +207,10 @@ public class MailSender
         props.put("mail.imap.tls", "true");
       }
       props.put("mail.store.protocol", protocol);
-      props.put("mail."+protocol+".host", imapCopyData.getImap_host());
+      props.put("mail." + protocol + ".host", imapCopyData.getImap_host());
       if (imapCopyData.getImap_port() != null)
       {
-        props.put("mail."+protocol+".port", imapCopyData.getImap_port());
+        props.put("mail." + protocol + ".port", imapCopyData.getImap_port());
       }
       this.imapCopyData = imapCopyData;
     }
@@ -225,13 +225,13 @@ public class MailSender
   /**
    * 
    * @param email
-   *          Empf‰nger Adresse
+   *          Empf√§nger Adresse
    * @param subject
    *          Betreff
    * @param text
    *          Nachrittext
    * @param anhang
-   *          Anh‰nge als TreeSet
+   *          Anh√§nge als TreeSet
    * @throws MessagingException
    *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
    * @throws ApplicationException
@@ -249,13 +249,13 @@ public class MailSender
   /**
    * 
    * @param emailadresses
-   *          Empf‰nger Adresse als Array
+   *          Empf√§nger Adresse als Array
    * @param subject
    *          Betreff
    * @param text
    *          Nachrittext
    * @param anhang
-   *          Anh‰nge als TreeSet
+   *          Anh√§nge als TreeSet
    * @throws MessagingException
    *           wird beim Fehler beim Mailvorbereiten oder Versand geworfen
    * @throws ApplicationException
@@ -314,7 +314,7 @@ public class MailSender
         MimeBodyPart altMessageBodyPart = new MimeBodyPart();
         altMessageBodyPart.addHeader("Content-Encoding", UTF_8);
         altMessageBodyPart.setText(
-            "Um diese Email richtig darstellen zu kˆnnen, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
+            "Um diese Email richtig darstellen zu k√∂nnen, erlauben Sie bitte in Ihrem Emailprogramm die Darstellung von HTML-Emails.\n"
                 + text.replaceAll(
                     "(?s)<\\s*?(script|Script|SCRIPT).*?>.*?</\\s*?(script|Script|SCRIPT)\\s*?>",
                     "")
@@ -413,8 +413,8 @@ public class MailSender
     {
       try
       {
-        return MimetypesFileTypeMap.getDefaultFileTypeMap().getContentType(
-            ma.getDateiname());
+        return MimetypesFileTypeMap.getDefaultFileTypeMap()
+            .getContentType(ma.getDateiname());
       }
       catch (RemoteException e)
       {

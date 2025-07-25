@@ -74,7 +74,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
         control.getZeigeZahlungInTabCheckbox());
 
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
-      leftTab.addLabelPair("Zeige Zusatzbetr‰ge in Tab",
+      leftTab.addLabelPair("Zeige Zusatzbetr√§ge in Tab",
           control.getZeigeZusatzbetrageInTabCheckbox());
 
     leftTab.addLabelPair("Zeige Mitgliedskonto in Tab",
@@ -98,7 +98,7 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
         control.getZeigeZusatzfelderInTabCheckbox());
 
     if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
-      leftTab.addLabelPair("Zeige Lehrg‰nge in Tab",
+      leftTab.addLabelPair("Zeige Lehrg√§nge in Tab",
           control.getZeigeLehrgaengeInTabCheckbox());
 
     if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))

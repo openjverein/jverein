@@ -42,8 +42,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularfeldControl extends FormularPartControl
-    implements Savable
+public class FormularfeldControl extends FormularPartControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -319,6 +318,7 @@ public class FormularfeldControl extends FormularPartControl
   /**
    * This method stores the project using the current values.
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

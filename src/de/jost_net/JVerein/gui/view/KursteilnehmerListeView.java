@@ -44,11 +44,11 @@ public class KursteilnehmerListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Verwendungszweck", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getEingabedatumvon());
     middle.addInput(control.getEingabedatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getAbbuchungsdatumvon());
     right.addInput(control.getAbbuchungsdatumbis());
@@ -69,10 +69,10 @@ public class KursteilnehmerListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Eingabe Datumsbereich zurück");
-    vor1.setToolTipText("Eingabe Datumsbereich vowärts");
-    zurueck2.setToolTipText("Abbuchung Datumsbereich zurück");
-    vor2.setToolTipText("Abbuchung Datumsbereich vowärts");
+    zurueck1.setToolTipText("Eingabe Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Eingabe Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Abbuchung Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Abbuchung Datumsbereich vowÃ¤rts");
 
     control.getKursteilnehmerTable().paint(getParent());
     ButtonArea buttons = new ButtonArea();
@@ -80,8 +80,7 @@ public class KursteilnehmerListeView extends AbstractView
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class),
-        null, false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

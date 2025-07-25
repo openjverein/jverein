@@ -31,7 +31,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Jahresabschlusses
+ * LÃ¶schen eines Jahresabschlusses
  */
 public class JahresabschlussDeleteAction implements Action
 {
@@ -46,7 +46,7 @@ public class JahresabschlussDeleteAction implements Action
     }
     if (context == null || !(context instanceof Jahresabschluss))
     {
-      throw new ApplicationException("Keinen Jahresabschluss ausgewählt");
+      throw new ApplicationException("Keinen Jahresabschluss ausgewÃ¤hlt");
     }
 
     try
@@ -62,12 +62,12 @@ public class JahresabschlussDeleteAction implements Action
       if (it1.hasNext())
       {
         throw new ApplicationException(
-            "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
+            "Jahresabschluss kann nicht gelÃ¶scht werden. Es existieren neuere AbschlÃ¼sse!");
       }
-      
+
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Jahresabschluss löschen");
-      d.setText("Wollen Sie diesen Jahresabschluss wirklich löschen?");
+      d.setTitle("Jahresabschluss lÃ¶schen");
+      d.setText("Wollen Sie diesen Jahresabschluss wirklich lÃ¶schen?");
 
       try
       {
@@ -81,7 +81,7 @@ public class JahresabschlussDeleteAction implements Action
       {
         Logger.error(
 
-            "Fehler beim Löschen des Jahresabschlusses", e);
+            "Fehler beim LÃ¶schen des Jahresabschlusses", e);
         return;
       }
       a.delete();
@@ -95,11 +95,11 @@ public class JahresabschlussDeleteAction implements Action
             .createObject(Anfangsbestand.class, a1.getID());
         a2.delete();
       }
-      GUI.getStatusBar().setSuccessText("Jahresabschluss gelöscht.");
+      GUI.getStatusBar().setSuccessText("Jahresabschluss gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Jahresabschlusses";
+      String fehler = "Fehler beim LÃ¶schen des Jahresabschlusses";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

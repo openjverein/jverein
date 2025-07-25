@@ -48,11 +48,12 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgew‰hlt.");
+      throw new ApplicationException("Keine Spendenbescheinigung ausgew√§hlt.");
     }
     else if (context instanceof Spendenbescheinigung)
     {
-      bescheinigungen = new Spendenbescheinigung[] {(Spendenbescheinigung) context};
+      bescheinigungen = new Spendenbescheinigung[] {
+          (Spendenbescheinigung) context };
     }
     else if (context instanceof Spendenbescheinigung[])
     {
@@ -64,12 +65,13 @@ public class SpendenbescheinigungEmailAction implements Action
     }
     try
     {
-      for(Spendenbescheinigung spb:bescheinigungen)
+      for (Spendenbescheinigung spb : bescheinigungen)
       {
         Mitglied member = spb.getMitglied();
         if (member == null)
         {
-          String fehler = spb.getZeile1() + spb.getZeile2() + ": Kein Mitglied zugewiesen";
+          String fehler = spb.getZeile1() + spb.getZeile2()
+              + ": Kein Mitglied zugewiesen";
           GUI.getStatusBar().setErrorText(fehler);
           Logger.error(fehler);
           return;
@@ -77,7 +79,8 @@ public class SpendenbescheinigungEmailAction implements Action
         mitglieder.add(spb.getMitglied());
       }
       MitgliedMailSendenAction mailSendenAction = new MitgliedMailSendenAction();
-      mailSendenAction.handleAction(mitglieder.toArray(new Mitglied[mitglieder.size()]));
+      mailSendenAction
+          .handleAction(mitglieder.toArray(new Mitglied[mitglieder.size()]));
     }
     catch (RemoteException e)
     {

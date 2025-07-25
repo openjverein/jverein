@@ -31,10 +31,10 @@ public class Update0425 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("buchungsart",
-      new Column("steuersatz", COLTYPE.DOUBLE, 17, "0", false, false)));
-    execute(addColumn("buchungsart",
-      new Column("steuer_buchungsart", COLTYPE.VARCHAR, 10, null, false, false)));
+        new Column("steuersatz", COLTYPE.DOUBLE, 17, "0", false, false)));
+    execute(addColumn("buchungsart", new Column("steuer_buchungsart",
+        COLTYPE.VARCHAR, 10, null, false, false)));
     execute(addColumn("buchung",
-      new Column("dependencyid", COLTYPE.INTEGER, 10, "-1", false, false)));
+        new Column("dependencyid", COLTYPE.INTEGER, 10, "-1", false, false)));
   }
 }

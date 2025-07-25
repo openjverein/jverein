@@ -40,8 +40,7 @@ public class EigenschaftGruppeListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFTGRUPPE, false, "question-circle.png");
     buttons.addButton("Neu", new NewAction(EigenschaftGruppeDetailView.class,
-        EigenschaftGruppe.class), null,
-        false, "document-new.png");
+        EigenschaftGruppe.class), null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

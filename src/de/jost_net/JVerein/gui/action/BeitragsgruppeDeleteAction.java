@@ -32,7 +32,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen einer Beitragsgruppe
+ * LÃ¶schen einer Beitragsgruppe
  */
 public class BeitragsgruppeDeleteAction implements Action
 {
@@ -46,7 +46,7 @@ public class BeitragsgruppeDeleteAction implements Action
     }
     if (context == null || !(context instanceof Beitragsgruppe))
     {
-      throw new ApplicationException("Keine Beitragsgruppe ausgewählt");
+      throw new ApplicationException("Keine Beitragsgruppe ausgewÃ¤hlt");
     }
     try
     {
@@ -55,7 +55,7 @@ public class BeitragsgruppeDeleteAction implements Action
       {
         return;
       }
-      if(bg.getSekundaer())
+      if (bg.getSekundaer())
       {
         DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);
@@ -63,7 +63,7 @@ public class BeitragsgruppeDeleteAction implements Action
         if (sek.size() > 0)
         {
           throw new ApplicationException(String.format(
-              "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser sekundären Beitragsgruppe zugeordnet.",
+              "Beitragsgruppe '%s' kann nicht gelÃ¶scht werden. %d Mitglied(er) sind dieser sekundÃ¤ren Beitragsgruppe zugeordnet.",
               bg.getBezeichnung(), sek.size()));
         }
       }
@@ -75,7 +75,7 @@ public class BeitragsgruppeDeleteAction implements Action
         if (mitgl.size() > 0)
         {
           throw new ApplicationException(String.format(
-              "Beitragsgruppe '%s' kann nicht gelöscht werden. %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
+              "Beitragsgruppe '%s' kann nicht gelÃ¶scht werden. %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
               bg.getBezeichnung(), mitgl.size()));
         }
       }
@@ -85,12 +85,12 @@ public class BeitragsgruppeDeleteAction implements Action
       if (nextbg.size() > 0)
       {
         throw new ApplicationException(String.format(
-            "Beitragsgruppe '%s' kann nicht gelöscht werden. Bei %d Mitglied(er) ist diese Beitragsgruppe als zukünftige Beitragsgrupe hinterlegt.",
+            "Beitragsgruppe '%s' kann nicht gelÃ¶scht werden. Bei %d Mitglied(er) ist diese Beitragsgruppe als zukÃ¼nftige Beitragsgrupe hinterlegt.",
             bg.getBezeichnung(), nextbg.size()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Beitragsgruppe löschen");
-      d.setText("Wollen Sie diese Beitragsgruppe wirklich löschen?");
+      d.setTitle("Beitragsgruppe lÃ¶schen");
+      d.setText("Wollen Sie diese Beitragsgruppe wirklich lÃ¶schen?");
 
       try
       {
@@ -102,16 +102,16 @@ public class BeitragsgruppeDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error(String.format("Fehler beim Löschen der Beitragsgruppe: %s",
+        Logger.error(String.format("Fehler beim LÃ¶schen der Beitragsgruppe: %s",
             new Object[] { e.getMessage() }));
         return;
       }
       bg.delete();
-      GUI.getStatusBar().setSuccessText("Beitragsgruppe gelöscht.");
+      GUI.getStatusBar().setSuccessText("Beitragsgruppe gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Beitragsgruppe";
+      String fehler = "Fehler beim LÃ¶schen der Beitragsgruppe";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

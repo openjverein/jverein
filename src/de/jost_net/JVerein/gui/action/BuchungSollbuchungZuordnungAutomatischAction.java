@@ -29,14 +29,17 @@ import de.willuhn.util.ApplicationException;
 public class BuchungSollbuchungZuordnungAutomatischAction implements Action
 {
   private DateInput vondatum;
+
   private DateInput bisdatum;
 
-  public BuchungSollbuchungZuordnungAutomatischAction(DateInput vondatum, DateInput bisdatum) {
+  public BuchungSollbuchungZuordnungAutomatischAction(DateInput vondatum,
+      DateInput bisdatum)
+  {
     this.vondatum = vondatum;
     this.bisdatum = bisdatum;
   }
 
- /**
+  /**
    * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
    */
   @Override
@@ -44,7 +47,8 @@ public class BuchungSollbuchungZuordnungAutomatischAction implements Action
   {
     try
     {
-      BuchungenSollbuchungZuordnungDialog d = new BuchungenSollbuchungZuordnungDialog((Date)vondatum.getValue(), (Date)bisdatum.getValue());
+      BuchungenSollbuchungZuordnungDialog d = new BuchungenSollbuchungZuordnungDialog(
+          (Date) vondatum.getValue(), (Date) bisdatum.getValue());
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -58,7 +62,8 @@ public class BuchungSollbuchungZuordnungAutomatischAction implements Action
     catch (Exception e)
     {
       Logger.error("error while assign transfers to members", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Zuordnen von Buchungen zu Sollbuchungen");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Zuordnen von Buchungen zu Sollbuchungen");
     }
   }
 

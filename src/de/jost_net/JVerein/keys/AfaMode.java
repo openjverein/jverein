@@ -26,7 +26,6 @@ public class AfaMode
   public static final int AUTO = 2;
 
   public static final int ANGEPASST = 3;
-  
 
   private int afamode;
 

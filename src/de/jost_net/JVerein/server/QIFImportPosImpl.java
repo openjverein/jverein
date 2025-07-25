@@ -72,8 +72,8 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     {
       return null;
     }
-    return (QIFImportHead) Einstellungen.getDBService().createObject(
-        QIFImportHead.class, headId.toString());
+    return (QIFImportHead) Einstellungen.getDBService()
+        .createObject(QIFImportHead.class, headId.toString());
   }
 
   @Override
@@ -211,7 +211,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
       if (getGesperrt().booleanValue())
         return null;
       if (getMitgliedZuordenbar().booleanValue())
-        return "Buchung im Mitgliedskonto möglich";
+        return "Buchung im Mitgliedskonto mÃ¶glich";
       return " - ";
     }
     if (VIEW_SALDO.equals(fieldName))
@@ -225,7 +225,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   @Override
   public void setGesperrt(Boolean sperren) throws RemoteException
   {
-    if (null == sperren || sperren.booleanValue() == false)
+    if (null == sperren || !sperren.booleanValue())
       setAttribute(COL_SPERRE, SPERRE_NEIN);
     else
       setAttribute(COL_SPERRE, SPERRE_JA);
@@ -244,7 +244,7 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
   @Override
   public void setMitgliedZuordenbar(Boolean zuordenbar) throws RemoteException
   {
-    if (null == zuordenbar || zuordenbar.booleanValue() == false)
+    if (null == zuordenbar || !zuordenbar.booleanValue())
       setAttribute(COL_MITGLIEDBAR, MITGLIEDBAR_NEIN);
     else
       setAttribute(COL_MITGLIEDBAR, MITGLIEDBAR_JA);
@@ -290,8 +290,8 @@ public class QIFImportPosImpl extends AbstractDBObject implements QIFImportPos
     }
     catch (RemoteException ex)
     {
-      throw new ApplicationException(
-          "Defaultwerte können nicht gesetzt werden", ex);
+      throw new ApplicationException("Defaultwerte kÃ¶nnen nicht gesetzt werden",
+          ex);
     }
   }
 

@@ -31,7 +31,7 @@ public class AltersgruppenParser
     ArrayList<VonBis> elemente;
     if (altersgruppe == null)
     {
-      throw new RuntimeException("Altersgruppe(n) müssen gefüllt sein!");
+      throw new RuntimeException("Altersgruppe(n) mÃ¼ssen gefÃ¼llt sein!");
     }
     // Schritt 1: Zerlegen in die einzelnen Gruppen
     StringTokenizer stt = new StringTokenizer(altersgruppe, ",");
@@ -49,7 +49,7 @@ public class AltersgruppenParser
       if (stt.countTokens() != 2)
       {
         throw new RuntimeException(String.format(
-            "Ungültige Altersgruppe: %s \nDie Eingaben müssen folgendes Format haben: 1-6,7-13,14-22,23-50",
+            "UngÃ¼ltige Altersgruppe: %s \nDie Eingaben mÃ¼ssen folgendes Format haben: 1-6,7-13,14-22,23-50",
             gruppen.get(i)));
       }
       try

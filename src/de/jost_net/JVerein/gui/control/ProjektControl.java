@@ -38,8 +38,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektControl extends FilterControl
-    implements Savable
+public class ProjektControl extends FilterControl implements Savable
 {
 
   private JVereinTablePart projektList;
@@ -89,7 +88,7 @@ public class ProjektControl extends FilterControl
     }
 
     Date d = getProjekt().getStartDatum();
-    if (d.equals( Einstellungen.NODATE ))
+    if (d.equals(Einstellungen.NODATE))
     {
       d = null;
     }
@@ -102,19 +101,20 @@ public class ProjektControl extends FilterControl
   {
     if (endeDatum != null)
     {
-        return endeDatum;
+      return endeDatum;
     }
 
     Date d = getProjekt().getEndeDatum();
-    if (d.equals( Einstellungen.NODATE ))
+    if (d.equals(Einstellungen.NODATE))
     {
-        d = null;
+      d = null;
     }
     endeDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     endeDatum.setName("Endedatum");
     return endeDatum;
   }
 
+  @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Projekt p = getProjekt();
@@ -129,6 +129,7 @@ public class ProjektControl extends FilterControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -164,7 +165,8 @@ public class ProjektControl extends FilterControl
     return projektList;
   }
 
-  public void TabRefresh() 
+  @Override
+  public void TabRefresh()
   {
     if (projektList == null)
     {
@@ -190,14 +192,14 @@ public class ProjektControl extends FilterControl
   {
     DBIterator<Projekt> projekte = Einstellungen.getDBService()
         .createList(Projekt.class);
-    
+
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
     {
       String tmpSuchtext = (String) getSuchtext().getValue();
       if (tmpSuchtext.length() > 0)
       {
         projekte.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)

@@ -72,8 +72,8 @@ public interface DBSupport extends Serializable
    * @throws ApplicationException
    *           wenn die Datenbank-Konsistenz nicht gewaehrleistet ist.
    */
-  public void checkConsistency(Connection conn) throws RemoteException,
-      ApplicationException;
+  public void checkConsistency(Connection conn)
+      throws RemoteException, ApplicationException;
 
   /**
    * Prueft die Datenbankverbindung.

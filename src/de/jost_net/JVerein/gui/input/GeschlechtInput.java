@@ -62,7 +62,7 @@ public class GeschlechtInput extends SelectNoScrollInput
     if (null == o)
     {
       return null;
-    } 
+    }
     else
     {
       return o.geschlecht;
@@ -70,7 +70,7 @@ public class GeschlechtInput extends SelectNoScrollInput
   }
 
   /**
-   * Liefert das gewählte Objekt ohne Default-Wert zurück
+   * Liefert das gewÃ¤hlte Objekt ohne Default-Wert zurÃ¼ck
    */
   public GeschlechtObject getSelectedValue()
   {
@@ -113,7 +113,7 @@ public class GeschlechtInput extends SelectNoScrollInput
 
       if (geschlecht.equals(MAENNLICH))
       {
-        this.label = "Männlich";
+        this.label = "MÃ¤nnlich";
       }
       else if (geschlecht.equals(WEIBLICH))
       {

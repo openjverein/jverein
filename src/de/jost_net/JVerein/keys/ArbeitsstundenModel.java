@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schlüssel Einstellung.Arbeitsmodel Diese Klasse hilft beim Einstellen wie mit
+ * SchlÃ¼ssel Einstellung.Arbeitsmodel Diese Klasse hilft beim Einstellen wie mit
  * Arbeitsstunden umgegangen werden soll
  */
 public class ArbeitsstundenModel

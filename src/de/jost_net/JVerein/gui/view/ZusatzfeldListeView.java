@@ -40,9 +40,8 @@ public class ZusatzfeldListeView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
     buttons.addButton("Neu",
-        new NewAction(ZusatzfeldDetailView.class, Felddefinition.class),
-        null, false,
-        "document-new.png");
+        new NewAction(ZusatzfeldDetailView.class, Felddefinition.class), null,
+        false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

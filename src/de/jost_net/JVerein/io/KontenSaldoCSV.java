@@ -48,7 +48,7 @@ public class KontenSaldoCSV implements ISaldoExport
   private static CellProcessor[] getProcessors()
   {
 
-    final CellProcessor[] processors = new CellProcessor[] { 
+    final CellProcessor[] processors = new CellProcessor[] {
         new ConvertNullTo(""), // Kontonummer
         new ConvertNullTo(""), // Bezeichnung
         new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)), // Anfangsbestand

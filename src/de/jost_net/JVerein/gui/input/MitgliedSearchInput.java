@@ -31,7 +31,7 @@ public class MitgliedSearchInput extends SearchInput
   {
     super();
   }
-  
+
   @Override
   @SuppressWarnings("rawtypes")
   public List startSearch(String text)

@@ -35,9 +35,8 @@ public class Update0471 extends AbstractDDLUpdate
   {
     execute(addColumn("einstellung",
         new Column("projekteanzeigen", COLTYPE.BOOLEAN, 0, "0", false, false)));
-    
+
     execute("UPDATE einstellung SET projekteanzeigen = CASE "
-        + "WHEN EXISTS (SELECT 1 FROM projekt) THEN 1 ELSE 0 "
-        + "END;");
+        + "WHEN EXISTS (SELECT 1 FROM projekt) THEN 1 ELSE 0 " + "END;");
   }
 }

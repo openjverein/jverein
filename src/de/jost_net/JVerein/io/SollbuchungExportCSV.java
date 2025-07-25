@@ -135,12 +135,12 @@ public class SollbuchungExportCSV extends SollbuchungExport
 
       for (Sollbuchung sollbuch : sollbuchungen)
       {
-        Map<String, Object> mp = new MitgliedMap().getMap(sollbuch.getMitglied(),
-            null);
+        Map<String, Object> mp = new MitgliedMap()
+            .getMap(sollbuch.getMitglied(), null);
         map = new SollbuchungMap().getMap(sollbuch, mp);
         writer.write(map, header, processors);
-        monitor.log(
-            "Export: " + Adressaufbereitung.getNameVorname(sollbuch.getMitglied()));
+        monitor.log("Export: "
+            + Adressaufbereitung.getNameVorname(sollbuch.getMitglied()));
       }
       writer.close();
     }

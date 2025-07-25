@@ -67,7 +67,7 @@ public abstract class StatistikJahrgaengeExport implements Exporter
       Logger.error("Datum kann nicht geparsed werden: ", e);
     }
     /*
-     * Teil 1: natürliche Personen
+     * Teil 1: natÃ¼rliche Personen
      */
     DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
         .createList(Mitglied.class);

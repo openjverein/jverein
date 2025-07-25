@@ -25,10 +25,10 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Interface für alle Mitgliederauswertungen
+ * Interface fÃ¼r alle Mitgliederauswertungen
  * 
  * Die implementierende Klasse muss das MitgliedControl im Konstruktor
- * übergeben.
+ * Ã¼bergeben.
  * 
  * @author heiner
  * 
@@ -58,13 +58,13 @@ public interface IAuswertung
       throws ApplicationException;
 
   /**
-   * Bezeichnung der Auswertung für die Drop-Down-Liste
+   * Bezeichnung der Auswertung fÃ¼r die Drop-Down-Liste
    */
   @Override
   public String toString();
 
   /**
-   * Datei nach der Erzeugung öffnen
+   * Datei nach der Erzeugung Ã¶ffnen
    */
   public boolean openFile();
 }

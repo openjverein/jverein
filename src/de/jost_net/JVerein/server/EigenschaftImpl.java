@@ -75,7 +75,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     }
     if (getEigenschaftGruppe() == null)
     {
-      throw new ApplicationException("Bitte Eigenschaftengruppe ausw‰hlen");
+      throw new ApplicationException("Bitte Eigenschaftengruppe ausw√§hlen");
     }
   }
 

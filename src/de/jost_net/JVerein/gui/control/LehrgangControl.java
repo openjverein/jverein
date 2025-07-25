@@ -49,8 +49,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangControl extends FilterControl
-    implements Savable
+public class LehrgangControl extends FilterControl implements Savable
 {
 
   private JVereinTablePart lehrgaengeList;
@@ -66,9 +65,8 @@ public class LehrgangControl extends FilterControl
   private TextInput ergebnis = null;
 
   private Lehrgang lehrg = null;
-  
-  private AbstractInput mitglied;
 
+  private AbstractInput mitglied;
 
   public LehrgangControl(AbstractView view)
   {
@@ -96,8 +94,10 @@ public class LehrgangControl extends FilterControl
     DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
     it.setOrder("order by bezeichnung");
-    lehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, getLehrgang().getLehrgangsart());
-    lehrgangsart.setPleaseChoose("Bitte auswählen");
+    lehrgangsart = new SelectInput(
+        it != null ? PseudoIterator.asList(it) : null,
+        getLehrgang().getLehrgangsart());
+    lehrgangsart.setPleaseChoose("Bitte auswÃ¤hlen");
     lehrgangsart.addListener(new Listener()
     {
 
@@ -135,7 +135,7 @@ public class LehrgangControl extends FilterControl
 
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Datum");
-    this.von.setText("Bitte (Beginn-)Datum wählen");
+    this.von.setText("Bitte (Beginn-)Datum wÃ¤hlen");
     von.setMandatory(true);
     return von;
   }
@@ -151,7 +151,7 @@ public class LehrgangControl extends FilterControl
 
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Datum");
-    this.bis.setText("Bitte Ende-Datum wählen");
+    this.bis.setText("Bitte Ende-Datum wÃ¤hlen");
     return bis;
   }
 
@@ -196,6 +196,7 @@ public class LehrgangControl extends FilterControl
     return l;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -224,6 +225,7 @@ public class LehrgangControl extends FilterControl
     }
   }
 
+  @Override
   public void TabRefresh()
   {
     try
@@ -252,15 +254,15 @@ public class LehrgangControl extends FilterControl
         .createList(Lehrgang.class);
     lehrgaenge.join("mitglied");
     lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
-    
+
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        lehrgaenge.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        lehrgaenge.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -316,7 +318,7 @@ public class LehrgangControl extends FilterControl
     }
     return lehrgaengeList;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -326,7 +328,7 @@ public class LehrgangControl extends FilterControl
 
     if (getLehrgang().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getLehrgang().getMitglied()};
+      Mitglied[] mitgliedArray = { getLehrgang().getMitglied() };
       mitglied = new SelectInput(mitgliedArray, getLehrgang().getMitglied());
       mitglied.setEnabled(false);
     }

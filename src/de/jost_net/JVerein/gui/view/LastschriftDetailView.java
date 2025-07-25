@@ -53,7 +53,7 @@ public class LastschriftDetailView extends AbstractView
     left.addInput(control.getVorname());
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getPLZ());
     right.addInput(control.getOrt());

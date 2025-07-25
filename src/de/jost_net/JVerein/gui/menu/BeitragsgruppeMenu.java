@@ -38,7 +38,7 @@ public class BeitragsgruppeMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(BeitragsgruppeDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new BeitragsgruppeDeleteAction(), "user-trash-full.png"));
   }
 }

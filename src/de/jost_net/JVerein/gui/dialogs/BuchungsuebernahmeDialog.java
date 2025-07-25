@@ -29,7 +29,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<Boolean>
 {
 
   Boolean start = false;
-  
+
   public BuchungsuebernahmeDialog(int position)
   {
     super(position);
@@ -61,7 +61,7 @@ public class BuchungsuebernahmeDialog extends AbstractDialog<Boolean>
       @Override
       public void handleAction(Object context)
       {
-       close();
+        close();
       }
     }, null, false, "process-stop.png");
     buttons.paint(parent);

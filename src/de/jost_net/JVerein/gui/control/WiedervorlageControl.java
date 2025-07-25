@@ -43,8 +43,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageControl extends FilterControl
-    implements Savable
+public class WiedervorlageControl extends FilterControl implements Savable
 {
 
   private DateInput datum = null;
@@ -52,11 +51,11 @@ public class WiedervorlageControl extends FilterControl
   private Input vermerk = null;
 
   private DateInput erledigung = null;
-  
+
   private AbstractInput mitglied;
 
   private Wiedervorlage wvl = null;
-  
+
   private WiedervorlageList wiedervorlageList = null;
 
   public WiedervorlageControl(AbstractView view)
@@ -87,7 +86,7 @@ public class WiedervorlageControl extends FilterControl
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Wiedervorlagedatum w‰hlen");
+    this.datum.setText("Bitte Wiedervorlagedatum w√§hlen");
     this.datum.addListener(new Listener()
     {
 
@@ -131,7 +130,7 @@ public class WiedervorlageControl extends FilterControl
 
     this.erledigung = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.erledigung.setTitle("Erledigung");
-    this.erledigung.setText("Bitte Erledigungsdatum w‰hlen");
+    this.erledigung.setText("Bitte Erledigungsdatum w√§hlen");
     this.erledigung.addListener(new Listener()
     {
 
@@ -147,7 +146,7 @@ public class WiedervorlageControl extends FilterControl
     });
     return erledigung;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -157,8 +156,9 @@ public class WiedervorlageControl extends FilterControl
 
     if (getWiedervorlage().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getWiedervorlage().getMitglied()};
-      mitglied = new SelectInput(mitgliedArray, getWiedervorlage().getMitglied());
+      Mitglied[] mitgliedArray = { getWiedervorlage().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray,
+          getWiedervorlage().getMitglied());
       mitglied.setEnabled(false);
     }
     else
@@ -180,6 +180,7 @@ public class WiedervorlageControl extends FilterControl
     return w;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -206,14 +207,15 @@ public class WiedervorlageControl extends FilterControl
       throw new ApplicationException(fehler, e);
     }
   }
-  
+
   public Part getWiedervorlageList() throws RemoteException
   {
     wiedervorlageList = new WiedervorlageList(
         new StartViewAction(WiedervorlageListeView.class), this);
     return wiedervorlageList.getWiedervorlageList();
   }
-  
+
+  @Override
   public void TabRefresh()
   {
     if (wiedervorlageList == null)
@@ -222,5 +224,5 @@ public class WiedervorlageControl extends FilterControl
     }
     wiedervorlageList.refresh();
   }
-  
+
 }

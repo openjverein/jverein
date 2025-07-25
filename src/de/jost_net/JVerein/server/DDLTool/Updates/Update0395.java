@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -42,8 +42,8 @@ public class Update0395 extends AbstractDDLUpdate
   {
 
     // Ein Abrechnungslauf kann abgeschlossen werden, damit
-    // er nicht mehr über die Oberfläche gelöscht werden kann
-    // Zusätzlich gibt es noch ein neues Bemerkungsfeld
+    // er nicht mehr Ã¼ber die OberflÃ¤che gelÃ¶scht werden kann
+    // ZusÃ¤tzlich gibt es noch ein neues Bemerkungsfeld
 
     execute(addColumn("abrechnungslauf",
         new Column("bemerkung", COLTYPE.VARCHAR, 80, null, false, false)));
@@ -51,9 +51,9 @@ public class Update0395 extends AbstractDDLUpdate
     execute(addColumn("abrechnungslauf",
         new Column("abgeschlossen", COLTYPE.BOOLEAN, 0, "FALSE", true, false)));
 
-    // Ein- uns Ausschalten der Abschließen-Funktion ermöglichen
-    // Hat keine Auswirkung auf bereits abhgeschlossene Abrechnungsläufe,
-    // bewirkt nur die Anzeige der Funktion im Kontextmenü
+    // Ein- uns Ausschalten der AbschlieÃŸen-Funktion ermÃ¶glichen
+    // Hat keine Auswirkung auf bereits abhgeschlossene AbrechnungslÃ¤ufe,
+    // bewirkt nur die Anzeige der Funktion im KontextmenÃ¼
     execute(addColumn("einstellung", new Column("abrlabschliessen",
         COLTYPE.BOOLEAN, 0, "FALSE", false, false)));
 

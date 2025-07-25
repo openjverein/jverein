@@ -51,6 +51,7 @@ public class ProjektDetailView extends AbstractDetailView
     buttons.paint(this.getParent());
   }
 
+  @Override
   protected Savable getControl()
   {
     return control;

@@ -31,7 +31,7 @@ public class JVereinKontoInput extends SelectInput
   public JVereinKontoInput() throws RemoteException
   {
     super(init() != null ? PseudoIterator.asList(init()) : null, null);
-    this.setPleaseChoose("Wähle ein JVerein Konto");
+    this.setPleaseChoose("WÃ¤hle ein JVerein Konto");
   }
 
   private static GenericIterator<Konto> init() throws RemoteException
@@ -46,7 +46,7 @@ public class JVereinKontoInput extends SelectInput
   {
     if (null == bean)
       return null;
-    if (bean instanceof Konto == false)
+    if (!(bean instanceof Konto))
       return bean.toString();
 
     try

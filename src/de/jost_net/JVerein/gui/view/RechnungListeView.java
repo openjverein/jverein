@@ -36,14 +36,14 @@ public class RechnungListeView extends AbstractView
 
     RechnungControl control = new RechnungControl(this);
     control.init(RechnungControl.TYP.RECHNUNG.name() + ".", null, null);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getMailauswahl());
-    left.addLabelPair("Ohne Abbucher",control.getOhneAbbucher());
+    left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getDifferenz());
@@ -52,7 +52,7 @@ public class RechnungListeView extends AbstractView
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -63,8 +63,8 @@ public class RechnungListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zurück");
-    vor.setToolTipText("Datumsbereich vowärts");
+    zurueck.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor.setToolTipText("Datumsbereich vowÃ¤rts");
 
     control.getRechnungList().paint(this.getParent());
 

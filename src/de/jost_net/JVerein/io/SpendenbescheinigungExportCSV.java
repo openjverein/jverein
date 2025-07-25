@@ -67,7 +67,7 @@ public class SpendenbescheinigungExportCSV
           "Zeile 7" };
       writer.writeHeader(header);
 
-      // Eintr‰ge
+      // Eintr√§ge
       for (Spendenbescheinigung spb : spbList)
       {
         csvzeile.put(header[0], spb.getBescheinigungsdatum());

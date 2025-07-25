@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe, Leonardo Mörlein
+ * Copyright (c) by Heiner Jostkleigrewe, Leonardo MÃ¶rlein
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -133,7 +133,7 @@ public class SollbuchungPositionControl extends AbstractControl
     Date d = getPosition().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     datum.setMandatory(true);
     return datum;
   }
@@ -146,7 +146,8 @@ public class SollbuchungPositionControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getPosition().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
 
     buchungsart.addListener(new Listener()
     {
@@ -236,6 +237,7 @@ public class SollbuchungPositionControl extends AbstractControl
     return pos;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

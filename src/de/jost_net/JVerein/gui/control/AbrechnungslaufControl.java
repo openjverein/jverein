@@ -49,8 +49,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufControl extends FilterControl
-    implements Savable
+public class AbrechnungslaufControl extends FilterControl implements Savable
 {
 
   private Abrechnungslauf abrl;
@@ -81,7 +80,7 @@ public class AbrechnungslaufControl extends FilterControl
 
   private LabelInput statistiklastschriften;
 
-  public AbrechnungslaufControl(AbstractView view) 
+  public AbrechnungslaufControl(AbstractView view)
   {
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -142,7 +141,7 @@ public class AbrechnungslaufControl extends FilterControl
     }
     faelligkeit = new LabelInput(new JVDateFormatTTMMJJJJ()
         .format(getAbrechnungslauf().getFaelligkeit()));
-    faelligkeit.setName("F‰lligkeit");
+    faelligkeit.setName("F√§lligkeit");
     return faelligkeit;
   }
 
@@ -152,8 +151,8 @@ public class AbrechnungslaufControl extends FilterControl
     {
       return astichtag;
     }
-    astichtag = new LabelInput(new JVDateFormatTTMMJJJJ()
-        .format(getAbrechnungslauf().getStichtag()));
+    astichtag = new LabelInput(
+        new JVDateFormatTTMMJJJJ().format(getAbrechnungslauf().getStichtag()));
     astichtag.setName("Stichtag");
     return astichtag;
   }
@@ -165,7 +164,7 @@ public class AbrechnungslaufControl extends FilterControl
       return eintrittsdatum;
     }
     Date ed = getAbrechnungslauf().getEintrittsdatum();
-    if(ed.equals(Einstellungen.NODATE))
+    if (ed.equals(Einstellungen.NODATE))
       eintrittsdatum = new LabelInput(null);
     else
       eintrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
@@ -180,7 +179,7 @@ public class AbrechnungslaufControl extends FilterControl
       return austrittsdatum;
     }
     Date ed = getAbrechnungslauf().getAustrittsdatum();
-    if(ed.equals(Einstellungen.NODATE))
+    if (ed.equals(Einstellungen.NODATE))
       austrittsdatum = new LabelInput(null);
     else
       austrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
@@ -208,7 +207,7 @@ public class AbrechnungslaufControl extends FilterControl
     String zs = "";
     if (getAbrechnungslauf().getZusatzbetraege())
     {
-      zs += "Zusatzbetr‰ge ";
+      zs += "Zusatzbetr√§ge ";
     }
     if (getAbrechnungslauf().getKursteilnehmer())
     {
@@ -321,12 +320,13 @@ public class AbrechnungslaufControl extends FilterControl
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
-    // Es kann nur die Bemerkung ver‰ndert werden
+    // Es kann nur die Bemerkung ver√§ndert werden
     Abrechnungslauf al = getAbrechnungslauf();
     al.setBemerkung((String) getBemerkung().getValue());
     return al;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -367,7 +367,7 @@ public class AbrechnungslaufControl extends FilterControl
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Modus", "modus",
           new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
-      abrechnungslaufList.addColumn("F‰lligkeit", "faelligkeit",
+      abrechnungslaufList.addColumn("F√§lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       abrechnungslaufList.addColumn("Stichtag", "stichtag",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -378,7 +378,7 @@ public class AbrechnungslaufControl extends FilterControl
       abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
       {
-        abrechnungslaufList.addColumn("Zusatzbetr‰ge", "zusatzbetraege",
+        abrechnungslaufList.addColumn("Zusatzbetr√§ge", "zusatzbetraege",
             new JaNeinFormatter());
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
@@ -406,7 +406,8 @@ public class AbrechnungslaufControl extends FilterControl
     }
     return abrechnungslaufList;
   }
-  
+
+  @Override
   public void TabRefresh()
   {
     if (abrechnungslaufList == null)

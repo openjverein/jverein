@@ -30,7 +30,7 @@ public class JubilaeenView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jubil‰en");
+    GUI.getView().setTitle("Jubil√§en");
 
     final MitgliedControl control = new MitgliedControl(this);
 

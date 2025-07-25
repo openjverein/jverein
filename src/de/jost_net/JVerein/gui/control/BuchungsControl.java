@@ -124,8 +124,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class BuchungsControl extends VorZurueckControl
-    implements Savable
+public class BuchungsControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -160,10 +159,10 @@ public class BuchungsControl extends VorZurueckControl
 
   private TextAreaInput kommentar;
 
-  // Definition für beide Auswahlvarianten (SelectInput und
+  // Definition fÃ¼r beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
-  
+
   private SelectInput buchungsklasse;
 
   private SelectInput projekt;
@@ -183,7 +182,7 @@ public class BuchungsControl extends VorZurueckControl
   private TextInput suchtext = null;
 
   private TextInput suchbetrag = null;
-  
+
   private TextInput mitglied = null;
 
   private SelectInput suchsteuer;
@@ -207,26 +206,27 @@ public class BuchungsControl extends VorZurueckControl
   public static final String SUCHSTEUER = "suchsteuer";
 
   private Vector<Listener> changeKontoListener = new Vector<>();
-  
+
   protected String settingsprefix = "geldkonto.";
-  
+
   private Kontenfilter kontenfilter = Kontenfilter.ALLE;
-  
+
   private boolean geldkonto = true;
-  
+
   private TreeMap<String, String> params;
 
   public enum Kontenfilter
   {
-    GELDKONTO,  // Beinhaltet Rückstellungen
+    GELDKONTO, // Beinhaltet RÃ¼ckstellungen
     ANLAGEKONTO,
     ALLE
   }
 
   public enum SplitFilter
   {
-    ALLE(0, "Alle"), SPLIT(1, "Nur Splitbuchungen"), HAUPT(2,
-        "Nur Hauptbuchungen");
+    ALLE(0, "Alle"),
+    SPLIT(1, "Nur Splitbuchungen"),
+    HAUPT(2, "Nur Hauptbuchungen");
 
     private String text;
 
@@ -274,10 +274,11 @@ public class BuchungsControl extends VorZurueckControl
   private CheckboxInput ungeprueft;
 
   private SelectInput steuer;
-  
+
   private enum RANGE
   {
-    MONAT, TAG
+    MONAT,
+    TAG
   }
 
   public BuchungsControl(AbstractView view, Kontenfilter kontenfilter)
@@ -324,14 +325,14 @@ public class BuchungsControl extends VorZurueckControl
     if (ib == null)
       b.setIban(null);
     else
-      b.setIban(ib.toUpperCase().replace(" ",""));
+      b.setIban(ib.toUpperCase().replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());
     }
     else
     {
-      // Nötig um für den Check den letzten gesetzten Wert zu löschen
+      // NÃ¶tig um fÃ¼r den Check den letzten gesetzten Wert zu lÃ¶schen
       b.setBetragNull();
     }
     b.setZweck((String) getZweck().getValue());
@@ -492,7 +493,7 @@ public class BuchungsControl extends VorZurueckControl
     Date d = getBuchung().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     datum.setMandatory(true);
     return datum;
   }
@@ -503,7 +504,8 @@ public class BuchungsControl extends VorZurueckControl
     {
       return suchtext;
     }
-    suchtext = new TextInput(settings.getString(settingsprefix + "suchtext", ""), 35);
+    suchtext = new TextInput(
+        settings.getString(settingsprefix + "suchtext", ""), 35);
     return suchtext;
   }
 
@@ -518,10 +520,11 @@ public class BuchungsControl extends VorZurueckControl
     {
       return suchbetrag;
     }
-    suchbetrag = new TextInput(settings.getString(settingsprefix + "suchbetrag", ""));
+    suchbetrag = new TextInput(
+        settings.getString(settingsprefix + "suchbetrag", ""));
     return suchbetrag;
   }
-  
+
   public boolean isSuchBetragAktiv()
   {
     return suchbetrag != null;
@@ -533,7 +536,8 @@ public class BuchungsControl extends VorZurueckControl
     {
       return mitglied;
     }
-    mitglied = new TextInput(settings.getString(settingsprefix + "mitglied", ""), 35);
+    mitglied = new TextInput(
+        settings.getString(settingsprefix + "mitglied", ""), 35);
     return mitglied;
   }
 
@@ -611,8 +615,7 @@ public class BuchungsControl extends VorZurueckControl
   {
     sollbuchung = new SollbuchungAuswahlInput(getBuchung())
         .getSollbuchungAuswahl();
-    sollbuchung.addListener(event ->
-      {
+    sollbuchung.addListener(event -> {
       try
       {
         String name = (String) getName().getValue();
@@ -643,14 +646,12 @@ public class BuchungsControl extends VorZurueckControl
               .getSollbuchungPositionList();
           if (getBuchungsart().getValue() == null && sbpList.size() > 0)
           {
-            getBuchungsart().setValue(
-                sbpList.get(0).getBuchungsart());
+            getBuchungsart().setValue(sbpList.get(0).getBuchungsart());
           }
-          if (isBuchungsklasseActive()
-              && getBuchungsklasse().getValue() == null && sbpList.size() > 0)
+          if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null
+              && sbpList.size() > 0)
           {
-            getBuchungsklasse().setValue(
-                sbpList.get(0).getBuchungsklasse());
+            getBuchungsklasse().setValue(sbpList.get(0).getBuchungsklasse());
           }
           if (getSteuer() != null && getSteuer().getValue() == null
               && sbpList.size() > 0)
@@ -661,8 +662,8 @@ public class BuchungsControl extends VorZurueckControl
       }
       catch (RemoteException e)
       {
-          Logger.error("Fehler", e);
-        }
+        Logger.error("Fehler", e);
+      }
     });
     return sollbuchung;
   }
@@ -695,8 +696,9 @@ public class BuchungsControl extends VorZurueckControl
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-      getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-      (Integer) Einstellungen.getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
+        getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     if (!getBuchung().getSpeicherung())
     {
       buchungsart.setMandatory(true);
@@ -709,8 +711,8 @@ public class BuchungsControl extends VorZurueckControl
         try
         {
           Buchungsart bua = (Buchungsart) buchungsart.getValue();
-          if (buchungsklasse != null && buchungsklasse.getValue() == null &&
-              bua != null)
+          if (buchungsklasse != null && buchungsklasse.getValue() == null
+              && bua != null)
             buchungsklasse.setValue(bua.getBuchungsklasse());
         }
         catch (RemoteException e)
@@ -734,23 +736,23 @@ public class BuchungsControl extends VorZurueckControl
     });
     return buchungsart;
   }
-  
+
   public Input getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null && !buchungsklasse.getControl().isDisposed())
     {
       return buchungsklasse;
     }
-    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklasse,
-        getBuchung().getBuchungsklasse());
-    if (!getBuchung().getSpeicherung() && 
-        (Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getBuchung().getBuchungsklasse());
+    if (!getBuchung().getSpeicherung() && (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       buchungsklasse.setMandatory(true);
     }
     return buchungsklasse;
   }
-  
+
   public boolean isBuchungsklasseActive()
   {
     return buchungsklasse != null;
@@ -770,10 +772,11 @@ public class BuchungsControl extends VorZurueckControl
         "((startdatum is null or startdatum <= ?) and (endedatum is null or endedatum >= ?))",
         new Object[] { buchungsDatum, buchungsDatum });
     list.setOrder("ORDER BY bezeichnung");
-    projekt = new SelectInput(list != null ? PseudoIterator.asList(list) : null, getBuchung().getProjekt());
+    projekt = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+        getBuchung().getProjekt());
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
-    projekt.setPleaseChoose("Bitte auswählen");
+    projekt.setPleaseChoose("Bitte auswÃ¤hlen");
     return projekt;
   }
 
@@ -797,7 +800,7 @@ public class BuchungsControl extends VorZurueckControl
 
   public Button getSammelueberweisungButton()
   {
-    sammelueberweisungButton = new Button("Sammelüberweisung", new Action()
+    sammelueberweisungButton = new Button("SammelÃ¼berweisung", new Action()
     {
 
       @Override
@@ -865,7 +868,7 @@ public class BuchungsControl extends VorZurueckControl
     {
       projektliste.add(list.next());
     }
-    
+
     int pwert = settings.getInt(settingsprefix + PROJEKT, -2);
     Projekt p = null;
     if (pwert == 0)
@@ -888,7 +891,7 @@ public class BuchungsControl extends VorZurueckControl
     suchprojekt = new SelectInput(projektliste, p);
     suchprojekt.addListener(new FilterListener());
     suchprojekt.setAttribute("bezeichnung");
-    suchprojekt.setPleaseChoose("Keine Einschränkung");
+    suchprojekt.setPleaseChoose("Keine EinschrÃ¤nkung");
     return suchprojekt;
   }
 
@@ -924,10 +927,10 @@ public class BuchungsControl extends VorZurueckControl
       return suchbuchungsart;
     }
 
-    suchbuchungsart = (SelectInput) new BuchungsartInput().
-        getBuchungsartInput(suchbuchungsart, null,
-        buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
-    
+    suchbuchungsart = (SelectInput) new BuchungsartInput().getBuchungsartInput(
+        suchbuchungsart, null, buchungsarttyp.BUCHUNGSART,
+        AbstractInputAuswahl.ComboBox);
+
     @SuppressWarnings("unchecked")
     List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
     ArrayList<Buchungsart> liste = new ArrayList<>();
@@ -939,7 +942,7 @@ public class BuchungsControl extends VorZurueckControl
     liste.add(b2);
     for (Buchungsart ba : suchliste)
       liste.add(ba);
-    
+
     int bwert = settings.getInt(settingsprefix + BUCHUNGSART, -2);
     Buchungsart b = null;
     int size = liste.size();
@@ -998,7 +1001,7 @@ public class BuchungsControl extends VorZurueckControl
     }
     this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum");
-    this.vondatum.setText("Bitte Anfangsdatum wählen");
+    this.vondatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.vondatum.setMandatory(true);
     return vondatum;
   }
@@ -1026,7 +1029,7 @@ public class BuchungsControl extends VorZurueckControl
     }
     this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Anfangsdatum");
-    this.bisdatum.setText("Bitte Anfangsdatum wählen");
+    this.bisdatum.setText("Bitte Anfangsdatum wÃ¤hlen");
     this.bisdatum.setMandatory(true);
     return bisdatum;
   }
@@ -1097,8 +1100,10 @@ public class BuchungsControl extends VorZurueckControl
 
   public Button getStarteBuchungSollbuchungZuordnungAutomatischButton()
   {
-    Button b = new Button("Zuordnung", new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(), getBisdatum()), null, false,
-            "user-friends.png");
+    Button b = new Button("Zuordnung",
+        new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(),
+            getBisdatum()),
+        null, false, "user-friends.png");
     return b;
   }
 
@@ -1115,7 +1120,7 @@ public class BuchungsControl extends VorZurueckControl
     }, null, false, "file-pdf.png");
     return b;
   }
-  
+
   public Button getAfaButton()
   {
     Button b = new Button("Erzeuge Abschreibungen", new Action()
@@ -1131,7 +1136,8 @@ public class BuchungsControl extends VorZurueckControl
         }
         catch (RemoteException e)
         {
-          GUI.getStatusBar().setErrorText("Fehler bei der Erstellung der Abschreibungen");
+          GUI.getStatusBar()
+              .setErrorText("Fehler bei der Erstellung der Abschreibungen");
         }
         catch (ParseException ex)
         {
@@ -1142,6 +1148,7 @@ public class BuchungsControl extends VorZurueckControl
     return b;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -1158,7 +1165,7 @@ public class BuchungsControl extends VorZurueckControl
       {
         b.plausi();
         SplitbuchungsContainer.add(b);
-        GUI.getStatusBar().setSuccessText("Buchung übernommen");
+        GUI.getStatusBar().setSuccessText("Buchung Ã¼bernommen");
       }
     }
     catch (RemoteException ex)
@@ -1201,7 +1208,7 @@ public class BuchungsControl extends VorZurueckControl
       if (konto == null)
       {
         throw new ApplicationException(
-            "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
+            "Kein Konto AusgewÃ¤hlt. Ggfs. erst unter BuchfÃ¼hrung->Konten ein Konto anlegen.");
       }
       settings.setAttribute(settingsprefix + "kontoid", konto.getID());
       return konto;
@@ -1230,7 +1237,7 @@ public class BuchungsControl extends VorZurueckControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewähltes Projekt kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hltes Projekt kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1248,19 +1255,20 @@ public class BuchungsControl extends VorZurueckControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   private Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {
       if (null == buchungsklasse)
         return null;
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -1268,7 +1276,7 @@ public class BuchungsControl extends VorZurueckControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -1278,7 +1286,7 @@ public class BuchungsControl extends VorZurueckControl
   {
     params = new TreeMap<>();
 
-    // Werte speichern und Parameter füllen
+    // Werte speichern und Parameter fÃ¼llen
     Date dv = null;
     if (isVondatumAktiv())
     {
@@ -1288,7 +1296,8 @@ public class BuchungsControl extends VorZurueckControl
     {
       throw new RemoteException("Bitte Von Datum eingeben!");
     }
-    settings.setAttribute(settingsprefix + "vondatum", new JVDateFormatTTMMJJJJ().format(dv));
+    settings.setAttribute(settingsprefix + "vondatum",
+        new JVDateFormatTTMMJJJJ().format(dv));
 
     Date db = null;
     if (isBisdatumAktiv())
@@ -1299,7 +1308,8 @@ public class BuchungsControl extends VorZurueckControl
     {
       throw new RemoteException("Bitte Bis Datum eingeben!");
     }
-    settings.setAttribute(settingsprefix + "bisdatum", new JVDateFormatTTMMJJJJ().format(db));
+    settings.setAttribute(settingsprefix + "bisdatum",
+        new JVDateFormatTTMMJJJJ().format(db));
 
     Konto k = null;
     if (isSuchKontoAktiv())
@@ -1370,7 +1380,7 @@ public class BuchungsControl extends VorZurueckControl
       settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
       if (ungeprueft)
       {
-        params.put("Nur ungeprüfte ", ungeprueft.toString());
+        params.put("Nur ungeprÃ¼fte ", ungeprueft.toString());
       }
     }
     String suchtext = null;
@@ -1436,9 +1446,8 @@ public class BuchungsControl extends VorZurueckControl
       }
     }
 
-    query = new BuchungQuery(dv, db, k, b, p, suchtext,
-        suchbetrag, mvalue, mitglied, geldkonto, split,
-        ungeprueft, steuer);
+    query = new BuchungQuery(dv, db, k, b, p, suchtext, suchbetrag, mvalue,
+        mitglied, geldkonto, split, ungeprueft, steuer);
 
     List<Buchung> buchungen = query.get();
 
@@ -1447,7 +1456,7 @@ public class BuchungsControl extends VorZurueckControl
       buchungsList = new BuchungListTablePart(buchungen,
           new BuchungAction(false, null));
       buchungsList.addColumn("Nr", "id-int");
-      buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
+      buchungsList.addColumn("GeprÃ¼ft", "geprueft", new Formatter()
       {
         @Override
         public String format(Object o)
@@ -1455,7 +1464,8 @@ public class BuchungsControl extends VorZurueckControl
           return (Boolean) o ? "\u2705" : "";
         }
       });
-      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
       {
         buchungsList.addColumn("D", "document");
       }
@@ -1481,7 +1491,8 @@ public class BuchungsControl extends VorZurueckControl
 
       buchungsList.addColumn("Name", "name");
       if (geldkonto)
-        buchungsList.addColumn("IBAN oder Kontonummer", "iban", new IbanFormatter());
+        buchungsList.addColumn("IBAN oder Kontonummer", "iban",
+            new IbanFormatter());
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -1498,12 +1509,13 @@ public class BuchungsControl extends VorZurueckControl
           return s;
         }
       });
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
       }
-      
+
       buchungsList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       buchungsList.addColumn("Betrag", "betrag",
@@ -1533,8 +1545,8 @@ public class BuchungsControl extends VorZurueckControl
       }
       if (geldkonto)
         buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
-          new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
-          Column.SORT_BY_DISPLAY));
+            new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
+            Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
@@ -1590,7 +1602,8 @@ public class BuchungsControl extends VorZurueckControl
       splitbuchungsList.addColumn("Blatt", "blattnummer");
       splitbuchungsList.addColumn("Name", "name");
       splitbuchungsList.addColumn("Verwendungszweck", "zweck");
-      if ((Boolean) Einstellungen.getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         splitbuchungsList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
@@ -1700,7 +1713,7 @@ public class BuchungsControl extends VorZurueckControl
         }
 
         list.setOrder("ORDER BY nummer");
-        
+
         while (list.hasNext())
         {
           buchungsarten.add(list.next());
@@ -1708,7 +1721,7 @@ public class BuchungsControl extends VorZurueckControl
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -1717,8 +1730,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -1746,7 +1759,7 @@ public class BuchungsControl extends VorZurueckControl
       final List<Buchung> buchungen = query.get();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -1755,8 +1768,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "CSV")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "CSV").get());
 
       final String s = fd.open();
 
@@ -1816,15 +1829,15 @@ public class BuchungsControl extends VorZurueckControl
 
       BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
           BuchungsjournalSortDialog.POSITION_CENTER);
-      
-      // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
+
+      // 20220823: sbuer: Statische Variablen fuer neue SortiermÃ¶glichkeiten
       String sort = djs.open();
       if (djs.getClosed())
         return;
       query.setOrdername(sort);
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -1833,8 +1846,8 @@ public class BuchungsControl extends VorZurueckControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("buchungsjournal", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "PDF")
-              .get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -2006,7 +2019,7 @@ public class BuchungsControl extends VorZurueckControl
           return false;
         }
         Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
-        if(spb != null)
+        if (spb != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
@@ -2024,11 +2037,11 @@ public class BuchungsControl extends VorZurueckControl
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Status der aktuellen Buchung kann nicht geprüft werden.", e);
+          "Status der aktuellen Buchung kann nicht geprÃ¼ft werden.", e);
     }
     return true;
   }
-  
+
   public boolean isSplitBuchungAbgeschlossen() throws ApplicationException
   {
     try
@@ -2044,13 +2057,15 @@ public class BuchungsControl extends VorZurueckControl
           Jahresabschluss ja = buchung.getJahresabschluss();
           if (ja != null)
           {
-            GUI.getStatusBar().setErrorText(String.format(
-                "Buchung wurde bereits am %s von %s abgeschlossen.",
-                new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+            GUI.getStatusBar()
+                .setErrorText(String.format(
+                    "Buchung wurde bereits am %s von %s abgeschlossen.",
+                    new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
+                    ja.getName()));
             return true;
           }
           Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
-          if(spb != null)
+          if (spb != null)
           {
             GUI.getStatusBar().setErrorText(
                 "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
@@ -2062,7 +2077,7 @@ public class BuchungsControl extends VorZurueckControl
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Status der aktuellen Buchung kann nicht geprüft werden.", e);
+          "Status der aktuellen Buchung kann nicht geprÃ¼ft werden.", e);
     }
     return false;
   }
@@ -2105,7 +2120,8 @@ public class BuchungsControl extends VorZurueckControl
     MitgliedZustand beide = new MitgliedZustand(null, "Beide");
     liste.add(beide);
 
-    String bwert = settings.getString(settingsprefix + MITGLIEDZUGEORDNET, "Beide");
+    String bwert = settings.getString(settingsprefix + MITGLIEDZUGEORDNET,
+        "Beide");
     MitgliedZustand b = ja;
     for (int i = 0; i < liste.size(); i++)
     {
@@ -2133,7 +2149,7 @@ public class BuchungsControl extends VorZurueckControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()), 
+    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()),
         new TextInput(""));
     return iban;
   }
@@ -2250,7 +2266,7 @@ public class BuchungsControl extends VorZurueckControl
     }
 
   }
-  
+
   public void resetFilter()
   {
     try
@@ -2277,11 +2293,15 @@ public class BuchungsControl extends VorZurueckControl
       }
       Calendar calendar = Calendar.getInstance();
       Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+      Date startGJ = Datum.toDate(
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + year);
       if (calendar.getTime().before(startGJ))
       {
-        year = year -1;
-        startGJ = Datum.toDate((String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+        year = year - 1;
+        startGJ = Datum.toDate(
+            (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+                + year);
       }
       if (isVondatumAktiv())
       {
@@ -2318,12 +2338,12 @@ public class BuchungsControl extends VorZurueckControl
       Logger.error("Error filter reset", ex);
     }
   }
-  
+
   public boolean getGeldkonto()
   {
     return geldkonto;
   }
-  
+
   public String getSettingsPrefix()
   {
     return settingsprefix;
@@ -2340,7 +2360,8 @@ public class BuchungsControl extends VorZurueckControl
         Date bis = (Date) getBisdatum().getValue();
         if (getRangeTyp(von, bis) == RANGE.TAG)
         {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+              bis.toInstant());
           delta++;
           calendar.setTime(von);
           calendar.add(Calendar.DAY_OF_MONTH, -delta);
@@ -2351,8 +2372,10 @@ public class BuchungsControl extends VorZurueckControl
         }
         else
         {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
           int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
           delta++;
           calendar.setTime(von);
@@ -2385,7 +2408,8 @@ public class BuchungsControl extends VorZurueckControl
         Date bis = (Date) getBisdatum().getValue();
         if (getRangeTyp(von, bis) == RANGE.TAG)
         {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+              bis.toInstant());
           delta++;
           calendar.setTime(von);
           calendar.add(Calendar.DAY_OF_MONTH, delta);
@@ -2396,8 +2420,10 @@ public class BuchungsControl extends VorZurueckControl
         }
         else
         {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
           int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
           delta++;
           calendar.setTime(von);
@@ -2431,7 +2457,7 @@ public class BuchungsControl extends VorZurueckControl
       return RANGE.TAG;
     return RANGE.MONAT;
   }
-  
+
   private void checkDate() throws ApplicationException
   {
     Date von = (Date) getVondatum().getValue();

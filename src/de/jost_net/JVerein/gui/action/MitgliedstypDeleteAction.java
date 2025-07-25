@@ -38,7 +38,7 @@ public class MitgliedstypDeleteAction implements Action
   {
     if (context == null || !(context instanceof Mitgliedstyp))
     {
-      throw new ApplicationException("Kein Mitgliedstyp ausgewählt");
+      throw new ApplicationException("Kein Mitgliedstyp ausgewÃ¤hlt");
     }
     try
     {
@@ -46,7 +46,7 @@ public class MitgliedstypDeleteAction implements Action
       if (mt.getJVereinid() > 0)
       {
         throw new ApplicationException(
-            "Dieser Mitgliedstyp darf nicht gelöscht werden");
+            "Dieser Mitgliedstyp darf nicht gelÃ¶scht werden");
       }
       if (mt.isNewObject())
       {
@@ -59,12 +59,12 @@ public class MitgliedstypDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
+            "Mitgliedstyp '%s' kann nicht gelÃ¶scht werden. Es existieren Nicht-Mitglieder dieses Typs.",
             mt.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Mitgliedstyp löschen");
-      d.setText("Wollen Sie diesen Mitgliedstyp wirklich löschen?");
+      d.setTitle("Mitgliedstyp lÃ¶schen");
+      d.setText("Wollen Sie diesen Mitgliedstyp wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -73,16 +73,16 @@ public class MitgliedstypDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen eines Mitgliedstyp", e);
+        Logger.error("Fehler beim LÃ¶schen eines Mitgliedstyp", e);
         return;
       }
 
       mt.delete();
-      GUI.getStatusBar().setSuccessText("Mitgliedstyp gelöscht.");
+      GUI.getStatusBar().setSuccessText("Mitgliedstyp gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Mitgliedstyp.";
+      String fehler = "Fehler beim LÃ¶schen des Mitgliedstyp.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

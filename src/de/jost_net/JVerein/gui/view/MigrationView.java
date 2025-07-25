@@ -200,7 +200,7 @@ public class MigrationView extends AbstractView
     loadComp.setLayout(new RowLayout());
 
     Button selectImportFile = new Button(loadComp, SWT.PUSH);
-    selectImportFile.setText("Datei w‰hlen");
+    selectImportFile.setText("Datei w√§hlen");
 
     final Label showPathFile = new Label(loadComp, SWT.SHADOW_IN);
 
@@ -377,7 +377,7 @@ public class MigrationView extends AbstractView
 
     /* Sicherheitsnachfrage */
     YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
-    ynd.setText("Achtung! Existierende Daten werden gelˆscht. Weiter?");
+    ynd.setText("Achtung! Existierende Daten werden gel√∂scht. Weiter?");
     ynd.setTitle("Import");
     Boolean choice;
     try
@@ -517,7 +517,7 @@ public class MigrationView extends AbstractView
       resetAllAssignment(necTable);
 
       File importFile = selectFile(parent.getShell(), SWT.OPEN,
-          "Bitte w‰hlen Sie die Import-Datei aus.", "lastdir");
+          "Bitte w√§hlen Sie die Import-Datei aus.", "lastdir");
 
       if (importFile != null)
       {
@@ -527,7 +527,7 @@ public class MigrationView extends AbstractView
         if (importFile.getAbsolutePath().indexOf(' ') > 0)
         {
           GUI.getStatusBar().setErrorText(
-              "Der Dateiname, bzw. der absolute Pfad, enth‰lt Leerzeichen. Das ist nicht zul‰ssig!");
+              "Der Dateiname, bzw. der absolute Pfad, enth√§lt Leerzeichen. Das ist nicht zul√§ssig!");
           return;
         }
 

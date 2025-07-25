@@ -42,7 +42,7 @@ public class LehrgangDeleteAction implements Action
     }
     if (context == null || !(context instanceof Lehrgang))
     {
-      throw new ApplicationException("Kein Lehrgang ausgewählt");
+      throw new ApplicationException("Kein Lehrgang ausgewÃ¤hlt");
     }
     try
     {
@@ -53,8 +53,8 @@ public class LehrgangDeleteAction implements Action
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Lehrgang löschen");
-      d.setText("Wollen Sie diesen Lehrgang wirklich löschen?");
+      d.setTitle("Lehrgang lÃ¶schen");
+      d.setText("Wollen Sie diesen Lehrgang wirklich lÃ¶schen?");
 
       try
       {
@@ -66,15 +66,15 @@ public class LehrgangDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen eines Lehrgangs", e);
+        Logger.error("Fehler beim LÃ¶schen eines Lehrgangs", e);
         return;
       }
       l.delete();
-      GUI.getStatusBar().setSuccessText("Lehrgang gelöscht.");
+      GUI.getStatusBar().setSuccessText("Lehrgang gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen eines Lehrgangs";
+      String fehler = "Fehler beim LÃ¶schen eines Lehrgangs";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

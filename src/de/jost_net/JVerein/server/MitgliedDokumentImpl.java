@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 
-public class MitgliedDokumentImpl extends AbstractDokumentImpl implements
-    MitgliedDokument
+public class MitgliedDokumentImpl extends AbstractDokumentImpl
+    implements MitgliedDokument
 {
 
   private static final long serialVersionUID = 1L;

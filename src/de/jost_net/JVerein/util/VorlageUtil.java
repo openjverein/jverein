@@ -92,7 +92,7 @@ public class VorlageUtil
         case KONTOAUSZUG_DATEINAME:
         case CT1_AUSGABE_DATEINAME:
         case PRENOTIFICATION_DATEINAME:
-          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Bei zip oder einzelnes Dokument fÃ¼r mehrere EintrÃ¤ge
           // Nur die allgemeine Map
           break;
         default:
@@ -166,7 +166,7 @@ public class VorlageUtil
         case KONTOAUSZUG_DATEINAME:
         case CT1_AUSGABE_DATEINAME:
         case PRENOTIFICATION_DATEINAME:
-          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Bei zip oder einzelnes Dokument fÃ¼r mehrere EintrÃ¤ge
           // Nur die allgemeine Map
           break;
         default:

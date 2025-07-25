@@ -53,7 +53,7 @@ public class MitgliedskontoMenu extends ContextMenu
   {
     addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Sollbuchung löschen",
+    addItem(new SollOhneIstItem("Sollbuchung lÃ¶schen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     try
     {
@@ -74,11 +74,12 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
-    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
+    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lÃ¶sen",
         new IstbuchungLoesenAction(), "unlocked.png"));
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
@@ -258,7 +259,7 @@ public class MitgliedskontoMenu extends ContextMenu
             if (ob != null)
             {
               Buchung b = (Buchung) ob;
-              if (b.getBuchungsart().getSpende() == true)
+              if (b.getBuchungsart().getSpende())
               {
                 return true;
               }

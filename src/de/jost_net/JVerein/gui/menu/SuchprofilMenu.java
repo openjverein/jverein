@@ -31,7 +31,7 @@ public class SuchprofilMenu extends ContextMenu
   {
     addItem(new CheckedContextMenuItem("Laden", new SuchprofilLadenAction(),
         "document-open.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new SuchprofilDeleteAction(control), "user-trash-full.png"));
   }
 }

@@ -81,23 +81,27 @@ public class Ct1Ueberweisung
     switch (ct1ausgabe)
     {
       case SEPA_DATEI:
-        return dateiausgabe(lastschriften, file, faell, ct1ausgabe, verwendungszweck);
+        return dateiausgabe(lastschriften, file, faell, ct1ausgabe,
+            verwendungszweck);
 
       case HIBISCUS:
-        return hibiscusausgabe(lastschriften, file, faell, ct1ausgabe, verwendungszweck);
+        return hibiscusausgabe(lastschriften, file, faell, ct1ausgabe,
+            verwendungszweck);
     }
     return -1;
   }
 
-  private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
-      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
+  private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file,
+      Date faell, Ct1Ausgabe ct1ausgabe, String verwendungszweck)
+      throws Exception
   {
     SepaVersion sepaVersion = SepaVersion
         .byURN((String) Einstellungen.getEinstellung(Property.CT1SEPAVERSION));
     Properties ls_properties = new Properties();
     ls_properties.setProperty("src.bic",
         (String) Einstellungen.getEinstellung(Property.BIC));
-    ls_properties.setProperty("src.iban", (String) Einstellungen.getEinstellung(Property.IBAN));
+    ls_properties.setProperty("src.iban",
+        (String) Einstellungen.getEinstellung(Property.IBAN));
     ls_properties.setProperty("src.name",
         ((String) Einstellungen.getEinstellung(Property.NAME)).toUpperCase());
     long epochtime = Calendar.getInstance().getTimeInMillis();
@@ -105,42 +109,54 @@ public class Ct1Ueberweisung
     DateFormat ISO_DATE = new SimpleDateFormat(SepaUtil.DATE_FORMAT);
     ls_properties.setProperty("sepaid", epochtime_string);
     ls_properties.setProperty("pmtinfid", epochtime_string);
-    ls_properties.setProperty("date", ISO_DATE.format(faell) );
+    ls_properties.setProperty("date", ISO_DATE.format(faell));
     ls_properties.setProperty("batchbook", "false");
     int counter = 0;
     for (Lastschrift ls : lastschriften)
     {
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),       StringUtils.trimToEmpty(ls.getBIC()));
-      ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),      StringUtils.trimToEmpty(ls.getIBAN()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.bic", counter),
+          StringUtils.trimToEmpty(ls.getBIC()));
+      ls_properties.setProperty(SepaUtil.insertIndex("dst.iban", counter),
+          StringUtils.trimToEmpty(ls.getIBAN()));
       if (ls.getMitglied() != null)
       {
-        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(ls.getMitglied()
-            .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)
-            .toUpperCase()));
+        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
+            StringUtils.trimToEmpty(ls.getMitglied()
+                .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)
+                .toUpperCase()));
       }
       else if (ls.getKursteilnehmer() != null)
       {
-        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),      StringUtils.trimToEmpty(
-            Adressaufbereitung.getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
+        ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
+            StringUtils.trimToEmpty(Adressaufbereitung
+                .getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
       }
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),     (BigDecimal.valueOf(0.01)).toString());
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),      HBCIProperties.CURRENCY_DEFAULT_DE);
-      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),         StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
-      ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),    "NOTPROVIDED");
-      ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),     StringUtils.trimToEmpty(ls.getMandatID()));
-      ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter), ISO_DATE.format(ls.getMandatDatum()));
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
+          (BigDecimal.valueOf(0.01)).toString());
+      ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
+          HBCIProperties.CURRENCY_DEFAULT_DE);
+      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+          StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+      ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
+          "NOTPROVIDED");
+      ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
+          StringUtils.trimToEmpty(ls.getMandatID()));
+      ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter),
+          ISO_DATE.format(ls.getMandatDatum()));
       counter += 1;
     }
     final OutputStream os = Files.newOutputStream(file.toPath());
     System.setProperty("sepa.pain.formatted", "true");
-    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("UebSEPA", sepaVersion);
+    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("UebSEPA",
+        sepaVersion);
     sepagenerator.generate(ls_properties, os, true);
     os.close();
     return counter;
   }
 
-  private int hibiscusausgabe(ArrayList<Lastschrift> lastschriften, File file, Date faell,
-      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
+  private int hibiscusausgabe(ArrayList<Lastschrift> lastschriften, File file,
+      Date faell, Ct1Ausgabe ct1ausgabe, String verwendungszweck)
+      throws Exception
   {
     try
     {
@@ -168,8 +184,8 @@ public class Ct1Ueberweisung
       {
         throw new RemoteException(e.getMessage());
       }
-      AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[
-          lastschriften.size()];
+      AuslandsUeberweisung[] ueberweisungen = new AuslandsUeberweisung[lastschriften
+          .size()];
       int i = 0;
       for (Lastschrift ls : lastschriften)
       {

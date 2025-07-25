@@ -37,7 +37,7 @@ public class SollbuchungPositionMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungPositionDetailView.class),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new SollbuchungPositionDeleteAction(), "user-trash-full.png"));
   }
 }

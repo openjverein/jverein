@@ -56,10 +56,10 @@ public class NewAction implements Action
           null);
       if (noHistory)
       {
-        // Wenn CurrentObject und View von aktueller und nächster View gleich
+        // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
         // sind, wird die aktuelle View nicht in die History aufgenommen.
-        // Dadurch führt der Zurückbutton auch bei "Speichern und neu" zur Liste
-        // zurück.
+        // Dadurch fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste
+        // zurÃ¼ck.
         if (GUI.getCurrentView().getClass().equals(viewClass))
         {
           GUI.getCurrentView().setCurrentObject(object);

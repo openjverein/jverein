@@ -40,16 +40,16 @@ public class MailDeleteAction implements Action
     }
     if (context == null)
     {
-      throw new ApplicationException("Keine Mail ausgewählt");
+      throw new ApplicationException("Keine Mail ausgewÃ¤hlt");
     }
     Mail[] mails = null;
-    if(context instanceof Mail)
+    if (context instanceof Mail)
     {
-      mails = new Mail[] { (Mail) context};
+      mails = new Mail[] { (Mail) context };
     }
-    else if(context instanceof Mail[])
+    else if (context instanceof Mail[])
     {
-      mails = (Mail[])context;
+      mails = (Mail[]) context;
     }
     else
     {
@@ -57,8 +57,8 @@ public class MailDeleteAction implements Action
     }
     String mehrzahl = mails.length > 1 ? "s" : "";
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Mail" + mehrzahl + " löschen");
-    d.setText("Wollen Sie diese Mail" + mehrzahl + " wirklich löschen?");
+    d.setTitle("Mail" + mehrzahl + " lÃ¶schen");
+    d.setText("Wollen Sie diese Mail" + mehrzahl + " wirklich lÃ¶schen?");
 
     try
     {
@@ -78,9 +78,9 @@ public class MailDeleteAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim Löschen der Mail", e);
+      Logger.error("Fehler beim LÃ¶schen der Mail", e);
       return;
     }
-    GUI.getStatusBar().setSuccessText("Mail gelöscht.");
+    GUI.getStatusBar().setSuccessText("Mail gelÃ¶scht.");
   }
 }

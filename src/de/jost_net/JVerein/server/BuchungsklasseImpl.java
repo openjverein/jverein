@@ -23,8 +23,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseImpl extends AbstractJVereinDBObject
-    implements
-    Buchungsklasse
+    implements Buchungsklasse
 {
   private static final long serialVersionUID = 500102542884220658L;
 
@@ -62,7 +61,7 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Nummer nicht gÃ¼ltig");
       }
     }
     catch (RemoteException e)

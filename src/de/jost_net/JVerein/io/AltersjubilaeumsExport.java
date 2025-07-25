@@ -57,7 +57,7 @@ public abstract class AltersjubilaeumsExport implements Exporter
     this.file = file;
     MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
-    Logger.debug(String.format("Altersjubil‰umexport, Jahr=%d", jahr));
+    Logger.debug(String.format("Altersjubil√§umexport, Jahr=%d", jahr));
     open();
     JubilaeenParser jp = new JubilaeenParser(
         (String) Einstellungen.getEinstellung(Property.ALTERSJUBILAEEN));

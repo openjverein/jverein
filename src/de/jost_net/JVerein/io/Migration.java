@@ -605,7 +605,7 @@ public class Migration
     try
     {
       Integer.parseInt(id);
-      m.setID(id); // wird übersprungen bei nichtnumerischen externen
+      m.setID(id); // wird Ã¼bersprungen bei nichtnumerischen externen
                    // Mitgliedsnummern.
     }
     catch (NumberFormatException e)
@@ -686,8 +686,7 @@ public class Migration
        */
       zahlweg = Zahlungsweg.BASISLASTSCHRIFT;
 
-      boolean neuebankverbindung = iban != null
-          && iban.length() > 0;
+      boolean neuebankverbindung = iban != null && iban.length() > 0;
 
       if (!neuebankverbindung)
       {
@@ -705,7 +704,7 @@ public class Migration
     else if (zahlart.equalsIgnoreCase("u")
         || zahlart.equalsIgnoreCase("ueberweisung"))
     {
-      zahlweg = Zahlungsweg.ÜBERWEISUNG;
+      zahlweg = Zahlungsweg.ÃœBERWEISUNG;
     }
     else
     {
@@ -728,8 +727,8 @@ public class Migration
         }
         catch (SEPAException e)
         {
-          throw new ApplicationException(String.format(
-              "%s: IBAN ungültig!", Adressaufbereitung.getNameVorname(m)));
+          throw new ApplicationException(String.format("%s: IBAN ungÃ¼ltig!",
+              Adressaufbereitung.getNameVorname(m)));
         }
         m.setBic(i.getBIC());
       }
@@ -770,7 +769,8 @@ public class Migration
     {
       eintritt = null;
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
       {
         throw new ApplicationException(String.format(
             "%s: Eintrittsdatum fehlt!", Adressaufbereitung.getNameVorname(m)));
@@ -836,7 +836,7 @@ public class Migration
       else
       {
         progMonitor.log(String.format(
-            "Individueller Beitrag fuer %s enthält keine gültige Formatierung und wird verworfen.",
+            "Individueller Beitrag fuer %s enthÃ¤lt keine gÃ¼ltige Formatierung und wird verworfen.",
             Adressaufbereitung.getNameVorname(m)));
       }
     }
@@ -855,7 +855,7 @@ public class Migration
       else
       {
         progMonitor.log(String.format(
-            "Personenart für %s enthält keine gültige Formatierung. Es dürfen nur Wörter verwendet werden, die mit einem j fuer juristische Personen oder n fuer natürliche Personen beginnen. Bei leerem Inhalt wird der Standardwert n verwendet",
+            "Personenart fÃ¼r %s enthÃ¤lt keine gÃ¼ltige Formatierung. Es dÃ¼rfen nur WÃ¶rter verwendet werden, die mit einem j fuer juristische Personen oder n fuer natÃ¼rliche Personen beginnen. Bei leerem Inhalt wird der Standardwert n verwendet",
             Adressaufbereitung.getNameVorname(m)));
         throw new ApplicationException();
       }
@@ -969,7 +969,7 @@ public class Migration
           catch (ParseException e)
           {
             throw new ApplicationException(
-                String.format("%s : ungültiges Datumsformat %s: %s",
+                String.format("%s : ungÃ¼ltiges Datumsformat %s: %s",
                     Adressaufbereitung.getNameVorname(curMitglied), f.getName(),
                     inhalt));
           }
@@ -989,7 +989,7 @@ public class Migration
           catch (NumberFormatException e)
           {
             throw new ApplicationException(
-                String.format("%s: ungültiges Datenformat %s: %s",
+                String.format("%s: ungÃ¼ltiges Datenformat %s: %s",
                     Adressaufbereitung.getNameVorname(curMitglied), f.getName(),
                     inhalt));
           }
@@ -1012,7 +1012,7 @@ public class Migration
         else
         {
           throw new ApplicationException(
-              String.format("%s: ungültiges Datenformat %s: %s",
+              String.format("%s: ungÃ¼ltiges Datenformat %s: %s",
                   Adressaufbereitung.getNameVorname(curMitglied), f.getName(),
                   inhalt));
         }
@@ -1028,7 +1028,7 @@ public class Migration
           catch (NumberFormatException e)
           {
             throw new ApplicationException(
-                String.format("%s: ungültiges Datenformat %s: %s",
+                String.format("%s: ungÃ¼ltiges Datenformat %s: %s",
                     Adressaufbereitung.getNameVorname(curMitglied), f.getName(),
                     inhalt));
           }
@@ -1052,7 +1052,7 @@ public class Migration
   {
     try
     {
-      // Arbeitseinsätze
+      // ArbeitseinsÃ¤tze
       DBIterator<Arbeitseinsatz> listarbeitseinsaetze = Einstellungen
           .getDBService().createList(Arbeitseinsatz.class);
       while (listarbeitseinsaetze.hasNext())
@@ -1068,7 +1068,7 @@ public class Migration
         Lastschrift l = listlastschriften.next();
         l.delete();
       }
-      // Lehrgänge
+      // LehrgÃ¤nge
       DBIterator<Lehrgang> listlehrgaenge = Einstellungen.getDBService()
           .createList(Lehrgang.class);
       while (listlehrgaenge.hasNext())
@@ -1076,7 +1076,7 @@ public class Migration
         Lehrgang l = listlehrgaenge.next();
         l.delete();
       }
-      // Mailempfänger
+      // MailempfÃ¤nger
       DBIterator<MailEmpfaenger> listmailempfaenger = Einstellungen
           .getDBService().createList(MailEmpfaenger.class);
       while (listmailempfaenger.hasNext())
@@ -1093,8 +1093,8 @@ public class Migration
         m.delete();
       }
       // Sollbuchung
-      DBIterator<Sollbuchung> sollbIt = Einstellungen
-          .getDBService().createList(Sollbuchung.class);
+      DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
       while (sollbIt.hasNext())
       {
         Sollbuchung sollb = sollbIt.next();

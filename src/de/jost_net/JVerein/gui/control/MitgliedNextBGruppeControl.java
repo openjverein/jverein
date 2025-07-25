@@ -161,7 +161,8 @@ public class MitgliedNextBGruppeControl extends AbstractControl
   {
     Mitglied mitglied = getMitglied();
     Beitragsgruppe beitragsGruppe = mitglied.getBeitragsgruppe();
-    return (beitragsGruppe.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER);
+    return (beitragsGruppe
+        .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER);
   }
 
   public Input getBeitragsgruppeInput() throws RemoteException
@@ -179,12 +180,13 @@ public class MitgliedNextBGruppeControl extends AbstractControl
       list.addFilter("(beitragsart is null or beitragsart != ?)",
           ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
     }
-    beitragsgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+    beitragsgruppe = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
         getMitgliedNextBGruppe().getBeitragsgruppe());
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setMandatory(true);
     beitragsgruppe.setAttribute("bezeichnung");
-    beitragsgruppe.setPleaseChoose("Bitte auswählen");
+    beitragsgruppe.setPleaseChoose("Bitte auswÃ¤hlen");
     beitragsgruppe.setComment("");
     return beitragsgruppe;
   }
@@ -222,7 +224,7 @@ public class MitgliedNextBGruppeControl extends AbstractControl
         .setBeitragsgruppe((Beitragsgruppe) beitragsgruppe.getValue());
     mitgliedsBeitragsgruppe.store();
     GUI.getStatusBar()
-        .setSuccessText("Zukünftige Beitragsgruppe gespeichert!!");
+        .setSuccessText("ZukÃ¼nftige Beitragsgruppe gespeichert!!");
   }
 
 }

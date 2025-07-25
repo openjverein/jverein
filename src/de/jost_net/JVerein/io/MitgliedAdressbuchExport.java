@@ -53,7 +53,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
       }
       txt.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d SÃ¤tze.", list.size()));
     }
     catch (IOException e)
     {

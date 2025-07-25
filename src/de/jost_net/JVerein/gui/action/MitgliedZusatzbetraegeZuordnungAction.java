@@ -27,7 +27,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Zusatzbetr‰ge den Mitgliedern zuordnen.
+ * Zusatzbetr√§ge den Mitgliedern zuordnen.
  */
 public class MitgliedZusatzbetraegeZuordnungAction implements Action
 {
@@ -38,7 +38,7 @@ public class MitgliedZusatzbetraegeZuordnungAction implements Action
     if (context == null
         || (!(context instanceof Mitglied) && !(context instanceof Mitglied[])))
     {
-      throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("Kein Mitglied ausgew√§hlt");
     }
     Mitglied[] m = null;
     if (context instanceof Mitglied)

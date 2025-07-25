@@ -78,9 +78,8 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
   }
 
   @Override
-  public void export(ArrayList<PseudoDBObject> zeile,
-      final File file, Date datumvon, Date datumbis)
-      throws ApplicationException
+  public void export(ArrayList<PseudoDBObject> zeile, final File file,
+      Date datumvon, Date datumbis) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try

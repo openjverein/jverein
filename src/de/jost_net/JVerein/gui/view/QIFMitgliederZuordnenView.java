@@ -77,7 +77,7 @@ public class QIFMitgliederZuordnenView extends AbstractView
 
     {
       TabGroup tabBeispiel = new TabGroup(folder, "Beispielbuchungen", true, 1);
-      tabBeispiel.addHeadline("Beispielbuchungen zum gew‰hlten Namen");
+      tabBeispiel.addHeadline("Beispielbuchungen zum gew√§hlten Namen");
 
       SimpleContainer labelContainer = new SimpleContainer(
           tabBeispiel.getComposite(), false, 2);

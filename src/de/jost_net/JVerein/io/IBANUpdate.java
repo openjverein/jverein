@@ -37,7 +37,7 @@ public class IBANUpdate implements GenericObject
   private String status;
 
   public IBANUpdate(String id, String name, String blz, String konto,
-      String iban, String bic, String status) 
+      String iban, String bic, String status)
   {
     this.id = id;
     this.name = name;
@@ -91,7 +91,8 @@ public class IBANUpdate implements GenericObject
   @Override
   public String[] getAttributeNames()
   {
-    return new String[] { "id", "name", "blz", "konto", "iban", "bic", "status" };
+    return new String[] { "id", "name", "blz", "konto", "iban", "bic",
+        "status" };
   }
 
   @Override

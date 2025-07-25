@@ -30,8 +30,8 @@ public class Update0448 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("mitgliedauswahl",
-        COLTYPE.INTEGER, 0, "0", false, false)));
+    execute(addColumn("einstellung",
+        new Column("mitgliedauswahl", COLTYPE.INTEGER, 0, "0", false, false)));
 
   }
 }

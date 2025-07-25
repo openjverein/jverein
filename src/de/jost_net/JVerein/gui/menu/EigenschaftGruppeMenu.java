@@ -38,7 +38,7 @@ public class EigenschaftGruppeMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(EigenschaftGruppeDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new EigenschaftGruppeDeleteAction(), "user-trash-full.png"));
   }
 }

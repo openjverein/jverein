@@ -121,8 +121,8 @@ public class AdressaufbereitungTest
   @Test
   public void test08() throws RemoteException
   {
-    IAdresse adr = getAdresse("n", null, null, "Neutrum", "Neutral", null,
-        null, null, null, null, GeschlechtInput.OHNEANGABE);
+    IAdresse adr = getAdresse("n", null, null, "Neutrum", "Neutral", null, null,
+        null, null, null, GeschlechtInput.OHNEANGABE);
     assertEquals("Guten Tag Neutrum Neutral,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Neutrum,", Adressaufbereitung.getAnredeDu(adr));
@@ -160,9 +160,9 @@ public class AdressaufbereitungTest
 
   private static IAdresse getAdresse(final String personenart,
       final String anrede, final String titel, final String vorname,
-      final String name, final String adressierungszusatz,
-      final String strasse, final String plz, final String ort,
-      final String staat, final String geschlecht)
+      final String name, final String adressierungszusatz, final String strasse,
+      final String plz, final String ort, final String staat,
+      final String geschlecht)
   {
     return new IAdresse()
     {
@@ -225,7 +225,6 @@ public class AdressaufbereitungTest
       {
         return Staat.getStaat(getStaatCode());
       }
-
 
       @Override
       public String getStaatCode() throws RemoteException

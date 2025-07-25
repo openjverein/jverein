@@ -31,6 +31,7 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   private static final long serialVersionUID = 1L;
 
   private static final String STARTDATUM = "startdatum";
+
   private static final String ENDEDATUM = "endedatum";
 
   public ProjektImpl() throws RemoteException
@@ -78,9 +79,11 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
       throw new ApplicationException("Bitte Bezeichnung eingeben");
     }
 
-    if ( isStartDatumGesetzt() && isEndeDatumGesetzt() && getEndeDatum().before( getStartDatum() ) )
+    if (isStartDatumGesetzt() && isEndeDatumGesetzt()
+        && getEndeDatum().before(getStartDatum()))
     {
-      throw new ApplicationException( "Endedatum muss nach dem Startdatum liegen" );
+      throw new ApplicationException(
+          "Endedatum muss nach dem Startdatum liegen");
     }
   }
 
@@ -109,39 +112,42 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   }
 
   @Override
-  public Date getStartDatum() throws RemoteException {
+  public Date getStartDatum() throws RemoteException
+  {
     Date d = (Date) getAttribute(STARTDATUM);
-    if ( d == null ) {
-        return Einstellungen.NODATE;
+    if (d == null)
+    {
+      return Einstellungen.NODATE;
     }
 
     return d;
   }
 
   @Override
-  public void setStartDatum( Date startDatum ) throws RemoteException
+  public void setStartDatum(Date startDatum) throws RemoteException
   {
-    setAttribute( STARTDATUM, startDatum );
+    setAttribute(STARTDATUM, startDatum);
   }
 
   @Override
-  public void setStartDatum( String startDatum ) throws RemoteException
+  public void setStartDatum(String startDatum) throws RemoteException
   {
-    setAttribute( STARTDATUM, toDate(startDatum) );
+    setAttribute(STARTDATUM, toDate(startDatum));
   }
 
   @Override
   public Date getEndeDatum() throws RemoteException
   {
     Date d = (Date) getAttribute(ENDEDATUM);
-    if( d == null ) {
-        return Einstellungen.NODATE;
+    if (d == null)
+    {
+      return Einstellungen.NODATE;
     }
     return d;
   }
 
   @Override
-  public void setEndeDatum( Date endeDatum ) throws RemoteException
+  public void setEndeDatum(Date endeDatum) throws RemoteException
   {
     setAttribute(ENDEDATUM, endeDatum);
   }
@@ -153,13 +159,15 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   }
 
   @Override
-  public boolean isStartDatumGesetzt() throws RemoteException {
-      return getAttribute( STARTDATUM ) != null;
+  public boolean isStartDatumGesetzt() throws RemoteException
+  {
+    return getAttribute(STARTDATUM) != null;
   }
 
   @Override
-  public boolean isEndeDatumGesetzt() throws RemoteException {
-      return getAttribute( ENDEDATUM ) != null;
+  public boolean isEndeDatumGesetzt() throws RemoteException
+  {
+    return getAttribute(ENDEDATUM) != null;
   }
 
   @Override

@@ -86,26 +86,24 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.AUSTRITT.getName(),
         Datum.formatDate(mitglied.getAustritt()));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
-        mitglied.getBeitragsgruppe() != null ?
-            Einstellungen.DECIMALFORMAT.format(
-                mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag()) :
-            "");
+        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
+            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
+            : "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(),
-        mitglied.getBeitragsgruppe() != null ?
-            Einstellungen.DECIMALFORMAT.format(
-                mitglied.getBeitragsgruppe().getArbeitseinsatzStunden()) :
-            "");
+        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
+            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
+            : "");
     try
     {
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
-          mitglied.getBeitragsgruppe() != null ?
-              Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
+          mitglied.getBeitragsgruppe() != null
+              ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                   Beitragsmodel.getByKey((Integer) Einstellungen
                       .getEinstellung(Property.BEITRAGSMODEL)),
                   mitglied.getZahlungstermin(),
                   mitglied.getZahlungsrhythmus().getKey(),
-                  mitglied.getBeitragsgruppe(), new Date(), mitglied)) :
-              "");
+                  mitglied.getBeitragsgruppe(), new Date(), mitglied))
+              : "");
     }
     catch (ApplicationException e)
     {
@@ -116,13 +114,13 @@ public class MitgliedMap extends AbstractMap
       Logger.error("NullPointerException:" + mitglied.getName());
     }
     map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(),
-        mitglied.getBeitragsgruppe() != null ?
-            mitglied.getBeitragsgruppe().getBezeichnung() :
-            "");
+        mitglied.getBeitragsgruppe() != null
+            ? mitglied.getBeitragsgruppe().getBezeichnung()
+            : "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(),
-        mitglied.getBeitragsgruppe() != null ?
-            mitglied.getBeitragsgruppe().getID() :
-            "");
+        mitglied.getBeitragsgruppe() != null
+            ? mitglied.getBeitragsgruppe().getID()
+            : "");
     map.put(MitgliedVar.MANDATDATUM.getName(), mitglied.getMandatDatum());
     map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
     map.put(MitgliedVar.BIC.getName(), mitglied.getBic());
@@ -146,8 +144,8 @@ public class MitgliedMap extends AbstractMap
     if (mitglied.getIndividuellerBeitrag() != null)
     {
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
-          Einstellungen.DECIMALFORMAT.format(
-              mitglied.getIndividuellerBeitrag()));
+          Einstellungen.DECIMALFORMAT
+              .format(mitglied.getIndividuellerBeitrag()));
     }
     else
     {
@@ -207,16 +205,17 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
-        mitglied.getZahlungstermin() != null ?
-            mitglied.getZahlungstermin().getText() :
-            "");
+        mitglied.getZahlungstermin() != null
+            ? mitglied.getZahlungstermin().getText()
+            : "");
     map.put(MitgliedVar.ZAHLUNGSWEG.getName(), mitglied.getZahlungsweg() + "");
 
     String zahlungsweg = "";
     switch (mitglied.getZahlungsweg())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", mitglied.getBic());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
             mitglied.getIban());
@@ -224,10 +223,12 @@ public class MitgliedMap extends AbstractMap
             mitglied.getMandatID());
         break;
       case Zahlungsweg.BARZAHLUNG:
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR);
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
-      case Zahlungsweg.ÜBERWEISUNG:
-        zahlungsweg = (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
+      case Zahlungsweg.ÃœBERWEISUNG:
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
     }
     try
@@ -312,8 +313,7 @@ public class MitgliedMap extends AbstractMap
     }
 
     DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
-        .getDBService()
-        .createList(EigenschaftGruppe.class);
+        .getDBService().createList(EigenschaftGruppe.class);
     while (eigenschaftGruppeIt.hasNext())
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
@@ -329,7 +329,7 @@ public class MitgliedMap extends AbstractMap
 
     if (!ohneLesefelder)
     {
-      // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+      // FÃ¼ge Lesefelder diesem Mitglied-Objekt hinzu.
       LesefeldAuswerter l = new LesefeldAuswerter();
       l.setLesefelderDefinitionsFromDatabase();
       l.setMap(map);
@@ -376,7 +376,7 @@ public class MitgliedMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei MÃ¼ller");
     map.put(MitgliedVar.MITGLIEDSTYP.getName(), "1");
     map.put(MitgliedVar.ANREDE.getName(), "Herrn");
     map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
@@ -395,7 +395,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
     map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
     map.put(MitgliedVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
     map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
     map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
@@ -451,7 +451,7 @@ public class MitgliedMap extends AbstractMap
         Zahlungstermin.HALBJAEHRLICH4.toString());
     map.put(MitgliedVar.ZAHLUNGSWEG.getName(), "2");
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
-        "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto.");
     map.put(MitgliedVar.ZAHLERID.getName(), "123456");
 
     // Liste der Felddefinitionen
@@ -501,7 +501,7 @@ public class MitgliedMap extends AbstractMap
       map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
     }
 
-    // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+    // FÃ¼ge Lesefelder diesem Mitglied-Objekt hinzu.
     LesefeldAuswerter l = new LesefeldAuswerter();
     l.setLesefelderDefinitionsFromDatabase();
     l.setMap(map);

@@ -62,7 +62,7 @@ public class Datentyp
       case GANZZAHL:
         return "Ganzzahl";
       case WAEHRUNG:
-        return "Währung";
+        return "WÃ¤hrung";
       case JANEIN:
         return "Ja/Nein";
       default:

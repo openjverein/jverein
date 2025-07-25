@@ -27,7 +27,8 @@ public enum SuchSpendenart
   SACHSPENDE(3, "Sachspende"),
   ERSTATTUNGSVERZICHT(4, "Geldspende mit Erstattungsverzicht"),
   GELDSPENDE_ECHT(5, "Geldspende ohne Erstattungsverzicht"),
-  SACHSPENDE_ERSTATTUNGSVERZICHT(6, "Sachspende oder Geldspende mit Erstattungsverzicht");
+  SACHSPENDE_ERSTATTUNGSVERZICHT(6,
+      "Sachspende oder Geldspende mit Erstattungsverzicht");
 
   private final String text;
 

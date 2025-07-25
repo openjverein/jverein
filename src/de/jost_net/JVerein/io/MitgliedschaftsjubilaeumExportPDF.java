@@ -30,8 +30,8 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 
-public class MitgliedschaftsjubilaeumExportPDF extends
-    MitgliedschaftsjubilaeumsExport
+public class MitgliedschaftsjubilaeumExportPDF
+    extends MitgliedschaftsjubilaeumsExport
 {
 
   private FileOutputStream fos;
@@ -84,15 +84,16 @@ public class MitgliedschaftsjubilaeumExportPDF extends
   protected void open() throws DocumentException, FileNotFoundException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, String.format("Mitgliedschaftsjubilare %d",
-        jahr), "", 3);
+    reporter = new Reporter(fos,
+        String.format("Mitgliedschaftsjubilare %d", jahr), "", 3);
   }
 
   @Override
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
-    Paragraph pHeader = new Paragraph("\n"
-        + String.format("%d-jähriges Jubiläum", jahrgang), Reporter.getFreeSans(11));
+    Paragraph pHeader = new Paragraph(
+        "\n" + String.format("%d-jÃ¤hriges JubilÃ¤um", jahrgang),
+        Reporter.getFreeSans(11));
     reporter.add(pHeader);
     reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
@@ -124,8 +125,8 @@ public class MitgliedschaftsjubilaeumExportPDF extends
   protected void add(Mitglied m) throws RemoteException
   {
     reporter.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
-    reporter
-        .addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT);
+    reporter.addColumn(Adressaufbereitung.getNameVorname(m),
+        Element.ALIGN_LEFT);
     reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
     String kommunikation = m.getTelefonprivat();
     if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)

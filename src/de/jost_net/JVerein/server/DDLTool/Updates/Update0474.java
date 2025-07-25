@@ -98,7 +98,7 @@ public class Update0474 extends AbstractDDLUpdate
         false);
     execute(addColumn("einstellung", steuer));
 
-    // Steuer für bestehende Steuersätze erstellen
+    // Steuer fÃ¼r bestehende SteuersÃ¤tze erstellen
     execute("INSERT INTO steuer (NAME, satz, buchungsart,aktiv) SELECT"
         + " concat(case art when 0 then 'Umsatzsteuer ' when 1 then 'Vorsteuer ' when 2 then 'Steuer ' END, steuersatz , '%'),"
         + " steuersatz,steuer_buchungsart,1 FROM buchungsart"

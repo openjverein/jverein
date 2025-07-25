@@ -126,6 +126,7 @@ public class MailVorlageControl extends VorZurueckControl
     return mv;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try

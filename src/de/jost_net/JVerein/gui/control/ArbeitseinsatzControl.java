@@ -75,8 +75,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ArbeitseinsatzControl extends FilterControl
-    implements Savable
+public class ArbeitseinsatzControl extends FilterControl implements Savable
 {
   private ArbeitseinsatzPart part = null;
 
@@ -87,7 +86,7 @@ public class ArbeitseinsatzControl extends FilterControl
   private SelectInput suchjahr = null;
 
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
-  
+
   private JVereinTablePart arbeitseinsatzList;
 
   public ArbeitseinsatzControl(AbstractView view)
@@ -152,6 +151,7 @@ public class ArbeitseinsatzControl extends FilterControl
     return ae;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
@@ -191,7 +191,7 @@ public class ArbeitseinsatzControl extends FilterControl
     }
 
     suchjahr = new SelectInput(jahre, settings.getInt("jahr", jahre.get(0)));
-    // suchjahr.setPleaseChoose("Bitte ausw‰hlen");
+    // suchjahr.setPleaseChoose("Bitte ausw√§hlen");
     suchjahr.setPreselected(settings.getInt("jahr", bis.get(Calendar.YEAR)));
     suchjahr.addListener(new FilterListener());
     return suchjahr;
@@ -213,7 +213,7 @@ public class ArbeitseinsatzControl extends FilterControl
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatz¸berpr¸fung");
+              "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatz√ºberpr√ºfung");
         }
       }
     }, null, false, "file-pdf.png");
@@ -236,7 +236,7 @@ public class ArbeitseinsatzControl extends FilterControl
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatz¸berpr¸fung");
+              "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatz√ºberpr√ºfung");
         }
       }
     }, null, false, "xsd.png");
@@ -245,7 +245,7 @@ public class ArbeitseinsatzControl extends FilterControl
 
   public Button getArbeitseinsatzAusgabeButton()
   {
-    Button b = new Button("Zusatzbetr‰ge generieren", new Action()
+    Button b = new Button("Zusatzbetr√§ge generieren", new Action()
     {
 
       @Override
@@ -269,7 +269,7 @@ public class ArbeitseinsatzControl extends FilterControl
   private void startePDFAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -305,7 +305,7 @@ public class ArbeitseinsatzControl extends FilterControl
         {
           FileOutputStream fos = new FileOutputStream(file);
           Reporter reporter = new Reporter(fos,
-              String.format("Arbeitseins‰tze %d", jahr), sub, it.size());
+              String.format("Arbeitseins√§tze %d", jahr), sub, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Sollstunden", Element.ALIGN_RIGHT, 30,
@@ -322,7 +322,8 @@ public class ArbeitseinsatzControl extends FilterControl
           while (it.hasNext())
           {
             ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn((String) z.getAttribute("idnamevorname"),
                   Element.ALIGN_LEFT);
@@ -371,7 +372,7 @@ public class ArbeitseinsatzControl extends FilterControl
   private void starteCSVAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei w‰hlen.");
+    fd.setText("Ausgabedatei w√§hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -489,10 +490,11 @@ public class ArbeitseinsatzControl extends FilterControl
             zb.setFaelligkeit(new Date());
             zb.setStartdatum(new Date());
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
-            zb.setMitglied(Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setMitglied(
+                Integer.valueOf((String) z.getAttribute("mitgliedid")));
             zb.store();
           }
-          GUI.getStatusBar().setSuccessText("Liste Arbeitseins‰tze gestartet");
+          GUI.getStatusBar().setSuccessText("Liste Arbeitseins√§tze gestartet");
           GUI.getCurrentView().reload();
         }
         catch (Exception e)
@@ -568,7 +570,7 @@ public class ArbeitseinsatzControl extends FilterControl
     }
     return arbeitseinsatzueberpruefungList.getArbeitseinsatzUeberpruefungList();
   }
-  
+
   private void refreshList()
   {
     try
@@ -580,7 +582,7 @@ public class ArbeitseinsatzControl extends FilterControl
       //
     }
   }
-  
+
   private class FilterListener implements Listener
   {
 
@@ -594,14 +596,14 @@ public class ArbeitseinsatzControl extends FilterControl
       refreshList();
     }
   }
-  
+
   public Part getArbeitseinsatzTable() throws RemoteException
   {
     if (arbeitseinsatzList != null)
     {
       return arbeitseinsatzList;
     }
-    
+
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = getArbeitseinsaetzeIt();
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
@@ -619,8 +621,8 @@ public class ArbeitseinsatzControl extends FilterControl
     VorZurueckControl.setObjektListe(null, null);
     return arbeitseinsatzList;
   }
-  
-  
+
+  @Override
   public void TabRefresh()
   {
     try
@@ -642,23 +644,24 @@ public class ArbeitseinsatzControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
-  private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt() throws RemoteException
+
+  private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt()
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = service
         .createList(Arbeitseinsatz.class);
     arbeitseinsaetze.join("mitglied");
     arbeitseinsaetze.addFilter("mitglied.id = arbeitseinsatz.mitglied");
-    
+
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        arbeitseinsaetze.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        arbeitseinsaetze.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -678,11 +681,11 @@ public class ArbeitseinsatzControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         arbeitseinsaetze.addFilter("(lower(bemerkung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     return arbeitseinsaetze;
   }
-  
+
 }

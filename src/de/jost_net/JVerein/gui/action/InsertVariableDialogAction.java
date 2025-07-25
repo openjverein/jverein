@@ -48,7 +48,7 @@ public class InsertVariableDialogAction implements Action
   {
     if (map == null)
     {
-      throw new ApplicationException("Keine Map übergeben!");
+      throw new ApplicationException("Keine Map Ã¼bergeben!");
     }
     new ShowVariablesDialog(map, prependCopyText, "");
   }

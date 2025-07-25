@@ -33,9 +33,8 @@ public class MailMenu extends ContextMenu
   public MailMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(MailDetailView.class, part),
-        "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new MailDeleteAction(),
+        new EditAction(MailDetailView.class, part), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new MailDeleteAction(),
         "user-trash-full.png"));
   }
 }

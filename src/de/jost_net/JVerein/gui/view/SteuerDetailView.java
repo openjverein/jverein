@@ -49,8 +49,7 @@ public class SteuerDetailView extends AbstractDetailView
     buttons.addButton("Speichern", e -> {
       control.handleStore();
       GUI.getStatusBar().setSuccessText("Steuer gespeichert");
-    }, null, true,
-        "document-save.png");
+    }, null, true, "document-save.png");
     buttons.paint(getParent());
   }
 

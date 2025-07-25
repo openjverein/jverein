@@ -29,6 +29,7 @@ public class Update0442 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("update mitglied set individuellerbeitrag = NULL where individuellerbeitrag <= 0");
+    execute(
+        "update mitglied set individuellerbeitrag = NULL where individuellerbeitrag <= 0");
   }
 }

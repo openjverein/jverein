@@ -30,7 +30,7 @@ public class Update0459 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     {
-      // Autoincrement von Rechnung auf den maximalen Zähler aus Formular setzen
+      // Autoincrement von Rechnung auf den maximalen ZÃ¤hler aus Formular setzen
       // so gibt es eine fortlaufende Rechnungsnummer bei verwendung der
       // Rechnung-ID
       if (getDriver() == DRIVER.H2)
@@ -43,8 +43,8 @@ public class Update0459 extends AbstractDDLUpdate
       {
         execute(
             "SET @max_id = (SELECT if(MAX(zaehler),MAX(zaehler)+1,1) FROM formular WHERE art = 2);"
-              + "SET @sql = CONCAT('ALTER TABLE rechnung AUTO_INCREMENT = ', @max_id);"
-              + "PREPARE st FROM @sql; EXECUTE st;");
+                + "SET @sql = CONCAT('ALTER TABLE rechnung AUTO_INCREMENT = ', @max_id);"
+                + "PREPARE st FROM @sql; EXECUTE st;");
       }
     }
   }

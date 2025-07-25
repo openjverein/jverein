@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schl¸ssel Zahlungsrhythmus
+ * Schl√ºssel Zahlungsrhythmus
  */
 public class Zahlungsrhythmus
 {
@@ -54,11 +54,11 @@ public class Zahlungsrhythmus
     switch (key)
     {
       case Zahlungsrhythmus.JAEHRLICH:
-        return "J‰hrlich";
+        return "J√§hrlich";
       case Zahlungsrhythmus.HALBJAEHRLICH:
-        return "Halbj‰hrlich";
+        return "Halbj√§hrlich";
       case Zahlungsrhythmus.VIERTELJAEHRLICH:
-        return "Viertelj‰hrlich";
+        return "Viertelj√§hrlich";
       case Zahlungsrhythmus.MONATLICH:
         return "Monatlich";
       default:

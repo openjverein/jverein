@@ -38,7 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Nicht-Mitglied
+ * LÃ¶schen eines Nicht-Mitglied
  */
 public class NichtMitgliedDeleteAction implements Action
 {
@@ -48,15 +48,15 @@ public class NichtMitgliedDeleteAction implements Action
     Mitglied[] mitglieder = null;
     if (context == null)
     {
-      throw new ApplicationException("Kein Nicht-Mitglied ausgewählt");
+      throw new ApplicationException("Kein Nicht-Mitglied ausgewÃ¤hlt");
     }
-    else if(context instanceof Mitglied)
+    else if (context instanceof Mitglied)
     {
-      mitglieder = new Mitglied[] {(Mitglied)context};
+      mitglieder = new Mitglied[] { (Mitglied) context };
     }
-    else if(context instanceof Mitglied[])
+    else if (context instanceof Mitglied[])
     {
-      mitglieder = (Mitglied[])context;
+      mitglieder = (Mitglied[]) context;
     }
     else
     {
@@ -66,13 +66,14 @@ public class NichtMitgliedDeleteAction implements Action
     {
       String mehrzahl = mitglieder.length > 1 ? "er" : "";
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Nicht-Mitglied" + mehrzahl + " löschen");
-      d.setPanelText("Nicht-Mitglied" + mehrzahl + " löschen?");
+      d.setTitle("Nicht-Mitglied" + mehrzahl + " lÃ¶schen");
+      d.setPanelText("Nicht-Mitglied" + mehrzahl + " lÃ¶schen?");
       d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "":"s") + " Nicht-Mitglied" + mehrzahl + " wirklich löschen?"
-          + "\nDies löscht auch alle Nicht-Mitglied bezogenen Daten wie"
+      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "" : "s")
+          + " Nicht-Mitglied" + mehrzahl + " wirklich lÃ¶schen?"
+          + "\nDies lÃ¶scht auch alle Nicht-Mitglied bezogenen Daten wie"
           + "\nz.B. Sollbuchungen, Spendenbescheinigungen, Mails etc."
-          + "\nDiese Daten können nicht wieder hergestellt werden!";
+          + "\nDiese Daten kÃ¶nnen nicht wieder hergestellt werden!";
       d.setText(text);
 
       try
@@ -83,26 +84,27 @@ public class NichtMitgliedDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Nicht-Mitglied", e);
+        Logger.error("Fehler beim LÃ¶schen des Nicht-Mitglied", e);
         return;
       }
-      
+
       final DBService service = Einstellungen.getDBService();
       DBTransaction.starten();
-      for(Mitglied m:mitglieder)
+      for (Mitglied m : mitglieder)
       {
         if (m.isNewObject())
         {
           continue;
         }
-        // Suche Mails mit mehr als einem Empfänger
+        // Suche Mails mit mehr als einem EmpfÃ¤nger
         String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
         sql += "group by mailempfaenger.mail ";
         sql += "HAVING anzahl > 1 ";
         ResultSetExtractor rs = new ResultSetExtractor()
         {
           @Override
-          public Object extract(ResultSet rs) throws RemoteException, SQLException
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
           {
             ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
             while (rs.next())
@@ -113,10 +115,11 @@ public class NichtMitgliedDeleteAction implements Action
           }
         };
         @SuppressWarnings("unchecked")
-        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service.execute(sql,
-            new Object[] { }, rs);
-        
-        // Alle Mails an das Nicht-Mitglied löschen wenn nur ein Empfänger vorhanden
+        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service
+            .execute(sql, new Object[] {}, rs);
+
+        // Alle Mails an das Nicht-Mitglied lÃ¶schen wenn nur ein EmpfÃ¤nger
+        // vorhanden
         DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
             .createList(MailEmpfaenger.class);
         it.addFilter("mitglied = ?", m.getID());
@@ -125,20 +128,21 @@ public class NichtMitgliedDeleteAction implements Action
           Mail ma = ((MailEmpfaenger) it.next()).getMail();
           if (!ergebnis.contains(new BigDecimal(ma.getID())))
           {
-            // Die Mail hat keinen weiteren Empfänger also löschen
+            // Die Mail hat keinen weiteren EmpfÃ¤nger also lÃ¶schen
             ma.delete();
           }
         }
-        
+
         m.delete();
       }
       DBTransaction.commit();
-      GUI.getStatusBar().setSuccessText("Nicht-Mitglied" + mehrzahl + " gelöscht.");
+      GUI.getStatusBar()
+          .setSuccessText("Nicht-Mitglied" + mehrzahl + " gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
       DBTransaction.rollback();
-      String fehler = "Fehler beim Löschen des Nicht-Mitglied";
+      String fehler = "Fehler beim LÃ¶schen des Nicht-Mitglied";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -49,9 +49,9 @@ public class WiedervorlageMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
         new WiedervorlageErledigungAction(), "check.png"));
-    addItem(new WiedervorlageErledigtItem("Erledigung löschen",
+    addItem(new WiedervorlageErledigtItem("Erledigung lÃ¶schen",
         new WiedervorlageErledigungDeleteAction(), "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
     if (table != null)
     {
@@ -60,8 +60,9 @@ public class WiedervorlageMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
     }
   }
-  
-  private static class WiedervorlageErledigtItem extends CheckedSingleContextMenuItem
+
+  private static class WiedervorlageErledigtItem
+      extends CheckedSingleContextMenuItem
   {
     private WiedervorlageErledigtItem(String text, Action action, String icon)
     {
@@ -86,10 +87,12 @@ public class WiedervorlageMenu extends ContextMenu
       return false;
     }
   }
-  
-  private static class WiedervorlageNichtErledigtItem extends CheckedSingleContextMenuItem
+
+  private static class WiedervorlageNichtErledigtItem
+      extends CheckedSingleContextMenuItem
   {
-    private WiedervorlageNichtErledigtItem(String text, Action action, String icon)
+    private WiedervorlageNichtErledigtItem(String text, Action action,
+        String icon)
     {
       super(text, action, icon);
     }

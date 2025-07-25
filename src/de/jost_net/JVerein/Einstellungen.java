@@ -50,7 +50,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Diese Klasse speichert einige Einstellungen für dieses Plugin.
+ * Diese Klasse speichert einige Einstellungen fÃ¼r dieses Plugin.
  * 
  * @author Heiner Jostkleigrewe
  */
@@ -62,7 +62,7 @@ public class Einstellungen
   private static Settings settings = new Settings(Einstellungen.class);
 
   /**
-   * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
+   * VerschlÃ¼sselte Datei fÃ¼r besonders sensible Daten (PasswÃ¶rter)
    */
   private static Wallet wallet = null;
 
@@ -99,7 +99,7 @@ public class Einstellungen
   private static long TIMEOUT = 60;
 
   /**
-   * Variable, in der gespeichert wird, ob für den Verein Zusatzfelder vorhanden
+   * Variable, in der gespeichert wird, ob fÃ¼r den Verein Zusatzfelder vorhanden
    * sind.
    */
   private static Boolean hasZus = null;
@@ -149,7 +149,7 @@ public class Einstellungen
   {
     settings.setAttribute(key, value);
   }
-  
+
   /**
    * Settings in die lokale Settings Datei schreiben (nicht in der DB)
    * 
@@ -283,7 +283,7 @@ public class Einstellungen
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
     UNTERSCHRIFT("unterschrift", String.class, ""),
 
-    // Buchführung
+    // BuchfÃ¼hrung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
     UNTERDRUECKUNGKONTEN("unterdrueckungkonten", Integer.class, "2"),
     UNTERDRUECKUNGLAENGE("unterdrueckunglaenge", Integer.class, "0"),
@@ -305,7 +305,7 @@ public class Einstellungen
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
         "Der Betrag wird vom Konto ${IBAN}, (BIC ${BIC}) abgebucht."),
     RECHNUNGTEXTUEBERWEISUNG("rechnungtextueberweisung", String.class,
-        "Bitte überweisen Sie den Betrag auf das angegebene Konto."),
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto."),
     RECHNUNGTEXTBAR("rechnungtextbar", String.class,
         "Bitte zahlen Sie den Betrag auf das angegebene Konto ein."),
     ZAEHLERLAENGE("zaehlerlaenge", Integer.class, "5"),
@@ -406,11 +406,10 @@ public class Einstellungen
    *         in der Einstellung-Property definiert)
    * @throws RemoteException
    */
-  public static Object getEinstellung(Property prop)
-      throws RemoteException
+  public static Object getEinstellung(Property prop) throws RemoteException
   {
-    // Nach dem Timeout einstellungen neu laden. So werden auch Änderungen von
-    // Außerhalb gelesen.
+    // Nach dem Timeout einstellungen neu laden. So werden auch Ã„nderungen von
+    // AuÃŸerhalb gelesen.
     if (System.currentTimeMillis() > loadtime + TIMEOUT * 1000)
     {
       loadEinstellungen();
@@ -515,7 +514,7 @@ public class Einstellungen
    * Die Mailsignatur holen
    * 
    * @param separator
-   *          wenn true wird der Separator (-- \n) automatisch eingefügt wenn
+   *          wenn true wird der Separator (-- \n) automatisch eingefÃ¼gt wenn
    *          noch nicht vorhanden
    * @return die Signatur
    * @throws RemoteException
@@ -536,11 +535,12 @@ public class Einstellungen
   }
 
   /**
-   * Lädt die Einstellungen aus der DB und speichert sie in der Cache-Map
+   * LÃ¤dt die Einstellungen aus der DB und speichert sie in der Cache-Map
    */
   public static void loadEinstellungen() throws RemoteException
   {
-    DBIterator<DBObject> einstellungen = getDBService().createList(Einstellung.class);
+    DBIterator<DBObject> einstellungen = getDBService()
+        .createList(Einstellung.class);
     while (einstellungen.hasNext())
     {
       Einstellung e = (Einstellung) einstellungen.next();
@@ -555,7 +555,7 @@ public class Einstellungen
 
   /**
    * Holt den Hibiscus DBService um auf die Hibiscus Konten etc. zugreifen zu
-   * können
+   * kÃ¶nnen
    * 
    * @return
    * @throws RemoteException
@@ -648,7 +648,7 @@ public class Einstellungen
   }
 
   /**
-   * Prüft ob zusatzfelder verwendet werden
+   * PrÃ¼ft ob zusatzfelder verwendet werden
    * 
    * @return
    * @throws RemoteException
@@ -745,7 +745,7 @@ public class Einstellungen
   }
 
   /**
-   * Prüft, ob es der Erste Start von JVerein ist
+   * PrÃ¼ft, ob es der Erste Start von JVerein ist
    * 
    * @return
    */
@@ -786,8 +786,7 @@ public class Einstellungen
   {
     IMAPCopyData imapCopyData = new IMAPCopyData(
         (Boolean) getEinstellung(Property.COPYTOIMAPFOLDER),
-        (String) getEinstellung(Property.IMAPAUTHUSER),
-        getSmtpAuthPwd(),
+        (String) getEinstellung(Property.IMAPAUTHUSER), getSmtpAuthPwd(),
         (String) getEinstellung(Property.IMAPHOST),
         (String) getEinstellung(Property.IMAPPORT),
         (Boolean) getEinstellung(Property.IMAPSSL),

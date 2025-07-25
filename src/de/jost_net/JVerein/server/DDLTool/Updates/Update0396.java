@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/

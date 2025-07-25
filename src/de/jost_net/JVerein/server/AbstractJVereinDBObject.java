@@ -37,8 +37,8 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     super();
   }
 
-  // Wir müssen das überschreiben, da hasChanged die id nach int casted.
-  // Da wir in JVerein jedoch Long ids haben, wird es als Änderung gewerted.
+  // Wir mÃ¼ssen das Ã¼berschreiben, da hasChanged die id nach int casted.
+  // Da wir in JVerein jedoch Long ids haben, wird es als Ã„nderung gewerted.
   // Hier speichern wir die id immer als Long.
   @Override
   public Object setAttribute(String fieldName, Object value)
@@ -65,10 +65,10 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     if (isNewObject())
     {
       super.store();
-      // Das ist hier nötig, da AbstractDBObject blöderweise die Properties beim
-      // Insert nicht in der Map speichert und somit keine Änderungsüberwachnung
-      // möglich ist. Wir laden das Object einfach neu aus der DB dabei wird die
-      // Map gefüllt.
+      // Das ist hier nÃ¶tig, da AbstractDBObject blÃ¶derweise die Properties beim
+      // Insert nicht in der Map speichert und somit keine Ã„nderungsÃ¼berwachnung
+      // mÃ¶glich ist. Wir laden das Object einfach neu aus der DB dabei wird die
+      // Map gefÃ¼llt.
       load(getID());
     }
     else

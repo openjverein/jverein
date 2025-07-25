@@ -47,22 +47,28 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
   private boolean keinkonto;
 
   private boolean nurHibiscus;
-  
+
   private boolean nurAktuelleKonten;
-  
+
   private Kontenfilter art;
-  
+
   private CheckboxInput box = null;
-  
+
   private KontoList konten = null;
 
   /**
    * Dialog zur Kontenauswahl
-   * @param position An welcher Stelle soll der Dialog angezeigt werden?
-   * @param keinkonto Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
-   * @param nurHibiscus Es sollen nur Hibiscus-Konten angezeigt werden
-   * @param nurAktuelleKonten Es sollen nur aktuelle Konten angezeigt werden
-   * @param abschreibung Es sollen nur Anlagekonten angezeigt werden
+   * 
+   * @param position
+   *          An welcher Stelle soll der Dialog angezeigt werden?
+   * @param keinkonto
+   *          Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
+   * @param nurHibiscus
+   *          Es sollen nur Hibiscus-Konten angezeigt werden
+   * @param nurAktuelleKonten
+   *          Es sollen nur aktuelle Konten angezeigt werden
+   * @param abschreibung
+   *          Es sollen nur Anlagekonten angezeigt werden
    */
   public KontoAuswahlDialog(int position, boolean keinkonto,
       boolean nurHibiscus, boolean nurAktuelleKonten, Kontenfilter art)
@@ -72,31 +78,35 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
     this.setTitle("Konto-Auswahl");
     this.keinkonto = keinkonto;
     this.nurHibiscus = nurHibiscus;
-    this.nurAktuelleKonten=nurAktuelleKonten;
+    this.nurAktuelleKonten = nurAktuelleKonten;
     this.art = art;
   }
 
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    LabelGroup group = new LabelGroup(parent, "Verfügbare Konten");
+    LabelGroup group = new LabelGroup(parent, "VerfÃ¼gbare Konten");
     box = new CheckboxInput(nurAktuelleKonten);
     box.addListener(new Listener()
     {
+      @Override
       public void handleEvent(Event event)
       {
-    	  nurAktuelleKonten = (Boolean) box.getValue();
-    	  try 
-    	  { 
-    	    konten.update(nurHibiscus, nurAktuelleKonten, art);
-    	  } catch (Exception e) {}
+        nurAktuelleKonten = (Boolean) box.getValue();
+        try
+        {
+          konten.update(nurHibiscus, nurAktuelleKonten, art);
+        }
+        catch (Exception e)
+        {
+        }
       }
     });
     group.addCheckbox(box, i18n.tr("Nur aktive Konten"));
 
     if (text == null || text.length() == 0)
     {
-      text = "  Bitte wählen Sie das gewünschte Konto aus.";
+      text = "  Bitte wÃ¤hlen Sie das gewÃ¼nschte Konto aus.";
     }
     group.addText(text, true);
 
@@ -105,7 +115,7 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
       @Override
       public void handleAction(Object context)
       {
-        // wenn kein Konto ausgewählt sein darf, wird null zurückgegeben.
+        // wenn kein Konto ausgewÃ¤hlt sein darf, wird null zurÃ¼ckgegeben.
         if (context == null && keinkonto)
         {
           choosen = null;
@@ -119,15 +129,15 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
         close();
       }
     };
-    konten = new de.jost_net.JVerein.gui.parts.KontoList(a,
-        nurHibiscus, nurAktuelleKonten, art);
+    konten = new de.jost_net.JVerein.gui.parts.KontoList(a, nurHibiscus,
+        nurAktuelleKonten, art);
     konten.setContextMenu(null);
     konten.setMulti(false);
     konten.removeFeature(FeatureSummary.class);
     konten.paint(parent);
 
     ButtonArea b = new ButtonArea();
-    b.addButton(i18n.tr("Übernehmen"), new Action()
+    b.addButton(i18n.tr("Ãœbernehmen"), new Action()
     {
 
       @Override
