@@ -58,12 +58,11 @@ Für die Verwendung von IntelliJ folge diesen Schritten:
 ### Projekt-Struktur
 1. Um das JVerein-Projekt anzulegen, folge dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-project (Unter dem Punkt "Import a project with settings") und wähle den JVerein Ordner aus. Der JVerein Ordner muss als Eclipse Projekt importiert werden.
 2. Die eben heruntergeladenen Abhängigkeiten, befinden sich in dem Ordner, in dem auch der JVerein Ordner liegt. Importiere diese Ordner als Module nach dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-as-module (Unter dem Punkt "Import an Eclipse project as a module"). Auch hier müssen die Ordner als Eclipse-Modul importiert werden.
-3. Unter File -> Settings -> File Encodings: setze das Project Encoding auf ISO-8859-1
-4. Unter File -> Project Structure muss eine SDK mit mindestens Java 17 ausgewählt werden und das Language Level auf Java 11 gesetzt sein.
-5. Wechsle nun in diesem Fenster auf Modules und passe in allen Modulen die SDK so an, dass sie auf ein installiertes SDK verweist.
-6. Ebenfalls in diesem Fenster muss aus dem Hibiscus Modul im Sources tab der Ordner test entfernt werden.
-7. Lege eine neue Run/Debug Configuration an. Wähle dort "Application".
-8. In der Configuration wähle als Modul "jameica" und als Main Class "de.willuhn.jameica.Main". Für die Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen. Als Working Directory wähle jameica-<version>-nightly.src/jameica.
+3. Unter File -> Project Structure muss eine SDK mit mindestens Java 17 ausgewählt werden und das Language Level auf Java 11 gesetzt sein.
+4. Wechsle nun in diesem Fenster auf Modules und passe in allen Modulen die SDK so an, dass sie auf ein installiertes SDK verweist.
+5. Ebenfalls in diesem Fenster muss aus dem Hibiscus Modul im Sources tab der Ordner test entfernt werden.
+6. Lege eine neue Run/Debug Configuration an. Wähle dort "Application".
+7. In der Configuration wähle als Modul "jameica" und als Main Class "de.willuhn.jameica.Main". Für die Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen. Als Working Directory wähle jameica-<version>-nightly.src/jameica.
 
 ### Erster Start
 1. Führe die eben erstellte Configuration aus. Noch sind keine Plugins installiert, schließe daher Jameica wieder.
