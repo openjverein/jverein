@@ -19,11 +19,10 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Lesefeld;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LesefeldImpl extends AbstractDBObject implements Lesefeld
+public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
 {
 
   private static final long serialVersionUID = 1610434197155984031L;
@@ -105,6 +104,10 @@ public class LesefeldImpl extends AbstractDBObject implements Lesefeld
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("ausgabe".equals(fieldName))
+    {
+      return getEvaluatedContent();
+    }
     return super.getAttribute(fieldName);
   }
 
