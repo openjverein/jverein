@@ -22,11 +22,11 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class EinstellungenVorlageDetailView extends AbstractDetailView
@@ -46,7 +46,7 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     grName.addLabelPair("Vorlagenmuster", control.getMuster());
     grName.addLabelPair("Vorschau", control.getVorschau());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

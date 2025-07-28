@@ -20,9 +20,9 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.input.SaveNeuButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.control.EigenschaftControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class EigenschaftDetailView extends AbstractDetailView
@@ -40,7 +40,7 @@ public class EigenschaftDetailView extends AbstractDetailView
     grEigenschaft.addLabelPair("Bezeichnung", control.getBezeichnung());
     grEigenschaft.addLabelPair("Gruppe", control.getEigenschaftGruppe());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EIGENSCHAFT, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

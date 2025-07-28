@@ -20,9 +20,9 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.input.SaveNeuButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.control.FelddefinitionControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class ZusatzfeldDetailView extends AbstractDetailView
@@ -43,7 +43,7 @@ public class ZusatzfeldDetailView extends AbstractDetailView
     group.addLabelPair("Datentyp", control.getDatentyp());
     group.addLabelPair("Länge", control.getLaenge());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FELDDEFINITIONEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

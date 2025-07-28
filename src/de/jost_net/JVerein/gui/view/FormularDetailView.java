@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.input.SaveNeuButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.GUI;
@@ -80,7 +81,7 @@ public class FormularDetailView extends AbstractDetailView
 
     cont.addPart(control.getFormularfeldList());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
 

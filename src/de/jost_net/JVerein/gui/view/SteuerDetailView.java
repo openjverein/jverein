@@ -19,8 +19,9 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SteuerControl;
+import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class SteuerDetailView extends AbstractDetailView
@@ -40,16 +41,13 @@ public class SteuerDetailView extends AbstractDetailView
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     group.addLabelPair("Aktiv", control.getAktiv());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.STEUER, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton("Speichern", e -> {
-      control.handleStore();
-      GUI.getStatusBar().setSuccessText("Steuer gespeichert");
-    }, null, true, "document-save.png");
+    buttons.addButton(new SaveButton(control));
     buttons.paint(getParent());
   }
 

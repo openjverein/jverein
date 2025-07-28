@@ -21,8 +21,8 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WiedervorlageControl;
 import de.jost_net.JVerein.gui.input.SaveButton;
 import de.jost_net.JVerein.gui.input.SaveNeuButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class WiedervorlageDetailView extends AbstractDetailView
@@ -41,7 +41,7 @@ public class WiedervorlageDetailView extends AbstractDetailView
     group.addLabelPair("Vermerk", control.getVermerk());
     group.addLabelPair("Erledigung", control.getErledigung());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
