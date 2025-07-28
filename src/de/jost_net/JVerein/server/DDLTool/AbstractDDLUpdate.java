@@ -85,7 +85,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     try
     {
-      Logger.debug(statement);
+      Logger.info(statement);
       ScriptExecutor.execute(new StringReader(statement), conn, null);
       if (setVersion)
       {
