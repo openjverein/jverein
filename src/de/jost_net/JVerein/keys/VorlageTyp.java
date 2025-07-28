@@ -20,8 +20,7 @@ public enum VorlageTyp
 {
   SPENDENBESCHEINIGUNG_DATEINAME("spendenbescheinigung-dateiname",
       "Spendenbescheinigung Dateiname"),
-  SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME(
-      "spendenbescheinigung-mitglied-dateiname",
+  SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME("spendenbescheinigung-mitglied-dateiname",
       "Spendenbescheinigung-Mitglied Dateiname"),
   RECHNUNG_DATEINAME("rechnung-dateiname", "Rechnung Dateiname"),
   RECHNUNG_MITGLIED_DATEINAME("rechnung-mitglied-dateiname",
@@ -31,15 +30,65 @@ public enum VorlageTyp
   KONTOAUSZUG_DATEINAME("kontoauszug-dateiname", "Kontoauszug Dateiname"),
   KONTOAUSZUG_MITGLIED_DATEINAME("kontoauszug-mitglied-dateiname",
       "Kontoauszug-Mitglied Dateiname"),
-  FREIES_FORMULAR_DATEINAME("freies-formular-dateiname",
-      "Freies Formular Dateiname"),
+  FREIES_FORMULAR_DATEINAME("freies-formular-dateiname", "Freies Formular Dateiname"),
   FREIES_FORMULAR_MITGLIED_DATEINAME("freies-formular-mitglied-dateiname",
       "Freies Formular-Mitglied Dateiname"),
   CT1_AUSGABE_DATEINAME("1ct-ausgabe-dateiname", "1ct Ausgabe Dateiname"),
-  PRENOTIFICATION_DATEINAME("pre-notification-dateiname",
-      "Pre-Notification Dateiname"),
+  PRENOTIFICATION_DATEINAME("pre-notification-dateiname", "Pre-Notification Dateiname"),
   PRENOTIFICATION_MITGLIED_DATEINAME("pre-notification-mitglied-dateiname",
-      "Pre-Notification-Mitglied Dateiname");
+      "Pre-Notification-Mitglied Dateiname"),
+  // Reports aus Mitglieder
+  PERSONALBOGEN_DATEINAME("personalbogen-dateiname", "Personalbogen Dateiname"),
+  SOLLBUCHUNGEN_DATEINAME("sollbuchungen-dateiname",
+      "Sollbuchungen Liste Dateiname"),
+  SPENDENBESCHEINIGUNGEN_DATEINAME("spendenbescheinigungen-dateiname",
+      "Spendenbescheinigungen Liste Dateiname"),
+  ZUSATZBETRAEGE_DATEINAME("zusatzbetraege-dateiname",
+      "Zusatzbeträge Liste Dateiname"),
+  // Reports aus Buchführung
+  KONTENSALDO_DATEINAME("kontensaldo-dateiname", "Kontensaldo Dateiname"),
+  BUCHUNGSJOURNAL_DATEINAME("buchungsjournal-dateiname",
+      "Buchungsjournal Dateiname"),
+  EINZELBUCHUNGEN_DATEINAME("einzelbuchungen-dateiname",
+      "Einzelbuchungen Dateiname"),
+  SUMMENBUCHUNGEN_DATEINAME("summenbuchungen-dateiname",
+      "Summenbuchungen Dateiname"),
+  BUCHUNGSKLASSENSALDO_DATEINAME("buchungsklassensaldo-dateiname",
+      "Buchungsklassensaldo Dateiname"),
+  UMSATZSTEUER_VORANMELDUNG_DATEINAME("umsatzsteuervoranmeldung-dateiname",
+      "Umsatzsteuer Voranmeldung Dateiname"),
+  PROJEKTSALDO_DATEINAME("projektsaldo-dateiname", "Projektsaldo Dateiname"),
+  ANLAGENVERZEICHNIS_DATEINAME("anlagenverzeichnis-dateiname",
+      "Anlagenverzeichnis Dateiname"),
+  MITTELVERWENDUNG_DATEINAME("mittelverwendung-dateiname",
+      "Mittelverwendung Dateiname"),
+  MITTELVERWENDUNGSSALDO_DATEINAME("mittelverwendungssaldo-dateiname",
+      "Mittelverwendungssaldo Dateiname"),
+  // Reports aus Abrechnung
+  ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME(
+      "abrechnungslauf-lastschriften-dateiname",
+      "Abrechnungslauf Lastschriften Dateiname"),
+  ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME("abrechnungslaufliste-dateiname",
+      "Abrechnungslauf Sollbuchungen Dateiname"),
+  // Reports aus Auswertung
+  AUSWERTUNG_MITGLIED_DATEINAME("auswertung-mitglied-dateiname",
+      "Auswertung Mitglied Dateiname"),
+  AUSWERTUNG_NICHT_MITGLIED_DATEINAME("auswertung-nichtmitglied-dateiname",
+      "Auswertung Nicht-Mitglied Dateiname"),
+  AUSWERTUNG_ALTERSJUBILARE_DATEINAME("auswertung-altersjubilare-dateiname",
+      "Auswertung Jubiläen Dateiname"),
+  AUSWERTUNG_KURSTEILNEHMER_DATEINAME("auswertung-kursteilnehmer-dateiname",
+      "Auswertung Kursteilnehmer Dateiname"),
+  AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME(
+      "auswertung-mitgliederstatistik-dateiname",
+      "Auswertung Mitgliederstatistik Dateiname"),
+  AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME(
+      "auswertung-jahrgangsstatistik-dateiname",
+      "Auswertung Jahrgangsstatistik Dateiname"),
+  AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME("auswertung-arbeitseinsaetze-dateiname",
+      "Auswertung Arbeitseinsätze Dateiname"),
+  // Reports aus Einstellungen Buchführung
+  BUCHUNGSARTEN_DATEINAME("buchungsarten-dateiname", "Buchungsarten Dateiname");
 
   private final String text;
 
