@@ -206,7 +206,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       try
       {
-        lesefeldControl.updateLesefeldMitgliedList(control.getMitglied());
+        lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+            false);
       }
       catch (RemoteException e)
       {
@@ -250,6 +251,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           control.handleStore();
           zeichneUeberschrift();
+          // Mitglied neu aus DB lesen damit die editierten Daten verfügbar
+          // werden
+          Mitglied mg = Einstellungen.getDBService()
+              .createObject(Mitglied.class, control.getMitglied().getID());
+          control.setMitglied(mg);
+          GUI.getCurrentView().setCurrentObject(mg);
+          lesefeldControl.updateLesefeldMitgliedList(mg, true);
         }
         catch (RemoteException | ApplicationException e)
         {
