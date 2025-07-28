@@ -18,11 +18,14 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -84,7 +87,17 @@ public class FormularfeldDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png"));
+    }, null, false, "go-next.png")
+    {
+      @Override
+      public void paint(Composite parent) throws RemoteException
+      {
+        if (((DBObject) getCurrentObject()).isNewObject())
+        {
+          super.paint(parent);
+        }
+      }
+    });
 
     buttons.paint(this.getParent());
   }

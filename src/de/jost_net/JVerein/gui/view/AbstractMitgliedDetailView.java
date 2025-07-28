@@ -48,6 +48,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
@@ -253,7 +254,17 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png"));
+    }, null, false, "go-next.png")
+    {
+      @Override
+      public void paint(Composite parent) throws RemoteException
+      {
+        if (((DBObject) getCurrentObject()).isNewObject())
+        {
+          super.paint(parent);
+        }
+      }
+    });
 
     buttons.paint(parent);
   }

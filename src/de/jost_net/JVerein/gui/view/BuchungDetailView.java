@@ -114,7 +114,10 @@ public class BuchungDetailView extends AbstractDetailView
       }
     }, null, false, "go-next.png");
     saveNextButton.setEnabled(editable);
-    buttons.addButton(saveNextButton);
+    if (control.getBuchung().isNewObject())
+    {
+      buttons.addButton(saveNextButton);
+    }
 
     buttons.paint(getParent());
   }
