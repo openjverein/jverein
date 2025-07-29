@@ -20,12 +20,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
-import de.jost_net.JVerein.gui.input.SaveNeuButton;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -69,7 +68,7 @@ public class KontoDetailView extends AbstractDetailView
     {
       left1.addLabelPair("Anlagenzweck", control.getAnlagenzweck());
     }
-    ButtonArea anlagenbuttons = new ButtonArea();
+    de.willuhn.jameica.gui.parts.ButtonArea anlagenbuttons = new de.willuhn.jameica.gui.parts.ButtonArea();
     anlagenbuttons.addButton(control.getAutobutton());
     left1.addButtonArea(anlagenbuttons);
 
@@ -79,7 +78,7 @@ public class KontoDetailView extends AbstractDetailView
     right1.addLabelPair("Afa Mode", control.getAfaMode());
     right1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
     right1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
-    ButtonArea afabuttons = new ButtonArea();
+    de.willuhn.jameica.gui.parts.ButtonArea afabuttons = new de.willuhn.jameica.gui.parts.ButtonArea();
     afabuttons.addButton(control.getAfabutton());
     right1.addButtonArea(afabuttons);
 

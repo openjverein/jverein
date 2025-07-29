@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.Button;
 
 /**
  * Diese Klasse erzeugt standardisierte Bereiche fuer Buttons. Das ist die neue
@@ -34,7 +33,7 @@ import de.willuhn.jameica.gui.parts.Button;
  */
 public class ButtonAreaRtoL implements Part
 {
-  private List<Button> buttons = new ArrayList<Button>();
+  private List<ButtonRtoL> buttons = new ArrayList<ButtonRtoL>();
 
   /**
    * @see de.willuhn.jameica.gui.Part#paint(org.eclipse.swt.widgets.Composite)
@@ -62,7 +61,7 @@ public class ButtonAreaRtoL implements Part
    * @param button
    *          der Button.
    */
-  public void addButton(Button button)
+  public void addButton(ButtonRtoL button)
   {
     this.buttons.add(button);
   }
@@ -130,7 +129,7 @@ public class ButtonAreaRtoL implements Part
   public void addButton(String name, final Action action, final Object context,
       boolean isDefault, String icon)
   {
-    this.buttons.add(new Button(name, action, context, isDefault, icon));
+    this.buttons.add(new ButtonRtoL(name, action, context, isDefault, icon));
   }
 
 }

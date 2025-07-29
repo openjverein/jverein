@@ -26,12 +26,12 @@ import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -67,7 +67,7 @@ public class BuchungDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
 
-    Button saveButton = new Button("Speichern", context -> {
+    ButtonRtoL saveButton = new ButtonRtoL("Speichern", context -> {
       try
       {
         control.buchungSpeichern();
@@ -86,7 +86,7 @@ public class BuchungDetailView extends AbstractDetailView
     saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
-    Button saveNextButton = new Button("Speichern und neu", context -> {
+    ButtonRtoL saveNextButton = new ButtonRtoL("Speichern und neu", context -> {
       try
       {
         control.buchungSpeichern();

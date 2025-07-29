@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -54,7 +55,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.Container;
@@ -204,17 +204,18 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     if (!control.getMitglied().isNewObject())
     {
-      buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
+      buttons.addButton(new ButtonRtoL("Kontoauszug", new KontoauszugAction(),
           control.getMitglied(), false, "file-invoice.png"));
     }
     if (isMitgliedDetail())
     {
-      buttons.addButton(new Button("Personalbogen", new PersonalbogenAction(),
-          control.getCurrentObject(), false, "receipt.png"));
+      buttons
+          .addButton(new ButtonRtoL("Personalbogen", new PersonalbogenAction(),
+              control.getCurrentObject(), false, "receipt.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
-      buttons
-          .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
+      buttons.addButton(
+          new ButtonRtoL("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "edit-copy.png"));
     }
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
@@ -237,7 +238,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new Button("Speichern und neu", context -> {
+    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
       {
         control.handleStore();

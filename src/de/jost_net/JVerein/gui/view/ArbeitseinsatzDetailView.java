@@ -18,11 +18,11 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
-import de.jost_net.JVerein.gui.input.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
 
 public class ArbeitseinsatzDetailView extends AbstractDetailView

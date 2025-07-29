@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.gui.view.MailDetailView;
@@ -54,7 +55,6 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
@@ -250,9 +250,9 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     return anhang;
   }
 
-  public Button getMailSendButton()
+  public ButtonRtoL getMailSendButton()
   {
-    Button b = new Button("Speichern und senden", new Action()
+    ButtonRtoL b = new ButtonRtoL("Speichern und senden", new Action()
     {
 
       @Override
@@ -316,9 +316,9 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     return b;
   }
 
-  public Button getMailReSendButton()
+  public ButtonRtoL getMailReSendButton()
   {
-    Button b = new Button("Speichern und erneut senden", new Action()
+    ButtonRtoL b = new ButtonRtoL("Speichern und erneut senden", new Action()
     {
 
       @Override
