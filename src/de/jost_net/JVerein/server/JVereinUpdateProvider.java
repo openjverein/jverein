@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -264,19 +263,13 @@ public class JVereinUpdateProvider
           monitor, conn);
       Method method = object.getClass().getMethod("run", new Class[] {});
       Object[] args = new Object[] {};
-      DBTransaction.starten();
+
       method.invoke(object, args);
-      DBTransaction.commit();
+      conn.commit();
     }
     catch (ClassNotFoundException e)
     {
-      DBTransaction.rollback();
       return false;
-    }
-    catch (Exception e)
-    {
-      DBTransaction.rollback();
-      throw e;
     }
     return true;
   }
