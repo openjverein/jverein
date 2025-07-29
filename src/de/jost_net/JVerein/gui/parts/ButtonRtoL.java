@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
@@ -165,7 +166,8 @@ public class ButtonRtoL implements Part
    */
   public void paint(Composite parent) throws RemoteException
   {
-    button = new Button(parent, SWT.LEFT_TO_RIGHT);
+    button = new Button(parent, SWT.LEFT_TO_RIGHT | SWT.PUSH);
+    button.setFont(Font.DEFAULT.getSWTFont());
     button.setText(this.title == null ? "" : this.title);
     button.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
     if (this.icon != null)
