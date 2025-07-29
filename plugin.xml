@@ -13,10 +13,6 @@
       <item name="Über"
             action="de.jost_net.JVerein.gui.action.AboutAction" 
             icon="gtk-info.png" />
-      <item name="-" />
-      <item name="Lizenzinformationen"
-            action="de.jost_net.JVerein.gui.action.LizenzAction"
-            icon="text-x-generic.png" />
     </item>
   </menu>
   <classfinder>
