@@ -83,10 +83,10 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       throw new ApplicationException("Leeres Statement");
     }
-    try
+    try (Statement stmt = conn.createStatement())
     {
       Logger.info(statement);
-      ScriptExecutor.execute(new StringReader(statement), conn, null);
+      stmt.executeUpdate(statement);
       if (setVersion)
       {
         setNewVersion(nr);
