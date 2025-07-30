@@ -271,6 +271,11 @@ public class JVereinUpdateProvider
     {
       return false;
     }
+    catch (Exception e)
+    {
+      conn.rollback();
+      throw e;
+    }
     return true;
   }
 
