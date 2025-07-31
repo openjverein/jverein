@@ -30,7 +30,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -128,9 +127,9 @@ public abstract class AbstractSaldoControl extends AbstractControl
 
   public static final int ART_LEERZEILE = 8;
 
-  final static String AuswertungPDF = "PDF";
+  final static String AuswertungPDF = ".pdf";
 
-  final static String AuswertungCSV = "CSV";
+  final static String AuswertungCSV = ".csv";
 
   public AbstractSaldoControl(AbstractView view) throws RemoteException
   {
@@ -194,7 +193,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
    * 
    * @return
    */
-  protected abstract String getAuswertungTitle();
+  protected abstract String getDateiname();
 
   /**
    * Git ein Object, dass das Interface ISaldoExport implementiert zurück.
@@ -218,8 +217,6 @@ public abstract class AbstractSaldoControl extends AbstractControl
   {
     try
     {
-      String title = getAuswertungTitle();
-
       ArrayList<PseudoDBObject> zeile = getList();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -233,9 +230,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname(title, "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          type).get());
+      fd.setFileName(getDateiname() + type);
 
       final String s = fd.open();
 

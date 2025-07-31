@@ -930,9 +930,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   public Object[] getCVSExportGrenzen() throws RemoteException
   {
-    return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
-        getOhneAbbucher().getValue(), getDatumvon().getValue(),
-        getDatumbis().getValue(), getMailauswahl().getValue() };
+    return new Object[] { this, getSuchname().getValue(),
+        getDifferenz().getValue(), getOhneAbbucher().getValue(),
+        getDatumvon().getValue(), getDatumbis().getValue(),
+        getMailauswahl().getValue() };
   }
 
 }

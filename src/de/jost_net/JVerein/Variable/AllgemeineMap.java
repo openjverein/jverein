@@ -26,24 +26,9 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Staat;
-import de.jost_net.JVerein.util.JVDateFormatJJJJ;
-import de.jost_net.JVerein.util.JVDateFormatMM;
-import de.jost_net.JVerein.util.JVDateFormatMMJJJJ;
-import de.jost_net.JVerein.util.JVDateFormatTT;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
-public class AllgemeineMap
+public class AllgemeineMap extends AbstractMap
 {
-
-  private JVDateFormatTTMMJJJJ ttmmjjjj = new JVDateFormatTTMMJJJJ();
-
-  private JVDateFormatMMJJJJ mmjjjj = new JVDateFormatMMJJJJ();
-
-  private JVDateFormatTT tt = new JVDateFormatTT();
-
-  private JVDateFormatMM mm = new JVDateFormatMM();
-
-  private JVDateFormatJJJJ jjjj = new JVDateFormatJJJJ();
 
   public AllgemeineMap()
   {

@@ -30,8 +30,10 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -493,9 +495,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
+  protected String getDateiname()
   {
-    return "Buchungsklassen-Saldo";
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
   }
 
   @Override
@@ -506,7 +508,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new BuchungsklassesaldoCSV(mitUmbuchung);
       case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung, getAuswertungTitle());
+        return new BuchungsklassesaldoPDF(mitUmbuchung,
+            "Buchungsklassen-Saldo");
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }

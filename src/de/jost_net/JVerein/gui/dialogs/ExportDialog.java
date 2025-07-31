@@ -30,7 +30,6 @@ import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.IOFormat;
 import de.jost_net.JVerein.io.IORegistry;
-import de.jost_net.JVerein.util.Dateiname;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -176,8 +175,7 @@ public class ExportDialog extends AbstractDialog<Object>
     String ext = se == null ? "" : se[0];
     ext = ext.replaceAll("\\*.", ""); // "*." entfernen
 
-    fd.setFileName(
-        new Dateiname(exp.exporter.getDateiname(), "", "a$-d$z$", ext).get());
+    fd.setFileName(exp.exporter.getDateiname(objects[0]));
 
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));

@@ -294,7 +294,7 @@ public abstract class FilterControl extends VorZurueckControl
     return suchmitgliedstyp != null;
   }
 
-  public Input getMitgliedStatus()
+  public SelectInput getMitgliedStatus()
   {
     if (status != null)
     {
@@ -497,7 +497,7 @@ public abstract class FilterControl extends VorZurueckControl
         }
         catch (RemoteException e)
         {
-          
+
         }
       }
       else

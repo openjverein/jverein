@@ -67,9 +67,15 @@ public class FormularfelderExportAction implements Action
         Formularfeld ff = formularfelder.next();
         fflist.add(ff);
       }
+      Object[] objects = new Object[fflist.size() + 1];
+      objects[0] = f;
+      for (int i = 1; i < objects.length; i++)
+      {
+        objects[i] = fflist.get(i - 1);
+      }
 
-      ExportDialog d = new ExportDialog((Object[]) fflist.toArray(),
-          Formularfeld.class, DokumentationUtil.FORMULARE);
+      ExportDialog d = new ExportDialog(objects, Formularfeld.class,
+          DokumentationUtil.FORMULARE);
       d.open();
     }
     catch (OperationCanceledException oce)

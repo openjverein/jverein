@@ -28,6 +28,7 @@ import java.util.TreeMap;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -57,7 +58,8 @@ public abstract class StatistikJahrgaengeExport implements Exporter
   {
     this.file = file;
     statistik = new TreeMap<>();
-    Integer jahr = (Integer) objects[0];
+    MitgliedControl control = (MitgliedControl) objects[0];
+    Integer jahr = control.getJJahr();
     try
     {
       stichtag = Datum.toDate("31.12." + jahr);
@@ -159,12 +161,6 @@ public abstract class StatistikJahrgaengeExport implements Exporter
 
     open();
     close();
-  }
-
-  @Override
-  public String getDateiname()
-  {
-    return "statistikjahrgaenge";
   }
 
   protected abstract void open()

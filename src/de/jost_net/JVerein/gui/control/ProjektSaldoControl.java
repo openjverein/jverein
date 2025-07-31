@@ -21,8 +21,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 
 public class ProjektSaldoControl extends BuchungsklasseSaldoControl
@@ -69,8 +71,8 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
+  protected String getDateiname()
   {
-    return "Projekt-Saldo";
+    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_DATEINAME, this);
   }
 }

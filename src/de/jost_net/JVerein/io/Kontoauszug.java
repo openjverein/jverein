@@ -62,6 +62,8 @@ public class Kontoauszug
 
   private Reporter rpt;
 
+  private ArrayList<Mitglied> mitglieder = new ArrayList<>();
+
   private Kontoauszug() throws IOException, DocumentException
   {
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -71,7 +73,6 @@ public class Kontoauszug
   public Kontoauszug(Object object, SollbuchungControl control) throws Exception
   {
     this();
-    ArrayList<Mitglied> mitglieder = new ArrayList<>();
 
     if (object == null && control.isSuchMitgliedstypActive()
         && control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
@@ -182,8 +183,17 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
-        + extension);
+    if (mitglieder.size() == 1)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+              mitglieder.get(0)) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
+          + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();

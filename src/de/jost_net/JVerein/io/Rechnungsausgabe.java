@@ -68,25 +68,6 @@ public class Rechnungsausgabe
   {
     this.control = control;
     this.typ = typ;
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
-    {
-      case DRUCK:
-        file = getDateiAuswahl("pdf");
-        if (file == null)
-        {
-          return;
-        }
-        formularaufbereitung = new FormularAufbereitung(file, true, false);
-        break;
-      case MAIL:
-        file = getDateiAuswahl("zip");
-        if (file == null)
-        {
-          return;
-        }
-        zos = new ZipOutputStream(new FileOutputStream(file));
-        break;
-    }
 
     Formular formular = null;
     // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
@@ -121,9 +102,29 @@ public class Rechnungsausgabe
     if (rechnungen.size() == 0)
     {
       GUI.getStatusBar().setErrorText("Keine passende Rechnung gefunden.");
-      file.delete();
       return;
     }
+
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    {
+      case DRUCK:
+        file = getDateiAuswahl("pdf");
+        if (file == null)
+        {
+          return;
+        }
+        formularaufbereitung = new FormularAufbereitung(file, true, false);
+        break;
+      case MAIL:
+        file = getDateiAuswahl("zip");
+        if (file == null)
+        {
+          return;
+        }
+        zos = new ZipOutputStream(new FileOutputStream(file));
+        break;
+    }
+
     aufbereitung(formular);
   }
 
@@ -186,15 +187,34 @@ public class Rechnungsausgabe
     {
       fd.setFilterPath(path);
     }
-    if (typ == TYP.RECHNUNG)
+    if (rechnungen.size() == 1)
     {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "." + extension);
+      Rechnung rechnung = rechnungen.next();
+      if (typ == TYP.RECHNUNG)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
+                rechnung, rechnung.getMitglied()) + "." + extension);
+      }
+      else
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, rechnung,
+                rechnung.getMitglied()) + "." + extension);
+      }
     }
     else
     {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "." + extension);
+      if (typ == TYP.RECHNUNG)
+      {
+        fd.setFileName(VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "."
+            + extension);
+      }
+      else
+      {
+        fd.setFileName(VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "."
+            + extension);
+      }
     }
     fd.setFilterExtensions(new String[] { "*." + extension });
 

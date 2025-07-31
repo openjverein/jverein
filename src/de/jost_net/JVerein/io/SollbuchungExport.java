@@ -26,7 +26,6 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -46,8 +45,6 @@ public abstract class SollbuchungExport implements Exporter
   @Override
   public abstract IOFormat[] getIOFormats(Class<?> objectType);
 
-  protected EXPORT_TYP exportTyp = EXPORT_TYP.MITGLIEDSKONTO;
-
   protected File file;
 
   protected SollbuchungControl control = new SollbuchungControl(null);
@@ -58,13 +55,14 @@ public abstract class SollbuchungExport implements Exporter
       throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
-    this.control.getSuchname().setValue(objects[0]);
-    this.control.getDifferenz().setValue(objects[1]);
-    this.control.getOhneAbbucher().setValue(objects[2]);
-    this.control.getDatumvon().setValue(objects[3]);
-    this.control.getDatumbis().setValue(objects[4]);
+    // Index 0 ist der Control!
+    this.control.getSuchname().setValue(objects[1]);
+    this.control.getDifferenz().setValue(objects[2]);
+    this.control.getOhneAbbucher().setValue(objects[3]);
+    this.control.getDatumvon().setValue(objects[4]);
+    this.control.getDatumbis().setValue(objects[5]);
     this.control.getMailauswahl()
-        .setValue(new MailAuswertungObject((int) objects[5]));
+        .setValue(new MailAuswertungObject((int) objects[6]));
 
     open();
 
@@ -89,17 +87,6 @@ public abstract class SollbuchungExport implements Exporter
       endeMitglied();
     }
     close(monitor);
-  }
-
-  public void setExportTyp(EXPORT_TYP typ)
-  {
-    exportTyp = typ;
-  }
-
-  @Override
-  public String getDateiname()
-  {
-    return exportTyp.getDateiName();
   }
 
   protected abstract void startMitglied(Mitglied m) throws DocumentException;

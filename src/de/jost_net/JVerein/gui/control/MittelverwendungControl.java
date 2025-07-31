@@ -34,10 +34,12 @@ import de.jost_net.JVerein.io.MittelverwendungExportPDF;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -1091,9 +1093,18 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
+  protected String getDateiname()
   {
-    return "Mittelverwendungsrechnung";
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME, this);
+    }
+    else
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_DATEINAME, this);
+    }
   }
 
   @Override
