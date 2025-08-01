@@ -127,7 +127,7 @@ public class DokumentControl extends AbstractControl
       {
         GUI.startView(new DokumentDetailView(verzeichnis), doc);
       }
-    }, null);
+    }, null, false, "document-new.png");
     neuButton.setEnabled(enabled);
     return neuButton;
   }

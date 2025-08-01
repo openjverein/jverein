@@ -161,8 +161,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true);
     zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    zeichneMitgliedDetail(showInTab ? folder : oben.getComposite());
+    showInTab = Einstellungen.getSettingBoolean("ZeigeArbeitseinsatzInTab",
+        true);
+    zeichneArbeitseinsaetze(showInTab ? folder : oben.getComposite());
 
+    showInTab = Einstellungen.getSettingBoolean("ZeigeDokumenteInTab", true);
     zeichneDokumente(showInTab ? folder : oben.getComposite());
 
     // Aktivier zuletzt ausgewählten Tab.
@@ -270,14 +273,19 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           .createObject(MitgliedDokument.class, null);
       mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
       DokumentControl dcontrol = new DokumentControl(this, "mitglieder", true);
-      cont.addPart(dcontrol.getDokumenteList(mido));
+
       ButtonArea butts = new ButtonArea();
       butts.addButton(dcontrol.getNeuButton(mido));
       butts.paint(cont.getComposite());
+
+      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      cont.getComposite().setLayout(new GridLayout(1, false));
+
+      cont.addPart(dcontrol.getDokumenteList(mido));
     }
   }
 
-  private void zeichneMitgliedDetail(Composite parentComposite)
+  private void zeichneArbeitseinsaetze(Composite parentComposite)
       throws RemoteException
   {
     if (isMitgliedDetail()
