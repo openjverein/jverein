@@ -461,7 +461,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();
-    
+
     return nummer;
   }
 
@@ -729,35 +729,39 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
-  public Button getRechnungDruckUndMailButton()
+  public de.jost_net.JVerein.gui.parts.ButtonRtoL getRechnungDruckUndMailButton()
   {
 
-    Button b = new Button("Druck und Mail", new Action()
-    {
+    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
+        "Druck und Mail", new Action()
+        {
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Rechnung re = getRechnung();
-        GUI.startView(RechnungMailView.class, new Rechnung[] { (Rechnung) re });
-      }
-    }, getRechnung(), false, "document-print.png");
+          @Override
+          public void handleAction(Object context) throws ApplicationException
+          {
+            Rechnung re = getRechnung();
+            GUI.startView(RechnungMailView.class,
+                new Rechnung[] { (Rechnung) re });
+          }
+        }, getRechnung(), false, "document-print.png");
     return b;
   }
 
-  public Button getMahnungDruckUndMailButton()
+  public de.jost_net.JVerein.gui.parts.ButtonRtoL getMahnungDruckUndMailButton()
   {
 
-    Button b = new Button("Mahnung Druck und Mail", new Action()
-    {
+    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
+        "Mahnung Druck und Mail", new Action()
+        {
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Rechnung re = getRechnung();
-        GUI.startView(MahnungMailView.class, new Rechnung[] { (Rechnung) re });
-      }
-    }, getRechnung(), false, "document-print.png");
+          @Override
+          public void handleAction(Object context) throws ApplicationException
+          {
+            Rechnung re = getRechnung();
+            GUI.startView(MahnungMailView.class,
+                new Rechnung[] { (Rechnung) re });
+          }
+        }, getRechnung(), false, "document-print.png");
     return b;
   }
 

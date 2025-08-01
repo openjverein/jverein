@@ -27,11 +27,12 @@ import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
@@ -61,7 +62,7 @@ public class FormularDetailView extends AbstractDetailView
 
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
 
-    ButtonArea buttons1 = new ButtonArea();
+    ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
     buttons1.addButton("Export", new FormularfelderExportAction(),
         getCurrentObject(), false, "document-save.png");
     buttons1.addButton("Import", new FormularfelderImportAction(control),
@@ -79,7 +80,7 @@ public class FormularDetailView extends AbstractDetailView
 
     cont.addPart(control.getFormularfeldList());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
 
@@ -89,6 +90,7 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 

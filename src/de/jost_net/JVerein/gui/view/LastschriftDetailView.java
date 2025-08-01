@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -65,7 +65,7 @@ public class LastschriftDetailView extends AbstractView
     right.addInput(control.getBIC());
     right.addInput(control.getBetrag());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

@@ -19,16 +19,13 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
-import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.util.ApplicationException;
 
 public class BuchungsartDetailView extends AbstractDetailView
 {
@@ -58,29 +55,14 @@ public class BuchungsartDetailView extends AbstractDetailView
     group.addLabelPair("Suchbegriff ist ein regulärer Ausdruck",
         control.getRegexp());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-
-    buttons.addButton(new Button("Speichern und neu", context -> {
-      try
-      {
-        control.handleStore();
-
-        new NewAction(BuchungsartDetailView.class, Buchungsart.class, true)
-            .handleAction(null);
-        GUI.getStatusBar().setSuccessText("Buchungsart gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-    }, null, false, "go-next.png"));
-
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 
