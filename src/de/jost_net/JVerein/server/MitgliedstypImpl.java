@@ -72,7 +72,7 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
     {
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       DBIterator<Mitgliedstyp> typIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);

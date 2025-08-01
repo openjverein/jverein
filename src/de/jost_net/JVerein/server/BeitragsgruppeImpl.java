@@ -70,7 +70,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
     {
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       DBIterator<Beitragsgruppe> gruppeIt = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);

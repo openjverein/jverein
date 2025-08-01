@@ -60,7 +60,7 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
     {
       if (getBezeichnung() == null)
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       DBIterator<EigenschaftGruppe> gruppeIt = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);

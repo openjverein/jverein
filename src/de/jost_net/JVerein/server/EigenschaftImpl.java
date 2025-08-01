@@ -73,7 +73,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   {
     if (getBezeichnung() == null)
     {
-      throw new ApplicationException("Bitte Bezeichnung eingeben");
+      throw new ApplicationException("Bitte Bezeichnung eingeben!");
     }
     if (getEigenschaftGruppe() == null)
     {

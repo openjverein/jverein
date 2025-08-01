@@ -77,7 +77,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     {
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
-        throw new ApplicationException("Bitte eine Bezeichnung eingeben");
+        throw new ApplicationException("Bitte eine Bezeichnung eingeben!");
       }
       DBIterator<Formular> formIt = Einstellungen.getDBService()
           .createList(Formular.class);

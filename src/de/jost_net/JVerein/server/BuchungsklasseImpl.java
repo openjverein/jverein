@@ -59,11 +59,11 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
     {
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Nummer nicht gültig.");
       }
       DBIterator<Buchungsklasse> klassenIt = Einstellungen.getDBService()
           .createList(Buchungsklasse.class);
