@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Lesefeld;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -51,11 +53,29 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
   {
     try
     {
-      if (getScript() == null || getScript().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte gültiges Script eingeben");
+        throw new ApplicationException("Bitte Skript-Namen eingeben.");
       }
-
+      if (getScript() == null || getScript().isEmpty())
+      {
+        throw new ApplicationException("Bitte gültiges Script eingeben.");
+      }
+      DBIterator<Lesefeld> lesefelderIt = Einstellungen.getDBService()
+          .createList(Lesefeld.class);
+      while (lesefelderIt.hasNext())
+      {
+        Lesefeld test = lesefelderIt.next();
+        // Bezeichnung von Lesefeld muss eindeutig sein.
+        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        {
+          if (!test.getID().equalsIgnoreCase(this.getID()))
+          {
+            throw new ApplicationException(
+                "Bitte eindeutigen Skript-Namen eingeben!");
+          }
+        }
+      }
     }
     catch (RemoteException e)
     {
@@ -106,7 +126,12 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
   {
     if ("ausgabe".equals(fieldName))
     {
-      return getEvaluatedContent();
+      String ausgabe = getEvaluatedContent();
+      if (ausgabe != null && ausgabe.contains("\n"))
+      {
+        ausgabe = ausgabe.substring(0, ausgabe.indexOf("\n"));
+      }
+      return ausgabe;
     }
     return super.getAttribute(fieldName);
   }

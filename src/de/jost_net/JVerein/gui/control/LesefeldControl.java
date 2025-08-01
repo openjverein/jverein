@@ -109,6 +109,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         if (it.hasNext())
         {
           selectedMitglied = it.next();
+          settings.setAttribute("mitglied", selectedMitglied.getID());
         }
       }
       catch (RemoteException ex)
@@ -151,6 +152,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         selectedMitglied,
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     suchMitglied.addListener(new SuchMitgliedListener());
+    // In LesefelderListeView alle Lesefelder aus der DB lesen und evaluieren
+    // Dadurch kann die evaluierte Ausgabe in der Liste angezeigt werden
     initLesefelder();
     lesefeldAuswerter.evalAlleLesefelder();
     return suchMitglied;
@@ -176,6 +179,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
+        // Wenn sich das Mitglied im LesefelderListeView ändert, dann alle
+        // Lesefelder neu evaluieren, geladen sind sie ja schon
         lesefeldAuswerter
             .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
         lesefeldAuswerter.evalAlleLesefelder();
@@ -207,7 +212,14 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
-    initLesefelder();
+    // Im LesefelderDetailView braucht man nicht alle Lesefelder aus der DB
+    // lesen.
+    // Zur evaluierung wird das aktuelle Lesefeld genommen
+    if (selectedMitglied != null)
+    {
+      lesefeldAuswerter
+          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+    }
     return mitglied;
   }
 
@@ -258,8 +270,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return scriptName;
     }
-    scriptName = new TextInput(
-        getLesefeld() != null ? lesefeld.getBezeichnung() : "");
+    scriptName = new TextInput(getLesefeld().getBezeichnung());
     scriptName.setMandatory(true);
     return scriptName;
   }
@@ -277,9 +288,9 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return scriptCode;
     }
-    scriptCode = new TextAreaInput(
-        getLesefeld() != null ? lesefeld.getScript() : "");
+    scriptCode = new TextAreaInput(getLesefeld().getScript());
     scriptCode.setMandatory(true);
+    scriptCode.setHeight(200);
     return scriptCode;
   }
 
@@ -296,8 +307,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return scriptResult;
     }
-    scriptResult = new TextAreaInput(
-        lesefeld != null ? lesefeld.getEvaluatedContent() : "");
+    scriptResult = new TextAreaInput(getLesefeld().getEvaluatedContent());
     scriptResult.setEnabled(false);
     return scriptResult;
   }
@@ -326,6 +336,40 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
+   * Holt aktuelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
+   * zurück in die GUI.
+   *
+   * @return true bei Erfolg, sonst false (Fehlermeldung wird in
+   *         Skript-Ausgabe-Feld geschrieben).
+   */
+  public boolean updateScriptResult()
+  {
+    String result = "";
+    boolean success = true;
+    try
+    {
+      result = (String) lesefeldAuswerter
+          .eval(getScriptCode().getValue().toString());
+      if (result == null)
+      {
+        result = "Skript-Fehler: Skript muss Rückgabewert liefern.";
+        success = false;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      result = "Skript-Fehler:\r\n" + e.getMessage();
+      success = false;
+    }
+    finally
+    {
+      scriptResult.setValue(result);
+    }
+    return success;
+  }
+
+  /**
    * Bereitet das Lesesefeld Objekt mit aktuellen Werten zum Speichern vor.
    * 
    * @throws RemoteException
@@ -336,16 +380,19 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
   {
+    Lesefeld l = getLesefeld();
+    // Speichern nur wenn keine Fehler im Script sind.
     if (updateScriptResult())
     {
-      lesefeldAuswerter.addLesefelderDefinition(lesefeld);
+      l.setBezeichnung(getScriptName().getValue().toString());
+      l.setScript(getScriptCode().getValue().toString());
     }
     else
     {
       throw new ApplicationException(
           "Skript enthält Fehler. Kann nicht gespeichert werden.");
     }
-    return getLesefeld();
+    return l;
   }
 
   /**
@@ -373,11 +420,12 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * Datenbank.
    * 
    * @throws RemoteException
-   * 
-   * 
    */
   private void initLesefelder() throws RemoteException
   {
+    // Im LesefelderListe View oder MitgliedDetailView werden alle Lesefelder
+    // einmalig aus der DB gelesen. Später können sie mit unterschiedlichen
+    // Mitgliedern evaluiert werden
     lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
     // Die Map darf nur gesetzt werden wenn es ein Mitglied gibt!
     if (selectedMitglied != null)
@@ -399,10 +447,12 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   {
     if (lesefeldList == null)
     {
+      // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
+      // evaluierte Ausgabe gesetzt ist
       lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
           null);
       lesefeldList.addColumn("Skript-Name", "bezeichnung");
-      lesefeldList.addColumn("Ausgabe", "ausgabe");
+      lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
       lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
       lesefeldList.setRememberColWidths(true);
       lesefeldList.setRememberOrder(true);
@@ -441,88 +491,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Aktualisiert lokales Feld lesefeld mit den vom Nutzer eingegebenen Daten
-   * aus der GUI. Dabei wird ggf. lesefeld initialisiert und die Eindeutigkeit
-   * des Namens des Skriptes sichergestellt.
-   */
-  private boolean updateLesefeldFromGUI()
-  {
-    if (scriptName.getValue().toString().isEmpty())
-    {
-      GUI.getStatusBar().setErrorText("Bitte Skript-Namen eingeben.");
-      return false;
-    }
-    try
-    {
-      String lesefeldid = getLesefeld().getID();
-      if (lesefeldid == null)
-      {
-        lesefeldid = "0";
-      }
-      for (Lesefeld lesefeld : lesefeldAuswerter.getLesefelder())
-      {
-        // Bezeichnung von Lesefeld muss eindeutig sein.
-        if (lesefeld.getBezeichnung().equals(scriptName.getValue()))
-        {
-          String currentid = lesefeld.getID();
-          if (!lesefeldid.equalsIgnoreCase(currentid))
-          {
-            GUI.getStatusBar()
-                .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");
-            return false;
-          }
-        }
-      }
-      lesefeld.setBezeichnung((String) scriptName.getValue());
-      lesefeld.setScript((String) scriptCode.getValue());
-      lesefeld.setEvaluatedContent((String) scriptResult.getValue());
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Holt akutelles Skript von GUI, evaluiert dieses und schreibt Ergebnis
-   * zurück in die GUI.
-   *
-   * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *         Skript-Ausgabe-Feld geschrieben).
-   */
-  public boolean updateScriptResult()
-  {
-    if (!updateLesefeldFromGUI())
-      return false;
-    String result = "";
-    boolean success = true;
-    try
-    {
-      result = (String) lesefeldAuswerter.eval(lesefeld.getScript());
-      if (result == null)
-      {
-        result = "Skript-Fehler: Skript muss Rückgabewert liefern.";
-        success = false;
-      }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      result = "Skript-Fehler:\r\n" + e.getMessage();
-      success = false;
-    }
-    finally
-    {
-      scriptResult.setValue(result);
-    }
-    return success;
-  }
-
-  /**
    * 
    * @throws RemoteException
    * @return Die Lesefelder Tabelle für den Tab im MitgliedDetailView.
@@ -534,10 +502,12 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return lesefeldMitgliedList;
     }
+    // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
+    // evaluierte Ausgabe gesetzt ist
     lesefeldMitgliedList = new TablePart(lesefeldAuswerter.getLesefelder(),
         new EditAction(LesefeldDetailView.class));
     lesefeldMitgliedList.addColumn("Skript-Name", "bezeichnung");
-    lesefeldMitgliedList.addColumn("Ausgabe", "ausgabe");
+    lesefeldMitgliedList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
     lesefeldMitgliedList.setContextMenu(new LesefeldMenu(null));
     lesefeldMitgliedList.setRememberColWidths(true);
     lesefeldMitgliedList.setRememberOrder(true);

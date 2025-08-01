@@ -38,12 +38,13 @@ public class LesefeldDetailView extends AbstractDetailView
     GUI.getView().setTitle("Lesefeld");
     control = new LesefeldControl(this);
 
-    SimpleContainer container = new SimpleContainer(getParent(), true);
-
+    SimpleContainer container = new SimpleContainer(getParent(), false);
     container.addLabelPair("Mitglied", control.getMitglied());
     container.addLabelPair("Skript-Name", control.getScriptName());
-    container.addLabelPair("Skript", control.getScriptCode());
-    container.addLabelPair("Ausgabe", control.getScriptResult());
+    container.addLabelPair("Skript-Code", control.getScriptCode());
+
+    SimpleContainer container2 = new SimpleContainer(getParent(), true);
+    container2.addLabelPair("Skript-Ausg.", control.getScriptResult());
 
     if (control.getLesefeld() != null)
     {
