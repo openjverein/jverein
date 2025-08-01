@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -71,6 +73,20 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben");
+      }
+      DBIterator<Mitgliedstyp> typIt = Einstellungen.getDBService()
+          .createList(Mitgliedstyp.class);
+      while (typIt.hasNext())
+      {
+        Mitgliedstyp test = typIt.next();
+        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        {
+          if (!test.getID().equalsIgnoreCase(this.getID()))
+          {
+            throw new ApplicationException(
+                "Bitte eindeutige Bezeichnung eingeben!");
+          }
+        }
       }
     }
     catch (RemoteException e)

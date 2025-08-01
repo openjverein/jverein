@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -62,6 +64,19 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       if (getNummer() < 0)
       {
         throw new ApplicationException("Nummer nicht gültig");
+      }
+      DBIterator<Buchungsklasse> klassenIt = Einstellungen.getDBService()
+          .createList(Buchungsklasse.class);
+      while (klassenIt.hasNext())
+      {
+        Buchungsklasse test = klassenIt.next();
+        if (test.getNummer() == getNummer())
+        {
+          if (!test.getID().equalsIgnoreCase(this.getID()))
+          {
+            throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
+          }
+        }
       }
     }
     catch (RemoteException e)

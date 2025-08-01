@@ -18,8 +18,10 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -76,6 +78,20 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     if (getEigenschaftGruppe() == null)
     {
       throw new ApplicationException("Bitte Eigenschaftengruppe auswählen");
+    }
+    DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
+        .createList(Eigenschaft.class);
+    while (eigIt.hasNext())
+    {
+      Eigenschaft test = eigIt.next();
+      if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+      {
+        if (!test.getID().equalsIgnoreCase(this.getID()))
+        {
+          throw new ApplicationException(
+              "Bitte eindeutige Bezeichnung eingeben!");
+        }
+      }
     }
   }
 
