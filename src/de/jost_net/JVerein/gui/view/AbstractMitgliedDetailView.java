@@ -259,13 +259,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           control.handleStore();
           zeichneUeberschrift();
-          // Mitglied neu aus DB lesen damit die editierten Daten verfügbar
-          // werden
-          Mitglied mg = Einstellungen.getDBService()
-              .createObject(Mitglied.class, control.getMitglied().getID());
-          control.setMitglied(mg);
-          GUI.getCurrentView().setCurrentObject(mg);
-          lesefeldControl.updateLesefeldMitgliedList(mg, true);
+          lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+              true);
         }
         catch (RemoteException | ApplicationException e)
         {
