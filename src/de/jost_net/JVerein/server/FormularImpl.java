@@ -62,18 +62,6 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       {
         throw new ApplicationException("Bitte gültigen Dateinamen angeben!");
       }
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
-      {
-        throw new ApplicationException("Bitte eine Bezeichnung eingeben");
-      }
-      DBIterator<Formular> it = Einstellungen.getDBService()
-          .createList(Formular.class);
-      it.addFilter("bezeichnung = ?", getBezeichnung());
-      if (it.hasNext())
-      {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
-      }
     }
     catch (RemoteException e)
     {
@@ -90,6 +78,20 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       if (getBezeichnung() == null || getBezeichnung().length() == 0)
       {
         throw new ApplicationException("Bitte eine Bezeichnung eingeben");
+      }
+      DBIterator<Formular> formIt = Einstellungen.getDBService()
+          .createList(Formular.class);
+      while (formIt.hasNext())
+      {
+        Formular test = formIt.next();
+        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        {
+          if (!test.getID().equalsIgnoreCase(this.getID()))
+          {
+            throw new ApplicationException(
+                "Bitte eindeutige Bezeichnung eingeben!");
+          }
+        }
       }
     }
     catch (RemoteException e)
