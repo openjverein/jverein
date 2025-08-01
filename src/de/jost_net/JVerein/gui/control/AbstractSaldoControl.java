@@ -36,7 +36,6 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -193,6 +192,13 @@ public abstract class AbstractSaldoControl extends AbstractControl
    * 
    * @return
    */
+  protected abstract String getAuswertungTitle();
+
+  /**
+   * Holt den Dateinamen für die Auswertungen
+   * 
+   * @return
+   */
   protected abstract String getDateiname();
 
   /**
@@ -330,7 +336,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
     return datumbis;
   }
 
-  public Input getGeschaeftsjahr()
+  public TextInput getGeschaeftsjahr()
   {
     if (geschaeftsjahr != null)
     {

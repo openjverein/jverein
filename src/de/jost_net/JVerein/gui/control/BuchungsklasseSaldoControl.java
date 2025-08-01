@@ -495,6 +495,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getAuswertungTitle()
+  {
+    return "Buchungsklassen-Saldo";
+  }
+
+  @Override
   protected String getDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
@@ -508,10 +514,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new BuchungsklassesaldoCSV(mitUmbuchung);
       case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung,
-            "Buchungsklassen-Saldo");
+        return new BuchungsklassesaldoPDF(mitUmbuchung, getAuswertungTitle());
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

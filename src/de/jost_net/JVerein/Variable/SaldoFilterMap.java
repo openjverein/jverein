@@ -45,15 +45,15 @@ public class SaldoFilterMap extends AbstractMap
     }
 
     map.put(SaldoFilterVar.DATUM_VON_F.getName(),
-        control.getDatumvon().getValue());
+        fromDate(toDate((String) control.getDatumvon().getValue())));
     map.put(SaldoFilterVar.DATUM_VON_U.getName(),
         toDate((String) control.getDatumvon().getValue()));
     map.put(SaldoFilterVar.DATUM_BIS_F.getName(),
-        control.getDatumbis().getValue());
+        fromDate(toDate((String) control.getDatumbis().getValue())));
     map.put(SaldoFilterVar.DATUM_BIS_U.getName(),
         toDate((String) control.getDatumbis().getValue()));
     map.put(SaldoFilterVar.JAHR.getName(),
-        control.getGeschaeftsjahr().getValue());
+        control.getGeschaeftsjahr().getValue().toString());
 
     return map;
   }

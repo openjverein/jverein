@@ -2139,7 +2139,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Input getSuchMitgliedZugeordnet()
+  public SelectInput getSuchMitgliedZugeordnet()
   {
     if (hasmitglied != null)
     {
@@ -2194,7 +2194,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   /**
    * Hilfsklasse zur Anzeige der Importer.
    */
-  public class MitgliedZustand
+  private class MitgliedZustand
       implements GenericObject, Comparable<MitgliedZustand>
   {
 

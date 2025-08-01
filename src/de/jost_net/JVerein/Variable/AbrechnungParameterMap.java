@@ -68,14 +68,14 @@ public class AbrechnungParameterMap extends AbstractMap
     map.put(AbrechnungParameterVar.DATUM_AUSTRITT_F.getName(),
         fromDate((Date) control.getBisdatum().getValue()));
     map.put(AbrechnungParameterVar.ZAHLUNGSGRUND.getName(),
-        control.getZahlungsgrund().getValue());
+        control.getZahlungsgrund().getValue().toString());
     map.put(AbrechnungParameterVar.MODUS.getName(),
         control.getAbbuchungsmodus().getText());
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
       map.put(AbrechnungParameterVar.ABREACHNUNGSMONAT.getName(),
-          control.getAbrechnungsmonat().getValue());
+          control.getAbrechnungsmonat().getText());
     }
 
     return map;

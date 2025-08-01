@@ -140,6 +140,7 @@ public class RechnungMap extends AbstractMap
         (String) Einstellungen.getEinstellung(Property.QRCODEINTRO));
 
     map.put(RechnungVar.DATUM.getName(), re.getDatum());
+    map.put(RechnungVar.DATUM_F.getName(), fromDate(re.getDatum()));
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad(re.getID(),
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
 
@@ -161,6 +162,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.STAAT.getName(), re.getStaat());
     map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
     map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
+    map.put(RechnungVar.MANDATDATUM_F.getName(), fromDate(re.getMandatDatum()));
     map.put(RechnungVar.BIC.getName(), re.getBIC());
     map.put(RechnungVar.IBAN.getName(), re.getIBAN());
     map.put(RechnungVar.IBANMASKIERT.getName(),
@@ -254,6 +256,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.QRCODE_INTRO.getName(),
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
+    map.put(RechnungVar.DATUM_F.getName(), "20251001");
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     map.put(RechnungVar.ANREDE.getName(), "Herrn");
@@ -272,6 +275,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.PERSONENART.getName(), "n");
     map.put(RechnungVar.MANDATID.getName(), "12345");
     map.put(RechnungVar.MANDATDATUM.getName(), toDate("01.01.2024"));
+    map.put(RechnungVar.MANDATDATUM_F.getName(), "20240101");
     map.put(RechnungVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");

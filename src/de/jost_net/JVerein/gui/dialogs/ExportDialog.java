@@ -175,6 +175,8 @@ public class ExportDialog extends AbstractDialog<Object>
     String ext = se == null ? "" : se[0];
     ext = ext.replaceAll("\\*.", ""); // "*." entfernen
 
+    // objects[0] ist immer der Control bzw. das Objekt welches für die
+    // Dateinamen Map benutzt wird
     fd.setFileName(exp.exporter.getDateiname(objects[0]));
 
     String path = settings.getString("lastdir",

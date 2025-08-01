@@ -54,7 +54,7 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
           .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         map.put(AuswertungMitgliedFilterVar.EXT_MITGLIEDSNUMMER.getName(),
-            control.getSuchExterneMitgliedsnummer().toString());
+            control.getSuchExterneMitgliedsnummer().getValue().toString());
       }
     }
     catch (RemoteException e)

@@ -51,7 +51,7 @@ public class SollbuchungListeFilterMap extends AbstractMap
     map.put(SollbuchungListeFilterVar.ZAHLER_MAIL.getName(),
         control.getMailauswahl().getText());
     map.put(SollbuchungListeFilterVar.DIFFERENZ.getName(),
-        control.getDifferenz().getValue().toString());
+        control.getDifferenz().getText());
     Double limit = (Double) control.getDoubleAusw().getValue();
     if (limit != null)
     {

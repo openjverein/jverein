@@ -1093,6 +1093,12 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getAuswertungTitle()
+  {
+    return "Mittelverwendungsrechnung";
+  }
+
+  @Override
   protected String getDateiname()
   {
     if (selectedTab == 0)

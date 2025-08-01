@@ -355,6 +355,12 @@ public class KontensaldoControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getAuswertungTitle()
+  {
+    return "Konten-Saldo";
+  }
+
+  @Override
   protected String getDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.KONTENSALDO_DATEINAME, this);
@@ -373,4 +379,5 @@ public class KontensaldoControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

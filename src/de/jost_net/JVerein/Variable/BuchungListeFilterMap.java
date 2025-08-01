@@ -24,7 +24,6 @@ import java.util.Map;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.MitgliedZustand;
 import de.jost_net.JVerein.rmi.Konto;
 
 public class BuchungListeFilterMap extends AbstractMap
@@ -70,7 +69,7 @@ public class BuchungListeFilterMap extends AbstractMap
     map.put(BuchungListeFilterVar.SPLITBUCHUNG.getName(),
         control.getSuchSplibuchung().getText());
     map.put(BuchungListeFilterVar.BETRAG.getName(),
-        control.getSuchBetrag().getValue());
+        control.getSuchBetrag().getValue().toString());
     map.put(BuchungListeFilterVar.DATUM_VON_U.getName(),
         control.getVondatum().getValue());
     map.put(BuchungListeFilterVar.DATUM_VON_F.getName(),
@@ -82,12 +81,11 @@ public class BuchungListeFilterMap extends AbstractMap
     String u = (Boolean) control.getUngeprueft().getValue() ? "Ja" : "Nein";
     map.put(BuchungListeFilterVar.UNGEPRUEFT.getName(), u);
     map.put(BuchungListeFilterVar.ENTHALTENER_TEXT.getName(),
-        control.getSuchtext().getValue());
+        control.getSuchtext().getValue().toString());
     map.put(BuchungListeFilterVar.MITGLIED_ZUGEORDNET.getName(),
-        ((MitgliedZustand) control.getSuchMitgliedZugeordnet().getValue())
-            .getText());
+        control.getSuchMitgliedZugeordnet().getText());
     map.put(BuchungListeFilterVar.MITGLIED_NAME.getName(),
-        control.getMitglied().getValue());
+        control.getMitglied().getValue().toString());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       map.put(BuchungListeFilterVar.STEUER.getName(),

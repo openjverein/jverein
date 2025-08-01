@@ -68,6 +68,7 @@ public class FormularfelderExportAction implements Action
         fflist.add(ff);
       }
       Object[] objects = new Object[fflist.size() + 1];
+      // Formular an erster Stelle zur Berechnung des Dateinamen
       objects[0] = f;
       for (int i = 1; i < objects.length; i++)
       {

@@ -363,6 +363,12 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getAuswertungTitle()
+  {
+    return "Anlagenverzeichnis";
+  }
+
+  @Override
   protected String getDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
@@ -381,4 +387,5 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

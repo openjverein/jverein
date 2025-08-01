@@ -69,7 +69,7 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
     map.put(AnlagenbuchungListeFilterVar.SPLITBUCHUNG.getName(),
         control.getSuchSplibuchung().getText());
     map.put(AnlagenbuchungListeFilterVar.BETRAG.getName(),
-        control.getSuchBetrag().getValue());
+        control.getSuchBetrag().getValue().toString());
     map.put(AnlagenbuchungListeFilterVar.DATUM_VON_U.getName(),
         control.getVondatum().getValue());
     map.put(AnlagenbuchungListeFilterVar.DATUM_VON_F.getName(),
@@ -79,7 +79,7 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
     map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_F.getName(),
         fromDate((Date) control.getBisdatum().getValue()));
     map.put(AnlagenbuchungListeFilterVar.ENTHALTENER_TEXT.getName(),
-        control.getSuchtext().getValue());
+        control.getSuchtext().getValue().toString());
 
     return map;
   }
