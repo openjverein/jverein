@@ -49,4 +49,10 @@ public class FreieFormulareControl extends DruckMailControl
     saveDruckMailSettings();
     new FreiesFormularAusgabe(this);
   }
+
+  @Override
+  protected void TabRefresh()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+  }
 }
