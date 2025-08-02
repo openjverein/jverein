@@ -154,7 +154,15 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     suchMitglied.addListener(new SuchMitgliedListener());
     // In LesefelderListeView alle Lesefelder aus der DB lesen und evaluieren
     // Dadurch kann die evaluierte Ausgabe in der Liste angezeigt werden
-    initLesefelder();
+    lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
+    if (selectedMitglied != null)
+    {
+      lesefeldAuswerter
+          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+      // Mitglied in Settings speichern damit es beim Editieren oder der Neu
+      // Action im LesefeldDetailView erscheint.
+      settings.setAttribute("mitglied", selectedMitglied.getID());
+    }
     lesefeldAuswerter.evalAlleLesefelder();
     return suchMitglied;
   }
@@ -416,29 +424,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Initialisiert die Lesefelder im Lesefeld Auswerter mit den Daten aus der
-   * Datenbank.
-   * 
-   * @throws RemoteException
-   */
-  private void initLesefelder() throws RemoteException
-  {
-    // Im LesefelderListe View oder MitgliedDetailView werden alle Lesefelder
-    // einmalig aus der DB gelesen. Später können sie mit unterschiedlichen
-    // Mitgliedern evaluiert werden
-    lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
-    // Die Map darf nur gesetzt werden wenn es ein Mitglied gibt!
-    if (selectedMitglied != null)
-    {
-      lesefeldAuswerter
-          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
-      // Mitglied in Settings speichern damit es beim Editieren oder der Neu
-      // Action im LesefeldDetailView erscheint.
-      settings.setAttribute("mitglied", selectedMitglied.getID());
-    }
-  }
-
-  /**
    * @throws RemoteException
    * @return Die Lesefelder Tabelle für den LesefeldListeView.
    * 
@@ -530,7 +515,19 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     if (m != null && m.getID() != null)
     {
       selectedMitglied = m;
-      initLesefelder();
+      if (ersterTabAufruf)
+      {
+        // Im MitgliedDetailView werden alle Lesefelder einmalig aus der DB
+        // gelesen. Später können sie mit unterschiedlichen Mitgliedern
+        // evaluiert werden
+        lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
+      }
+      ersterTabAufruf = false;
+      lesefeldAuswerter
+          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+      // Mitglied in Settings speichern damit es beim Editieren oder der Neu
+      // Action im LesefeldDetailView erscheint.
+      settings.setAttribute("mitglied", selectedMitglied.getID());
       lesefeldAuswerter.evalAlleLesefelder();
     }
   }
@@ -561,7 +558,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         {
           lesefeldMitgliedList.addItem(lesefeld);
         }
-        ersterTabAufruf = false;
       }
     }
   }
