@@ -94,7 +94,7 @@ public class FormularfelderExportCSV extends FormularfelderExport
     }
     catch (RemoteException e)
     {
-      return "Formularfelder.xml";
+      return "Formularfelder.csv";
     }
   }
 
