@@ -55,11 +55,16 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
     {
       if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Skript-Namen eingeben.");
+        throw new ApplicationException("Bitte Skript-Namen eingeben!");
+      }
+      if (getBezeichnung().contains(" "))
+      {
+        throw new ApplicationException(
+            "Der Skript-Name darf keine Leerzeichen enthalten!");
       }
       if (getScript() == null || getScript().isEmpty())
       {
-        throw new ApplicationException("Bitte gültiges Script eingeben.");
+        throw new ApplicationException("Bitte gültiges Script eingeben!");
       }
       DBIterator<Lesefeld> lesefelderIt = Einstellungen.getDBService()
           .createList(Lesefeld.class);
