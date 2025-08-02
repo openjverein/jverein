@@ -259,8 +259,6 @@ public class EinstellungControl extends AbstractControl
 
   private IntegerInput AnzahlSpaltenZusatzfelderInput;
 
-  private IntegerInput AnzahlSpaltenLesefelderInput;
-
   private IntegerInput AnzahlSpaltenMitgliedschaftInput;
 
   private IntegerInput AnzahlSpaltenZahlungInput;
@@ -1585,19 +1583,6 @@ public class EinstellungControl extends AbstractControl
     }
   }
 
-  public IntegerInput getAnzahlSpaltenLesefelderInput() throws RemoteException
-  {
-    {
-      if (AnzahlSpaltenLesefelderInput != null)
-      {
-        return AnzahlSpaltenLesefelderInput;
-      }
-      AnzahlSpaltenLesefelderInput = new IntegerInput(
-          Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1));
-      return AnzahlSpaltenLesefelderInput;
-    }
-  }
-
   public IntegerInput getAnzahlSpaltenMitgliedschaftInput()
       throws RemoteException
   {
@@ -2839,8 +2824,6 @@ public class EinstellungControl extends AbstractControl
     {
       Einstellungen.setSettingInt("AnzahlSpaltenStammdaten",
           (Integer) getAnzahlSpaltenStammdatenInput().getValue());
-      Einstellungen.setSettingInt("AnzahlSpaltenLesefelder",
-          (Integer) getAnzahlSpaltenLesefelderInput().getValue());
       Einstellungen.setSettingInt("AnzahlSpaltenZusatzfelder",
           (Integer) getAnzahlSpaltenZusatzfelderInput().getValue());
       Einstellungen.setSettingInt("AnzahlSpaltenMitgliedschaft",
