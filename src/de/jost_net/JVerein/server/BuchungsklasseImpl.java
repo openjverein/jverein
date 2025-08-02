@@ -67,14 +67,14 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       }
       DBIterator<Buchungsklasse> klassenIt = Einstellungen.getDBService()
           .createList(Buchungsklasse.class);
+      if (!this.isNewObject())
+      {
+        klassenIt.addFilter("id != ?", getID());
+      }
       klassenIt.addFilter("nummer = ?", getNummer());
       if (klassenIt.hasNext())
       {
-        Buchungsklasse test = klassenIt.next();
-        if (!test.getID().equals(this.getID()))
-        {
-          throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
-        }
+        throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
       }
     }
     catch (RemoteException e)

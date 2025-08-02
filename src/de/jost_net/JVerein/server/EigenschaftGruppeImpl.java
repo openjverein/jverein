@@ -64,15 +64,15 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       }
       DBIterator<EigenschaftGruppe> gruppeIt = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
+      if (!this.isNewObject())
+      {
+        gruppeIt.addFilter("id != ?", getID());
+      }
       gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
       if (gruppeIt.hasNext())
       {
-        EigenschaftGruppe test = gruppeIt.next();
-        if (!test.getID().equals(this.getID()))
-        {
-          throw new ApplicationException(
-              "Bitte eindeutige Bezeichnung eingeben!");
-        }
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
       }
     }
     catch (RemoteException e)

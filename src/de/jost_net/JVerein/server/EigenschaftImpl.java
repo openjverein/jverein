@@ -81,15 +81,14 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     }
     DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
         .createList(Eigenschaft.class);
+    if (!this.isNewObject())
+    {
+      eigIt.addFilter("id != ?", getID());
+    }
     eigIt.addFilter("bezeichnung = ?", getBezeichnung());
     if (eigIt.hasNext())
     {
-      Eigenschaft test = eigIt.next();
-      if (!test.getID().equals(this.getID()))
-      {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
-      }
+      throw new ApplicationException("Bitte eindeutige Bezeichnung eingeben!");
     }
   }
 

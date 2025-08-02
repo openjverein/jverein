@@ -74,15 +74,15 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
       }
       DBIterator<Beitragsgruppe> gruppeIt = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
+      if (!this.isNewObject())
+      {
+        gruppeIt.addFilter("id != ?", getID());
+      }
       gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
       if (gruppeIt.hasNext())
       {
-        Beitragsgruppe test = gruppeIt.next();
-        if (!test.getID().equals(this.getID()))
-        {
-          throw new ApplicationException(
-              "Bitte eindeutige Bezeichnung eingeben!");
-        }
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
       }
       switch (Beitragsmodel.getByKey(
           (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
