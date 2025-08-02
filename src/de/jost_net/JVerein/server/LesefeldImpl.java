@@ -67,7 +67,7 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
       if (lesefelderIt.hasNext())
       {
         Lesefeld test = lesefelderIt.next();
-        if (!test.getID().equalsIgnoreCase(this.getID()))
+        if (!test.getID().equals(this.getID()))
         {
           throw new ApplicationException(
               "Bitte eindeutigen Skript-Namen eingeben!");
