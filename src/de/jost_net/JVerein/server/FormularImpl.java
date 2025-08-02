@@ -81,16 +81,14 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       }
       DBIterator<Formular> formIt = Einstellungen.getDBService()
           .createList(Formular.class);
-      while (formIt.hasNext())
+      formIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (formIt.hasNext())
       {
         Formular test = formIt.next();
-        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
+        if (!test.getID().equalsIgnoreCase(this.getID()))
         {
-          if (!test.getID().equalsIgnoreCase(this.getID()))
-          {
-            throw new ApplicationException(
-                "Bitte eindeutige Bezeichnung eingeben!");
-          }
+          throw new ApplicationException(
+              "Bitte eindeutige Bezeichnung eingeben!");
         }
       }
     }

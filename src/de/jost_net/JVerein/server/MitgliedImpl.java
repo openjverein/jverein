@@ -367,19 +367,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
 
     DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
         .createList(Mitglied.class);
-    mitglieder.addFilter(MITGLIEDSTYP + "= 1");
-    while (mitglieder.hasNext())
+    mitglieder.addFilter("externemitgliedsnummer = ?",
+        getExterneMitgliedsnummer());
+    if (mitglieder.hasNext())
     {
       Mitglied test = mitglieder.next();
-      if (getExterneMitgliedsnummer()
-          .equalsIgnoreCase(test.getExterneMitgliedsnummer()))
+      if (!test.getID().equalsIgnoreCase(this.getID()))
       {
-        if (!test.getID().equalsIgnoreCase(this.getID()))
-        {
-          throw new ApplicationException(
-              "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
-                  + test.getAttribute("namevorname"));
-        }
+        throw new ApplicationException(
+            "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
+                + test.getAttribute("namevorname"));
       }
     }
   }

@@ -80,16 +80,14 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       }
       DBIterator<Mitgliedstyp> typIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);
-      while (typIt.hasNext())
+      typIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (typIt.hasNext())
       {
         Mitgliedstyp test = typIt.next();
-        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
+        if (!test.getID().equalsIgnoreCase(this.getID()))
         {
-          if (!test.getID().equalsIgnoreCase(this.getID()))
-          {
-            throw new ApplicationException(
-                "Bitte eindeutige Bezeichnung eingeben!");
-          }
+          throw new ApplicationException(
+              "Bitte eindeutige Bezeichnung eingeben!");
         }
       }
     }
