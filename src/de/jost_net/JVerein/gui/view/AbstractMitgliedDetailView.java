@@ -199,8 +199,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   /**
    * Die Lesefelder werden nicht direkt beim Aufruf des MitgliedDetailView aus
-   * der DB geladen sondern erst wenn der Lesefelder Tab erstmalig angezeigt
-   * wird. Wir der Tab selektiert wird der Update im lesefeldControl aufgerufen.
+   * der DB geladen, sondern erst wenn der Lesefelder Tab erstmalig angezeigt
+   * wird. Wird der Tab selektiert, wird der Update im lesefeldControl
+   * aufgerufen.
    * 
    * @param folder
    *          Der selektierte Folder unten im View

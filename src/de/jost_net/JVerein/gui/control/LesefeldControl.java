@@ -221,13 +221,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     // Im LesefelderDetailView braucht man nicht alle Lesefelder aus der DB
-    // lesen.
-    // Zur evaluierung wird das aktuelle Lesefeld genommen
-    if (selectedMitglied != null)
-    {
-      lesefeldAuswerter
-          .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
-    }
+    // lesen. Zur Evaluierung wird das aktuelle Lesefeld genommen.
     return mitglied;
   }
 
@@ -251,8 +245,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        lesefeldAuswerter
-            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
         updateScriptResult();
         settings.setAttribute("mitglied", selectedMitglied.getID());
       }
@@ -284,7 +276,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Code des bearbeiteten Lesefeldes Scripts
+   * Code des bearbeiteten Lesefeldes Scripts.
    * 
    * @throws RemoteException
    * @return Eingabefeld für den Script Code.
@@ -303,7 +295,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Ausgabe des bearbeiteten Lesefeldes Scripts
+   * Ausgabe des bearbeiteten Lesefeldes Scripts.
    * 
    * @throws RemoteException
    * @return Ausgabefeld für die Script Ausgabe.
@@ -333,7 +325,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * @return Button zur Aktualisierung der Ausgabe eines Scriptes
+   * @return Button zur Aktualisierung der Ausgabe eines Scriptes.
    * 
    */
   public Button getAktualisierenButton()
@@ -356,6 +348,11 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     boolean success = true;
     try
     {
+      if (selectedMitglied != null)
+      {
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
+      }
       result = (String) lesefeldAuswerter
           .eval(getScriptCode().getValue().toString());
       if (result == null)
@@ -504,6 +501,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * Datenbank gelesen und alle evaluiert. Dann stehen auch die Ausgaben für die
    * Tabelle bereit.
    * 
+   * Lesen aus der Datenbank wird nur einmal gemacht.
+   * 
    * @param m
    *          Das Mitglied
    * @throws RemoteException
@@ -535,9 +534,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   /**
    * Werden die Lesefelder bei Mitgliedern im Tab angezeigt, dann werden sie
    * erst gezeichnet wenn der Tab selektiert wird. Vorher wird nur eine leere
-   * nicht sichtbare Liste gezeichnet. Der Update wird immer aufgerufen wenn der
-   * Tab selektiert wird. Die Lesefelder müssen aber pro Mitglied nur einmal
-   * gefüllt werden.
+   * Liste gezeichnet. Der Update wird immer aufgerufen wenn der Tab selektiert
+   * wird. Die Lesefelder müssen aber pro Mitglied nur einmal gefüllt werden.
    * 
    * @param m
    *          Das Mitglied
@@ -550,6 +548,9 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     // Bei neuem Mitglied noch nichts anzeigen
     if (m != null && m.getID() != null)
     {
+      // Force wird aus dem MitgliedDetailView verwendet wenn ein Mitglied
+      // gespeichert wird. Dann muss ein Update gemacht werden weil sich die
+      // Mitgliedsdaten geändert haben können.
       if (ersterTabAufruf || force)
       {
         initLesefeldMitgliedList(m);
