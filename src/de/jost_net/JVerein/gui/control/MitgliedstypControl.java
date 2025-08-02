@@ -71,6 +71,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getMitgliedstyp().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -82,6 +83,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     }
     bezeichnungplural = new TextInput(getMitgliedstyp().getBezeichnungPlural(),
         30);
+    bezeichnungplural.setMandatory(true);
     return bezeichnungplural;
   }
 

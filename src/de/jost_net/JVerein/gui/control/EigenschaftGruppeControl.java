@@ -77,6 +77,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getEigenschaftGruppe().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 

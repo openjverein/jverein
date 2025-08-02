@@ -96,6 +96,7 @@ public class FormularControl extends FormularPartControl implements Savable
     {
       bezeichnung.focus();
     }
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -135,13 +136,17 @@ public class FormularControl extends FormularPartControl implements Savable
     return art;
   }
 
-  public FileInput getDatei()
+  public FileInput getDatei() throws RemoteException
   {
     if (datei != null)
     {
       return datei;
     }
     datei = new FileInput("", false, new String[] { "*.pdf", "*.PDF" });
+    if (getFormular().isNewObject())
+    {
+      datei.setMandatory(true);
+    }
     return datei;
   }
 

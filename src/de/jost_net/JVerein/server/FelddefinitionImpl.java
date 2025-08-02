@@ -59,9 +59,13 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getName() == null || getName().length() == 0)
+      if (getName() == null || getName().isEmpty())
       {
         throw new ApplicationException("Bitte Namen des Feldes eingeben");
+      }
+      if (getLabel() == null || getLabel().isEmpty())
+      {
+        throw new ApplicationException("Bitte Namen des Label eingeben");
       }
       setName(getName().toLowerCase());
       String validChars = "abcdefghijklmnopqrstuvwxyz0123456789_";

@@ -82,6 +82,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getEigenschaft().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -100,6 +101,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");
     eigenschaftgruppe.setPleaseChoose("Bitte auswählen");
+    eigenschaftgruppe.setMandatory(true);
     return eigenschaftgruppe;
   }
 

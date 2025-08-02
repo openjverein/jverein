@@ -25,6 +25,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -62,13 +63,24 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Bitte Nummer eingeben!");
+      }
+      DBIterator<Buchungsart> artIt = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      if (!this.isNewObject())
+      {
+        artIt.addFilter("id != ?", getID());
+      }
+      artIt.addFilter("nummer = ?", getNummer());
+      if (artIt.hasNext())
+      {
+        throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
       }
       if (getSteuer() != null
           && getSteuer().getBuchungsart().getArt() != getArt())

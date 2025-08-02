@@ -76,6 +76,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     {
       nummer.focus();
     }
+    nummer.setMandatory(true);
     return nummer;
   }
 
@@ -86,6 +87,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getBuchungsklasse().getBezeichnung(), 255);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -93,7 +95,14 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Buchungsklasse b = getBuchungsklasse();
-    b.setNummer(((Integer) getNummer(false).getValue()).intValue());
+    if (getNummer(false).getValue() != null)
+    {
+      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
+    }
+    else
+    {
+      b.setNummer(-1);
+    }
     b.setBezeichnung((String) getBezeichnung().getValue());
     return b;
   }
