@@ -123,6 +123,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     {
       nummer.focus();
     }
+    nummer.setMandatory(true);
     return nummer;
   }
 
@@ -133,6 +134,7 @@ public class BuchungsartControl extends FilterControl implements Savable
       return bezeichnung;
     }
     bezeichnung = new TextInput(getBuchungsart().getBezeichnung(), 80);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -295,14 +297,15 @@ public class BuchungsartControl extends FilterControl implements Savable
       throws RemoteException, ApplicationException
   {
     Buchungsart b = getBuchungsart();
-    try
+    if (getNummer(false).getValue() != null)
     {
       b.setNummer(((Integer) getNummer(false).getValue()).intValue());
     }
-    catch (NullPointerException e)
+    else
     {
-      throw new ApplicationException("Nummer fehlt");
+      b.setNummer(-1);
     }
+
     b.setBezeichnung((String) getBezeichnung().getValue());
     ArtBuchungsart ba = (ArtBuchungsart) getArt().getValue();
     b.setArt(ba.getKey());

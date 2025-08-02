@@ -75,7 +75,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte eine Bezeichnung eingeben!");
       }
@@ -84,7 +84,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       while (formIt.hasNext())
       {
         Formular test = formIt.next();
-        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
         {
           if (!test.getID().equalsIgnoreCase(this.getID()))
           {

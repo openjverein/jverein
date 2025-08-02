@@ -71,7 +71,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
 
   private void plausi() throws RemoteException, ApplicationException
   {
-    if (getBezeichnung() == null)
+    if (getBezeichnung() == null || getBezeichnung().isEmpty())
     {
       throw new ApplicationException("Bitte Bezeichnung eingeben!");
     }
@@ -84,7 +84,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     while (eigIt.hasNext())
     {
       Eigenschaft test = eigIt.next();
-      if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+      if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
       {
         if (!test.getID().equalsIgnoreCase(this.getID()))
         {

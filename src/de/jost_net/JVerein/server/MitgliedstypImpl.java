@@ -70,16 +70,20 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      if (getBezeichnungPlural() == null || getBezeichnungPlural().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung Plural eingeben!");
       }
       DBIterator<Mitgliedstyp> typIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);
       while (typIt.hasNext())
       {
         Mitgliedstyp test = typIt.next();
-        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
         {
           if (!test.getID().equalsIgnoreCase(this.getID()))
           {

@@ -58,7 +58,7 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
@@ -67,7 +67,7 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       while (gruppeIt.hasNext())
       {
         EigenschaftGruppe test = gruppeIt.next();
-        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
         {
           if (!test.getID().equalsIgnoreCase(this.getID()))
           {

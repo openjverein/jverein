@@ -63,13 +63,13 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig.");
+        throw new ApplicationException("Bitte Nummer eingeben!");
       }
       DBIterator<Buchungsart> artIt = Einstellungen.getDBService()
           .createList(Buchungsart.class);

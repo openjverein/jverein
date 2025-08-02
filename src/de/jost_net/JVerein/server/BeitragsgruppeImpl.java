@@ -68,7 +68,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
@@ -77,7 +77,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
       while (gruppeIt.hasNext())
       {
         Beitragsgruppe test = gruppeIt.next();
-        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        if (getBezeichnung().equalsIgnoreCase(test.getBezeichnung()))
         {
           if (!test.getID().equalsIgnoreCase(this.getID()))
           {
