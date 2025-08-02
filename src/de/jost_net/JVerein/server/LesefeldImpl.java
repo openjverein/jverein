@@ -63,17 +63,14 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
       }
       DBIterator<Lesefeld> lesefelderIt = Einstellungen.getDBService()
           .createList(Lesefeld.class);
-      while (lesefelderIt.hasNext())
+      lesefelderIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (lesefelderIt.hasNext())
       {
         Lesefeld test = lesefelderIt.next();
-        // Bezeichnung von Lesefeld muss eindeutig sein.
-        if (test.getBezeichnung().equalsIgnoreCase(getBezeichnung()))
+        if (!test.getID().equalsIgnoreCase(this.getID()))
         {
-          if (!test.getID().equalsIgnoreCase(this.getID()))
-          {
-            throw new ApplicationException(
-                "Bitte eindeutigen Skript-Namen eingeben!");
-          }
+          throw new ApplicationException(
+              "Bitte eindeutigen Skript-Namen eingeben!");
         }
       }
     }
