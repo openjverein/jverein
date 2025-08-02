@@ -259,10 +259,16 @@ public class JVereinUpdateProvider
 
       method.invoke(object, new Object[] {});
       setNewVersion(conn, currentversion);
+      conn.commit();
     }
     catch (ClassNotFoundException e)
     {
       return false;
+    }
+    catch (Exception e)
+    {
+      conn.rollback();
+      throw e;
     }
     return true;
   }
