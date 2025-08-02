@@ -51,25 +51,6 @@ public class FreiesFormularAusgabe
       return;
     }
 
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
-    {
-      case DRUCK:
-        file = getDateiAuswahl("pdf", formular.getBezeichnung());
-        if (file == null)
-        {
-          return;
-        }
-        formularaufbereitung = new FormularAufbereitung(file, false, false);
-        break;
-      case MAIL:
-        file = getDateiAuswahl("zip", formular.getBezeichnung());
-        if (file == null)
-        {
-          return;
-        }
-        zos = new ZipOutputStream(new FileOutputStream(file));
-        break;
-    }
     Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control
         .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
     int type = -1;
@@ -80,9 +61,29 @@ public class FreiesFormularAusgabe
     if (mitglieder.size() == 0)
     {
       GUI.getStatusBar().setErrorText("Keine passenden Mitglieder gefunden.");
-      file.delete();
       return;
     }
+
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    {
+      case DRUCK:
+        file = getDateiAuswahl("pdf", formular.getBezeichnung(), mitglieder);
+        if (file == null)
+        {
+          return;
+        }
+        formularaufbereitung = new FormularAufbereitung(file, false, false);
+        break;
+      case MAIL:
+        file = getDateiAuswahl("zip", formular.getBezeichnung(), mitglieder);
+        if (file == null)
+        {
+          return;
+        }
+        zos = new ZipOutputStream(new FileOutputStream(file));
+        break;
+    }
+
     aufbereitung(formular, mitglieder);
   }
 
@@ -132,7 +133,8 @@ public class FreiesFormularAusgabe
 
   }
 
-  File getDateiAuswahl(String extension, String name) throws RemoteException
+  File getDateiAuswahl(String extension, String name,
+      ArrayList<Mitglied> mitglieder) throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -142,11 +144,19 @@ public class FreiesFormularAusgabe
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
-            + extension);
+    if (mitglieder.size() == 1)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+              name, mitglieder.get(0)) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
+              + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
-
     String s = fd.open();
     if (s == null || s.length() == 0)
     {
