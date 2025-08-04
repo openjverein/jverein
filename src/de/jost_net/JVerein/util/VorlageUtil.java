@@ -200,7 +200,7 @@ public class VorlageUtil
   {
     DBIterator<Vorlage> vorlagen = Einstellungen.getDBService()
         .createList(Vorlage.class);
-    vorlagen.addFilter("key = ?", typ.getKey());
+    vorlagen.addFilter("name = ?", typ.getKey());
     if (vorlagen.hasNext())
     {
       return vorlagen.next().getMuster();
