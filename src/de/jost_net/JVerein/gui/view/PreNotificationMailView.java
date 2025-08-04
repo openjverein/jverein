@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
+import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -98,6 +99,8 @@ public class PreNotificationMailView extends AbstractView
     buttons1.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
+    buttons1.addButton(control.getDruckMailMitgliederButton(
+        this.getCurrentObject(), TYP.DRUCKMAIL.toString()));
     buttons1.addButton(control.getStartButton(this.getCurrentObject()));
     addButtonArea(buttons1, grtabMailPDF.getComposite());
 
@@ -110,6 +113,8 @@ public class PreNotificationMailView extends AbstractView
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons2.addButton(control.getDruckMailMitgliederButton(
+        this.getCurrentObject(), TYP.CENT1.toString()));
     buttons2.addButton(
         control.getStart1ctUeberweisungButton(this.getCurrentObject()));
     addButtonArea(buttons2, grtab2.getComposite());

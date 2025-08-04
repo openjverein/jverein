@@ -1,8 +1,13 @@
 package de.jost_net.JVerein.gui.control;
 
-import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
 
+import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
+import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -44,9 +49,64 @@ public class FreieFormulareControl extends DruckMailControl
   }
 
   private void generiereFreieFormulare(Object currentObject)
-      throws IOException, ApplicationException
   {
-    saveDruckMailSettings();
-    new FreiesFormularAusgabe(this);
+    try
+    {
+      saveDruckMailSettings();
+      new FreiesFormularAusgabe(getMitglieder(currentObject), this);
+    }
+    catch (ApplicationException ae)
+    {
+      GUI.getStatusBar().setErrorText(ae.getMessage());
+    }
+    catch (Exception e)
+    {
+      Logger.error("", e);
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+  }
+
+  private ArrayList<Mitglied> getMitglieder(Object object)
+      throws RemoteException, ApplicationException
+  {
+    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) getSuchMitgliedstyp(
+        Mitgliedstypen.ALLE).getValue();
+    int type = -1;
+    if (mitgliedstyp != null)
+    {
+      type = Integer.parseInt(mitgliedstyp.getID());
+    }
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(type, null);
+    if (mitglieder.size() == 0)
+    {
+      throw new ApplicationException(
+          "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+    }
+    return mitglieder;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    ArrayList<Mitglied> mitglieder = getMitglieder(object);
+    String text = null;
+    int ohneMail = 0;
+    if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+    {
+      for (Mitglied m : mitglieder)
+      {
+        String mail = m.getEmail();
+        if (mail == null || mail.isEmpty())
+        {
+          ohneMail++;
+        }
+      }
+    }
+    if (ohneMail > 0)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse!";
+    }
+    return new DruckMailEmpfaenger(mitglieder, text);
   }
 }
