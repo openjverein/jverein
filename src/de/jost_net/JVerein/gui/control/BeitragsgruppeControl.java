@@ -155,6 +155,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     if (getBeitragsgruppe().getID() != null
         && getBeitragsgruppe().getHasAltersstaffel())
       betrag.disable();
+    betrag.setMandatory(true);
     return betrag;
   }
 
@@ -467,7 +468,14 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         else
         {
           Double betrag = (Double) getBetrag().getValue();
-          b.setBetrag(betrag.doubleValue());
+          if (betrag != null)
+          {
+            b.setBetrag(betrag.doubleValue());
+          }
+          else
+          {
+            b.setBetrag(-1);
+          }
           b.setHasAltersstaffel(false);
         }
         break;
