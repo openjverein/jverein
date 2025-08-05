@@ -415,19 +415,20 @@ public class MitgliedQuery
         it.addFilter(Sollbuchung.T_DATUM + " <= ?",
             (Date) control.getDatumbis().getValue());
       }
+      if (control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
+      {
+        it.addHaving("dif < -" + limit.toString());
+      }
+      else
+      {
+        it.addHaving("dif > " + limit.toString());
+      }
       it.addGroupBy(Sollbuchung.T_MITGLIED);
       ArrayList<String> diffIds = new ArrayList<>();
       while (it.hasNext())
       {
         PseudoDBObject o = it.next();
-        Double dif = o.getDouble("dif");
-        if ((control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG
-            && dif < -limit)
-            || (control.getDifferenz().getValue() == DIFFERENZ.UEBERZAHLUNG
-                && dif > limit))
-        {
-          diffIds.add(String.valueOf(o.getAttribute("mid")));
-        }
+        diffIds.add(String.valueOf(o.getAttribute("mid")));
       }
 
       if (diffIds.size() == 0)
