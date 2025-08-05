@@ -1004,9 +1004,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         }
       }
     }
-    if (ohneMail > 0)
+    if (ohneMail == 1)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse!";
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(mitglieder, text);
   }

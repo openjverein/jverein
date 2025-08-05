@@ -1088,7 +1088,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       throws RemoteException, ApplicationException
   {
     List<Mitglied> mitglieder = new ArrayList<>();
-    String text = null;
+    String text = "";
     int ohneMail = 0;
     int ohneMitglied = 0;
     Spendenbescheinigung[] spbs = getSpbArray(object);
@@ -1115,27 +1115,61 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     if (ohneMail > 0 && ohneMitglied == 0)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse!";
+      text = getMailText(ohneMail, false);
     }
     if (ohneMail == 0 && ohneMitglied > 0)
     {
-      if (getAusgabeart().getValue() == Ausgabeart.MAIL)
-      {
-        text = ohneMitglied
-            + " Spendenbescheinigungen haben kein Mitglied gesetzt!";
-      }
-      else
-      {
-        text = ohneMitglied
-            + " Spendenbescheinigungen haben kein Mitglied gesetzt, werden aber gedruckt!";
-      }
+      text = getMitgliedText(ohneMitglied,
+          getAusgabeart().getValue() != Ausgabeart.MAIL);
     }
     if (ohneMail > 0 && ohneMitglied > 0)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse und "
-          + ohneMitglied
-          + " Spendenbescheinigungen haben kein Mitglied gesetzt!";
+      text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
     }
     return new DruckMailEmpfaenger(mitglieder, text);
+  }
+
+  private String getMailText(int ohneMail, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck)
+    {
+      zusatz = " und ";
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse" + zusatz;
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse" + zusatz;
+    }
+    return text;
+  }
+
+  private String getMitgliedText(int ohneMitglied, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck && ohneMitglied == 1)
+    {
+      zusatz = ", wird aber gedruckt.";
+    }
+    if (druck && ohneMitglied > 1)
+    {
+      zusatz = ", werden aber gedruckt.";
+    }
+    if (ohneMitglied == 1)
+    {
+      text = ohneMitglied + " Spendenbescheinigung hat kein Mitglied gesetzt"
+          + zusatz;
+    }
+    else if (ohneMitglied > 1)
+    {
+      text = ohneMitglied
+          + " Spendenbescheinigungen haben kein Mitglied gesetzt" + zusatz;
+    }
+    return text;
   }
 }

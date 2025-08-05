@@ -27,7 +27,6 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 /**
@@ -54,10 +53,6 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
   {
     LabelGroup group = new LabelGroup(parent, "");
     LabelInput textFeld = new LabelInput(text);
-    if (text != null && !text.isEmpty())
-    {
-      textFeld.setColor(Color.ERROR);
-    }
     group.addLabelPair("", textFeld);
 
     TablePart empfaenger = new TablePart(mitglieder, null);
