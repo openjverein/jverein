@@ -237,7 +237,7 @@ public abstract class DruckMailControl extends FilterControl
 
   public Button getDruckMailMitgliederButton(final Object object, String option)
   {
-    Button button = new Button("Mitglieder Liste", new Action()
+    Button button = new Button("Empfaenger Liste", new Action()
     {
 
       @Override

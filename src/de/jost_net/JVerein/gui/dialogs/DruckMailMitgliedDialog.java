@@ -42,7 +42,7 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
       int position)
   {
     super(position);
-    setTitle("Mitglieder Liste");
+    setTitle("Empfaenger Liste");
     setSize(700, 450);
     this.mitglieder = mitglieder;
     this.text = text;
