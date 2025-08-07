@@ -128,7 +128,7 @@ public class WirtschaftsplanNode implements GenericObjectNode
         "AND %s.buchungsklasse = ? " +
         "GROUP BY buchung.buchungsart";
 
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((boolean) Einstellungen.getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       sql = String.format(sql, "buchung");
     }

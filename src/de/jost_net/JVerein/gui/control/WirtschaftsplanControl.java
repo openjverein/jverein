@@ -21,8 +21,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanPDF;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -34,13 +35,11 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -61,7 +60,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public class WirtschaftsplanControl extends AbstractControl
+public class WirtschaftsplanControl extends VorZurueckControl
 {
   private EditTreePart einnahmen;
 
@@ -92,8 +91,9 @@ public class WirtschaftsplanControl extends AbstractControl
   {
     DBService service = Einstellungen.getDBService();
 
-    TablePart wirtschaftsplaene = new TablePart(
-            service.createList(Wirtschaftsplan.class), new EditAction(WirtschaftsplanView.class));
+    JVereinTablePart wirtschaftsplaene = new JVereinTablePart(
+            service.createList(Wirtschaftsplan.class), new EditAction(
+        WirtschaftsplanDetailView.class));
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -111,7 +111,9 @@ public class WirtschaftsplanControl extends AbstractControl
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
-    wirtschaftsplaene.setContextMenu(new WirtschaftsplanListMenu());
+    wirtschaftsplaene.setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
+    wirtschaftsplaene.setAction(new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
+    VorZurueckControl.setObjektListe(null, null);
 
     return wirtschaftsplaene;
   }
@@ -208,7 +210,7 @@ public class WirtschaftsplanControl extends AbstractControl
         "AND buchungsart.art = ? " +
         "GROUP BY %s.buchungsklasse";
 
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       sql = String.format(sql, "buchung", "buchung");
     }
@@ -452,7 +454,7 @@ public class WirtschaftsplanControl extends AbstractControl
     //
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
+    if (path != null && !path.isEmpty())
     {
       fd.setFilterPath(path);
     }
@@ -461,7 +463,7 @@ public class WirtschaftsplanControl extends AbstractControl
     try
     {
       fd.setFileName(new Dateiname("wirtschaftsplan", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+          (String) Einstellungen.getEinstellung(Einstellungen.Property.DATEINAMENMUSTER), type).get());
     }
     catch (RemoteException e)
     {
@@ -471,7 +473,7 @@ public class WirtschaftsplanControl extends AbstractControl
 
     final String s = fd.open();
 
-    if (s == null || s.length() == 0)
+    if (s == null || s.isEmpty())
     {
       return;
     }

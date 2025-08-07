@@ -67,7 +67,7 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
 
       iterator = Einstellungen.getDBService().createList(Buchungsart.class);
       iterator.addFilter("art = ?", art);
-      if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if (!(boolean) Einstellungen.getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         String buchungsklasseId = node.getBuchungsklasse().getID();
         iterator.addFilter("buchungsklasse = ?", buchungsklasseId);

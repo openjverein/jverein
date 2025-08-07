@@ -118,6 +118,8 @@ public class DokumentationUtil
   public static final String MITTELVERWENDUNGSALDO = BUCHF
       + "mittelverwendungsaldo";
 
+  public static final String WIRTSCHAFTSPLANUNG = BUCHF + "wirtschaftsplanung";
+
   public static final String UMSATZSTEUERSALDO = BUCHF + "umsatzsteuersaldo";
 
   // Abrechnung

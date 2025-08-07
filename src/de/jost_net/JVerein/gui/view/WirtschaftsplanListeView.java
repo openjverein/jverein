@@ -38,7 +38,7 @@ public class WirtschaftsplanListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIRTSCHAFTSPLANUNG, false, "question-circle.png");
-    buttons.addButton("Neu", new NewAction(WirtschaftsplanView.class, Wirtschaftsplan.class), control, false,
+    buttons.addButton("Neu", new NewAction(WirtschaftsplanDetailView.class, Wirtschaftsplan.class), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }
