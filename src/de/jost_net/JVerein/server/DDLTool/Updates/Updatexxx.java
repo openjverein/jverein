@@ -23,9 +23,9 @@ import de.willuhn.util.ProgressMonitor;
 import java.sql.Connection;
 
 @SuppressWarnings("unused")
-public class Update0478 extends AbstractDDLUpdate
+public class Updatexxx extends AbstractDDLUpdate
 {
-    public Update0478(String driver, ProgressMonitor monitor, Connection conn)
+    public Updatexxx(String driver, ProgressMonitor monitor, Connection conn)
     {
         super(driver, monitor, conn);
     }
