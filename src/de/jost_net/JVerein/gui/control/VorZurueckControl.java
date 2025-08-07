@@ -22,11 +22,11 @@ import java.util.LinkedList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 
 public class VorZurueckControl extends AbstractControl
 {
@@ -36,11 +36,11 @@ public class VorZurueckControl extends AbstractControl
 
   static LinkedList<Long> objektListe = null;
 
-  private Button zurueck;
+  private ButtonRtoL zurueck;
 
-  private Button vor;
+  private ButtonRtoL vor;
 
-  private Button info;
+  private ButtonRtoL info;
 
   private int zurueckIndex = -2;
 
@@ -65,9 +65,9 @@ public class VorZurueckControl extends AbstractControl
   /**
    * Buttons
    */
-  public Button getInfoButton()
+  public ButtonRtoL getInfoButton()
   {
-    info = new Button("", null, null, false, null)
+    info = new ButtonRtoL("", null, null, false, null)
     {
       @Override
       public void paint(Composite parent) throws RemoteException
@@ -96,9 +96,9 @@ public class VorZurueckControl extends AbstractControl
     return info;
   }
 
-  public Button getZurueckButton()
+  public ButtonRtoL getZurueckButton()
   {
-    zurueck = new Button("", context -> {
+    zurueck = new ButtonRtoL("", context -> {
       try
       {
         DBObject instanz = Einstellungen.getDBService().createObject(
@@ -144,9 +144,9 @@ public class VorZurueckControl extends AbstractControl
     return zurueck;
   }
 
-  public Button getVorButton()
+  public ButtonRtoL getVorButton()
   {
-    vor = new Button("", context -> {
+    vor = new ButtonRtoL("", context -> {
       try
       {
         DBObject instanz = Einstellungen.getDBService()

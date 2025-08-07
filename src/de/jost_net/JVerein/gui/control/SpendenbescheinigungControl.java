@@ -511,35 +511,36 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  public Button getDruckUndMailButton()
+  public de.jost_net.JVerein.gui.parts.ButtonRtoL getDruckUndMailButton()
   {
 
-    Button b = new Button("Druck und Mail", new Action()
-    {
+    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
+        "Druck und Mail", new Action()
+        {
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Spendenbescheinigung spb = getSpendenbescheinigung();
-        try
-        {
-          if (spb.isNewObject())
+          @Override
+          public void handleAction(Object context) throws ApplicationException
           {
-            GUI.getStatusBar()
-                .setErrorText("Spendenbescheinigung bitte erst speichern!");
-            return;
+            Spendenbescheinigung spb = getSpendenbescheinigung();
+            try
+            {
+              if (spb.isNewObject())
+              {
+                GUI.getStatusBar()
+                    .setErrorText("Spendenbescheinigung bitte erst speichern!");
+                return;
+              }
+            }
+            catch (RemoteException e)
+            {
+              Logger.error(e.getMessage());
+              throw new ApplicationException(
+                  "Fehler bei der Aufbereitung der Spendenbescheinigung");
+            }
+            GUI.startView(SpendenbescheinigungMailView.class,
+                new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
           }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der Aufbereitung der Spendenbescheinigung");
-        }
-        GUI.startView(SpendenbescheinigungMailView.class,
-            new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
-      }
-    }, getSpendenbescheinigung(), false, "document-print.png");
+        }, getSpendenbescheinigung(), false, "document-print.png");
     return b;
   }
 

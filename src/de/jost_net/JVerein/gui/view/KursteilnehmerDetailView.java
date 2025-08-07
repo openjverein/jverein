@@ -17,19 +17,16 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
-import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerDetailView extends AbstractDetailView
 {
@@ -73,28 +70,14 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     grStatistik.addLabelPair("Geburtsdatum", control.getGeburtsdatum());
     grStatistik.addLabelPair("Geschlecht", control.getGeschlecht());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(new Button("Speichern und neu", context -> {
-      try
-      {
-        control.handleStore();
-
-        new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class,
-            true).handleAction(null);
-        GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-    }, null, false, "go-next.png"));
-
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 
