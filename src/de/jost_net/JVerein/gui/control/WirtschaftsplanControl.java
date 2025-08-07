@@ -53,12 +53,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class WirtschaftsplanControl extends VorZurueckControl
 {
@@ -92,8 +87,7 @@ public class WirtschaftsplanControl extends VorZurueckControl
     DBService service = Einstellungen.getDBService();
 
     JVereinTablePart wirtschaftsplaene = new JVereinTablePart(
-            service.createList(Wirtschaftsplan.class), new EditAction(
-        WirtschaftsplanDetailView.class));
+        service.createList(Wirtschaftsplan.class), null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
