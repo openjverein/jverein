@@ -32,7 +32,5 @@ public class Update0419 extends AbstractDDLUpdate
   {
     execute(alterColumn("buchungsklasse",
         new Column("bezeichnung", COLTYPE.VARCHAR, 100, null, false, false)));
-
-    setNewVersion(nr);
   }
 }
