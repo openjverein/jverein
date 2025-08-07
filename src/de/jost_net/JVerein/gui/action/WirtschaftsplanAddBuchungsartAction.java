@@ -48,7 +48,7 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     if (! (context instanceof WirtschaftsplanNode)) {
-      throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
+      throw new ApplicationException("Fehler beim HinzufÃ¼gen der Buchungsart");
     }
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
     try
@@ -117,7 +117,7 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
     catch (Exception e)
     {
       throw new ApplicationException(
-          "Fehler beim Hinzufügen der Buchungsart");
+          "Fehler beim HinzufÃ¼gen der Buchungsart");
     }
   }
 }

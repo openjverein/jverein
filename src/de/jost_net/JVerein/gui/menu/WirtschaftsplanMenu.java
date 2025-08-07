@@ -30,11 +30,11 @@ public class WirtschaftsplanMenu extends ContextMenu
 {
   public WirtschaftsplanMenu(int art, WirtschaftsplanControl control)
   {
-    addItem(new BuchungsklasseItem("Buchungsart hinzufügen", new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));
-    addItem(new BuchungsartItem("Posten hinzufügen", new WirtschaftsplanAddPostenAction(control), "list-add.png"));
+    addItem(new BuchungsklasseItem("Buchungsart hinzufÃ¼gen", new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));
+    addItem(new BuchungsartItem("Posten hinzufÃ¼gen", new WirtschaftsplanAddPostenAction(control), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
 
-    addItem(new CheckedContextMenuItem("Posten löschen", new WirtschaftsplanDeletePostenAction(control), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Posten lÃ¶schen", new WirtschaftsplanDeletePostenAction(control), "user-trash-full.png"));
   }
 
   private static class BuchungsklasseItem extends CheckedContextMenuItem

@@ -106,8 +106,8 @@ public class WirtschaftsplanControl extends VorZurueckControl
     wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
     wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
     wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);
-    wirtschaftsplaene.addColumn("Zuflüsse Ist", "istPlus", formatter);
-    wirtschaftsplaene.addColumn("Abflüsse Ist", "istMinus", formatter);
+    wirtschaftsplaene.addColumn("ZuflÃ¼sse Ist", "istPlus", formatter);
+    wirtschaftsplaene.addColumn("AbflÃ¼sse Ist", "istMinus", formatter);
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
@@ -272,7 +272,7 @@ public class WirtschaftsplanControl extends VorZurueckControl
             }
             catch (NumberFormatException | ParseException e)
             {
-              GUI.getStatusBar().setErrorText("Bitte gib eine gültige Zahl im deutschen Format ein!");
+              GUI.getStatusBar().setErrorText("Bitte gib eine gÃ¼ltige Zahl im deutschen Format ein!");
               throw new ApplicationException("Keine Zahl eingegeben");
             }
             break;
@@ -381,7 +381,7 @@ public class WirtschaftsplanControl extends VorZurueckControl
         iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
         while (iterator.hasNext())
         {
-          iterator.next().delete(); //Löschen alter Einträge, wird später neu angelegt
+          iterator.next().delete(); //LÃ¶schen alter EintrÃ¤ge, wird spÃ¤ter neu angelegt
         }
       }
 
@@ -448,7 +448,7 @@ public class WirtschaftsplanControl extends VorZurueckControl
   public void starteAuswertung(String type) throws ApplicationException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     //
     Settings settings = new Settings(this.getClass());
     //

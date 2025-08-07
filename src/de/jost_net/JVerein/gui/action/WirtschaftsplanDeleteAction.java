@@ -25,16 +25,16 @@ public class WirtschaftsplanDeleteAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Wirtschaftsplan ausgewählt");
+      throw new ApplicationException("Kein Wirtschaftsplan ausgewÃ¤hlt");
     }
 
-    String mehrzahl = wirtschaftsplaene.length > 1 ? "Wirtschaftspläne" : "Wirtschaftsplan";
+    String mehrzahl = wirtschaftsplaene.length > 1 ? "WirtschaftsplÃ¤ne" : "Wirtschaftsplan";
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle(mehrzahl + " löschen");
-    d.setPanelText(mehrzahl + " löschen?");
+    d.setTitle(mehrzahl + " lÃ¶schen");
+    d.setPanelText(mehrzahl + " lÃ¶schen?");
     d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-    String text = "Wollen Sie diese" + (wirtschaftsplaene.length > 1 ? "":"s") + " " + mehrzahl + " wirklich löschen?"
-        + "\nDiese Daten können nicht wieder hergestellt werden!";
+    String text = "Wollen Sie diese" + (wirtschaftsplaene.length > 1 ? "":"s") + " " + mehrzahl + " wirklich lÃ¶schen?"
+        + "\nDiese Daten kÃ¶nnen nicht wieder hergestellt werden!";
     d.setText(text);
 
     try
@@ -46,7 +46,7 @@ public class WirtschaftsplanDeleteAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim Löschen des Wirtschaftsplans", e);
+      Logger.error("Fehler beim LÃ¶schen des Wirtschaftsplans", e);
       return;
     }
 
@@ -59,12 +59,12 @@ public class WirtschaftsplanDeleteAction implements Action
         wirtschaftsplan.delete();
       }
       DBTransaction.commit();
-      GUI.getStatusBar().setSuccessText(mehrzahl + " gelöscht!");
+      GUI.getStatusBar().setSuccessText(mehrzahl + " gelÃ¶scht!");
     }
     catch (Exception e)
     {
-      GUI.getStatusBar().setErrorText("Fehler beim Löschen!");
-      Logger.error("Fehler beim Löschen des Wirtschaftsplans", e);
+      GUI.getStatusBar().setErrorText("Fehler beim LÃ¶schen!");
+      Logger.error("Fehler beim LÃ¶schen des Wirtschaftsplans", e);
       DBTransaction.rollback();
     }
   }

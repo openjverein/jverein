@@ -172,7 +172,7 @@ public class WirtschaftsplanImpl extends AbstractDBObject
             return 0.;
           }
         });
-      case "istRücklagenGebildet":
+      case "istRÃ¼cklagenGebildet":
         return service.execute(sqlIst,
             new Object[] { EINNAHME, Kontoart.LIMIT.getKey(),
                 Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
@@ -187,7 +187,7 @@ public class WirtschaftsplanImpl extends AbstractDBObject
                 return 0.;
               }
             });
-      case "istRücklagenAufgelöst":
+      case "istRÃ¼cklagenAufgelÃ¶st":
         return service.execute(sqlIst,
             new Object[] { AUSGABE, Kontoart.LIMIT.getKey(),
                 Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
@@ -232,18 +232,18 @@ public class WirtschaftsplanImpl extends AbstractDBObject
             });
       case "istPlus":
         return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
-            "istRücklagenGebildet") + (Double) getAttribute("istForderungen");
+            "istRÃ¼cklagenGebildet") + (Double) getAttribute("istForderungen");
       case "istMinus":
         return (Double) getAttribute("istAusgabe") + (Double) getAttribute(
-            "istRücklagenAufgelöst") + (Double) getAttribute(
+            "istRÃ¼cklagenAufgelÃ¶st") + (Double) getAttribute(
             "istVerbindlichkeiten");
       case "planSaldo":
         return (Double) getAttribute("planEinnahme") + (Double) getAttribute("planAusgabe");
       case "istSaldo":
         return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
             "istAusgabe") + (Double) getAttribute(
-            "istRücklagenGebildet") + (Double) getAttribute(
-            "istRücklagenAufgelöst") + (Double) getAttribute(
+            "istRÃ¼cklagenGebildet") + (Double) getAttribute(
+            "istRÃ¼cklagenAufgelÃ¶st") + (Double) getAttribute(
             "istForderungen") + (Double) getAttribute("istVerbindlichkeiten");
       case "differenz":
         return (Double) getAttribute("istSaldo") - (Double) getAttribute("planSaldo");

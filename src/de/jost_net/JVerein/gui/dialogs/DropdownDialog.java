@@ -50,7 +50,7 @@ public class DropdownDialog<T> extends AbstractDialog<T>
 
     auswahlInput = new SelectInput(auswahl,
         auswahl.isEmpty() ? null : auswahl.get(0));
-    group.addLabelPair("Bitte wählen", auswahlInput);
+    group.addLabelPair("Bitte wÃ¤hlen", auswahlInput);
 
     ButtonArea buttonArea = new ButtonArea();
     buttonArea.addButton("OK", e -> {

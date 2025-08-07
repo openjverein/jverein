@@ -39,7 +39,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
   {
     if (!(context instanceof WirtschaftsplanNode))
     {
-      throw new ApplicationException("Fehler beim Löschen der Posten");
+      throw new ApplicationException("Fehler beim LÃ¶schen der Posten");
     }
 
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
@@ -90,12 +90,12 @@ public class WirtschaftsplanDeletePostenAction implements Action
           control.reloadSoll(node);
           break;
         case UNBEKANNT:
-          throw new ApplicationException("Fehler beim Löschen der Posten");
+          throw new ApplicationException("Fehler beim LÃ¶schen der Posten");
       }
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim Löschen der Posten");
+      throw new ApplicationException("Fehler beim LÃ¶schen der Posten");
     }
   }
 }

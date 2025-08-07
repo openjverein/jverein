@@ -58,7 +58,7 @@ public class WirtschaftsplanUebersichtPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
+    LabelGroup uebersicht = new LabelGroup(parent, "Ãœbersicht");
 
     bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung());
     uebersicht.addLabelPair("Bezeichnung", bezeichnung);
@@ -93,10 +93,10 @@ public class WirtschaftsplanUebersichtPart implements Part
     if (ruecklagenIterator.size() > 0)
     {
       DecimalInput istRuecklagenGebildet = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istRücklagenGebildet"),
+          (Double) control.getWirtschaftsplan().getAttribute("istRÃ¼cklagenGebildet"),
           Einstellungen.DECIMALFORMAT);
       istRuecklagenGebildet.disable();
-      einnahmen.addLabelPair("Rücklagen gebildet Ist", istRuecklagenGebildet);
+      einnahmen.addLabelPair("RÃ¼cklagen gebildet Ist", istRuecklagenGebildet);
     }
     if (verbindlichkeitenIterator.size() > 0)
     {
@@ -112,7 +112,7 @@ public class WirtschaftsplanUebersichtPart implements Part
           (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
           Einstellungen.DECIMALFORMAT);
       istPositiv.disable();
-      einnahmen.addLabelPair("Summe Zuflüsse Ist", istPositiv);
+      einnahmen.addLabelPair("Summe ZuflÃ¼sse Ist", istPositiv);
     }
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
@@ -134,10 +134,10 @@ public class WirtschaftsplanUebersichtPart implements Part
     if (ruecklagenIterator.size() > 0)
     {
       DecimalInput istRuecklagenAufgeloest = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istRücklagenAufgelöst"),
+          (Double) control.getWirtschaftsplan().getAttribute("istRÃ¼cklagenAufgelÃ¶st"),
           Einstellungen.DECIMALFORMAT);
       istRuecklagenAufgeloest.disable();
-      ausgaben.addLabelPair("Rücklagen aufgelöst Ist", istRuecklagenAufgeloest);
+      ausgaben.addLabelPair("RÃ¼cklagen aufgelÃ¶st Ist", istRuecklagenAufgeloest);
     }
     if (verbindlichkeitenIterator.size() > 0)
     {
@@ -153,7 +153,7 @@ public class WirtschaftsplanUebersichtPart implements Part
           (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
           Einstellungen.DECIMALFORMAT);
       istNegativ.disable();
-      ausgaben.addLabelPair("Summe Abflüsse Ist", istNegativ);
+      ausgaben.addLabelPair("Summe AbflÃ¼sse Ist", istNegativ);
     }
   }
 
@@ -178,7 +178,7 @@ public class WirtschaftsplanUebersichtPart implements Part
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Fehler beim Aktualisieren der Übersicht!");
+          "Fehler beim Aktualisieren der Ãœbersicht!");
     }
 
     double sollEinnahmen = einnahmen.stream()
