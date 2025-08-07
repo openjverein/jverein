@@ -26,12 +26,22 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public enum DRIVER
   {
-    H2, MYSQL
+    H2,
+    MYSQL
   }
 
   public enum COLTYPE
   {
-    BIGINT, INTEGER, VARCHAR, CHAR, DATE, TIMESTAMP, BOOLEAN, DOUBLE, LONGBLOB
+    BIGINT,
+    INTEGER,
+    VARCHAR,
+    CHAR,
+    DATE,
+    TIMESTAMP,
+    BOOLEAN,
+    DOUBLE,
+    LONGBLOB,
+    MEDIUMTEXT
   }
 
   private DRIVER drv;
@@ -46,12 +56,12 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     if (name.length() != 10)
     {
       throw new RuntimeException(
-          "Ungültiger Name für eine Update-Klasse (Updatennnn)");
+          "UngÃ¼ltiger Name fÃ¼r eine Update-Klasse (Updatennnn)");
     }
     if (!name.startsWith("Update"))
     {
       throw new RuntimeException(
-          "Ungültiger Name für eine Update-Klasse (Updatennnn)");
+          "UngÃ¼ltiger Name fÃ¼r eine Update-Klasse (Updatennnn)");
     }
     nr = Integer.parseInt(name.substring(6));
     this.conn = conn;
@@ -85,7 +95,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     try
     {
-      Logger.debug(statement);
+      Logger.info(statement);
       ScriptExecutor.execute(new StringReader(statement), conn, null);
       if (setVersion)
       {
@@ -95,7 +105,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     catch (Exception e)
     {
       Logger.error("unable to execute update", e);
-      throw new ApplicationException("Fehler beim Ausführen des Updates", e);
+      throw new ApplicationException("Fehler beim AusfÃ¼hren des Updates", e);
     }
   }
 
@@ -118,7 +128,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     }
     catch (SQLException e)
     {
-      Logger.error("Versionsnummer kann nicht eingefügt werden.", e);
+      Logger.error("Versionsnummer kann nicht eingefÃ¼gt werden.", e);
       throw new ApplicationException(
           "Versionsnummer kann nicht gespeichert werden.");
     }
@@ -285,6 +295,9 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       case VARCHAR:
         ret += "VARCHAR(" + col.getLen() + ")";
         break;
+      case MEDIUMTEXT:
+        ret += "MEDIUMTEXT";
+        break;
       case LONGBLOB:
         ret += "LONGBLOB";
         break;
@@ -294,7 +307,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       ret += "NOT NULL ";
     }
-    else if(drv == DRIVER.MYSQL && !col.isAutoincrement())
+    else if (drv == DRIVER.MYSQL && !col.isAutoincrement())
     {
       ret += "NULL ";
     }
@@ -329,27 +342,27 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return "";
 
   }
-  
-  public void createForeignKeyIfNotExistsNocheck(String constraintname, String table,
-      String column, String reftable, String refcolumn, String ondelete,
-      String onupdate) throws ApplicationException
+
+  public void createForeignKeyIfNotExistsNocheck(String constraintname,
+      String table, String column, String reftable, String refcolumn,
+      String ondelete, String onupdate) throws ApplicationException
   {
     switch (drv)
     {
       case H2:
       {
-        execute( "ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS " + constraintname
-            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + "("
-            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
-            + " NOCHECK;\n", true);
+        execute("ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS "
+            + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
+            + reftable + "(" + refcolumn + ") ON DELETE " + ondelete
+            + " ON UPDATE " + onupdate + " NOCHECK;\n", true);
       }
-      break;
+        break;
       case MYSQL:
       {
-        String statement =  "ALTER TABLE " + table + " ADD CONSTRAINT " + constraintname
-            + " FOREIGN KEY (" + column + ") REFERENCES " + reftable + " ("
-            + refcolumn + ") ON DELETE " + ondelete + " ON UPDATE " + onupdate
-            + ";\n";
+        String statement = "ALTER TABLE " + table + " ADD CONSTRAINT "
+            + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
+            + reftable + " (" + refcolumn + ") ON DELETE " + ondelete
+            + " ON UPDATE " + onupdate + ";\n";
         try
         {
           Logger.debug(statement);
@@ -368,18 +381,20 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   {
     return "drop table " + table + ";\n";
   }
-  
+
   public String dropForeignKey(String constraintname, String table)
   {
     switch (drv)
     {
       case H2:
       {
-        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname + ";\n";
+        return "ALTER TABLE " + table + " DROP CONSTRAINT " + constraintname
+            + ";\n";
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname + ";\n";
+        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname
+            + ";\n";
       }
     }
     return "";

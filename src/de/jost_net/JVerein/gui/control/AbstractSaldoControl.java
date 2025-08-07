@@ -27,6 +27,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Dateiname;
@@ -89,7 +90,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
   public static final String ENDBESTAND = "endbestand";
 
   /**
-   * Anzahl Eintr‰ge
+   * Anzahl Eintr√§ge
    */
   public static final String ANZAHL = "anzahl";
 
@@ -150,13 +151,13 @@ public abstract class AbstractSaldoControl extends AbstractControl
   /**
    * Liefert die Liste
    * 
-   * @return die Liste der Eintr‰ge
+   * @return die Liste der Eintr√§ge
    * @throws RemoteException
    */
   public abstract ArrayList<PseudoDBObject> getList() throws RemoteException;
 
   /**
-   * L‰dt die Liste neu
+   * L√§dt die Liste neu
    * 
    * @throws ApplicationException
    * 
@@ -189,14 +190,14 @@ public abstract class AbstractSaldoControl extends AbstractControl
   }
 
   /**
-   * Holt den Titel f¸r die Auswertungen
+   * Holt den Titel f√ºr die Auswertungen
    * 
    * @return
    */
   protected abstract String getAuswertungTitle();
 
   /**
-   * Git ein Object, dass das Interface ISaldoExport implementiert zur¸ck.
+   * Git ein Object, dass das Interface ISaldoExport implementiert zur√ºck.
    * 
    * @param type
    *          der type der Auswertung
@@ -213,8 +214,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
    *          Der Typ der Auswertung (AuswertungPDF, AuswertungCSV)
    * @throws ApplicationException
    */
-  private void starteAuswertung(String type)
-      throws ApplicationException
+  private void starteAuswertung(String type) throws ApplicationException
   {
     try
     {
@@ -223,7 +223,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
       ArrayList<PseudoDBObject> zeile = getList();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       Settings settings = new Settings(this.getClass());
 
@@ -234,7 +234,8 @@ public abstract class AbstractSaldoControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname(title, "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          type).get());
 
       final String s = fd.open();
 
@@ -391,10 +392,10 @@ public abstract class AbstractSaldoControl extends AbstractControl
   }
 
   /**
-   * Holt das Gesch‰ftsjahr des Datumbereichs
+   * Holt das Gesch√§ftsjahr des Datumbereichs
    * 
-   * @return Das Gesch‰ftsjahr, wenn Start und Ende mit der Auswahl
-   *         ¸bereinstimmen, sonst 0.
+   * @return Das Gesch√§ftsjahr, wenn Start und Ende mit der Auswahl
+   *         √ºbereinstimmen, sonst 0.
    */
   public Integer isGeschaeftsjahr()
   {
@@ -407,7 +408,8 @@ public abstract class AbstractSaldoControl extends AbstractControl
       cal.setTime(von);
       year = cal.get(Calendar.YEAR);
       Date gjvon = Datum.toDate(
-          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + year);
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + year);
       if (!von.equals(gjvon))
       {
         return 0;

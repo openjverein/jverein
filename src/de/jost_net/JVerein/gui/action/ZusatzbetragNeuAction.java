@@ -26,12 +26,12 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetraegeAction implements Action
+public class ZusatzbetragNeuAction implements Action
 {
 
   private Mitglied m;
 
-  public ZusatzbetraegeAction(Mitglied m)
+  public ZusatzbetragNeuAction(Mitglied m)
   {
     super();
     this.m = m;
@@ -42,33 +42,30 @@ public class ZusatzbetraegeAction implements Action
   {
     Zusatzbetrag z = null;
 
-    if (context != null && (context instanceof Zusatzbetrag))
+    try
     {
-      z = (Zusatzbetrag) context;
-    }
-    else
-    {
-      try
+      z = (Zusatzbetrag) Einstellungen.getDBService()
+          .createObject(Zusatzbetrag.class, null);
+      if (m != null)
       {
-        z = (Zusatzbetrag) Einstellungen.getDBService().createObject(
-            Zusatzbetrag.class, null);
-        if (m != null  && m.getID() == null)
+        if (m != null && m.getID() == null)
         {
           throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann kˆnnen Zusatzbetr‰ge aufgenommen werden.");
+              "Neues Mitglied bitte erst speichern. Dann k√∂nnen Zusatzbetr√§ge aufgenommen werden.");
         }
-
-        if (m != null)
-        {
-          z.setMitglied(Integer.valueOf(m.getID()).intValue());
-        }
+        z.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Zusatzbetrages", e);
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen Zusatzbetrages", e);
+    }
+
     GUI.startView(ZusatzbetragDetailView.class.getName(), z);
   }
 }

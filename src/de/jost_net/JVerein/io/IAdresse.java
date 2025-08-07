@@ -22,7 +22,7 @@ import java.rmi.RemoteException;
 public interface IAdresse
 {
   /**
-   * N = Natürliche Person, J = Juristische Person
+   * N = NatÃ¼rliche Person, J = Juristische Person
    */
   public String getPersonenart() throws RemoteException;
 

@@ -39,7 +39,7 @@ public class KontoDeleteAction implements Action
   {
     if (context == null || !(context instanceof Konto))
     {
-      throw new ApplicationException("Kein Konto ausgewählt");
+      throw new ApplicationException("Kein Konto ausgewÃ¤hlt");
     }
     try
     {
@@ -55,12 +55,12 @@ public class KontoDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Konto '%s' kann nicht gelöscht werden. Es existieren Buchungen auf diesem Konto.",
+            "Konto '%s' kann nicht gelÃ¶scht werden. Es existieren Buchungen auf diesem Konto.",
             k.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Konto löschen");
-      d.setText("Wollen Sie dieses Konto wirklich löschen?");
+      d.setTitle("Konto lÃ¶schen");
+      d.setText("Wollen Sie dieses Konto wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -69,16 +69,16 @@ public class KontoDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen des Kontos", e);
+        Logger.error("Fehler beim LÃ¶schen des Kontos", e);
         return;
       }
 
       k.delete();
-      GUI.getStatusBar().setSuccessText("Konto gelöscht.");
+      GUI.getStatusBar().setSuccessText("Konto gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen des Kontos.";
+      String fehler = "Fehler beim LÃ¶schen des Kontos.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

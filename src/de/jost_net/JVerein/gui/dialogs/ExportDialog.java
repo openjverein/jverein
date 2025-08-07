@@ -100,17 +100,17 @@ public class ExportDialog extends AbstractDialog<Object>
   {
     Container group = new SimpleContainer(parent);
     group.addText(i18n.tr(
-        "Bitte wählen Sie das gewünschte Dateiformat aus für den Export aus"),
+        "Bitte wÃ¤hlen Sie das gewÃ¼nschte Dateiformat aus fÃ¼r den Export aus"),
         true);
 
     Input formats = getExporterList();
-    group.addLabelPair(i18n.tr("Verfügbare Formate:"), formats);
+    group.addLabelPair(i18n.tr("VerfÃ¼gbare Formate:"), formats);
 
     boolean exportEnabled = !(formats instanceof LabelInput);
 
     if (exportEnabled)
     {
-      group.addCheckbox(getOpenFile(), i18n.tr("Datei nach dem Export öffnen"));
+      group.addCheckbox(getOpenFile(), i18n.tr("Datei nach dem Export Ã¶ffnen"));
     }
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(), helplink, false,
@@ -164,7 +164,7 @@ public class ExportDialog extends AbstractDialog<Object>
     if (exp == null || exp.exporter == null)
     {
       throw new ApplicationException(
-          i18n.tr("Bitte wählen Sie ein Export-Format aus"));
+          i18n.tr("Bitte wÃ¤hlen Sie ein Export-Format aus"));
     }
     settings.setAttribute("lastformat", exp.format.getName());
 
@@ -325,7 +325,7 @@ public class ExportDialog extends AbstractDialog<Object>
 
     if (size == 0)
     {
-      exporterListe = new LabelInput(i18n.tr("Keine Export-Filter verfügbar"));
+      exporterListe = new LabelInput(i18n.tr("Keine Export-Filter verfÃ¼gbar"));
       return exporterListe;
     }
 

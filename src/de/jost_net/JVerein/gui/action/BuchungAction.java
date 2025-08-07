@@ -17,24 +17,38 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.LinkedList;
+import java.util.List;
 
+import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SplitbuchungDetailView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.server.BuchungImpl;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungAction implements Action
 {
   private boolean splitbuchung;
 
+  private TablePart part = null;
+
   public BuchungAction(boolean splitbuchung)
   {
     this.splitbuchung = splitbuchung;
   }
 
+  public BuchungAction(boolean splitbuchung, TablePart buchungsList)
+  {
+    this.splitbuchung = splitbuchung;
+    this.part = buchungsList;
+  }
+
+  @SuppressWarnings("unchecked")
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -46,10 +60,26 @@ public class BuchungAction implements Action
     }
     else
     {
-      throw new ApplicationException("Keine Buchung ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung ausgew√§hlt");
     }
     try
     {
+      if (part != null && b.getSplitId() == null)
+      {
+        try
+        {
+          LinkedList<Long> objektListe = new LinkedList<>();
+          for (Buchung bu : (List<Buchung>) part.getItems(false))
+          {
+            objektListe.add(Long.valueOf(bu.getID()));
+          }
+          VorZurueckControl.setObjektListe(BuchungImpl.class, objektListe);
+        }
+        catch (NumberFormatException | RemoteException e)
+        {
+          //
+        }
+      }
       if (b.getSplitId() == null || splitbuchung && !b.isToDelete())
       {
         GUI.startView(BuchungDetailView.class.getName(), b);

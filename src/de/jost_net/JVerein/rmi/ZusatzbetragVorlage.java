@@ -20,9 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.willuhn.datasource.rmi.DBObject;
 
-public interface ZusatzbetragVorlage extends DBObject
+public interface ZusatzbetragVorlage extends JVereinDBObject
 {
 
   public Date getFaelligkeit() throws RemoteException;
@@ -54,9 +53,9 @@ public interface ZusatzbetragVorlage extends DBObject
   public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
 
   public Buchungsart getBuchungsart() throws RemoteException;
-  
+
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
@@ -64,4 +63,8 @@ public interface ZusatzbetragVorlage extends DBObject
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   public void setZahlungsweg(Zahlungsweg value) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
 }

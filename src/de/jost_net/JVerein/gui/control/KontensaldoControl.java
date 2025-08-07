@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -56,9 +57,11 @@ public class KontensaldoControl extends AbstractSaldoControl
   public KontensaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
-    summensaldo = Einstellungen.getEinstellung().getSummenAnlagenkonto();
+    summensaldo = (Boolean) Einstellungen
+        .getEinstellung(Property.SUMMENANLAGENKONTO);
   }
 
+  @Override
   public TablePart getSaldoList() throws ApplicationException
   {
     try
@@ -110,19 +113,19 @@ public class KontensaldoControl extends AbstractSaldoControl
       throws RemoteException
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
-    boolean mitSteuer = Einstellungen.getEinstellung().getOptiert();
+    boolean mitSteuer = (Boolean) Einstellungen
+        .getEinstellung(Property.OPTIERTPFLICHT);
     if (mitSteuer)
     {
       // Bei Umbuchungen vom Geldkonto den Steueranteil nicht bei den
-      // Umbuchungen sondern bei den Einnahmen/Ausgaben aufführen.
-      // Alte Steuerbuchungen mit dependencyid berücksichtigen wir dabei nicht
+      // Umbuchungen sondern bei den Einnahmen/Ausgaben auffÃ¼hren.
+      // Alte Steuerbuchungen mit dependencyid berÃ¼cksichtigen wir dabei nicht
       it.addColumn(
           "sum(case when buchungsart.art = ? then buchung.betrag else 0 end "
               + "- case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + UMBUCHUNGEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + UMBUCHUNGEN,
           ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
@@ -131,8 +134,7 @@ public class KontensaldoControl extends AbstractSaldoControl
               + "+ case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag > 0 then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + EINNAHMEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + EINNAHMEN,
           ArtBuchungsart.EINNAHME, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
 
@@ -141,8 +143,7 @@ public class KontensaldoControl extends AbstractSaldoControl
               + "+ case when (dependencyid is null or dependencyid = -1)"
               + " and konto.kontoart = ? and buchungsart.art = ? and buchung.betrag < 0 then "
               + "CAST(buchung.betrag * COALESCE(steuer.satz,0) / (100 + COALESCE(steuer.satz,0))"
-              + " AS DECIMAL(10,2)) ELSE 0 END) as "
-              + AUSGABEN,
+              + " AS DECIMAL(10,2)) ELSE 0 END) as " + AUSGABEN,
           ArtBuchungsart.AUSGABE, Kontoart.GELD.getKey(),
           ArtBuchungsart.UMBUCHUNG);
     }
@@ -177,7 +178,7 @@ public class KontensaldoControl extends AbstractSaldoControl
 
     if (mitSteuer)
     {
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         it.leftJoin("steuer", "steuer.id = buchung.steuer");
       }
@@ -195,6 +196,8 @@ public class KontensaldoControl extends AbstractSaldoControl
 
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.kontoart");
+    it.addGroupBy("konto.bezeichnung");
+    it.addGroupBy("konto.nummer");
 
     it.setOrder("ORDER BY konto.nummer");
 
@@ -263,12 +266,12 @@ public class KontensaldoControl extends AbstractSaldoControl
             + (ohneBuchungsart == null ? 0 : ohneBuchungsart);
         o.setAttribute(ENDBESTAND, endbestand);
 
-        // Die Art des Eintrags ist hier immer "Detail" (Wird für die Summen in
-        // der Fußzeile benötigt)
+        // Die Art des Eintrags ist hier immer "Detail" (Wird fÃ¼r die Summen in
+        // der FuÃŸzeile benÃ¶tigt)
         o.setAttribute(ART, ART_DETAIL);
 
         // Summen aller Konten ermitteln.
-        // Konten über dem Limit nicht mitzählen.
+        // Konten Ã¼ber dem Limit nicht mitzÃ¤hlen.
         if (kontoart < Kontoart.LIMIT.getKey())
         {
           summeAnfangsbestand += anfangsbestand;
@@ -279,7 +282,7 @@ public class KontensaldoControl extends AbstractSaldoControl
           jahressaldo += endbestand - anfangsbestand;
         }
 
-        // Die Summen für das Summen Anlagenkonto bestimmen
+        // Die Summen fÃ¼r das Summen Anlagenkonto bestimmen
         if (summensaldo && kontoart == Kontoart.ANLAGE.getKey())
         {
           summenAnlageAnfangsbestand += anfangsbestand;
@@ -288,7 +291,7 @@ public class KontensaldoControl extends AbstractSaldoControl
           summenAnlageUmbuchungen += umbuchungen;
           summenAnlageEndbestand += endbestand;
         }
-        // Die Konten über dem Limit gesondert ausgeben
+        // Die Konten Ã¼ber dem Limit gesondert ausgeben
         else if (kontoart > Kontoart.LIMIT.getKey())
         {
           zeilenUeberLimit.add(o);
@@ -326,22 +329,22 @@ public class KontensaldoControl extends AbstractSaldoControl
     summe.setAttribute(ART, ART_GESAMTSALDOFOOTER);
     zeilen.add(summe);
 
-    // Überschuss/Verlust Zeile
+    // Ãœberschuss/Verlust Zeile
     PseudoDBObject gv = new PseudoDBObject();
-    gv.setAttribute(GRUPPE, "Überschuss/Verlust(-)");
+    gv.setAttribute(GRUPPE, "Ãœberschuss/Verlust(-)");
     gv.setAttribute(ENDBESTAND, jahressaldo);
     gv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
     zeilen.add(gv);
 
-    // Konten ohne Berücksichtigung im Saldo
+    // Konten ohne BerÃ¼cksichtigung im Saldo
     if (zeilenUeberLimit.size() > 0)
     {
       // Leerzeile als Trenner
       zeilen.add(new PseudoDBObject());
 
-      // Konten ohne Berücksichtigung im Saldo
+      // Konten ohne BerÃ¼cksichtigung im Saldo
       PseudoDBObject ohne = new PseudoDBObject();
-      ohne.setAttribute(GRUPPE, "Konten ohne Berücksichtigung im Saldo:");
+      ohne.setAttribute(GRUPPE, "Konten ohne BerÃ¼cksichtigung im Saldo:");
       zeilen.add(ohne);
 
       zeilen.addAll(zeilenUeberLimit);

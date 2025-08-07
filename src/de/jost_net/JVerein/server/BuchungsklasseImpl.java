@@ -18,13 +18,14 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseImpl extends AbstractJVereinDBObject
-    implements
-    Buchungsklasse
+    implements Buchungsklasse
 {
   private static final long serialVersionUID = 500102542884220658L;
 
@@ -56,13 +57,24 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Bitte Nummer eingeben!");
+      }
+      DBIterator<Buchungsklasse> klassenIt = Einstellungen.getDBService()
+          .createList(Buchungsklasse.class);
+      if (!this.isNewObject())
+      {
+        klassenIt.addFilter("id != ?", getID());
+      }
+      klassenIt.addFilter("nummer = ?", getNummer());
+      if (klassenIt.hasNext())
+      {
+        throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
       }
     }
     catch (RemoteException e)

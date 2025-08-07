@@ -40,8 +40,8 @@ public class MitgliedAddress implements Address
     //
   }
 
-  public MitgliedAddress(String name, String kommentar, String bic,
-      String iban, String kategorie)
+  public MitgliedAddress(String name, String kommentar, String bic, String iban,
+      String kategorie)
   {
     this.name = name;
     this.kommentar = kommentar;

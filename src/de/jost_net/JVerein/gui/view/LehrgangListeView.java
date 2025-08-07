@@ -17,9 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.LehrgangControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -33,7 +34,7 @@ public class LehrgangListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Lehrg‰nge");
+    GUI.getView().setTitle("Lehrg√§nge");
 
     final LehrgangControl control = new LehrgangControl(this);
 
@@ -43,11 +44,11 @@ public class LehrgangListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getSuchLehrgangsart());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());
     right.addInput(control.getDatumbis());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -58,15 +59,16 @@ public class LehrgangListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck.setToolTipText("Datumsbereich zur¸ck");
-    vor.setToolTipText("Datumsbereich vow‰rts");
+    zurueck.setToolTipText("Datumsbereich zur√ºck");
+    vor.setToolTipText("Datumsbereich vow√§rts");
 
     control.getLehrgaengeList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton("Neu", new LehrgangAction(null), 
-        control, false, "document-new.png");
+    buttons.addButton("Neu",
+        new NewAction(LehrgangDetailView.class, Lehrgang.class), control, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

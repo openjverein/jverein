@@ -16,7 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-public enum SpendenbescheinigungVar {
+public enum SpendenbescheinigungVar
+{
   ANREDE("spendenbescheinigung_anrede"), //
   EMPFAENGER("spendenbescheinigung_empfaenger"), //
   BETRAG("spendenbescheinigung_betrag"), //
@@ -24,6 +25,7 @@ public enum SpendenbescheinigungVar {
   BESCHEINIGUNGDATUM("spendenbescheinigung_datum"), //
   SPENDEART("spendenbescheinigung_spendenart"), //
   SPENDEDATUM("spendenbescheinigung_spendedatum"), //
+  SPENDEDATUM_ERSTES("spendenbescheinigung_spendedatum_erstes"), //
   SPENDENZEITRAUM("spendenbescheinigung_spendenzeitraum"), //
   ERSATZAUFWENDUNGEN("spendenbescheinigung_ersatzaufwendungen"), //
   ERSATZAUFWENDUNGEN_JA("spendenbescheinigung_ersatzaufwendungen_ja"), //

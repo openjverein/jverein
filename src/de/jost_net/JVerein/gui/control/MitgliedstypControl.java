@@ -19,27 +19,27 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MitgliedstypAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypControl extends AbstractControl
-    implements Savable
+public class MitgliedstypControl extends VorZurueckControl implements Savable
 {
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart mitgliedstypList;
+  private JVereinTablePart mitgliedstypList;
 
   private Input bezeichnung;
 
@@ -71,6 +71,7 @@ public class MitgliedstypControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getMitgliedstyp().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -82,15 +83,17 @@ public class MitgliedstypControl extends AbstractControl
     }
     bezeichnungplural = new TextInput(getMitgliedstyp().getBezeichnungPlural(),
         30);
+    bezeichnungplural.setMandatory(true);
     return bezeichnungplural;
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Mitgliedstyp mt = getMitgliedstyp();
     mt.setBezeichnung((String) getBezeichnung().getValue());
     mt.setBezeichnungPlural((String) getBezeichnungPlural().getValue());
+    return mt;
   }
 
   /**
@@ -98,13 +101,12 @@ public class MitgliedstypControl extends AbstractControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Mitgliedstyp mt = getMitgliedstyp();
-      mt.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -120,15 +122,18 @@ public class MitgliedstypControl extends AbstractControl
     DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
     mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);
 
-    mitgliedstypList = new TablePart(mtIt, new MitgliedstypAction());
+    mitgliedstypList = new JVereinTablePart(mtIt, null);
     mitgliedstypList.addColumn("Bezeichnung", Mitgliedstyp.BEZEICHNUNG);
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
     mitgliedstypList.addColumn("ID", "id");
-    mitgliedstypList.setContextMenu(new MitgliedstypMenu());
+    mitgliedstypList.setContextMenu(new MitgliedstypMenu(mitgliedstypList));
     mitgliedstypList.setRememberColWidths(true);
     mitgliedstypList.setRememberOrder(true);
     mitgliedstypList.addFeature(new FeatureSummary());
+    mitgliedstypList.setAction(
+        new EditAction(MitgliedstypDetailView.class, mitgliedstypList));
+    VorZurueckControl.setObjektListe(null, null);
     return mitgliedstypList;
   }
 }

@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -38,8 +38,8 @@ public class SpendenbescheinigungListeView extends AbstractView
     GUI.getView().setTitle("Spendenbescheinigungen");
 
     SpendenbescheinigungControl control = new SpendenbescheinigungControl(this);
-    control.init("spendenliste." , null, null);
-    
+    control.init("spendenliste.", null, null);
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
@@ -51,7 +51,7 @@ public class SpendenbescheinigungListeView extends AbstractView
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
     middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
     right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
@@ -72,10 +72,10 @@ public class SpendenbescheinigungListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Bescheinigung Datumsbereich zurück");
-    vor1.setToolTipText("Bescheinigung Datumsbereich vowärts");
-    zurueck2.setToolTipText("Spende Datumsbereich zurück");
-    vor2.setToolTipText("Spende Datumsbereich vowärts");
+    zurueck1.setToolTipText("Bescheinigung Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Bescheinigung Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Spende Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Spende Datumsbereich vowÃ¤rts");
 
     control.getSpendenbescheinigungList().paint(this.getParent());
 
@@ -84,8 +84,9 @@ public class SpendenbescheinigungListeView extends AbstractView
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getCSVExportButton());
     buttons.addButton(control.getPDFExportButton());
-    buttons.addButton("Neu (Sachspende)", new SpendenbescheinigungAction(Spendenart.SACHSPENDE), null,
-        false, "document-new.png");
+    buttons.addButton("Neu (Sachspende)",
+        new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE), null, false,
+        "document-new.png");
     buttons.addButton("Neu (automatisch)",
         new StartViewAction(SpendenbescheinigungAutoNeuView.class), null, false,
         "document-new.png");

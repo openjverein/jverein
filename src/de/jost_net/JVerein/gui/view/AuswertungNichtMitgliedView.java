@@ -34,7 +34,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 public class AuswertungNichtMitgliedView extends AbstractView
 {
   final MitgliedControl control = new MitgliedControl(this);
-  
+
   public AuswertungNichtMitgliedView() throws RemoteException
   {
     control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
@@ -53,12 +53,12 @@ public class AuswertungNichtMitgliedView extends AbstractView
     left.addInput(control.getMailauswahl());
     SelectInput mitgliedsTyp = control
         .getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED);
-    mitgliedsTyp.setPleaseChoose("Bitte ausw‰hlen");
+    mitgliedsTyp.setPleaseChoose("Bitte ausw√§hlen");
     left.addInput(mitgliedsTyp);
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       left.addInput(zusatzfelderInput);
@@ -69,12 +69,12 @@ public class AuswertungNichtMitgliedView extends AbstractView
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
     right.addInput(control.getSuchGeschlecht());
-    
+
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());
     filterbuttons.addButton(control.getSpeichernButton());
     group.addButtonArea(filterbuttons);
-    
+
     // Zweite Gruppe: Ausgabe
     LabelGroup group2 = new LabelGroup(getParent(), "Ausgabe");
 

@@ -25,9 +25,9 @@ import java.rmi.RemoteException;
 public class PersonenartInput extends SelectNoScrollInput
 {
 
-  public final static String NATUERLICHE_PERSON = "Natürliche Person";
+  public final static String NATUERLICHE_PERSON = "NatÃ¼rliche Person";
 
-  public final static String JURISTISCHE_PERSON = "Juristische Person (Firma, Organisation, Behörde)";
+  public final static String JURISTISCHE_PERSON = "Juristische Person (Firma, Organisation, BehÃ¶rde)";
 
   public PersonenartInput(final String personenart)
   {

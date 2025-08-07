@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -61,7 +62,7 @@ public class ZusatzbetragVorlageDialog
   {
     this.getZusatzbetragVorlagen().paint(parent);
     ButtonArea b = new ButtonArea();
-    b.addButton("Übernehmen", new Action()
+    b.addButton("Ãœbernehmen", new Action()
     {
 
       @Override
@@ -107,17 +108,18 @@ public class ZusatzbetragVorlageDialog
         close();
       }
     });
-    tab.addColumn("Erste Fälligkeit", "startdatum",
+    tab.addColumn("Erste FÃ¤lligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    tab.addColumn("Nächste Fälligkeit", "faelligkeit",
+    tab.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     tab.addColumn("Intervall", "intervalltext");
-    tab.addColumn("Nicht mehr ausführen ab", "endedatum",
+    tab.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       tab.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());

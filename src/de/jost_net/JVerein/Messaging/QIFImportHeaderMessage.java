@@ -19,7 +19,7 @@ package de.jost_net.JVerein.Messaging;
 import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
 /**
- * Wurde die Tabelle QIFImportHeader ge‰ndert wird diese Nachricht gesendet
+ * Wurde die Tabelle QIFImportHeader ge√§ndert wird diese Nachricht gesendet
  * 
  * @author Rolf Mamat
  * 

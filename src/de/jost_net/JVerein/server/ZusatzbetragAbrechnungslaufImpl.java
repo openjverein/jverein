@@ -24,8 +24,8 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.willuhn.datasource.db.AbstractDBObject;
 
-public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject implements
-    ZusatzbetragAbrechnungslauf
+public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject
+    implements ZusatzbetragAbrechnungslauf
 {
 
   private static final long serialVersionUID = 6084498628933735690L;

@@ -38,7 +38,7 @@ public class BuchungNeuAction implements Action
   {
     this.control = control;
   }
-  
+
   @Override
   public void handleAction(Object context)
   {
@@ -59,13 +59,15 @@ public class BuchungNeuAction implements Action
       }
       else
       {
-        String kontoid = control.getSettings().getString(control.getSettingsPrefix() + "kontoid", "");
+        String kontoid = control.getSettings()
+            .getString(control.getSettingsPrefix() + "kontoid", "");
         if (kontoid != null && !kontoid.isEmpty())
         {
           Konto k = null;
           try
           {
-            k = (Konto) Einstellungen.getDBService().createObject(Konto.class, kontoid);
+            k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
+                kontoid);
             if (null != k)
             {
               if (k.getKontoArt() == Kontoart.ANLAGE)
@@ -82,9 +84,9 @@ public class BuchungNeuAction implements Action
           }
         }
       }
-      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
       // sind, wird die atuelle View nicht in die History aufgenommen. Dadurch
-      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      // fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste zurÃ¼ck.
       if (GUI.getCurrentView().getClass().equals(BuchungDetailView.class))
       {
         GUI.getCurrentView().setCurrentObject(buch);

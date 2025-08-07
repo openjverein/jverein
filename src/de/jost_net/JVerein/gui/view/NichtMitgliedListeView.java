@@ -48,27 +48,29 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
   public void getFilter() throws RemoteException
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
     left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED));
+    left.addInput(control.getSuchname());
+    left.addInput(control.getMailauswahl());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getSuchGeschlecht());
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    left.addInput(eigenschaftenInput);
+    middle.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      left.addInput(zusatzfelderInput);
+      middle.addInput(zusatzfelderInput);
       control.updateZusatzfelderAuswahlTooltip();
     }
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getGeburtsdatumvon());
     right.addInput(control.getGeburtsdatumbis());
-    right.addInput(control.getSuchGeschlecht());
-    right.addInput(control.getMailauswahl());
-    
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getResetButton());
     buttons.addButton(control.getSuchenButton());

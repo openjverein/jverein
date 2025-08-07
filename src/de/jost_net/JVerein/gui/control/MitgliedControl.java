@@ -36,18 +36,20 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzAction;
+import de.jost_net.JVerein.gui.action.ArbeitseinsatzNeuAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.gui.action.LehrgangNeuAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.gui.action.WiedervorlageNeuAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetragNeuAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -58,6 +60,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
@@ -68,14 +71,22 @@ import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
 import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
@@ -95,6 +106,7 @@ import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -102,6 +114,7 @@ import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
@@ -137,6 +150,7 @@ import de.willuhn.jameica.gui.input.SpinnerInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -151,11 +165,10 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedControl extends FilterControl
-    implements Savable
+public class MitgliedControl extends FilterControl implements Savable
 {
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -179,8 +192,8 @@ public class MitgliedControl extends FilterControl
 
   private Input ort;
 
-  private SelectNoScrollInput staat;
-  
+  private StaatSearchInput staat;
+
   private TextInput leitwegID;
 
   private DateInput geburtsdatum = null;
@@ -190,7 +203,7 @@ public class MitgliedControl extends FilterControl
   private SelectNoScrollInput zahlungsweg;
 
   private LabelGroup bankverbindungLabelGroup;
-  
+
   private LabelGroup abweichenderKontoinhaberLabelGroup;
 
   private SelectNoScrollInput zahlungsrhytmus;
@@ -227,7 +240,7 @@ public class MitgliedControl extends FilterControl
 
   private TextInput ktoiort;
 
-  private SelectNoScrollInput ktoistaat;
+  private StaatSearchInput ktoistaat;
 
   private EmailInput ktoiemail;
 
@@ -271,7 +284,7 @@ public class MitgliedControl extends FilterControl
 
   private TreePart eigenschaftenTree;
 
-  // Elemente für die Auswertung
+  // Elemente fÃ¼r die Auswertung
   private TextInput auswertungUeberschrift = null;
 
   private TextAreaInput vermerk1;
@@ -290,19 +303,19 @@ public class MitgliedControl extends FilterControl
 
   private FamilienbeitragMessageConsumer fbc = null;
 
-  // Liste aller Zusatzbeträge
-  private TablePart zusatzbetraegeList;
+  // Liste aller ZusatzbetrÃ¤ge
+  private AutoUpdateTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
-  private TablePart wiedervorlageList;
+  private AutoUpdateTablePart wiedervorlageList;
 
   // Liste der Mails
   private TablePart mailList;
 
-  // Liste der Arbeitseinsätze
+  // Liste der ArbeitseinsÃ¤tze
   private TablePart arbeitseinsatzList;
 
-  // Liste der Lehrgänge
+  // Liste der LehrgÃ¤nge
   private TablePart lehrgaengeList;
 
   private TablePart familienangehoerige;
@@ -316,9 +329,8 @@ public class MitgliedControl extends FilterControl
   private TablePart beitragsTabelle;
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
- 
 
-  // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
+  // Zeitstempel merken, wann der Letzte refresh ausgefÃ¼hrt wurde.
   private long lastrefresh = 0;
 
   private String eigenschaftenHash;
@@ -356,7 +368,9 @@ public class MitgliedControl extends FilterControl
     mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
         + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
     mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
-    mitgliedstyp = new SelectNoScrollInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, getMitglied().getMitgliedstyp());
+    mitgliedstyp = new SelectNoScrollInput(
+        mtIt != null ? PseudoIterator.asList(mtIt) : null,
+        getMitglied().getMitgliedstyp());
     mitgliedstyp.setName("Mitgliedstyp");
     return mitgliedstyp;
   }
@@ -376,9 +390,10 @@ public class MitgliedControl extends FilterControl
 
   private boolean isExterneMitgliedsnummerMandatory() throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer() == false)
+    if (!((Boolean) Einstellungen
+        .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
       return false;
-    if (view instanceof AbstractMitgliedDetailView == false)
+    if (!(view instanceof AbstractMitgliedDetailView))
       return false;
     AbstractMitgliedDetailView detailView = (AbstractMitgliedDetailView) view;
     return detailView.isMitgliedDetail();
@@ -468,7 +483,7 @@ public class MitgliedControl extends FilterControl
     }
     strasse = new TextInput(getMitglied().getStrasse(), 40);
 
-    strasse.setName("Straße");
+    strasse.setName("StraÃŸe");
     return strasse;
   }
 
@@ -525,7 +540,7 @@ public class MitgliedControl extends FilterControl
     return ort;
   }
 
-  public SelectNoScrollInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
@@ -538,13 +553,13 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Konnte Staat \""
           + getMitglied().getStaat() + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectNoScrollInput(Staat.values(),
-        Staat.getByKey(getMitglied().getStaatCode()));
-    staat.setPleaseChoose("Nicht gesetzt");
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(Staat.getByKey(getMitglied().getStaatCode()));
     staat.setName("Staat");
     return staat;
   }
-  
+
   public TextInput getLeitwegID() throws RemoteException
   {
     if (leitwegID != null)
@@ -570,10 +585,10 @@ public class MitgliedControl extends FilterControl
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setName("Geburtsdatum");
     this.geburtsdatum.setTitle("Geburtsdatum");
-    this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
+    this.geburtsdatum.setText("Bitte Geburtsdatum wÃ¤hlen");
     zeigeAlter(d);
-    this.geburtsdatum
-        .setMandatory(Einstellungen.getEinstellung().getGeburtsdatumPflicht());
+    this.geburtsdatum.setMandatory(
+        (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
     return geburtsdatum;
   }
 
@@ -593,9 +608,10 @@ public class MitgliedControl extends FilterControl
       return geschlecht;
     }
     String g = getMitglied().getGeschlecht();
-    geschlecht = new GeschlechtInput(g==null?"o":getMitglied().getGeschlecht());
+    geschlecht = new GeschlechtInput(
+        g == null ? "o" : getMitglied().getGeschlecht());
     geschlecht.setName("Geschlecht");
-    geschlecht.setPleaseChoose("Bitte auswählen");
+    geschlecht.setPleaseChoose("Bitte auswÃ¤hlen");
     geschlecht.setMandatory(true);
     geschlecht.setName("Geschlecht");
     return geschlecht;
@@ -607,16 +623,17 @@ public class MitgliedControl extends FilterControl
     {
       return zahlungsweg;
     }
-    
+
     boolean mitVollzahler = false;
-    if(beitragsgruppe != null)
+    if (beitragsgruppe != null)
     {
-    	Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-    	if(bg != null && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-    		mitVollzahler = true;
+      Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
+      if (bg != null
+          && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        mitVollzahler = true;
     }
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
-    
+
     if (getMitglied().getZahlungsweg() != null)
     {
       zahlungsweg = new SelectNoScrollInput(weg,
@@ -624,10 +641,10 @@ public class MitgliedControl extends FilterControl
     }
     else
     {
-      zahlungsweg = new SelectNoScrollInput(weg,
-          new Zahlungsweg(Einstellungen.getEinstellung().getZahlungsweg()));
+      zahlungsweg = new SelectNoScrollInput(weg, new Zahlungsweg(
+          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     }
-    
+
     zahlungsweg.setName("Zahlungsweg");
     zahlungsweg.addListener(new Listener()
     {
@@ -639,7 +656,8 @@ public class MitgliedControl extends FilterControl
         {
           try
           {
-            if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+            if (((Zahlungsweg) getZahlungsweg().getValue())
+                .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
             {
               mandatid.setMandatory(false);
               mandatdatum.setMandatory(false);
@@ -657,32 +675,33 @@ public class MitgliedControl extends FilterControl
           catch (RemoteException e)
           {
             Logger.error("Fehler beim Zahlungsweg setzen.", e);
-          }        
+          }
         }
       }
     });
     return zahlungsweg;
   }
-  
+
   private void refreshZahlungsweg() throws RemoteException
   {
-    if(beitragsgruppe == null || zahlungsweg == null)
+    if (beitragsgruppe == null || zahlungsweg == null)
       return;
     boolean mitVollzahler = false;
     Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-    if(bg != null && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+    if (bg != null
+        && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
       mitVollzahler = true;
     ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
     zahlungsweg.setList(weg);
   }
 
-  // Lösche alle Daten aus der Bankverbindungsmaske
+  // LÃ¶sche alle Daten aus der Bankverbindungsmaske
   private void deleteBankverbindung()
   {
     try
     {
       getZahlungsrhythmus().setValue(new Zahlungsrhythmus(
-          Einstellungen.getEinstellung().getZahlungsrhytmus()));
+          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS)));
       getMandatID().setValue(null);
       getMandatDatum().setValue(null);
       getMandatVersion().setValue(null);
@@ -715,12 +734,13 @@ public class MitgliedControl extends FilterControl
     }
     return bankverbindungLabelGroup;
   }
-  
+
   public LabelGroup getAbweichenderKontoinhaberLabelGroup(Composite parent)
   {
     if (abweichenderKontoinhaberLabelGroup == null)
     {
-      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent, "Abweichender Kontoinhaber");
+      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent,
+          "Abweichender Kontoinhaber");
     }
     return abweichenderKontoinhaberLabelGroup;
   }
@@ -739,8 +759,8 @@ public class MitgliedControl extends FilterControl
     else
     {
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
-          new Zahlungsrhythmus(
-              Einstellungen.getEinstellung().getZahlungsrhytmus()));
+          new Zahlungsrhythmus((Integer) Einstellungen
+              .getEinstellung(Property.ZAHLUNGSRHYTMUS)));
     }
     zahlungsrhytmus.setName("Zahlungsrhytmus");
     return zahlungsrhytmus;
@@ -785,8 +805,8 @@ public class MitgliedControl extends FilterControl
     {
       mandatid.setMandatory(true);
     }
-    if (Einstellungen.getEinstellung()
-        .getSepaMandatIdSource() != SepaMandatIdSource.INDIVIDUELL)
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.SEPAMANDATIDSOURCE) != SepaMandatIdSource.INDIVIDUELL)
     {
       mandatid.disable();
     }
@@ -808,8 +828,9 @@ public class MitgliedControl extends FilterControl
     this.mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
-    this.mandatdatum.setText("Bitte Datum des Mandats wählen");
-    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    this.mandatdatum.setText("Bitte Datum des Mandats wÃ¤hlen");
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       mandatdatum.setMandatory(false);
     }
@@ -826,7 +847,8 @@ public class MitgliedControl extends FilterControl
     {
       return mandatversion;
     }
-    mandatversion = new SpinnerNoScrollInput(0, 1000, getMitglied().getMandatVersion());
+    mandatversion = new SpinnerNoScrollInput(0, 1000,
+        getMitglied().getMandatVersion());
     mandatversion.setName("Mandatsversion");
     mandatversion.addListener(new Listener()
     {
@@ -846,7 +868,8 @@ public class MitgliedControl extends FilterControl
 
       }
     });
-    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       mandatversion.setMandatory(false);
     }
@@ -877,8 +900,10 @@ public class MitgliedControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()), getBic());
-    if (((Zahlungsweg) getZahlungsweg().getValue()).getKey() != Zahlungsweg.BASISLASTSCHRIFT)
+    iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()),
+        getBic());
+    if (((Zahlungsweg) getZahlungsweg().getValue())
+        .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
     {
       iban.setMandatory(false);
     }
@@ -972,7 +997,7 @@ public class MitgliedControl extends FilterControl
       return ktoistrasse;
     }
     ktoistrasse = new TextInput(getMitglied().getKtoiStrasse(), 40);
-    ktoistrasse.setName("Straße");
+    ktoistrasse.setName("StraÃŸe");
     return ktoistrasse;
   }
 
@@ -1010,7 +1035,7 @@ public class MitgliedControl extends FilterControl
     return ktoiort;
   }
 
-  public SelectNoScrollInput getKtoiStaat() throws RemoteException
+  public StaatSearchInput getKtoiStaat() throws RemoteException
   {
     if (ktoistaat != null)
     {
@@ -1023,9 +1048,9 @@ public class MitgliedControl extends FilterControl
       GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
           + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
     }
-    ktoistaat = new SelectNoScrollInput(Staat.values(),
-        Staat.getByKey(getMitglied().getKtoiStaatCode()));
-    ktoistaat.setPleaseChoose("Nicht gesetzt");
+    ktoistaat = new StaatSearchInput();
+    ktoistaat.setSearchString("Zum Suchen tippen");
+    ktoistaat.setValue(Staat.getByKey(getMitglied().getKtoiStaatCode()));
     ktoistaat.setName("Staat");
     return ktoistaat;
   }
@@ -1048,7 +1073,7 @@ public class MitgliedControl extends FilterControl
     }
     ktoigeschlecht = new GeschlechtInput(getMitglied().getKtoiGeschlecht());
     ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setPleaseChoose("Bitte auswählen");
+    ktoigeschlecht.setPleaseChoose("Bitte auswÃ¤hlen");
     ktoigeschlecht.setMandatory(true);
     ktoigeschlecht.setName("Geschlecht");
     ktoigeschlecht.setMandatory(false);
@@ -1113,9 +1138,9 @@ public class MitgliedControl extends FilterControl
     this.eintritt = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.eintritt.setTitle("Eintrittsdatum");
     this.eintritt.setName("Eintrittsdatum");
-    this.eintritt.setText("Bitte Eintrittsdatum wählen");
+    this.eintritt.setText("Bitte Eintrittsdatum wÃ¤hlen");
     this.eintritt.setMandatory(
-        Einstellungen.getEinstellung().getEintrittsdatumPflicht());
+        (Boolean) Einstellungen.getEinstellung(Property.EINTRITTSDATUMPFLICHT));
     return eintritt;
   }
 
@@ -1133,16 +1158,18 @@ public class MitgliedControl extends FilterControl
     {
       // alte Beitragsgruppen hatten das Feld Beitragsarten noch nicht gesetzt
       // (NULL)
-      // diese Beitragsgruppen müssen hier auch erlaubt sein.
+      // diese Beitragsgruppen mÃ¼ssen hier auch erlaubt sein.
       list.addFilter("beitragsart <> ? or beitragsart IS NULL",
           new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
     }
-    beitragsgruppe = new SelectNoScrollInput(list != null ? PseudoIterator.asList(list) : null, getMitglied().getBeitragsgruppe());
+    beitragsgruppe = new SelectNoScrollInput(
+        list != null ? PseudoIterator.asList(list) : null,
+        getMitglied().getBeitragsgruppe());
     beitragsgruppe.setName("Beitragsgruppe");
     beitragsgruppe.setValue(getMitglied().getBeitragsgruppe());
     beitragsgruppe.setMandatory(true);
     beitragsgruppe.setAttribute("bezeichnung");
-    beitragsgruppe.setPleaseChoose("Bitte auswählen");
+    beitragsgruppe.setPleaseChoose("Bitte auswÃ¤hlen");
     beitragsgruppe.addListener(new Listener()
     {
 
@@ -1175,7 +1202,7 @@ public class MitgliedControl extends FilterControl
           {
             getMitglied().setVollZahlerID(null);
             disableZahler();
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
+            // ZukÃ¼nftige BeitrÃ¤ge nur bei bereits gespeicherten Mitgliedern
             if (getMitglied().getID() != null)
             {
               getZukuenftigeBeitraegeView().setVisible(true);
@@ -1298,13 +1325,13 @@ public class MitgliedControl extends FilterControl
     }
     auswertungUeberschrift = new TextInput(
         settings.getString("auswertung.ueberschrift", ""));
-    auswertungUeberschrift.setName("Überschrift");
+    auswertungUeberschrift.setName("Ãœberschrift");
     return auswertungUeberschrift;
   }
 
   /**
-   * Liefert ein Part zurück, das den Familienverband anzeigt. Da Container
-   * jedoch nur das Hinzufügen von Parts zulassen, ist das Part Familienverband
+   * Liefert ein Part zurÃ¼ck, das den Familienverband anzeigt. Da Container
+   * jedoch nur das HinzufÃ¼gen von Parts zulassen, ist das Part Familienverband
    * dynamisch: Entweder wird der Familienverband angezeigt (setShow(true)),
    * oder ein leeres Composite (setShow(false))
    * 
@@ -1337,15 +1364,15 @@ public class MitgliedControl extends FilterControl
   {
     if (zahler != null)
     {
-      // wenn force nicht gesetzt, gib aktuellen zahler zurück.
-      if (force != true)
+      // wenn force nicht gesetzt, gib aktuellen zahler zurÃ¼ck.
+      if (!force)
         return zahler;
       // ansonsten: erzeuge neuen...
-      // Dies ist nötig, wenn Zahler ausgeblendet wurde und daher der
+      // Dies ist nÃ¶tig, wenn Zahler ausgeblendet wurde und daher der
       // Parent vom GC disposed wurde.
     }
     zahler = new VollzahlerInput().getMitgliedInput(zahler, getMitglied(),
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
 
     zahler.addListener(new Listener()
     {
@@ -1375,8 +1402,8 @@ public class MitgliedControl extends FilterControl
 
     if (getBeitragsgruppe(true) != null
         && getBeitragsgruppe(true).getValue() != null
-        && ((Beitragsgruppe) getBeitragsgruppe(true).getValue()).getBeitragsArt() 
-        == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        && ((Beitragsgruppe) getBeitragsgruppe(true).getValue())
+            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
     {
       zahler.setEnabled(true);
     }
@@ -1399,7 +1426,7 @@ public class MitgliedControl extends FilterControl
     this.austritt = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.austritt.setTitle("Austrittsdatum");
     this.austritt.setName("Austrittsdatum");
-    this.austritt.setText("Bitte Austrittsdatum wählen");
+    this.austritt.setText("Bitte Austrittsdatum wÃ¤hlen");
     this.austritt.addListener(new Listener()
     {
 
@@ -1425,9 +1452,9 @@ public class MitgliedControl extends FilterControl
     Date d = getMitglied().getKuendigung();
 
     this.kuendigung = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.kuendigung.setName("Kündigungsdatum");
-    this.kuendigung.setTitle("Kündigungsdatum");
-    this.kuendigung.setText("Bitte Kündigungsdatum wählen");
+    this.kuendigung.setName("KÃ¼ndigungsdatum");
+    this.kuendigung.setTitle("KÃ¼ndigungsdatum");
+    this.kuendigung.setText("Bitte KÃ¼ndigungsdatum wÃ¤hlen");
     this.kuendigung.addListener(new Listener()
     {
 
@@ -1455,7 +1482,7 @@ public class MitgliedControl extends FilterControl
     this.sterbetag = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.sterbetag.setName("Sterbetag");
     this.sterbetag.setTitle("Sterbetag");
-    this.sterbetag.setText("Bitte Sterbetag wählen");
+    this.sterbetag.setText("Bitte Sterbetag wÃ¤hlen");
     this.sterbetag.addListener(new Listener()
     {
 
@@ -1563,7 +1590,7 @@ public class MitgliedControl extends FilterControl
           DateInput di = new DateInput(d, new JVDateFormatTTMMJJJJ());
           di.setName(fd.getLabel());
           di.setTitle(fd.getLabel());
-          di.setText(String.format("Bitte %s wählen", fd.getLabel()));
+          di.setText(String.format("Bitte %s wÃ¤hlen", fd.getLabel()));
           zusatzfelder[i] = di;
           break;
         case Datentyp.GANZZAHL:
@@ -1607,7 +1634,7 @@ public class MitgliedControl extends FilterControl
     }
 
     // erstelle lesefeldAuswerter, der alle Daten und Methoden
-    // zum Evaluieren von Skripten enthält.
+    // zum Evaluieren von Skripten enthÃ¤lt.
     if (lesefeldAuswerter == null)
     {
       lesefeldAuswerter = new LesefeldAuswerter();
@@ -1618,11 +1645,11 @@ public class MitgliedControl extends FilterControl
     if (lesefeldAuswerter.countLesefelder() == 0)
       return null;
 
-    // Ist noch keine ID verfügbar, wird das Mitglied gerade angelegt.
+    // Ist noch keine ID verfÃ¼gbar, wird das Mitglied gerade angelegt.
     // Dann darf getMap() nicht aufgerufen werden, da sonst Standard-Werte
-    // für Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
+    // fÃ¼r Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
     // Da lesefeldAuswerter aber einen kompletten Datensatz eines Mitglieds
-    // benötigt um alle Skripte fehlerfrei zu parsen, dürfen die Lesefelder
+    // benÃ¶tigt um alle Skripte fehlerfrei zu parsen, dÃ¼rfen die Lesefelder
     // noch nicht ausgewertet werden. Die GUI-Elemente werden daher beim
     // ersten Erstellen eines neuen Mitglieds noch nicht angezeigt.
     if (getMitglied().getID() == null)
@@ -1638,7 +1665,7 @@ public class MitgliedControl extends FilterControl
         .entrySet().iterator();
     while (it.hasNext())
     {
-      // Evaluiere Skripte und erzeuge für jedes ein TextAreaInput mit
+      // Evaluiere Skripte und erzeuge fÃ¼r jedes ein TextAreaInput mit
       // dem ausgewerteten Inhalt sowie dem Skriptnamen davor.
       Entry<String, Object> pairs = it.next();
       TextAreaInput t = new TextAreaInput(pairs.getValue().toString());
@@ -1665,9 +1692,9 @@ public class MitgliedControl extends FilterControl
     {
       Mitglied m = famiter.next();
       // Wenn der Iterator auf das aktuelle Mitglied zeigt,
-      // nutze stattdessen getMitglied() damit nicht das alte, unveränderte
+      // nutze stattdessen getMitglied() damit nicht das alte, unverÃ¤nderte
       // Mitglied
-      // aus der DB verwendet wird, sondern das vom Nutzer veränderte Mitglied.
+      // aus der DB verwendet wird, sondern das vom Nutzer verÃ¤nderte Mitglied.
       if (m.getID().equalsIgnoreCase(getMitglied().getID()))
         m = getMitglied();
       familienangehoerige.addItem(m);
@@ -1718,40 +1745,58 @@ public class MitgliedControl extends FilterControl
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new TablePart(zusatzbetraege,
-        new ZusatzbetraegeAction(getMitglied()));
+    zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege,
+        new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
 
-    zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+    zusatzbetraegeList.addColumn("Erste FÃ¤lligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+    zusatzbetraegeList.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
-        "ausfuehrung",
-        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Letzte abgerechnete FÃ¤lligkeit",
+        "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-    zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+    zusatzbetraegeList.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+    {
       @Override
       public String format(Object o)
       {
-        return new Zahlungsweg((Integer)o).getText();
+        return new Zahlungsweg((Integer) o).getText();
       }
     });
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
     }
     zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
         new BuchungsartFormatter());
-    zusatzbetraegeList
-        .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
+    }
+    zusatzbetraegeList.setContextMenu(new ZusatzbetraegeMenu(null));
     return zusatzbetraegeList;
   }
 
@@ -1766,17 +1811,16 @@ public class MitgliedControl extends FilterControl
         .createList(Wiedervorlage.class);
     wiedervorlagen.addFilter("mitglied = " + getMitglied().getID());
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    wiedervorlageList = new TablePart(wiedervorlagen,
-        new WiedervorlageAction(getMitglied()));
-    wiedervorlageList.setRememberColWidths(true);
-    wiedervorlageList.setRememberOrder(true);
-
+    wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen,
+        new EditAction(WiedervorlageDetailView.class));
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.addColumn("Vermerk", "vermerk");
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    wiedervorlageList.setContextMenu(new WiedervorlageMenu(wiedervorlageList));
+    wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
+    wiedervorlageList.setRememberColWidths(true);
+    wiedervorlageList.setRememberOrder(true);
     return wiedervorlageList;
   }
 
@@ -1816,10 +1860,10 @@ public class MitgliedControl extends FilterControl
     arbeitseinsaetze.addFilter("mitglied = " + getMitglied().getID());
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     arbeitseinsatzList = new TablePart(arbeitseinsaetze,
-        new ArbeitseinsatzAction(mitglied));
+        new EditAction(ArbeitseinsatzDetailView.class));
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
-    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu());
+    arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
 
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -1841,7 +1885,7 @@ public class MitgliedControl extends FilterControl
     DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new TablePart(lehrgaenge,
-        new LehrgangAction(getMitglied()));
+        new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
 
@@ -1852,7 +1896,7 @@ public class MitgliedControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-    lehrgaengeList.setContextMenu(new LehrgangMenu());
+    lehrgaengeList.setContextMenu(new LehrgangMenu(null));
     return lehrgaengeList;
   }
 
@@ -1910,8 +1954,8 @@ public class MitgliedControl extends FilterControl
     // Suche alle *.csv Dateien im vorlagencsvverzeichnis
     String vorlagencsvverzeichnis = "";
     String[] vorlagencsvList = {};
-    vorlagencsvverzeichnis = Einstellungen.getEinstellung()
-        .getVorlagenCsvVerzeichnis();
+    vorlagencsvverzeichnis = (String) Einstellungen
+        .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     if (vorlagencsvverzeichnis.length() > 0)
     {
       File verzeichnis = new File(vorlagencsvverzeichnis);
@@ -1966,7 +2010,7 @@ public class MitgliedControl extends FilterControl
     sortierung.setName("Sortierung");
     return sortierung;
   }
-  
+
   public boolean isSortierungAktiv()
   {
     return sortierung != null;
@@ -2013,7 +2057,7 @@ public class MitgliedControl extends FilterControl
           getKtoiPlz().setValue(getPlz().getValue());
           getKtoiOrt().setValue(getOrt().getValue());
           getKtoiEmail().setValue(getEmail().getValue());
-          if (Einstellungen.getEinstellung().getAuslandsadressen())
+          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
           {
             getKtoiStaat().setValue(getStaat().getValue());
           }
@@ -2029,30 +2073,30 @@ public class MitgliedControl extends FilterControl
     // button
     return b;
   }
-  
+
   public Button getKontoDatenLoeschenButton()
   {
-    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    Button b = new Button("Bankverbindung-Daten lÃ¶schen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
-          YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-          dialog.setTitle("Bankverbindung-Daten löschen");
-          dialog.setText("Bankverbindung-Daten löschen?");
-          boolean delete = false;
-          try
-          {
-            delete = ((Boolean) dialog.open()).booleanValue();
-          }
-          catch (Exception e)
-          {
-            Logger.error("Fehler beim Bankverbindung-Löschen-Dialog.", e);
-          }
-          if (delete)
-          {
-            deleteBankverbindung();
-          }
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Bankverbindung-Daten lÃ¶schen");
+        dialog.setText("Bankverbindung-Daten lÃ¶schen?");
+        boolean delete = false;
+        try
+        {
+          delete = ((Boolean) dialog.open()).booleanValue();
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim Bankverbindung-LÃ¶schen-Dialog.", e);
+        }
+        if (delete)
+        {
+          deleteBankverbindung();
+        }
       }
     }, null, false, "user-trash-full.png");
     // button
@@ -2145,13 +2189,15 @@ public class MitgliedControl extends FilterControl
   public Button getLesefelderEdit()
   {
     return new Button("Bearbeiten",
-        new LesefelddefinitionenAction(getMitglied()), null, false, "text-x-generic.png");
+        new LesefelddefinitionenAction(getMitglied()), null, false,
+        "text-x-generic.png");
   }
 
   public Button getZusatzbetragNeu()
   {
     return new Button("Neuer Zusatzbetrag",
-        new ZusatzbetraegeAction(getMitglied()), null, false, "document-new.png");
+        new ZusatzbetragNeuAction(getMitglied()), null, false,
+        "document-new.png");
   }
 
   public Button getSollbuchungNeu()
@@ -2164,32 +2210,42 @@ public class MitgliedControl extends FilterControl
   public Button getWiedervorlageNeu()
   {
     return new Button("Neue Wiedervorlage",
-        new WiedervorlageAction(getMitglied()), null, false, "document-new.png");
+        new WiedervorlageNeuAction(getMitglied()), null, false,
+        "document-new.png");
   }
 
   public Button getArbeitseinsatzNeu()
   {
     return new Button("Neuer Arbeitseinsatz",
-        new ArbeitseinsatzAction(getMitglied()), null, false, "document-new.png");
+        new ArbeitseinsatzNeuAction(getMitglied()), null, false,
+        "document-new.png");
   }
 
   public Button getLehrgangNeu()
   {
-    return new Button("Neuer Lehrgang", new LehrgangAction(getMitglied()), null,
-        false, "document-new.png");
+    return new Button("Neuer Lehrgang", new LehrgangNeuAction(getMitglied()),
+        null, false, "document-new.png");
   }
 
   public TablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new TablePart(new MitgliedQuery(this).get(atyp, null),
-        detailaction);
+    part = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
-    part.setContextMenu(new MitgliedMenu(detailaction));
+    part.setContextMenu(new MitgliedMenu(detailaction, part));
     part.setMulti(true);
     part.setRememberColWidths(true);
     part.setRememberOrder(true);
     part.setRememberState(true);
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      part.setAction(new EditAction(MitgliedDetailView.class, part));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      part.setAction(new EditAction(NichtMitgliedDetailView.class, part));
+    }
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 
@@ -2211,7 +2267,7 @@ public class MitgliedControl extends FilterControl
     part.sort();
     return part;
   }
-  
+
   public TreePart getEigenschaftenTree() throws RemoteException
   {
     if (eigenschaftenTree != null)
@@ -2219,8 +2275,7 @@ public class MitgliedControl extends FilterControl
       return eigenschaftenTree;
     }
     eigenschaftenTree = new TreePart(new EigenschaftenNode(mitglied), null);
-    eigenschaftenTree
-        .addSelectionListener(new EigenschaftListener());
+    eigenschaftenTree.addSelectionListener(new EigenschaftListener());
     eigenschaftenTree.setFormatter(new EigenschaftTreeFormatter());
 
     eigenschaftenHash = createEigenschaftenHash();
@@ -2229,14 +2284,14 @@ public class MitgliedControl extends FilterControl
   }
 
   /**
-   * Zur überwachung der Änderungen einen Hash erzeugen
+   * Zur Ã¼berwachung der Ã„nderungen einen Hash erzeugen
    * 
    * @throws RemoteException
    */
   private String createEigenschaftenHash() throws RemoteException
   {
     String hash = "";
-    if(eigenschaftenTree != null)
+    if (eigenschaftenTree != null)
     {
       for (Object o : eigenschaftenTree.getItems())
       {
@@ -2254,7 +2309,8 @@ public class MitgliedControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
 
@@ -2342,7 +2398,7 @@ public class MitgliedControl extends FilterControl
         throw new ApplicationException("Beitragsgruppe fehlt");
       }
     }
-    if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+    if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
     {
       if (getIndividuellerBeitrag().getValue() != null)
       {
@@ -2373,7 +2429,7 @@ public class MitgliedControl extends FilterControl
       m.setIban(ib.toUpperCase().replace(" ", ""));
     m.setEintritt((Date) getEintritt().getValue());
     m.setEmail((String) getEmail().getValue());
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       if (externemitgliedsnummer != null)
       {
@@ -2399,7 +2455,7 @@ public class MitgliedControl extends FilterControl
       m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
       if (getGeschlecht().getSelectedValue() == null)
       {
-        throw new ApplicationException("Bitte Geschlecht auswählen!");
+        throw new ApplicationException("Bitte Geschlecht auswÃ¤hlen!");
       }
 
       m.setGeschlecht((String) getGeschlecht().getValue());
@@ -2442,18 +2498,19 @@ public class MitgliedControl extends FilterControl
     {
       m.setEingabedatum();
     }
+    return m;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Mitglied m = getMitglied();
+      Mitglied m = (Mitglied) prepareStore();
       m.setMandatID((String) getMandatID().getValue());
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
-      // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
-      // Eintrag immer als geändert erkannt.
+      // verwendet, daher kÃ¶nnen wir ihn nicht in fill() setzen, sonst wird der
+      // Eintrag immer als geÃ¤ndert erkannt.
       if (mitgliedstyp != null)
       {
         Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
@@ -2468,7 +2525,8 @@ public class MitgliedControl extends FilterControl
 
       boolean ist_mitglied = m.getMitgliedstyp()
           .getJVereinid() == Mitgliedstyp.MITGLIED;
-      if (Einstellungen.getEinstellung().getMitgliedfoto() && ist_mitglied)
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO)
+          && ist_mitglied)
       {
         Mitgliedfoto f = null;
         DBIterator<Mitgliedfoto> it = Einstellungen.getDBService()
@@ -2498,7 +2556,10 @@ public class MitgliedControl extends FilterControl
       }
       if (eigenschaftenTree != null)
       {
-        ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();  // liefert nur den Root
+        ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems(); // liefert
+                                                                              // nur
+                                                                              // den
+                                                                              // Root
         EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
         if (!getMitglied().isNewObject())
         {
@@ -2531,7 +2592,7 @@ public class MitgliedControl extends FilterControl
               .createList(Felddefinition.class);
           it0.addFilter("label = ?", new Object[] { ti.getName() });
           Felddefinition fd = it0.next();
-          // Ist bereits ein Datensatz für diese Definiton vorhanden ?
+          // Ist bereits ein Datensatz fÃ¼r diese Definiton vorhanden ?
           DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
               .createList(Zusatzfelder.class);
           it.addFilter("mitglied =?", new Object[] { m.getID() });
@@ -2588,10 +2649,10 @@ public class MitgliedControl extends FilterControl
           ti.setData("old", ti.getValue());
         }
       }
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
-          && ist_mitglied)
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN) && ist_mitglied)
       {
-        // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
+        // Schritt 1: Die selektierten sekundÃ¤ren Beitragsgruppe prÃ¼fen, ob sie
         // bereits gespeichert sind. Ggfls. speichern.
         @SuppressWarnings("rawtypes")
         List items = sekundaerebeitragsgruppe.getItems();
@@ -2603,8 +2664,8 @@ public class MitgliedControl extends FilterControl
             sb.store();
           }
         }
-        // Schritt 2: Die sekundären Beitragsgruppe in der Liste, die nicht mehr
-        // selektiert sind, müssen gelöscht werden.
+        // Schritt 2: Die sekundÃ¤ren Beitragsgruppe in der Liste, die nicht mehr
+        // selektiert sind, mÃ¼ssen gelÃ¶scht werden.
         for (SekundaereBeitragsgruppe sb : listeSeB)
         {
           if (!sb.isNewObject() && !items.contains(sb))
@@ -2624,7 +2685,8 @@ public class MitgliedControl extends FilterControl
 
   public TreePart getFamilienbeitraegeTree() throws RemoteException
   {
-    familienbeitragtree = new TreePart(new FamilienbeitragNode(getMitgliedStatus()),
+    familienbeitragtree = new TreePart(
+        new FamilienbeitragNode(getMitgliedStatus()),
         new MitgliedDetailAction());
     familienbeitragtree.addColumn("Name", "name");
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2640,20 +2702,20 @@ public class MitgliedControl extends FilterControl
         FamilienbeitragNode fbn = (FamilienbeitragNode) item.getData();
         try
         {
-         if (fbn.getType() == FamilienbeitragNode.ROOT)
-           item.setImage(SWTUtil.getImage("users.png"));
-         if (fbn.getType() == FamilienbeitragNode.ZAHLER
-             && fbn.getMitglied().getAustritt() == null)
-           item.setImage(SWTUtil.getImage("user-friends.png"));
-         if (fbn.getType() == FamilienbeitragNode.ZAHLER
-             && fbn.getMitglied().getAustritt() != null)
-           item.setImage(SWTUtil.getImage("eraser.png"));
-         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
-             && fbn.getMitglied().getAustritt() == null)
-           item.setImage(SWTUtil.getImage("user.png"));
-         if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
-             && fbn.getMitglied().getAustritt() != null)
-           item.setImage(SWTUtil.getImage("eraser.png"));
+          if (fbn.getType() == FamilienbeitragNode.ROOT)
+            item.setImage(SWTUtil.getImage("users.png"));
+          if (fbn.getType() == FamilienbeitragNode.ZAHLER
+              && fbn.getMitglied().getAustritt() == null)
+            item.setImage(SWTUtil.getImage("user-friends.png"));
+          if (fbn.getType() == FamilienbeitragNode.ZAHLER
+              && fbn.getMitglied().getAustritt() != null)
+            item.setImage(SWTUtil.getImage("eraser.png"));
+          if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+              && fbn.getMitglied().getAustritt() == null)
+            item.setImage(SWTUtil.getImage("user.png"));
+          if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
+              && fbn.getMitglied().getAustritt() != null)
+            item.setImage(SWTUtil.getImage("eraser.png"));
         }
         catch (Exception e)
         {
@@ -2661,6 +2723,7 @@ public class MitgliedControl extends FilterControl
         }
       }
     });
+    VorZurueckControl.setObjektListe(null, null);
     return familienbeitragtree;
   }
 
@@ -2697,7 +2760,7 @@ public class MitgliedControl extends FilterControl
       }
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -2706,7 +2769,7 @@ public class MitgliedControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("auswertungmitglied", dateinamensort,
-          Einstellungen.getEinstellung().getDateinamenmuster(),
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
 
@@ -2784,10 +2847,11 @@ public class MitgliedControl extends FilterControl
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(
+        Mitgliedstypen.NICHTMITGLIED).getValue();
     if (mt == null)
     {
-      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
+      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswÃ¤hlen");
       return;
     }
     list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
@@ -2810,9 +2874,9 @@ public class MitgliedControl extends FilterControl
       {
         dateinamensort = "geburtstagsliste";
       }
-      
+
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -2821,7 +2885,7 @@ public class MitgliedControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("auswertungnichtmitglied", dateinamensort,
-          Einstellungen.getEinstellung().getDateinamenmuster(),
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
           ausw.getDateiendung()).get());
       fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
 
@@ -2884,7 +2948,7 @@ public class MitgliedControl extends FilterControl
   private void starteStatistik() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     fd.setFilterExtensions(new String[] { "*.pdf" });
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
@@ -2893,7 +2957,8 @@ public class MitgliedControl extends FilterControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("statistik", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
 
     String s = fd.open();
 
@@ -2935,7 +3000,6 @@ public class MitgliedControl extends FilterControl
     Application.getController().start(t);
 
   }
-
 
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
@@ -2982,7 +3046,8 @@ public class MitgliedControl extends FilterControl
                   FamilienbeitragMessageConsumer.this);
               return;
             }
-            familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
+            familienbeitragtree
+                .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
           }
           catch (Exception e)
           {
@@ -3038,7 +3103,7 @@ public class MitgliedControl extends FilterControl
     }
     beitragsTabelle.sort();
   }
-  
+
   @Override
   public void TabRefresh()
   {
@@ -3046,7 +3111,8 @@ public class MitgliedControl extends FilterControl
     {
       try
       {
-        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(
+            Mitgliedstypen.NICHTMITGLIED).getValue();
         if (mt != null)
         {
           refreshMitgliedTable(Integer.parseInt(mt.getID()));
@@ -3061,13 +3127,14 @@ public class MitgliedControl extends FilterControl
         Logger.error("Fehler", e1);
       }
     }
-    
+
     if (familienbeitragtree != null)
     {
       try
       {
         familienbeitragtree.removeAll();
-        familienbeitragtree.setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
+        familienbeitragtree
+            .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
       }
       catch (RemoteException e1)
       {
@@ -3075,7 +3142,7 @@ public class MitgliedControl extends FilterControl
       }
     }
   }
-  
+
   @Override
   public boolean hasChanged() throws RemoteException
   {
@@ -3098,12 +3165,13 @@ public class MitgliedControl extends FilterControl
       return true;
     }
 
-    // Sekundäre Beitragsgruppen testen
+    // SekundÃ¤re Beitragsgruppen testen
     Mitglied m = getMitglied();
-    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen()
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
         && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
     {
-      // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
+      // Schritt 1: Die selektierten sekundÃ¤ren Beitragsgruppe prÃ¼fen, ob sie
       // bereits gespeichert sind. Ggfls. speichern.
       @SuppressWarnings("rawtypes")
       List items = sekundaerebeitragsgruppe.getItems();
@@ -3115,8 +3183,8 @@ public class MitgliedControl extends FilterControl
           return true;
         }
       }
-      // Schritt 2: Die sekundären Beitragsgruppe in der Liste, die nicht mehr
-      // selektiert sind, müssen gelöscht werden.
+      // Schritt 2: Die sekundÃ¤ren Beitragsgruppe in der Liste, die nicht mehr
+      // selektiert sind, mÃ¼ssen gelÃ¶scht werden.
       for (SekundaereBeitragsgruppe sb : listeSeB)
       {
         if (!sb.isNewObject() && !items.contains(sb))
@@ -3130,7 +3198,7 @@ public class MitgliedControl extends FilterControl
 
   public void saveAusgabeSettings() throws RemoteException
   {
-    
+
     if (auswertungUeberschrift != null)
     {
       String tmp = (String) getAuswertungUeberschrift().getValue();

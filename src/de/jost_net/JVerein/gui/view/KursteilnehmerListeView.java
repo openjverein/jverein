@@ -16,17 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -44,31 +38,17 @@ public class KursteilnehmerListeView extends AbstractView
 
     final KursteilnehmerControl control = new KursteilnehmerControl(this);
 
-    String sql = "select count(*) from kursteilnehmer";
-    DBService service = Einstellungen.getDBService();
-    ResultSetExtractor rs = new ResultSetExtractor()
-    {
-
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        rs.next();
-        return Long.valueOf(rs.getLong(1));
-      }
-    };
-    Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
-
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Verwendungszweck", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getEingabedatumvon());
     middle.addInput(control.getEingabedatumbis());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getAbbuchungsdatumvon());
     right.addInput(control.getAbbuchungsdatumbis());
@@ -89,22 +69,18 @@ public class KursteilnehmerListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Eingabe Datumsbereich zurück");
-    vor1.setToolTipText("Eingabe Datumsbereich vowärts");
-    zurueck2.setToolTipText("Abbuchung Datumsbereich zurück");
-    vor2.setToolTipText("Abbuchung Datumsbereich vowärts");
+    zurueck1.setToolTipText("Eingabe Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Eingabe Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Abbuchung Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Abbuchung Datumsbereich vowÃ¤rts");
 
-    if (anzahl.longValue() > 0)
-    {
-      control.getKursteilnehmerTable().paint(getParent());
-    }
+    control.getKursteilnehmerTable().paint(getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class),
-        null, false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

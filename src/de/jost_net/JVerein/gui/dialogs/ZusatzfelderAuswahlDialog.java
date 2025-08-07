@@ -48,12 +48,13 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
   private ArrayList<Input> felder;
 
   private Settings settings;
-  
+
   String zusatzfeld = null;
-  
+
   String zusatzfelder = null;
 
-  public ZusatzfelderAuswahlDialog(Settings settings, String zusatzfeld, String zusatzfelder)
+  public ZusatzfelderAuswahlDialog(Settings settings, String zusatzfeld,
+      String zusatzfelder)
   {
     super(ZusatzfelderAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 700);
@@ -230,8 +231,8 @@ public class ZusatzfelderAuswahlDialog extends AbstractDialog<Object>
               fd.getID());
           try
           {
-            String value = settings
-                .getString(zusatzfeld + counter + ".value", "");
+            String value = settings.getString(zusatzfeld + counter + ".value",
+                "");
 
             if (value.length() > 0)
             {

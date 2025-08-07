@@ -19,25 +19,31 @@ package de.jost_net.JVerein.keys;
 public enum Kontoart
 {
   // LIMIT ist keine Kontoart, sondern dient zur Abgrenzung.
-  // Ids unter dem Limit werden regulär im Buchungsklassensaldo, Kontensaldo und der Wirtschaftsplanung
-  // berücksichtigt.
-  // Ids über dem Limit werden in diesen Salden ignoriert.
-  // Ebenfals is LIMIT_RUECKLAGE keine Kontoart, sondern grenzt die
-  // Rücklagekonten ab.
-  GELD(1, "Geldkonto", "Geldvermögen"),
-  ANLAGE(2, "Anlagenkonto", "Anlagevermögen"),
+  // Ids unter dem Limit werden regulÃ¤r im Buchungsklassensaldo, Kontensaldo
+  // und der Wirtschaftsplanung
+  // berÃ¼cksichtigt.
+  // Ids Ã¼ber dem Limit werden in diesen Salden ignoriert.
+  // Ebenfals ist LIMIT_RUECKLAGE keine Kontoart, sondern grenzt die
+  // RÃ¼cklagekonten ab.
+  GELD(1, "Geldkonto", "GeldvermÃ¶gen"),
+  ANLAGE(2, "Anlagenkonto", "AnlagevermÃ¶gen"),
   SCHULDEN(3, "Fremdkapital"),
   LIMIT(100, "-- Limit --"),
-  RUECKLAGE_ZWECK_GEBUNDEN(101, "Zweckgebundene Rücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_BETRIEBSMITTEL(102, "Betriebsmittelrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_INVESTITION(103, "Investitionsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_INSTANDHALTUNG(104, "Instandhaltungsrücklage nach § 62 Abs. 1 Nr. 1 AO"),
-  RUECKLAGE_WIEDERBESCHAFFUNG(105, "Wiederbeschaffungsrücklage nach § 62 Abs. 1 Nr. 2 AO"),
-  RUECKLAGE_FREI(106, "Freie Rücklage nach § 62 Abs. 1 Nr. 3 AO"),
-  RUECKLAGE_ERWERB(107, "Rücklage für Gesellschaftsrechte nach § 62 Abs. 1 Nr. 4 AO"),
-  VERMOEGEN(108, "Vermögen nach § 62 Abs. 3 und 4 AO"),
-  RUECKLAGE_SONSTIG(109, "Sonstige Rücklagen und Vermögen"),
-  LIMIT_RUECKLAGE(200, "-- Limit Rücklage --"),
+  RUECKLAGE_ZWECK_GEBUNDEN(101,
+      "Zweckgebundene RÃ¼cklage nach Â§ 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_BETRIEBSMITTEL(102,
+      "BetriebsmittelrÃ¼cklage nach Â§ 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_INVESTITION(103, "InvestitionsrÃ¼cklage nach Â§ 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_INSTANDHALTUNG(104,
+      "InstandhaltungsrÃ¼cklage nach Â§ 62 Abs. 1 Nr. 1 AO"),
+  RUECKLAGE_WIEDERBESCHAFFUNG(105,
+      "WiederbeschaffungsrÃ¼cklage nach Â§ 62 Abs. 1 Nr. 2 AO"),
+  RUECKLAGE_FREI(106, "Freie RÃ¼cklage nach Â§ 62 Abs. 1 Nr. 3 AO"),
+  RUECKLAGE_ERWERB(107,
+      "RÃ¼cklage fÃ¼r Gesellschaftsrechte nach Â§ 62 Abs. 1 Nr. 4 AO"),
+  VERMOEGEN(108, "VermÃ¶gen nach Â§ 62 Abs. 3 und 4 AO"),
+  RUECKLAGE_SONSTIG(109, "Sonstige RÃ¼cklagen und VermÃ¶gen"),
+  LIMIT_RUECKLAGE(200, "-- Limit RÃ¼cklage --"),
   VERBINDLICHKEITEN(201, "Verbindlichkeiten"),
   FORDERUNGEN(202, "Forderungen");
 

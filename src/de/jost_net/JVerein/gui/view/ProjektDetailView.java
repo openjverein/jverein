@@ -44,10 +44,14 @@ public class ProjektDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PROJEKTE, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
 
+  @Override
   protected Savable getControl()
   {
     return control;

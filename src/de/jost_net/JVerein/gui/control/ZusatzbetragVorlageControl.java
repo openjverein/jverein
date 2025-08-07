@@ -23,18 +23,22 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
 import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -49,6 +53,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
@@ -85,6 +90,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
   private SelectInput zahlungsweg;
 
+  private SteuerInput steuer = null;
+
   public ZusatzbetragVorlageControl(AbstractView view)
   {
     super(view);
@@ -112,8 +119,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     Date d = getZusatzbetragVorlage().getFaelligkeit();
 
     this.faelligkeit = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit");
-    this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
+    this.faelligkeit.setTitle("FÃ¤lligkeit");
+    this.faelligkeit.setText("Bitte FÃ¤lligkeitsdatum wÃ¤hlen");
     this.faelligkeit.addListener(new Listener()
     {
       @Override
@@ -164,7 +171,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     Date d = getZusatzbetragVorlage().getStartdatum();
     this.startdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.startdatum.setTitle("Startdatum");
-    this.startdatum.setText("Bitte Startdatum wählen");
+    this.startdatum.setText("Bitte Startdatum wÃ¤hlen");
     this.startdatum.addListener(new Listener()
     {
       @Override
@@ -213,7 +220,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
       @Override
@@ -229,6 +237,19 @@ public class ZusatzbetragVorlageControl extends AbstractControl
         catch (RemoteException e)
         {
           Logger.error("Fehler", e);
+        }
+      }
+    });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
         }
       }
     });
@@ -257,8 +278,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     {
       if (buchungsklasse == null)
         return null;
-      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse()
-          .getValue();
+      Buchungsklasse bukla = (Buchungsklasse) getBuchungsklasse().getValue();
       if (null == bukla)
         return null;
       Long id = Long.valueOf(bukla.getID());
@@ -266,7 +286,7 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "GewÃ¤hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -284,6 +304,20 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return zahlungsweg;
   }
 
+  public SelectInput getSteuer() throws RemoteException
+  {
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    steuer = new SteuerInput(getZusatzbetragVorlage().getSteuer());
+
+    steuer.setAttribute("name");
+    steuer.setPleaseChoose("Keine Steuer");
+
+    return steuer;
+  }
+
   public DateInput getEndedatum() throws RemoteException
   {
     if (endedatum != null)
@@ -293,8 +327,8 @@ public class ZusatzbetragVorlageControl extends AbstractControl
 
     Date d = getZusatzbetragVorlage().getEndedatum();
     this.endedatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.endedatum.setTitle("Nicht mehr ausführen ab");
-    this.endedatum.setText("Bitte Endedatum wählen");
+    this.endedatum.setTitle("Nicht mehr ausfÃ¼hren ab");
+    this.endedatum.setText("Bitte Endedatum wÃ¤hlen");
     this.endedatum.addListener(new Listener()
     {
       @Override
@@ -310,7 +344,9 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     return endedatum;
   }
 
-  public void prepareStore() throws RemoteException, ApplicationException
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     ZusatzbetragVorlage z = getZusatzbetragVorlage();
     z.setFaelligkeit((Date) getFaelligkeit().getValue());
@@ -325,15 +361,19 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     z.setBuchungsart((Buchungsart) getBuchungsart().getValue());
     z.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     z.setZahlungsweg((Zahlungsweg) getZahlungsweg().getValue());
+    if (steuer != null)
+    {
+      z.setSteuer((Steuer) steuer.getValue());
+    }
+    return z;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      ZusatzbetragVorlage z = getZusatzbetragVorlage();
-      z.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -353,12 +393,12 @@ public class ZusatzbetragVorlageControl extends AbstractControl
     {
       zusatzbetragVorlageList = new TablePart(zusatzbetragsvorlagen,
           new EditAction(ZusatzbetragVorlageDetailView.class));
-      zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
+      zusatzbetragVorlageList.addColumn("Erste FÃ¤lligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
+      zusatzbetragVorlageList.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
-      zusatzbetragVorlageList.addColumn("Nicht mehr ausführen ab", "endedatum",
+      zusatzbetragVorlageList.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
       zusatzbetragVorlageList.addColumn("Betrag", "betrag",
@@ -372,13 +412,32 @@ public class ZusatzbetragVorlageControl extends AbstractControl
               return new Zahlungsweg((Integer) o).getText();
             }
           });
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
       }
       zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        zusatzbetragVorlageList.addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
+      }
 
       zusatzbetragVorlageList.setContextMenu(new ZusatzbetragVorlageMenu());
       zusatzbetragVorlageList.setRememberColWidths(true);

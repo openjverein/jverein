@@ -41,13 +41,13 @@ public class KontoauszugMailView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Kontoauszüge");
+    GUI.getView().setTitle("KontoauszÃ¼ge");
 
     final SollbuchungControl control = new SollbuchungControl(this);
     control.init("kontoauszug.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    
+
     if (this.getCurrentObject() == null)
     {
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
@@ -71,6 +71,7 @@ public class KontoauszugMailView extends AbstractView
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getDifferenz());
+      left.addLabelPair("Differenz Limit", control.getDoubleAusw());
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());
@@ -89,7 +90,7 @@ public class KontoauszugMailView extends AbstractView
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
     cont.addLabelPair("Text", control.getTxt());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSpeichernButton());
@@ -101,18 +102,18 @@ public class KontoauszugMailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTOAUSZUG, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
-        control, false, "edit-copy.png"));
+            control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    buttons.addButton(control.getStartKontoauszugButton(
-        this.getCurrentObject(), control));
+    buttons.addButton(
+        control.getStartKontoauszugButton(this.getCurrentObject(), control));
     buttons.paint(this.getParent());
   }
 }

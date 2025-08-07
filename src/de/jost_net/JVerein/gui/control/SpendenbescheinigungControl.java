@@ -36,8 +36,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
@@ -45,6 +46,8 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
@@ -52,17 +55,20 @@ import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.io.ZipMailer;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -82,7 +88,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -95,12 +100,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
 {
 
   // Spendenbescheinigung View
-  private TablePart spbList;
+  private JVereinTablePart spbList;
 
   private SelectInput spendenart;
 
   private AbstractInput mitglied;
-  
+
   private TextInput zeile1;
 
   private TextInput zeile2;
@@ -132,7 +137,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private CheckboxInput unterlagenwertermittlung;
 
   private Spendenbescheinigung spendenbescheinigung;
-  
+
   private boolean and = false;
 
   private String sql = "";
@@ -198,12 +203,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       else
       {
-      Spendenart spa = (Spendenart) getSpendenart().getValue();
-      getBezeichnungSachzuwendung()
-          .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
-      getHerkunftSpende().setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
-      getUnterlagenWertermittlung()
-          .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
+        Spendenart spa = (Spendenart) getSpendenart().getValue();
+        getBezeichnungSachzuwendung()
+            .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
+        getHerkunftSpende().setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
+        getUnterlagenWertermittlung()
+            .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
       }
     }
     catch (RemoteException e)
@@ -211,7 +216,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       Logger.error("Fehler", e);
     }
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -220,11 +225,11 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     Mitglied m = getSpendenbescheinigung().getMitglied();
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, m,
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     if (mitglied instanceof SelectInput)
     {
-      ((SelectInput) mitglied).setPleaseChoose("Optional auswählen");
+      ((SelectInput) mitglied).setPleaseChoose("Optional auswÃ¤hlen");
       if (m == null)
       {
         ((SelectInput) mitglied).setPreselected(null);
@@ -402,7 +407,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       else
       {
-        // Wegen Kompabilität zu früher
+        // Wegen KompabilitÃ¤t zu frÃ¼her
         check = getSpendenbescheinigung().getErsatzAufwendungen();
       }
     }
@@ -459,7 +464,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Spendenbescheinigung spb = getSpendenbescheinigung();
     Spendenart spa = (Spendenart) getSpendenart().getValue();
@@ -483,20 +488,20 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setHerkunftSpende(hsp.getKey());
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
+    return spb;
   }
-  
+
   /**
    * This method stores the project using the current values.
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Spendenbescheinigung spb = getSpendenbescheinigung();
-      spb.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -508,7 +513,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   public Button getDruckUndMailButton()
   {
-  
+
     Button b = new Button("Druck und Mail", new Action()
     {
 
@@ -521,7 +526,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
           if (spb.isNewObject())
           {
             GUI.getStatusBar()
-            .setErrorText("Spendenbescheinigung bitte erst speichern!");
+                .setErrorText("Spendenbescheinigung bitte erst speichern!");
             return;
           }
         }
@@ -531,7 +536,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
           throw new ApplicationException(
               "Fehler bei der Aufbereitung der Spendenbescheinigung");
         }
-        GUI.startView(SpendenbescheinigungMailView.class, 
+        GUI.startView(SpendenbescheinigungMailView.class,
             new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
       }
     }, getSpendenbescheinigung(), false, "document-print.png");
@@ -544,8 +549,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    spbList = new TablePart(getSpendenbescheinigungen(),
-        new SpendenbescheinigungAction(Spendenart.SACHSPENDE));
+    spbList = new JVereinTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
@@ -571,13 +575,17 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addColumn("Zeile 7", "zeile7");
 
     spbList.setRememberColWidths(true);
-    spbList.setContextMenu(new SpendenbescheinigungMenu());
+    spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setRememberOrder(true);
     spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
+    spbList.setAction(
+        new EditAction(SpendenbescheinigungDetailView.class, spbList));
+    VorZurueckControl.setObjektListe(null, null);
     return spbList;
   }
 
+  @Override
   public void TabRefresh()
   {
     if (spbList != null)
@@ -613,7 +621,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     // Bei GELDSPENDE_ECHT liefert das Query auch Splittbuchungen die neben
     // echten Geldbuchungen auch Geldbuchungen mit Verzicht haben.
     // Darum lesen wir nochmal mit ERSTATTUNGSVERZICHT. Wenn eine Id da
-    // auch dabei ist dürfen wir die Splittbuchung nicht nehmen
+    // auch dabei ist dÃ¼rfen wir die Splittbuchung nicht nehmen
     if (suchSpendenart == SuchSpendenart.GELDSPENDE_ECHT)
     {
       ArrayList<Long> erstattungsIds = querySpendenbescheinigungen(
@@ -783,38 +791,38 @@ public class SpendenbescheinigungControl extends DruckMailControl
   public String getInfoText(Object spbArray)
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
-    String text = "Es wurden " + spbArr.length + 
-        " Spendenbescheinigungen ausgewählt"
+    String text = "Es wurden " + spbArr.length
+        + " Spendenbescheinigungen ausgewÃ¤hlt"
         + "\nFolgende Mitglieder haben keine Mailadresse:";
     try
     {
-      for (Spendenbescheinigung spb: spbArr)
+      for (Spendenbescheinigung spb : spbArr)
       {
         Mitglied m = spb.getMitglied();
-        if (m != null && ( m.getEmail() == null || m.getEmail().isEmpty()))
+        if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          text = text + "\n - " + m.getName()
-              + ", " + m.getVorname();
+          text = text + "\n - " + m.getName() + ", " + m.getVorname();
         }
       }
-      text = text 
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
-      for (Spendenbescheinigung spb: spbArr)
+      text = text
+          + "\nFÃ¼r folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
+      for (Spendenbescheinigung spb : spbArr)
       {
         if (spb.getMitglied() == null)
         {
-          text = text  + "\n - " + spb.getZeile1()
-              + ", " + spb.getZeile2() + ", " + spb.getZeile3();
+          text = text + "\n - " + spb.getZeile1() + ", " + spb.getZeile2()
+              + ", " + spb.getZeile3();
         }
       }
     }
     catch (Exception ex)
     {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Mitglieder aus den Spendenbescheinigungen");
+      GUI.getStatusBar().setErrorText(
+          "Fehler beim Ermitteln der Mitglieder aus den Spendenbescheinigungen");
     }
     return text;
   }
-  
+
   public Button getStartButton(final Object currentObject)
   {
     Button button = new Button("Starten", new Action()
@@ -833,11 +841,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
             if (spblist.size() == 0)
             {
               GUI.getStatusBar()
-              .setSuccessText("Für die gewählten Filterkriterien wurden "
-                  + "keine Spendenbescheinigungen gefunden");
+                  .setSuccessText("FÃ¼r die gewÃ¤hlten Filterkriterien wurden "
+                      + "keine Spendenbescheinigungen gefunden");
               return;
             }
-            spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
+            spbArray = spblist
+                .toArray(new Spendenbescheinigung[spblist.size()]);
           }
           else if (currentObject instanceof Spendenbescheinigung[])
           {
@@ -847,8 +856,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
           {
             return;
           }
-          generatePdf((String) mailtext.getValue(), (Adressblatt) adressblatt.getValue(),
-               spbArray, (Ausgabeart) ausgabeart.getValue());
+          generatePdf((String) mailtext.getValue(),
+              (Adressblatt) adressblatt.getValue(), spbArray,
+              (Ausgabeart) ausgabeart.getValue());
           if ((Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
           {
             sendeMail((String) mailbetreff.getValue(),
@@ -865,18 +875,18 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return button;
   }
 
-  private void generatePdf(String text, Adressblatt adressblatt, 
+  private void generatePdf(String text, Adressblatt adressblatt,
       Spendenbescheinigung[] spba, Ausgabeart ausgabeart)
       throws ApplicationException
   {
     boolean open = false;
-    if (ausgabeart ==  Ausgabeart.DRUCK)
+    if (ausgabeart == Ausgabeart.DRUCK)
       open = true;
-    SpendenbescheinigungPrintAction action = 
-        new SpendenbescheinigungPrintAction(text, adressblatt, open);
+    SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(
+        text, adressblatt, open);
     action.handleAction(spba);
   }
-  
+
   private void sendeMail(final String betr, String text,
       final Spendenbescheinigung[] spba) throws IOException
   {
@@ -893,24 +903,20 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       // PDF wurde bereits erstellt, dieses holen wir und schreiben es in das
       // ZIP
-      String path = Einstellungen.getEinstellung()
-          .getSpendenbescheinigungverzeichnis();
+      String path = (String) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS);
       if (path == null || path.length() == 0)
       {
         path = settings.getString("lastdir", System.getProperty("user.home"));
       }
       settings.setAttribute("lastdir", path);
       path = path.endsWith(File.separator) ? path : path + File.separator;
-
-      String fileName = new Dateiname(spb.getMitglied(),
-          spb.getSpendedatum(), "Spendenbescheinigung",
-          Einstellungen.getEinstellung().getDateinamenmusterSpende(),
-          "pdf").get();
+      String fileName = VorlageUtil.getName(
+          VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, m) + ".pdf";
 
       // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-      zos.putNextEntry(new ZipEntry(
-          m.getID() + "#spendenbescheinigung#" + spb.getID() + "#"
-              + m.getEmail() + "#" + fileName));
+      zos.putNextEntry(new ZipEntry(m.getID() + "#spendenbescheinigung#"
+          + spb.getID() + "#" + m.getEmail() + "#" + fileName));
       FileInputStream in = new FileInputStream(new File(path + fileName));
       // buffer size
       byte[] b = new byte[1024];
@@ -924,7 +930,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     zos.close();
     new ZipMailer(zip, (String) betr, text);
   }
-  
+
   public Button getPDFExportButton()
   {
     Button b = new Button("PDF", new Action()
@@ -959,7 +965,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     try
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
+      fd.setText("Ausgabedatei wÃ¤hlen.");
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -967,7 +973,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("spendenbescheinigungen", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), type).get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          type).get());
 
       final String s = fd.open();
 

@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.FormularAufbereitung;
@@ -82,22 +83,23 @@ public class FreiesFormularAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      throw new ApplicationException("Kein Mitglied ausgewÃ¤hlt");
     }
   }
 
   private void generiereFreiesFormular(Mitglied[] m) throws Exception
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings
-        .getString("lastdir", System.getProperty("user.home"));
+    fd.setText("Ausgabedatei wÃ¤hlen.");
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
     if (path != null && path.length() > 0)
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("freiesformular", "", Einstellungen
-        .getEinstellung().getDateinamenmuster(), "pdf").get());
+    fd.setFileName(new Dateiname("freiesformular", "",
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -115,8 +117,8 @@ public class FreiesFormularAction implements Action
     FormularAufbereitung fa = new FormularAufbereitung(file, false, false);
     for (Mitglied mi : m)
     {
-      Formular fo = (Formular) Einstellungen.getDBService().createObject(
-          Formular.class, id);
+      Formular fo = (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, id);
       Map<String, Object> map = new MitgliedMap().getMap(mi, null);
       map = new AllgemeineMap().getMap(map);
       fa.writeForm(fo, map);

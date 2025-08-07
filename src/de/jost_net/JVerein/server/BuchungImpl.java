@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -84,21 +85,21 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(
-            "Buchung kann nicht gelöscht werden weil sie zu einer "
-                + "Spendenbescheinigung gehört");
+            "Buchung kann nicht gelÃ¶scht werden weil sie zu einer "
+                + "Spendenbescheinigung gehÃ¶rt");
       }
     }
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Spendenbescheinigung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber 
+      // Das passiert wenn sie kurz vorher gelÃ¶scht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Buchung kann nicht gelöscht werden. Siehe system log");
+          "Buchung kann nicht gelÃ¶scht werden. Siehe system log");
     }
   }
 
@@ -138,16 +139,17 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     cal2.add(Calendar.YEAR, 10);
     if (cal1.after(cal2))
     {
-      throw new ApplicationException("Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
+      throw new ApplicationException(
+          "Buchungsdatum liegt mehr als 10 Jahre in der Zukunft");
     }
     cal2.add(Calendar.YEAR, -60);
     if (cal1.before(cal2))
     {
       throw new ApplicationException(
-          "Buchungsdatum liegt mehr als 50 Jahre zurück");
+          "Buchungsdatum liegt mehr als 50 Jahre zurÃ¼ck");
     }
 
-    /* Prüfung des Projektes */
+    /* PrÃ¼fung des Projektes */
     Projekt projekt = getProjekt();
     if (projekt != null)
     {
@@ -179,23 +181,23 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (getBuchungsart() == null)
       {
         throw new ApplicationException(
-            "Buchungsart kann nicht gelöscht werden da "
-            + "eine Spendenbescheinigung zugeordnet ist!");
+            "Buchungsart kann nicht gelÃ¶scht werden da "
+                + "eine Spendenbescheinigung zugeordnet ist!");
       }
       if (getBuchungsart() != null && !getBuchungsart().getSpende())
       {
         throw new ApplicationException(
             "Buchungsart kann nicht in eine Buchungsart ohne der Eigenschaft Spende "
-            + "geändert werden da eine Spendenbescheinigung zugeordnet ist!");
+                + "geÃ¤ndert werden da eine Spendenbescheinigung zugeordnet ist!");
       }
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       if (getSteuer() != null
           && !getKonto().getKontoArt().equals(Kontoart.GELD))
       {
         throw new ApplicationException(
-            "Steuer ist nur bei Buchungen auf Geldkonten möglich.");
+            "Steuer ist nur bei Buchungen auf Geldkonten mÃ¶glich.");
       }
       if (getSteuer() != null && getBuchungsart() != null
           && getSteuer().getBuchungsart().getArt() != getBuchungsart().getArt())
@@ -204,12 +206,12 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         {
           case ArtBuchungsart.AUSGABE:
             throw new ApplicationException(
-                "Umsatzsteuer statt Vorsteuer gewählt.");
+                "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
           case ArtBuchungsart.EINNAHME:
             throw new ApplicationException(
-                "Vorsteuer statt Umsatzsteuer gewählt.");
-          // Umbuchung ist bei Anlagebuchungen möglich,
-          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+          // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
           case ArtBuchungsart.UMBUCHUNG:
             break;
         }
@@ -219,7 +221,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
               || getBuchungsart().getAbschreibung()))
       {
         throw new ApplicationException(
-            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+            "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
       }
     }
   }
@@ -506,7 +508,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
 
   @Override
   public Jahresabschluss getAbschluss() throws RemoteException
-  { 
+  {
     Object o = super.getAttribute("abschluss");
     if (o == null)
     {
@@ -530,8 +532,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void setAbschluss(Jahresabschluss abschluss)
-      throws RemoteException
+  public void setAbschluss(Jahresabschluss abschluss) throws RemoteException
   {
     if (abschluss != null)
     {
@@ -568,8 +569,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void setSollbuchung(Sollbuchung sollbuchung)
-      throws RemoteException
+  public void setSollbuchung(Sollbuchung sollbuchung) throws RemoteException
   {
     if (sollbuchung != null)
     {
@@ -667,12 +667,12 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   public Double getNetto() throws RemoteException
   {
     Double brutto = (Double) getAttribute("betrag");
-    if (!Einstellungen.getEinstellung().getOptiert())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       return brutto;
     }
 
-    // Bei Anlagekonten gibt es nur Brutto Beträeg
+    // Bei Anlagekonten gibt es nur Brutto BetrÃ¤eg
     if (getKonto() != null && getKonto().getKontoArt().equals(Kontoart.ANLAGE))
     {
       return brutto;
@@ -685,7 +685,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       return brutto;
     }
     Steuer steuer = null;
-    if (Einstellungen.getEinstellung().getSteuerInBuchung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       steuer = getSteuer();
     }
@@ -701,7 +701,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     {
       return brutto;
     }
-    
+
     BigDecimal netto = new BigDecimal(brutto).multiply(new BigDecimal(100))
         .divide(new BigDecimal(100d + steuer.getSatz()), 2,
             RoundingMode.HALF_UP);
@@ -724,12 +724,17 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     }
     map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
         (this.getAbrechnungslauf() != null
-        ? this.getAbrechnungslauf().getDatum()
+            ? this.getAbrechnungslauf().getDatum()
             : ""));
     map.put(BuchungVar.ART.getName(),
         StringTool.toNotNullString(this.getArt()));
     map.put(BuchungVar.AUSZUGSNUMMER.getName(), this.getAuszugsnummer());
     map.put(BuchungVar.BETRAG.getName(), this.getBetrag());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      map.put(BuchungVar.STEUER.getName(),
+          this.getSteuer() == null ? null : this.getSteuer().getSatz());
+    }
     map.put(BuchungVar.BLATTNUMMER.getName(), this.getBlattnummer());
     map.put(BuchungVar.ID.getName(), this.getID());
     if (this.getBuchungsart() != null)
@@ -781,8 +786,8 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         this.getKonto() != null ? this.getKonto().getNummer() : "");
     map.put(BuchungVar.MITGLIEDSKONTO.getName(),
         this.getSollbuchung() != null
-        ? Adressaufbereitung
-            .getNameVorname(this.getSollbuchung().getMitglied())
+            ? Adressaufbereitung
+                .getNameVorname(this.getSollbuchung().getMitglied())
             : "");
     map.put(BuchungVar.NAME.getName(), this.getName());
     map.put(BuchungVar.ZWECK1.getName(),
@@ -949,14 +954,15 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   public void delete() throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
-    DBIterator<BuchungDokument> docs = service.createList(BuchungDokument.class);
+    DBIterator<BuchungDokument> docs = service
+        .createList(BuchungDokument.class);
     docs.addFilter("referenz = ?", new Object[] { this.getID() });
     while (docs.hasNext())
     {
       QueryMessage qm = new QueryMessage(
           ((BuchungDokument) docs.next()).getUUID(), null);
-      Application.getMessagingFactory().getMessagingQueue(
-          "jameica.messaging.del").sendSyncMessage(qm);
+      Application.getMessagingFactory()
+          .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
   }
@@ -979,10 +985,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
       }
     }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss zuerst der 
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung gespeichert 
-    // werden kann. Dann muss man die Buchung auch bei bestehendem Jahresabschluss speichern 
-    // können. In diesem Fall wird mit check false gespeichert.
+    // Wird eine Abschreibung wÃ¤hrend des Jahresabschlusses generiert muss
+    // zuerst der
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
+    // gespeichert
+    // werden kann. Dann muss man die Buchung auch bei bestehendem
+    // Jahresabschluss speichern
+    // kÃ¶nnen. In diesem Fall wird mit check false gespeichert.
     super.store();
   }
 

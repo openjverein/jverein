@@ -24,7 +24,6 @@ public class AfaOrt
   public static final int ANLAGENBUCHUNGEN = 0;
 
   public static final int JAHRESABSCHLUSS = 1;
-  
 
   private int afaort;
 

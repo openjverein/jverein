@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -58,13 +59,13 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   private int nodetype = NONE;
 
   /**
-   * Selektiert über die Buchungen mit einer Buchungsart, die als Spende
+   * Selektiert Ã¼ber die Buchungen mit einer Buchungsart, die als Spende
    * markiert ist, alle Mitglieder, die eine Buchung in Sollbuchung eingetragen
-   * haben. Die Buchungen dürfen noch nicht auf einer Spendenbescheinigung
+   * haben. Die Buchungen dÃ¼rfen noch nicht auf einer Spendenbescheinigung
    * eingetragen sein. Es werden nur die Mitglieder selektiert, bei denen auch
-   * eine Adresse (Straße, PLZ, Ort) eingetragen ist. Zusätzlich muss die Summe
-   * der Buchungen größer gleich dem in den Einstellungen hinterlegten
-   * Mindestbetrag für Spendenbescheinigungen sein.
+   * eine Adresse (StraÃŸe, PLZ, Ort) eingetragen ist. ZusÃ¤tzlich muss die Summe
+   * der Buchungen grÃ¶ÃŸer gleich dem in den Einstellungen hinterlegten
+   * Mindestbetrag fÃ¼r Spendenbescheinigungen sein.
    * 
    * @param jahr
    *          Das Jahr der Buchung
@@ -74,8 +75,8 @@ public class SpendenbescheinigungNode implements GenericObjectNode
   {
     childrens = new ArrayList<>();
     nodetype = ROOT;
-    double minBetrag = Einstellungen.getEinstellung()
-        .getSpendenbescheinigungminbetrag();
+    double minBetrag = (Double) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
 
     ResultSetExtractor rse = new ResultSetExtractor()
     {
@@ -94,11 +95,11 @@ public class SpendenbescheinigungNode implements GenericObjectNode
     String sql = "SELECT mitglied.id, sum(buchung.betrag) " + "FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
-        + " = " + Sollbuchung.TABLE_NAME_ID
-        + "  JOIN mitglied ON " + Sollbuchung.T_ZAHLER + " = mitglied.id "
+        + " = " + Sollbuchung.TABLE_NAME_ID + "  JOIN mitglied ON "
+        + Sollbuchung.T_ZAHLER + " = mitglied.id "
         + "WHERE year(buchung.datum) = ? " + "  AND buchungsart.spende = true "
-        + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
+        + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
+        + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
         // rdc: Nur Mitglieder mit bekannter Adresse
         + "  AND (mitglied.strasse IS NOT NULL AND LENGTH(mitglied.strasse) > 0) "
         + "  AND (mitglied.plz IS NOT NULL AND LENGTH(mitglied.plz) > 0) "
@@ -121,7 +122,7 @@ public class SpendenbescheinigungNode implements GenericObjectNode
 
   /**
    * Selektiert zu einem Mitglied die Buchungen mit einer Buchungsart, die als
-   * Spende markiert sind. Die Buchungen dürfen noch nicht auf einer
+   * Spende markiert sind. Die Buchungen dÃ¼rfen noch nicht auf einer
    * Spendenbescheinigung eingetragen sein.
    * 
    * @param mitglied
@@ -157,9 +158,8 @@ public class SpendenbescheinigungNode implements GenericObjectNode
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
         + " = " + Sollbuchung.TABLE_NAME_ID + " WHERE year(buchung.datum) = ? "
         + "  AND buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
-        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL "
-        + "  AND " + Buchung.T_SOLLBUCHUNG + " IS NOT NULL "
-        + "ORDER BY buchung.datum";
+        + " = ? " + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
+        + Buchung.T_SOLLBUCHUNG + " IS NOT NULL " + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
     ArrayList<String> idliste = (ArrayList<String>) Einstellungen.getDBService()
         .execute(sql, new Object[] { jahr, mitglied.getID() }, rs);

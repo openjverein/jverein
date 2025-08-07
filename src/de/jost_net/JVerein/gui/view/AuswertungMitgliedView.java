@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -30,9 +31,9 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AuswertungMitgliedView extends AbstractView
-{  
+{
   final MitgliedControl control = new MitgliedControl(this);
-  
+
   public AuswertungMitgliedView() throws RemoteException
   {
     control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
@@ -50,7 +51,7 @@ public class AuswertungMitgliedView extends AbstractView
     // left
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getMitgliedStatus());
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       left.addInput(control.getSuchExterneMitgliedsnummer());
     }
@@ -59,7 +60,7 @@ public class AuswertungMitgliedView extends AbstractView
     control.updateEigenschaftenAuswahlTooltip();
     left.addInput(control.getBeitragsgruppeAusw());
 
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       left.addInput(zusatzfelderInput);
@@ -81,12 +82,12 @@ public class AuswertungMitgliedView extends AbstractView
     right.addInput(control.getAustrittvon());
     right.addInput(control.getAustrittbis());
 
-    if (Einstellungen.getEinstellung().getSterbedatum())
+    if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
     {
       right.addInput(control.getSterbedatumvon());
       right.addInput(control.getSterbedatumbis());
     }
-    
+
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());
     filterbuttons.addButton(control.getSpeichernButton());

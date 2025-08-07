@@ -19,12 +19,13 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -62,13 +63,24 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
       if (getNummer() < 0)
       {
-        throw new ApplicationException("Nummer nicht gültig");
+        throw new ApplicationException("Bitte Nummer eingeben!");
+      }
+      DBIterator<Buchungsart> artIt = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      if (!this.isNewObject())
+      {
+        artIt.addFilter("id != ?", getID());
+      }
+      artIt.addFilter("nummer = ?", getNummer());
+      if (artIt.hasNext())
+      {
+        throw new ApplicationException("Bitte eindeutige Nummer eingeben!");
       }
       if (getSteuer() != null
           && getSteuer().getBuchungsart().getArt() != getArt())
@@ -77,12 +89,12 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         {
           case ArtBuchungsart.AUSGABE:
             throw new ApplicationException(
-                "Umsatzsteuer statt Vorsteuer gewählt.");
+                "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
           case ArtBuchungsart.EINNAHME:
             throw new ApplicationException(
-                "Vorsteuer statt Umsatzsteuer gewählt.");
-          // Umbuchung ist bei Anlagebuchungen möglich,
-          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) möglich
+                "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+          // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+          // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
           case ArtBuchungsart.UMBUCHUNG:
             break;
         }
@@ -90,7 +102,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       if (getSteuer() != null && (getSpende() || getAbschreibung()))
       {
         throw new ApplicationException(
-            "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+            "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
       }
     }
     catch (RemoteException e)
@@ -108,10 +120,10 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     try
     {
       if (hasChanged("steuer")
-          && !Einstellungen.getEinstellung().getSteuerInBuchung())
+          && !(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
 
-        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+        // PrÃ¼fen ob es abgeschlossene Buchungen mit der Buchungsart gibt
         ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
             "buchung");
         it.addColumn("buchung.id");
@@ -125,10 +137,10 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         if (it.hasNext())
         {
           throw new ApplicationException(
-              "Steuer kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+              "Steuer kann nicht geÃ¤ndert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
         }
 
-        // Prüfen ob es eine Rechnung mit dieser Buchungsart gibt
+        // PrÃ¼fen ob es eine Rechnung mit dieser Buchungsart gibt
         it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
         it.addColumn(Sollbuchung.TABLE_NAME_ID);
         it.setLimit(1);
@@ -142,7 +154,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         if (it.hasNext())
         {
           throw new ApplicationException(
-              "Steuer kann nicht geändert werden, es existieren Rechnungen mit dieser Buchungsart.");
+              "Steuer kann nicht geÃ¤ndert werden, es existieren Rechnungen mit dieser Buchungsart.");
         }
       }
     }
@@ -231,7 +243,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("art", art);
   }
-  
+
   @Override
   public int getStatus() throws RemoteException
   {
@@ -319,7 +331,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     setAttribute("suchbegriff", suchbegriff);
   }
-  
+
   @Override
   public Boolean getAbschreibung() throws RemoteException
   {
@@ -329,7 +341,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public void setAbschreibung(Boolean abschreibung) throws RemoteException
   {
-    setAttribute("abschreibung",abschreibung);
+    setAttribute("abschreibung", abschreibung);
   }
 
   @Override
@@ -344,7 +356,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	  return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("bezeichnungnr"))
@@ -356,7 +368,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       }
       else
       {
-    	return getBezeichnung();
+        return getBezeichnung();
       }
     }
     else if (fieldName.equals("klasse-art-bez"))
@@ -413,7 +425,8 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     super.store();
     Cache.get(Buchungsart.class, false).put(this); // Cache aktualisieren
   }
-  
+
+  @Override
   public boolean equals(Object bart)
   {
     try

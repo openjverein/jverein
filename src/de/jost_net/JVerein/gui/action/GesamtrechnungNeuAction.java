@@ -67,14 +67,14 @@ public class GesamtrechnungNeuAction implements Action
       if (sollArray.size() <= 1)
       {
         throw new ApplicationException(
-            "Es sind zu wenig Sollbuchungen ausgewählt.");
+            "Es sind zu wenig Sollbuchungen ausgewÃ¤hlt.");
       }
       sollbs = sollArray.toArray(new Sollbuchung[sollArray.size()]);
     }
     else
     {
       throw new ApplicationException(
-          "Es sind zu wenig Sollbuchungen ausgewählt.");
+          "Es sind zu wenig Sollbuchungen ausgewÃ¤hlt.");
     }
 
     try
@@ -105,19 +105,19 @@ public class GesamtrechnungNeuAction implements Action
         if (!mitglied.equals(sollb.getMitgliedId()))
         {
           throw new ApplicationException(
-              "Es können nur Sollbuchungen eines Mitglieds zu einer Rechnung zusammengefasst werden.");
+              "Es kÃ¶nnen nur Sollbuchungen eines Mitglieds zu einer Rechnung zusammengefasst werden.");
         }
         if ((zahler == null && sollb.getZahlerId() != null)
             || (zahler != null && !zahler.equals(sollb.getZahlerId())))
         {
           throw new ApplicationException(
-              "Es können nur Sollbuchungen des gleichen Zahlers zu einer Rechnung zusammengefasst werden.");
+              "Es kÃ¶nnen nur Sollbuchungen des gleichen Zahlers zu einer Rechnung zusammengefasst werden.");
         }
         if (zahlungsweg == null || sollb.getZahlungsweg() == null
             || !zahlungsweg.equals(sollb.getZahlungsweg()))
         {
           throw new ApplicationException(
-              "Es können nur Sollbuchungen mit demselben Zahlungsweg zu einer Rechnung zusammengefasst werden.");
+              "Es kÃ¶nnen nur Sollbuchungen mit demselben Zahlungsweg zu einer Rechnung zusammengefasst werden.");
         }
       }
 

@@ -67,8 +67,7 @@ public class SollbuchungAuswahlInput
     {
       return sollbuchungAuswahl;
     }
-    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(
-        buchungen[0]);
+    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(buchungen[0]);
     d.addCloseListener(new SollbuchungListener());
 
     sollbuchungAuswahl = new DialogInput(sollbuchung != null
@@ -131,8 +130,8 @@ public class SollbuchungAuswahlInput
           if ((name == null || name.length() == 0)
               && (zweck1 == null || zweck1.length() == 0))
           {
-            buchungen[0].setName(Adressaufbereitung.getNameVorname(sollbuchung
-                .getMitglied()));
+            buchungen[0].setName(
+                Adressaufbereitung.getNameVorname(sollbuchung.getMitglied()));
             buchungen[0].setZweck(sollbuchung.getZweck1());
             buchungen[0].setBetrag(sollbuchung.getBetrag());
             buchungen[0].setDatum(new Date());

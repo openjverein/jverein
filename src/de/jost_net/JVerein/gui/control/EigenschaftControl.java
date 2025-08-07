@@ -22,31 +22,30 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.EigenschaftGruppeFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftControl extends AbstractControl
-    implements Savable
+public class EigenschaftControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart eigenschaftList;
+  private JVereinTablePart eigenschaftList;
 
   private Input bezeichnung;
 
@@ -83,6 +82,7 @@ public class EigenschaftControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getEigenschaft().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -95,16 +95,18 @@ public class EigenschaftControl extends AbstractControl
     DBIterator<EigenschaftGruppe> list = Einstellungen.getDBService()
         .createList(EigenschaftGruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    eigenschaftgruppe = new SelectInput(list != null ? PseudoIterator.asList(list) : null,
+    eigenschaftgruppe = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null,
         getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setValue(getEigenschaft().getEigenschaftGruppe());
     eigenschaftgruppe.setAttribute("bezeichnung");
-    eigenschaftgruppe.setPleaseChoose("Bitte ausw‰hlen");
+    eigenschaftgruppe.setPleaseChoose("Bitte ausw√§hlen");
+    eigenschaftgruppe.setMandatory(true);
     return eigenschaftgruppe;
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Eigenschaft ei = getEigenschaft();
 
@@ -118,15 +120,15 @@ public class EigenschaftControl extends AbstractControl
       ei.setEigenschaftGruppe(null);
     }
     ei.setBezeichnung((String) getBezeichnung().getValue());
+    return ei;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Eigenschaft ei = getEigenschaft();
-      ei.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -145,16 +147,18 @@ public class EigenschaftControl extends AbstractControl
 
     if (eigenschaftList == null)
     {
-      eigenschaftList = new TablePart(eigenschaften,
-          new EditAction(EigenschaftDetailView.class));
+      eigenschaftList = new JVereinTablePart(eigenschaften, null);
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
       eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe",
           new EigenschaftGruppeFormatter());
-      eigenschaftList.setContextMenu(new EigenschaftMenu());
+      eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
       eigenschaftList.setRememberColWidths(true);
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
       eigenschaftList.addFeature(new FeatureSummary());
+      eigenschaftList.setAction(
+          new EditAction(EigenschaftDetailView.class, eigenschaftList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {

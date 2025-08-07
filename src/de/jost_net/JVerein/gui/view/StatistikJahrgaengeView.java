@@ -41,8 +41,9 @@ public class StatistikJahrgaengeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
-    Button btnStart = new Button("Starten", new StatistikJahrgaengeExportAction(),
-        control.getJubeljahr(), true, "walking.png");
+    Button btnStart = new Button("Starten",
+        new StatistikJahrgaengeExportAction(), control.getJubeljahr(), true,
+        "walking.png");
 
     buttons.addButton(btnStart);
 

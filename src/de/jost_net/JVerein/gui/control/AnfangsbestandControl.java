@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -38,8 +39,7 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AnfangsbestandControl extends FilterControl
-    implements Savable
+public class AnfangsbestandControl extends FilterControl implements Savable
 {
 
   private TablePart anfangsbestandList;
@@ -106,7 +106,7 @@ public class AnfangsbestandControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
     DBIterator<Konto> konten = Einstellungen.getDBService()
@@ -120,12 +120,13 @@ public class AnfangsbestandControl extends FilterControl
     if (konten.size() > 1)
     {
       throw new RemoteException(
-          "Mehrere Konten mit gleicher Nummer sind nicht zul‰ssig!");
+          "Mehrere Konten mit gleicher Nummer sind nicht zul√§ssig!");
     }
     Konto k = konten.next();
     a.setKonto(k);
     a.setDatum((Date) getDatum(false).getValue());
     a.setBetrag((Double) getBetrag().getValue());
+    return a;
   }
 
   /**
@@ -133,13 +134,12 @@ public class AnfangsbestandControl extends FilterControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Anfangsbestand a = getAnfangsbestand();
-      a.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -170,7 +170,8 @@ public class AnfangsbestandControl extends FilterControl
     return anfangsbestandList;
   }
 
-  public void TabRefresh() 
+  @Override
+  public void TabRefresh()
   {
     if (anfangsbestandList == null)
     {
@@ -191,7 +192,7 @@ public class AnfangsbestandControl extends FilterControl
       Logger.error("Fehler", e1);
     }
   }
-  
+
   private DBIterator<Anfangsbestand> getAnfangsstaende() throws RemoteException
   {
     DBIterator<Anfangsbestand> anfangsbestaende = Einstellungen.getDBService()
@@ -204,7 +205,7 @@ public class AnfangsbestandControl extends FilterControl
       if (tmpSuchname.length() > 0)
       {
         anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
       }
     }
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
@@ -213,7 +214,7 @@ public class AnfangsbestandControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         anfangsbestaende.addFilter("(lower(nummer) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)

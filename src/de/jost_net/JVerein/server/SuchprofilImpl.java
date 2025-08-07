@@ -58,7 +58,7 @@ public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
     {
       if (getInhalt() == null)
       {
-        throw new ApplicationException("Bitte gültigen Dateinamen angeben!");
+        throw new ApplicationException("Bitte gÃ¼ltigen Dateinamen angeben!");
       }
     }
     catch (RemoteException e)
@@ -125,7 +125,7 @@ public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
   @Override
   public void setClazz(String clazz) throws RemoteException
   {
-    setAttribute("clazz",clazz);
+    setAttribute("clazz", clazz);
   }
 
   @Override

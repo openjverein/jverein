@@ -34,14 +34,14 @@ public class IstbuchungEditAction implements Action
   {
     if (context == null || !(context instanceof MitgliedskontoNode))
     {
-      throw new ApplicationException("Keine Istbuchung ausgew‰hlt");
+      throw new ApplicationException("Keine Istbuchung ausgew√§hlt");
     }
 
     try
     {
       MitgliedskontoNode mkn = (MitgliedskontoNode) context;
-      Buchung bu = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          mkn.getID());
+      Buchung bu = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, mkn.getID());
       GUI.startView(BuchungDetailView.class.getName(), bu);
     }
     catch (RemoteException e)

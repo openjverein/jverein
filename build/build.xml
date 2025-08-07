@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:resolver="antlib:org.apache.maven.resolver.ant" basedir=".." default="all" name="All">
   <property name="build.dir" value="build" />
 
@@ -45,7 +45,7 @@
       <path refid="cp" />
       <fileset dir="${lib.dir}">
         <include name="nc.jar" />
-        <include name="bsh-3.0.0-20230205.094654-3.jar" />
+        <include name="bsh-2.1.1.jar" />
       </fileset>
       <fileset dir="../hibiscus/lib">
         <include name="**/*.jar" />
@@ -170,7 +170,7 @@
     <delete includeemptydirs="true">
       <fileset dir="${lib.dir}">
         <exclude name="nc.jar" />
-        <exclude name="bsh-3.0.0-20230205.094654-3.jar" />
+        <exclude name="bsh-2.1.1.jar" />
       </fileset>
     </delete>
     <delete dir="lib.test" />

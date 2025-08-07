@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io.Adressbuch;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -27,17 +28,20 @@ public class Adressaufbereitung
 {
   public static String getAdressfeld(IAdresse adr) throws RemoteException
   {
-    String empfaenger = (adr.getAnrede() != null
-        && adr.getAnrede().length() > 0 ? adr.getAnrede() + "\n" : "")
-        + getVornameName(adr)
-        + "\n"
+    String empfaenger = (adr.getAnrede() != null && adr.getAnrede().length() > 0
+        ? adr.getAnrede() + "\n"
+        : "")
+        + getVornameName(adr) + "\n"
         + (adr.getAdressierungszusatz() != null
-            && adr.getAdressierungszusatz().length() > 0 ? adr
-            .getAdressierungszusatz() + "\n" : "")
-        + (adr.getStrasse() != null && adr.getStrasse().length() > 0 ? adr
-            .getStrasse() + "\n" : "")
-        + (adr.getPlz() != null && adr.getPlz().length() > 0 ? adr.getPlz()
-            + " " : "")
+            && adr.getAdressierungszusatz().length() > 0
+                ? adr.getAdressierungszusatz() + "\n"
+                : "")
+        + (adr.getStrasse() != null && adr.getStrasse().length() > 0
+            ? adr.getStrasse() + "\n"
+            : "")
+        + (adr.getPlz() != null && adr.getPlz().length() > 0
+            ? adr.getPlz() + " "
+            : "")
         + (adr.getOrt() != null && adr.getOrt().length() > 0 ? adr.getOrt()
             : "");
     if (adr.getStaat() != null && adr.getStaat().length() > 0)
@@ -49,7 +53,7 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück, Meier, Dr. Willi
+   * Gibt den Namen aufbereitet zurÃ¼ck, Meier, Dr. Willi
    */
   public static String getNameVorname(IAdresse adr) throws RemoteException
   {
@@ -63,12 +67,12 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück, Nr. - Meier, Dr. Willi
+   * Gibt den Namen aufbereitet zurÃ¼ck, Nr. - Meier, Dr. Willi
    */
   public static String getIdNameVorname(Mitglied mitglied)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
       return getNameVorname(mitglied) + " ("
           + mitglied.getExterneMitgliedsnummer() + ")";
@@ -80,7 +84,7 @@ public class Adressaufbereitung
   }
 
   /**
-   * Gibt den Namen aufbereitet zurück: Dr. Willi Meier
+   * Gibt den Namen aufbereitet zurÃ¼ck: Dr. Willi Meier
    */
   public static String getVornameName(IAdresse adr) throws RemoteException
   {

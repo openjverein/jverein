@@ -42,7 +42,17 @@ public class MitgliedstypDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton(new SaveButton(control));
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    SaveButton saveButton = new SaveButton(control);
+    buttons.addButton(saveButton);
+    if (control.getMitgliedstyp().getJVereinid() > 0)
+    {
+      saveButton.setEnabled(false);
+      GUI.getStatusBar().setErrorText(
+          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
+    }
     buttons.paint(this.getParent());
   }
 

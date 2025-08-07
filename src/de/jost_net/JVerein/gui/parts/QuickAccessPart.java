@@ -20,11 +20,12 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.ArrayList; 
+import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
@@ -36,17 +37,17 @@ import de.willuhn.util.ApplicationException;
 public class QuickAccessPart implements Part
 {
   private AbstractSaldoControl control;
-  
+
   private int anzahlButtons = 10;
-  
+
   private boolean additionalButtons;
-  
+
   private Integer jahr;
-  
+
   private Integer startjahr;
-  
-  private Calendar calendar = Calendar.getInstance();;
-  
+
+  private Calendar calendar = Calendar.getInstance();
+
   private ArrayList<Button> buttons = new ArrayList<Button>();
 
   public QuickAccessPart(AbstractSaldoControl control,
@@ -69,7 +70,7 @@ public class QuickAccessPart implements Part
     }
     finally
     {
-      calendar.add(Calendar.YEAR, 1-anzahlButtons);
+      calendar.add(Calendar.YEAR, 1 - anzahlButtons);
       jahr = calendar.get(Calendar.YEAR);
       startjahr = jahr;
     }
@@ -80,7 +81,7 @@ public class QuickAccessPart implements Part
   {
     LabelGroup quickGroup = new LabelGroup(parent, "Schnellzugriff");
     ButtonArea quickBtns = new ButtonArea();
-    
+
     Button home = new Button("", new Action()
     {
       @Override
@@ -89,7 +90,7 @@ public class QuickAccessPart implements Part
         try
         {
           jahr = startjahr;
-          Integer geschaeftsjahr = jahr+anzahlButtons-1;
+          Integer geschaeftsjahr = jahr + anzahlButtons - 1;
           updateButtons();
           control.getDatumvon().setDate(genYearStartDate(geschaeftsjahr));
           control.getDatumbis().setDate(genYearEndDate(geschaeftsjahr));
@@ -98,16 +99,18 @@ public class QuickAccessPart implements Part
         }
         catch (RemoteException e)
         {
-          throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+          throw new ApplicationException(
+              "Fehler aufgetreten " + e.getMessage());
         }
         catch (ParseException e)
         {
-          throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+          throw new ApplicationException(
+              "Fehler aufgetreten " + e.getMessage());
         }
       }
     }, null, false, "edit-undo.png");
     quickBtns.addButton(home);
-    
+
     Button zurueck = new Button("", new Action()
     {
       @Override
@@ -118,7 +121,7 @@ public class QuickAccessPart implements Part
       }
     }, null, false, "go-previous.png");
     quickBtns.addButton(zurueck);
-    
+
     Button vor = new Button("", new Action()
     {
       @Override
@@ -129,19 +132,18 @@ public class QuickAccessPart implements Part
       }
     }, null, false, "go-next.png");
     quickBtns.addButton(vor);
-    
-    
+
     Integer j = 0;
     for (Integer i = 0; i < anzahlButtons; i++)
     {
       j = i + jahr;
-      buttons.add(new Button(j.toString(), new QuickAccessAction(control,i)));
+      buttons.add(new Button(j.toString(), new QuickAccessAction(control, i)));
     }
     for (Button bu : buttons)
     {
       quickBtns.addButton(bu);
     }
-    
+
     if (additionalButtons)
     {
       quickBtns.addButton("Letzte 30 Tage",
@@ -153,7 +155,7 @@ public class QuickAccessPart implements Part
     }
     quickGroup.addPart(quickBtns);
   }
-  
+
   private void updateButtons()
   {
     Integer j = 0;
@@ -170,7 +172,7 @@ public class QuickAccessPart implements Part
     private AbstractSaldoControl control;
 
     private Integer offset;
-    
+
     private Date von;
 
     private Date bis;
@@ -180,7 +182,7 @@ public class QuickAccessPart implements Part
       this.control = control;
       this.offset = offset;
     }
-    
+
     QuickAccessAction(AbstractSaldoControl control, Date von, Date bis)
     {
       this.control = control;
@@ -210,7 +212,7 @@ public class QuickAccessPart implements Part
         }
         else
         {
-          Integer geschaeftsjahr = jahr+offset;
+          Integer geschaeftsjahr = jahr + offset;
           control.getDatumvon().setDate(genYearStartDate(geschaeftsjahr));
           control.getDatumbis().setDate(genYearEndDate(geschaeftsjahr));
           control.getGeschaeftsjahr().setValue(geschaeftsjahr.toString());
@@ -241,13 +243,16 @@ public class QuickAccessPart implements Part
     return calendar.getTime();
   }
 
-  private Date genYearStartDate(Integer year) throws ParseException, RemoteException
+  private Date genYearStartDate(Integer year)
+      throws ParseException, RemoteException
   {
-    return Datum.toDate(Einstellungen.getEinstellung()
-        .getBeginnGeschaeftsjahr() + year);
+    return Datum.toDate(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+            + year);
   }
 
-  private Date genYearEndDate(Integer year) throws ParseException, RemoteException
+  private Date genYearEndDate(Integer year)
+      throws ParseException, RemoteException
   {
     calendar.setTime(genYearStartDate(year));
     calendar.add(Calendar.YEAR, 1);

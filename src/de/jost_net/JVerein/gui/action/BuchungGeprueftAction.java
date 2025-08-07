@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -58,7 +59,8 @@ public class BuchungGeprueftAction implements Action
 
     try
     {
-      boolean sync = Einstellungen.getEinstellung().getGeprueftSynchronisieren();
+      boolean sync = (Boolean) Einstellungen
+          .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN);
       for (Buchung b : buchungen)
       {
         b.setGeprueft(geprueft);
@@ -66,7 +68,7 @@ public class BuchungGeprueftAction implements Action
 
         // ggfs. mit Hibiscus syncronisieren
         // wir verwenden hier die SynTAX-MessageQueue, da diese bereits
-        // existiert und somit keine Änderung an Hibiscus nötig ist
+        // existiert und somit keine Ã„nderung an Hibiscus nÃ¶tig ist
         if (sync && b.getUmsatzid() != null)
         {
           String hid = b.getUmsatzid().toString();

@@ -25,8 +25,7 @@ import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftenImpl extends AbstractDBObject implements
-    Eigenschaften
+public class EigenschaftenImpl extends AbstractDBObject implements Eigenschaften
 {
 
   private static final long serialVersionUID = -5906609226109964967L;

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -49,11 +50,11 @@ public class SollbuchungPositionListPart extends TablePart
     addColumn("Zweck", "zweck");
     addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if (Einstellungen.getEinstellung().getOptiert())
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       addColumn("Nettobetrag", "nettobetrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if (Einstellungen.getEinstellung().getSteuerInBuchung())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         addColumn("Steuer", "steuer", o -> {
           if (o == null)
@@ -73,7 +74,8 @@ public class SollbuchungPositionListPart extends TablePart
       }
     }
     addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());

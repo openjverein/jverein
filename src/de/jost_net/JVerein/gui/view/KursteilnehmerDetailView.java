@@ -45,7 +45,7 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
     LabelGroup group = new LabelGroup(scrolled.getComposite(),
-        "Daten für die Lastschrift");
+        "Daten fÃ¼r die Lastschrift");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
@@ -57,7 +57,7 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
     left.addInput(control.getPLZ());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getOrt());
     right.addInput(control.getStaat());
@@ -76,16 +76,17 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-
     buttons.addButton(new Button("Speichern und neu", context -> {
       try
       {
         control.handleStore();
 
         new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class,
-            true)
-            .handleAction(null);
+            true).handleAction(null);
         GUI.getStatusBar().setSuccessText("Kursteilnehmer gespeichert");
       }
       catch (ApplicationException e)

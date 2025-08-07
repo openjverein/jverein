@@ -17,9 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.WiedervorlageControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -34,16 +35,16 @@ public class WiedervorlageListeView extends AbstractView
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Wiedervorlagen");
-    
+
     final WiedervorlageControl control = new WiedervorlageControl(this);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addLabelPair("Vermerk", control.getSuchtext());
-    
+
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getDatumvon());
     middle.addInput(control.getDatumbis());
@@ -52,7 +53,7 @@ public class WiedervorlageListeView extends AbstractView
     right.addLabelPair("Erledigung von", control.getEingabedatumvon());
     right.addLabelPair("Erledigung bis", control.getEingabedatumbis());
     right.addLabelPair("Ohne Erledigung", control.getCheckboxAuswahl());
-    
+
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
         control.getDatumbis());
@@ -69,17 +70,18 @@ public class WiedervorlageListeView extends AbstractView
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
-    zurueck1.setToolTipText("Datumsbereich zurück");
-    vor1.setToolTipText("Datumsbereich vowärts");
-    zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
-    vor2.setToolTipText("Erledigung Datumsbereich vowärts");
-    
+    zurueck1.setToolTipText("Datumsbereich zurÃ¼ck");
+    vor1.setToolTipText("Datumsbereich vowÃ¤rts");
+    zurueck2.setToolTipText("Erledigung Datumsbereich zurÃ¼ck");
+    vor2.setToolTipText("Erledigung Datumsbereich vowÃ¤rts");
+
     control.getWiedervorlageList().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
-    buttons.addButton("Neu", new WiedervorlageAction(null), 
-        null, false, "document-new.png");
+    buttons.addButton("Neu",
+        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class), null,
+        false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

@@ -28,7 +28,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Übernahme einer MailVorlage
+ * Ãœbernahme einer MailVorlage
  */
 public class MailVorlageUebernehmenAction implements Action
 {
@@ -64,9 +64,9 @@ public class MailVorlageUebernehmenAction implements Action
       else
       {
         YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        d.setTitle("Als Vorlage übernehmen");
+        d.setTitle("Als Vorlage Ã¼bernehmen");
         d.setText(
-            "Es existiert bereits eine Vorlage mit diesem Betreff.\nSoll sie überschrieben werden?");
+            "Es existiert bereits eine Vorlage mit diesem Betreff.\nSoll sie Ã¼berschrieben werden?");
 
         Boolean choice = (Boolean) d.open();
         if (!choice.booleanValue())
@@ -76,7 +76,7 @@ public class MailVorlageUebernehmenAction implements Action
         MailVorlage v = vorlagen.next();
         v.setTxt(text);
         v.store();
-        GUI.getStatusBar().setSuccessText("Mail-Vorlage überschrieben");
+        GUI.getStatusBar().setSuccessText("Mail-Vorlage Ã¼berschrieben");
       }
     }
     catch (OperationCanceledException oce)

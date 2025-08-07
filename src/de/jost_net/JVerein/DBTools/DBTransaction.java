@@ -32,14 +32,14 @@ public class DBTransaction
   {
     if (null != transactionObjekt)
     {
-      Logger.info("Datenbank Transaktion läuft bereits");
+      Logger.info("Datenbank Transaktion lÃ¤uft bereits");
       return;
     }
 
     try
     {
-      transactionObjekt = Einstellungen.getDBService().createObject(
-          Version.class, null);
+      transactionObjekt = Einstellungen.getDBService()
+          .createObject(Version.class, null);
       transactionObjekt.transactionBegin();
     }
     catch (RemoteException ex)
@@ -87,7 +87,7 @@ public class DBTransaction
     }
     catch (RemoteException ex)
     {
-      Logger.error("Datenbankänderungen können nicht zurückgenommen werden!",
+      Logger.error("DatenbankÃ¤nderungen kÃ¶nnen nicht zurÃ¼ckgenommen werden!",
           ex);
     }
     finally

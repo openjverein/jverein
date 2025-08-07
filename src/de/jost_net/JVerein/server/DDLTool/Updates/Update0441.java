@@ -32,9 +32,9 @@ public class Update0441 extends AbstractDDLUpdate
     execute(dropForeignKey("fkBuchungDokument1", "buchungdokument"));
     execute(createForeignKey("fkBuchungDokument1", "buchungdokument",
         "referenz", "buchung", "id", "CASCADE", "NO ACTION"));
-    
+
     execute(dropForeignKey("fkBuchung3", "buchung"));
-    execute(createForeignKey("fkBuchung3", "buchung",
-        "mitgliedskonto", "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
+    execute(createForeignKey("fkBuchung3", "buchung", "mitgliedskonto",
+        "mitgliedskonto", "id", "SET NULL", "NO ACTION"));
   }
 }

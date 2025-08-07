@@ -33,8 +33,8 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public void setFormular(Formular formular) throws RemoteException;
 
   /**
-   * Füllt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
-   * Formular müssen selbst hinzugefügt werden
+   * FÃ¼llt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
+   * Formular mÃ¼ssen selbst hinzugefÃ¼gt werden
    * 
    * @param mk
    *          die Sollbuchung aus der eine Rechnung erstellt werden soll
@@ -47,7 +47,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   void setBetrag(double betrag) throws RemoteException;
 
   public void setDatum(Date date) throws RemoteException;
-  
+
   public Date getDatum() throws RemoteException;
 
   public Formular getFormular() throws RemoteException;
@@ -106,23 +106,23 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   void setPersonenart(String personenart) throws RemoteException;
 
   public String getMandatID() throws RemoteException;
-  
+
   public void setMandatID(String id) throws RemoteException;
 
   public Date getMandatDatum() throws RemoteException;
-  
+
   public void setMandatDatum(Date datum) throws RemoteException;
 
   public String getBIC() throws RemoteException;
-  
+
   public void setBIC(String bic) throws RemoteException;
 
   public String getIBAN() throws RemoteException;
-  
+
   public void setIBAN(String iban) throws RemoteException;
-  
+
   public Double getIstSumme() throws RemoteException;
-  
+
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;

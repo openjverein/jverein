@@ -105,7 +105,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       if (getBezeichnung().length() > 255)
       {
         throw new ApplicationException(
-            "Maximale L‰nge der Bezeichnung: 255 Zeichen");
+            "Maximale L√§nge der Bezeichnung: 255 Zeichen");
       }
       if (getNummer() == null || getNummer().length() == 0)
       {
@@ -115,7 +115,8 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       {
         if (getBetrag() != null && getBetrag() < 0.0)
         {
-          throw new ApplicationException("Wert der Anlage darf nicht negativ sein");
+          throw new ApplicationException(
+              "Wert der Anlage darf nicht negativ sein");
         }
         if (getAnlagenart() == null)
         {
@@ -127,11 +128,12 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
         }
         if (getBuchungsklasse() == null)
         {
-          throw new ApplicationException("Bitte Anlagen Buchungsklasse eingeben");
+          throw new ApplicationException(
+              "Bitte Anlagen Buchungsklasse eingeben");
         }
         if (getAnlagenzweck() == null)
         {
-          throw new ApplicationException("Bitte Anlagen Zweck ausw‰hlen");
+          throw new ApplicationException("Bitte Anlagen Zweck ausw√§hlen");
         }
         if (getAfaMode() == null)
         {
@@ -163,7 +165,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
    * @param konto
    *          id des Kontos
    * @param datum
-   * @return dibt den Kontostand am anfang des angegebenen Tages zur¸ck, also
+   * @return dibt den Kontostand am anfang des angegebenen Tages zur√ºck, also
    *         ohne die Buchungen des angegebenen Tages
    * @throws RemoteException
    */
@@ -184,7 +186,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     {
       Anfangsbestand a = it.next();
 
-      // Anfangsbestand = vorhandener Anfangsbestand + Ums‰tze bis "bis"
+      // Anfangsbestand = vorhandener Anfangsbestand + Ums√§tze bis "bis"
       ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
           "buchung");
       summeIt.addColumn("sum(betrag) as summe");
@@ -213,13 +215,13 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     it.setLimit(1);
 
     // Anfangsstand ist vorhanden und es gibt keinen Anfangsstand vorher
-    // Dann muﬂ das Konto im Bereich erzeugt worden sein oder es gibt keinen
-    // fr¸heren Anfangsstand. Dann zur¸ckrechnen
+    // Dann mu√ü das Konto im Bereich erzeugt worden sein oder es gibt keinen
+    // fr√ºheren Anfangsstand. Dann zur√ºckrechnen
     if (it.hasNext())
     {
       Anfangsbestand a = it.next();
 
-      // Anfangsbestand = vorhandener Anfangsbestand - Ums‰tze davor.
+      // Anfangsbestand = vorhandener Anfangsbestand - Ums√§tze davor.
       ExtendedDBIterator<PseudoDBObject> summeIt = new ExtendedDBIterator<>(
           "buchung");
       summeIt.addColumn("sum(betrag) as summe");
@@ -312,8 +314,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
         .createList(Konto.class);
     konten.addFilter("(eroeffnung is null or eroeffnung <= ?)",
         new Object[] { gj.getEndeGeschaeftsjahr() });
-    konten.addFilter(
-        "(aufloesung is null or aufloesung >= ? )",
+    konten.addFilter("(aufloesung is null or aufloesung >= ? )",
         new Object[] { gj.getBeginnGeschaeftsjahr() });
     konten.setOrder("order by bezeichnung");
     return konten;
@@ -332,7 +333,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     super.store();
     Cache.get(Konto.class, false).put(this); // Cache aktualisieren
   }
-  
+
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
@@ -357,7 +358,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("buchungsart", buchungsartId);
   }
-  
+
   @Override
   public Kontoart getKontoArt() throws RemoteException
   {
@@ -373,12 +374,11 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   }
 
   @Override
-  public void setKontoArt(Kontoart kontoart)
-      throws RemoteException
+  public void setKontoArt(Kontoart kontoart) throws RemoteException
   {
     setAttribute("kontoart", kontoart.getKey());
   }
-  
+
   @Override
   public Buchungsart getAnlagenart() throws RemoteException
   {
@@ -403,7 +403,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("anlagenart", anlagenartId);
   }
-  
+
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
@@ -428,7 +428,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("anlagenklasse", anlagenklasseId);
   }
-  
+
   @Override
   public Buchungsart getAfaart() throws RemoteException
   {
@@ -453,7 +453,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("afaart", afaartId);
   }
-  
+
   @Override
   public Integer getNutzungsdauer() throws RemoteException
   {
@@ -465,7 +465,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("nutzungsdauer", nutzungsdauer);
   }
-  
+
   @Override
   public Double getBetrag() throws RemoteException
   {
@@ -477,7 +477,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("betrag", d);
   }
-  
+
   @Override
   public String getKommentar() throws RemoteException
   {
@@ -489,7 +489,6 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("kommentar", kommentar);
   }
-  
 
   @Override
   public Date getAnschaffung() throws RemoteException
@@ -502,7 +501,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("anschaffung", anschaffung);
   }
-  
+
   @Override
   public Double getAfaStart() throws RemoteException
   {
@@ -514,7 +513,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("afastart", afastart);
   }
-  
+
   @Override
   public Double getAfaDauer() throws RemoteException
   {
@@ -526,7 +525,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("afadauer", afadauer);
   }
-  
+
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
@@ -538,7 +537,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("afarestwert", afarestwert);
   }
-  
+
   @Override
   public Integer getAfaMode() throws RemoteException
   {
@@ -602,7 +601,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       return getBuchungsart();
     return super.getAttribute(fieldName);
   }
-  
+
   @Override
   public Anlagenzweck getAnlagenzweck() throws RemoteException
   {
@@ -618,8 +617,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   }
 
   @Override
-  public void setAnlagenzweck(Anlagenzweck zweck)
-      throws RemoteException
+  public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException
   {
     setAttribute("zweck", zweck.getKey());
   }

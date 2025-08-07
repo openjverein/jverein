@@ -16,40 +16,57 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
-import de.jost_net.JVerein.gui.dialogs.SplitBuchungDialog;
-import de.willuhn.jameica.gui.AbstractView;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class SplitBuchungDetailAction implements Action
+public class LehrgangNeuAction implements Action
 {
-  private BuchungsControl control;
 
-  private AbstractView view;
+  private Mitglied m;
 
-  public SplitBuchungDetailAction(BuchungsControl control, AbstractView view)
+  public LehrgangNeuAction(Mitglied m)
   {
-    this.control = control;
-    this.view = view;
+    super();
+    this.m = m;
   }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    BuchungsControl bc = new BuchungsControl(view, Kontenfilter.GELDKONTO);
-    SplitBuchungDialog spd = new SplitBuchungDialog(bc, view);
+    Lehrgang l = null;
+
     try
     {
-      spd.open();
-      control.refreshSplitbuchungen();
+      l = (Lehrgang) Einstellungen.getDBService().createObject(Lehrgang.class,
+          null);
+      if (m != null)
+      {
+        if (m.getID() == null)
+        {
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann können Lehrgänge aufgenommen werden.");
+        }
+
+        l.setMitglied(Integer.valueOf(m.getID()).intValue());
+      }
+      else
+      {
+        throw new ApplicationException("Kein Mitglied ausgewählt");
+      }
     }
-    catch (Exception e)
+    catch (RemoteException e)
     {
-      Logger.error("Fehler", e);
-      throw new ApplicationException(e);
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen Lehrgangs", e);
     }
+
+    GUI.startView(LehrgangDetailView.class.getName(), l);
   }
 }

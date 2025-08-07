@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -32,13 +33,13 @@ public class MitgliedDuplizierenAction implements Action
   {
     if (context == null || !(context instanceof Mitglied))
     {
-      throw new ApplicationException("kein Mitglied ausgew‰hlt");
+      throw new ApplicationException("kein Mitglied ausgew√§hlt");
     }
-    Mitglied m = null;
+    Mitglied m;
     try
     {
-      m = (Mitglied) context;
-      m.setID(null);
+      m = Einstellungen.getDBService().createObject(Mitglied.class, null);
+      m.overwrite((Mitglied) context);
       if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
       {
         GUI.startView(new MitgliedDetailView(), m);
@@ -50,8 +51,8 @@ public class MitgliedDuplizierenAction implements Action
     }
     catch (Exception e)
     {
-      throw new ApplicationException(
-          "Fehler beim duplizieren eines Mitgliedes", e);
+      throw new ApplicationException("Fehler beim duplizieren eines Mitgliedes",
+          e);
     }
   }
 }

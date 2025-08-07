@@ -22,9 +22,11 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -38,8 +40,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 public class WiedervorlageList extends TablePart implements Part
 {
 
-  private TablePart wiedervorlageList;
-  
+  private AutoUpdateTablePart wiedervorlageList;
+
   private FilterControl control;
 
   public WiedervorlageList(Action action, FilterControl control)
@@ -50,12 +52,10 @@ public class WiedervorlageList extends TablePart implements Part
 
   public Part getWiedervorlageList() throws RemoteException
   {
-    
     DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
     if (wiedervorlageList == null)
     {
-      wiedervorlageList = new TablePart(wiedervorlagen,
-          new WiedervorlageAction(null));
+      wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen, null);
       wiedervorlageList.addColumn("Name", "mitglied");
       wiedervorlageList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -67,6 +67,9 @@ public class WiedervorlageList extends TablePart implements Part
       wiedervorlageList.setRememberColWidths(true);
       wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.addFeature(new FeatureSummary());
+      wiedervorlageList.setAction(
+          new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
@@ -79,24 +82,24 @@ public class WiedervorlageList extends TablePart implements Part
     }
     return wiedervorlageList;
   }
-  
+
   private DBIterator<Wiedervorlage> getIterator() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Wiedervorlage> wiedervorlagen = service
         .createList(Wiedervorlage.class);
-    
+
     wiedervorlagen.join("mitglied");
     wiedervorlagen.addFilter("mitglied.id = wiedervorlage.mitglied");
-    
+
     if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) control.getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        wiedervorlagen.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        wiedervorlagen.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -116,7 +119,7 @@ public class WiedervorlageList extends TablePart implements Part
       if (tmpSuchtext.length() > 0)
       {
         wiedervorlagen.addFilter("(lower(vermerk) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (control.isCheckboxAuswahlAktiv()
@@ -137,7 +140,7 @@ public class WiedervorlageList extends TablePart implements Part
           new Object[] { (Date) control.getEingabedatumbis().getValue() });
     }
     wiedervorlagen.setOrder("ORDER BY datum DESC");
-    
+
     return wiedervorlagen;
   }
 

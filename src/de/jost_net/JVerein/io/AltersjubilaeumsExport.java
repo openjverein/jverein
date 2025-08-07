@@ -27,6 +27,7 @@ import java.util.Date;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -56,10 +57,10 @@ public abstract class AltersjubilaeumsExport implements Exporter
     this.file = file;
     MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
-    Logger.debug(String.format("Altersjubil‰umexport, Jahr=%d", jahr));
+    Logger.debug(String.format("Altersjubil√§umexport, Jahr=%d", jahr));
     open();
     JubilaeenParser jp = new JubilaeenParser(
-        Einstellungen.getEinstellung().getAltersjubilaeen());
+        (String) Einstellungen.getEinstellung(Property.ALTERSJUBILAEEN));
     while (jp.hasNext())
     {
       int jubi = jp.getNext();

@@ -18,18 +18,19 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageDeleteAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungAction;
 import de.jost_net.JVerein.gui.action.WiedervorlageErledigungDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
@@ -41,22 +42,27 @@ public class WiedervorlageMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Wiedervorlagen.
    */
-  public WiedervorlageMenu(TablePart table)
+  public WiedervorlageMenu(JVereinTablePart table)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new WiedervorlageAction(null),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(WiedervorlageDetailView.class, table),
         "text-x-generic.png"));
     addItem(new WiedervorlageNichtErledigtItem("Erledigung setzen",
-        new WiedervorlageErledigungAction(table), "check.png"));
-    addItem(new WiedervorlageErledigtItem("Erledigung löschen",
-        new WiedervorlageErledigungDeleteAction(table), "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+        new WiedervorlageErledigungAction(), "check.png"));
+    addItem(new WiedervorlageErledigtItem("Erledigung lÃ¶schen",
+        new WiedervorlageErledigungDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new WiedervorlageDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (table != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
-  
-  private static class WiedervorlageErledigtItem extends CheckedSingleContextMenuItem
+
+  private static class WiedervorlageErledigtItem
+      extends CheckedSingleContextMenuItem
   {
     private WiedervorlageErledigtItem(String text, Action action, String icon)
     {
@@ -81,10 +87,12 @@ public class WiedervorlageMenu extends ContextMenu
       return false;
     }
   }
-  
-  private static class WiedervorlageNichtErledigtItem extends CheckedSingleContextMenuItem
+
+  private static class WiedervorlageNichtErledigtItem
+      extends CheckedSingleContextMenuItem
   {
-    private WiedervorlageNichtErledigtItem(String text, Action action, String icon)
+    private WiedervorlageNichtErledigtItem(String text, Action action,
+        String icon)
     {
       super(text, action, icon);
     }

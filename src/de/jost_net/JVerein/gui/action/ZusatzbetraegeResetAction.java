@@ -22,29 +22,21 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ausführungsdatum eines Zusatzbetrages entfernen.
+ * AusfÃ¼hrungsdatum eines Zusatzbetrages entfernen.
  */
 public class ZusatzbetraegeResetAction implements Action
 {
-
-  private TablePart table;
-
-  public ZusatzbetraegeResetAction(TablePart table)
-  {
-    this.table = table;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     if (context == null || !(context instanceof Zusatzbetrag))
     {
-      throw new ApplicationException("Kein Zusatzbetrag ausgewählt");
+      throw new ApplicationException("Kein Zusatzbetrag ausgewÃ¤hlt");
     }
     try
     {
@@ -54,8 +46,9 @@ public class ZusatzbetraegeResetAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Ausführungsdatum zurücksetzen");
-      d.setText("Wollen Sie das Ausführungsdatum dieses Zusatzbetrages wirklich zurücksetzen?");
+      d.setTitle("AusfÃ¼hrungsdatum zurÃ¼cksetzen");
+      d.setText(
+          "Wollen Sie das AusfÃ¼hrungsdatum dieses Zusatzbetrages wirklich zurÃ¼cksetzen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -67,15 +60,13 @@ public class ZusatzbetraegeResetAction implements Action
         Logger.error("Fehler beim Reset des Zusatzbetrages", e);
         return;
       }
-      int ind = table.removeItem(z);
       z.setAusfuehrung(null);
       z.store();
-      table.addItem(z, ind);
-      GUI.getStatusBar().setSuccessText("Ausführungsdatum zurückgesetzt.");
+      GUI.getStatusBar().setSuccessText("AusfÃ¼hrungsdatum zurÃ¼ckgesetzt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Zurücksetzen des Ausführungsdatums des Zusatzbetrages.";
+      String fehler = "Fehler beim ZurÃ¼cksetzen des AusfÃ¼hrungsdatums des Zusatzbetrages.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

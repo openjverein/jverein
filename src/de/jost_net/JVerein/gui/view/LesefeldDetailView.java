@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -128,8 +129,8 @@ public class LesefeldDetailView extends AbstractView
         if (lesefeld.getBezeichnung().equals(textInputScriptName.getValue()))
         {
           String currentid = lesefeld.getID();
-          if (this.lesefeld == null || !this.lesefeld.getID()
-              .equalsIgnoreCase(currentid))
+          if (this.lesefeld == null
+              || !this.lesefeld.getID().equalsIgnoreCase(currentid))
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte eindeutigen Skript-Namen eingeben!");
@@ -140,13 +141,13 @@ public class LesefeldDetailView extends AbstractView
 
       // erstelle neues lesefeld, wenn nötig.
       if (lesefeld == null)
-        lesefeld = Einstellungen.getDBService()
-            .createObject(Lesefeld.class, null);
+        lesefeld = Einstellungen.getDBService().createObject(Lesefeld.class,
+            null);
 
       lesefeld.setBezeichnung((String) textInputScriptName.getValue());
       lesefeld.setScript((String) textAreaInputScriptCode.getValue());
-      lesefeld.setEvaluatedContent(
-          (String) textAreaInputScriptResult.getValue());
+      lesefeld
+          .setEvaluatedContent((String) textAreaInputScriptResult.getValue());
     }
     catch (RemoteException e)
     {
@@ -163,7 +164,7 @@ public class LesefeldDetailView extends AbstractView
    * zurück in die GUI.
    *
    * @return true bei Erfolg, sonst false (Fehlermeldung wird in
-   *     Skript-Ausgabe-Feld geschrieben).
+   *         Skript-Ausgabe-Feld geschrieben).
    */
   private boolean updateScriptResult()
   {
@@ -232,7 +233,7 @@ public class LesefeldDetailView extends AbstractView
     }
 
     mitglied = new MitgliedInput().getMitgliedInput(mitglied, selectedMitglied,
-        Einstellungen.getEinstellung().getMitgliedAuswahl());
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     mitglied.addListener(new MitgliedListener());
     mitglied.setMandatory(true);
     return mitglied;
@@ -254,8 +255,8 @@ public class LesefeldDetailView extends AbstractView
         if (selected == null || selected == selectedMitglied)
           return;
         selectedMitglied = selected;
-        lesefeldAuswerter.setMap(
-            new MitgliedMap().getMap(selectedMitglied, null, true));
+        lesefeldAuswerter
+            .setMap(new MitgliedMap().getMap(selectedMitglied, null, true));
         updateScriptResult();
       }
       catch (RemoteException e)

@@ -23,17 +23,19 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -45,10 +47,10 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SteuerControl extends AbstractControl implements Savable
+public class SteuerControl extends VorZurueckControl implements Savable
 {
 
-  private TablePart steuerList;
+  private JVereinTablePart steuerList;
 
   private TextInput name;
 
@@ -58,6 +60,8 @@ public class SteuerControl extends AbstractControl implements Savable
 
   private CheckboxInput aktiv;
 
+  private Steuer steuer;
+
   public SteuerControl(AbstractView view)
   {
     super(view);
@@ -65,7 +69,12 @@ public class SteuerControl extends AbstractControl implements Savable
 
   public Steuer getSteuer()
   {
-    return (Steuer) getCurrentObject();
+    if (steuer != null)
+    {
+      return steuer;
+    }
+    steuer = (Steuer) getCurrentObject();
+    return steuer;
   }
 
   public TablePart getSteuerList() throws ApplicationException
@@ -79,21 +88,20 @@ public class SteuerControl extends AbstractControl implements Savable
       DBIterator<Steuer> steuern = Einstellungen.getDBService()
           .createList(Steuer.class);
 
-      steuerList = new TablePart(steuern,
-          new EditAction(SteuerDetailView.class));
+      steuerList = new JVereinTablePart(steuern, null);
       steuerList.addColumn("Name", "name");
-      steuerList.addColumn("Steuersatz", "satz",
-          o -> {
-            return (Double) o + "%";
-          }, false,
-          Column.ALIGN_RIGHT);
+      steuerList.addColumn("Steuersatz", "satz", o -> {
+        return (Double) o + "%";
+      }, false, Column.ALIGN_RIGHT);
       steuerList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
-      steuerList.setContextMenu(new SteuerMenue());
+      steuerList.setContextMenu(new SteuerMenue(steuerList));
       steuerList.setRememberColWidths(true);
       steuerList.removeFeature(FeatureSummary.class);
       steuerList.setMulti(true);
+      steuerList.setCheckable(false);
+      steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));
       return steuerList;
     }
     catch (RemoteException e)
@@ -132,9 +140,9 @@ public class SteuerControl extends AbstractControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput()
-        .getBuchungsartInput(buchungsart, getSteuer().getBuchungsart(), null,
-            Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
+        getSteuer().getBuchungsart(), null, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.setMandatory(true);
     buchungsart.setComment("");
     Listener listener = new Listener()
@@ -156,7 +164,7 @@ public class SteuerControl extends AbstractControl implements Savable
                 comment = "Einnahme -> Umsatzsteuer";
                 break;
               case ArtBuchungsart.UMBUCHUNG:
-                comment = "Umbuchung ist Ungültig";
+                comment = "Umbuchung ist UngÃ¼ltig";
                 break;
             }
           }
@@ -184,7 +192,8 @@ public class SteuerControl extends AbstractControl implements Savable
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Steuer s = getSteuer();
     s.setName((String) getName().getValue());
@@ -195,15 +204,15 @@ public class SteuerControl extends AbstractControl implements Savable
           Long.parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
     }
     s.setAktiv((Boolean) getAktiv().getValue());
+    return s;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Steuer s = getSteuer();
-      s.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

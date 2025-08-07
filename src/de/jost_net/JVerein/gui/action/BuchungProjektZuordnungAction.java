@@ -36,10 +36,10 @@ public class BuchungProjektZuordnungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof Buchung)
-        && !(context instanceof Buchung[]))
+    if (context == null
+        || !(context instanceof Buchung) && !(context instanceof Buchung[]))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgewählt");
+      throw new ApplicationException("Keine Buchung(en) ausgewÃ¤hlt");
     }
     try
     {
@@ -93,14 +93,14 @@ public class BuchungProjektZuordnungAction implements Action
         String protecttext = "";
         if (open == null)
         {
-          GUI.getStatusBar().setSuccessText("Projekte gelöscht");
+          GUI.getStatusBar().setSuccessText("Projekte gelÃ¶scht");
         }
         else
         {
           if (counter > 0)
           {
             protecttext = String
-                .format(", %d Projekte wurden nicht überschrieben. ", counter);
+                .format(", %d Projekte wurden nicht Ã¼berschrieben. ", counter);
           }
           GUI.getStatusBar()
               .setSuccessText("Projekte zugeordnet" + protecttext);
@@ -118,8 +118,7 @@ public class BuchungProjektZuordnungAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung des Projektes");
+      GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung des Projektes");
     }
   }
 }

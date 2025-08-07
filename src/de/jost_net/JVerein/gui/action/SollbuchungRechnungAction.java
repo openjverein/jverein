@@ -39,8 +39,8 @@ public class SollbuchungRechnungAction implements Action
       {
         try
         {
-          context = Einstellungen.getDBService()
-              .createObject(Sollbuchung.class, mkn.getID());
+          context = Einstellungen.getDBService().createObject(Sollbuchung.class,
+              mkn.getID());
         }
         catch (RemoteException e)
         {
@@ -56,7 +56,7 @@ public class SollbuchungRechnungAction implements Action
         if (sollb.getRechnung() == null)
         {
           throw new ApplicationException(
-              "Keine Rechnung zu ausgew‰hlter Sollbuchung vorhanden!");
+              "Keine Rechnung zu ausgew√§hlter Sollbuchung vorhanden!");
         }
         GUI.startView(RechnungDetailView.class.getName(), sollb.getRechnung());
       }

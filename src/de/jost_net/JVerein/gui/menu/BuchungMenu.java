@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
@@ -29,8 +30,9 @@ import de.jost_net.JVerein.gui.action.BuchungGeprueftAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungSteuerZuordnenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
@@ -55,46 +57,47 @@ public class BuchungMenu extends ContextMenu
 {
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Buchungen.
+   * 
+   * @throws RemoteException
    */
 
-  public BuchungMenu(BuchungsControl control)
+  public BuchungMenu(BuchungsControl control) throws RemoteException
   {
     boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new BuchungAction(false), "text-x-generic.png"));
-    addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
+        new BuchungAction(false, control.getBuchungsList()),
+        "text-x-generic.png"));
+    addItem(new GeprueftBuchungItem("Als \"geprÃ¼ft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
-    addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",
+    addItem(new GeprueftBuchungItem("Als \"ungeprÃ¼ft\" markieren",
         new BuchungGeprueftAction(false), "edit-undo.png", true));
     addItem(new SingleBuchungItem("Duplizieren", new BuchungDuplizierenAction(),
         "edit-copy.png"));
     if (geldkonto)
     {
-      addItem(
-          new GegenBuchungItem("Gegenbuchung",
-              new BuchungGegenbuchungAction(control),
-          "edit-copy.png"));
+      addItem(new GegenBuchungItem("Gegenbuchung",
+          new BuchungGegenbuchungAction(control), "edit-copy.png"));
     }
     addItem(new SplitBuchungItem("Splitbuchung", new SplitBuchungAction(),
         "edit-copy.png"));
-    addItem(new AufloesenItem("Auflösen",
-        new SplitbuchungBulkAufloesenAction(control),
-        "unlocked.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
-            "user-trash-full.png"));
+    addItem(new AufloesenItem("AuflÃ¶sen",
+        new SplitbuchungBulkAufloesenAction(control), "unlocked.png"));
+    addItem(new BuchungItem("LÃ¶schen", new BuchungDeleteAction(false),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
     {
       addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
-              new MitgliedDetailAction(), "user-friends.png"));
-      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto", new AnlagenkontoNeuAction(),
-          "document-new.png"));
+          new MitgliedDetailAction(), "user-friends.png"));
+      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
+          new AnlagenkontoNeuAction(), "document-new.png"));
       try
       {
-        if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
         {
           addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-              new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+              new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
               "file-invoice.png"));
         }
       }
@@ -105,13 +108,26 @@ public class BuchungMenu extends ContextMenu
     }
     addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
-    if (geldkonto) {
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        addItem(new CheckedContextMenuItem("Steuer zuordnen",
+            new BuchungSteuerZuordnenAction(), "view-refresh.png"));
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht anzeigen
+    }
+    if (geldkonto)
+    {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
           new BuchungSollbuchungZuordnungAction(), "view-refresh.png"));
     }
     try
     {
-      if (Einstellungen.getEinstellung().getProjekteAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         addItem(new CheckedContextMenuItem("Projekt zuordnen",
             new BuchungProjektZuordnungAction(), "view-refresh.png"));
@@ -130,7 +146,7 @@ public class BuchungMenu extends ContextMenu
         && syntax.getManifest().getVersion().compliesTo("2.10.5+"))
     {
       addItem(ContextMenuItem.SEPARATOR);
-      addItem(new CheckedContextMenuItem("In SynTAX übernehmen",
+      addItem(new CheckedContextMenuItem("In SynTAX Ã¼bernehmen",
           new SyntaxExportAction(), "document-save.png"));
     }
   }
@@ -196,7 +212,7 @@ public class BuchungMenu extends ContextMenu
       return false;
     }
   }
-    
+
   private static class SingleGegenBuchungItem
       extends CheckedSingleContextMenuItem
   {
@@ -274,7 +290,7 @@ public class BuchungMenu extends ContextMenu
       return false;
     }
   }
-  
+
   private static class AufloesenItem extends CheckedContextMenuItem
   {
     private AufloesenItem(String text, Action action, String icon)
@@ -350,10 +366,14 @@ public class BuchungMenu extends ContextMenu
 
   private static class MitgliedOeffnenItem extends CheckedContextMenuItem
   {
-    private MitgliedOeffnenItem(String text, Action action, String icon) { super(text, action, icon); }
+    private MitgliedOeffnenItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
 
     @Override
-    public boolean isEnabledFor(Object o) {
+    public boolean isEnabledFor(Object o)
+    {
       try
       {
         if (o instanceof Buchung)
@@ -361,7 +381,8 @@ public class BuchungMenu extends ContextMenu
           return ((Buchung) o).getSollbuchung() != null;
         }
       }
-      catch (RemoteException e) {
+      catch (RemoteException e)
+      {
         Logger.error("Fehler", e);
       }
       return false;

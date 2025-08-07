@@ -48,6 +48,8 @@ public enum MitgliedVar
   KONTO("mitglied_konto"), //
   BANKNAME("mitglied_bankname"), //
   KONTOINHABER("mitglied_kontoinhaber"), //
+  KONTOINHABER_VORNAMENAME("mitglied_kontoinhaber_vornamename"), //
+  KONTOINHABER_EMPFAENGER("mitglied_kontoinhaber_empfaenger"), //
   KONTOINHABER_PERSONENART("mitglied_kontoinhaber_personenart"), //
   KONTOINHABER_ANREDE("mitglied_kontoinhaber_anrede"), //
   KONTOINHABER_TITEL("mitglied_kontoinhaber_titel"), //

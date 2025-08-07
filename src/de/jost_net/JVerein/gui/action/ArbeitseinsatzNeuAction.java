@@ -26,11 +26,11 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzAction implements Action
+public class ArbeitseinsatzNeuAction implements Action
 {
   private Mitglied m;
 
-  public ArbeitseinsatzAction(Mitglied m)
+  public ArbeitseinsatzNeuAction(Mitglied m)
   {
     super();
     this.m = m;
@@ -41,32 +41,30 @@ public class ArbeitseinsatzAction implements Action
   {
     Arbeitseinsatz aeins = null;
 
-    if (context != null && (context instanceof Arbeitseinsatz))
+    try
     {
-      aeins = (Arbeitseinsatz) context;
-    }
-    else
-    {
-      try
+      aeins = (Arbeitseinsatz) Einstellungen.getDBService()
+          .createObject(Arbeitseinsatz.class, null);
+      if (m != null)
       {
-        aeins = (Arbeitseinsatz) Einstellungen.getDBService().createObject(
-            Arbeitseinsatz.class, null);
-        if (m != null)
+        if (m.getID() == null)
         {
-          if (m.getID() == null)
-          {
-            throw new ApplicationException(
-                "Neues Mitglied bitte erst speichern. Dann kˆnnen Arbeitseins‰tze aufgenommen werden.");
-          }
-          aeins.setMitglied(Integer.valueOf(m.getID()).intValue());
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern. Dann k√∂nnen Arbeitseins√§tze aufgenommen werden.");
         }
+        aeins.setMitglied(Integer.valueOf(m.getID()).intValue());
       }
-      catch (RemoteException e)
+      else
       {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Arbeitseinsatzes", e);
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "Fehler bei der Erzeugung eines neuen Arbeitseinsatzes", e);
+    }
+
     GUI.startView(ArbeitseinsatzDetailView.class.getName(), aeins);
   }
 }

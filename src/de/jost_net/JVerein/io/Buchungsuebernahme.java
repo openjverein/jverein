@@ -26,14 +26,14 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.schlevoigt.JVerein.util.Misc;
-
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.BuchungUebernahmeProtokollDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -66,9 +66,9 @@ public class Buchungsuebernahme
   {
     try
     {
-      Logger.info("Buchungsübernahme zu JVerein gestartet");
+      Logger.info("BuchungsÃ¼bernahme zu JVerein gestartet");
 
-      // BuchungsartList für automatische Buchungszuordnung bestimmen.
+      // BuchungsartList fÃ¼r automatische Buchungszuordnung bestimmen.
       DBIterator<Buchungsart> buchungsartIt = Einstellungen.getDBService()
           .createList(Buchungsart.class);
       buchungsartIt.addFilter("suchbegriff != '' and suchbegriff is not null");
@@ -76,7 +76,7 @@ public class Buchungsuebernahme
 
       // Protokollliste initialisieren
       buchungen = new ArrayList<>();
-      // Über alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
+      // Ãœber alle Hibiscus-Konten (aus JVerein-Sicht) iterieren
       DBIterator<Konto> hibkto = Einstellungen.getDBService()
           .createList(Konto.class);
       hibkto.addFilter("hibiscusid > 0");
@@ -85,11 +85,11 @@ public class Buchungsuebernahme
         Konto kto = (Konto) hibkto.next();
         leseHibiscus(kto);
       }
-      Logger.info("Buchungsübernahme zu JVerein abgeschlossen");
+      Logger.info("BuchungsÃ¼bernahme zu JVerein abgeschlossen");
     }
     catch (Exception e)
     {
-      Logger.error("Buchungsübernahme zu JVerein fehlerhaft", e);
+      Logger.error("BuchungsÃ¼bernahme zu JVerein fehlerhaft", e);
     }
     try
     {
@@ -192,16 +192,17 @@ public class Buchungsuebernahme
           }
         }
         // Beautify zweck
-        if (Einstellungen.getEinstellung().getAutomatischeBuchungskorrekturHibiscus())
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS))
         {
-          zweck = Misc.getBuchungsZweckKorrektur(zweck, true);
+          zweck = BuchungsZweckKorrektur.getBuchungsZweckKorrektur(zweck, true);
         }
         if (zweck != null && zweck.length() > 500)
         {
           zweck = zweck.substring(0, 500);
         }
         b.setZweck(zweck);
-        
+
         // Buchungsart automatisch zuordnen
         String suchZweck = u.getGegenkontoNummer() + " " + u.getGegenkontoName()
             + " " + zweck;
@@ -210,14 +211,15 @@ public class Buchungsuebernahme
           if (match(ba.getSuchbegriff(), suchZweck, ba.getRegexp()))
           {
             b.setBuchungsartId(Long.parseLong(ba.getID()));
-            if (Einstellungen.getEinstellung().getSteuerInBuchung())
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.STEUERINBUCHUNG))
             {
               b.setSteuer(ba.getSteuer());
             }
+            break;
           }
-          break;
         }
-        
+
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());
@@ -241,7 +243,7 @@ public class Buchungsuebernahme
    * @param zweck
    *          der Verwendungszweck etc. der Buchung
    * @param isRegexp
-   *          ist der Suchtext ein regulärer Ausdruck?
+   *          ist der Suchtext ein regulÃ¤rer Ausdruck?
    * @return true wenn der zweck zum suchtext passt
    */
   private boolean match(String suchtext, String zweck, boolean isRegexp)

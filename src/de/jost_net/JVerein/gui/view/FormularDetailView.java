@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
-import de.jost_net.JVerein.gui.action.FormularfeldAction;
+import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -49,24 +49,24 @@ public class FormularDetailView extends AbstractDetailView
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Bezeichnung", control.getBezeichnung(true));
     left.addLabelPair("Art", control.getArt());
     left.addLabelPair("Datei", control.getDatei());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fortlaufende Nr.", control.getZaehler());
-    right.addLabelPair("Formularverknüpfung", control.getFormlink());
-    
+    right.addLabelPair("FormularverknÃ¼pfung", control.getFormlink());
+
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
-    
+
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Export", new FormularfelderExportAction(),
         getCurrentObject(), false, "document-save.png");
     buttons1.addButton("Import", new FormularfelderImportAction(control),
         getCurrentObject(), false, "file-import.png");
-    buttons1.addButton("Neu", new FormularfeldAction(), getCurrentObject(),
+    buttons1.addButton("Neu", new FormularfeldNeuAction(), getCurrentObject(),
         false, "document-new.png");
 
     // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
@@ -74,17 +74,20 @@ public class FormularDetailView extends AbstractDetailView
     Composite comp = new Composite(cont.getComposite(), SWT.NONE);
     comp.setLayout(layout);
     comp.setLayoutData(new GridData(GridData.END));
-    
+
     buttons1.paint(cont.getComposite());
-    
+
     cont.addPart(control.getFormularfeldList());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
+
     buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
         getCurrentObject(), false, "edit-copy.png");
-
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

@@ -39,7 +39,7 @@ import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 /**
- * Ein Dialog, ueber den man ein Projekt auswählen kann.
+ * Ein Dialog, ueber den man ein Projekt auswÃ¤hlen kann.
  */
 public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
 {
@@ -47,13 +47,13 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   private Projekt selected = null;
 
   private SelectInput projekte = null;
-  
+
   private CheckboxInput ueberschreiben = null;
 
   private LabelInput status = null;
-  
+
   private boolean abort = false;
-  
+
   private boolean ueberschr;
 
   Buchung[] buchungen = null;
@@ -63,7 +63,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     super(position);
     this.buchungen = buchungen;
 
-    setTitle("Projekt auswählen");
+    setTitle("Projekt auswÃ¤hlen");
     setSize(400, SWT.DEFAULT);
   }
 
@@ -72,18 +72,18 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Projekt", this.getProjekte());
-    group.addLabelPair("Projekte überschreiben", getUeberschreiben());
+    group.addLabelPair("Projekte Ã¼berschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
-    
+
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Übernehmen", new Action()
+    buttons.addButton("Ãœbernehmen", new Action()
     {
       @Override
       public void handleAction(Object context)
       {
         if (projekte.getValue() == null)
         {
-          status.setValue("Bitte auswählen");
+          status.setValue("Bitte auswÃ¤hlen");
           status.setColor(Color.ERROR);
           return;
         }
@@ -111,8 +111,9 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
         close();
       }
     }, null, false, "process-stop.png");
-    getShell().addListener(SWT.Close,new Listener()
+    getShell().addListener(SWT.Close, new Listener()
     {
+      @Override
       public void handleEvent(Event event)
       {
         abort = true;
@@ -126,12 +127,12 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
   {
     return this.selected;
   }
-  
+
   public boolean getAbort()
   {
     return abort;
   }
-  
+
   public boolean getOverride()
   {
     return ueberschr;
@@ -150,8 +151,8 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     if (buchungen != null)
     {
       /*
-       * UND-Verknüpfung der Datumsbereiche, damit nur Projekte angezeigt
-       * werden, die für die Auswahl gültig sind
+       * UND-VerknÃ¼pfung der Datumsbereiche, damit nur Projekte angezeigt
+       * werden, die fÃ¼r die Auswahl gÃ¼ltig sind
        */
       for (Buchung buchung : buchungen)
       {
@@ -161,9 +162,10 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     }
 
     pj.setOrder("ORDER BY bezeichnung");
-    this.projekte = new SelectInput(pj != null ? PseudoIterator.asList(pj) : null, null);
+    this.projekte = new SelectInput(
+        pj != null ? PseudoIterator.asList(pj) : null, null);
     this.projekte.setValue(null);
-    this.projekte.setPleaseChoose("Bitte Projekt auswählen");
+    this.projekte.setPleaseChoose("Bitte Projekt auswÃ¤hlen");
     this.projekte.addListener(new Listener()
     {
 
@@ -175,7 +177,7 @@ public class ProjektAuswahlDialog extends AbstractDialog<Projekt>
     });
     return this.projekte;
   }
-  
+
   private LabelInput getStatus()
   {
     if (status != null)

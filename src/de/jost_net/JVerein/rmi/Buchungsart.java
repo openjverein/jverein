@@ -41,7 +41,7 @@ public interface Buchungsart extends JVereinDBObject
   public Boolean getSpende() throws RemoteException;
 
   public void setSpende(Boolean spende) throws RemoteException;
-  
+
   public int getStatus() throws RemoteException;
 
   public void setStatus(int status) throws RemoteException;

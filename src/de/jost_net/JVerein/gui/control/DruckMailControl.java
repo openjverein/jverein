@@ -12,16 +12,17 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 
-public abstract class DruckMailControl extends FilterControl implements IMailControl
+public abstract class DruckMailControl extends FilterControl
+    implements IMailControl
 {
   public DruckMailControl(AbstractView view)
   {
     super(view);
   }
-  
+
   public static final String EMAIL = "Mail";
 
-  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empf‰nger)";
+  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empf√§nger)";
 
   public static final String PDF2 = "PDF (Alle)";
 
@@ -32,31 +33,30 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
   public static final String EINZELN_MITGLIEDSNUMMER = "Einzelne PDF-Dateien, mit Mitgliedsnummer";
 
   public static final String EINZELN_NUMMERIERT_UND_MNR = "Einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
-  
+
   protected TextAreaInput info = null;
 
   protected FormularInput formular = null;
 
   protected SelectInput ausgabeart = null;
-  
+
   protected SelectInput ausgabesortierung = null;
 
   protected SelectInput adressblatt = null;
-  
+
   protected SelectInput output = null;
 
   protected SelectInput pdfModus = null;
-  
+
   protected TextInput mailbetreff = null;
 
   protected TextAreaInput mailtext = null;
-  
-  
+
   public String getInfoText(Object selection)
   {
     return "";
   }
-  
+
   public TextAreaInput getInfo() throws RemoteException
   {
     if (info != null)
@@ -79,19 +79,19 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
     formular = new FormularInput(formulartyp);
     return formular;
   }
-  
+
   public SelectInput getAusgabeart()
   {
     if (ausgabeart != null)
     {
       return ausgabeart;
     }
-    ausgabeart = new SelectInput(Ausgabeart.values(),
-        Ausgabeart.getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
+    ausgabeart = new SelectInput(Ausgabeart.values(), Ausgabeart
+        .getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
     ausgabeart.setName("Ausgabe");
     return ausgabeart;
   }
-  
+
   public SelectInput getAusgabesortierung()
   {
     if (ausgabesortierung != null)
@@ -99,23 +99,24 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
       return ausgabesortierung;
     }
     ausgabesortierung = new SelectInput(Ausgabesortierung.values(),
-        Ausgabesortierung.getByKey(settings.getInt(settingsprefix + "ausgabesortierung", 1)));
+        Ausgabesortierung.getByKey(
+            settings.getInt(settingsprefix + "ausgabesortierung", 1)));
     ausgabesortierung.setName("Sortierung");
     return ausgabesortierung;
   }
-  
+
   public SelectInput getAdressblatt()
   {
     if (adressblatt != null)
     {
       return adressblatt;
     }
-    adressblatt = new SelectInput( Adressblatt.values(),
-        Adressblatt.getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
+    adressblatt = new SelectInput(Adressblatt.values(), Adressblatt
+        .getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
     adressblatt.setName("Adressblatt");
     return adressblatt;
   }
-  
+
   public SelectInput getOutput()
   {
     if (output != null)
@@ -130,7 +131,7 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
     output.setName("Ausgabe");
     return output;
   }
-  
+
   public SelectInput getPdfModus()
   {
     if (pdfModus != null)
@@ -140,19 +141,19 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
     Object[] values = new Object[] { NICHT_EINZELN, EINZELN_NUMMERIERT,
         EINZELN_MITGLIEDSNUMMER, EINZELN_NUMMERIERT_UND_MNR };
     pdfModus = new SelectInput(values,
-        settings.getString(settingsprefix +"pdfModus", NICHT_EINZELN));
+        settings.getString(settingsprefix + "pdfModus", NICHT_EINZELN));
     pdfModus.setName("PDF als");
     return pdfModus;
   }
-  
+
   public TextInput getBetreff()
   {
     if (mailbetreff != null)
     {
       return mailbetreff;
     }
-    mailbetreff = new TextInput(settings.
-        getString(settingsprefix + "mail.betreff", ""), 100);
+    mailbetreff = new TextInput(
+        settings.getString(settingsprefix + "mail.betreff", ""), 100);
     mailbetreff.setName("Betreff");
     return mailbetreff;
   }
@@ -169,12 +170,12 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
     {
       return mailtext;
     }
-    mailtext = new TextAreaInput(settings.
-        getString(settingsprefix + "mail.text", ""), 10000);
+    mailtext = new TextAreaInput(
+        settings.getString(settingsprefix + "mail.text", ""), 10000);
     mailtext.setName("Text");
     return mailtext;
   }
-  
+
   @Override
   public String getTxtString()
   {
@@ -183,7 +184,7 @@ public abstract class DruckMailControl extends FilterControl implements IMailCon
 
   protected void saveDruckMailSettings() throws RemoteException
   {
-    if (ausgabeart != null )
+    if (ausgabeart != null)
     {
       Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
       settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());

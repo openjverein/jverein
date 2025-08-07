@@ -70,21 +70,21 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       if (this.getRechnung() != null)
       {
         throw new ApplicationException(
-            "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
-                + "Rechnung gehört");
+            "Sollbuchung kann nicht gelÃ¶scht werden weil sie zu einer "
+                + "Rechnung gehÃ¶rt");
       }
     }
     catch (ObjectNotFoundException e)
     {
       // Alles ok, es gibt keine Rechnung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber
+      // Das passiert wenn sie kurz vorher gelÃ¶scht wurde aber
       // die ID noch im Cache gespeichert ist
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Sollbuchung kann nicht gelöscht werden. Siehe system log");
+          "Sollbuchung kann nicht gelÃ¶scht werden. Siehe system log");
     }
   }
 
@@ -187,6 +187,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     return (Mitglied) cache.get(o);
   }
 
+  @Override
   public String getMitgliedId() throws RemoteException
   {
     return String.valueOf(super.getAttribute(MITGLIED));
@@ -229,6 +230,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
   }
 
+  @Override
   public Long getZahlerId() throws RemoteException
   {
     return (Long) super.getAttribute(ZAHLER);
@@ -285,7 +287,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute(BETRAG, d);
+    setAttribute(BETRAG, Math.round(d * 100) / 100d);
   }
 
   @Override

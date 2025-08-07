@@ -64,11 +64,11 @@ public class IntervallZusatzzahlung
       case ZWEIMONATLICH:
         return "Zweimonatlich";
       case VIERTELJAEHRLICH:
-        return "Viertelj‰hrlich";
+        return "Viertelj√§hrlich";
       case HALBJAEHRLICH:
-        return "Halbj‰hrlich";
+        return "Halbj√§hrlich";
       case JAEHRLICH:
-        return "J‰hrlich";
+        return "J√§hrlich";
       default:
         return null;
     }

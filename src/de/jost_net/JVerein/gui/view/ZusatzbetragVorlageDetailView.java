@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
@@ -37,15 +38,20 @@ public class ZusatzbetragVorlageDetailView extends AbstractDetailView
     control = new ZusatzbetragVorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Zusatzbetrag-Vorlage");
-    group.addLabelPair("Erste Fälligkeit ", control.getStartdatum(true));
-    group.addLabelPair("Nächste Fälligkeit", control.getFaelligkeit());
+    group.addLabelPair("Erste FÃ¤lligkeit ", control.getStartdatum(true));
+    group.addLabelPair("NÃ¤chste FÃ¤lligkeit", control.getFaelligkeit());
     group.addLabelPair("Intervall", control.getIntervall());
-    group.addLabelPair("Nicht mehr ausführen ab", control.getEndedatum());
+    group.addLabelPair("Nicht mehr ausfÃ¼hren ab", control.getEndedatum());
     group.addLabelPair("Buchungstext", control.getBuchungstext());
     group.addLabelPair("Betrag", control.getBetrag());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
     group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
 
     ButtonArea buttons = new ButtonArea();

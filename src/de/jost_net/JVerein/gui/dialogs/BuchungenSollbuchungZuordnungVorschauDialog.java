@@ -24,6 +24,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
@@ -45,17 +46,19 @@ import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, der die automatisch ermittelten Zuordnungen zwischen Buchung und
- * Sollbuchung anzeigt und bei Best‰tigung persistiert
+ * Sollbuchung anzeigt und bei Best√§tigung persistiert
  */
-public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<Object>
+public class BuchungenSollbuchungZuordnungVorschauDialog
+    extends AbstractDialog<Object>
 {
   private List<BookingMemberAccountEntry> assignedBooking;
 
-  public BuchungenSollbuchungZuordnungVorschauDialog(List<BookingMemberAccountEntry> assignedBooking)
+  public BuchungenSollbuchungZuordnungVorschauDialog(
+      List<BookingMemberAccountEntry> assignedBooking)
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(1400, 400);
-    this.setTitle("Buchungszuordnung best‰tigen");
+    this.setTitle("Buchungszuordnung best√§tigen");
     this.assignedBooking = assignedBooking;
   }
 
@@ -64,39 +67,52 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
   {
     final TablePart bu = new TablePart(assignedBooking, null);
 
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer().booleanValue())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
-      bu.addColumn("Ext. Mitgliedsnummer", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.externemitgliedsnummer");
+      bu.addColumn("Ext. Mitgliedsnummer",
+          BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO
+              + "mitglied.externemitgliedsnummer");
     }
     else
     {
-      bu.addColumn("Mitgliedsnummer", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.id");
+      bu.addColumn("Mitgliedsnummer",
+          BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.id");
     }
 
-    bu.addColumn("Anrede", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.anrede");
-    bu.addColumn("Vorname", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.vorname");
-    bu.addColumn("Name", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.name");
-    bu.addColumn("Abrechnungslaufnummer", BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "abrechnungslauf.id");
-    bu.addColumn("Buchungsnummer", BookingMemberAccountEntry.PREFIX_BUCHUNG + "id");
-    bu.addColumn("IBAN oder Kontonummer", BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban", new IbanFormatter());
-    bu.addColumn("Betrag", BookingMemberAccountEntry.PREFIX_BUCHUNG + "betrag", new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    bu.addColumn("Verwendungszweck", BookingMemberAccountEntry.PREFIX_BUCHUNG + "zweck", new Formatter()
-    {
-      @Override
-      public String format(Object value)
-      {
-        if (value == null)
+    bu.addColumn("Anrede",
+        BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.anrede");
+    bu.addColumn("Vorname",
+        BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.vorname");
+    bu.addColumn("Name",
+        BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "mitglied.name");
+    bu.addColumn("Abrechnungslaufnummer",
+        BookingMemberAccountEntry.PREFIX_MITGLIEDSKONTO + "abrechnungslauf.id");
+    bu.addColumn("Buchungsnummer",
+        BookingMemberAccountEntry.PREFIX_BUCHUNG + "id");
+    bu.addColumn("IBAN oder Kontonummer",
+        BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban", new IbanFormatter());
+    bu.addColumn("Betrag", BookingMemberAccountEntry.PREFIX_BUCHUNG + "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    bu.addColumn("Verwendungszweck",
+        BookingMemberAccountEntry.PREFIX_BUCHUNG + "zweck", new Formatter()
         {
-          return null;
-        }
-        String s = value.toString();
-        s = s.replaceAll("\r\n", " ");
-        s = s.replaceAll("\r", " ");
-        s = s.replaceAll("\n", " ");
-        return s;
-      }
-    });
-    bu.addColumn("Buchungsdatum", BookingMemberAccountEntry.PREFIX_BUCHUNG + "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
+          @Override
+          public String format(Object value)
+          {
+            if (value == null)
+            {
+              return null;
+            }
+            String s = value.toString();
+            s = s.replaceAll("\r\n", " ");
+            s = s.replaceAll("\r", " ");
+            s = s.replaceAll("\n", " ");
+            return s;
+          }
+        });
+    bu.addColumn("Buchungsdatum",
+        BookingMemberAccountEntry.PREFIX_BUCHUNG + "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Zuordnungsart", "zuordnungsart");
 
     bu.setRememberColWidths(true);
@@ -111,7 +127,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
         persistAssignment();
       }
     }, null, false, "ok.png");
-    
+
     b.addButton("Abbrechen", new Action()
     {
       @Override
@@ -127,21 +143,24 @@ public class BuchungenSollbuchungZuordnungVorschauDialog extends AbstractDialog<
   {
     try
     {
-      for(BookingMemberAccountEntry dao : assignedBooking)
+      for (BookingMemberAccountEntry dao : assignedBooking)
       {
         Sollbuchung sollb = dao.getSollbuchung();
         Buchung buchung = dao.getBuchung();
         SplitbuchungsContainer.autoSplit(buchung, sollb, false);
       }
 
-      //Darstellung aktualisieren
+      // Darstellung aktualisieren
       new StartViewAction(BuchungListeView.class).handleAction(this);
 
-      GUI.getStatusBar().setSuccessText("Die Zuordnung wurde erfolgreich durchgef¸hrt");
+      GUI.getStatusBar()
+          .setSuccessText("Die Zuordnung wurde erfolgreich durchgef√ºhrt");
     }
-    catch (RemoteException e) {
+    catch (RemoteException e)
+    {
       Logger.error("error while assignment", e);
-      throw new ApplicationException("Fehler bei der Durchf¸hrung der Zuordnung", e);
+      throw new ApplicationException(
+          "Fehler bei der Durchf√ºhrung der Zuordnung", e);
     }
 
     close();

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
@@ -70,6 +71,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     super(view);
   }
 
+  @Override
   public TablePart getSaldoList() throws ApplicationException
   {
     try
@@ -134,7 +136,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-    switch (Einstellungen.getEinstellung().getBuchungsartSort())
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
         it.addColumn(
@@ -205,6 +207,16 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addGroupBy("konto.id");
     it.addGroupBy("konto.anlagenart");
     it.addGroupBy("konto.anlagenklasse");
+    it.addGroupBy("konto.bezeichnung");
+    it.addGroupBy("konto.nutzungsdauer");
+    it.addGroupBy("konto.anschaffung");
+    it.addGroupBy("konto.betrag");
+    it.addGroupBy("buchungsart.bezeichnung");
+    it.addGroupBy("buchungsart.nummer");
+    it.addGroupBy("buchungsklasse.bezeichnung");
+    it.addGroupBy("buchungsklasse.nummer");
+    it.addGroupBy("afaart.bezeichnung");
+    it.addGroupBy("afaart.nummer");
 
     return it;
   }

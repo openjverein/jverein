@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
@@ -40,36 +41,36 @@ public class KontoDetailView extends AbstractDetailView
 
     LabelGroup group = new LabelGroup(getParent(), "Konto");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
-    
+
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Kontoart", control.getKontoArt());
     left.addLabelPair("Nummer", control.getNummer());
     left.addLabelPair("Bezeichnung", control.getBezeichnung());
-    left.addLabelPair("Eröffnungsdatum", control.getEroeffnung());
-    left.addLabelPair("Auflösungsdatum", control.getAufloesung());
-    
+    left.addLabelPair("ErÃ¶ffnungsdatum", control.getEroeffnung());
+    left.addLabelPair("AuflÃ¶sungsdatum", control.getAufloesung());
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Hibiscus-Konto", control.getHibiscusId());
     right.addLabelPair("GB-Buchungsart", control.getBuchungsart());
     right.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     right.addLabelPair("Kommentar", control.getKommentar());
-    
+
     LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
     ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
-    
+
     SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
     left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
     left1.addLabelPair("AfA Buchungsart", control.getAfaart());
     left1.addLabelPair("Anlagenwert", control.getBetrag());
     left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
-    if (Einstellungen.getEinstellung().getMittelverwendung())
+    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
     {
       left1.addLabelPair("Anlagenzweck", control.getAnlagenzweck());
     }
     ButtonArea anlagenbuttons = new ButtonArea();
     anlagenbuttons.addButton(control.getAutobutton());
     left1.addButtonArea(anlagenbuttons);
-    
+
     SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
     right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
     right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
@@ -83,6 +84,9 @@ public class KontoDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

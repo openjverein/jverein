@@ -50,7 +50,7 @@ public class RechnungMailView extends AbstractView
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
-      
+
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getSuchname());
       left.addInput(control.getMailauswahl());
@@ -63,7 +63,7 @@ public class RechnungMailView extends AbstractView
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());
       right.addInput(control.getDatumbis());
-      
+
       ButtonArea filterbuttons = new ButtonArea();
       filterbuttons.addButton(control.getResetButton());
       filterbuttons.addButton(control.getSpeichernButton());
@@ -75,12 +75,12 @@ public class RechnungMailView extends AbstractView
       cont1.addHeadline("Info");
       cont1.addInput(control.getInfo());
     }
-        
+
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Parameter");
-    
+
     cont.addInput(control.getAusgabeart());
-    //cont.addInput(control.getAusgabesortierung());
+    // cont.addInput(control.getAusgabesortierung());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -93,16 +93,16 @@ public class RechnungMailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.RECHNUNG_MAIL, false, "question-circle.png");
-    buttons.addButton(new Button("Mail-Vorlage", new MailVorlageZuweisenAction(),
-        control, false, "view-refresh.png"));
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
-    buttons.addButton(new Button("Vorschau",
-        new MailTextVorschauAction(map, true), control, false,
-        "edit-copy.png"));
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+            control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
-        control, false, "document-new.png"));
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

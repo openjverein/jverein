@@ -25,9 +25,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -35,7 +38,6 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -47,7 +49,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -55,7 +56,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class AbrechnungslaufBuchungenControl extends AbstractControl
+public class AbrechnungslaufBuchungenControl extends VorZurueckControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -72,7 +73,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
 
   private Abrechnungslauf abrl;
 
-  private TablePart SollbuchungsList;
+  private JVereinTablePart sollbuchungsList;
 
   public AbrechnungslaufBuchungenControl(AbstractView view)
   {
@@ -138,8 +139,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     //
   }
 
-  private DBIterator<Sollbuchung> getIterator(int lauf)
-      throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -152,35 +152,38 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
   public Part getSollbuchungsList() throws RemoteException
   {
     DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
-    if (SollbuchungsList == null)
+    if (sollbuchungsList == null)
     {
-      SollbuchungsList = new TablePart(sollbIt, new SollbuchungEditAction());
-      SollbuchungsList.addColumn("F‰lligkeit", Sollbuchung.DATUM,
+      sollbuchungsList = new JVereinTablePart(sollbIt, null);
+      sollbuchungsList.addColumn("F√§lligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
-      SollbuchungsList.addColumn("Mitglied", Sollbuchung.MITGLIED);
-      SollbuchungsList.addColumn("Zweck", Sollbuchung.ZWECK1);
-      SollbuchungsList.addColumn("Betrag", Sollbuchung.BETRAG,
+      sollbuchungsList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+      sollbuchungsList.addColumn("Zweck", Sollbuchung.ZWECK1);
+      sollbuchungsList.addColumn("Betrag", Sollbuchung.BETRAG,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      SollbuchungsList.addColumn("Eingang", Sollbuchung.ISTSUMME,
+      sollbuchungsList.addColumn("Eingang", Sollbuchung.ISTSUMME,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      SollbuchungsList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
+      sollbuchungsList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
           new ZahlungswegFormatter(), false, Column.ALIGN_LEFT);
-      SollbuchungsList.setRememberColWidths(true);
-      SollbuchungsList.setRememberOrder(true);
-      SollbuchungsList.addFeature(new FeatureSummary());
-      SollbuchungsList.setContextMenu(new SollbuchungMenu());
+      sollbuchungsList.setRememberColWidths(true);
+      sollbuchungsList.setRememberOrder(true);
+      sollbuchungsList.addFeature(new FeatureSummary());
+      sollbuchungsList.setContextMenu(new SollbuchungMenu(sollbuchungsList));
+      sollbuchungsList.setAction(
+          new EditAction(SollbuchungDetailView.class, sollbuchungsList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
-      SollbuchungsList.removeAll();
+      sollbuchungsList.removeAll();
       while (sollbIt.hasNext())
       {
-        SollbuchungsList.addItem(sollbIt.next());
+        sollbuchungsList.addItem(sollbIt.next());
       }
-      SollbuchungsList.sort();
+      sollbuchungsList.sort();
     }
-    return SollbuchungsList;
+    return sollbuchungsList;
   }
 
   public Button getStartListeButton()
@@ -205,7 +208,7 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
       DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -214,7 +217,8 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abrechnungslauf", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -234,8 +238,8 @@ public class AbrechnungslaufBuchungenControl extends AbstractControl
     }
   }
 
-  private void auswertungPDF(final DBIterator<Sollbuchung> it,
-      final File file, final Abrechnungslauf lauf)
+  private void auswertungPDF(final DBIterator<Sollbuchung> it, final File file,
+      final Abrechnungslauf lauf)
   {
     BackgroundTask t = new BackgroundTask()
     {

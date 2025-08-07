@@ -27,7 +27,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ausführungsdatum der Abbuchung eines Kursteilnehmers entfernen.
+ * AusfÃ¼hrungsdatum der Abbuchung eines Kursteilnehmers entfernen.
  */
 public class KursteilnehmerAbuResetAction implements Action
 {
@@ -44,7 +44,7 @@ public class KursteilnehmerAbuResetAction implements Action
   {
     if (context == null || !(context instanceof Kursteilnehmer))
     {
-      throw new ApplicationException("Kein Kursteilnehmer ausgewählt");
+      throw new ApplicationException("Kein Kursteilnehmer ausgewÃ¤hlt");
     }
     try
     {
@@ -54,8 +54,9 @@ public class KursteilnehmerAbuResetAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Abbuchungsdatum zurücksetzen");
-      d.setText("Wollen Sie das Ausführungsdatum der Abbuchung wirklich zurücksetzen?");
+      d.setTitle("Abbuchungsdatum zurÃ¼cksetzen");
+      d.setText(
+          "Wollen Sie das AusfÃ¼hrungsdatum der Abbuchung wirklich zurÃ¼cksetzen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -73,11 +74,11 @@ public class KursteilnehmerAbuResetAction implements Action
       kt.store();
       table.addItem(kt, ind);
 
-      GUI.getStatusBar().setSuccessText("Abbuchungsdatum zurückgesetzt.");
+      GUI.getStatusBar().setSuccessText("Abbuchungsdatum zurÃ¼ckgesetzt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Zurücksetzen des Abbuchungsdatum des Kursteilnehmers.";
+      String fehler = "Fehler beim ZurÃ¼cksetzen des Abbuchungsdatum des Kursteilnehmers.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

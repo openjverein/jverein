@@ -38,7 +38,7 @@ public class SplitBuchungAction implements Action
     if (context == null
         || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
     {
-      throw new ApplicationException("Keine Buchung(en) ausgew‰hlt");
+      throw new ApplicationException("Keine Buchung(en) ausgew√§hlt");
     }
     Buchung[] bl = null;
     try
@@ -75,7 +75,7 @@ public class SplitBuchungAction implements Action
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
         }
         Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if(spb != null)
+        if (spb != null)
         {
           throw new ApplicationException(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
@@ -83,7 +83,7 @@ public class SplitBuchungAction implements Action
         if (bu.getBuchungsart() == null)
         {
           throw new ApplicationException(
-              "Allen Buchungen muss zun‰chst eine Buchungsart zugeordnet werden.");
+              "Allen Buchungen muss zun√§chst eine Buchungsart zugeordnet werden.");
         }
       }
       bl[0].setSplitTyp(SplitbuchungTyp.HAUPT);

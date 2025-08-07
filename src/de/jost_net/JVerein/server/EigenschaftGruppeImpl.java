@@ -18,13 +18,14 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
-    implements
-    EigenschaftGruppe
+    implements EigenschaftGruppe
 {
 
   private static final long serialVersionUID = -5906609226109964967L;
@@ -57,9 +58,21 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      DBIterator<EigenschaftGruppe> gruppeIt = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
+      if (!this.isNewObject())
+      {
+        gruppeIt.addFilter("id != ?", getID());
+      }
+      gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (gruppeIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
       }
     }
     catch (RemoteException e)

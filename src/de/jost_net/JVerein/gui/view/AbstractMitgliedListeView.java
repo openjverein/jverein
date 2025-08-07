@@ -68,7 +68,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
         rs);
     if (anzahlbeitragsgruppe.longValue() == 0)
     {
-      new LabelInput("Noch keine Beitragsgruppe erfaßt. Bitte unter "
+      new LabelInput("Noch keine Beitragsgruppe erfaÃŸt. Bitte unter "
           + "Administration|Beitragsgruppen erfassen.").paint(getParent());
     }
     rs = new ResultSetExtractor()
@@ -86,12 +86,13 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
     if (anzahl.longValue() > 0)
     {
-      Mitgliedstyp mt = (Mitgliedstyp) control.getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
+      Mitgliedstyp mt = (Mitgliedstyp) control
+          .getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
       if (mt != null)
       {
-      Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
-      p = control.getMitgliedTable(Integer.parseInt(mt.getID()),
-          getDetailAction());
+        Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
+        p = control.getMitgliedTable(Integer.parseInt(mt.getID()),
+            getDetailAction());
       }
       else
       {
@@ -105,7 +106,8 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     {
       buttons.addButton("Import", new MitgliederImportAction(), null, false,
           "file-import.png");
-      buttons.addButton("Neu", getDetailAction(), null, false, "document-new.png");
+      buttons.addButton("Neu", getDetailAction(), null, false,
+          "document-new.png");
     }
     buttons.paint(this.getParent());
   }
@@ -116,8 +118,6 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     if (p != null)
       p.removeAll();
   }
-
-
 
   public abstract String getTitle();
 

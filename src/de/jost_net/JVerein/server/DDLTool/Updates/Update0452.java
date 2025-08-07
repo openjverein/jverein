@@ -31,9 +31,8 @@ public class Update0452 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute("update mitgliedskonto set betrag = 0 where betrag IS NULL");
-    
-    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true,
-        false);
+
+    Column betrag = new Column("betrag", COLTYPE.DOUBLE, 0, null, true, false);
     execute(alterColumnSetNotNull("mitgliedskonto", betrag));
   }
 }

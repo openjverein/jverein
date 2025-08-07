@@ -45,7 +45,7 @@ public class LehrgangsartDeleteAction implements Action
     }
     if (context == null || !(context instanceof Lehrgangsart))
     {
-      throw new ApplicationException("Keine Lehrgangsart ausgewählt");
+      throw new ApplicationException("Keine Lehrgangsart ausgewÃ¤hlt");
     }
     try
     {
@@ -61,12 +61,12 @@ public class LehrgangsartDeleteAction implements Action
       if (it.hasNext())
       {
         throw new ApplicationException(String.format(
-            "Lehrgangsart '%s' kann nicht gelöscht werden. Es existieren Lehrgänge dieser Art.",
+            "Lehrgangsart '%s' kann nicht gelÃ¶scht werden. Es existieren LehrgÃ¤nge dieser Art.",
             l.getBezeichnung()));
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Lehrgangsart löschen");
-      d.setText("Wollen Sie diese Lehrgangsart wirklich löschen?");
+      d.setTitle("Lehrgangsart lÃ¶schen");
+      d.setText("Wollen Sie diese Lehrgangsart wirklich lÃ¶schen?");
 
       try
       {
@@ -78,15 +78,15 @@ public class LehrgangsartDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen einer Lehrgangsart", e);
+        Logger.error("Fehler beim LÃ¶schen einer Lehrgangsart", e);
         return;
       }
       l.delete();
-      GUI.getStatusBar().setSuccessText("Lehrgangsart gelöscht.");
+      GUI.getStatusBar().setSuccessText("Lehrgangsart gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen einer Lehrgangsart";
+      String fehler = "Fehler beim LÃ¶schen einer Lehrgangsart";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

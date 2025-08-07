@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -37,26 +38,28 @@ import de.willuhn.jameica.gui.input.SelectInput;
 public class BuchungsartInput
 {
   private int unterdrueckunglaenge = 0;
-  
-  public enum buchungsarttyp {
+
+  public enum buchungsarttyp
+  {
     BUCHUNGSART,
     ANLAGENART,
     AFAART
   }
-  
+
   public AbstractInput getBuchungsartInput(AbstractInput buchungsart,
       Buchungsart bart, buchungsarttyp art, int auswahl) throws RemoteException
   {
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
-        unterdrueckunglaenge = Einstellungen.getEinstellung().getUnterdrueckungLaenge();
-        if (unterdrueckunglaenge > 0) 
+        unterdrueckunglaenge = (Integer) Einstellungen
+            .getEinstellung(Property.UNTERDRUECKUNGLAENGE);
+        if (unterdrueckunglaenge > 0)
         {
           final DBService service = Einstellungen.getDBService();
           Calendar cal = Calendar.getInstance();
           Date db = cal.getTime();
-          cal.add(Calendar.MONTH, - unterdrueckunglaenge);
+          cal.add(Calendar.MONTH, -unterdrueckunglaenge);
           Date dv = cal.getTime();
 
           String sql;
@@ -86,8 +89,8 @@ public class BuchungsartInput
             sql += "AND buchungsart.status = ?) OR buchungsart.status = ? ";
           }
 
-          if (Einstellungen.getEinstellung()
-              .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
           {
             sql += "ORDER BY nummer";
           }
@@ -98,20 +101,22 @@ public class BuchungsartInput
           ResultSetExtractor rs = new ResultSetExtractor()
           {
             @Override
-            public Object extract(ResultSet rs) throws RemoteException, SQLException
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
             {
               ArrayList<Buchungsart> list = new ArrayList<Buchungsart>();
               while (rs.next())
               {
-                list.add(
-                  (Buchungsart) service.createObject(Buchungsart.class, rs.getString(1)));
+                list.add((Buchungsart) service.createObject(Buchungsart.class,
+                    rs.getString(1)));
               }
               return list;
             }
           };
           @SuppressWarnings("unchecked")
-          ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service.execute(sql,
-              new Object[] { dv, db, StatusBuchungsart.AUTO, StatusBuchungsart.ACTIVE}, rs);
+          ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
+              .execute(sql, new Object[] { dv, db, StatusBuchungsart.AUTO,
+                  StatusBuchungsart.ACTIVE }, rs);
           if (bart != null && ergebnis != null && !ergebnis.contains(bart))
             ergebnis.add(bart);
           buchungsart = new SelectInput(ergebnis, bart);
@@ -130,8 +135,8 @@ public class BuchungsartInput
             it.addFilter("buchungsart.abschreibung = TRUE");
           }
 
-          if (Einstellungen.getEinstellung()
-              .getBuchungsartSort() == BuchungsartSort.NACH_NUMMER)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BUCHUNGSARTSORT) == BuchungsartSort.NACH_NUMMER)
           {
             it.setOrder("ORDER BY nummer");
           }
@@ -146,8 +151,9 @@ public class BuchungsartInput
             ergebnis.add(bart);
           buchungsart = new SelectInput(ergebnis, bart);
         }
-        
-        switch (Einstellungen.getEinstellung().getBuchungsartSort())
+
+        switch ((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGSARTSORT))
         {
           case BuchungsartSort.NACH_NUMMER:
             ((SelectInput) buchungsart).setAttribute("nrbezeichnung");
@@ -159,19 +165,22 @@ public class BuchungsartInput
             ((SelectInput) buchungsart).setAttribute("bezeichnung");
             break;
         }
-        ((SelectInput) buchungsart).setPleaseChoose("Bitte ausw‰hlen");
+        ((SelectInput) buchungsart).setPleaseChoose("Bitte ausw√§hlen");
         break;
       case AbstractInputAuswahl.SearchInput:
       default: // default soll SearchInput sein. Eigentlich sollten die
         // Settings immer gesetzt sein, aber man weiss ja nie.
         buchungsart = new BuchungsartSearchInput(art);
-        switch (Einstellungen.getEinstellung().getBuchungsartSort())
+        switch ((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGSARTSORT))
         {
           case BuchungsartSort.NACH_NUMMER:
-            ((BuchungsartSearchInput) buchungsart).setAttribute("nrbezeichnung");
+            ((BuchungsartSearchInput) buchungsart)
+                .setAttribute("nrbezeichnung");
             break;
           case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-            ((BuchungsartSearchInput) buchungsart).setAttribute("bezeichnungnr");
+            ((BuchungsartSearchInput) buchungsart)
+                .setAttribute("bezeichnungnr");
             break;
           default:
             ((BuchungsartSearchInput) buchungsart).setAttribute("bezeichnung");

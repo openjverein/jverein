@@ -62,12 +62,12 @@ public class JahresabschlussImpl extends AbstractDBObject
       if (hasBuchungenOhneBuchungsart())
       {
         throw new ApplicationException(
-            "Achtung! Es existieren noch Buchungen ohne Buchungsart. Kein Abschluss möglich!");
+            "Achtung! Es existieren noch Buchungen ohne Buchungsart. Kein Abschluss mÃ¶glich!");
       }
       if (getName() == null || getName().length() == 0)
       {
         throw new ApplicationException(
-            "Name des Verantwortlichen für den Abschluss fehlt");
+            "Name des Verantwortlichen fÃ¼r den Abschluss fehlt");
       }
       Konto k = (Konto) Einstellungen.getDBService().createObject(Konto.class,
           null);
@@ -84,14 +84,14 @@ public class JahresabschlussImpl extends AbstractDBObject
         if (!anfangsbestaende.hasNext())
         {
           throw new ApplicationException(
-              String.format("Für Konto %s %s fehlt der Anfangsbestand.",
+              String.format("FÃ¼r Konto %s %s fehlt der Anfangsbestand.",
                   k1.getNummer(), k1.getBezeichnung()));
         }
       }
     }
     catch (ParseException e)
     {
-      throw new ApplicationException("Ungültiges von-Datum");
+      throw new ApplicationException("UngÃ¼ltiges von-Datum");
     }
     catch (RemoteException e)
     {

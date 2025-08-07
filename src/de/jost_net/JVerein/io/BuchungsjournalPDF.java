@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.rmi.RemoteException;
 import java.util.TreeMap;
 
 import com.itextpdf.text.BaseColor;
@@ -25,6 +26,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -38,8 +40,7 @@ public class BuchungsjournalPDF
 {
 
   public BuchungsjournalPDF(BuchungQuery query, final File file,
-      final TreeMap<String, String> params)
-      throws ApplicationException
+      final TreeMap<String, String> params) throws ApplicationException
   {
     try
     {
@@ -62,8 +63,9 @@ public class BuchungsjournalPDF
         reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT);
         if (b.getAuszugsnummer() != null)
         {
-          reporter.addColumn(b.getAuszugsnummer() + "/"
-              + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
+          reporter.addColumn(
+              b.getAuszugsnummer() + "/"
+                  + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
               Element.ALIGN_LEFT);
         }
         else
@@ -74,7 +76,8 @@ public class BuchungsjournalPDF
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         String buklaString = "-: ";
         String buaString = "--";
-        if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
         {
           if (b.getBuchungsklasseId() != null)
           {
@@ -96,6 +99,11 @@ public class BuchungsjournalPDF
         }
         reporter.addColumn(buklaString + buaString, Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+        {
+          reporter.addColumn(
+              b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        }
         if (b.getBuchungsart() != null)
         {
           int buchungsartart = b.getBuchungsart().getArt();
@@ -174,7 +182,8 @@ public class BuchungsjournalPDF
     }
   }
 
-  private void createTableHeader(Reporter reporter) throws DocumentException
+  private void createTableHeader(Reporter reporter)
+      throws DocumentException, RemoteException
   {
     reporter.addHeaderColumn("Nr", Element.ALIGN_RIGHT, 20,
         BaseColor.LIGHT_GRAY);
@@ -192,6 +201,11 @@ public class BuchungsjournalPDF
         Element.ALIGN_CENTER, 70, BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 30,
+          BaseColor.LIGHT_GRAY);
+    }
     reporter.createHeader();
   }
 }

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungAutoNeuControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -37,20 +38,21 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
 
     SpendenbescheinigungAutoNeuControl control = new SpendenbescheinigungAutoNeuControl(
         this);
-    
-    InfoPanel   info = new InfoPanel();
+
+    InfoPanel info = new InfoPanel();
     info.setTitle("Info");
     info.setIcon("gtk-info.png");
-    double betrag = Einstellungen.getEinstellung().getSpendenbescheinigungminbetrag();
+    double betrag = (Double) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
     if (betrag > 0.01)
     {
       info.setText(String.format(
-          "Es wurden nur Mitglieder ber¸cksichtigt, bei denen Strasse, "
+          "Es wurden nur Mitglieder ber√ºcksichtigt, bei denen Strasse, "
               + "PLZ und Ort eingetragen sind." + '\n'
               + "Auch wurden nur Spendenbescheinigungen "
-              + "generiert deren Betrag grˆﬂer oder gleich %s Euro ist.\n\n"
+              + "generiert deren Betrag gr√∂√üer oder gleich %s Euro ist.\n\n"
               + "Um eine neue Spende zu erstellen muss die Buchung einer Buchungsart mit Spende zugeordnet sein.\n"
-              + "Auﬂerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).",
+              + "Au√üerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).",
           betrag));
       info.setComment(
           "Siehe Administration->Einstellungen->Spendenbescheinigungen->Mindestbetrag");
@@ -58,10 +60,10 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     else
     {
       info.setText(
-          "Es wurden nur Mitglieder ber¸cksichtigt, bei denen Strasse, "
+          "Es wurden nur Mitglieder ber√ºcksichtigt, bei denen Strasse, "
               + "PLZ und Ort eingetragen sind.\n\n"
               + "Um eine neue Spende zu erstellen muss die Buchung einer Buchungsart mit Spende zugeordnet sein.\n"
-              + "Auﬂerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).");
+              + "Au√üerdem muss sie einer Sollbuchung zugeordnet sein. (ggfs. bei Nicht-Mitglieder Spender anlegen).");
     }
     info.paint(getParent());
     LabelGroup group1 = new LabelGroup(getParent(), "Filter");
@@ -71,11 +73,10 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group2.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Einzelbest‰tigung",
-        control.getFormular());
+    left.addLabelPair("Einzelbest√§tigung", control.getFormular());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Sammelbest‰tigung",
+    right.addLabelPair("Sammelbest√§tigung",
         control.getFormularSammelbestaetigung());
 
     control.getSpendenbescheinigungTree().paint(this.getParent());

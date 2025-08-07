@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -53,7 +55,7 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       if (getJVereinid() > 0)
       {
         throw new ApplicationException(
-            "Dieser Datensatz darf nicht gelöscht werden!");
+            "Dieser Datensatz darf nicht gelÃ¶scht werden!");
       }
     }
     catch (RemoteException e)
@@ -68,9 +70,25 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      if (getBezeichnungPlural() == null || getBezeichnungPlural().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung Plural eingeben!");
+      }
+      DBIterator<Mitgliedstyp> typIt = Einstellungen.getDBService()
+          .createList(Mitgliedstyp.class);
+      if (!this.isNewObject())
+      {
+        typIt.addFilter("id != ?", getID());
+      }
+      typIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (typIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
       }
     }
     catch (RemoteException e)

@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe, Leonardo Mörlein
+ * Copyright (c) by Heiner Jostkleigrewe, Leonardo MÃ¶rlein
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -24,17 +24,18 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.pseudo.PseudoIterator;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -132,7 +133,7 @@ public class SollbuchungPositionControl extends AbstractControl
     Date d = getPosition().getDatum();
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    this.datum.setText("Bitte Datum wÃ¤hlen");
     datum.setMandatory(true);
     return datum;
   }
@@ -145,7 +146,8 @@ public class SollbuchungPositionControl extends AbstractControl
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
         getPosition().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
 
     buchungsart.addListener(new Listener()
     {
@@ -185,13 +187,7 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       return steuer;
     }
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    it.addFilter("aktiv = true or id = ?",
-        (getPosition().getSteuer() == null ? 0
-            : getPosition().getSteuer().getID()));
-    steuer = new SelectInput(PseudoIterator.asList(it),
-        getPosition().getSteuer());
+    steuer = new SteuerInput(getPosition().getSteuer());
 
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
@@ -200,10 +196,10 @@ public class SollbuchungPositionControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
-    boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
     SollbuchungPosition pos = getPosition();
     pos.setDatum((Date) getDatum().getValue());
     pos.setZweck((String) getZweck().getValue());
@@ -238,14 +234,15 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       pos.setSteuer((Steuer) getSteuer().getValue());
     }
+    return pos;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      SollbuchungPosition pos = getPosition();
+      SollbuchungPosition pos = (SollbuchungPosition) prepareStore();
       pos.store();
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;

@@ -22,29 +22,21 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * N‰chstes F‰lligkeitsdatum eines Zusatzbetrages setzen.
+ * N√§chstes F√§lligkeitsdatum eines Zusatzbetrages setzen.
  */
 public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
 {
-
-  private TablePart table;
-
-  public ZusatzbetraegeNaechsteFaelligkeitAction(TablePart table)
-  {
-    this.table = table;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     if (context == null || !(context instanceof Zusatzbetrag))
     {
-      throw new ApplicationException("Kein Zusatzbetrag ausgew‰hlt");
+      throw new ApplicationException("Kein Zusatzbetrag ausgew√§hlt");
     }
     try
     {
@@ -54,8 +46,8 @@ public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("N‰chste F‰lligkeit setzen");
-      d.setText("Wollen Sie das n‰chste F‰lligkeitsdatum setzen?");
+      d.setTitle("N√§chste F√§lligkeit setzen");
+      d.setText("Wollen Sie das n√§chste F√§lligkeitsdatum setzen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -65,20 +57,18 @@ public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
       catch (Exception e)
       {
         Logger.error(
-            "Fehler beim Setzen des n‰chsten F‰lligkeitsdatums des Zusatzbetrages",
+            "Fehler beim Setzen des n√§chsten F√§lligkeitsdatums des Zusatzbetrages",
             e);
         return;
       }
       z.naechsteFaelligkeit();
-
-      int ind = table.removeItem(z);
       z.store();
-      table.addItem(z, ind);
-      GUI.getStatusBar().setSuccessText("F‰lligkeitsdatum gesetzt.");
+
+      GUI.getStatusBar().setSuccessText("F√§lligkeitsdatum gesetzt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Zur¸cksetzen des Ausf¸hrungsdatums des Zusatzbetrages.";
+      String fehler = "Fehler beim Zur√ºcksetzen des Ausf√ºhrungsdatums des Zusatzbetrages.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

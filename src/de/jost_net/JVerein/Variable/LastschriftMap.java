@@ -55,7 +55,7 @@ public class LastschriftMap extends AbstractMap
       abrl.setDatum(new Date());
       abrl.setFaelligkeit(new Date());
       abrl.setID("123");
-      ls.setAdressierungszusatz("Hinterhaus bei Lieschen Müller");
+      ls.setAdressierungszusatz("Hinterhaus bei Lieschen MÃ¼ller");
       ls.setAnrede("Herrn");
       ls.setBetrag(123.45d);
       ls.setBIC("XXXXXXXXXXX");
@@ -83,7 +83,8 @@ public class LastschriftMap extends AbstractMap
 
     map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
     map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
-    // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte Abrechnungsläufe
+    // Damit Pre-Notifications fÃ¼r mit Versionen bis 2.8.18 erstellte
+    // AbrechnungslÃ¤ufe
     // korrekt erstellt werden, werden beide Felder verwendet.
     if (ls.getMandatSequence().equals("FRST"))
     {
@@ -163,7 +164,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.VORNAME.getName(), "Willi");
     map.put(LastschriftVar.STRASSE.getName(), "Bahnhofstr. 22");
     map.put(LastschriftVar.ADRESSSIERUNGSZUSATZ.getName(),
-        "Hinterhof bei Müller");
+        "Hinterhof bei MÃ¼ller");
     map.put(LastschriftVar.PLZ.getName(), "12345");
     map.put(LastschriftVar.ORT.getName(), "Testenhausen");
     map.put(LastschriftVar.STAAT.getName(), "Deutschland");
@@ -176,7 +177,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
     map.put(LastschriftVar.BETRAG.getName(), "23,80");
     map.put(LastschriftVar.EMPFAENGER.getName(),
-        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     return map;
   }
 }

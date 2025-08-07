@@ -19,8 +19,8 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schlüssel Einstellung.SEPAMandatIDSource Diese Klasse hilft beim Einstellen
- * wie die MandatsID für SEPA Lastschriften erzeugt werden soll
+ * SchlÃ¼ssel Einstellung.SEPAMandatIDSource Diese Klasse hilft beim Einstellen
+ * wie die MandatsID fÃ¼r SEPA Lastschriften erzeugt werden soll
  */
 public class SepaMandatIdSource
 {

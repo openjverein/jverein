@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.Action;
@@ -45,7 +46,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   {
     super(list, action);
 
-    // ChangeListener f¸r die Summe der ausgew‰hlten Buchungen anh‰ngen.
+    // ChangeListener f√ºr die Summe der ausgew√§hlten Buchungen anh√§ngen.
     addSelectionListener(e -> {
       createFeatureEventContext(Event.REFRESH, ctx);
       Feature feature = this.getFeature(FeatureSummary.class);
@@ -55,17 +56,17 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       }
     });
   }
-  
+
   /**
-   * Belegt den Context mit dem anzuzeigenden Text.
-   * Ersetzt getSummary() welches deprecated ist.
+   * Belegt den Context mit dem anzuzeigenden Text. Ersetzt getSummary() welches
+   * deprecated ist.
    */
   @SuppressWarnings("unchecked")
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class,e))
+    if (this.hasEvent(FeatureSummary.class, e))
     {
       double sumBetrag = 0.0;
       double sumNetto = 0d;
@@ -74,7 +75,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       {
         @SuppressWarnings("rawtypes")
         List l = this.getItems();
-        summary = new String(l.size() + " Datens‰tze");
+        summary = new String(l.size() + " Datens√§tze");
         for (int i = 0; i < l.size(); i++)
         {
           Buchung b = (Buchung) l.get(i);
@@ -84,7 +85,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
-        if (Einstellungen.getEinstellung().getOptiert())
+        if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
         {
           summary += " / " + "Gesamtnetto:" + " "
               + Einstellungen.DECIMALFORMAT.format(sumNetto) + " "
@@ -92,9 +93,9 @@ public class BuchungListTablePart extends AutoUpdateTablePart
         }
         if (saldo != null)
         {
-        summary += " / " + "Kontosaldo:" + " "
-            + Einstellungen.DECIMALFORMAT.format(saldo) + " "
-            + Einstellungen.CURRENCY;
+          summary += " / " + "Kontosaldo:" + " "
+              + Einstellungen.DECIMALFORMAT.format(saldo) + " "
+              + Einstellungen.CURRENCY;
         }
         Object o = getSelection();
         if (o != null && o instanceof Buchung[])
@@ -109,7 +110,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
           summary += " / " + "Summe Auswahl: "
               + Einstellungen.DECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
-          if (Einstellungen.getEinstellung().getOptiert())
+          if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             summary += " / " + "Auswahl Netto:" + " "
                 + Einstellungen.DECIMALFORMAT.format(netto) + " "
@@ -121,7 +122,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
       {
         // nichts tun
       }
-      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT,summary);
+      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
     return ctx;
   }

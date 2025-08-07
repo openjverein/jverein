@@ -193,7 +193,7 @@ public class CSVConnection
     {
       Logger.error("Fehler", e);
       throw new SQLException(
-          "Konnte Anzahl Daten nicht ermitteln - Häufiger Grund eine Leerstelle vor/nach einen Semikolon, siehe Stacktrace wegen der Zeile");
+          "Konnte Anzahl Daten nicht ermitteln - HÃ¤ufiger Grund eine Leerstelle vor/nach einen Semikolon, siehe Stacktrace wegen der Zeile");
     }
     return result;
   }
@@ -208,7 +208,7 @@ public class CSVConnection
   {
     Properties props = new java.util.Properties();
     props.put("separator", (Character.valueOf(seperator)).toString()); // separator
-                                                                   // is a bar
+    // is a bar
     props.put("suppressHeaders", "false"); // first line contains data
     props.put("charset", "ISO-8859-1");
     int pos = csvFile.getName().lastIndexOf('.');

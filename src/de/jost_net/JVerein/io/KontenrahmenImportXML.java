@@ -196,9 +196,9 @@ public class KontenrahmenImportXML implements Importer
             buchungsart.store();
           }
         }
-    }
+      }
 
-  }
+    }
     catch (Exception e)
     {
       DBTransaction.rollback();

@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
@@ -98,7 +99,7 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     }
     if (getDatum().after(new Date()))
     {
-      throw new ApplicationException("Keine Anfangsbestände in der Zukunft");
+      throw new ApplicationException("Keine AnfangsbestÃ¤nde in der Zukunft");
     }
     Jahresabschluss ja = getJahresabschluss();
     if (ja != null)
@@ -112,7 +113,8 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     try
     {
       Date beginngeschaeftsjahr = new JVDateFormatTTMMJJJJ().parse(
-          Einstellungen.getEinstellung().getBeginnGeschaeftsjahr() + "2009");
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + "2009");
       DBIterator<Anfangsbestand> it = Einstellungen.getDBService()
           .createList(Anfangsbestand.class);
       it.addFilter("konto = ?", new Object[] { getKonto().getID() });
@@ -141,12 +143,12 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
         return;
       }
       throw new ApplicationException(
-          "Tag und Monat müssen mit dem Beginn des Geschäftsjahres übereinstimmen.");
+          "Tag und Monat mÃ¼ssen mit dem Beginn des GeschÃ¤ftsjahres Ã¼bereinstimmen.");
     }
     catch (ParseException e)
     {
       throw new ApplicationException(
-          "Beginn des Geschäftsjahres ist in den Einstellungen nicht gesetzt.");
+          "Beginn des GeschÃ¤ftsjahres ist in den Einstellungen nicht gesetzt.");
     }
   }
 

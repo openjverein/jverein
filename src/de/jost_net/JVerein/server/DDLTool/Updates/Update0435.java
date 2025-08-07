@@ -32,7 +32,7 @@ public class Update0435 extends AbstractDDLUpdate
   {
     execute(addColumn("einstellung", new Column("unterschriftdrucken",
         COLTYPE.BOOLEAN, 0, null, false, false)));
-    execute(addColumn("einstellung", new Column("unterschrift",
-        COLTYPE.LONGBLOB, 0, null, false, false)));
+    execute(addColumn("einstellung",
+        new Column("unterschrift", COLTYPE.LONGBLOB, 0, null, false, false)));
   }
 }

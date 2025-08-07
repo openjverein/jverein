@@ -36,12 +36,14 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -50,6 +52,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -59,7 +62,7 @@ import de.willuhn.util.ProgressMonitor;
 
 /**
  * Versand von Mails mit Anhang aus einer Zip-Datei an die Mitglieder. Wird z.
- * B. für den Rechnungsversand gebraucht<br>
+ * B. fÃ¼r den Rechnungsversand gebraucht<br>
  */
 public class ZipMailer
 {
@@ -67,8 +70,8 @@ public class ZipMailer
    * Sendet die Mail mit den Dateien aus dem Zip an alle Empfnger
    * 
    * @param zipfile
-   *          das Archiv mit allen PDFs (o.ä.) die an die Mitglieder verschickt
-   *          werden sollen. Die Dateien darin müssen den Dateinamen in der Form
+   *          das Archiv mit allen PDFs (o.Ã¤.) die an die Mitglieder verschickt
+   *          werden sollen. Die Dateien darin mÃ¼ssen den Dateinamen in der Form
    *          MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf haben.
    * @param betreff
    *          Betreff der Mail
@@ -79,20 +82,20 @@ public class ZipMailer
   public ZipMailer(final File zipfile, final String betreff, String text)
       throws RemoteException
   {
-    // ggf. Signatur anhängen
+    // ggf. Signatur anhÃ¤ngen
     if (text.toLowerCase().contains("<html")
         && text.toLowerCase().contains("</body"))
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
       text = text + "<hr />"
-          + Einstellungen.getEinstellung().getMailSignatur(false);
+          + (String) Einstellungen.getEinstellung(Property.MAILSIGNATUR);
       text = text + "</body></html>";
     }
     else
     {
-      // MailSignatur mit Separator einfach anhängen
-      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+      // MailSignatur mit Separator einfach anhÃ¤ngen
+      text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;
 
@@ -106,17 +109,18 @@ public class ZipMailer
         try (ZipFile zip = new ZipFile(zipfile))
         {
           MailSender sender = new MailSender(
-              Einstellungen.getEinstellung().getSmtpServer(),
-              Einstellungen.getEinstellung().getSmtpPort(),
-              Einstellungen.getEinstellung().getSmtpAuthUser(),
-              Einstellungen.getEinstellung().getSmtpAuthPwd(),
-              Einstellungen.getEinstellung().getSmtpFromAddress(),
-              Einstellungen.getEinstellung().getSmtpFromAnzeigename(),
-              Einstellungen.getEinstellung().getMailAlwaysBcc(),
-              Einstellungen.getEinstellung().getMailAlwaysCc(),
-              Einstellungen.getEinstellung().getSmtpSsl(),
-              Einstellungen.getEinstellung().getSmtpStarttls(),
-              Einstellungen.getEinstellung().getMailVerzoegerung(),
+              (String) Einstellungen.getEinstellung(Property.SMTPSERVER),
+              (String) Einstellungen.getEinstellung(Property.SMTPPORT),
+              (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
+              Einstellungen.getSmtpAuthPwd(),
+              (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
+              (String) Einstellungen
+                  .getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSTARTTLS),
+              (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG),
               Einstellungen.getImapCopyData());
 
           Velocity.init();
@@ -130,7 +134,7 @@ public class ZipMailer
           for (@SuppressWarnings("rawtypes")
           Enumeration e = zip.entries(); e.hasMoreElements();)
           {
-            if(isInterrupted())
+            if (isInterrupted())
             {
               monitor.setStatus(ProgressMonitor.STATUS_ERROR);
               monitor.setStatusText("Mailversand abgebrochen");
@@ -153,7 +157,7 @@ public class ZipMailer
               if (teile.length != 5)
               {
                 throw new ApplicationException(
-                    "Ungültiger Dateiname: " + currentEntry);
+                    "UngÃ¼ltiger Dateiname: " + currentEntry);
               }
 
               String id = teile[0];
@@ -162,36 +166,41 @@ public class ZipMailer
               String mail = teile[3];
               String dateiname = teile[4];
 
-              // Mitglied Map hinzufügen
+              Rechnung re = null;
+              Spendenbescheinigung spb = null;
+
+              // Mitglied Map hinzufÃ¼gen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               map = new MitgliedMap().getMap(m, map);
 
               switch (art.toLowerCase().trim())
-                {
-                  case "rechnung":
-                    Rechnung re = (Rechnung) Einstellungen.getDBService()
-                        .createObject(Rechnung.class, artId);
-                    map = new RechnungMap().getMap(re, map);
-                    break;
-                  case "spendenbescheinigung":
-                    Spendenbescheinigung spb = (Spendenbescheinigung) Einstellungen
-                        .getDBService()
-                        .createObject(Spendenbescheinigung.class, artId);
-                    map = new SpendenbescheinigungMap().getMap(spb, map);
-                    break;
-                  case "lastschrift":
-                    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
-                        .createObject(Lastschrift.class, artId);
-                    map = new LastschriftMap().getMap(ls, map);
-                    break;
-                case "":
-                  // Keine Art verwendet
+              {
+                case "rechnung":
+                case "mahnung":
+                  re = (Rechnung) Einstellungen.getDBService()
+                      .createObject(Rechnung.class, artId);
+                  map = new RechnungMap().getMap(re, map);
                   break;
-                  default:
-                    Logger.error("Zipmailer Map nicht implementiert: " + art);
-                    break;
-                }
+                case "spendenbescheinigung":
+                  spb = (Spendenbescheinigung) Einstellungen.getDBService()
+                      .createObject(Spendenbescheinigung.class, artId);
+                  map = new SpendenbescheinigungMap().getMap(spb, map);
+                  break;
+                case "lastschrift":
+                  Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                      .createObject(Lastschrift.class, artId);
+                  map = new LastschriftMap().getMap(ls, map);
+                  break;
+                case "":
+                case "freiesformular":
+                case "kontoauszug":
+                  // Keine eigene Map verwendet
+                  break;
+                default:
+                  Logger.error("Zipmailer Map nicht implementiert: " + art);
+                  break;
+              }
               VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
@@ -208,10 +217,40 @@ public class ZipMailer
               in.close();
               ma.setAnhang(bos.toByteArray());
 
-              StringWriter wdateiname = new StringWriter();
-              Velocity.evaluate(context, wdateiname, "LOG", dateiname);
-
-              ma.setDateiname(wdateiname.toString());
+              String finaldateiname = "";
+              switch (art.toLowerCase().trim())
+              {
+                case "rechnung":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                  break;
+                case "mahnung":
+                  finaldateiname = VorlageUtil
+                      .getName(VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
+                  break;
+                case "spendenbescheinigung":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
+                      m) + ".pdf";
+                  break;
+                case "freiesformular":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                      dateiname.substring(0, dateiname.lastIndexOf('.')), m)
+                      + ".pdf";
+                  break;
+                case "kontoauszug":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m)
+                      + ".pdf";
+                  break;
+                default:
+                  StringWriter wdateiname = new StringWriter();
+                  Velocity.evaluate(context, wdateiname, "LOG", dateiname);
+                  finaldateiname = wdateiname.toString();
+                  break;
+              }
+              ma.setDateiname(finaldateiname);
               TreeSet<MailAnhang> anhang = new TreeSet<>();
               anhang.add(ma);
 
@@ -237,22 +276,23 @@ public class ZipMailer
                   monitor.log(mail + " - " + ae.getMessage());
                 }
                 sentCount++;
-                      
+
                 Mail ml = (Mail) Einstellungen.getDBService()
-                        .createObject(Mail.class, null);
+                    .createObject(Mail.class, null);
                 ml.setBetreff(wtext1.toString());
                 ml.setTxt(wtext2.toString());
                 ml.setBearbeitung(new Timestamp(new Date().getTime()));
                 ml.setVersand(new Timestamp(new Date().getTime()));
                 ml.store();
-                
-                MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
-                        .createObject(MailEmpfaenger.class, null);
+
+                MailEmpfaenger me = (MailEmpfaenger) Einstellungen
+                    .getDBService().createObject(MailEmpfaenger.class, null);
                 me.setMitglied(m);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
-                if (Einstellungen.getEinstellung().getAnhangSpeichern())
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.ANHANGSPEICHERN))
                 {
                   ma.setMail(ml);
                   ma.store();

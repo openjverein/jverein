@@ -36,7 +36,7 @@ public class JubilaeumsExportAction implements Action
   {
     try
     {
-      ExportDialog d = new ExportDialog(new Object[] { context},
+      ExportDialog d = new ExportDialog(new Object[] { context },
           Mitglied.class, DokumentationUtil.JUBILAEEN);
       d.open();
     }
@@ -52,8 +52,8 @@ public class JubilaeumsExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim exportieren der Mitglieder-Jubil‰en");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim exportieren der Mitglieder-Jubil√§en");
     }
   }
 

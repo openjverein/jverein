@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -48,7 +49,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 {
 
   private AbstractInput buchungsarten = null;
-  
+
   private SelectInput buchungsklassen = null;
 
   private CheckboxInput ueberschreiben = null;
@@ -56,11 +57,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   private LabelInput status = null;
 
   private Buchungsart buchungsart = null;
-  
+
   private Buchungsklasse buchungsklasse = null;
 
   private boolean ueberschr;
-  
+
   private boolean abort = true;
 
   /**
@@ -78,22 +79,23 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
     }
-    group.addLabelPair("Buchungsarten überschreiben", getUeberschreiben());
+    group.addLabelPair("Buchungsarten Ã¼berschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Übernehmen", new Action()
+    buttons.addButton("Ãœbernehmen", new Action()
     {
       @Override
-      public void handleAction(Object context) 
+      public void handleAction(Object context)
       {
         if (buchungsarten.getValue() == null)
         {
-          status.setValue("Bitte Buchungsart auswählen");
+          status.setValue("Bitte Buchungsart auswÃ¤hlen");
           status.setColor(Color.ERROR);
           return;
         }
@@ -103,11 +105,12 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         }
         try
         {
-          if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
             if (buchungsklassen.getValue() == null)
             {
-              status.setValue("Bitte Buchungsklasse auswählen");
+              status.setValue("Bitte Buchungsklasse auswÃ¤hlen");
               status.setColor(Color.ERROR);
               return;
             }
@@ -164,7 +167,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     return buchungsart;
   }
-  
+
   public Buchungsklasse getBuchungsklasse()
   {
     return buchungsklasse;
@@ -174,7 +177,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   {
     return ueberschr;
   }
-  
+
   public boolean getAbort()
   {
     return abort;
@@ -186,9 +189,9 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return buchungsarten;
     }
-    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten, null,
-        buchungsarttyp.BUCHUNGSART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten,
+        null, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsarten.addListener(new Listener()
     {
       @Override
@@ -198,7 +201,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         {
           status.setValue("");
           if (buchungsklassen != null && buchungsklassen.getValue() == null)
-            buchungsklassen.setValue(((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
+            buchungsklassen.setValue(
+                ((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
         }
         catch (RemoteException e)
         {
@@ -208,15 +212,15 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     });
     return buchungsarten;
   }
-  
+
   private SelectInput getBuchungsklasseAuswahl() throws RemoteException
   {
     if (buchungsklassen != null)
     {
       return buchungsklassen;
     }
-    buchungsklassen = new BuchungsklasseInput().getBuchungsklasseInput(buchungsklassen,
-        null);
+    buchungsklassen = new BuchungsklasseInput()
+        .getBuchungsklasseInput(buchungsklassen, null);
     buchungsklassen.addListener(new Listener()
     {
       @Override

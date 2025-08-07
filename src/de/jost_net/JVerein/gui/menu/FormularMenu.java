@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.FormularDeleteAction;
 import de.jost_net.JVerein.gui.action.FormularDuplizierenAction;
 import de.jost_net.JVerein.gui.action.FormularExportAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -36,21 +37,17 @@ public class FormularMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Formulare.
    */
-  public FormularMenu(FormularControl control)
+  public FormularMenu(FormularControl control, JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(FormularDetailView.class),
-        "text-x-generic.png"));
+        new EditAction(FormularDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new FormularAnzeigeAction(),
-        "edit-copy.png"));
+        new FormularAnzeigeAction(), "edit-copy.png"));
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new FormularDuplizierenAction(control), "edit-copy.png"));
-    addItem(new CheckedSingleContextMenuItem("Löschen",
-        new FormularDeleteAction(),
-        "user-trash-full.png"));
-    addItem(
-        new CheckedContextMenuItem("Exportieren",
-            new FormularExportAction(), "document-save.png"));
+    addItem(new CheckedSingleContextMenuItem("LÃ¶schen",
+        new FormularDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Exportieren",
+        new FormularExportAction(), "document-save.png"));
   }
 }

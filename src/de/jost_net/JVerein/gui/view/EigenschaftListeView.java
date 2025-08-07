@@ -41,8 +41,7 @@ public class EigenschaftListeView extends AbstractView
         DokumentationUtil.EIGENSCHAFT, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(EigenschaftDetailView.class, Eigenschaft.class), null,
-        false,
-        "document-new.png");
+        false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

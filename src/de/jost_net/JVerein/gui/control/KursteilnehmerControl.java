@@ -30,17 +30,21 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -54,10 +58,8 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
@@ -67,8 +69,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class KursteilnehmerControl extends FilterControl
-    implements Savable
+public class KursteilnehmerControl extends FilterControl implements Savable
 {
 
   private PersonenartInput personenart;
@@ -89,7 +90,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private TextInput ort;
 
-  private SelectInput staat;
+  private StaatSearchInput staat;
 
   private EmailInput email;
 
@@ -109,7 +110,7 @@ public class KursteilnehmerControl extends FilterControl
 
   private Kursteilnehmer ktn;
 
-  private TablePart part;
+  private JVereinTablePart part;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -211,7 +212,7 @@ public class KursteilnehmerControl extends FilterControl
       return strasse;
     }
     strasse = new TextInput(getKursteilnehmer().getStrasse(), 40);
-    strasse.setName("Straﬂe");
+    strasse.setName("Stra√üe");
     return strasse;
   }
 
@@ -249,7 +250,7 @@ public class KursteilnehmerControl extends FilterControl
     return ort;
   }
 
-  public SelectInput getStaat() throws RemoteException
+  public StaatSearchInput getStaat() throws RemoteException
   {
     if (staat != null)
     {
@@ -263,9 +264,9 @@ public class KursteilnehmerControl extends FilterControl
           .setErrorText("Konnte Staat \"" + getKursteilnehmer().getStaat()
               + "\" nicht finden, bitte anpassen.");
     }
-    staat = new SelectInput(Staat.values(),
-        Staat.getByKey(getKursteilnehmer().getStaatCode()));
-    staat.setPleaseChoose("Nicht gesetzt");
+    staat = new StaatSearchInput();
+    staat.setSearchString("Zum Suchen tippen");
+    staat.setValue(Staat.getByKey(getKursteilnehmer().getStaatCode()));
     staat.setName("Staat");
     return staat;
   }
@@ -307,7 +308,7 @@ public class KursteilnehmerControl extends FilterControl
     this.mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.mandatdatum.setTitle("Datum des Mandats");
     this.mandatdatum.setName("Datum des Mandats");
-    this.mandatdatum.setText("Bitte Datum des Mandats w‰hlen");
+    this.mandatdatum.setText("Bitte Datum des Mandats w√§hlen");
     this.mandatdatum.setName("Datum des Mandats");
     this.mandatdatum.setMandatory(true);
     return mandatdatum;
@@ -331,7 +332,8 @@ public class KursteilnehmerControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
+    iban = new IBANInput(
+        HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
     iban.setName("IBAN");
     iban.setMandatory(true);
     return iban;
@@ -359,8 +361,9 @@ public class KursteilnehmerControl extends FilterControl
     Date d = getKursteilnehmer().getGeburtsdatum();
     this.geburtsdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.geburtsdatum.setTitle("Geburtsdatum");
-    this.geburtsdatum.setText("Bitte Geburtsdatum w‰hlen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    this.geburtsdatum.setText("Bitte Geburtsdatum w√§hlen");
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       this.geburtsdatum.setMandatory(true);
     }
@@ -375,8 +378,9 @@ public class KursteilnehmerControl extends FilterControl
     }
     geschlecht = new GeschlechtInput(getKursteilnehmer().getGeschlecht());
     geschlecht.setName("Geschlecht");
-    geschlecht.setPleaseChoose("Bitte ausw‰hlen");
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    geschlecht.setPleaseChoose("Bitte ausw√§hlen");
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       geschlecht.setMandatory(true);
     }
@@ -390,12 +394,11 @@ public class KursteilnehmerControl extends FilterControl
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new TablePart(kursteilnehmer,
-        new EditAction(KursteilnehmerDetailView.class));
+    part = new JVereinTablePart(kursteilnehmer, null);
 
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
-    part.addColumn("Straﬂe", "strasse");
+    part.addColumn("Stra√üe", "strasse");
     part.addColumn("PLZ", "plz");
     part.addColumn("Ort", "ort");
     part.addColumn("Verwendungszweck", "vzweck1");
@@ -410,10 +413,12 @@ public class KursteilnehmerControl extends FilterControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     part.setContextMenu(new KursteilnehmerMenu(part));
     part.setMulti(true);
-
+    part.setAction(new EditAction(KursteilnehmerDetailView.class, part));
+    VorZurueckControl.setObjektListe(null, null);
     return part;
   }
 
+  @Override
   public void TabRefresh()
   {
 
@@ -454,7 +459,7 @@ public class KursteilnehmerControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Kursteilnehmer k = getKursteilnehmer();
     String p = (String) getPersonenart().getValue();
@@ -493,15 +498,15 @@ public class KursteilnehmerControl extends FilterControl
     {
       k.setEingabedatum();
     }
+    return k;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Kursteilnehmer k = getKursteilnehmer();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -514,15 +519,15 @@ public class KursteilnehmerControl extends FilterControl
   private void starteAuswertung()
   {
     // Alle Kursteilnehmer lesen
-    
+
     try
     {
       saveFilterSettings();
       String subtitle = "";
       final DBIterator<Kursteilnehmer> list = getIterator();
-      
+
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei w‰hlen.");
+      fd.setText("Ausgabedatei w√§hlen.");
 
       String path = settings.getString("lastdir",
           System.getProperty("user.home"));
@@ -531,7 +536,8 @@ public class KursteilnehmerControl extends FilterControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("kursteilnehmer", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
 
       final String s = fd.open();
 
@@ -632,7 +638,7 @@ public class KursteilnehmerControl extends FilterControl
       if (tmpSuchtext.length() > 0)
       {
         kursteilnehmer.addFilter("(lower(vzweck1) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
@@ -645,12 +651,14 @@ public class KursteilnehmerControl extends FilterControl
       kursteilnehmer.addFilter("eingabedatum <= ?",
           new Object[] { (Date) getEingabedatumbis().getValue() });
     }
-    if (isAbbuchungsdatumvonAktiv() && getAbbuchungsdatumvon().getValue() != null)
+    if (isAbbuchungsdatumvonAktiv()
+        && getAbbuchungsdatumvon().getValue() != null)
     {
       kursteilnehmer.addFilter("abbudatum >= ?",
           new Object[] { (Date) getAbbuchungsdatumvon().getValue() });
     }
-    if (isAbbuchungsdatumbisAktiv() && getAbbuchungsdatumbis().getValue() != null)
+    if (isAbbuchungsdatumbisAktiv()
+        && getAbbuchungsdatumbis().getValue() != null)
     {
       kursteilnehmer.addFilter("abbudatum <= ?",
           new Object[] { (Date) getAbbuchungsdatumbis().getValue() });

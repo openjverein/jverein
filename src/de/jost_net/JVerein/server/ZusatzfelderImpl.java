@@ -216,8 +216,7 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
         case Datentyp.GANZZAHL:
           return getFeldGanzzahl() + "";
         case Datentyp.JANEIN:
-          return getFeldJaNein() ? "ja"
-              : "nein";
+          return getFeldJaNein() ? "ja" : "nein";
         case Datentyp.WAEHRUNG:
           if (getFeldWaehrung() != null)
           {
@@ -230,7 +229,7 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
         case Datentyp.ZEICHENFOLGE:
           return getFeld();
         default:
-          return "ungültiger Datentyp";
+          return "ungÃ¼ltiger Datentyp";
       }
     }
     catch (RemoteException e)

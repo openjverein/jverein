@@ -31,6 +31,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -51,33 +52,42 @@ public class BuchungQuery
   public String text;
 
   public String betrag;
-  
+
   private String mitglied;
 
   private List<Buchung> ergebnis;
 
   private Boolean hasMitglied;
-  
+
   private boolean geldkonto;
-  
+
+  private Steuer steuer;
+
   private HashMap<String, String> sortValues = new HashMap<String, String>();
 
-  private void SortHashMap() {
-	  sortValues.put("ORDER_ID","order by id");
-	  sortValues.put("ORDER_DATUM","order by datum");
-	  sortValues.put("ORDER_DATUM_NAME","order by datum, name");
-	  sortValues.put("ORDER_DATUM_ID","order by datum, id");
-	  sortValues.put("ORDER_DATUM_ID_NAME","order by datum, id, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER","order by datum, auszugsnummer");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME","order by datum, auszugsnummer, name");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER","order by datum, blattnummer");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME","order by datum, blattnummer, name");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID","order by datum, auszugsnummer, id");
-	  sortValues.put("ORDER_DATUM_BLATTNUMMER_ID","order by datum, blattnummer, id");
-	  sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID","order by datum, auszugsnummer, blattnummer, id");
-	  sortValues.put("DEFAULT","order by datum");
+  private void SortHashMap()
+  {
+    sortValues.put("ORDER_ID", "order by id");
+    sortValues.put("ORDER_DATUM", "order by datum");
+    sortValues.put("ORDER_DATUM_NAME", "order by datum, name");
+    sortValues.put("ORDER_DATUM_ID", "order by datum, id");
+    sortValues.put("ORDER_DATUM_ID_NAME", "order by datum, id, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER",
+        "order by datum, auszugsnummer");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_NAME",
+        "order by datum, auszugsnummer, name");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER", "order by datum, blattnummer");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_NAME",
+        "order by datum, blattnummer, name");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_ID",
+        "order by datum, auszugsnummer, id");
+    sortValues.put("ORDER_DATUM_BLATTNUMMER_ID",
+        "order by datum, blattnummer, id");
+    sortValues.put("ORDER_DATUM_AUSZUGSNUMMER_BLATTNUMMER_ID",
+        "order by datum, auszugsnummer, blattnummer, id");
+    sortValues.put("DEFAULT", "order by datum");
   }
-  
+
   public String ordername = null;
 
   private SplitFilter split;
@@ -87,7 +97,7 @@ public class BuchungQuery
   public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
       Buchungsart buchungsart, Projekt projekt, String text, String betrag,
       Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split, Boolean ungeprueft)
+      SplitFilter split, Boolean ungeprueft, Steuer steuer)
   {
     this.datumvon = datumvon;
     this.datumbis = datumbis;
@@ -101,28 +111,34 @@ public class BuchungQuery
     this.mitglied = mitglied;
     this.split = split;
     this.ungeprueft = ungeprueft;
+    this.steuer = steuer;
   }
-  
-  public String getOrder(String value) {
-	  SortHashMap();
-	  String newvalue = null;
-	  if ( value == null ) {
-		  return sortValues.get("DEFAULT");
-	  } else {
-		  newvalue = value.replaceAll(", ", "_");
-		  newvalue = newvalue.toUpperCase();
-		  newvalue = "ORDER_" + newvalue;
-          return sortValues.get(newvalue);
-	  }
-  }
-  
-  public void setOrdername(String value)
+
+  public String getOrder(String value)
   {
-    if ( value != null ) {
-    	ordername = value;
+    SortHashMap();
+    String newvalue = null;
+    if (value == null)
+    {
+      return sortValues.get("DEFAULT");
+    }
+    else
+    {
+      newvalue = value.replaceAll(", ", "_");
+      newvalue = newvalue.toUpperCase();
+      newvalue = "ORDER_" + newvalue;
+      return sortValues.get(newvalue);
     }
   }
-  
+
+  public void setOrdername(String value)
+  {
+    if (value != null)
+    {
+      ordername = value;
+    }
+  }
+
   public Boolean getHasMitglied()
   {
     return hasMitglied;
@@ -168,7 +184,7 @@ public class BuchungQuery
   {
     final DBService service = Einstellungen.getDBService();
     DBIterator<Buchung> it = service.createList(Buchung.class);
-    
+
     if (mitglied != null && !mitglied.isEmpty())
     {
       String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
@@ -176,10 +192,11 @@ public class BuchungQuery
       it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
       it.join("mitglied");
       it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
-      it.addFilter("(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
+      it.addFilter(
+          "(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
           new Object[] { mitgliedsuche, mitgliedsuche });
     }
-    
+
     it.addFilter("buchung.datum >= ? ", datumvon);
     it.addFilter("buchung.datum <= ? ", datumbis);
 
@@ -191,10 +208,8 @@ public class BuchungQuery
     {
       it.join("konto");
       it.addFilter("konto.id = buchung.konto");
-      it.addFilter("kontoart = ?",
-          new Object[] { Kontoart.ANLAGE.getKey() });
+      it.addFilter("kontoart = ?", new Object[] { Kontoart.ANLAGE.getKey() });
     }
-
 
     if (buchungart != null)
     {
@@ -266,19 +281,19 @@ public class BuchungQuery
             it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSER:
+          case GRÃ–SSER:
           {
             it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
             break;
           }
-          case GRÖSSERGLEICH:
+          case GRÃ–SSERGLEICH:
           {
             it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
             break;
           }
           case BEREICH:
-            it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?", suchbetrag.getBetrag(),
-                suchbetrag.getBetrag2());
+            it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?",
+                suchbetrag.getBetrag(), suchbetrag.getBetrag2());
             break;
           case KEINE:
             break;
@@ -289,7 +304,8 @@ public class BuchungQuery
             it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
             break;
           case BETRAG:
-            it.addFilter("(buchung.betrag = ? OR buchung.betrag = ?)", suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
+            it.addFilter("(buchung.betrag = ? OR buchung.betrag = ?)",
+                suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
             break;
           default:
             break;
@@ -310,22 +326,35 @@ public class BuchungQuery
       }
       catch (Exception e)
       {
-        ;
+        
       }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
       it.addFilter(
           "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
-          + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
+              + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
           ttext, ttext, ttext, id);
+    }
+
+    if (steuer != null)
+    {
+      if (steuer.getID() == null)
+      {
+        it.addFilter("steuer is null");
+      }
+      else
+      {
+        it.addFilter("steuer = ? ", steuer.getID());
+      }
     }
 
     // 20220823: sbuer: Neue Sortierfelder
     SortHashMap();
     String orderString = getOrder(ordername);
-    // System.out.println("ordervalue : " + ordername + " ,orderString : " + orderString);
+    // System.out.println("ordervalue : " + ordername + " ,orderString : " +
+    // orderString);
     it.setOrder(orderString);
-    
+
     this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
     return ergebnis;
   }
@@ -337,7 +366,7 @@ public class BuchungQuery
         new JVDateFormatTTMMJJJJ().format(getDatumbis()));
     if (getKonto() != null)
     {
-      subtitle += " " + String.format("für Konto %s - %s",
+      subtitle += " " + String.format("fÃ¼r Konto %s - %s",
           getKonto().getNummer(), getKonto().getBezeichnung());
     }
     if (getProjekt() != null)

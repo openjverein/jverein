@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -61,11 +62,11 @@ import de.willuhn.util.ProgressMonitor;
 public class AbrechnungSEPAControl extends AbstractControl
 {
 
-  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
+  private static String CONFIRM_TITEL = "SEPA-Check temporÃ¤r deaktivieren";
 
-  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
-      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
-      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
+  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muÃŸ ein gÃ¼ltiges SEPA-Mandat vorliegen.\n"
+      + "Wenn das Mandat Ã¤lter als 3 Jahre ist, mÃ¼ssen in den letzten 3 Jahren Lastschriften durchgefÃ¼hrt worden sein.\n"
+      + "WÃ¤hlen Sie \"Ja\" nur, wenn diese Bedingungen fÃ¼r alle Mitglieder erfÃ¼llt sind.";
 
   private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
 
@@ -177,8 +178,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return stichtag;
     }
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag für die Abrechnung");
-    this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
+    this.stichtag.setTitle("Stichtag fÃ¼r die Abrechnung");
+    this.stichtag.setText("Bitte Stichtag fÃ¼r die Abrechnung wÃ¤hlen");
     return stichtag;
   }
 
@@ -191,12 +192,10 @@ public class AbrechnungSEPAControl extends AbstractControl
     Calendar cal = Calendar.getInstance();
     Bankarbeitstage bat = new Bankarbeitstage();
     cal = bat.getCalendar(cal,
-        1 + Einstellungen.getEinstellung().getSEPADatumOffset());
-    this.faelligkeit = new DateInput(cal.getTime(),
-        new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit");
-    this.faelligkeit.setText(
-        "Bitte Fälligkeitsdatum wählen");
+        1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
+    this.faelligkeit = new DateInput(cal.getTime(), new JVDateFormatTTMMJJJJ());
+    this.faelligkeit.setTitle("FÃ¤lligkeit");
+    this.faelligkeit.setText("Bitte FÃ¤lligkeitsdatum wÃ¤hlen");
     faelligkeit.addListener(event -> {
       if (event.type != SWT.Selection && event.type != SWT.FocusOut)
       {
@@ -219,7 +218,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
-    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
+    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wÃ¤hlen");
     this.vondatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
     return vondatum;
@@ -246,7 +245,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
-        .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
+        .setText("Bitte maximales Austrittsdatum fÃ¼r die Abrechnung wÃ¤hlen");
     this.bisdatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER);
     return bisdatum;
@@ -297,7 +296,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     kompakteabbuchung.addListener(new KompaktListener());
     return kompakteabbuchung;
   }
-  
+
   public CheckboxInput getSollbuchungenZusammenfassen()
   {
     if (sollbuchungenzusammenfassen != null)
@@ -310,27 +309,25 @@ public class AbrechnungSEPAControl extends AbstractControl
     return sollbuchungenzusammenfassen;
   }
 
-
   public CheckboxInput getRechnung()
   {
     if (rechnung != null)
     {
       return rechnung;
     }
-    rechnung = new CheckboxInput(
-        settings.getBoolean("rechnung", false));
+    rechnung = new CheckboxInput(settings.getBoolean("rechnung", false));
     rechnung.addListener(new RechnungListener());
     return rechnung;
   }
-  
+
   public FormularInput getRechnungFormular() throws RemoteException
   {
     if (rechnungsformular != null)
     {
       return rechnungsformular;
     }
-    rechnungsformular = new FormularInput(
-        FormularArt.RECHNUNG, settings.getString("rechnungsformular", ""));
+    rechnungsformular = new FormularInput(FormularArt.RECHNUNG,
+        settings.getString("rechnungsformular", ""));
     rechnungsformular.setEnabled(settings.getBoolean("rechnung", false));
     return rechnungsformular;
   }
@@ -346,7 +343,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
     return rechnungstext;
   }
-  
+
   public DateInput getRechnungsdatum()
   {
     if (rechnungsdatum != null)
@@ -380,7 +377,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       @Override
       public void handleEvent(Event event)
       {
-        // Bei temporär deaktivieren den User fragen
+        // Bei temporÃ¤r deaktivieren den User fragen
         if ((Boolean) sepacheck.getValue())
         {
           if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
@@ -458,8 +455,7 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private void doAbrechnung() throws ApplicationException, RemoteException
   {
-    settings.setAttribute("modus",
-        (Integer) modus.getValue());
+    settings.setAttribute("modus", (Integer) modus.getValue());
     settings.setAttribute("zahlungsgrund", (String) zahlungsgrund.getValue());
     if (zusatzbetrag != null)
     {
@@ -475,7 +471,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         (Boolean) kompakteabbuchung.getValue());
     settings.setAttribute("sollbuchungenzusammenfassen",
         (Boolean) sollbuchungenzusammenfassen.getValue());
-    if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
@@ -484,7 +480,8 @@ public class AbrechnungSEPAControl extends AbstractControl
               : ((Formular) rechnungsformular.getValue()).getID());
     }
     settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
-    Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe().getValue();
+    Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe()
+        .getValue();
     settings.setAttribute("abrechnungsausgabe", aa.getKey());
     Integer modus = null;
     try
@@ -498,7 +495,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     if (faelligkeit.getValue() == null)
     {
-      throw new ApplicationException("Fälligkeitsdatum fehlt");
+      throw new ApplicationException("FÃ¤lligkeitsdatum fehlt");
     }
     Date vondatum = null;
     if (stichtag.getValue() == null)
@@ -524,7 +521,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     if (aa == Abrechnungsausgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wählen.");
+      fd.setText("SEPA-Ausgabedatei wÃ¤hlen.");
       String path = settings.getString("lastdir.sepa",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -532,18 +529,20 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "XML").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "XML").get());
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
-        throw new ApplicationException("Keine Datei ausgewählt!");
+        throw new ApplicationException("Keine Datei ausgewÃ¤hlt!");
       }
       sepafilercur = new File(file);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
       settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
       try
       {
-        sepaVersion = Einstellungen.getEinstellung().getSepaVersion();
+        sepaVersion = SepaVersion
+            .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION));
       }
       catch (Exception e)
       {
@@ -551,13 +550,13 @@ public class AbrechnungSEPAControl extends AbstractControl
       }
     }
 
-    // PDF-Datei für Basislastschrift2PDF
+    // PDF-Datei fÃ¼r Basislastschrift2PDF
     String pdffileRCUR = null;
     final Boolean pdfprintb = (Boolean) sepaprint.getValue();
     if (pdfprintb)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("PDF-Ausgabedatei wählen");
+      fd.setText("PDF-Ausgabedatei wÃ¤hlen");
 
       String path = settings.getString("lastdir.pdf",
           System.getProperty("user.home"));
@@ -566,14 +565,15 @@ public class AbrechnungSEPAControl extends AbstractControl
         fd.setFilterPath(path);
       }
       fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          Einstellungen.getEinstellung().getDateinamenmuster(), "PDF").get());
+          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+          "PDF").get());
       pdffileRCUR = fd.open();
       if (pdffileRCUR == null)
       {
         return;
       }
       File file = new File(pdffileRCUR);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      // Wir merken uns noch das Verzeichnis fÃ¼rs nÃ¤chste mal
       settings.setAttribute("lastdir.pdf", file.getParent());
     }
 
@@ -581,7 +581,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       final AbrechnungSEPAParam abupar;
       try
       {
-        abupar = new AbrechnungSEPAParam(this, sepafilercur, sepaVersion, pdffileRCUR);
+        abupar = new AbrechnungSEPAParam(this, sepafilercur, sepaVersion,
+            pdffileRCUR);
       }
       catch (RemoteException e)
       {
@@ -597,13 +598,14 @@ public class AbrechnungSEPAControl extends AbstractControl
           try
           {
 
-            DBTransaction.starten();            
+            DBTransaction.starten();
             new AbrechnungSEPA(abupar, monitor, this);
             DBTransaction.commit();
 
             monitor.setPercentComplete(100);
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
-            GUI.getStatusBar().setSuccessText("Abrechnung durchgeführt" + abupar.getText());
+            GUI.getStatusBar()
+                .setSuccessText("Abrechnung durchgefÃ¼hrt" + abupar.getText());
 
           }
           catch (ApplicationException ae)
@@ -618,14 +620,19 @@ public class AbrechnungSEPAControl extends AbstractControl
             ApplicationException ae;
             if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
             {
-              Logger.error(String.format("error while creating %s", abupar.sepafileRCUR.getAbsolutePath()), e);
-              ae = new ApplicationException(String.format("Fehler beim Erstellen der Abbuchungsdatei: %s", abupar.sepafileRCUR.getAbsolutePath()), e);
-            } 
+              Logger.error(String.format("error while creating %s",
+                  abupar.sepafileRCUR.getAbsolutePath()), e);
+              ae = new ApplicationException(
+                  String.format("Fehler beim Erstellen der Abbuchungsdatei: %s",
+                      abupar.sepafileRCUR.getAbsolutePath()),
+                  e);
+            }
             else if (abupar.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
             {
               Logger.error("error while creating debit in Hibiscus", e);
-              ae = new ApplicationException("Fehler beim Erstellen der Hibiscus-Lastschrift", e);
-            } 
+              ae = new ApplicationException(
+                  "Fehler beim Erstellen der Hibiscus-Lastschrift", e);
+            }
             else
             {
               Logger.error("error during operation", e);

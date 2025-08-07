@@ -54,8 +54,8 @@ public class AnfangsbestandDetailAction implements Action
     {
       try
       {
-        a = (Anfangsbestand) Einstellungen.getDBService().createObject(
-            Anfangsbestand.class, null);
+        a = (Anfangsbestand) Einstellungen.getDBService()
+            .createObject(Anfangsbestand.class, null);
       }
       catch (RemoteException e)
       {

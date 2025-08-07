@@ -71,7 +71,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
       // Checken, welchen von beiden Treibern wir haben
       try
       {
-        // Können wir den neuen laden?
+        // KÃ¶nnen wir den neuen laden?
         Class.forName(DRIVER_MYSQL);
         driver = DRIVER_MYSQL;
       }
@@ -102,10 +102,8 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
   @Override
   public String getJdbcUrl()
   {
-    return JVereinDBService.SETTINGS
-        .getString(
-            "database.driver.mysql.jdbcurl",
-            "jdbc:mysql://localhost:3306/jverein?useUnicode=Yes&characterEncoding=ISO8859_1")
+    return JVereinDBService.SETTINGS.getString("database.driver.mysql.jdbcurl",
+        "jdbc:mysql://localhost:3306/jverein?useUnicode=Yes&characterEncoding=ISO8859_1")
         .trim();
   }
 
@@ -115,8 +113,8 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
   @Override
   public String getJdbcUsername()
   {
-    return JVereinDBService.SETTINGS.getString(
-        "database.driver.mysql.username", "jverein").trim();
+    return JVereinDBService.SETTINGS
+        .getString("database.driver.mysql.username", "jverein").trim();
   }
 
   @Override
@@ -126,12 +124,12 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
     {
       try
       {
-        new JVereinUpdateProvider(conn, Application.getCallback()
-            .getStartupMonitor());
+        new JVereinUpdateProvider(conn,
+            Application.getCallback().getStartupMonitor());
       }
       catch (Exception e2)
       {
-        Logger.error("Datenbankupdate kann nicht ausgeführt werden.", e2);
+        Logger.error("Datenbankupdate kann nicht ausgefÃ¼hrt werden.", e2);
         throw new ApplicationException(e2);
       }
     }
@@ -161,8 +159,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
   @Override
   public String getSQLTimestamp(String content)
   {
-    return String.format("(UNIX_TIMESTAMP(%s)*1000)",
-        new Object[] { content });
+    return String.format("(UNIX_TIMESTAMP(%s)*1000)", new Object[] { content });
   }
 
   /**

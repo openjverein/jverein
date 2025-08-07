@@ -34,7 +34,6 @@ public interface Buchung extends JVereinDBObject
 
   public static final String T_SOLLBUCHUNG = TABLE_NAME + "." + SOLLBUCHUNG;
 
-
   public void setID(String id) throws RemoteException;
 
   public Integer getUmsatzid() throws RemoteException;
@@ -62,9 +61,9 @@ public interface Buchung extends JVereinDBObject
   public void setIban(String iban) throws RemoteException;
 
   public boolean isBetragNull() throws RemoteException;
-  
+
   public void setBetragNull() throws RemoteException;
-  
+
   public double getBetrag() throws RemoteException;
 
   public void setBetrag(double betrag) throws RemoteException;
@@ -90,9 +89,9 @@ public interface Buchung extends JVereinDBObject
   public Long getBuchungsartId() throws RemoteException;
 
   public void setBuchungsartId(Long buchungsart) throws RemoteException;
-  
+
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
@@ -101,11 +100,10 @@ public interface Buchung extends JVereinDBObject
 
   public Long getAbschlussId() throws RemoteException;
 
-  public void setAbschluss(Jahresabschluss abschluss)
-      throws RemoteException;
+  public void setAbschluss(Jahresabschluss abschluss) throws RemoteException;
 
   public void setAbschlussId(Long abschlussId) throws RemoteException;
-  
+
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public Long getAbrechnungslaufID() throws RemoteException;
@@ -119,8 +117,7 @@ public interface Buchung extends JVereinDBObject
 
   public Long getSollbuchungID() throws RemoteException;
 
-  public void setSollbuchung(Sollbuchung sollbuchung)
-      throws RemoteException;
+  public void setSollbuchung(Sollbuchung sollbuchung) throws RemoteException;
 
   public void setSollbuchungID(Long sollbuchungID) throws RemoteException;
 
@@ -159,8 +156,8 @@ public interface Buchung extends JVereinDBObject
    * 
    * @param speicherung
    *          true: ja, Normalfall <br>
-   *          false: nein, bei Splitbuchungen werden die Datens‰tze zun‰chst in
-   *          einer ArrayList gehalten und sp‰ter in die Datenbank geschrieben.
+   *          false: nein, bei Splitbuchungen werden die Datens√§tze zun√§chst in
+   *          einer ArrayList gehalten und sp√§ter in die Datenbank geschrieben.
    */
   public void setSpeicherung(boolean speicherung) throws RemoteException;
 
@@ -171,7 +168,7 @@ public interface Buchung extends JVereinDBObject
   public boolean isToDelete() throws RemoteException;
 
   public void plausi() throws RemoteException, ApplicationException;
-  
+
   public void store(boolean check) throws RemoteException, ApplicationException;
 
   public Boolean getGeprueft() throws RemoteException;

@@ -25,7 +25,7 @@ public enum InternalColumns
   ADRZUSATZ("Adressierungszusatz", false), //
   ANREDE("Anrede", true), //
   AUSTRITTSDATUM("Austritt", true), //
-  BIC("BIC", false),  //
+  BIC("BIC", false), //
   BEITRAG("Beitrag_1", true), //
   BEITRAGSART("Beitragsart_1", true), //
   BEITRAGINDI("Individuellerbeitrag", false), //

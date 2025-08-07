@@ -27,34 +27,34 @@ public interface MailEmpfaenger extends DBObject
   public String getID() throws RemoteException;
 
   /**
-   * ID der zugehörigen Mail
+   * ID der zugehÃ¶rigen Mail
    */
   public Mail getMail() throws RemoteException;
 
   /**
-   * ID der zugehörigen Mail
+   * ID der zugehÃ¶rigen Mail
    */
   public void setMail(Mail mail) throws RemoteException;
 
   /**
-   * Mitglied ist Mail-Empfänger
+   * Mitglied ist Mail-EmpfÃ¤nger
    */
   public Mitglied getMitglied() throws RemoteException;
 
   /**
-   * Mitglied ist Mail-Empfänger
+   * Mitglied ist Mail-EmpfÃ¤nger
    */
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
 
   /**
    * Gibt entweder die Mailadresse des Mitgliedes oder die "nackte" Adresse
-   * zurück
+   * zurÃ¼ck
    */
   public String getMailAdresse() throws RemoteException;
 
   /**
-   * Gibt das Datum des letzten Versand der Mail zurück.
+   * Gibt das Datum des letzten Versand der Mail zurÃ¼ck.
    */
   public Timestamp getVersand() throws RemoteException;
 

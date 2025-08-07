@@ -37,7 +37,7 @@ public class DokumentInfoBearbeitenAction implements Action
   {
     if (context == null || !(context instanceof AbstractDokument))
     {
-      throw new ApplicationException("Kein Dokument ausgew‰hlt");
+      throw new ApplicationException("Kein Dokument ausgew√§hlt");
     }
     try
     {

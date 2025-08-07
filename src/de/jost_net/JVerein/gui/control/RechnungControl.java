@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
@@ -33,6 +34,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
@@ -42,6 +44,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -73,7 +76,7 @@ import de.willuhn.util.ApplicationException;
 public class RechnungControl extends DruckMailControl implements Savable
 {
 
-  private TablePart rechnungList;
+  private JVereinTablePart rechnungList;
 
   private Rechnung rechnung;
 
@@ -127,7 +130,8 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   public enum TYP
   {
-    RECHNUNG, MAHNUNG
+    RECHNUNG,
+    MAHNUNG
   }
 
   public RechnungControl(AbstractView view)
@@ -145,8 +149,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       return rechnungList;
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
-    rechnungList = new TablePart(rechnungen,
-        new EditAction(RechnungDetailView.class));
+    rechnungList = new JVereinTablePart(rechnungen, null);
     rechnungList.addColumn("Nr", "id-int");
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -157,17 +160,21 @@ public class RechnungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     rechnungList.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    rechnungList.addColumn("Zahlungsweg", "zahlungsweg", new ZahlungswegFormatter());
+    rechnungList.addColumn("Zahlungsweg", "zahlungsweg",
+        new ZahlungswegFormatter());
     // Dummy Spalte, damit Zahlungsweg nicht am rechten Rand klebt
     rechnungList.addColumn(" ", " ",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
         Column.ALIGN_LEFT);
 
     rechnungList.setRememberColWidths(true);
-    rechnungList.setContextMenu(new RechnungMenu());
+    rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setRememberOrder(true);
     rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
+    rechnungList
+        .setAction(new EditAction(RechnungDetailView.class, rechnungList));
+    VorZurueckControl.setObjektListe(null, null);
     return rechnungList;
   }
 
@@ -219,6 +226,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     return button;
   }
 
+  @Override
   @SuppressWarnings("unchecked")
   public void TabRefresh()
   {
@@ -273,7 +281,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       rechnungenIt.addFilter(
           "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-          new Object[] { "%" + ((String) suchname.getValue()).toLowerCase() + "%",
+          new Object[] {
+              "%" + ((String) suchname.getValue()).toLowerCase() + "%",
               "%" + ((String) suchname.getValue()).toLowerCase() + "%" });
     }
 
@@ -304,9 +313,8 @@ public class RechnungControl extends DruckMailControl implements Savable
       }
       String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
           + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
-          + Sollbuchung.TABLE_NAME
-          + " LEFT JOIN buchung on " + Sollbuchung.TABLE_NAME_ID + " = "
-          + Buchung.T_SOLLBUCHUNG
+          + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung on "
+          + Sollbuchung.TABLE_NAME_ID + " = " + Buchung.T_SOLLBUCHUNG
           + " WHERE " + Sollbuchung.T_RECHNUNG + " is not null " + " group by "
           + Sollbuchung.TABLE_NAME_ID;
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
@@ -368,7 +376,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       if (rechnungen != null)
       {
-        text = "Es wurden " + rechnungen.length + " Rechnungen ausgew‰hlt"
+        text = "Es wurden " + rechnungen.length + " Rechnungen ausgew√§hlt"
             + "\nFolgende Mitglieder haben keine Mailadresse:";
         for (Rechnung re : rechnungen)
         {
@@ -450,10 +458,10 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
 
     nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();
-    ;
+    
     return nummer;
   }
 
@@ -694,7 +702,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         getRechnung().getSollbuchungPositionList(), null);
     return buchungList;
   }
-  
+
   public TextInput getZahlungsweg() throws RemoteException
   {
     if (zahlungsweg != null)
@@ -754,11 +762,13 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
+    return re;
   }
 
   @Override
@@ -766,9 +776,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   {
     try
     {
-      prepareStore();
-      Rechnung re = getRechnung();
-      re.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

@@ -31,7 +31,7 @@ public class FreiesFormularMailView extends AbstractView
     GUI.getView().setTitle("Freie Formulare");
 
     final FreieFormulareControl control = new FreieFormulareControl(this);
-    control.init("freieformulare.","zusatzfeld.", "zusatzfelder.");
+    control.init("freieformulare.", "zusatzfeld.", "zusatzfelder.");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
 
@@ -41,7 +41,7 @@ public class FreiesFormularMailView extends AbstractView
     left.addInput(control.getMitgliedStatus());
     left.addInput(control.getBeitragsgruppeAusw());
     left.addInput(control.getMailauswahl());
-    
+
     SimpleContainer mid = new SimpleContainer(cl.getComposite());
     mid.addInput(control.getSuchname());
     mid.addInput(control.getGeburtsdatumvon());
@@ -53,7 +53,7 @@ public class FreiesFormularMailView extends AbstractView
     right.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
     right.addInput(control.getStichtag());
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       right.addInput(zusatzfelderInput);
@@ -87,9 +87,9 @@ public class FreiesFormularMailView extends AbstractView
         control, false, "bookmark.png");
     buttons
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
-        control, false, "edit-copy.png"));
+            control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(
         control.getStartFreieFormulareButton(this.getCurrentObject(), control));

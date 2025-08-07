@@ -22,28 +22,28 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeDetailView;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EigenschaftGruppeControl extends AbstractControl
+public class EigenschaftGruppeControl extends VorZurueckControl
     implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart eigenschaftgruppeList;
+  private JVereinTablePart eigenschaftgruppeList;
 
   private Input bezeichnung;
 
@@ -77,6 +77,7 @@ public class EigenschaftGruppeControl extends AbstractControl
       return bezeichnung;
     }
     bezeichnung = new TextInput(getEigenschaftGruppe().getBezeichnung(), 30);
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -101,12 +102,13 @@ public class EigenschaftGruppeControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
     eg.setBezeichnung((String) getBezeichnung().getValue());
     eg.setPflicht((Boolean) getPflicht().getValue());
     eg.setMax1((Boolean) getMax1().getValue());
+    return eg;
   }
 
   /**
@@ -114,13 +116,12 @@ public class EigenschaftGruppeControl extends AbstractControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      EigenschaftGruppe eg = getEigenschaftGruppe();
-      eg.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -142,17 +143,20 @@ public class EigenschaftGruppeControl extends AbstractControl
         .createList(EigenschaftGruppe.class);
     eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
-    eigenschaftgruppeList = new TablePart(eigenschaftgruppe,
-        new EditAction(EigenschaftGruppeDetailView.class));
+    eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
         new JaNeinFormatter());
     eigenschaftgruppeList.addColumn("Max. 1 Eigenschaft", "max1",
         new JaNeinFormatter());
-    eigenschaftgruppeList.setContextMenu(new EigenschaftGruppeMenu());
+    eigenschaftgruppeList
+        .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
     eigenschaftgruppeList.setRememberColWidths(true);
     eigenschaftgruppeList.setRememberOrder(true);
     eigenschaftgruppeList.addFeature(new FeatureSummary());
+    eigenschaftgruppeList.setAction(new EditAction(
+        EigenschaftGruppeDetailView.class, eigenschaftgruppeList));
+    VorZurueckControl.setObjektListe(null, null);
     return eigenschaftgruppeList;
   }
 }

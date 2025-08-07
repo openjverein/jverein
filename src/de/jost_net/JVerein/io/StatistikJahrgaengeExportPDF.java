@@ -39,7 +39,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   @Override
   public String getName()
   {
-    return "Statistik Jahrg‰nge PDF-Export";
+    return "Statistik Jahrg√§nge PDF-Export";
   }
 
   @Override
@@ -80,13 +80,13 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   protected void open() throws DocumentException, FileNotFoundException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, "Statistik Jahrg‰nge, Stichtag: "
+    reporter = new Reporter(fos, "Statistik Jahrg√§nge, Stichtag: "
         + new JVDateFormatTTMMJJJJ().format(stichtag) + "", "", 3);
     reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("m‰nnlich", Element.ALIGN_CENTER, 50,
+    reporter.addHeaderColumn("m√§nnlich", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
@@ -101,8 +101,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
     {
       reporter.addColumn(key, Element.ALIGN_CENTER);
       StatistikJahrgang dsbj = statistik.get(key);
-      reporter.addColumn(
-          Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
+      reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
           Element.ALIGN_RIGHT);
       reporter.addColumn(
           Einstellungen.INTFORMAT.format(dsbj.getAnzahlmaennlich()),

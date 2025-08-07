@@ -23,10 +23,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -41,8 +43,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageControl extends FilterControl
-    implements Savable
+public class WiedervorlageControl extends FilterControl implements Savable
 {
 
   private DateInput datum = null;
@@ -50,11 +51,11 @@ public class WiedervorlageControl extends FilterControl
   private Input vermerk = null;
 
   private DateInput erledigung = null;
-  
+
   private AbstractInput mitglied;
 
   private Wiedervorlage wvl = null;
-  
+
   private WiedervorlageList wiedervorlageList = null;
 
   public WiedervorlageControl(AbstractView view)
@@ -85,7 +86,7 @@ public class WiedervorlageControl extends FilterControl
 
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Wiedervorlagedatum w‰hlen");
+    this.datum.setText("Bitte Wiedervorlagedatum w√§hlen");
     this.datum.addListener(new Listener()
     {
 
@@ -129,7 +130,7 @@ public class WiedervorlageControl extends FilterControl
 
     this.erledigung = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.erledigung.setTitle("Erledigung");
-    this.erledigung.setText("Bitte Erledigungsdatum w‰hlen");
+    this.erledigung.setText("Bitte Erledigungsdatum w√§hlen");
     this.erledigung.addListener(new Listener()
     {
 
@@ -145,7 +146,7 @@ public class WiedervorlageControl extends FilterControl
     });
     return erledigung;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -155,34 +156,36 @@ public class WiedervorlageControl extends FilterControl
 
     if (getWiedervorlage().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getWiedervorlage().getMitglied()};
-      mitglied = new SelectInput(mitgliedArray, getWiedervorlage().getMitglied());
+      Mitglied[] mitgliedArray = { getWiedervorlage().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray,
+          getWiedervorlage().getMitglied());
       mitglied.setEnabled(false);
     }
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     }
     mitglied.setMandatory(true);
     return mitglied;
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Wiedervorlage w = getWiedervorlage();
     w.setDatum((Date) getDatum(false).getValue());
     w.setVermerk((String) getVermerk().getValue());
     w.setErledigung((Date) getErledigung().getValue());
+    return w;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Wiedervorlage w = getWiedervorlage();
+      Wiedervorlage w = (Wiedervorlage) prepareStore();
       if (w.isNewObject())
       {
         if (getMitglied().getValue() != null)
@@ -204,14 +207,15 @@ public class WiedervorlageControl extends FilterControl
       throw new ApplicationException(fehler, e);
     }
   }
-  
+
   public Part getWiedervorlageList() throws RemoteException
   {
     wiedervorlageList = new WiedervorlageList(
         new StartViewAction(WiedervorlageListeView.class), this);
     return wiedervorlageList.getWiedervorlageList();
   }
-  
+
+  @Override
   public void TabRefresh()
   {
     if (wiedervorlageList == null)
@@ -220,5 +224,5 @@ public class WiedervorlageControl extends FilterControl
     }
     wiedervorlageList.refresh();
   }
-  
+
 }

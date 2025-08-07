@@ -69,15 +69,15 @@ public class BackupRestoreAction implements Action
     {
       if (Einstellungen.getDBService().createList(Einstellung.class).size() > 0)
       {
-        String text = "Die JVerein-Datenbank enthält bereits Daten.\n"
+        String text = "Die JVerein-Datenbank enthÃ¤lt bereits Daten.\n"
             + "Das Backup kann nur in eine neue JVerein-Installation importiert werden.";
         Application.getCallback().notifyUser(text);
         return;
       }
 
       DBTransaction.starten();
-      
-      // Vom System eingefügte Sätze löschen. Ansonsten gibt es duplicate keys      
+
+      // Vom System eingefÃ¼gte SÃ¤tze lÃ¶schen. Ansonsten gibt es duplicate keys
       DBIterator<EigenschaftGruppe> iteigr = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
       while (iteigr.hasNext())
@@ -97,7 +97,7 @@ public class BackupRestoreAction implements Action
     fd.setFileName(
         "jverein-" + new JVDateFormatJJJJMMTT().format(new Date()) + ".xml");
     fd.setFilterExtensions(new String[] { "*.xml" });
-    fd.setText("Bitte wählen Sie die Backup-Datei aus");
+    fd.setText("Bitte wÃ¤hlen Sie die Backup-Datei aus");
     String f = fd.open();
     if (f == null || f.length() == 0)
     {
@@ -129,13 +129,13 @@ public class BackupRestoreAction implements Action
         final ClassLoader loader = Application.getPluginLoader()
             .getPlugin(JVereinPlugin.class).getManifest().getClassLoader();
 
-        // Prüfen ob eine H2 DB verwendet wird, sonst ist es mysql/mariadb
+        // PrÃ¼fen ob eine H2 DB verwendet wird, sonst ist es mysql/mariadb
         boolean h2driver = JVereinDBService.SETTINGS
             .getString("database.driver", "H2").toLowerCase()
             .indexOf("h2") >= 0;
         try
         {
-          // FOreign Key Check vorübergehend deaktiieren
+          // FOreign Key Check vorÃ¼bergehend deaktiieren
           if (h2driver)
           {
             Einstellungen.getDBService()
@@ -186,7 +186,7 @@ public class BackupRestoreAction implements Action
           String classOld = null;
           while ((o = reader.read()) != null)
           {
-            if(isInterrupted())
+            if (isInterrupted())
             {
               monitor.setStatus(ProgressMonitor.STATUS_ERROR);
               monitor.setStatusText("Backup abgebrochen");
@@ -194,25 +194,29 @@ public class BackupRestoreAction implements Action
               DBTransaction.rollback();
               return;
             }
-            if(classOld != null && !o.getClass().getSimpleName().equals(classOld))
+            if (classOld != null
+                && !o.getClass().getSimpleName().equals(classOld))
             {
               monitor.setStatusText(String.format("%s importiert", classOld));
               classOld = o.getClass().getSimpleName();
             }
-            if(classOld == null)
+            if (classOld == null)
             {
               classOld = o.getClass().getSimpleName();
             }
-            
+
             try
             {
-              if(o instanceof Version)
+              if (o instanceof Version)
               {
-                int vBackup = ((Version)o).getVersion();
-                int vDB = ((Version)Einstellungen.getDBService().createObject(Version.class, "1")).getVersion();
-                if(vBackup != vDB)
+                int vBackup = ((Version) o).getVersion();
+                int vDB = ((Version) Einstellungen.getDBService()
+                    .createObject(Version.class, "1")).getVersion();
+                if (vBackup != vDB)
                 {
-                  String text = "Die Datenbank Version (" + vDB + ") entspricht nicht der des Backups (" + vBackup +").\n"
+                  String text = "Die Datenbank Version (" + vDB
+                      + ") entspricht nicht der des Backups (" + vBackup
+                      + ").\n"
                       + "Das Backup kann nur in eine identische Datenbank Version importiert werden.";
                   Application.getCallback().notifyUser(text);
                   monitor.setStatus(ProgressMonitor.STATUS_ERROR);
@@ -224,19 +228,20 @@ public class BackupRestoreAction implements Action
                 continue;
               }
               ((AbstractDBObject) o).insert();
-              if(o instanceof Einstellung)
+              if (o instanceof Einstellung)
               {
-                Einstellungen.reloadEinstellung();
+                Einstellungen.loadEinstellungen();
               }
             }
             catch (Exception e)
             {
-              //Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und "Mitglied" existiert und es einen DUPLICATE KEY gibt
-              if(!(o instanceof Mitgliedstyp))
+              // Fehler Bei Adresstyp ignorieren, da hier bereits "Spender" und
+              // "Mitglied" existiert und es einen DUPLICATE KEY gibt
+              if (!(o instanceof Mitgliedstyp))
               {
                 Logger.error("unable to import " + o.getClass().getName() + ":"
                     + o.getID() + ", skipping", e);
-                monitor.log(String.format("  %s fehlerhaft %s, überspringe",
+                monitor.log(String.format("  %s fehlerhaft %s, Ã¼berspringe",
                     BeanUtil.toString(o), e.getMessage()));
               }
             }
@@ -244,10 +249,12 @@ public class BackupRestoreAction implements Action
             if (count++ % 1000 == 0)
               monitor.addPercentComplete(1);
           }
-          if(o != null)
-            monitor.setStatusText(String.format("%s importiert", o.getClass().getSimpleName()));
+          if (o != null)
+            monitor.setStatusText(
+                String.format("%s importiert", o.getClass().getSimpleName()));
 
-          DBTransaction.commit();;
+          DBTransaction.commit();
+          
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");
           monitor.setPercentComplete(100);

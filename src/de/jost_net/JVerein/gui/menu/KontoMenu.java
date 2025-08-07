@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.AnfangsbestandNeuAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -33,14 +34,13 @@ public class KontoMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Konten.
    */
-  public KontoMenu()
+  public KontoMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(KontoDetailView.class),
-        "text-x-generic.png"));
+        new EditAction(KontoDetailView.class, part), "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Anfangsbestand",
         new AnfangsbestandNeuAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new KontoDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new KontoDeleteAction(),
         "user-trash-full.png"));
   }
 }

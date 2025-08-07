@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
@@ -60,25 +61,25 @@ import de.willuhn.util.ApplicationException;
  */
 public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
 {
-  
+
   private TextInput nummer;
 
   private TextInput bezeichnung;
-  
+
   private AbstractInput anlagenart;
-  
+
   private SelectInput buchungsklasse;
-  
+
   private AbstractInput afaart;
-  
+
   private IntegerNullInput nutzungsdauer;
-  
+
   private LabelInput message = null;
-  
+
   private Konto konto = null;
-  
+
   private Buchung buchung = null;
-  
+
   final KontoControl control = new KontoControl(null);
 
   /**
@@ -95,7 +96,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-       
+
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Nummer", getNummer());
     group.addLabelPair("Bezeichnung", getBezeichnung());
@@ -106,7 +107,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     group.addLabelPair("", getMessage());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("‹bernehmen", new Action()
+    buttons.addButton("√úbernehmen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -114,7 +115,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         try
         {
           if (konto == null)
-            konto = (Konto) Einstellungen.getDBService().createObject(Konto.class, null);
+            konto = (Konto) Einstellungen.getDBService()
+                .createObject(Konto.class, null);
         }
         catch (RemoteException e)
         {
@@ -148,7 +150,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
   {
     return konto;
   }
-  
+
   private void handleStore() throws ApplicationException
   {
     try
@@ -161,13 +163,16 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       konto.setAnlagenartId(getSelectedAnlagenartId());
       konto.setBuchungsklasseId(getSelectedBuchungsklasseId());
       konto.setAfaartId(getSelectedAfaartId());
-      konto.setAfaRestwert(Einstellungen.getEinstellung().getAfaRestwert());
+      konto.setAfaRestwert(
+          (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
       konto.setAfaMode(AfaMode.AUTO);
-      konto.setNutzungsdauer((Integer)getNutzungsdauer().getValue());
+      konto.setNutzungsdauer((Integer) getNutzungsdauer().getValue());
       konto.setKommentar(buchung.getKommentar());
       konto.store();
-      BuchungsControl bcontrol = new BuchungsControl(null, Kontenfilter.ANLAGEKONTO);
-      bcontrol.getSettings().setAttribute("anlagenkonto.kontoid", konto.getID());
+      BuchungsControl bcontrol = new BuchungsControl(null,
+          Kontenfilter.ANLAGEKONTO);
+      bcontrol.getSettings().setAttribute("anlagenkonto.kontoid",
+          konto.getID());
     }
     catch (RemoteException e)
     {
@@ -178,7 +183,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       throw new ApplicationException(e.getMessage());
     }
   }
-  
+
   public TextInput getNummer() throws RemoteException
   {
     if (nummer != null)
@@ -188,7 +193,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     nummer = new TextInput("", 35);
     return nummer;
   }
-  
+
   public TextInput getBezeichnung() throws RemoteException
   {
     if (bezeichnung != null)
@@ -198,20 +203,21 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     bezeichnung = new TextInput("", 255);
     return bezeichnung;
   }
-  
+
   public Input getAnlagenart() throws RemoteException
   {
     if (anlagenart != null)
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput( anlagenart,
+    anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
         buchung.getBuchungsart(), buchungsarttyp.ANLAGENART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
   }
-  
+
   private Long getSelectedAnlagenartId() throws ApplicationException
   {
     try
@@ -224,12 +230,12 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Anlagensart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Anlagensart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public Input getBuchungsklasse() throws RemoteException
   {
     if (buchungsklasse != null)
@@ -241,27 +247,28 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     list.setOrder(control.getBuchungartSortOrder());
     Buchungsklasse bk = buchung.getBuchungsklasse();
     if (bk == null && buchung.getBuchungsart() != null)
-        bk = buchung.getBuchungsart().getBuchungsklasse();
+      bk = buchung.getBuchungsart().getBuchungsklasse();
     if (bk != null)
     {
-      buchungsklasse = new SelectInput(list != null ? 
-          PseudoIterator.asList(list) : null, bk);
+      buchungsklasse = new SelectInput(
+          list != null ? PseudoIterator.asList(list) : null, bk);
     }
     else
     {
-      buchungsklasse = new SelectInput(list != null ? 
-          PseudoIterator.asList(list) : null, null);
+      buchungsklasse = new SelectInput(
+          list != null ? PseudoIterator.asList(list) : null, null);
     }
     buchungsklasse.setAttribute(control.getBuchungartAttribute());
-    buchungsklasse.setPleaseChoose("Bitte ausw‰hlen");
+    buchungsklasse.setPleaseChoose("Bitte ausw√§hlen");
     return buchungsklasse;
   }
-  
+
   private Long getSelectedBuchungsklasseId() throws ApplicationException
   {
     try
     {
-      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse().getValue();
+      Buchungsklasse buchungsKlasse = (Buchungsklasse) getBuchungsklasse()
+          .getValue();
       if (null == buchungsKlasse)
         return null;
       Long id = Long.valueOf(buchungsKlasse.getID());
@@ -269,24 +276,24 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsklasse kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsklasse kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   public Input getAfaart() throws RemoteException
   {
     if (afaart != null)
     {
       return afaart;
     }
-    afaart = new BuchungsartInput().getBuchungsartInput( afaart,
-        null, buchungsarttyp.AFAART,
-        Einstellungen.getEinstellung().getBuchungBuchungsartAuswahl());
+    afaart = new BuchungsartInput().getBuchungsartInput(afaart, null,
+        buchungsarttyp.AFAART, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     return afaart;
   }
-  
+
   private Long getSelectedAfaartId() throws ApplicationException
   {
     try
@@ -299,12 +306,12 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gew‰hlte Buchungsart kann nicht ermittelt werden";
+      final String meldung = "Gew√§hlte Buchungsart kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
   }
-  
+
   private LabelInput getMessage() throws RemoteException
   {
     if (message != null)
@@ -316,26 +323,27 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
         + "WHERE (kontoart = ?) ";
     boolean exist = (boolean) service.execute(sql,
         new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs)
-          throws RemoteException, SQLException
-      {
-        if (rs.next())
         {
-          return true;
-        }
-        return false;
-      }
-    });
+          @Override
+          public Object extract(ResultSet rs)
+              throws RemoteException, SQLException
+          {
+            if (rs.next())
+            {
+              return true;
+            }
+            return false;
+          }
+        });
     if (!exist)
-      message = new LabelInput(" *Beim ersten Anlagenkonto bitte JVerein neu starten um die ƒnderungen anzuwenden");
+      message = new LabelInput(
+          " *Beim ersten Anlagenkonto bitte JVerein neu starten um die √Ñnderungen anzuwenden");
     else
       message = new LabelInput("");
     message.setColor(Color.ERROR);
     return message;
   }
-  
+
   public IntegerNullInput getNutzungsdauer() throws RemoteException
   {
     if (nutzungsdauer != null)
@@ -345,7 +353,7 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     nutzungsdauer = new IntegerNullInput();
     return nutzungsdauer;
   }
-  
+
   public class AnlagenartListener implements Listener
   {
 
@@ -375,5 +383,5 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       }
     }
   }
-  
+
 }

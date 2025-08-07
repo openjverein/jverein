@@ -18,8 +18,10 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -69,13 +71,24 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
 
   private void plausi() throws RemoteException, ApplicationException
   {
-    if (getBezeichnung() == null)
+    if (getBezeichnung() == null || getBezeichnung().isEmpty())
     {
-      throw new ApplicationException("Bitte Bezeichnung eingeben");
+      throw new ApplicationException("Bitte Bezeichnung eingeben!");
     }
     if (getEigenschaftGruppe() == null)
     {
-      throw new ApplicationException("Bitte Eigenschaftengruppe ausw‰hlen");
+      throw new ApplicationException("Bitte Eigenschaftengruppe ausw√§hlen");
+    }
+    DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
+        .createList(Eigenschaft.class);
+    if (!this.isNewObject())
+    {
+      eigIt.addFilter("id != ?", getID());
+    }
+    eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+    if (eigIt.hasNext())
+    {
+      throw new ApplicationException("Bitte eindeutige Bezeichnung eingeben!");
     }
   }
 

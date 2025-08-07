@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -47,19 +48,22 @@ public class BuchungsartDetailView extends AbstractDetailView
     group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     group.addLabelPair("Spende", control.getSpende());
     group.addLabelPair("Abschreibung", control.getAbschreibung());
-    if (Einstellungen.getEinstellung().getOptiert())
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       group.addLabelPair("Steuer", control.getSteuer());
     }
     // TODO Jo Dokumentation nachpflegen
     group.addLabelPair("Status", control.getStatus());
     group.addLabelPair("Suchbegriff", control.getSuchbegriff());
-    group.addLabelPair("Suchbegriff ist ein regulärer Ausdruck",
+    group.addLabelPair("Suchbegriff ist ein regulÃ¤rer Ausdruck",
         control.getRegexp());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGSART, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
 
     buttons.addButton(new Button("Speichern und neu", context -> {

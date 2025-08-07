@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2014 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -44,7 +44,7 @@ import de.willuhn.util.ProgressMonitor;
  * Importieren von Objekten zu Mitgliedern
  * 
  * TODO
- * - Die  Liste  mit den Objekttypen muß zuvor vorhanden sein!
+ * - Die  Liste  mit den Objekttypen muÃŸ zuvor vorhanden sein!
  * - Optionale Felder
  *     gruppe
  *     extnr
@@ -53,7 +53,7 @@ public class FormularfelderImportCSV implements Importer
 {
 
   /**
-   * Alle vorhandenen Formularfelder für ein bestimmtes Formular löschen
+   * Alle vorhandenen Formularfelder fÃ¼r ein bestimmtes Formular lÃ¶schen
    */
   private void deleteExistingData(Formular f)
   {
@@ -88,7 +88,7 @@ public class FormularfelderImportCSV implements Importer
     try
     {
       Logger
-          .info("Importiere Formularfelder für Formular " + f.getBezeichnung());
+          .info("Importiere Formularfelder fÃ¼r Formular " + f.getBezeichnung());
     }
     catch (RemoteException re)
     {
@@ -198,7 +198,8 @@ public class FormularfelderImportCSV implements Importer
         }
       }
       monitor.setStatus(ProgressMonitor.STATUS_DONE);
-      monitor.setStatusText("Formularfelder für Formular " + f.getBezeichnung() + " importiert");
+      monitor.setStatusText(
+          "Formularfelder fÃ¼r Formular " + f.getBezeichnung() + " importiert");
       results.close();
       stmt.close();
       conn.close();

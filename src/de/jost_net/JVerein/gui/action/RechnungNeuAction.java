@@ -51,8 +51,8 @@ public class RechnungNeuAction implements Action
       {
         try
         {
-          context = Einstellungen.getDBService()
-              .createObject(Sollbuchung.class, mkn.getID());
+          context = Einstellungen.getDBService().createObject(Sollbuchung.class,
+              mkn.getID());
         }
         catch (RemoteException e)
         {
@@ -70,7 +70,7 @@ public class RechnungNeuAction implements Action
     }
     else
     {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
+      throw new ApplicationException("Keine Sollbuchung ausgewÃ¤hlt");
     }
 
     try
@@ -121,10 +121,11 @@ public class RechnungNeuAction implements Action
         GUI.getStatusBar().setErrorText("Keine Rechnung erstellt, alle " + skip
             + " Sollbuchungen enthalten bereits Rechnungen.");
       }
-      else {
+      else
+      {
         GUI.getCurrentView().reload();
         GUI.getStatusBar().setSuccessText(erstellt + " Rechnung(en) erstellt"
-            + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
+            + (skip > 0 ? ", " + skip + " vorhandene Ã¼bersprungen." : "."));
       }
     }
     catch (OperationCanceledException ignore)

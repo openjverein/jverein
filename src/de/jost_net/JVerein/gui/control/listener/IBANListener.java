@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -34,7 +35,7 @@ import de.willuhn.logging.Logger;
 
 /**
  * Sucht das Geldinstitut zur eingegebenen IBAN und zeigt es als Kommentar
- * hinter dem Feld an. -Prüft die IBAN -Ermittelt die BIC
+ * hinter dem Feld an. -PrÃ¼ft die IBAN -Ermittelt die BIC
  */
 
 public class IBANListener implements Listener
@@ -68,7 +69,7 @@ public class IBANListener implements Listener
     {
       return;
     }
-    String ib2 = ib.trim().toUpperCase().replace(" ","");
+    String ib2 = ib.trim().toUpperCase().replace(" ", "");
     iban.setValue(HBCIProperties.formatIban(ib2));
     if (ib2.length() == 0)
     {
@@ -122,8 +123,8 @@ public class IBANListener implements Listener
     String konto = ib.substring(9, ib.length());
     try
     {
-      IBAN ibankonv = new IBAN(konto, blz, Einstellungen.getEinstellung()
-          .getDefaultLand());
+      IBAN ibankonv = new IBAN(konto, blz,
+          (String) Einstellungen.getEinstellung(Property.DEFAULTLAND));
       iban.setValue(ibankonv.getIBAN());
       bic.setValue(ibankonv.getBIC());
     }

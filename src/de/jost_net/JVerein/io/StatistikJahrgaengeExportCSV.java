@@ -38,7 +38,7 @@ public class StatistikJahrgaengeExportCSV extends StatistikJahrgaengeExport
   @Override
   public String getName()
   {
-    return "Statistik Jahrg‰nge CSV-Export";
+    return "Statistik Jahrg√§nge CSV-Export";
   }
 
   @Override

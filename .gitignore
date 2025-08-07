@@ -4,6 +4,7 @@ bin.test
 releases
 lib
 !lib/bsh-3.0.0-20230205.094654-3.jar
+!lib/bsh-2.1.1.jar
 !lib/nc.jar
 lib.test
 lib.src

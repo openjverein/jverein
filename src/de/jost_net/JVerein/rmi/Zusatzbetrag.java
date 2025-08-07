@@ -72,7 +72,7 @@ public interface Zusatzbetrag extends JVereinDBObject
   public Long getBuchungsartId() throws RemoteException;
 
   public Buchungsklasse getBuchungsklasse() throws RemoteException;
-  
+
   public Long getBuchungsklasseId() throws RemoteException;
 
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
@@ -80,4 +80,8 @@ public interface Zusatzbetrag extends JVereinDBObject
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
 }

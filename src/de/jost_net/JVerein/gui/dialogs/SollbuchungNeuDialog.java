@@ -20,6 +20,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
@@ -132,7 +133,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     zweck.setMandatory(false);
     right.addLabelPair("Zweck", zweck);
     right.addLabelPair("Buchungsart", sollbPosControl.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       right.addLabelPair("Buchungsklasse", sollbPosControl.getBuchungsklasse());
     }
@@ -142,7 +144,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
 
-    // Speichern und zurück zum View
+    // Speichern und zurÃ¼ck zum View
     buttons.addButton("Speichern", new Action()
     {
 

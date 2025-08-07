@@ -35,8 +35,8 @@ public class SplitbuchungNeuAction implements Action
     try
     {
       Buchung master = SplitbuchungsContainer.getMaster();
-      Buchung buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
-          null);
+      Buchung buch = (Buchung) Einstellungen.getDBService()
+          .createObject(Buchung.class, null);
       buch.setAuszugsnummer(master.getAuszugsnummer());
       buch.setBlattnummer(master.getBlattnummer());
       buch.setDatum(master.getDatum());
@@ -54,11 +54,14 @@ public class SplitbuchungNeuAction implements Action
       buch.setSpeicherung(false);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setSteuer(master.getSteuer());
-      buch.setBetrag(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue() - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT).doubleValue());
+      buch.setBetrag(
+          SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT).doubleValue()
+              - SplitbuchungsContainer.getSumme(SplitbuchungTyp.SPLIT)
+                  .doubleValue());
 
-      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
-      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      // fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste zurÃ¼ck.
       if (GUI.getCurrentView().getClass().equals(BuchungDetailView.class))
       {
         GUI.getCurrentView().setCurrentObject(buch);

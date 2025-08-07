@@ -30,7 +30,7 @@ public class JahresabschlussListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jahresabschlüsse");
+    GUI.getView().setTitle("JahresabschlÃ¼sse");
 
     JahresabschlussControl control = new JahresabschlussControl(this);
 
@@ -41,9 +41,7 @@ public class JahresabschlussListeView extends AbstractView
         DokumentationUtil.JAHRESABSCHLUSS, false, "question-circle.png");
     buttons.addButton("Neu",
         new NewAction(JahresabschlussDetailView.class, Jahresabschluss.class),
-        null,
-        false,
-        "document-new.png");
+        null, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

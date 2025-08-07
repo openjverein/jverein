@@ -26,6 +26,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.VCardTool;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.Dateiname;
@@ -64,7 +65,7 @@ public class MitgliedVCardDateiAction implements Action
           }
         }
         FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-        fd.setText("Ausgabedatei w‰hlen.");
+        fd.setText("Ausgabedatei w√§hlen.");
 
         Settings settings = new de.willuhn.jameica.system.Settings(
             this.getClass());
@@ -75,7 +76,8 @@ public class MitgliedVCardDateiAction implements Action
           fd.setFilterPath(path);
         }
         fd.setFileName(new Dateiname("vCards", "",
-            Einstellungen.getEinstellung().getDateinamenmuster(), "vcf").get());
+            (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
+            "vcf").get());
         fd.setFilterExtensions(new String[] { "*.vcf" });
 
         String s = fd.open();
@@ -127,7 +129,7 @@ public class MitgliedVCardDateiAction implements Action
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (Exception e)

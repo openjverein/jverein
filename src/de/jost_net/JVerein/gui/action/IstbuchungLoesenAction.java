@@ -38,12 +38,12 @@ public class IstbuchungLoesenAction implements Action
     if (!((context instanceof MitgliedskontoNode)
         || context instanceof Buchung))
     {
-      throw new ApplicationException("Keine Istbuchung ausgewählt");
+      throw new ApplicationException("Keine Istbuchung ausgewÃ¤hlt");
     }
-  	
+
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Istbuchung von Sollbuchung lösen");
-    d.setText("Wollen Sie die Istbuchung wirklich von der Sollbuchung lösen?");
+    d.setTitle("Istbuchung von Sollbuchung lÃ¶sen");
+    d.setText("Wollen Sie die Istbuchung wirklich von der Sollbuchung lÃ¶sen?");
 
     try
     {
@@ -74,7 +74,7 @@ public class IstbuchungLoesenAction implements Action
       }
       bu.setSollbuchung(null);
       bu.store();
-      GUI.getStatusBar().setSuccessText("Istbuchung von Sollbuchung gelöst.");
+      GUI.getStatusBar().setSuccessText("Istbuchung von Sollbuchung gelÃ¶st.");
       Application.getMessagingFactory()
           .sendMessage(new MitgliedskontoMessage(bu));
 
@@ -82,7 +82,7 @@ public class IstbuchungLoesenAction implements Action
     catch (RemoteException e)
     {
       throw new ApplicationException(
-          "Fehler beim lösen der Istbuchung von der Sollbuchung");
+          "Fehler beim lÃ¶sen der Istbuchung von der Sollbuchung");
     }
   }
 }

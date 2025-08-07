@@ -31,6 +31,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -59,8 +60,7 @@ public class BuchungAuswertungPDF
 
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
       final File file, BuchungQuery query, boolean einzel,
-      final TreeMap<String, String> params)
-      throws ApplicationException
+      final TreeMap<String, String> params) throws ApplicationException
   {
     try
     {
@@ -75,7 +75,8 @@ public class BuchungAuswertungPDF
         title = "Summenliste";
       }
 
-      if (Boolean.valueOf(Einstellungen.getEinstellung().getKontonummerInBuchungsliste()))
+      if (Boolean.valueOf((Boolean) Einstellungen
+          .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
         kontonummer_in_buchungsliste = true;
 
       Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
@@ -85,7 +86,7 @@ public class BuchungAuswertungPDF
         reporter = new Reporter(fos, title, query.getSubtitle(),
             buchungsarten.size(), 50, 30, 20, 20);
       }
-        
+
       if (!einzel)
       {
         createTableHeaderSumme(reporter);
@@ -100,7 +101,8 @@ public class BuchungAuswertungPDF
         Buchungsklasse bukla = buchungsklassen.next();
         for (Buchungsart bua : buchungsarten)
         {
-          if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+          if (!(Boolean) Einstellungen
+              .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
             if (bua.getBuchungsklasseId() == null
                 || bua.getBuchungsklasse().getNummer() != bukla.getNummer())
@@ -125,7 +127,8 @@ public class BuchungAuswertungPDF
       // Buchungsarten ohne Buchungsklassen
       for (Buchungsart bua : buchungsarten)
       {
-        if (!Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+        if (!(Boolean) Einstellungen
+            .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
         {
           if (bua.getBuchungsklasseId() != null)
           {
@@ -145,7 +148,7 @@ public class BuchungAuswertungPDF
             || nichtLeer;
       }
       // Buchungen ohne Buchungsarten, wenn explizite Buchungsart angegeben ist,
-      // dann nur wenn auch ohne Buchungsart ausgew‰hlt ist (ID == null)
+      // dann nur wenn auch ohne Buchungsart ausgew√§hlt ist (ID == null)
       if (query.getBuchungsart() == null || (query.getBuchungsart() != null
           && query.getBuchungsart().getID() == null))
       {
@@ -252,7 +255,7 @@ public class BuchungAuswertungPDF
   {
     reporter.addHeaderColumn("Nummer", Element.ALIGN_CENTER, 22,
         BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 28,
+    reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 32,
         BaseColor.LIGHT_GRAY);
     if (kontonummer_in_buchungsliste)
       reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 34,
@@ -260,12 +263,16 @@ public class BuchungAuswertungPDF
     reporter.addHeaderColumn("Auszug", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Name", Element.ALIGN_CENTER,
-        (kontonummer_in_buchungsliste) ? 86 : 100,
-        BaseColor.LIGHT_GRAY);
+        (kontonummer_in_buchungsliste) ? 86 : 100, BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Zahlungsgrund", Element.ALIGN_CENTER, 100,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
         BaseColor.LIGHT_GRAY);
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 25,
+          BaseColor.LIGHT_GRAY);
+    }
     reporter.createHeader();
   }
 
@@ -282,11 +289,11 @@ public class BuchungAuswertungPDF
   }
 
   private boolean createTableContent(Reporter reporter, Buchungsart bua,
-      Buchungsklasse bukla,
-      List<Buchung> buchungen, boolean einzel)
+      Buchungsklasse bukla, List<Buchung> buchungen, boolean einzel)
       throws RemoteException, DocumentException
   {
-    if (Einstellungen.getEinstellung().getUnterdrueckungOhneBuchung()
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG)
         && buchungen.size() == 0)
     {
       return false;
@@ -337,6 +344,11 @@ public class BuchungAuswertungPDF
         reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
         reporter.addColumn(b.getBetrag());
+        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+        {
+          reporter.addColumn(
+              b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        }
       }
       buchungsartSumme += b.getBetrag();
       if (bua.getArt() == ArtBuchungsart.EINNAHME)
@@ -404,8 +416,9 @@ public class BuchungAuswertungPDF
       {
         continue;
       }
-      
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() == null
             || b.getBuchungsklasse().getNummer() != bukla.getNummer())
@@ -431,7 +444,8 @@ public class BuchungAuswertungPDF
         continue;
       }
 
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() != null)
         {

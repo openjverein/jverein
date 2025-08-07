@@ -18,16 +18,22 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.TabFolder;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.gui.util.TabGroup;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 
 public class MitgliedListeView extends AbstractMitgliedListeView
@@ -49,39 +55,53 @@ public class MitgliedListeView extends AbstractMitgliedListeView
   public void getFilter() throws RemoteException
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+    TabFolder folder = new TabFolder(group.getComposite(),
+        SWT.V_SCROLL | SWT.BORDER);
+    folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+    folder.setBackground(Color.BACKGROUND.getSWTColor());
 
-    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    // Erster Tab
+    TabGroup tab1 = new TabGroup(folder, "Allgemein", true, 3);
+    SimpleContainer left = new SimpleContainer(tab1.getComposite());
     left.addInput(control.getMitgliedStatus());
-    if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       left.addInput(control.getSuchExterneMitgliedsnummer());
     else
       left.addInput(control.getSuchMitgliedsnummer());
+    left.addInput(control.getSuchname());
+
+    SimpleContainer middle = new SimpleContainer(tab1.getComposite());
+    middle.addInput(control.getBeitragsgruppeAusw());
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    left.addInput(eigenschaftenInput);
+    middle.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    left.addInput(control.getBeitragsgruppeAusw());
-    if (Einstellungen.getEinstellung().hasZusatzfelder())
+    if (Einstellungen.hasZusatzfelder())
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      left.addInput(zusatzfelderInput);
+      middle.addInput(zusatzfelderInput);
       control.updateZusatzfelderAuswahlTooltip();
     }
 
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getSuchname());
-    middle.addInput(control.getGeburtsdatumvon());
-    middle.addInput(control.getGeburtsdatumbis());
-    middle.addInput(control.getSuchGeschlecht());
-    middle.addInput(control.getStichtag());
-
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getEintrittvon());
-    right.addInput(control.getEintrittbis());
-    right.addInput(control.getAustrittvon());
-    right.addInput(control.getAustrittbis());
+    SimpleContainer right = new SimpleContainer(tab1.getComposite());
+    right.addInput(control.getSuchGeschlecht());
     right.addInput(control.getMailauswahl());
-    
+    right.addInput(control.getStichtag());
+
+    // Zeiter Tab
+    TabGroup tab2 = new TabGroup(folder, "Erweitert", true, 3);
+    SimpleContainer left2 = new SimpleContainer(tab2.getComposite());
+    left2.addInput(control.getGeburtsdatumvon());
+    left2.addInput(control.getGeburtsdatumbis());
+
+    SimpleContainer middle2 = new SimpleContainer(tab2.getComposite());
+    middle2.addInput(control.getEintrittvon());
+    middle2.addInput(control.getEintrittbis());
+
+    SimpleContainer right2 = new SimpleContainer(tab2.getComposite());
+    right2.addInput(control.getAustrittvon());
+    right2.addInput(control.getAustrittbis());
+
+    // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getProfileButton());
     buttons.addButton(control.getResetButton());

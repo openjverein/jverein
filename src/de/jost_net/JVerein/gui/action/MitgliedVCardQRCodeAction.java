@@ -54,24 +54,24 @@ public class MitgliedVCardQRCodeAction implements Action
         ArrayList<Mitglied> mitgl = new ArrayList<>();
         mitgl.add((Mitglied) context);
 
-          String qrCodeData = Ezvcard.write(VCardTool.getVCards(mitgl))
-              .version(VCardVersion.V3_0).go();
-          String charset = "UTF-8"; // or "ISO-8859-1"
-          @SuppressWarnings("rawtypes")
-          Map hintMap = new HashMap();
-          hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-          BitMatrix matrix = new MultiFormatWriter().encode(
-              new String(qrCodeData.getBytes(charset), charset),
-              BarcodeFormat.QR_CODE, 300, 300, hintMap);
-          BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
+        String qrCodeData = Ezvcard.write(VCardTool.getVCards(mitgl))
+            .version(VCardVersion.V3_0).go();
+        String charset = "UTF-8"; // or "ISO-8859-1"
+        @SuppressWarnings("rawtypes")
+        Map hintMap = new HashMap();
+        hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+        BitMatrix matrix = new MultiFormatWriter().encode(
+            new String(qrCodeData.getBytes(charset), charset),
+            BarcodeFormat.QR_CODE, 300, 300, hintMap);
+        BufferedImage bi = MatrixToImageWriter.toBufferedImage(matrix);
 
-          QRCodeImageDialog dia = new QRCodeImageDialog(
-              AbstractDialog.POSITION_MOUSE, bi);
-          dia.open();
+        QRCodeImageDialog dia = new QRCodeImageDialog(
+            AbstractDialog.POSITION_MOUSE, bi);
+        dia.open();
       }
       else
       {
-        throw new ApplicationException("Kein Mitglied ausgew‰hlt");
+        throw new ApplicationException("Kein Mitglied ausgew√§hlt");
       }
     }
     catch (OperationCanceledException oce)

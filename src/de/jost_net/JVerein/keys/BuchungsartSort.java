@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2015 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -26,7 +26,7 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schlüssel Sortierung der Buchungsart; Form der Anzeige
+ * SchlÃ¼ssel Sortierung der Buchungsart; Form der Anzeige
  */
 public class BuchungsartSort
 {

@@ -21,10 +21,13 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
+import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
@@ -35,7 +38,8 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardDateiAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -65,14 +69,25 @@ public class MitgliedMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu für die Liste der Mitglieder.
+   * Erzeugt ein Kontext-Menu fÃ¼r die Liste der Mitglieder.
    * 
    * @throws RemoteException
    */
-  public MitgliedMenu(Action detailaction) throws RemoteException
+  public MitgliedMenu(Action detailaction, JVereinTablePart part)
+      throws RemoteException
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", detailaction,
-        "text-x-generic.png"));
+    if (detailaction instanceof MitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(MitgliedDetailView.class, part),
+          "text-x-generic.png"));
+    }
+    else if (detailaction instanceof NichtMitgliedDetailAction)
+    {
+      addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+          new EditAction(NichtMitgliedDetailView.class, part),
+          "text-x-generic.png"));
+    }
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new MitgliedDuplizierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
@@ -81,116 +96,121 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
     addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
         new MitgliedZusatzbetraegeZuordnungAction(), "euro-sign.png"));
-    if (Einstellungen.getEinstellung().getArbeitseinsatz() && !(detailaction instanceof NichtMitgliedDetailAction))
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ)
+        && !(detailaction instanceof NichtMitgliedDetailAction))
     {
       addItem(new CheckedContextMenuItem("Arbeitseinsatz zuordnen",
           new MitgliedArbeitseinsatzZuordnungAction(), "screwdriver.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      addItem(new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
-      {
+      addItem(
+          new CheckedSingleContextMenuItem("Zu Mitglied umwandeln", new Action()
+          {
 
-        @Override
-        public void handleAction(Object context) throws ApplicationException
-        {
-          Mitglied m = (Mitglied) context;
-          try
-          {
-            SimpleDialog sd = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-            sd.setText(
-                "Bitte die für Mitglieder erforderlichen Daten nacherfassen.");
-            sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-            sd.setSize(400, SWT.DEFAULT);
-            sd.setTitle("Daten nacherfassen");
-            try
+            @Override
+            public void handleAction(Object context) throws ApplicationException
             {
-              sd.open();
+              Mitglied m = (Mitglied) context;
+              try
+              {
+                SimpleDialog sd = new SimpleDialog(
+                    SimpleDialog.POSITION_CENTER);
+                sd.setText(
+                    "Bitte die fÃ¼r Mitglieder erforderlichen Daten nacherfassen.");
+                sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
+                sd.setSize(400, SWT.DEFAULT);
+                sd.setTitle("Daten nacherfassen");
+                try
+                {
+                  sd.open();
+                }
+                catch (Exception e)
+                {
+                  Logger.error("Fehler", e);
+                }
+                m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+                m.setEingabedatum();
+                GUI.startView(MitgliedDetailView.class.getName(), m);
+              }
+              catch (RemoteException e)
+              {
+                throw new ApplicationException(e);
+              }
             }
-            catch (Exception e)
-            {
-              Logger.error("Fehler", e);
-            }
-            m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
-            m.setEingabedatum();
-            GUI.startView(MitgliedDetailView.class.getName(), m);
-          }
-          catch (RemoteException e)
-          {
-            throw new ApplicationException(e);
-          }
-        }
-      }, "view-refresh.png"));
+          }, "view-refresh.png"));
     }
     else
     {
-      addItem(new CheckedSingleContextMenuItem("Zu Nicht-Mitglied umwandeln", new Action()
-      {
+      addItem(new CheckedSingleContextMenuItem("Zu Nicht-Mitglied umwandeln",
+          new Action()
+          {
 
-        @Override
-        public void handleAction(Object context) throws ApplicationException
-        {
-          Mitglied m = (Mitglied) context;
-          try
-          {
-            SimpleDialog sd = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-            sd.setText(
-                "Bitte den Mitgliedstyp nacherfassen.");
-            sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-            sd.setSize(400, SWT.DEFAULT);
-            sd.setTitle("Daten nacherfassen");
-            try
+            @Override
+            public void handleAction(Object context) throws ApplicationException
             {
-              sd.open();
+              Mitglied m = (Mitglied) context;
+              try
+              {
+                SimpleDialog sd = new SimpleDialog(
+                    SimpleDialog.POSITION_CENTER);
+                sd.setText("Bitte den Mitgliedstyp nacherfassen.");
+                sd.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
+                sd.setSize(400, SWT.DEFAULT);
+                sd.setTitle("Daten nacherfassen");
+                try
+                {
+                  sd.open();
+                }
+                catch (Exception e)
+                {
+                  Logger.error("Fehler", e);
+                }
+                m.setMitgliedstyp(Mitgliedstyp.SPENDER);
+                m.setEingabedatum();
+                m.setBeitragsgruppe(null);
+                m.setExterneMitgliedsnummer(null);
+                m.setIndividuellerBeitrag(null);
+                m.setEintritt("");
+                m.setAustritt("");
+                m.setKuendigung("");
+                m.setVollZahlerID(null);
+                DBService service = Einstellungen.getDBService();
+                // SekundÃ¤re Beitragsgruppen lÃ¶schen
+                DBIterator<SekundaereBeitragsgruppe> sit = service
+                    .createList(SekundaereBeitragsgruppe.class);
+                sit.addFilter("mitglied = ? ", m.getID());
+                while (sit.hasNext())
+                {
+                  sit.next().delete();
+                }
+                // ZukÃ¼nftige Beitragsgruppen lÃ¶schen
+                DBIterator<MitgliedNextBGruppe> mit = service
+                    .createList(MitgliedNextBGruppe.class);
+                mit.addFilter(MitgliedNextBGruppe.COL_MITGLIED + " = ? ",
+                    m.getID());
+                while (mit.hasNext())
+                {
+                  mit.next().delete();
+                }
+                GUI.startView(NichtMitgliedDetailView.class.getName(), m);
+              }
+              catch (RemoteException e)
+              {
+                throw new ApplicationException(e);
+              }
             }
-            catch (Exception e)
-            {
-              Logger.error("Fehler", e);
-            }
-            m.setMitgliedstyp(Mitgliedstyp.SPENDER);
-            m.setEingabedatum();
-            m.setBeitragsgruppe(null);
-            m.setExterneMitgliedsnummer(null);
-            m.setIndividuellerBeitrag(null);
-            m.setEintritt("");
-            m.setAustritt("");
-            m.setKuendigung("");
-            m.setVollZahlerID(null);
-            DBService service = Einstellungen.getDBService();
-            // Sekundäre Beitragsgruppen löschen
-            DBIterator<SekundaereBeitragsgruppe> sit = service
-                .createList(SekundaereBeitragsgruppe.class);
-            sit.addFilter("mitglied = ? ", m.getID());
-            while (sit.hasNext())
-            {
-              sit.next().delete();
-            }
-            // Zukünftige Beitragsgruppen löschen
-            DBIterator<MitgliedNextBGruppe> mit = service
-                .createList(MitgliedNextBGruppe.class);
-            mit.addFilter(MitgliedNextBGruppe.COL_MITGLIED + " = ? ", m.getID());
-            while (mit.hasNext())
-            {
-              mit.next().delete();
-            }
-            GUI.startView(NichtMitgliedDetailView.class.getName(), m);
-          }
-          catch (RemoteException e)
-          {
-            throw new ApplicationException(e);
-          }
-        }
-      }, "view-refresh.png"));
+          }, "view-refresh.png"));
     }
     if (detailaction instanceof NichtMitgliedDetailAction)
     {
-    addItem(new CheckedContextMenuItem("Löschen",
-        new NichtMitgliedDeleteAction(), "user-trash-full.png"));
+      addItem(new CheckedContextMenuItem("LÃ¶schen",
+          new NichtMitgliedDeleteAction(), "user-trash-full.png"));
     }
     else
     {
-      addItem(new CheckedContextMenuItem("Löschen",
-          new MitgliedDeleteAction(), "user-trash-full.png"));
+      addItem(new CheckedContextMenuItem("LÃ¶schen", new MitgliedDeleteAction(),
+          "user-trash-full.png"));
     }
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
@@ -201,13 +221,14 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
         "file-invoice.png"));
-    if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+          new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
           "file-invoice.png"));
       addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-          new SpendenbescheinigungAction(Spendenart.SACHSPENDE),
+          new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
           "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Personalbogen",

@@ -30,7 +30,7 @@ public class ZusatzbetragVorlageListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Zusatzbetr‰ge-Vorlagen");
+    GUI.getView().setTitle("Zusatzbetr√§ge-Vorlagen");
 
     final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
         this);
@@ -40,9 +40,8 @@ public class ZusatzbetragVorlageListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE_VORLAGE, false, "question-circle.png");
-    buttons.addButton("Neu",
-        new NewAction(ZusatzbetragVorlageDetailView.class, ZusatzbetragVorlage.class),
-        control, false, "document-new.png");
+    buttons.addButton("Neu", new NewAction(ZusatzbetragVorlageDetailView.class,
+        ZusatzbetragVorlage.class), control, false, "document-new.png");
     buttons.paint(this.getParent());
   }
 }

@@ -52,10 +52,10 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ein TreePart, bei dem Spalten editiert werden können. Dazu müssen die Spalten
+ * Ein TreePart, bei dem Spalten editiert werden kÃ¶nnen. Dazu mÃ¼ssen die Spalten
  * <code>editable</code> sein. Per
  * <code>addChangeListener(TableChangeListener l)</code> kann ein Listener
- * angehängt werden, der bei Änderungen benachrichtigt wird.
+ * angehÃ¤ngt werden, der bei Ã„nderungen benachrichtigt wird.
  */
 public class EditTreePart extends TreePart
 {
@@ -101,6 +101,7 @@ public class EditTreePart extends TreePart
 
       tree.addListener(SWT.MouseDown, new Listener()
       {
+        @Override
         public void handleEvent(Event e)
         {
           // Bearbeiten nur dann, wenn man mit der linken Maustaste klickt
@@ -117,14 +118,14 @@ public class EditTreePart extends TreePart
 
           final int index = selectedCol;
 
-          // Jetzt checken wir noch, ob die Spalte änderbar ist
+          // Jetzt checken wir noch, ob die Spalte Ã¤nderbar ist
           final Column col = columns.get(index);
           if (!col.canChange())
             return;
 
-          // Wir rufen den Listener auf, wenn dieser false zurückgibt, soll das
-          // Feld nicht bearbeitet werden können.
-          // Das ist nötig, da es bei einem Tree verschiedene Nodes Typen gibt,
+          // Wir rufen den Listener auf, wenn dieser false zurÃ¼ckgibt, soll das
+          // Feld nicht bearbeitet werden kÃ¶nnen.
+          // Das ist nÃ¶tig, da es bei einem Tree verschiedene Nodes Typen gibt,
           // die nicht alle gleich behandelt werden sollen.
           for (TreeEditListener l : editListeners)
           {
@@ -142,10 +143,10 @@ public class EditTreePart extends TreePart
           editor.setEditor(editorControl, item, index);
 
           // Wir merken uns noch die letzte Farbe des Items.
-          // Denn falls der User etwas Ungültiges eingibt, färben wir
+          // Denn falls der User etwas UngÃ¼ltiges eingibt, fÃ¤rben wir
           // sie rot. Allerdings wollen wir sie anschliessend
-          // wieder auf die richtige ursprüngliche Farbe
-          // zurücksetzen, wenn der User den Wert korrigiert hat.
+          // wieder auf die richtige ursprÃ¼ngliche Farbe
+          // zurÃ¼cksetzen, wenn der User den Wert korrigiert hat.
           if (item.getData("color") == null)
           {
             // wir hatten den Wert noch nicht gespeichert
@@ -154,7 +155,7 @@ public class EditTreePart extends TreePart
           final org.eclipse.swt.graphics.Color color = (org.eclipse.swt.graphics.Color) item
               .getData("color");
 
-          // Wir deaktivieren den Default-Button für den Zeitraum der
+          // Wir deaktivieren den Default-Button fÃ¼r den Zeitraum der
           // Bearbeitung
           Button b = GUI.getShell().getDefaultButton();
           final boolean enabled;
@@ -170,6 +171,7 @@ public class EditTreePart extends TreePart
           // Beendet das Editieren
           final Runnable done = new Runnable()
           {
+            @Override
             public void run()
             {
               if (editorControl != null)
@@ -188,9 +190,10 @@ public class EditTreePart extends TreePart
           //////////////////////////////////////////////////////////////////////
 
           //////////////////////////////////////////////////////////////////////
-          // Übernimmt die Änderungen
+          // Ãœbernimmt die Ã„nderungen
           final Runnable commit = new Runnable()
           {
+            @Override
             public void run()
             {
               try
@@ -206,7 +209,7 @@ public class EditTreePart extends TreePart
                 String formattedValue = newValue;
                 try
                 {
-                  // Wird gebraucht, um den ursprünglichen Typ zu kennen.
+                  // Wird gebraucht, um den ursprÃ¼nglichen Typ zu kennen.
                   Object value = BeanUtil.get(item.getData(),
                       col.getColumnId());
                   Object o = newValue;
@@ -244,7 +247,7 @@ public class EditTreePart extends TreePart
                   String msg = ae.getMessage();
                   if (msg == null || msg.length() == 0)
                   {
-                    msg = "Fehler beim Ändern des Wertes";
+                    msg = "Fehler beim Ã„ndern des Wertes";
                     Logger.error("error while changing value", ae);
                   }
                   GUI.getStatusBar().setErrorText(msg);
@@ -259,9 +262,10 @@ public class EditTreePart extends TreePart
           //
           //////////////////////////////////////////////////////////////////////
 
-          // Listener für Tastatur
+          // Listener fÃ¼r Tastatur
           editorControl.addTraverseListener(new TraverseListener()
           {
+            @Override
             public void keyTraversed(TraverseEvent e)
             {
               if (!editorControl.isFocusControl())
@@ -279,9 +283,10 @@ public class EditTreePart extends TreePart
               }
             }
           });
-          // Listener für Maus
+          // Listener fÃ¼r Maus
           editorControl.addFocusListener(new FocusAdapter()
           {
+            @Override
             public void focusLost(FocusEvent e)
             {
               commit.run();
@@ -327,8 +332,8 @@ public class EditTreePart extends TreePart
   }
 
   /**
-   * fügt dem Tree einen Listener hinzu, der ausgelöst wird, wenn ein Feld
-   * änderbar ist und vom Benutzer gäendert wurde.
+   * fÃ¼gt dem Tree einen Listener hinzu, der ausgelÃ¶st wird, wenn ein Feld
+   * Ã¤nderbar ist und vom Benutzer gÃ¤endert wurde.
    * 
    * @param l
    *          der Listener.
@@ -340,8 +345,8 @@ public class EditTreePart extends TreePart
   }
 
   /**
-   * fügt dem Tree einen Listener hinzu, der ausgeloöt wird, wenn ein Feld
-   * änderbar ist und vom Benutzer zum bearbeitet angeklickt wurde.
+   * fÃ¼gt dem Tree einen Listener hinzu, der ausgeloÃ¶t wird, wenn ein Feld
+   * Ã¤nderbar ist und vom Benutzer zum bearbeitet angeklickt wurde.
    * 
    * @param l
    *          der Listener.

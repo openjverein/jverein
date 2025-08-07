@@ -27,13 +27,17 @@ import java.util.TreeSet;
 import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.MailDetailAction;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.util.EvalMail;
+import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -59,8 +63,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class MailControl extends FilterControl
-    implements IMailControl, Savable
+public class MailControl extends FilterControl implements IMailControl, Savable
 {
 
   private AutoUpdateTablePart empfaenger;
@@ -75,7 +78,7 @@ public class MailControl extends FilterControl
 
   private Mail mail;
 
-  private TablePart mailsList;
+  private JVereinTablePart mailsList;
 
   public MailControl(AbstractView view)
   {
@@ -269,7 +272,7 @@ public class MailControl extends FilterControl
           {
             SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
             d.setTitle("Mail bereits versendet");
-            d.setText("Mail wurde bereits an alle Empf‰nger versendet!");
+            d.setText("Mail wurde bereits an alle Empf√§nger versendet!");
             try
             {
               d.open();
@@ -284,9 +287,10 @@ public class MailControl extends FilterControl
           {
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail senden?");
-            d.setText(
-                "Diese Mail wurde bereits an " + (getMail().getEmpfaenger()
-                    .size() - toBeSentCount) + " der gew‰hlten Empf‰nger versendet. Wollen Sie diese Mail an alle weiteren " + toBeSentCount + " Empf‰nger senden?");
+            d.setText("Diese Mail wurde bereits an "
+                + (getMail().getEmpfaenger().size() - toBeSentCount)
+                + " der gew√§hlten Empf√§nger versendet. Wollen Sie diese Mail an alle weiteren "
+                + toBeSentCount + " Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -334,7 +338,7 @@ public class MailControl extends FilterControl
           if (mail.getTxt().length() > 10000)
           {
             throw new ApplicationException(
-                "Maximale L‰nge des Textes 10.000 Zeichen");
+                "Maximale L√§nge des Textes 10.000 Zeichen");
           }
 
           boolean mailAlreadySent = false;
@@ -351,7 +355,7 @@ public class MailControl extends FilterControl
             YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
             d.setTitle("Mail erneut senden?");
             d.setText(
-                "An mindestens einen Empf‰nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf‰nger senden?");
+                "An mindestens einen Empf√§nger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empf√§nger senden?");
             try
             {
               Boolean choice = (Boolean) d.open();
@@ -406,25 +410,25 @@ public class MailControl extends FilterControl
   }
 
   /**
-   * Versende Mail an Empf‰nger. Wenn erneutSenden==false wird Mail nur an
-   * Empf‰nger versendet, die Mail noch nicht erhalten haben.
+   * Versende Mail an Empf√§nger. Wenn erneutSenden==false wird Mail nur an
+   * Empf√§nger versendet, die Mail noch nicht erhalten haben.
    */
   private void sendeMail(final boolean erneutSenden) throws RemoteException
   {
     String text = getTxtString();
-    if (text.toLowerCase().contains("<html") && text.toLowerCase()
-        .contains("</body"))
+    if (text.toLowerCase().contains("<html")
+        && text.toLowerCase().contains("</body"))
     {
       // MailSignatur ohne Separator mit vorangestellten hr in den body einbauen
       text = text.substring(0, text.toLowerCase().indexOf("</body") - 1);
-      text = text + "<hr />" + Einstellungen.getEinstellung()
-          .getMailSignatur(false);
+      text = text + "<hr />"
+          + (String) Einstellungen.getEinstellung(Property.MAILSIGNATUR);
       text = text + "</body></html>";
     }
     else
     {
       // MailSignatur mit Separator einfach anh?ngen
-      text = text + Einstellungen.getEinstellung().getMailSignatur(true);
+      text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;
     final String betr = getBetreffString();
@@ -439,17 +443,18 @@ public class MailControl extends FilterControl
         try
         {
           MailSender sender = new MailSender(
-              Einstellungen.getEinstellung().getSmtpServer(),
-              Einstellungen.getEinstellung().getSmtpPort(),
-              Einstellungen.getEinstellung().getSmtpAuthUser(),
-              Einstellungen.getEinstellung().getSmtpAuthPwd(),
-              Einstellungen.getEinstellung().getSmtpFromAddress(),
-              Einstellungen.getEinstellung().getSmtpFromAnzeigename(),
-              Einstellungen.getEinstellung().getMailAlwaysBcc(),
-              Einstellungen.getEinstellung().getMailAlwaysCc(),
-              Einstellungen.getEinstellung().getSmtpSsl(),
-              Einstellungen.getEinstellung().getSmtpStarttls(),
-              Einstellungen.getEinstellung().getMailVerzoegerung(),
+              (String) Einstellungen.getEinstellung(Property.SMTPSERVER),
+              (String) Einstellungen.getEinstellung(Property.SMTPPORT),
+              (String) Einstellungen.getEinstellung(Property.SMTPAUTHUSER),
+              Einstellungen.getSmtpAuthPwd(),
+              (String) Einstellungen.getEinstellung(Property.SMTPFROMADDRESS),
+              (String) Einstellungen
+                  .getEinstellung(Property.SMTPFROMANZEIGENAME),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSBCC),
+              (String) Einstellungen.getEinstellung(Property.MAILALWAYSCC),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSSL),
+              (Boolean) Einstellungen.getEinstellung(Property.SMTPSTARTTLS),
+              (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG),
               Einstellungen.getImapCopyData());
 
           Velocity.init();
@@ -495,7 +500,7 @@ public class MailControl extends FilterControl
               }
               else
               {
-                monitor.log(empf.getMailAdresse() + " - ¸bersprungen");
+                monitor.log(empf.getMailAdresse() + " - √ºbersprungen");
               }
             }
             catch (Exception e)
@@ -504,8 +509,8 @@ public class MailControl extends FilterControl
               monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
             }
             zae++;
-            double proz = (double) zae / (double) getMail().getEmpfaenger()
-                .size() * 100d;
+            double proz = (double) zae
+                / (double) getMail().getEmpfaenger().size() * 100d;
             monitor.setPercentComplete((int) proz);
           }
           monitor.setPercentComplete(100);
@@ -544,11 +549,12 @@ public class MailControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Mail m = getMail();
     m.setBetreff(getBetreffString());
     m.setTxt(getTxtString());
+    return m;
   }
 
   @Override
@@ -568,8 +574,7 @@ public class MailControl extends FilterControl
   {
     try
     {
-      prepareStore();
-      Mail m = getMail();
+      Mail m = (Mail) prepareStore();
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {
@@ -627,7 +632,7 @@ public class MailControl extends FilterControl
     {
       return mailsList;
     }
-    mailsList = new TablePart(getMails(), new MailDetailAction());
+    mailsList = new JVereinTablePart(getMails(), null);
     mailsList.addColumn("Nr", "id-int");
     mailsList.addColumn("Betreff", "betreff");
     mailsList.addColumn("Bearbeitung", "bearbeitung",
@@ -635,12 +640,15 @@ public class MailControl extends FilterControl
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.setRememberColWidths(true);
-    mailsList.setContextMenu(new MailMenu());
+    mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
     mailsList.setRememberOrder(true);
+    mailsList.setAction(new EditAction(MailDetailView.class, mailsList));
+    VorZurueckControl.setObjektListe(null, null);
     return mailsList;
   }
 
+  @Override
   public void TabRefresh()
   {
     try

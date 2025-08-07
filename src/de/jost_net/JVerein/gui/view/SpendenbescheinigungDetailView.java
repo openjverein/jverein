@@ -45,7 +45,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     {
       control.setEditable();
     }
-    
+
     ScrolledContainer scrolled = new ScrolledContainer(getParent());
 
     ColumnLayout cols1 = new ColumnLayout(scrolled.getComposite(), 2);
@@ -73,8 +73,8 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     right.addHeadline("Betrag");
     right.addLabelPair("Betrag", control.getBetrag());
 
-    right.addHeadline("Ersatz für Aufwendungen");
-    right.addLabelPair("Ersatz für Aufwendungen",
+    right.addHeadline("Ersatz fÃ¼r Aufwendungen");
+    right.addLabelPair("Ersatz fÃ¼r Aufwendungen",
         control.getErsatzAufwendungen());
 
     right.addHeadline("Formular");
@@ -87,9 +87,10 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     right.addLabelPair("Unterlagen Wertermittlung",
         control.getUnterlagenWertermittlung());
 
-    if (control.getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
+    if (control.getSpendenbescheinigung()
+        .getSpendenart() == Spendenart.GELDSPENDE)
     {
-      // Buchnungen nur für Geldspenden
+      // Buchnungen nur fÃ¼r Geldspenden
       LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
           "Buchungen");
       grBuchungen.addPart(control.getBuchungListPart());
@@ -98,6 +99,9 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(control.getDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());

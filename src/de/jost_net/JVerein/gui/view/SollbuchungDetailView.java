@@ -64,7 +64,7 @@ public class SollbuchungDetailView extends AbstractDetailView
 
     LabelGroup cont = new LabelGroup(scrolled.getComposite(),
         "Sollbuchungspositionen");
-    
+
     ButtonArea buttons1 = new ButtonArea();
     Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
         getCurrentObject(), false, "document-new.png");
@@ -88,7 +88,9 @@ public class SollbuchungDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
-
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     Button save = new SaveButton(control);
     save.setEnabled(!hasRechnung);
     buttons.addButton(save);

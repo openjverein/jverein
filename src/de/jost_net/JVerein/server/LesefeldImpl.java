@@ -54,7 +54,7 @@ public class LesefeldImpl extends AbstractDBObject implements Lesefeld
     {
       if (getScript() == null || getScript().length() == 0)
       {
-        throw new ApplicationException("Bitte gültiges Script eingeben");
+        throw new ApplicationException("Bitte gÃ¼ltiges Script eingeben");
       }
 
     }

@@ -23,9 +23,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.LehrgangAction;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -40,17 +44,15 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangControl extends FilterControl
-    implements Savable
+public class LehrgangControl extends FilterControl implements Savable
 {
 
-  private TablePart lehrgaengeList;
+  private JVereinTablePart lehrgaengeList;
 
   private SelectInput lehrgangsart;
 
@@ -63,9 +65,8 @@ public class LehrgangControl extends FilterControl
   private TextInput ergebnis = null;
 
   private Lehrgang lehrg = null;
-  
-  private AbstractInput mitglied;
 
+  private AbstractInput mitglied;
 
   public LehrgangControl(AbstractView view)
   {
@@ -93,8 +94,10 @@ public class LehrgangControl extends FilterControl
     DBIterator<Lehrgangsart> it = Einstellungen.getDBService()
         .createList(Lehrgangsart.class);
     it.setOrder("order by bezeichnung");
-    lehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, getLehrgang().getLehrgangsart());
-    lehrgangsart.setPleaseChoose("Bitte auswählen");
+    lehrgangsart = new SelectInput(
+        it != null ? PseudoIterator.asList(it) : null,
+        getLehrgang().getLehrgangsart());
+    lehrgangsart.setPleaseChoose("Bitte auswÃ¤hlen");
     lehrgangsart.addListener(new Listener()
     {
 
@@ -132,7 +135,7 @@ public class LehrgangControl extends FilterControl
 
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Datum");
-    this.von.setText("Bitte (Beginn-)Datum wählen");
+    this.von.setText("Bitte (Beginn-)Datum wÃ¤hlen");
     von.setMandatory(true);
     return von;
   }
@@ -148,7 +151,7 @@ public class LehrgangControl extends FilterControl
 
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Datum");
-    this.bis.setText("Bitte Ende-Datum wählen");
+    this.bis.setText("Bitte Ende-Datum wÃ¤hlen");
     return bis;
   }
 
@@ -173,7 +176,7 @@ public class LehrgangControl extends FilterControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgang l = getLehrgang();
 
@@ -190,14 +193,15 @@ public class LehrgangControl extends FilterControl
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
     l.setErgebnis((String) getErgebnis().getValue());
+    return l;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Lehrgang l = getLehrgang();
+      Lehrgang l = (Lehrgang) prepareStore();
       if (l.isNewObject())
       {
         if (getMitglied().getValue() != null)
@@ -221,6 +225,7 @@ public class LehrgangControl extends FilterControl
     }
   }
 
+  @Override
   public void TabRefresh()
   {
     try
@@ -249,15 +254,15 @@ public class LehrgangControl extends FilterControl
         .createList(Lehrgang.class);
     lehrgaenge.join("mitglied");
     lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
-    
+
     if (isSuchnameAktiv() && getSuchname().getValue() != null)
     {
       String tmpSuchname = (String) getSuchname().getValue();
       if (tmpSuchname.length() > 0)
       {
         String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        lehrgaenge.addFilter("(lower(name) like ? "
-            + "or lower(vorname) like ?)" , 
+        lehrgaenge.addFilter(
+            "(lower(name) like ? " + "or lower(vorname) like ?)",
             new Object[] { suchName, suchName });
       }
     }
@@ -285,7 +290,7 @@ public class LehrgangControl extends FilterControl
     DBIterator<Lehrgang> lehrgaenge = getIterator();
     if (lehrgaengeList == null)
     {
-      lehrgaengeList = new TablePart(lehrgaenge, new LehrgangAction(null));
+      lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
       lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
       lehrgaengeList.addColumn("Von/am", "von",
@@ -294,10 +299,13 @@ public class LehrgangControl extends FilterControl
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       lehrgaengeList.addColumn("Veranstalter", "veranstalter");
       lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-      lehrgaengeList.setContextMenu(new LehrgangMenu());
+      lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
+      lehrgaengeList
+          .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
@@ -310,7 +318,7 @@ public class LehrgangControl extends FilterControl
     }
     return lehrgaengeList;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -320,14 +328,14 @@ public class LehrgangControl extends FilterControl
 
     if (getLehrgang().getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {getLehrgang().getMitglied()};
+      Mitglied[] mitgliedArray = { getLehrgang().getMitglied() };
       mitglied = new SelectInput(mitgliedArray, getLehrgang().getMitglied());
       mitglied.setEnabled(false);
     }
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     }
     mitglied.setMandatory(true);
     return mitglied;

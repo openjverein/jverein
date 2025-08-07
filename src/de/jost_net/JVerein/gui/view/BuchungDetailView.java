@@ -54,22 +54,26 @@ public class BuchungDetailView extends AbstractDetailView
     }
     control = new BuchungsControl(this, art);
 
-    final boolean buchungabgeschlossen = control.isBuchungAbgeschlossen();
+    final boolean editable = control.isBuchungEditable();
+    final boolean speicherung = control.getBuchung().getSpeicherung();
 
-    BuchungPart part = new BuchungPart(control, this, buchungabgeschlossen);
+    BuchungPart part = new BuchungPart(control, this, !editable);
     part.paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
 
     Button saveButton = new Button("Speichern", context -> {
       try
       {
         control.buchungSpeichern();
 
-        // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
-        if (!control.getBuchung().getSpeicherung())
+        // Bei Splitbuchungen nach dem Speichern zurÃ¼ck zu SplitÃ¼bersicht
+        if (!speicherung)
         {
           GUI.startPreviousView();
         }
@@ -79,7 +83,7 @@ public class BuchungDetailView extends AbstractDetailView
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
     }, null, true, "document-save.png");
-    saveButton.setEnabled(!buchungabgeschlossen);
+    saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
     Button saveNextButton = new Button("Speichern und neu", context -> {
@@ -88,7 +92,7 @@ public class BuchungDetailView extends AbstractDetailView
         control.buchungSpeichern();
 
         // Bei Splitbuchungen neue Splitbuchung
-        if (!control.getBuchung().getSpeicherung())
+        if (!speicherung)
         {
           if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
               .doubleValue()
@@ -102,14 +106,14 @@ public class BuchungDetailView extends AbstractDetailView
         {
           new BuchungNeuAction(control).handleAction(null);
         }
-        GUI.getStatusBar().setSuccessText("Buchung übernommen");
+        GUI.getStatusBar().setSuccessText("Buchung Ã¼bernommen");
       }
       catch (Exception e)
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
     }, null, false, "go-next.png");
-    saveNextButton.setEnabled(!buchungabgeschlossen);
+    saveNextButton.setEnabled(editable);
     buttons.addButton(saveNextButton);
 
     buttons.paint(getParent());
@@ -124,7 +128,7 @@ public class BuchungDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
-    // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
+    // Bei Splitbuchunge Funktioniert die Ã„nderungsÃ¼berwachung nicht, da nicht
     // direkt gespeichert wird.
     try
     {

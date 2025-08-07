@@ -18,56 +18,38 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageAction implements Action
+public class VorlageVorschauAction implements Action
 {
 
-  private Mitglied m;
-
-  public WiedervorlageAction(Mitglied m)
+  public VorlageVorschauAction()
   {
-    super();
-    this.m = m;
+    //
   }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Wiedervorlage w = null;
+    VorlageControl control = null;
 
-    if (context != null && (context instanceof Wiedervorlage))
+    if (context instanceof VorlageControl)
     {
-      w = (Wiedervorlage) context;
+      control = (VorlageControl) context;
     }
     else
     {
-      try
-      {
-        w = (Wiedervorlage) Einstellungen.getDBService().createObject(
-            Wiedervorlage.class, null);
-        if (m != null)
-        {
-          if (m.getID() == null)
-          {
-            throw new ApplicationException(
-                "Neues Mitglied bitte erst speichern. Dann können Wiedervorlagen aufgenommen werden.");
-          }
-          w.setMitglied(Integer.valueOf(m.getID()).intValue());
-        }
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung einer neuen Wiedervorlage", e);
-      }
+      throw new ApplicationException("Falscher Kontext");
     }
-    GUI.startView(WiedervorlageDetailView.class.getName(), w);
+    try
+    {
+      control.updateVorschau();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(e);
+    }
   }
 }

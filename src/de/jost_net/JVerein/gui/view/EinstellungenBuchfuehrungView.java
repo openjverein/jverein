@@ -30,17 +30,18 @@ public class EinstellungenBuchfuehrungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Buchführung");
+    GUI.getView().setTitle("Einstellungen BuchfÃ¼hrung");
 
     final EinstellungControl control = new EinstellungControl(this);
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
+    cont.addLabelPair("Beginn GeschÃ¤ftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
-    cont.addLabelPair("Intervall für aktive Konten (Jahre)",
+    cont.addLabelPair("Intervall fÃ¼r aktive Konten (Jahre)",
         control.getUnterdrueckungKonten());
-    cont.addLabelPair("Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
+    cont.addLabelPair(
+        "Buchungsarten die seit x Monaten nicht benutzt werden unterdrÃ¼cken",
         control.getUnterdrueckungLaenge());
     cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     cont.addInput(control.getAutoBuchunguebernahme());
@@ -48,6 +49,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addInput(control.getUnterdrueckungOhneBuchung());
     cont.addInput(control.getKontonummerInBuchungsliste());
     cont.addInput(control.getOptiert());
+    cont.addInput(control.getOptiertPflicht());
     cont.addInput(control.getSteuerInBuchung());
     cont.addInput(control.getFreieBuchungsklasse());
     cont.addInput(control.getSplitPositionZweck());
@@ -55,7 +57,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

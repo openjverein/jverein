@@ -32,8 +32,8 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class JVereinDBServiceImpl extends DBServiceImpl implements
-    JVereinDBService
+public class JVereinDBServiceImpl extends DBServiceImpl
+    implements JVereinDBService
 {
 
   private static final long serialVersionUID = 7221618925760171630L;
@@ -45,7 +45,8 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
    */
   public JVereinDBServiceImpl() throws RemoteException
   {
-    this(SETTINGS.getString("database.driver", DBSupportH2Impl.class.getName()));
+    this(
+        SETTINGS.getString("database.driver", DBSupportH2Impl.class.getName()));
   }
 
   /**
@@ -70,15 +71,15 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
     }
     catch (Throwable t)
     {
-      throw new RemoteException(
-          "unable to load database driver " + driverClass, t);
+      throw new RemoteException("unable to load database driver " + driverClass,
+          t);
     }
   }
 
   @Override
   public String getName()
   {
-    return "Datenbank-Service für JVerein";
+    return "Datenbank-Service fÃ¼r JVerein";
   }
 
   @Override
@@ -90,6 +91,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
   /**
    * @see de.willuhn.datasource.db.DBServiceImpl#getTransactionIsolationLevel()
    */
+  @Override
   protected int getTransactionIsolationLevel() throws RemoteException
   {
     return this.driver.getTransactionIsolationLevel();
@@ -185,7 +187,7 @@ public class JVereinDBServiceImpl extends DBServiceImpl implements
   // .getPlugin(JVereinPlugin.class).getResources().getI18N();
   // ProgressMonitor monitor = Application.getCallback().getStartupMonitor();
   // monitor.setStatusText(i18n.tr(
-  // "Führe JVerein-Update durch: von {0} zu {1}", new String[] {
+  // "FÃ¼hre JVerein-Update durch: von {0} zu {1}", new String[] {
   // df.format(oldVersion), df.format(newVersion) }));
   //
   // this.driver.execute(getConnection(), f);

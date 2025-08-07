@@ -82,7 +82,8 @@ public class MitgliedskontoNode implements GenericObjectNode
     this.id = m.getID();
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
-    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?", new Object[] { m.getID() });
+    sollbIt.addFilter(Sollbuchung.MITGLIED + " = ?",
+        new Object[] { m.getID() });
     if (von != null)
     {
       sollbIt.addFilter(Sollbuchung.DATUM + " >= ?", von);
@@ -125,7 +126,8 @@ public class MitgliedskontoNode implements GenericObjectNode
       this.children = new ArrayList<>();
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
-      it.addFilter(Buchung.SOLLBUCHUNG + " = ?", new Object[] { sollb.getID() });
+      it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
+          new Object[] { sollb.getID() });
       it.setOrder("order by datum desc");
       ist = 0d;
       while (it.hasNext())
@@ -278,12 +280,12 @@ public class MitgliedskontoNode implements GenericObjectNode
       parent.children.remove(this);
     }
   }
-  
+
   public Double getSoll()
   {
     return soll;
   }
-  
+
   public Double getIst()
   {
     return ist;

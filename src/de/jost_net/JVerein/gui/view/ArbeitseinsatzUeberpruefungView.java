@@ -37,7 +37,7 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Auswertung Arbeitseins‰tze");
+    GUI.getView().setTitle("Auswertung Arbeitseins√§tze");
 
     final ArbeitseinsatzControl control = new ArbeitseinsatzControl(this);
     butArbeitseinsaetze = control.getArbeitseinsatzAusgabeButton();

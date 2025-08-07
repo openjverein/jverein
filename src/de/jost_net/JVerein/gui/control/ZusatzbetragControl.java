@@ -36,18 +36,23 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.Dateiname;
@@ -55,7 +60,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -65,6 +69,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
@@ -73,8 +78,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class ZusatzbetragControl extends AbstractControl
-    implements Savable
+public class ZusatzbetragControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -87,7 +91,7 @@ public class ZusatzbetragControl extends AbstractControl
 
   private SelectInput ausfuehrungSuch = null;
 
-  private TablePart zusatzbetraegeList;
+  private AutoUpdateTablePart zusatzbetraegeList;
 
   public static final String NEIN = "nein";
 
@@ -142,7 +146,7 @@ public class ZusatzbetragControl extends AbstractControl
     final Vector<String> werte = new Vector<>();
     werte.addElement("Alle");
     werte.addElement("Aktive");
-    werte.addElement("Noch nicht ausgeführt");
+    werte.addElement("Noch nicht ausgefÃ¼hrt");
 
     String sql = "select ausfuehrung from zusatzabbuchung where ausfuehrung is not null "
         + "group by ausfuehrung order by ausfuehrung desc";
@@ -185,7 +189,8 @@ public class ZusatzbetragControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Zusatzbetrag z = getZusatzbetrag();
     z.setFaelligkeit((Date) getZusatzbetragPart().getFaelligkeit().getValue());
@@ -203,19 +208,25 @@ public class ZusatzbetragControl extends AbstractControl
     z.setBetrag((Double) getZusatzbetragPart().getBetrag().getValue());
     z.setZahlungsweg(
         (Zahlungsweg) getZusatzbetragPart().getZahlungsweg().getValue());
+    if (getZusatzbetragPart().isSteuerActive())
+    {
+      z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
+    }
+    return z;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Zusatzbetrag z = getZusatzbetrag();
+      Zusatzbetrag z = (Zusatzbetrag) prepareStore();
       if (z.isNewObject())
       {
         if (getZusatzbetragPart().getMitglied().getValue() != null)
         {
-          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied()
+              .getValue();
           z.setMitglied(Integer.parseInt(m.getID()));
         }
         else
@@ -241,6 +252,10 @@ public class ZusatzbetragControl extends AbstractControl
         zv.setBuchungsart(z.getBuchungsart());
         zv.setBuchungsklasseId(z.getBuchungsklasseId());
         zv.setZahlungsweg(z.getZahlungsweg());
+        if (getZusatzbetragPart().isSteuerActive())
+        {
+          zv.setSteuer(z.getSteuer());
+        }
         zv.store();
       }
     }
@@ -258,42 +273,63 @@ public class ZusatzbetragControl extends AbstractControl
 
     if (zusatzbetraegeList == null)
     {
-      zusatzbetraegeList = new TablePart(zusatzbetraege,
-          new ZusatzbetraegeAction(null));
+      zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
       zusatzbetraegeList.addColumn("Name", "mitglied");
-      zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+      zusatzbetraegeList.addColumn("Erste FÃ¤lligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+      zusatzbetraegeList.addColumn("NÃ¤chste FÃ¤lligkeit", "faelligkeit",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
-          "ausfuehrung",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
+      zusatzbetraegeList.addColumn("Letzte abgerechnete FÃ¤lligkeit",
+          "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-      zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+      zusatzbetraegeList.addColumn("Nicht mehr ausfÃ¼hren ab", "endedatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
       zusatzbetraegeList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter() {
+      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+      {
         @Override
         public String format(Object o)
         {
-          return new Zahlungsweg((Integer)o).getText();
+          return new Zahlungsweg((Integer) o).getText();
         }
       });
-      if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
             new BuchungsklasseFormatter());
       }
       zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
+      }
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);
       zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.addFeature(new FeatureSummary());
       zusatzbetraegeList.setMulti(true);
+      zusatzbetraegeList.setAction(
+          new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
@@ -323,9 +359,9 @@ public class ZusatzbetragControl extends AbstractControl
     }
     else if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {
-      // zunächst nichts tun
+      // zunÃ¤chst nichts tun
     }
-    else if (this.ausfuehrungSuch.getText().equals("Noch nicht ausgeführt"))
+    else if (this.ausfuehrungSuch.getText().equals("Noch nicht ausgefÃ¼hrt"))
     {
       zusatzbetraege.addFilter("ausfuehrung is null");
     }
@@ -378,7 +414,7 @@ public class ZusatzbetragControl extends AbstractControl
         {
           Logger.error(e.getMessage());
           throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Zusatzbeträge");
+              "Fehler beim Start der PDF-Ausgabe der ZusatzbetrÃ¤ge");
         }
       }
     }, null, true, "file-pdf.png");
@@ -388,7 +424,7 @@ public class ZusatzbetragControl extends AbstractControl
   private void starteAuswertung() throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
@@ -396,7 +432,8 @@ public class ZusatzbetragControl extends AbstractControl
       fd.setFilterPath(path);
     }
     fd.setFileName(new Dateiname("zusatzbetraege", "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), "pdf").get());
+        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
+            .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -420,21 +457,19 @@ public class ZusatzbetragControl extends AbstractControl
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Zusatzbeträge", "", it.size());
+          Reporter reporter = new Reporter(fos, "ZusatzbetrÃ¤ge", "", it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
+          reporter.addHeaderColumn("NÃ¤chste FÃ¤lligkeit", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Letzte abgerechnete Fälligkeit",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+          reporter.addHeaderColumn("Letzte abgerechnete FÃ¤lligkeit",
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
               BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nicht mehr ausführen ab",
-              Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
+          reporter.addHeaderColumn("Nicht mehr ausfÃ¼hren ab",
+              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 50,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 30,
@@ -443,7 +478,8 @@ public class ZusatzbetragControl extends AbstractControl
           while (it.hasNext())
           {
             Zusatzbetrag z = (Zusatzbetrag) it.next();
-            if (Einstellungen.getEinstellung().getMitgliedsnummerAnzeigen())
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
             {
               reporter.addColumn(
                   Adressaufbereitung.getIdNameVorname(z.getMitglied()),

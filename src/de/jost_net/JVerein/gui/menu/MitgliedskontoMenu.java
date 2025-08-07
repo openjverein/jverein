@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
 import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
@@ -26,7 +27,7 @@ import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -52,11 +53,11 @@ public class MitgliedskontoMenu extends ContextMenu
   {
     addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Sollbuchung löschen",
+    addItem(new SollOhneIstItem("Sollbuchung lÃ¶schen",
         new SollbuchungLoeschenAction(), "user-trash-full.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         addItem(new MitRechnungItem("Rechnung anzeigen",
             new SollbuchungRechnungAction(), "file-invoice.png"));
@@ -73,18 +74,19 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
-    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lösen",
+    addItem(new SollMitIstItem("Istbuchung von Sollbuchung lÃ¶sen",
         new IstbuchungLoesenAction(), "unlocked.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
-            new SpendenbescheinigungAction(Spendenart.GELDSPENDE),
+            new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
             "file-invoice.png"));
         addItem(new MitgliedItem("Sachspendenbescheinigung",
-            new SpendenbescheinigungAction(Spendenart.SACHSPENDE),
+            new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
             "file-invoice.png"));
       }
     }
@@ -257,7 +259,7 @@ public class MitgliedskontoMenu extends ContextMenu
             if (ob != null)
             {
               Buchung b = (Buchung) ob;
-              if (b.getBuchungsart().getSpende() == true)
+              if (b.getBuchungsart().getSpende())
               {
                 return true;
               }

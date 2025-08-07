@@ -16,11 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -37,17 +39,19 @@ public class SpendenbescheinigungMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Spendenbescheinigungen.
    */
-  public SpendenbescheinigungMenu()
+  public SpendenbescheinigungMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new SpendenbescheinigungAction(0), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+        new EditAction(SpendenbescheinigungDetailView.class, part),
+        "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new SpendenbescheinigungDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("PDF",
-        new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true), "file-pdf.png"));
+        new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true),
+        "file-pdf.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new SpendenbescheinigungSendAction(), "document-print.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",

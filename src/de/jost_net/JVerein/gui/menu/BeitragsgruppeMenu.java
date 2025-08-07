@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.BeitragsgruppeDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,12 +33,12 @@ public class BeitragsgruppeMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Beitragsgruppen.
    */
-  public BeitragsgruppeMenu()
+  public BeitragsgruppeMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(BeitragsgruppeDetailView.class),
+        new EditAction(BeitragsgruppeDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
         new BeitragsgruppeDeleteAction(), "user-trash-full.png"));
   }
 }

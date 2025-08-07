@@ -30,23 +30,26 @@ public class EmailValidator
     }
     catch (AddressException e)
     {
-      Logger.error("Ungültige E-Mail-Adresse \""+emailAddress+"\"", e);
+      Logger.error("UngÃ¼ltige E-Mail-Adresse \"" + emailAddress + "\"", e);
       return false;
     }
     return true;
   }
 
-  private static void Check(InternetAddress internetAddress) throws AddressException
+  private static void Check(InternetAddress internetAddress)
+      throws AddressException
   {
     internetAddress.validate();
     String[] tokens = internetAddress.getAddress().split("@");
     if (tokens.length != 2)
     {
-      throw new AddressException("Missing final '@domain'", internetAddress.getAddress());
+      throw new AddressException("Missing final '@domain'",
+          internetAddress.getAddress());
     }
     if (tokens[1].lastIndexOf('.') == -1)
     {
-      throw new AddressException("Missing final '.tld'", internetAddress.getAddress());
+      throw new AddressException("Missing final '.tld'",
+          internetAddress.getAddress());
     }
   }
 }

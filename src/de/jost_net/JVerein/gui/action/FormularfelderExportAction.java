@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2014 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -52,7 +52,7 @@ public class FormularfelderExportAction implements Action
     }
     else
     {
-      throw new ApplicationException("Kein Formular ausgewählt");
+      throw new ApplicationException("Kein Formular ausgewÃ¤hlt");
     }
 
     try

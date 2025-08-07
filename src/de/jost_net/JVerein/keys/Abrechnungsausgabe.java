@@ -22,7 +22,10 @@ package de.jost_net.JVerein.keys;
 public enum Abrechnungsausgabe
 {
 
-  SEPA_DATEI(1, "Datei"), HIBISCUS(2, "Hibiscus"), KEINE_DATEI(3, "Keine");
+  SEPA_DATEI(1, "Datei"),
+  HIBISCUS(2, "Hibiscus"),
+  KEINE_DATEI(3, "Keine");
+
   private final String text;
 
   private final int key;

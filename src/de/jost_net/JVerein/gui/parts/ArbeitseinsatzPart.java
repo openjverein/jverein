@@ -23,6 +23,7 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -45,11 +46,10 @@ public class ArbeitseinsatzPart implements Part
   private DecimalInput stunden = null;
 
   private TextInput bemerkung = null;
-  
+
   private AbstractInput mitglied;
-  
+
   private boolean mitMitglied;
-  
 
   public ArbeitseinsatzPart(Arbeitseinsatz arbeitseinsatz, boolean mitMitglied)
   {
@@ -85,7 +85,7 @@ public class ArbeitseinsatzPart implements Part
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
     this.datum.setName("Datum");
-    this.datum.setText("Datum Arbeitseinsatz w‰hlen");
+    this.datum.setText("Datum Arbeitseinsatz w√§hlen");
     datum.setMandatory(true);
     return datum;
   }
@@ -96,8 +96,8 @@ public class ArbeitseinsatzPart implements Part
     {
       return stunden;
     }
-    stunden = new DecimalInput(arbeitseinsatz.getStunden(), new DecimalFormat(
-        "###,###.##"));
+    stunden = new DecimalInput(arbeitseinsatz.getStunden(),
+        new DecimalFormat("###,###.##"));
     stunden.setName("Stunden");
     stunden.setMandatory(true);
     return stunden;
@@ -113,7 +113,7 @@ public class ArbeitseinsatzPart implements Part
     bemerkung.setName("Bemerkung");
     return bemerkung;
   }
-  
+
   public Input getMitglied() throws RemoteException
   {
     if (mitglied != null)
@@ -123,14 +123,14 @@ public class ArbeitseinsatzPart implements Part
 
     if (arbeitseinsatz.getMitglied() != null)
     {
-      Mitglied[] mitgliedArray = {arbeitseinsatz.getMitglied()};
+      Mitglied[] mitgliedArray = { arbeitseinsatz.getMitglied() };
       mitglied = new SelectInput(mitgliedArray, arbeitseinsatz.getMitglied());
       mitglied.setEnabled(false);
     }
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     }
     mitglied.setMandatory(true);
     return mitglied;

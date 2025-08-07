@@ -20,11 +20,14 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.Datum;
 import de.willuhn.logging.Logger;
@@ -66,11 +69,11 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       if (getStartdatum() == null)
       {
-        throw new ApplicationException("Bitte Startdatum eingeben");
+        throw new ApplicationException("Bitte erste FÃ¤lligkeit eingeben");
       }
       if (getFaelligkeit() == null)
       {
-        throw new ApplicationException("Bitte nächste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte nÃ¤chste FÃ¤lligkeit eingeben");
       }
       if (getIntervall() == null)
       {
@@ -91,13 +94,13 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       if (getFaelligkeit().getTime() < getStartdatum().getTime())
       {
         throw new ApplicationException(
-            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen");
+            "Das FÃ¤lligkeitsdatum darf nicht vor dem Startdatum liegen");
       }
       if (!Datum.isImInterval(getStartdatum(), getFaelligkeit(),
           getIntervall()))
       {
         throw new ApplicationException(
-            "Nächste Fälligkeit liegt nicht im Intervall");
+            "NÃ¤chste FÃ¤lligkeit liegt nicht im Intervall");
       }
       if (getBetrag() == null)
       {
@@ -121,6 +124,33 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         {
           throw new ApplicationException(
               "Beim Mitglied ist keine IBAN oder Mandatdatum hinterlegt.");
+        }
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        if (getSteuer() != null && getBuchungsart() != null && getSteuer()
+            .getBuchungsart().getArt() != getBuchungsart().getArt())
+        {
+          switch (getBuchungsart().getArt())
+          {
+            case ArtBuchungsart.AUSGABE:
+              throw new ApplicationException(
+                  "Umsatzsteuer statt Vorsteuer gewÃ¤hlt.");
+            case ArtBuchungsart.EINNAHME:
+              throw new ApplicationException(
+                  "Vorsteuer statt Umsatzsteuer gewÃ¤hlt.");
+            // Umbuchung ist bei Anlagebuchungen mÃ¶glich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) mÃ¶glich
+            case ArtBuchungsart.UMBUCHUNG:
+              break;
+          }
+        }
+        if (getSteuer() != null && getBuchungsart() != null
+            && (getBuchungsart().getSpende()
+                || getBuchungsart().getAbschreibung()))
+        {
+          throw new ApplicationException(
+              "Bei Spenden und Abschreibungen ist keine Steuer mÃ¶glich.");
         }
       }
     }
@@ -332,6 +362,10 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       return getBuchungsklasse();
     }
+    if (fieldName.equals("steuer"))
+    {
+      return getSteuer();
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -341,20 +375,20 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public boolean isOffen(Date datum) throws RemoteException
   {
-    if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+    if (!getMitglied().isAngemeldet(datum) && !(Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }
-    // Einmalige Ausführung
+    // Einmalige AusfÃ¼hrung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
     {
       return (getAusfuehrung() == null);
     }
 
-    // Wenn das Endedatum gesetzt ist und das Fälligkeitsdatum liegt zum oder
+    // Wenn das Endedatum gesetzt ist und das FÃ¤lligkeitsdatum liegt zum oder
     // hinter
-    // dem Endedatum: nicht mehr ausführen
+    // dem Endedatum: nicht mehr ausfÃ¼hren
     if (getEndedatum() != null
         && getFaelligkeit().getTime() >= getEndedatum().getTime())
     {
@@ -366,15 +400,15 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public boolean isAktiv(Date datum) throws RemoteException
   {
-    if (!getMitglied().isAngemeldet(datum)
-        && !Einstellungen.getEinstellung().getZusatzbetragAusgetretene())
+    if (!getMitglied().isAngemeldet(datum) && !(Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       return false;
     }
-    // Einmalige Ausführung
+    // Einmalige AusfÃ¼hrung
     if (getIntervall().intValue() == IntervallZusatzzahlung.KEIN)
     {
-      // Ist das Ausführungsdatum gesetzt?
+      // Ist das AusfÃ¼hrungsdatum gesetzt?
       if (getAusfuehrung() != null)
       {
         return false;
@@ -382,8 +416,8 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       return (getFaelligkeit().getTime() <= datum.getTime());
     }
 
-    // Wenn das Endedatum gesetzt ist und das Ausführungsdatum liegt hinter
-    // dem Endedatum: nicht mehr ausführen
+    // Wenn das Endedatum gesetzt ist und das AusfÃ¼hrungsdatum liegt hinter
+    // dem Endedatum: nicht mehr ausfÃ¼hren
     if ((getEndedatum() != null
         && getFaelligkeit().getTime() >= getEndedatum().getTime())
         || getFaelligkeit().getTime() > datum.getTime())
@@ -415,7 +449,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         getStartdatum());
     if (vorh == null)
     {
-      throw new RemoteException("Datum kann nicht weiter zurückgesetzt werden");
+      throw new RemoteException("Datum kann nicht weiter zurÃ¼ckgesetzt werden");
     }
     else
     {
@@ -445,5 +479,29 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       setAttribute("zahlungsweg", zahlungsweg.getKey());
     }
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null; // Keine Steuer zugeordnet
+    }
+
+    if (l instanceof Steuer)
+    {
+      return (Steuer) l;
+    }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
+  }
+
+  @Override
+  public void setSteuer(Steuer steuer) throws RemoteException
+  {
+    setAttribute("steuer", steuer);
   }
 }

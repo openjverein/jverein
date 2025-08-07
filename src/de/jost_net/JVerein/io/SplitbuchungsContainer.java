@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -62,7 +63,7 @@ public class SplitbuchungsContainer
     {
       buchungen = bl;
       text = String.format(
-          "Es werden %s Splitbuchungen erzeugt.\nGeänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.",
+          "Es werden %s Splitbuchungen erzeugt.\nGeÃ¤nderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen Ã¼bernommen.",
           anzahl);
     }
     initiate(bl[0]);
@@ -179,7 +180,7 @@ public class SplitbuchungsContainer
 
   public static void store() throws RemoteException, ApplicationException
   {
-    if (splitbuchungen.size() == 0) // Splitbuchungen wurden aufgelöst
+    if (splitbuchungen.size() == 0) // Splitbuchungen wurden aufgelÃ¶st
     {
       return;
     }
@@ -227,14 +228,14 @@ public class SplitbuchungsContainer
     if (ba_haupt.getNummer() != ba_gegen.getNummer())
     {
       throw new RemoteException(
-          "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
+          "Buchungsarten bei Haupt- und Gegenbuchung mÃ¼ssen identisch sein");
     }
-    if (Einstellungen.getEinstellung().getSteuerInBuchung()
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG)
         && ((steuer_haupt == null && steuer_gegen != null)
             || (steuer_haupt != null && !steuer_haupt.equals(steuer_gegen))))
     {
       throw new RemoteException(
-          "Steuer bei Haupt- und Gegenbuchung müssen identisch sein");
+          "Steuer bei Haupt- und Gegenbuchung mÃ¼ssen identisch sein");
     }
     try
     {
@@ -360,7 +361,7 @@ public class SplitbuchungsContainer
     buch.setBuchungsartId(origin.getBuchungsartId());
     buch.setBuchungsklasseId(origin.getBuchungsklasseId());
     buch.setDatum(master.getDatum());
-    if (kommentareVonHauptbuchung.get(origin) == true)
+    if (kommentareVonHauptbuchung.get(origin))
     {
       buch.setKommentar(master.getKommentar());
     }
@@ -374,7 +375,7 @@ public class SplitbuchungsContainer
     buch.setProjekt(master.getProjekt());
     buch.setSplitId(Long.valueOf(master.getID()));
     buch.setUmsatzid(master.getUmsatzid());
-    if (zweckeVonHauptbuchung.get(origin) == true)
+    if (zweckeVonHauptbuchung.get(origin))
     {
       buch.setZweck(master.getZweck());
     }
@@ -398,8 +399,8 @@ public class SplitbuchungsContainer
    *          die Sollbuchung, die der Buchung zugewiesen werden soll
    * @param immerSpliten
    *          auch bei nur einer Sollbuchungsposition splitten
-   * @return Wenn die Beträge von Sollbuchung und Buchung verschieden sind, wird
-   *         die erzeugte Restbuchung zurückgegeben, sonst <code>null</code>.
+   * @return Wenn die BetrÃ¤ge von Sollbuchung und Buchung verschieden sind, wird
+   *         die erzeugte Restbuchung zurÃ¼ckgegeben, sonst <code>null</code>.
    */
   public static Buchung autoSplit(Buchung buchung, Sollbuchung sollb,
       boolean immerSplitten)
@@ -416,14 +417,14 @@ public class SplitbuchungsContainer
 
     HashMap<String, Double> splitMap = new HashMap<>();
     HashMap<String, String> splitZweckMap = new HashMap<>();
-    boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
     ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     try
     {
       for (SollbuchungPosition sp : spArray)
       {
-        // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
+        // Wenn eine Buchungsart fehlt kÃ¶nnen wir nicht automatisch splitten
         if (sp.getBuchungsartId() == null)
         {
           throw new ApplicationException(
@@ -432,8 +433,7 @@ public class SplitbuchungsContainer
         // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
         // wenn steuerInBuchung gesetzt ist)
         String key = sp.getBuchungsartId() + "-"
-            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId()
-                : "")
+            + (sp.getBuchungsklasseId() != null ? sp.getBuchungsklasseId() : "")
             + "#";
         if (steuerInBuchung)
         {
@@ -479,7 +479,7 @@ public class SplitbuchungsContainer
         splitten = true;
       }
       if (splitten)
-      { 
+      {
         boolean ersetzen = false;
         if (buchung.getBuchungsartId() == null
             && spArray.get(0).getBuchungsartId() != null)
@@ -497,16 +497,16 @@ public class SplitbuchungsContainer
           buchung.setSplitTyp(SplitbuchungTyp.HAUPT);
           buchung.setSollbuchungID(null);
         }
-        // Haupt- und Gegen-Buchungen können nicht gesplittet werden.
+        // Haupt- und Gegen-Buchungen kÃ¶nnen nicht gesplittet werden.
         else if (buchung.getSplitTyp() == SplitbuchungTyp.GEGEN
             || buchung.getSplitTyp() == SplitbuchungTyp.HAUPT)
         {
           throw new ApplicationException(
-              "Splitten von Haupt und Gegenbuchung nicht möglich.");
+              "Splitten von Haupt und Gegenbuchung nicht mÃ¶glich.");
         }
         else
         {
-          // Spitbuchungen müssen durch die neuen Buchungen ersetzt werden
+          // Spitbuchungen mÃ¼ssen durch die neuen Buchungen ersetzt werden
           ersetzen = true;
         }
 
@@ -521,18 +521,18 @@ public class SplitbuchungsContainer
               if (b.getSpendenbescheinigung() != null)
               {
                 Logger.error(
-                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht mÃ¶glich.");
                 throw new ApplicationException(
-                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht möglich.");
+                    "Splitbuchung ist einer Spendenbescheinigung zugeordnet, neu splitten nicht mÃ¶glich.");
               }
               b.setDelete(true);
               break;
             }
           }
         }
-      
-        boolean splitPositionZweck = Einstellungen.getEinstellung()
-            .getSplitPositionZweck();
+
+        boolean splitPositionZweck = (Boolean) Einstellungen
+            .getEinstellung(Property.SPLITPOSITIONZWECK);
         Iterator<Entry<String, Double>> iterator = splitMap.entrySet()
             .iterator();
         while (iterator.hasNext())
@@ -617,7 +617,7 @@ public class SplitbuchungsContainer
     }
     if (!splitten)
     {
-      // Wenn kein automatisches Spliten möglich ist nur Buchungsart,
+      // Wenn kein automatisches Spliten mÃ¶glich ist nur Buchungsart,
       // Buchungsklasse, Steuer und Sollbuchung zuweisen
       if (spArray.get(0).getBuchungsartId() != null)
       {

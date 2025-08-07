@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
@@ -57,7 +58,6 @@ import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.TreeFormatter;
@@ -75,17 +75,17 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public abstract class FilterControl extends AbstractControl
+public abstract class FilterControl extends VorZurueckControl
 {
   public final static String ALLE = "Alle";
 
-  // String f¸r allgemeine Settings z.B. settings1
+  // String f√ºr allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
 
-  // String f¸r Zusatzfelder
+  // String f√ºr Zusatzfelder
   protected String additionalparamprefix1 = "";
 
-  // String f¸r Zusatfelder Anzahl
+  // String f√ºr Zusatfelder Anzahl
   protected String additionalparamprefix2 = "";
 
   protected Settings settings = null;
@@ -176,59 +176,61 @@ public abstract class FilterControl extends AbstractControl
 
   private enum RANGE
   {
-    MONAT, TAG
+    MONAT,
+    TAG
   }
 
   protected SelectInput suchspendenart = null;
 
-  public enum Mitgliedstypen {
+  public enum Mitgliedstypen
+  {
     MITGLIED,
     NICHTMITGLIED,
     NOT_USED,
     ALLE
   }
-  
-  
+
   public FilterControl(AbstractView view)
   {
     super(view);
   }
-  
-  public void init(String settingsprefix, String additionalparamprefix1, 
+
+  public void init(String settingsprefix, String additionalparamprefix1,
       String additionalparamprefix2)
   {
-    if(settingsprefix != null)
+    if (settingsprefix != null)
       this.settingsprefix = settingsprefix;
-    if(additionalparamprefix1 != null)
+    if (additionalparamprefix1 != null)
       this.additionalparamprefix1 = additionalparamprefix1;
-    if(additionalparamprefix2 != null)
+    if (additionalparamprefix2 != null)
       this.additionalparamprefix2 = additionalparamprefix2;
   }
-  
+
   public Settings getSettings()
   {
     return settings;
   }
-  
+
   public String getSettingsprefix()
   {
     return settingsprefix;
   }
-  
+
   public String getAdditionalparamprefix1()
   {
     return additionalparamprefix1;
   }
-  
+
   public String getAdditionalparamprefix2()
   {
     return additionalparamprefix2;
   }
-  
+
   /**
    * Such Input Felder
    */
-  public SelectInput getSuchMitgliedstyp(Mitgliedstypen typ) throws RemoteException
+  public SelectInput getSuchMitgliedstyp(Mitgliedstypen typ)
+      throws RemoteException
   {
     if (suchmitgliedstyp != null)
     {
@@ -258,7 +260,8 @@ public abstract class FilterControl extends AbstractControl
       Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
           .createObject(Mitgliedstyp.class,
               String.valueOf(Mitgliedstyp.MITGLIED));
-      suchmitgliedstyp = new SelectInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
+      suchmitgliedstyp = new SelectInput(
+          mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }
     else if (typ == Mitgliedstypen.NICHTMITGLIED || typ == Mitgliedstypen.ALLE)
     {
@@ -266,13 +269,15 @@ public abstract class FilterControl extends AbstractControl
       try
       {
         mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
-            Mitgliedstyp.class, settings.getString(settingsprefix + "suchadresstyp", "2"));
+            Mitgliedstyp.class,
+            settings.getString(settingsprefix + "suchadresstyp", "2"));
       }
       catch (Exception e)
       {
         mt = null;
       }
-      suchmitgliedstyp = new SelectInput(mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
+      suchmitgliedstyp = new SelectInput(
+          mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }
     else
     {
@@ -283,12 +288,12 @@ public abstract class FilterControl extends AbstractControl
     suchmitgliedstyp.addListener(new FilterListener());
     return suchmitgliedstyp;
   }
-  
+
   public boolean isSuchMitgliedstypActive()
   {
     return suchmitgliedstyp != null;
   }
-  
+
   public Input getMitgliedStatus()
   {
     if (status != null)
@@ -307,19 +312,18 @@ public abstract class FilterControl extends AbstractControl
   {
     return status != null;
   }
-  
+
   public Input getMitgliedArt()
   {
     if (art != null)
     {
       return art;
     }
-    art = new SelectInput(
-        new String[] { "Mitglied", "Nicht-Mitglied" },
+    art = new SelectInput(new String[] { "Mitglied", "Nicht-Mitglied" },
         settings.getString(settingsprefix + "status.art", ""));
     try
     {
-      if (Einstellungen.getEinstellung().getKursteilnehmer())
+      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         art = new SelectInput(
             new String[] { "Mitglied", "Nicht-Mitglied", "Kursteilnehmer" },
@@ -340,7 +344,7 @@ public abstract class FilterControl extends AbstractControl
   {
     return art != null;
   }
-  
+
   public IntegerNullInput getSuchMitgliedsnummer()
   {
     if (suchmitgliedsnummer != null)
@@ -359,32 +363,33 @@ public abstract class FilterControl extends AbstractControl
     suchmitgliedsnummer.setName("Mitgliedsnummer");
     return suchmitgliedsnummer;
   }
-  
+
   public boolean isSuchMitgliedsnummerActive()
   {
     return suchmitgliedsnummer != null;
   }
-  
+
   public TextInput getSuchExterneMitgliedsnummer()
   {
     if (suchexternemitgliedsnummer != null)
     {
       return suchexternemitgliedsnummer;
     }
-    suchexternemitgliedsnummer = new TextInput(settings.getString(
-        settingsprefix + "suchExterneMitgliedsNummer",""), 50);
+    suchexternemitgliedsnummer = new TextInput(
+        settings.getString(settingsprefix + "suchExterneMitgliedsNummer", ""),
+        50);
     suchexternemitgliedsnummer.setName("Externe Mitgliedsnummer");
     return suchexternemitgliedsnummer;
   }
-  
+
   public boolean isSuchExterneMitgliedsnummerActive()
   {
     return suchexternemitgliedsnummer != null;
   }
-  
+
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
-    String  tmp = settings.getString(settingsprefix + "eigenschaften", "");
+    String tmp = settings.getString(settingsprefix + "eigenschaften", "");
     StringTokenizer stt = new StringTokenizer(tmp, ",");
     StringBuilder text = new StringBuilder();
     while (stt.hasMoreElements())
@@ -396,11 +401,11 @@ public abstract class FilterControl extends AbstractControl
       try
       {
         String s = stt.nextToken();
-        String eigenschaftId = s.substring(0,s.length()-1);
-        String plusMinus = s.substring(s.length()-1);
-        if (eigenschaftId.isEmpty() ||
-            !(plusMinus.equals(EigenschaftenNode.PLUS) ||
-            plusMinus.equals(EigenschaftenNode.MINUS)))
+        String eigenschaftId = s.substring(0, s.length() - 1);
+        String plusMinus = s.substring(s.length() - 1);
+        if (eigenschaftId.isEmpty()
+            || !(plusMinus.equals(EigenschaftenNode.PLUS)
+                || plusMinus.equals(EigenschaftenNode.MINUS)))
         {
           text = new StringBuilder();
           tmp = "";
@@ -420,7 +425,7 @@ public abstract class FilterControl extends AbstractControl
       }
     }
     final EigenschaftenAuswahlDialog d = new EigenschaftenAuswahlDialog(tmp,
-         true, this, false);
+        true, this, false);
     d.addCloseListener(new EigenschaftenCloseListener());
     eigenschaftenabfrage = new DialogInput(text.toString(), d);
     eigenschaftenabfrage.setName("Eigenschaften");
@@ -437,30 +442,28 @@ public abstract class FilterControl extends AbstractControl
     });
     return eigenschaftenabfrage;
   }
-  
+
   public boolean isEigenschaftenAuswahlAktiv()
   {
     return eigenschaftenabfrage != null;
   }
-  
+
   public void updateEigenschaftenAuswahlTooltip()
   {
-    eigenschaftenabfrage.getControl().setToolTipText(
-        eigenschaftenabfrage.getText());
+    eigenschaftenabfrage.getControl()
+        .setToolTipText(eigenschaftenabfrage.getText());
   }
-  
+
   public TreePart getEigenschaftenAuswahlTree(String vorbelegung,
-       boolean onlyChecked, 
-      Mitglied[] mitglieder) throws RemoteException
+      boolean onlyChecked, Mitglied[] mitglieder) throws RemoteException
   {
     eigenschaftenAuswahlTree = new TreePart(
         new EigenschaftenNode(vorbelegung, onlyChecked, mitglieder), null);
-    eigenschaftenAuswahlTree.addSelectionListener(
-        new EigenschaftListener());
+    eigenschaftenAuswahlTree.addSelectionListener(new EigenschaftListener());
     eigenschaftenAuswahlTree.setFormatter(new EigenschaftTreeFormatter());
     return eigenschaftenAuswahlTree;
   }
-  
+
   public static class EigenschaftTreeFormatter implements TreeFormatter
   {
 
@@ -494,7 +497,7 @@ public abstract class FilterControl extends AbstractControl
         }
         catch (RemoteException e)
         {
-          ;
+          
         }
       }
       else
@@ -511,7 +514,8 @@ public abstract class FilterControl extends AbstractControl
         {
           item.setImage(SWTUtil.getImage("tree-checked.png"));
         }
-        else if (eigenschaftitem.getPreset().equals(EigenschaftenNode.CHECKED_PARTLY))
+        else if (eigenschaftitem.getPreset()
+            .equals(EigenschaftenNode.CHECKED_PARTLY))
         {
           item.setImage(SWTUtil.getImage("tree-checked-partly.png"));
         }
@@ -522,7 +526,7 @@ public abstract class FilterControl extends AbstractControl
       }
     }
   }
-  
+
   public String getEigenschaftenString()
   {
     return settings.getString(settingsprefix + "eigenschaften", "");
@@ -530,10 +534,10 @@ public abstract class FilterControl extends AbstractControl
 
   public String getEigenschaftenVerknuepfung()
   {
-    return settings.getString(settingsprefix + "eigenschaften.verknuepfung", "und");
+    return settings.getString(settingsprefix + "eigenschaften.verknuepfung",
+        "und");
   }
-  
-  
+
   public SelectInput getBeitragsgruppeAusw() throws RemoteException
   {
     if (beitragsgruppeausw != null)
@@ -541,7 +545,8 @@ public abstract class FilterControl extends AbstractControl
       return beitragsgruppeausw;
     }
     Beitragsgruppe bg = null;
-    String beitragsgru = settings.getString(settingsprefix + "beitragsgruppe", "");
+    String beitragsgru = settings.getString(settingsprefix + "beitragsgruppe",
+        "");
     if (beitragsgru.length() > 0)
     {
       try
@@ -558,36 +563,37 @@ public abstract class FilterControl extends AbstractControl
     DBIterator<Beitragsgruppe> list = Einstellungen.getDBService()
         .createList(Beitragsgruppe.class);
     list.setOrder("ORDER BY bezeichnung");
-    beitragsgruppeausw = new SelectInput(list != null ? PseudoIterator.asList(list) : null, bg);
+    beitragsgruppeausw = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null, bg);
     beitragsgruppeausw.setName("Beitragsgruppe");
     beitragsgruppeausw.setAttribute("bezeichnung");
     beitragsgruppeausw.setPleaseChoose(ALLE);
     beitragsgruppeausw.addListener(new FilterListener());
     return beitragsgruppeausw;
   }
-  
+
   public boolean isBeitragsgruppeAuswAktiv()
   {
     return beitragsgruppeausw != null;
   }
-  
+
   public TextInput getSuchname()
   {
     if (suchname != null)
     {
       return suchname;
     }
-    this.suchname = new TextInput(settings.getString(settingsprefix + "suchname", ""),
-          50);
+    this.suchname = new TextInput(
+        settings.getString(settingsprefix + "suchname", ""), 50);
     suchname.setName("Name");
     return suchname;
   }
-  
+
   public boolean isSuchnameAktiv()
   {
     return suchname != null;
   }
-  
+
   public GeschlechtInput getSuchGeschlecht() throws RemoteException
   {
     if (suchgeschlecht != null)
@@ -601,12 +607,12 @@ public abstract class FilterControl extends AbstractControl
     suchgeschlecht.addListener(new FilterListener());
     return suchgeschlecht;
   }
-  
+
   public boolean isSuchGeschlechtAktiv()
   {
     return suchgeschlecht != null;
   }
-  
+
   public DateInput getDateInput(String setting)
   {
 
@@ -625,7 +631,7 @@ public abstract class FilterControl extends AbstractControl
     }
     return new DateInput(d, new JVDateFormatTTMMJJJJ());
   }
-  
+
   public DateInput getStichtag()
   {
     if (stichtag != null)
@@ -636,7 +642,7 @@ public abstract class FilterControl extends AbstractControl
     stichtag.setName("Stichtag");
     return stichtag;
   }
-  
+
   public DateInput getStichtag(boolean jahresende)
   {
     if (stichtag != null)
@@ -656,12 +662,12 @@ public abstract class FilterControl extends AbstractControl
     this.stichtag.setName("Stichtag");
     return stichtag;
   }
-  
+
   public boolean isStichtagAktiv()
   {
     return stichtag != null;
   }
-  
+
   public DateInput getGeburtsdatumvon()
   {
     if (geburtsdatumvon != null)
@@ -672,12 +678,12 @@ public abstract class FilterControl extends AbstractControl
     geburtsdatumvon.setName("Geburtsdatum von");
     return geburtsdatumvon;
   }
-  
+
   public boolean isGeburtsdatumvonAktiv()
   {
     return geburtsdatumvon != null;
   }
-  
+
   public DateInput getGeburtsdatumbis()
   {
     if (geburtsdatumbis != null)
@@ -688,7 +694,7 @@ public abstract class FilterControl extends AbstractControl
     geburtsdatumbis.setName("Geburtsdatum bis");
     return geburtsdatumbis;
   }
-  
+
   public boolean isGeburtsdatumbisAktiv()
   {
     return geburtsdatumbis != null;
@@ -704,7 +710,7 @@ public abstract class FilterControl extends AbstractControl
     sterbedatumvon.setName("Sterbedatum von");
     return sterbedatumvon;
   }
-  
+
   public boolean isSterbedatumvonAktiv()
   {
     return sterbedatumvon != null;
@@ -720,7 +726,7 @@ public abstract class FilterControl extends AbstractControl
     sterbedatumbis.setName("Sterbedatum bis");
     return sterbedatumbis;
   }
-  
+
   public boolean isSterbedatumbisAktiv()
   {
     return sterbedatumbis != null;
@@ -784,7 +790,7 @@ public abstract class FilterControl extends AbstractControl
     austrittbis.setName("Austrittsdatum bis");
     return austrittbis;
   }
-  
+
   public boolean isAustrittbisAktiv()
   {
     return austrittbis != null;
@@ -796,7 +802,8 @@ public abstract class FilterControl extends AbstractControl
     {
       return zusatzfelderabfrage;
     }
-    zad = new ZusatzfelderAuswahlDialog(settings, additionalparamprefix1, additionalparamprefix2);
+    zad = new ZusatzfelderAuswahlDialog(settings, additionalparamprefix1,
+        additionalparamprefix2);
     zad.addCloseListener(new ZusatzfelderListener());
 
     zusatzfelderabfrage = new DialogInput("", zad);
@@ -805,53 +812,55 @@ public abstract class FilterControl extends AbstractControl
     zusatzfelderabfrage.disableClientControl();
     return zusatzfelderabfrage;
   }
-  
+
   public boolean isZusatzfelderAuswahlAktiv()
   {
     return zusatzfelderabfrage != null;
   }
-  
+
   public void updateZusatzfelderAuswahlTooltip()
   {
-    zusatzfelderabfrage.getControl().setToolTipText(zusatzfelderabfrage.getText());
+    zusatzfelderabfrage.getControl()
+        .setToolTipText(zusatzfelderabfrage.getText());
   }
-  
+
   public void setZusatzfelderAuswahl()
   {
     int selected = settings.getInt(additionalparamprefix2 + "selected", 0);
     String string = "";
     if (selected == 0)
     {
-      string = "Kein Feld ausgew‰hlt";
+      string = "Kein Feld ausgew√§hlt";
     }
     else if (selected == 1)
     {
-      string = "1 Feld ausgew‰hlt";
+      string = "1 Feld ausgew√§hlt";
     }
     else
     {
-      string = String.format("%d Felder ausgew‰hlt", selected);
+      string = String.format("%d Felder ausgew√§hlt", selected);
     }
     zusatzfelderabfrage.setText(string);
   }
-  
+
   public SelectInput getMailauswahl() throws RemoteException
   {
     if (mailAuswahl != null)
     {
       return mailAuswahl;
     }
-    mailAuswahl = new MailAuswertungInput(settings.getInt(settingsprefix + "mailauswahl", 1));
+    mailAuswahl = new MailAuswertungInput(
+        settings.getInt(settingsprefix + "mailauswahl", 1));
     mailAuswahl.setName("Mail");
     mailAuswahl.addListener(new FilterListener());
     return mailAuswahl;
   }
-  
+
   public boolean isMailauswahlAktiv()
   {
     return mailAuswahl != null;
   }
-  
+
   public DateInput getDatumvon()
   {
     if (datumvon != null)
@@ -862,12 +871,12 @@ public abstract class FilterControl extends AbstractControl
     datumvon.setName("Datum von");
     return datumvon;
   }
-  
+
   public boolean isDatumvonAktiv()
   {
     return datumvon != null;
   }
-  
+
   public DateInput getDatumbis()
   {
     if (datumbis != null)
@@ -878,23 +887,23 @@ public abstract class FilterControl extends AbstractControl
     datumbis.setName("Datum bis");
     return datumbis;
   }
-  
+
   public boolean isDatumbisAktiv()
   {
     return datumbis != null;
   }
-  
+
   public SelectInput getDifferenz()
   {
     if (differenz != null)
     {
       return differenz;
     }
-    DIFFERENZ defaultwert = DIFFERENZ
-        .fromString(settings.getString(settingsprefix + "differenz", DIFFERENZ.EGAL.toString()));
+    DIFFERENZ defaultwert = DIFFERENZ.fromString(settings
+        .getString(settingsprefix + "differenz", DIFFERENZ.EGAL.toString()));
     return getDifferenz(defaultwert);
   }
-  
+
   public SelectInput getDifferenz(DIFFERENZ defaultvalue)
   {
     differenz = new SelectInput(DIFFERENZ.values(), defaultvalue);
@@ -902,28 +911,29 @@ public abstract class FilterControl extends AbstractControl
     differenz.addListener(new DifferenzListener());
     return differenz;
   }
-  
+
   public boolean isDifferenzAktiv()
   {
     return differenz != null;
   }
-  
+
   public CheckboxInput getOhneAbbucher()
   {
     if (ohneabbucher != null)
     {
       return ohneabbucher;
     }
-    ohneabbucher = new CheckboxInput(settings.getBoolean(settingsprefix + "ohneabbucher", false));
+    ohneabbucher = new CheckboxInput(
+        settings.getBoolean(settingsprefix + "ohneabbucher", false));
     ohneabbucher.addListener(new FilterListener());
     return ohneabbucher;
   }
-  
+
   public boolean isOhneAbbucherAktiv()
   {
     return ohneabbucher != null;
   }
-  
+
   public SelectInput getSuchLehrgangsart() throws RemoteException
   {
     if (suchlehrgangsart != null)
@@ -937,24 +947,26 @@ public abstract class FilterControl extends AbstractControl
     try
     {
       letztesuche = (Lehrgangsart) Einstellungen.getDBService().createObject(
-          Lehrgangsart.class, settings.getString(settingsprefix + "suchlehrgangsart", null));
+          Lehrgangsart.class,
+          settings.getString(settingsprefix + "suchlehrgangsart", null));
     }
     catch (ObjectNotFoundException e)
     {
       //
     }
-    suchlehrgangsart = new SelectInput(it != null ? PseudoIterator.asList(it) : null, letztesuche);
+    suchlehrgangsart = new SelectInput(
+        it != null ? PseudoIterator.asList(it) : null, letztesuche);
     suchlehrgangsart.setPleaseChoose(ALLE);
     suchlehrgangsart.addListener(new FilterListener());
     suchlehrgangsart.setName("Lehrgangsart");
     return suchlehrgangsart;
   }
-  
+
   public boolean isSuchLehrgangsartAktiv()
   {
     return suchlehrgangsart != null;
   }
-  
+
   public DateInput getEingabedatumvon()
   {
     if (eingabedatumvon != null)
@@ -970,7 +982,7 @@ public abstract class FilterControl extends AbstractControl
   {
     return eingabedatumvon != null;
   }
-  
+
   public DateInput getEingabedatumbis()
   {
     if (eingabedatumbis != null)
@@ -986,7 +998,7 @@ public abstract class FilterControl extends AbstractControl
   {
     return eingabedatumbis != null;
   }
-  
+
   public DateInput getAbbuchungsdatumvon()
   {
     if (abbuchungsdatumvon != null)
@@ -1002,7 +1014,7 @@ public abstract class FilterControl extends AbstractControl
   {
     return abbuchungsdatumvon != null;
   }
-  
+
   public DateInput getAbbuchungsdatumbis()
   {
     if (abbuchungsdatumbis != null)
@@ -1018,24 +1030,24 @@ public abstract class FilterControl extends AbstractControl
   {
     return abbuchungsdatumbis != null;
   }
-  
+
   public TextInput getSuchtext()
   {
     if (suchtext != null)
     {
       return suchtext;
     }
-    this.suchtext = new TextInput(settings.getString(settingsprefix + "suchtext", ""),
-          50);
+    this.suchtext = new TextInput(
+        settings.getString(settingsprefix + "suchtext", ""), 50);
     suchtext.setName("Text");
     return suchtext;
   }
-  
+
   public boolean isSuchtextAktiv()
   {
     return suchtext != null;
   }
-  
+
   public SelectInput getAbrechnungslaufAusw(int anzahl) throws RemoteException
   {
     if (abrechnungslaufausw != null)
@@ -1064,12 +1076,12 @@ public abstract class FilterControl extends AbstractControl
     abrechnungslaufausw.setAttribute("idtext");
     return abrechnungslaufausw;
   }
-  
+
   public boolean isAbrechnungslaufAuswAktiv()
   {
     return abrechnungslaufausw != null;
   }
-  
+
   public IntegerNullInput getIntegerAusw()
   {
     if (integerausw != null)
@@ -1088,12 +1100,12 @@ public abstract class FilterControl extends AbstractControl
     integerausw.setName("Auswahl");
     return integerausw;
   }
-  
+
   public boolean isIntegerAuswAktiv()
   {
     return integerausw != null;
   }
-  
+
   public DecimalInput getDoubleAusw()
   {
     if (doubleauswahl != null)
@@ -1304,7 +1316,7 @@ public abstract class FilterControl extends AbstractControl
     }, null, true, "search.png");
     return b;
   }
-  
+
   public Button getSpeichernButton()
   {
     Button b = new Button("Filter-Speichern", new Action()
@@ -1324,7 +1336,7 @@ public abstract class FilterControl extends AbstractControl
     }, null, false, "document-save.png");
     return b;
   }
-  
+
   public Button getResetButton()
   {
     return new Button("Filter-Reset", new Action()
@@ -1349,7 +1361,8 @@ public abstract class FilterControl extends AbstractControl
         if (eigenschaftenabfrage != null)
         {
           settings.setAttribute(settingsprefix + "eigenschaften", "");
-          settings.setAttribute(settingsprefix + "eigenschaften.verknuepfung", "und");
+          settings.setAttribute(settingsprefix + "eigenschaften.verknuepfung",
+              "und");
           eigenschaftenabfrage.setText("");
           eigenschaftenabfrage.getControl().redraw();
         }
@@ -1357,7 +1370,7 @@ public abstract class FilterControl extends AbstractControl
           beitragsgruppeausw.setValue(null);
         if (suchname != null)
           suchname.setValue("");
-        if(suchgeschlecht != null)
+        if (suchgeschlecht != null)
           suchgeschlecht.setValue(null);
         if (stichtag != null)
           stichtag.setValue(null);
@@ -1425,7 +1438,7 @@ public abstract class FilterControl extends AbstractControl
       }
     }, null, false, "eraser.png");
   }
-  
+
   protected void refresh()
   {
     try
@@ -1438,11 +1451,11 @@ public abstract class FilterControl extends AbstractControl
     }
     TabRefresh();
   }
-  
+
   protected void TabRefresh()
   {
   }
-  
+
   /**
    * Listener
    */
@@ -1453,11 +1466,12 @@ public abstract class FilterControl extends AbstractControl
     public void handleEvent(Event event)
     {
       setZusatzfelderAuswahl();
-      zusatzfelderabfrage.getControl().setToolTipText(zusatzfelderabfrage.getText());
+      zusatzfelderabfrage.getControl()
+          .setToolTipText(zusatzfelderabfrage.getText());
       refresh();
     }
   }
-  
+
   public class FilterListener implements Listener
   {
 
@@ -1475,7 +1489,7 @@ public abstract class FilterControl extends AbstractControl
       refresh();
     }
   }
-  
+
   public class DifferenzListener implements Listener
   {
 
@@ -1519,7 +1533,7 @@ public abstract class FilterControl extends AbstractControl
       if (o instanceof EigenschaftenNode)
       {
         EigenschaftenNode node = (EigenschaftenNode) o;
-        if ( node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
+        if (node.getNodeType() == EigenschaftenNode.EIGENSCHAFTEN)
         {
           node.incPreset();
           TreeItem item = (TreeItem) event.item;
@@ -1528,7 +1542,7 @@ public abstract class FilterControl extends AbstractControl
       }
     }
   }
-  
+
   /**
    * Listener, der die Auswahl der Eigenschaften ueberwacht.
    */
@@ -1577,7 +1591,7 @@ public abstract class FilterControl extends AbstractControl
   }
 
   /**
-   * Default-Werte f¸r die MitgliederSuchView speichern.
+   * Default-Werte f√ºr die MitgliederSuchView speichern.
    * 
    * @throws RemoteException
    */
@@ -1595,7 +1609,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "suchadresstyp", "");
       }
     }
-    
+
     if (status != null)
     {
       String tmp = (String) status.getValue();
@@ -1608,7 +1622,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "status.mitglied", "");
       }
     }
-    
+
     if (art != null)
     {
       String tmp = (String) art.getValue();
@@ -1621,20 +1635,22 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "status.art", "");
       }
     }
-    
+
     if (suchexternemitgliedsnummer != null)
     {
       String tmp = (String) suchexternemitgliedsnummer.getValue();
       if (tmp != null)
       {
-        settings.setAttribute(settingsprefix + "suchExterneMitgliedsNummer", tmp);
+        settings.setAttribute(settingsprefix + "suchExterneMitgliedsNummer",
+            tmp);
       }
       else
       {
-        settings.setAttribute(settingsprefix + "suchExterneMitgliedsNummer", "");
+        settings.setAttribute(settingsprefix + "suchExterneMitgliedsNummer",
+            "");
       }
     }
-    
+
     if (suchmitgliedsnummer != null)
     {
       Integer tmp = (Integer) suchmitgliedsnummer.getValue();
@@ -1660,7 +1676,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "beitragsgruppe", "");
       }
     }
-    
+
     if (suchname != null)
     {
       String tmp = (String) suchname.getValue();
@@ -1673,7 +1689,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "suchname", "");
       }
     }
-    
+
     if (suchgeschlecht != null)
     {
       String tmp = (String) suchgeschlecht.getValue();
@@ -1694,67 +1710,67 @@ public abstract class FilterControl extends AbstractControl
 
     if (geburtsdatumvon != null)
     {
-      saveDate( (Date) geburtsdatumvon.getValue(), "geburtsdatumvon");
+      saveDate((Date) geburtsdatumvon.getValue(), "geburtsdatumvon");
     }
-    
+
     if (geburtsdatumbis != null)
     {
-      saveDate( (Date) geburtsdatumbis.getValue(), "geburtsdatumbis");
+      saveDate((Date) geburtsdatumbis.getValue(), "geburtsdatumbis");
     }
 
     if (sterbedatumvon != null)
     {
-      saveDate( (Date) sterbedatumvon.getValue(), "sterbedatumvon");
+      saveDate((Date) sterbedatumvon.getValue(), "sterbedatumvon");
     }
 
     if (sterbedatumbis != null)
     {
-      saveDate( (Date) sterbedatumbis.getValue(), "sterbedatumbis");
+      saveDate((Date) sterbedatumbis.getValue(), "sterbedatumbis");
     }
 
     if (eintrittvon != null)
     {
-      saveDate( (Date) eintrittvon.getValue(), "eintrittvon");
+      saveDate((Date) eintrittvon.getValue(), "eintrittvon");
     }
 
     if (eintrittbis != null)
     {
-      saveDate( (Date) eintrittbis.getValue(), "eintrittbis");
+      saveDate((Date) eintrittbis.getValue(), "eintrittbis");
     }
 
     if (austrittvon != null)
     {
-      saveDate( (Date) austrittvon.getValue(), "austrittvon");
+      saveDate((Date) austrittvon.getValue(), "austrittvon");
     }
 
     if (austrittbis != null)
     {
-      saveDate( (Date) austrittbis.getValue(), "austrittbis");
+      saveDate((Date) austrittbis.getValue(), "austrittbis");
     }
-    
+
     if (mailAuswahl != null)
     {
       Integer tmp = (Integer) mailAuswahl.getValue();
       if (tmp != null)
       {
-      settings.setAttribute(settingsprefix + "mailauswahl", tmp.toString());
+        settings.setAttribute(settingsprefix + "mailauswahl", tmp.toString());
       }
       else
       {
         settings.setAttribute(settingsprefix + "mailauswahl", "1");
       }
     }
-    
+
     if (datumvon != null)
     {
-      saveDate( (Date) datumvon.getValue(), "datumvon");
+      saveDate((Date) datumvon.getValue(), "datumvon");
     }
-    
+
     if (datumbis != null)
     {
-      saveDate( (Date) datumbis.getValue(), "datumbis");
+      saveDate((Date) datumbis.getValue(), "datumbis");
     }
-    
+
     if (differenz != null)
     {
       String tmp = differenz.getValue().toString();
@@ -1767,7 +1783,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "differenz", "");
       }
     }
-    
+
     if (ohneabbucher != null)
     {
       Boolean tmp = (Boolean) ohneabbucher.getValue();
@@ -1793,27 +1809,27 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "suchlehrgangsart", "");
       }
     }
-    
+
     if (eingabedatumvon != null)
     {
-      saveDate( (Date) eingabedatumvon.getValue(), "eingabedatum.von");
+      saveDate((Date) eingabedatumvon.getValue(), "eingabedatum.von");
     }
-    
+
     if (eingabedatumbis != null)
     {
-      saveDate( (Date) eingabedatumbis.getValue(), "eingabedatum.bis");
+      saveDate((Date) eingabedatumbis.getValue(), "eingabedatum.bis");
     }
-    
+
     if (abbuchungsdatumvon != null)
     {
-      saveDate( (Date) abbuchungsdatumvon.getValue(), "abbuchungsdatum.von");
+      saveDate((Date) abbuchungsdatumvon.getValue(), "abbuchungsdatum.von");
     }
-    
+
     if (abbuchungsdatumbis != null)
     {
-      saveDate( (Date) abbuchungsdatumbis.getValue(), "abbuchungsdatum.bis");
+      saveDate((Date) abbuchungsdatumbis.getValue(), "abbuchungsdatum.bis");
     }
-    
+
     if (suchtext != null)
     {
       String tmp = (String) suchtext.getValue();
@@ -1826,7 +1842,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "suchtext", "");
       }
     }
-    
+
     if (integerausw != null)
     {
       Integer tmp = (Integer) integerausw.getValue();
@@ -1839,7 +1855,7 @@ public abstract class FilterControl extends AbstractControl
         settings.setAttribute(settingsprefix + "intergerauswahl", "");
       }
     }
-    
+
     if (doubleauswahl != null)
     {
       Double tmp = (Double) doubleauswahl.getValue();
@@ -1853,7 +1869,7 @@ public abstract class FilterControl extends AbstractControl
       }
     }
 
-    if (suchspendenart != null )
+    if (suchspendenart != null)
     {
       SuchSpendenart ss = (SuchSpendenart) suchspendenart.getValue();
       settings.setAttribute(settingsprefix + "suchspendenart.key", ss.getKey());
@@ -1939,7 +1955,7 @@ public abstract class FilterControl extends AbstractControl
       settings.setAttribute(settingsprefix + setting, "");
     }
   }
-  
+
   public ToolTipButton getZurueckButton(DateInput vonDatum, DateInput bisDatum)
   {
     return new ToolTipButton("", new Action()
@@ -1951,7 +1967,8 @@ public abstract class FilterControl extends AbstractControl
         Date bis = (Date) bisDatum.getValue();
         if (getRangeTyp(von, bis) == RANGE.TAG)
         {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+              bis.toInstant());
           delta++;
           calendar.setTime(von);
           calendar.add(Calendar.DAY_OF_MONTH, -delta);
@@ -1962,8 +1979,10 @@ public abstract class FilterControl extends AbstractControl
         }
         else
         {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
           int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
           delta++;
           calendar.setTime(von);
@@ -1989,7 +2008,8 @@ public abstract class FilterControl extends AbstractControl
         Date bis = (Date) bisDatum.getValue();
         if (getRangeTyp(von, bis) == RANGE.TAG)
         {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(), bis.toInstant());
+          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
+              bis.toInstant());
           delta++;
           calendar.setTime(von);
           calendar.add(Calendar.DAY_OF_MONTH, delta);
@@ -2000,8 +2020,10 @@ public abstract class FilterControl extends AbstractControl
         }
         else
         {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
+          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
+              .toLocalDate();
           int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
           delta++;
           calendar.setTime(von);
@@ -2028,7 +2050,7 @@ public abstract class FilterControl extends AbstractControl
       return RANGE.TAG;
     return RANGE.MONAT;
   }
-  
+
   private void checkDate(Date von, Date bis) throws ApplicationException
   {
     if (von == null)

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.input.SaveButton;
@@ -44,12 +45,14 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     LabelGroup group = new LabelGroup(getParent(), "Beitrag");
     group.addLabelPair("Bezeichnung", control.getBezeichnung(true));
 
-    if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
     {
-      group.addLabelPair("Sekund‰re Beitragsgruppe", control.getSekundaer());
+      group.addLabelPair("Sekund√§re Beitragsgruppe", control.getSekundaer());
     }
 
-    switch (Einstellungen.getEinstellung().getBeitragsmodel())
+    switch (Beitragsmodel.getByKey(
+        (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
     {
       case GLEICHERTERMINFUERALLE:
       case MONATLICH12631:
@@ -60,24 +63,30 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
       case FLEXIBEL:
       {
         group.addLabelPair("Betrag monatlich", control.getBetragMonatlich());
-        group.addLabelPair("Betrag viertelj‰hrlich",
+        group.addLabelPair("Betrag viertelj√§hrlich",
             control.getBetragVierteljaehrlich());
-        group.addLabelPair("Betrag halbj‰hrlich",
+        group.addLabelPair("Betrag halbj√§hrlich",
             control.getBetragHalbjaehrlich());
-        group.addLabelPair("Betrag j‰hrlich", control.getBetragJaehrlich());
+        group.addLabelPair("Betrag j√§hrlich", control.getBetragJaehrlich());
         break;
       }
     }
-    
+
     group.addLabelPair("Beitragsart", control.getBeitragsArt());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
-    if (Einstellungen.getEinstellung().getBuchungsklasseInBuchung())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      group.addLabelPair("Steuer", control.getSteuer());
+    }
 
-    if(Einstellungen.getEinstellung().getBeitragsmodel() != Beitragsmodel.FLEXIBEL
-        && Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) != Beitragsmodel.FLEXIBEL.getKey()
+        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
       Input[] altersstaffel = control.getAltersstaffel();
       if (altersstaffel != null)
@@ -85,7 +94,8 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         Container cont = new LabelGroup(getParent(), "Altersstaffel");
         SimpleVerticalContainer svc = new SimpleVerticalContainer(
             cont.getComposite(), true, 3);
-        svc.addCheckbox(control.getIsAltersstaffel(), "Nach Alter gestaffelte Beitr‰ge verwenden");
+        svc.addCheckbox(control.getIsAltersstaffel(),
+            "Nach Alter gestaffelte Beitr√§ge verwenden");
         for (Input inp : altersstaffel)
         {
           svc.addInput(inp);
@@ -93,8 +103,8 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         svc.arrangeVertically();
       }
     }
-    
-    if (Einstellungen.getEinstellung().getArbeitseinsatz())
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       LabelGroup groupAe = new LabelGroup(getParent(), "Arbeitseinsatz");
       groupAe.addLabelPair("Stunden", control.getArbeitseinsatzStunden());
@@ -106,6 +116,9 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BEITRAGSGRUPPEN, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -37,6 +38,7 @@ import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -67,6 +69,24 @@ public class MitgliederImport implements Importer
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
           ResultSet.CONCUR_READ_ONLY);
       results = stmt.executeQuery("SELECT * FROM " + fil.substring(0, pos));
+
+      try
+      {
+        results.findColumn("id");
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Mitglieder Ã¼berschreiben");
+        dialog.setText("In der Importdatei ist die Spalte \"id\" vorhanden,\n"
+            + "es werden die Felder der existierenden Mitglieder mit dieser ID\n"
+            + "geÃ¤ndert und ggf. geleert.\n" + "Soll fortgefahren werden?");
+        if (!(boolean) dialog.open())
+        {
+          throw new ApplicationException("Import abgebrochen");
+        }
+      }
+      catch (SQLException e)
+      {
+        // id nicht vorhanden
+      }
 
       /* Zusatzfelder ermitteln und in Liste ablegen */
       DBIterator<Felddefinition> felddefinitionIt = Einstellungen.getDBService()
@@ -118,20 +138,39 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Eigenschaft nicht vorhanden
+          // Sekundaere Beitragsgruppe nicht vorhanden
         }
       }
 
       DBTransaction.starten();
       int anz = 0;
+      int zeilen = results.getFetchSize();
       while (results.next())
       {
         anz++;
-        monitor.setPercentComplete(anz * 10);
+        monitor.setPercentComplete(anz * 100 / zeilen);
 
-        Mitglied m = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, null);
-
+        String id = null;
+        try
+        {
+          // Wenn die Spalte id existiert, sollen bestehende Mitglieder
+          // Ã¼berschrieben werden, dann nehmen wir die ID
+          id = results.getString("id");
+        }
+        catch (SQLException ignore)
+        {
+        }
+        Mitglied m = null;
+        try
+        {
+          m = (Mitglied) Einstellungen.getDBService()
+              .createObject(Mitglied.class, id);
+        }
+        catch (ObjectNotFoundException e)
+        {
+          throw new ApplicationException(
+              "Mitglied mit ID " + id + " nicht vorhanden.");
+        }
         try
         {
           String mitgliedstyp = results.getString("adresstyp");
@@ -154,8 +193,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Wenn Adresstyp nicht vorhanden speichern wir es als Mitglied
-          m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+          if (id == null)
+          {
+            // Wenn Adresstyp nicht vorhanden speichern wir es als Mitglied
+            m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+          }
         }
 
         try
@@ -170,9 +212,12 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Wenn Personenart nicht vorhanden speichern wir es als natürliche
-          // Person
-          m.setPersonenart("N");
+          if (id == null)
+          {
+            // Wenn Personenart nicht vorhanden speichern wir es als natÃ¼rliche
+            // Person
+            m.setPersonenart("N");
+          }
         }
 
         try
@@ -182,8 +227,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler parameter, ignorieren wir
-          m.setAdressierungszusatz("");
+          if (id == null)
+          {
+            // Optionaler parameter, ignorieren wir
+            m.setAdressierungszusatz("");
+          }
         }
 
         if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
@@ -200,7 +248,7 @@ public class MitgliederImport implements Importer
               catch (ParseException e)
               {
                 throw new ApplicationException("Zeile " + anz
-                    + ": Ungültiges Datumsformat für eintritt: " + eintritt);
+                    + ": UngÃ¼ltiges Datumsformat fÃ¼r eintritt: " + eintritt);
               }
             }
             else
@@ -210,8 +258,11 @@ public class MitgliederImport implements Importer
           }
           catch (SQLException e)
           {
-            throw new ApplicationException(
-                "Mitglied muss ein Eintrittsdatum haben!");
+            if (id == null)
+            {
+              throw new ApplicationException(
+                  "Mitglied muss ein Eintrittsdatum haben!");
+            }
           }
         }
 
@@ -231,7 +282,7 @@ public class MitgliederImport implements Importer
             catch (ParseException e)
             {
               throw new ApplicationException("Zeile " + anz
-                  + ": Ungültiges Datumsformat für austritt: " + austritt);
+                  + ": UngÃ¼ltiges Datumsformat fÃ¼r austritt: " + austritt);
             }
           }
         }
@@ -247,13 +298,16 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler parameter, ignorieren wir
-          m.setAnrede("");
+          if (id == null)
+          {
+            // Optionaler parameter, ignorieren wir
+            m.setAnrede("");
+          }
         }
 
         try
         {
-          // Beitragsgruppe nur bei Mitgliedern möglich
+          // Beitragsgruppe nur bei Mitgliedern mÃ¶glich
           if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             String beitragsgruppe = results.getString("beitragsgruppe");
@@ -277,12 +331,16 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          throw new ApplicationException("Beitragsgruppe fehlt");
+          if (id == null)
+          {
+            throw new ApplicationException("Beitragsgruppe fehlt");
+          }
         }
 
         try
         {
-          if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
           {
             String individuellerBeitrag = results
                 .getString("individuellerbeitrag");
@@ -308,29 +366,34 @@ public class MitgliederImport implements Importer
           {
             if (Zahlungsweg.get(Integer.parseInt(zahlungsweg)) == null)
               throw new ApplicationException(
-                  "Zeile " + anz + ": Zahlungsweg ungültig: " + zahlungsweg);
+                  "Zeile " + anz + ": Zahlungsweg ungÃ¼ltig: " + zahlungsweg);
             if (Integer.parseInt(zahlungsweg) == 4 && m.getBeitragsgruppe()
                 .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
               throw new ApplicationException(
                   "Zeile " + anz + ": Zahlungsweg VOLLZAHLER(" + 4
-                      + ") nur für Familienangehörige");
+                      + ") nur fÃ¼r FamilienangehÃ¶rige");
             m.setZahlungsweg(Integer.parseInt(zahlungsweg));
           }
           else
           {
-            m.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
           }
         }
         catch (SQLException e)
         {
-          // Wenn nicht vorhanden Standartwert aus Einstellungen nehmen
-          m.setZahlungsweg(Einstellungen.getEinstellung().getZahlungsweg());
+          if (id == null)
+          {
+            // Wenn nicht vorhanden Standartwert aus Einstellungen nehmen
+            m.setZahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG));
+          }
         }
 
         try
         {
-          if (Einstellungen.getEinstellung()
-              .getBeitragsmodel() == Beitragsmodel.MONATLICH12631)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.MONATLICH12631.getKey())
           {
             String zahlungsrhythmus = results.getString("zahlungsrhythmus");
             if (zahlungsrhythmus != null && zahlungsrhythmus.length() != 0)
@@ -340,7 +403,7 @@ public class MitgliederImport implements Importer
                 if (Zahlungsrhythmus
                     .get(Integer.parseInt(zahlungsrhythmus)) == null)
                   throw new ApplicationException("Zeile " + anz
-                      + ": Ungültiger Zahlungsrythmus: " + zahlungsrhythmus);
+                      + ": UngÃ¼ltiger Zahlungsrythmus: " + zahlungsrhythmus);
                 m.setZahlungsrhythmus(Integer.parseInt(zahlungsrhythmus));
               }
               catch (NumberFormatException e)
@@ -357,7 +420,7 @@ public class MitgliederImport implements Importer
                   }
                   if (!found)
                     throw new ApplicationException("Zeile " + anz
-                        + ": Ungültiger Zahlungsrythmus: " + zahlungsrhythmus);
+                        + ": UngÃ¼ltiger Zahlungsrythmus: " + zahlungsrhythmus);
                 }
               }
             }
@@ -371,14 +434,17 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // wenn nicht vorhanden Monatlich als default nehmen
-          m.setZahlungsrhythmus(Zahlungsrhythmus.MONATLICH);
+          if (id == null)
+          {
+            // wenn nicht vorhanden Monatlich als default nehmen
+            m.setZahlungsrhythmus(Zahlungsrhythmus.MONATLICH);
+          }
         }
 
         try
         {
-          if (Einstellungen.getEinstellung()
-              .getBeitragsmodel() == Beitragsmodel.FLEXIBEL)
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
           {
             String zahlungstermin = results.getString("zahlungstermin");
             if (zahlungstermin != null && zahlungstermin.length() != 0)
@@ -386,7 +452,7 @@ public class MitgliederImport implements Importer
               if (Zahlungstermin
                   .getByKey(Integer.parseInt(zahlungstermin)) == null)
                 throw new ApplicationException("Zeile " + anz
-                    + ": Ungültiger Zahlungstermin: " + zahlungstermin);
+                    + ": UngÃ¼ltiger Zahlungstermin: " + zahlungstermin);
               m.setZahlungstermin(Integer.parseInt(zahlungstermin));
             }
             else
@@ -397,8 +463,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // wenn nicht vorhanden Monatlich als default nehmen
-          m.setZahlungstermin(Zahlungstermin.MONATLICH.getKey());
+          if (id == null)
+          {
+            // wenn nicht vorhanden Monatlich als default nehmen
+            m.setZahlungstermin(Zahlungstermin.MONATLICH.getKey());
+          }
         }
 
         try
@@ -418,7 +487,7 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Nur bei Zahlungsweg Lastschrift pflicht
-          if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException("Mandatdatum fehlt");
@@ -440,8 +509,8 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig. 0 als default nehmen
-          if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+          // Nur bei Zahlungsweg Lastschrift nÃ¶tig. 0 als default nehmen
+          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             m.setMandatVersion(0);
@@ -462,7 +531,7 @@ public class MitgliederImport implements Importer
             {
               if (e.getFehler() == SEPAException.Fehler.UNGUELTIGES_LAND)
                 throw new ApplicationException("Zeile " + anz
-                    + ": IBAN Ungültiges Land: " + e.getMessage());
+                    + ": IBAN UngÃ¼ltiges Land: " + e.getMessage());
               else
                 throw new ApplicationException(e.getMessage());
             }
@@ -475,8 +544,8 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig
-          if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+          // Nur bei Zahlungsweg Lastschrift nÃ¶tig
+          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
           {
             throw new ApplicationException("IBAN fehlt");
@@ -492,7 +561,8 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            if (m.getBic() == "" && m.getIban() != null && m.getIban().length() > 0)
+            if (m.getBic() == "" && m.getIban() != null
+                && m.getIban().length() > 0)
             {
               IBAN i = new IBAN(m.getIban());
               m.setBic(i.getBIC());
@@ -502,7 +572,8 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
-          if (m.getBic() == "" && m.getIban() != null && m.getIban().length() != 0)
+          if (id == null && m.getBic() == "" && m.getIban() != null
+              && m.getIban().length() != 0)
           {
             IBAN i = new IBAN(m.getIban());
             m.setBic(i.getBIC());
@@ -516,17 +587,21 @@ public class MitgliederImport implements Importer
           {
             if (!EmailValidator.isValid(email))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültige Email: " + email);
+                  "Zeile " + anz + ": UngÃ¼ltige Email: " + email);
             m.setEmail(email);
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setEmail("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setEmail("");
+          }
         }
 
-        if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
         {
           try
           {
@@ -548,7 +623,10 @@ public class MitgliederImport implements Importer
         }
         else
         {
-          m.setExterneMitgliedsnummer(null);
+          if (id == null)
+          {
+            m.setExterneMitgliedsnummer(null);
+          }
         }
 
         try
@@ -561,14 +639,17 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
+          else if ((Boolean) Einstellungen
+              .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
-          if (Einstellungen.getEinstellung().getGeburtsdatumPflicht()
+          if (id == null
+              && (Boolean) Einstellungen
+                  .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
             throw new ApplicationException("Geburtsdatum fehlt");
         }
@@ -582,7 +663,7 @@ public class MitgliederImport implements Importer
                 && !geschlecht.toLowerCase().equals("w")
                 && !geschlecht.toLowerCase().equals("o"))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültiges Geschlecht: " + geschlecht);
+                  "Zeile " + anz + ": UngÃ¼ltiges Geschlecht: " + geschlecht);
             m.setGeschlecht(geschlecht.toLowerCase());
           }
           else
@@ -590,7 +671,10 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          m.setGeschlecht("o");
+          if (id == null)
+          {
+            m.setGeschlecht("o");
+          }
         }
 
         try
@@ -605,8 +689,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiAdressierungszusatz("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiAdressierungszusatz("");
+          }
         }
 
         try
@@ -619,8 +706,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiAnrede("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiAnrede("");
+          }
         }
 
         try
@@ -630,14 +720,17 @@ public class MitgliederImport implements Importer
           {
             if (!EmailValidator.isValid(ktoiemail))
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültige Email: " + ktoiemail);
+                  "Zeile " + anz + ": UngÃ¼ltige Email: " + ktoiemail);
             m.setKtoiEmail(ktoiemail);
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiEmail("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiEmail("");
+          }
         }
 
         try
@@ -650,8 +743,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiName("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiName("");
+          }
         }
 
         try
@@ -664,8 +760,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiOrt("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiOrt("");
+          }
         }
 
         try
@@ -696,8 +795,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiPlz("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiPlz("");
+          }
         }
 
         try
@@ -705,24 +807,28 @@ public class MitgliederImport implements Importer
           String ktoistaat = results.getString("ktoistaat");
           if (ktoistaat != null && ktoistaat.length() != 0)
           {
-            if(Staat.getByText(ktoistaat.toUpperCase()) != null)
+            if (Staat.getByText(ktoistaat.toUpperCase()) != null)
             {
               m.setKtoiStaat(Staat.getByText(ktoistaat.toUpperCase()).getKey());
             }
-            else if(Staat.getByKey(ktoistaat.toUpperCase()) != null)
+            else if (Staat.getByKey(ktoistaat.toUpperCase()) != null)
             {
               m.setKtoiStaat(ktoistaat.toUpperCase());
             }
             else
             {
-              throw new ApplicationException("Zeile " + anz + ": Kontoinhaber Staat nicht erkannt: " + ktoistaat);
+              throw new ApplicationException("Zeile " + anz
+                  + ": Kontoinhaber Staat nicht erkannt: " + ktoistaat);
             }
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiStaat("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiStaat("");
+          }
         }
 
         try
@@ -735,8 +841,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiStrasse("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiStrasse("");
+          }
         }
 
         try
@@ -749,8 +858,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiTitel("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiTitel("");
+          }
         }
 
         try
@@ -763,8 +875,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiVorname("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiVorname("");
+          }
         }
 
         try
@@ -776,14 +891,17 @@ public class MitgliederImport implements Importer
                 && !ktoigeschlecht.toLowerCase().equals("w")
                 && !ktoigeschlecht.toLowerCase().equals("o"))
               throw new ApplicationException("Zeile " + anz
-                  + ": Ungültiges Geschlecht: " + ktoigeschlecht);
+                  + ": UngÃ¼ltiges Geschlecht: " + ktoigeschlecht);
             m.setKtoiGeschlecht(ktoigeschlecht);
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setKtoiGeschlecht("o");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setKtoiGeschlecht("o");
+          }
         }
 
         try
@@ -824,7 +942,10 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          throw new ApplicationException("Name fehlt");
+          if (id == null)
+          {
+            throw new ApplicationException("Name fehlt");
+          }
         }
 
         try
@@ -834,8 +955,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setOrt("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setOrt("");
+          }
         }
 
         try
@@ -845,8 +969,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setPlz("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setPlz("");
+          }
         }
 
         try
@@ -854,24 +981,28 @@ public class MitgliederImport implements Importer
           String staat = results.getString("staat");
           if (staat != null && staat.length() != 0)
           {
-            if(Staat.getByKey(staat.toUpperCase()) != null)
+            if (Staat.getByKey(staat.toUpperCase()) != null)
             {
               m.setStaat(staat.toUpperCase());
             }
-            else if(Staat.getByText(staat.toUpperCase()) != null)
+            else if (Staat.getByText(staat.toUpperCase()) != null)
             {
               m.setStaat(Staat.getByText(staat.toUpperCase()).getKey());
             }
             else
             {
-              throw new ApplicationException("Zeile " + anz + ": Staat nicht erkannt: " + staat);
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Staat nicht erkannt: " + staat);
             }
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setStaat("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setStaat("");
+          }
         }
 
         try
@@ -881,8 +1012,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setStrasse("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setStrasse("");
+          }
         }
 
         try
@@ -895,8 +1029,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setTelefondienstlich("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setTelefondienstlich("");
+          }
         }
 
         try
@@ -909,8 +1046,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setTelefonprivat("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setTelefonprivat("");
+          }
         }
 
         try
@@ -923,8 +1063,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setHandy("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setHandy("");
+          }
         }
 
         try
@@ -937,8 +1080,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setTitel("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setTitel("");
+          }
         }
 
         try
@@ -951,8 +1097,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setVermerk1("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setVermerk1("");
+          }
         }
 
         try
@@ -965,8 +1114,11 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
-          m.setVermerk2("");
+          if (id == null)
+          {
+            // Optionaler Parameter
+            m.setVermerk2("");
+          }
         }
 
         try
@@ -981,22 +1133,46 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          throw new ApplicationException("Vorname fehlt");
+          if (id == null)
+          {
+            throw new ApplicationException("Vorname fehlt");
+          }
         }
 
-        m.setEingabedatum();
+        if (id == null)
+        {
+          m.setEingabedatum();
+        }
         m.setLetzteAenderung();
         m.store();
 
         for (Felddefinition f : zusfeldList)
         {
           String inhalt = results.getString("zusatzfeld_" + f.getName());
+
+          Zusatzfelder zusatzfeld = null;
+          // Bei vorhandenen Mitgliedern bereits vorhandenes Zusatzfeld suchen
+          if (id != null)
+          {
+            DBIterator<Zusatzfelder> itZusatzfeld = Einstellungen.getDBService()
+                .createList(Zusatzfelder.class);
+            itZusatzfeld.addFilter("mitglied = ?", m.getID());
+            itZusatzfeld.addFilter("felddefinition = ? ", f.getID());
+            if (itZusatzfeld.hasNext())
+            {
+              zusatzfeld = itZusatzfeld.next();
+            }
+          }
           if (inhalt.length() != 0)
           {
-            Zusatzfelder zusatzfeld = (Zusatzfelder) Einstellungen
-                .getDBService().createObject(Zusatzfelder.class, null);
-            zusatzfeld.setMitglied(Integer.parseInt(m.getID()));
-            zusatzfeld.setFelddefinition(Integer.parseInt(f.getID()));
+            if (zusatzfeld == null)
+            {
+              zusatzfeld = (Zusatzfelder) Einstellungen.getDBService()
+                  .createObject(Zusatzfelder.class, null);
+              zusatzfeld.setMitglied(Integer.parseInt(m.getID()));
+              zusatzfeld.setFelddefinition(Integer.parseInt(f.getID()));
+            }
+
             switch (f.getDatentyp())
             {
               case Datentyp.DATUM:
@@ -1008,7 +1184,7 @@ public class MitgliederImport implements Importer
                 catch (ParseException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datumsformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datumsformat " + inhalt);
                 }
                 break;
               case Datentyp.GANZZAHL:
@@ -1019,7 +1195,7 @@ public class MitgliederImport implements Importer
                 catch (NumberFormatException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.JANEIN:
@@ -1037,7 +1213,7 @@ public class MitgliederImport implements Importer
                 else
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.WAEHRUNG:
@@ -1049,7 +1225,7 @@ public class MitgliederImport implements Importer
                 catch (NumberFormatException e)
                 {
                   throw new ApplicationException(
-                      "Zeile " + anz + ": ungültiges Datenformat " + inhalt);
+                      "Zeile " + anz + ": ungÃ¼ltiges Datenformat " + inhalt);
                 }
                 break;
               case Datentyp.ZEICHENFOLGE:
@@ -1058,50 +1234,107 @@ public class MitgliederImport implements Importer
             }
             zusatzfeld.store();
           }
+          // Wenn bei Existierenden Mitgliedern das Zusatzfeld in der
+          // Importdatei leer ist, wird es gelÃ¶scht
+          else if (id != null && zusatzfeld != null)
+          {
+            zusatzfeld.delete();
+          }
         }
 
         for (Eigenschaft e : eigenschaftList)
         {
           String inhalt = results
               .getString("eigenschaft_" + e.getBezeichnung());
-          if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
-              && !inhalt.equalsIgnoreCase("nein"))
+          // Bei vorhandenen Mitgliedern bereits vorhandene Eigenschaft suchen
+          Eigenschaften eigenschaften = null;
+          if (id != null)
           {
-            Eigenschaften eigenschaften = (Eigenschaften) Einstellungen
-                .getDBService().createObject(Eigenschaften.class, null);
-            eigenschaften.setMitglied(m.getID());
-            eigenschaften.setEigenschaft(e.getID());
-            eigenschaften.store();
+            DBIterator<Eigenschaften> itEigenschaften = Einstellungen
+                .getDBService().createList(Eigenschaften.class);
+            itEigenschaften.addFilter("mitglied = ?", m.getID());
+            itEigenschaften.addFilter("eigenschaft = ? ", e.getID());
+            if (itEigenschaften.hasNext())
+            {
+              eigenschaften = itEigenschaften.next();
+            }
+          }
+          if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
+              && !inhalt.equalsIgnoreCase("nein")
+              && !inhalt.equalsIgnoreCase("0"))
+          {
+            if (eigenschaften == null)
+            {
+              eigenschaften = (Eigenschaften) Einstellungen.getDBService()
+                  .createObject(Eigenschaften.class, null);
+              eigenschaften.setMitglied(m.getID());
+              eigenschaften.setEigenschaft(e.getID());
+              eigenschaften.store();
+            }
+          }
+          // Vorhandene Eigenschaft ggf. entfernen
+          else if (id != null && eigenschaften != null)
+          {
+            eigenschaften.delete();
           }
         }
-        // Sekundaere-Beitragsgruppe nur bei Mitgliedern möglich
+        // Sekundaere-Beitragsgruppe nur bei Mitgliedern mÃ¶glich
         if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           for (Beitragsgruppe bg : sekundaerList)
           {
             String inhalt = results
                 .getString("sekundaer_" + bg.getBezeichnung());
-            if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
-                && !inhalt.equalsIgnoreCase("nein"))
+            SekundaereBeitragsgruppe sekundaer = null;
+            if (id != null)
             {
-              SekundaereBeitragsgruppe sekundaer = (SekundaereBeitragsgruppe) Einstellungen
-                  .getDBService()
-                  .createObject(SekundaereBeitragsgruppe.class, null);
-              sekundaer.setMitglied(Integer.parseInt(m.getID()));
-              sekundaer.setBeitragsgruppe(Integer.parseInt(bg.getID()));
-              sekundaer.store();
+              DBIterator<SekundaereBeitragsgruppe> itSekundaer = Einstellungen
+                  .getDBService().createList(SekundaereBeitragsgruppe.class);
+              itSekundaer.addFilter("mitglied = ?", m.getID());
+              itSekundaer.addFilter("beitragsgruppe = ? ", bg.getID());
+              if (itSekundaer.hasNext())
+              {
+                sekundaer = itSekundaer.next();
+              }
+            }
+            if (inhalt.length() != 0 && !inhalt.equalsIgnoreCase("false")
+                && !inhalt.equalsIgnoreCase("nein")
+                && !inhalt.equalsIgnoreCase("0"))
+            {
+              if (sekundaer == null)
+              {
+                sekundaer = (SekundaereBeitragsgruppe) Einstellungen
+                    .getDBService()
+                    .createObject(SekundaereBeitragsgruppe.class, null);
+                sekundaer.setMitglied(Integer.parseInt(m.getID()));
+                sekundaer.setBeitragsgruppe(Integer.parseInt(bg.getID()));
+                sekundaer.store();
+              }
+            }
+            // Ggf. vorhandene SekundÃ¤re Beitragsgruppe entfernen
+            else if (id != null && sekundaer != null)
+            {
+              sekundaer.delete();
             }
           }
         }
-
-        monitor.setPercentComplete(10 + (anz * 10));
-        monitor.setStatusText(String.format("Mitglied %s importiert.",
-            Adressaufbereitung.getNameVorname(m)));
+        String text = "";
+        if (id == null)
+        {
+          text = "Mitglied %s importiert.";
+        }
+        else
+        {
+          text = "Mitglied %s geÃ¤ndert.";
+        }
+        monitor.setStatusText(
+            String.format(text, Adressaufbereitung.getNameVorname(m)));
       }
       results.close();
       stmt.close();
       conn.close();
       DBTransaction.commit();
+      monitor.setPercentComplete(100);
       monitor.setStatusText("Import komplett abgeschlossen.");
     }
     catch (Exception e)

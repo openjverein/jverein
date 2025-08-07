@@ -20,12 +20,15 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
-import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -45,18 +48,19 @@ public class SollbuchungMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer Mitgliedskonten.
    */
-  public SollbuchungMenu()
+  public SollbuchungMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new SollbuchungEditAction(), "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Löschen",
-        new SollbuchungLoeschenAction(), "user-trash-full.png"));
+        new EditAction(SollbuchungDetailView.class, part),
+        "text-x-generic.png"));
+    addItem(new SollOhneIstItem("LÃ¶schen", new SollbuchungLoeschenAction(),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
     try
     {
-      if (Einstellungen.getEinstellung().getRechnungenAnzeigen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         addItem(new MitRechnungItem("Rechnung anzeigen",
             new SollbuchungRechnungAction(), "file-invoice.png"));
@@ -139,7 +143,7 @@ public class SollbuchungMenu extends ContextMenu
       return true;
     }
   }
-  
+
   private static class MultiItem extends CheckedContextMenuItem
   {
 

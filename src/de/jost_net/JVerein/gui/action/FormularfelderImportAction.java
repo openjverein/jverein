@@ -1,5 +1,5 @@
 /**********************************************************************
- * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung fÃ¼r Vereine
  * Copyright (c) by Heiner Jostkleigrewe
  * Copyright (c) 2014 by Thomas Hooge
  * Main Project: heiner@jverein.dem  http://www.jverein.de/
@@ -65,21 +65,20 @@ public class FormularfelderImportAction implements Action
       catch (RemoteException e)
       {
         Logger.error("Fehler", e);
-        throw new ApplicationException(
-            "Fehler beim Import der Formularfelder", e);
+        throw new ApplicationException("Fehler beim Import der Formularfelder",
+            e);
       }
     }
     else
     {
-      throw new ApplicationException(
-          "Es wurde kein Formular ausgewählt!");
+      throw new ApplicationException("Es wurde kein Formular ausgewÃ¤hlt!");
     }
-    
-    // Nachfrage, da alle Daten gelöscht werden!
+
+    // Nachfrage, da alle Daten gelÃ¶scht werden!
     YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
-    ynd.setText("Achtung! Alle momentan vorhandenen Formularfelder für\n"
-        + "dieses Formular werden gelöscht.\n"
-        + "Dieser Vorgang kann nicht rückgängig gemacht werden.\n\n"
+    ynd.setText("Achtung! Alle momentan vorhandenen Formularfelder fÃ¼r\n"
+        + "dieses Formular werden gelÃ¶scht.\n"
+        + "Dieser Vorgang kann nicht rÃ¼ckgÃ¤ngig gemacht werden.\n\n"
         + "Wirklich fortfahren?");
     ynd.setTitle("Import: Formularfelder");
     Boolean choice;
@@ -112,8 +111,8 @@ public class FormularfelderImportAction implements Action
     catch (Exception e)
     {
       Logger.error("error while importing form  fields", e);
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim Importieren von Formularfeldern");
+      GUI.getStatusBar()
+          .setErrorText("Fehler beim Importieren von Formularfeldern");
     }
 
     try

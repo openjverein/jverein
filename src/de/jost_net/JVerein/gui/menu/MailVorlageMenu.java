@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MailVorlageDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -29,12 +30,12 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 public class MailVorlageMenu extends ContextMenu
 {
 
-  public MailVorlageMenu()
+  public MailVorlageMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(MailVorlageDetailView.class),
+        new EditAction(MailVorlageDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new MailVorlageDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new MailVorlageDeleteAction(),
+        "user-trash-full.png"));
   }
 }

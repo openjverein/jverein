@@ -42,7 +42,7 @@ public class MailVorlageDeleteAction implements Action
     }
     if (context == null || !(context instanceof MailVorlage))
     {
-      throw new ApplicationException("Keine MailVorlage ausgewählt");
+      throw new ApplicationException("Keine MailVorlage ausgewÃ¤hlt");
     }
     try
     {
@@ -52,8 +52,8 @@ public class MailVorlageDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Mail-Vorlage löschen");
-      d.setText("Wollen Sie diese Mail-Vorlage wirklich löschen?");
+      d.setTitle("Mail-Vorlage lÃ¶schen");
+      d.setText("Wollen Sie diese Mail-Vorlage wirklich lÃ¶schen?");
 
       try
       {
@@ -66,14 +66,14 @@ public class MailVorlageDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der MailVorlage", e);
+        Logger.error("Fehler beim LÃ¶schen der MailVorlage", e);
         return;
       }
-      GUI.getStatusBar().setSuccessText("Mail-Vorlage gelöscht.");
+      GUI.getStatusBar().setSuccessText("Mail-Vorlage gelÃ¶scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Mail-Vorlage";
+      String fehler = "Fehler beim LÃ¶schen der Mail-Vorlage";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

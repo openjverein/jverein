@@ -22,7 +22,9 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ProjektMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ProjektDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -32,16 +34,14 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ProjektControl extends FilterControl
-    implements Savable
+public class ProjektControl extends FilterControl implements Savable
 {
 
-  private TablePart projektList;
+  private JVereinTablePart projektList;
 
   private Input bezeichnung;
 
@@ -88,7 +88,7 @@ public class ProjektControl extends FilterControl
     }
 
     Date d = getProjekt().getStartDatum();
-    if (d.equals( Einstellungen.NODATE ))
+    if (d.equals(Einstellungen.NODATE))
     {
       d = null;
     }
@@ -101,25 +101,27 @@ public class ProjektControl extends FilterControl
   {
     if (endeDatum != null)
     {
-        return endeDatum;
+      return endeDatum;
     }
 
     Date d = getProjekt().getEndeDatum();
-    if (d.equals( Einstellungen.NODATE ))
+    if (d.equals(Einstellungen.NODATE))
     {
-        d = null;
+      d = null;
     }
     endeDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     endeDatum.setName("Endedatum");
     return endeDatum;
   }
 
-  public void prepareStore() throws RemoteException
+  @Override
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Projekt p = getProjekt();
     p.setBezeichnung((String) getBezeichnung().getValue());
     p.setStartDatum((Date) getStartDatum().getValue());
     p.setEndeDatum((Date) getEndeDatum().getValue());
+    return p;
   }
 
   /**
@@ -127,13 +129,12 @@ public class ProjektControl extends FilterControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Projekt p = getProjekt();
-      p.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -149,21 +150,23 @@ public class ProjektControl extends FilterControl
     {
       return projektList;
     }
-    projektList = new TablePart(getProjekte(),
-        new EditAction(ProjektDetailView.class));
+    projektList = new JVereinTablePart(getProjekte(), null);
     projektList.addColumn("Bezeichnung", "bezeichnung");
     projektList.addColumn("Startdatum", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     projektList.addColumn("Endedatum", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    projektList.setContextMenu(new ProjektMenu());
+    projektList.setContextMenu(new ProjektMenu(projektList));
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
     projektList.addFeature(new FeatureSummary());
+    projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
+    VorZurueckControl.setObjektListe(null, null);
     return projektList;
   }
 
-  public void TabRefresh() 
+  @Override
+  public void TabRefresh()
   {
     if (projektList == null)
     {
@@ -189,14 +192,14 @@ public class ProjektControl extends FilterControl
   {
     DBIterator<Projekt> projekte = Einstellungen.getDBService()
         .createList(Projekt.class);
-    
+
     if (isSuchtextAktiv() && getSuchtext().getValue() != null)
     {
       String tmpSuchtext = (String) getSuchtext().getValue();
       if (tmpSuchtext.length() > 0)
       {
         projekte.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%"});
+            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
       }
     }
     if (isDatumvonAktiv() && getDatumvon().getValue() != null)

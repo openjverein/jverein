@@ -34,10 +34,10 @@ public class LastschriftDeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null
-        || (!(context instanceof Lastschrift) && !(context instanceof Lastschrift[])))
+    if (context == null || (!(context instanceof Lastschrift)
+        && !(context instanceof Lastschrift[])))
     {
-      throw new ApplicationException("Keine Lastschrift ausgewählt");
+      throw new ApplicationException("Keine Lastschrift ausgewÃ¤hlt");
     }
     try
     {
@@ -64,9 +64,9 @@ public class LastschriftDeleteAction implements Action
         return;
       }
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Lastschrift" + (la.length > 1 ? "en" : "") + " löschen");
+      d.setTitle("Lastschrift" + (la.length > 1 ? "en" : "") + " lÃ¶schen");
       d.setText("Wollen Sie diese Lastschrift" + (la.length > 1 ? "en" : "")
-          + " wirklich löschen?");
+          + " wirklich lÃ¶schen?");
       try
       {
         Boolean choice = (Boolean) d.open();
@@ -77,7 +77,7 @@ public class LastschriftDeleteAction implements Action
       }
       catch (Exception e)
       {
-        Logger.error("Fehler beim Löschen der Lastschrift", e);
+        Logger.error("Fehler beim LÃ¶schen der Lastschrift", e);
         return;
       }
       int count = 0;
@@ -89,16 +89,16 @@ public class LastschriftDeleteAction implements Action
       if (count > 0)
       {
         GUI.getStatusBar().setSuccessText(String.format(
-            "%d Lastschrift" + (count != 1 ? "en" : "") + " gelöscht.", count));
+            "%d Lastschrift" + (count != 1 ? "en" : "") + " gelÃ¶scht.", count));
       }
       else
       {
-        GUI.getStatusBar().setErrorText("Keine Lastschrift gelöscht");
+        GUI.getStatusBar().setErrorText("Keine Lastschrift gelÃ¶scht");
       }
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen der Lastschrift.";
+      String fehler = "Fehler beim LÃ¶schen der Lastschrift.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

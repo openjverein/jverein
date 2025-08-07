@@ -24,12 +24,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class SollbuchungListTablePart extends TablePart
+public class SollbuchungListTablePart extends JVereinTablePart
 {
 
   public SollbuchungListTablePart(Action action)
@@ -38,21 +37,22 @@ public class SollbuchungListTablePart extends TablePart
   }
 
   @SuppressWarnings("rawtypes")
-  public SollbuchungListTablePart(GenericIterator mitgliedskonten, Action action)
+  public SollbuchungListTablePart(GenericIterator mitgliedskonten,
+      Action action)
   {
     super(mitgliedskonten, action);
   }
 
   /**
-   * Belegt den Context mit dem anzuzeigenden Text.
-   * Ersetzt getSummary() welches deprecated ist.
+   * Belegt den Context mit dem anzuzeigenden Text. Ersetzt getSummary() welches
+   * deprecated ist.
    */
   @SuppressWarnings("unchecked")
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     Context ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class,e))
+    if (this.hasEvent(FeatureSummary.class, e))
     {
       double sumBetrag = 0.0;
       String summary = "";
@@ -60,7 +60,7 @@ public class SollbuchungListTablePart extends TablePart
       {
         @SuppressWarnings("rawtypes")
         List l = this.getItems();
-        summary = new String(l.size() + " Datens‰tze");
+        summary = new String(l.size() + " Datens√§tze");
         for (int i = 0; i < l.size(); i++)
         {
           Sollbuchung sollb = (Sollbuchung) l.get(i);
@@ -77,7 +77,7 @@ public class SollbuchungListTablePart extends TablePart
       {
         // nichts tun
       }
-      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT,summary);
+      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
     return ctx;
   }

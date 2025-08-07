@@ -19,20 +19,23 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BeitragsgruppeImpl extends AbstractJVereinDBObject
-    implements
-    Beitragsgruppe
+    implements Beitragsgruppe
 {
 
   private static final long serialVersionUID = 1L;
@@ -65,17 +68,30 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      DBIterator<Beitragsgruppe> gruppeIt = Einstellungen.getDBService()
+          .createList(Beitragsgruppe.class);
+      if (!this.isNewObject())
+      {
+        gruppeIt.addFilter("id != ?", getID());
+      }
+      gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (gruppeIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
+      }
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
           if (getBetrag() < 0)
           {
-            throw new ApplicationException("Betrag nicht g¸ltig");
+            throw new ApplicationException("Betrag nicht g√ºltig");
           }
 
           break;
@@ -83,7 +99,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           if (getBetragMonatlich() < 0 || getBetragVierteljaehrlich() < 0
               || getBetragHalbjaehrlich() < 0 || getBetragJaehrlich() < 0)
           {
-            throw new ApplicationException("Betrag nicht g¸ltig");
+            throw new ApplicationException("Betrag nicht g√ºltig");
           }
 
           break;
@@ -91,42 +107,54 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
       Beitragsgruppe gruppeAlt = null;
       try
       {
-        gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService().createObject(Beitragsgruppe.class,getID());
+        gruppeAlt = (Beitragsgruppe) Einstellungen.getDBService()
+            .createObject(Beitragsgruppe.class, getID());
       }
       catch (RemoteException e)
       {
-        //Alte Beitragsgruppe nicht gefunden
+        // Alte Beitragsgruppe nicht gefunden
       }
-      if(getBeitragsArt() != null) {
-        if(gruppeAlt != null)
+      if (getBeitragsArt() != null)
+      {
+        if (gruppeAlt != null)
         {
-          //Da es die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der Datenbank stehen kann, m¸ssen wir auf null pr¸fen
+          // Da es die Beitragsart ZAHLER nicht mehr gibt sie aber noch in der
+          // Datenbank stehen kann, m√ºssen wir auf null pr√ºfen
           ArtBeitragsart artAlt = gruppeAlt.getBeitragsArt();
-          if(artAlt == null)
-              artAlt = ArtBeitragsart.NORMAL;
-          if(artAlt.getKey() != getBeitragsArt().getKey()) {
+          if (artAlt == null)
+            artAlt = ArtBeitragsart.NORMAL;
+          if (artAlt.getKey() != getBeitragsArt().getKey())
+          {
             DBIterator<Mitglied> list = Einstellungen.getDBService()
                 .createList(Mitglied.class);
             list.addFilter("beitragsgruppe = ?", getID());
-            if(list.hasNext()) {
-              throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht ge‰ndert werden!");
+            if (list.hasNext())
+            {
+              throw new ApplicationException(
+                  "Es existieren Mitglieder mit diesem Beitrag, Beitragsart kann nicht ge√§ndert werden!");
             }
           }
         }
-        if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
+        if (getSekundaer() && getBeitragsArt()
+            .getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
         {
-          throw new ApplicationException("Sekund‰re Beitragsgrupe kann nicht Beitragsart Familienangehˆriger haben!");
+          throw new ApplicationException(
+              "Sekund√§re Beitragsgrupe kann nicht Beitragsart Familienangeh√∂riger haben!");
         }
       }
-      if(getSekundaer() != null) {
-        if(gruppeAlt != null && gruppeAlt.getSekundaer() != getSekundaer()) {
-          if(gruppeAlt.getSekundaer())
+      if (getSekundaer() != null)
+      {
+        if (gruppeAlt != null && gruppeAlt.getSekundaer() != getSekundaer())
+        {
+          if (gruppeAlt.getSekundaer())
           {
-            DBIterator<SekundaereBeitragsgruppe> list = Einstellungen.getDBService()
-                .createList(SekundaereBeitragsgruppe.class);
+            DBIterator<SekundaereBeitragsgruppe> list = Einstellungen
+                .getDBService().createList(SekundaereBeitragsgruppe.class);
             list.addFilter("beitragsgruppe = ?", getID());
-            if(list.hasNext()) {
-              throw new ApplicationException("Es existieren Mitglieder mit diesem sekund‰ren Beitrag, Sekund‰r kann nicht ge‰ndert werden!");
+            if (list.hasNext())
+            {
+              throw new ApplicationException(
+                  "Es existieren Mitglieder mit diesem sekund√§ren Beitrag, Sekund√§r kann nicht ge√§ndert werden!");
             }
           }
           else
@@ -134,14 +162,45 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
             DBIterator<Mitglied> list = Einstellungen.getDBService()
                 .createList(Mitglied.class);
             list.addFilter("beitragsgruppe = ?", getID());
-            if(list.hasNext()) {
-              throw new ApplicationException("Es existieren Mitglieder mit diesem Beitrag, Sekund‰r kann nicht ge‰ndert werden!");
+            if (list.hasNext())
+            {
+              throw new ApplicationException(
+                  "Es existieren Mitglieder mit diesem Beitrag, Sekund√§r kann nicht ge√§ndert werden!");
             }
           }
         }
-        if(getSekundaer() && getBeitragsArt().getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
+        if (getSekundaer() && getBeitragsArt()
+            .getKey() == ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey())
         {
-          throw new ApplicationException("Sekund‰re Beitragsgrupe kann nicht Beitragsart Angehˆriger haben!");
+          throw new ApplicationException(
+              "Sekund√§re Beitragsgrupe kann nicht Beitragsart Angeh√∂riger haben!");
+        }
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        if (getSteuer() != null && getBuchungsart() != null && getSteuer()
+            .getBuchungsart().getArt() != getBuchungsart().getArt())
+        {
+          switch (getBuchungsart().getArt())
+          {
+            case ArtBuchungsart.AUSGABE:
+              throw new ApplicationException(
+                  "Umsatzsteuer statt Vorsteuer gew√§hlt.");
+            case ArtBuchungsart.EINNAHME:
+              throw new ApplicationException(
+                  "Vorsteuer statt Umsatzsteuer gew√§hlt.");
+            // Umbuchung ist bei Anlagebuchungen m√∂glich,
+            // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf) m√∂glich
+            case ArtBuchungsart.UMBUCHUNG:
+              break;
+          }
+        }
+        if (getSteuer() != null && getBuchungsart() != null
+            && (getBuchungsart().getSpende()
+                || getBuchungsart().getAbschreibung()))
+        {
+          throw new ApplicationException(
+              "Bei Spenden und Abschreibungen ist keine Steuer m√∂glich.");
         }
       }
     }
@@ -284,7 +343,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     setAttribute("beitragsart", art);
   }
-  
+
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
@@ -303,7 +362,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     return (Long) super.getAttribute("buchungsklasse");
   }
-  
+
   @Override
   public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException
   {
@@ -325,7 +384,8 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   public void setArbeitseinsatzStunden(double arbeitseinsatzStunden)
       throws RemoteException
   {
-    setAttribute("arbeitseinsatzstunden", Double.valueOf(arbeitseinsatzStunden));
+    setAttribute("arbeitseinsatzstunden",
+        Double.valueOf(arbeitseinsatzStunden));
   }
 
   @Override
@@ -394,18 +454,22 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
     {
       return getBuchungsart();
     }
+    if (fieldName.equals("steuer"))
+    {
+      return getSteuer();
+    }
     return super.getAttribute(fieldName);
   }
 
   @Override
   public boolean getHasAltersstaffel() throws RemoteException
   {
-	Object o = getAttribute("altersstaffel");
-	if(o == null)
-		return false;
-    return (boolean)o;
+    Object o = getAttribute("altersstaffel");
+    if (o == null)
+      return false;
+    return (boolean) o;
   }
-  
+
   @Override
   public DBIterator<Altersstaffel> getAltersstaffelIterator()
       throws RemoteException
@@ -416,17 +480,15 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
     a.setOrder("order by nummer");
     return a;
   }
-  
 
   @Override
-  public Altersstaffel getAltersstaffel(int nummer)
-      throws RemoteException
+  public Altersstaffel getAltersstaffel(int nummer) throws RemoteException
   {
     DBIterator<Altersstaffel> a = Einstellungen.getDBService()
         .createList(Altersstaffel.class);
     a.addFilter("beitragsgruppe = ?", getID());
-    a.addFilter("nummer = ?",nummer);
-    if(a.hasNext())
+    a.addFilter("nummer = ?", nummer);
+    if (a.hasNext())
       return a.next();
     else
       return null;
@@ -436,5 +498,24 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   public void setHasAltersstaffel(boolean b) throws RemoteException
   {
     setAttribute("altersstaffel", b);
+  }
+
+  @Override
+  public Steuer getSteuer() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("steuer");
+    if (l == null)
+    {
+      return null; // Keine Steuer zugeordnet
+    }
+
+    Cache cache = Cache.get(Steuer.class, true);
+    return (Steuer) cache.get(l);
+  }
+
+  @Override
+  public void setSteuer(Steuer steuer) throws RemoteException
+  {
+    setAttribute("steuer", steuer);
   }
 }

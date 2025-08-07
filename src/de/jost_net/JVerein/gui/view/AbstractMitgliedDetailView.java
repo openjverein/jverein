@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
@@ -41,6 +42,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
@@ -65,8 +67,7 @@ import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
-
-  // Statische Variable, die den zuletzt ausgewählten Tab speichert.
+  // Statische Variable, die den zuletzt ausgewÃ¤hlten Tab speichert.
   private static int tabindex = -1;
 
   // Die aufgerufene Funktion: B=Bearbeiten, N=Neu, D=Duplizieren
@@ -105,61 +106,69 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     MitgliedUtils.setMitglied(zhl);
     zhl.setOrder("ORDER BY name, vorname");
 
-    int anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenStammdaten();
-    boolean showInTab = Einstellungen.getEinstellung()
-        .getZeigeStammdatenInTab();
+    int anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenStammdaten",
+        2);
+    boolean showInTab = Einstellungen.getSettingBoolean("ZeigeStammdatenInTab",
+        false);
     zeicheStammdaten(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenMitgliedschaft();
-    showInTab = Einstellungen.getEinstellung().getZeigeMitgliedschaftInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenMitgliedschaft",
+        1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedschaftInTab",
+        true);
     zeichneMitgliedschaft(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    anzahlSpalten = Einstellungen.getEinstellung().getAnzahlSpaltenZahlung();
-    showInTab = Einstellungen.getEinstellung().getZeigeZahlungInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZahlung", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZahlungInTab", true);
     zeichneZahlung(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeZusatzbetraegeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzbetraegeInTab",
+        true);
     zeichneZusatzbeitraege(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeMitgliedskontoInTab();
-    zeichneMitgliedkonto(controlSollb, showInTab ? folder : oben.getComposite());
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMitgliedskontoInTab",
+        true);
+    zeichneMitgliedkonto(controlSollb,
+        showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeVermerkeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeVermerkeInTab", true);
     zeichneVermerke(showInTab ? folder : oben.getComposite(), 1);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeWiedervorlageInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeWiedervorlageInTab",
+        true);
     zeichneWiedervorlage(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeMailsInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeMailsInTab", true);
     zeichneMails(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeEigenschaftenInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeEigenschaftenInTab",
+        true);
     zeichneEigenschaften(showInTab ? folder : oben.getComposite());
 
-    anzahlSpalten = Einstellungen.getEinstellung()
-        .getAnzahlSpaltenZusatzfelder();
-    showInTab = Einstellungen.getEinstellung().getZeigeZusatzfelderInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenZusatzfelder", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeZusatzfelderInTab", true);
     zeichneZusatzfelder(showInTab ? folder : oben.getComposite(),
         anzahlSpalten);
 
-    showInTab = Einstellungen.getEinstellung().getZeigeLehrgaengeInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLehrgaengeInTab", true);
     zeichneLehrgaenge(showInTab ? folder : oben.getComposite());
 
-    showInTab = Einstellungen.getEinstellung().getZeigeFotoInTab();
+    showInTab = Einstellungen.getSettingBoolean("ZeigeFotoInTab", true);
     zeichneMitgliedfoto(showInTab ? folder : oben.getComposite());
 
-    anzahlSpalten = Einstellungen.getEinstellung().getAnzahlSpaltenLesefelder();
-    showInTab = Einstellungen.getEinstellung().getZeigeLesefelderInTab();
+    anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1);
+    showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true);
     zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
 
-    zeichneMitgliedDetail(showInTab ? folder : oben.getComposite());
+    showInTab = Einstellungen.getSettingBoolean("ZeigeArbeitseinsatzInTab",
+        true);
+    zeichneArbeitseinsaetze(showInTab ? folder : oben.getComposite());
 
+    showInTab = Einstellungen.getSettingBoolean("ZeigeDokumenteInTab", true);
     zeichneDokumente(showInTab ? folder : oben.getComposite());
 
-    // Aktivier zuletzt ausgewählten Tab.
+    // Aktivier zuletzt ausgewÃ¤hlten Tab.
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
@@ -167,8 +176,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     folder.addSelectionListener(new SelectionListener()
     {
 
-      // Wenn Tab angeklickt, speicher diesen um ihn später automatisch
-      // wieder auszuwählen.
+      // Wenn Tab angeklickt, speicher diesen um ihn spÃ¤ter automatisch
+      // wieder auszuwÃ¤hlen.
       @Override
       public void widgetSelected(SelectionEvent arg0)
       {
@@ -191,6 +200,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIED, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     if (!control.getMitglied().isNewObject())
     {
       buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
@@ -201,7 +213,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       buttons.addButton(new Button("Personalbogen", new PersonalbogenAction(),
           control.getCurrentObject(), false, "receipt.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
-      // können
+      // kÃ¶nnen
       buttons
           .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "edit-copy.png"));
@@ -261,18 +273,23 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           .createObject(MitgliedDokument.class, null);
       mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
       DokumentControl dcontrol = new DokumentControl(this, "mitglieder", true);
-      cont.addPart(dcontrol.getDokumenteList(mido));
+
       ButtonArea butts = new ButtonArea();
       butts.addButton(dcontrol.getNeuButton(mido));
       butts.paint(cont.getComposite());
+
+      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      cont.getComposite().setLayout(new GridLayout(1, false));
+
+      cont.addPart(dcontrol.getDokumenteList(mido));
     }
   }
 
-  private void zeichneMitgliedDetail(Composite parentComposite)
+  private void zeichneArbeitseinsaetze(Composite parentComposite)
       throws RemoteException
   {
     if (isMitgliedDetail()
-        && Einstellungen.getEinstellung().getArbeitseinsatz())
+        && (Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       Container cont = getTabOrLabelContainer(parentComposite,
           "Arbeitseinsatz");
@@ -293,7 +310,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     // TODO: getLesefelder() ist zu langsam. Inhalt von Lesefeldern sollte erst
     // evaluiert werden, wenn Lesefelder-Tab angeklickt wird.
-    if (Einstellungen.getEinstellung().getUseLesefelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
     {
       Input[] lesefelder = control.getLesefelder();
       if (lesefelder != null)
@@ -305,7 +322,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           if (inp == null)
           {
-            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
+            String errorText = "Achtung! UngÃ¼ltiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
             Input errorInput = new TextInput(errorText);
             errorInput.setEnabled(false);
             svc.addInput(errorInput);
@@ -327,7 +344,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneMitgliedfoto(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && Einstellungen.getEinstellung().getMitgliedfoto())
+    if (isMitgliedDetail()
+        && (Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Foto");
       cont.addLabelPair("Foto", control.getFoto());
@@ -337,9 +355,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneLehrgaenge(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail() && Einstellungen.getEinstellung().getLehrgaenge())
+    if (isMitgliedDetail()
+        && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
+      Container cont = getTabOrLabelContainer(parentComposite, "LehrgÃ¤nge");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -382,7 +401,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneWiedervorlage(Composite parentComposite)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getWiedervorlage())
+    if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Wiedervorlage");
 
@@ -398,8 +417,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   private void zeichneMails(Composite parentComposite) throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getSmtpServer() != null
-        && Einstellungen.getEinstellung().getSmtpServer().length() > 0)
+    if ((String) Einstellungen.getEinstellung(Property.SMTPSERVER) != null
+        && ((String) Einstellungen.getEinstellung(Property.SMTPSERVER))
+            .length() > 0)
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Mails");
 
@@ -410,16 +430,16 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneVermerke(Composite parentComposite, int spaltenanzahl)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getVermerke())
+    if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Vermerke");
       SimpleContainer cols = new SimpleContainer(cont.getComposite(), true,
           spaltenanzahl * 2);
 
-      // Stelle sicher, dass Eingabefeld sich über mehrere Zeilen erstreckt.
+      // Stelle sicher, dass Eingabefeld sich Ã¼ber mehrere Zeilen erstreckt.
       GridData gridData = new GridData(GridData.FILL_BOTH);
       gridData.minimumHeight = 80;
-      // wenn der Vermerk mehr Zeilen benötigt, sollte er die Scrollbar
+      // wenn der Vermerk mehr Zeilen benÃ¶tigt, sollte er die Scrollbar
       // einblenden.
       gridData.heightHint = 80;
       cols.getComposite().setLayoutData(gridData);
@@ -431,7 +451,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   /**
    * Zeichnet das Mitgliedskonto, wenn dieses aktiviert ist und es sich nicht um
-   * ein neues Mitglied handelt (für dieses macht ein Mitgliedskonto noch kein
+   * ein neues Mitglied handelt (fÃ¼r dieses macht ein Mitgliedskonto noch kein
    * Sinn!)
    * 
    */
@@ -457,9 +477,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneZusatzbeitraege(Composite parentComposite)
       throws RemoteException
   {
-    if (Einstellungen.getEinstellung().getZusatzbetrag())
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Zusatzbeträge");
+      Container cont = getTabOrLabelContainer(parentComposite, "ZusatzbetrÃ¤ge");
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -481,14 +501,15 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton(control.getKontoDatenLoeschenButton());
     buttons1.paint(container.getComposite());
-    
+
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
 
     zahlungsweg.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
-      switch (Einstellungen.getEinstellung().getBeitragsmodel())
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
         case GLEICHERTERMINFUERALLE:
           break;
@@ -519,7 +540,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         .getAbweichenderKontoinhaberLabelGroup(container.getComposite());
     SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
-    
+
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
     addButtonArea(buttons2, cols2.getComposite());
@@ -532,7 +553,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols2.addInput(control.getKtoiAdressierungszusatz());
     cols2.addInput(control.getKtoiPlz());
     cols2.addInput(control.getKtoiOrt());
-    if (Einstellungen.getEinstellung().getAuslandsadressen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
     {
       cols2.addInput(control.getKtoiStaat());
     }
@@ -581,7 +602,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       SimpleVerticalContainer cols = new SimpleVerticalContainer(
           container.getComposite(), false, spaltenanzahl);
 
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         cols.addInput(control.getExterneMitgliedsnummer());
       }
@@ -592,18 +614,20 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cols.addInput(control.getBeitragsgruppe(true));
       cols.addInput(control.getEintritt());
       cols.addInput(control.getAustritt());
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         cols.addInput(control.getIndividuellerBeitrag());
       }
       cols.addInput(control.getKuendigung());
-      if (Einstellungen.getEinstellung().getSterbedatum()
+      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
           && control.getMitglied().getPersonenart().equalsIgnoreCase("n"))
       {
         cols.addInput(control.getSterbetag());
       }
       cols.arrangeVertically();
-      if (Einstellungen.getEinstellung().getSekundaereBeitragsgruppen())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
         container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
@@ -611,8 +635,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       container.addPart(control.getZukuenftigeBeitraegeView());
 
       // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familienangehöriger" gibt, zeige Familienverband-Part.
-      // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
+      // "FamilienangehÃ¶riger" gibt, zeige Familienverband-Part.
+      // Dieser Familien-Part soll Ã¼ber die komplette Breite angezeigt werden,
       // kann daher nicht im SimpleVerticalContainer angezeigt werden.
       DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
@@ -626,7 +650,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   }
 
   /**
-   * Zeichnet GUI-Felder für Stammdaten. Wenn Kommunikationsdaten aktiviert
+   * Zeichnet GUI-Felder fÃ¼r Stammdaten. Wenn Kommunikationsdaten aktiviert
    * sind, werden drei Spalten angezeigt, ansonsten zwei.
    * 
    * @param parentComposite
@@ -662,7 +686,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols.addInput(control.getStrasse());
     cols.addInput(control.getPlz());
     cols.addInput(control.getOrt());
-    if (Einstellungen.getEinstellung().getAuslandsadressen())
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
     {
       cols.addInput(control.getStaat());
     }
@@ -676,7 +700,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cols.addInput(control.getLeitwegID());
     }
 
-    if (Einstellungen.getEinstellung().getKommunikationsdaten())
+    if ((Boolean) Einstellungen.getEinstellung(Property.KOMMUNIKATIONSDATEN))
     {
       cols.addInput(control.getTelefonprivat());
       cols.addInput(control.getHandy());
@@ -687,7 +711,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   }
 
   /**
-   * Zeichnet den Mitglieds-/Adressnamen in die Überschriftszeile
+   * Zeichnet den Mitglieds-/Adressnamen in die Ãœberschriftszeile
    */
   private void zeichneUeberschrift() throws RemoteException
   {
@@ -699,7 +723,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     if (funktion == 'B' && isMitgliedDetail())
     {
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         mgname = (String) control.getExterneMitgliedsnummer().getValue();
         if (mgname == null || mgname.isEmpty())
@@ -711,13 +736,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
 
     if (control.getName(false).getValue() != null)
-      if (((String) control.getName(false).getValue()).isEmpty() == false)
+      if (!((String) control.getName(false).getValue()).isEmpty())
       {
         mgname = mgname + (String) control.getName(false).getValue();
-        if (((String) control.getTitel().getValue()).isEmpty() == false)
+        if (!((String) control.getTitel().getValue()).isEmpty())
           mgname = mgname + ", " + (String) control.getTitel().getValue() + " "
               + (String) control.getVorname().getValue();
-        else if (((String) control.getVorname().getValue()).isEmpty() == false)
+        else if (!((String) control.getVorname().getValue()).isEmpty())
           mgname = mgname + ", " + (String) control.getVorname().getValue();
       }
     GUI.getView().setTitle(getTitle() + " (" + mgname.trim() + ")");
@@ -729,17 +754,21 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   /**
    * Fuegt eine neue ButtonArea ohne Seperator hinzu.
-   * @param buttonArea die hinzuzufuegende Button-Area.
-   * @param composite in den gezeichnet werden soll
-   * Code ist aus de.willuhn.jameica.gui.util.Container kopiert
+   * 
+   * @param buttonArea
+   *          die hinzuzufuegende Button-Area.
+   * @param composite
+   *          in den gezeichnet werden soll Code ist aus
+   *          de.willuhn.jameica.gui.util.Container kopiert
    */
   public void addButtonArea(ButtonArea buttonArea, Composite composite)
   {
     try
     {
-      final GridData g = new GridData(GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
+      final GridData g = new GridData(
+          GridData.FILL_HORIZONTAL | GridData.HORIZONTAL_ALIGN_END);
       g.horizontalSpan = 2;
-      final Composite comp = new Composite(composite,SWT.NONE);
+      final Composite comp = new Composite(composite, SWT.NONE);
       comp.setLayoutData(g);
 
       final GridLayout gl = new GridLayout();
@@ -750,8 +779,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
     catch (RemoteException e)
     {
-      Logger.error("error while adding button area",e);
-      Application.getMessagingFactory().sendMessage(new StatusBarMessage(Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),StatusBarMessage.TYPE_ERROR));
+      Logger.error("error while adding button area", e);
+      Application.getMessagingFactory()
+          .sendMessage(new StatusBarMessage(
+              Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),
+              StatusBarMessage.TYPE_ERROR));
     }
   }
 

@@ -66,7 +66,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout layout = new GridLayout(2, false);
     comp.setLayout(layout);
 
-    JameicaUtil.addLabel("Empfänger", comp, GridData.VERTICAL_ALIGN_BEGINNING);
+    JameicaUtil.addLabel("EmpfÃ¤nger", comp, GridData.VERTICAL_ALIGN_BEGINNING);
     Composite comp2 = new Composite(comp, SWT.NONE);
     GridData gd2 = new GridData(GridData.FILL_HORIZONTAL);
     gd2.heightHint = 100;
@@ -83,7 +83,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl3 = new GridLayout();
     gl3.marginWidth = 0;
     comp3.setLayout(gl3);
-    Button add = new Button("Hinzufügen", new Action()
+    Button add = new Button("HinzufÃ¼gen", new Action()
     {
 
       @Override
@@ -140,7 +140,7 @@ public class MailDetailView extends AbstractDetailView
         FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
         fd.setFilterPath(
             settings.getString("lastdir", System.getProperty("user.home")));
-        fd.setText("Bitte wählen Sie einen Anhang aus.");
+        fd.setText("Bitte wÃ¤hlen Sie einen Anhang aus.");
         if (fd.open() != null)
         {
           try
@@ -174,9 +174,11 @@ public class MailDetailView extends AbstractDetailView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton(
-        new Button("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
-            false, "view-refresh.png"));
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    buttons.addButton(new Button("Mail-Vorlage",
+        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
 
     Map<String, Object> map = MitgliedMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
@@ -187,7 +189,7 @@ public class MailDetailView extends AbstractDetailView
         .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
     buttons.addButton(
-        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+        new Button("Als Vorlage Ã¼bernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());

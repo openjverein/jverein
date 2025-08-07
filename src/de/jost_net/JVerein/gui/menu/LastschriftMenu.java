@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
@@ -40,21 +41,22 @@ public class LastschriftMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Lastschriften.
    */
-  public LastschriftMenu()
+  public LastschriftMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new EditAction(LastschriftDetailView.class),
+        new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new LastschriftDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
   }
-  
-  private static class MitgliedAnzeigenMenuItem extends CheckedSingleContextMenuItem
+
+  private static class MitgliedAnzeigenMenuItem
+      extends CheckedSingleContextMenuItem
   {
     private MitgliedAnzeigenMenuItem(String text, Action action, String icon)
     {

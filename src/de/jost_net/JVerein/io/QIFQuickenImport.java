@@ -47,11 +47,11 @@ import de.willuhn.util.ProgressMonitor;
  * QIFImportHead und QIFImportPos
  * 
  * Eine QIF Datei darf nur ein Konto aus Quicken enthalten, weil Quicken einen
- * unvollständigen Export liefert, wenn mehrere Konten in eine Datei exportiert
+ * unvollstÃ¤ndigen Export liefert, wenn mehrere Konten in eine Datei exportiert
  * werden. Dieser Fehler konnte mit unterschiedlichen Versionen von Quicken nach
  * vollzogen werden.
  * 
- * Es wird nicht das komplette Format unterstützt aber die ( hoffentlich )
+ * Es wird nicht das komplette Format unterstÃ¼tzt aber die ( hoffentlich )
  * wesentlichen Teile die vor allem empirisch ermittelt wurden.
  * 
  * Eine Beschreibung des Formates bekomment man hier
@@ -64,9 +64,12 @@ public class QIFQuickenImport implements Importer
 {
   enum QIF_TYPES
   {
-    CASH("!Type:Cash"), BANK("!Type:Bank"), CCARD("!Type:CCard"),
+    CASH("!Type:Cash"),
+    BANK("!Type:Bank"),
+    CCARD("!Type:CCard"),
     // INVST("!Type:Invst"),
-    OTH_A("!Type:Oth A"), OTH_L("!Type:Oth L")
+    OTH_A("!Type:Oth A"),
+    OTH_L("!Type:Oth L")
     // , INVOICE("!Type:Invoice")
     ;
 
@@ -185,7 +188,7 @@ public class QIFQuickenImport implements Importer
    * 
    * Wir suchen erst eine Account Block - erste Zeile hat Text "!Account" Haben
    * wir diesen gefunden suchen wir den Typ Block - erste Zeile hat Text
-   * "!Type:" Danach kommen die Buchungen für dieses Konto bis eine Zeile mit
+   * "!Type:" Danach kommen die Buchungen fÃ¼r dieses Konto bis eine Zeile mit
    * "!" startet.
    * 
    * @param monitor
@@ -229,12 +232,12 @@ public class QIFQuickenImport implements Importer
         qifTyp = (QIFType) qifBlock.process(new QIFType());
         if (null != qifTyp)
         {
-          if (typeListe.isEmpty() == false)
+          if (!typeListe.isEmpty())
           {
             Logger.error(
-                "Die Datei enthält mehrere Konten. Weil Quicken Fehler bei solchen Exporten hat unterstützen wir dies nicht!");
+                "Die Datei enthÃ¤lt mehrere Konten. Weil Quicken Fehler bei solchen Exporten hat unterstÃ¼tzen wir dies nicht!");
             throw new ApplicationException(
-                "Datei enthält Daten von mehreren Konten!! Bitte jedes Konto einzelen Exportieren!!");
+                "Datei enthÃ¤lt Daten von mehreren Konten!! Bitte jedes Konto einzelen Exportieren!!");
           }
 
           loeschenAlteKontoDaten(qifTyp);
@@ -426,7 +429,7 @@ public class QIFQuickenImport implements Importer
     }
     catch (IOException ex)
     {
-      throw new ApplicationException("Exportdatei kann nicht geöffnet werden.",
+      throw new ApplicationException("Exportdatei kann nicht geÃ¶ffnet werden.",
           ex);
     }
   }
@@ -456,14 +459,14 @@ public class QIFQuickenImport implements Importer
       catch (IOException ex)
       {
         throw new ApplicationException(
-            "Daten können nicht aus der Datei gelesen werden.", ex);
+            "Daten kÃ¶nnen nicht aus der Datei gelesen werden.", ex);
       }
       return false;
     }
 
     public QIFItem process(QIFItem item)
     {
-      if (datenBlockPasstZuItem(item) == false)
+      if (!datenBlockPasstZuItem(item))
         return null;
 
       setzeItemDaten(item);
@@ -691,9 +694,9 @@ public class QIFQuickenImport implements Importer
 
     public boolean istGegenbuchungVon(QIFBuchung listItem)
     {
-      if (datum.equals(listItem.datum) == false)
+      if (!datum.equals(listItem.datum))
         return false;
-      if (betrag.equals(listItem.betrag) == false)
+      if (!betrag.equals(listItem.betrag))
         return false;
       return qifKonto.kontoName.equals(buchungsArt);
     }
@@ -712,7 +715,7 @@ public class QIFQuickenImport implements Importer
 
     public String gibGegenKontoName()
     {
-      if (istTransfereBuchung == false)
+      if (!istTransfereBuchung)
         return null;
       return buchungsArt;
     }
@@ -733,7 +736,7 @@ public class QIFQuickenImport implements Importer
     @Override
     public boolean isItem(List<String> datenList)
     {
-      return datenList.get(0).startsWith("!") == false;
+      return !datenList.get(0).startsWith("!");
     }
   }
 

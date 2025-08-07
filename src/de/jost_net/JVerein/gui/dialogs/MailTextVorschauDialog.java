@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -68,8 +69,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private final de.willuhn.jameica.system.Settings settings;
 
-  public MailTextVorschauDialog(IMailControl control,
-      Map<String, Object> map, int position, boolean mitMitglied)
+  public MailTextVorschauDialog(IMailControl control, Map<String, Object> map,
+      int position, boolean mitMitglied)
   {
     super(position);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -107,11 +108,11 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     if (mitMitglied && control.getEmpfaengerList() == null)
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          Einstellungen.getEinstellung().getMitgliedAuswahl());
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
       mitglied.addListener(new MitgliedListener());
       if (mitglied instanceof SelectInput)
       {
-        ((SelectInput) mitglied).setPleaseChoose("Optional ausw‰hlen");
+        ((SelectInput) mitglied).setPleaseChoose("Optional ausw√§hlen");
         ((SelectInput) mitglied).setPreselected(null);
       }
       container.addLabelPair("Mitglied", mitglied);
@@ -126,7 +127,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       {
         mitglied.disable();
       }
-      container.addLabelPair("Empf‰nger", mitglied);
+      container.addLabelPair("Empf√§nger", mitglied);
     }
 
     betreff = new TextInput(em.evalBetreff(betreffString));
@@ -137,7 +138,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     container.addLabelPair("Text", text);
 
     ButtonArea b = new ButtonArea();
-    b.addButton("Schlieﬂen", context -> close(), null, false,
+    b.addButton("Schlie√üen", context -> close(), null, false,
         "process-stop.png");
     b.paint(parent);
 

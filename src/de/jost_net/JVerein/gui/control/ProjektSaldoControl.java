@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -41,30 +42,31 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     // nach Buchungsklassenzu gruppieren
     ExtendedDBIterator<PseudoDBObject> it = super.getIterator();
 
-    // Wir überschreiben das "buchungsklasse" Feld mit dem Projektname
-     it.addColumn("projekt.bezeichnung as " + BUCHUNGSKLASSE);
-     it.addGroupBy("projekt.id");
-     String on = "projekt.id = buchung.projekt ";
-     if (mitSteuer)
-     {
-       on += " OR projekt.id = st.projekt";
-     }
-     it.join("projekt", on);
+    // Wir Ã¼berschreiben das "buchungsklasse" Feld mit dem Projektname
+    it.addColumn("projekt.bezeichnung as " + BUCHUNGSKLASSE);
+    it.addGroupBy("projekt.id");
+    it.addGroupBy("projekt.bezeichnung");
+    String on = "projekt.id = buchung.projekt ";
+    if (mitSteuer)
+    {
+      on += " OR projekt.id = st.projekt";
+    }
+    it.join("projekt", on);
 
-     switch (Einstellungen.getEinstellung().getBuchungsartSort())
-     {
-       case BuchungsartSort.NACH_NUMMER:
-         it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
-         break;
-       case BuchungsartSort.NACH_BEZEICHNUNG_NR:
-       default:
-         it.setOrder(
-             "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
-                 + "buchungsart.bezeichnung ");
-         break;
-     }
-     return it;
-   }
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        it.setOrder(
+            "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
+                + "buchungsart.bezeichnung ");
+        break;
+    }
+    return it;
+  }
 
   @Override
   protected String getAuswertungTitle()

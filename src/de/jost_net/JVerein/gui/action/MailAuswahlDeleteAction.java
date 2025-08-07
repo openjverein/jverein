@@ -44,15 +44,15 @@ public class MailAuswahlDeleteAction implements Action
     MailEmpfaenger[] empfaenger = null;
     if (context == null)
     {
-      throw new ApplicationException("Keinen Empf‰nger ausgew‰hlt");
+      throw new ApplicationException("Keinen Empf√§nger ausgew√§hlt");
     }
-    else if(context instanceof MailEmpfaenger)
+    else if (context instanceof MailEmpfaenger)
     {
-      empfaenger = new MailEmpfaenger[] {(MailEmpfaenger)context};
+      empfaenger = new MailEmpfaenger[] { (MailEmpfaenger) context };
     }
-    else if(context instanceof MailEmpfaenger[])
+    else if (context instanceof MailEmpfaenger[])
     {
-      empfaenger = (MailEmpfaenger[])context;
+      empfaenger = (MailEmpfaenger[]) context;
     }
     else
     {
@@ -60,14 +60,14 @@ public class MailAuswahlDeleteAction implements Action
     }
     try
     {
-      for(MailEmpfaenger me:empfaenger)
+      for (MailEmpfaenger me : empfaenger)
       {
         control.removeEmpfaenger(me);
       }
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim entfernen des MailEmpf‰ngers";
+      String fehler = "Fehler beim entfernen des MailEmpf√§ngers";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

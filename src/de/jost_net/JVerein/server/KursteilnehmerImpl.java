@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
@@ -34,8 +35,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerImpl extends AbstractJVereinDBObject
-    implements
-    Kursteilnehmer
+    implements Kursteilnehmer
 {
 
   private static final long serialVersionUID = 1L;
@@ -92,7 +92,8 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Bitte Datum des Mandats eingeben");
     }
-    if (Einstellungen.getEinstellung().getKursteilnehmerGebGesPflicht())
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
     {
       if (getGeburtsdatum() == null)
       {
@@ -134,7 +135,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     }
     if (getBetrag() <= 0)
     {
-      throw new ApplicationException("Bitte Betrag größer als 0 eingeben");
+      throw new ApplicationException("Bitte Betrag grÃ¶ÃŸer als 0 eingeben");
     }
   }
 

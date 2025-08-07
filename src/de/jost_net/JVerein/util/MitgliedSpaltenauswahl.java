@@ -19,6 +19,7 @@ package de.jost_net.JVerein.util;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BeitragsgruppeFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
@@ -53,7 +54,8 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Mitgliedsnummer", "idint", false, true);
     try
     {
-      if (Einstellungen.getEinstellung().getExterneMitgliedsnummer())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
       }
@@ -62,17 +64,39 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     {
       //
     }
+    add("Kontostand", "kontostand", false, new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        String anzeige = Einstellungen.DECIMALFORMAT.format((Double) o) + " ";
+        anzeige += ((Double) o) > -0.0049 ? "\u2705" : "\u2757";
+        return anzeige;
+      }
+    }, Column.ALIGN_RIGHT, true);
+    try
+    {
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      {
+        add("D", "document", false, true);
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
     add("Anrede", "anrede", false, true);
     add("Titel", "titel", false, true);
     add("Name", "name", true, true);
     add("Vorname", "vorname", true, true);
     add("Adressierungszusatz", "adressierungszusatz", false, true);
-    add("Straße", "strasse", true, true);
+    add("StraÃŸe", "strasse", true, true);
     add("PLZ", "plz", false, true);
     add("Ort", "ort", true, true);
     try
     {
-      if (Einstellungen.getEinstellung().getAuslandsadressen())
+      if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
       {
         add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT,
             true);
@@ -94,7 +118,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Kontoinhaber Name", "ktoiname", false, true);
     add("Kontoinhaber Titel", "ktoititel", false, true);
     add("Kontoinhaber Vorname", "ktoivorname", false, true);
-    add("Kontoinhaber Straße", "ktoistrasse", false, true);
+    add("Kontoinhaber StraÃŸe", "ktoistrasse", false, true);
     add("Kontoinhaber Adressierungszusatz", "ktoiadressierungszsatz", false,
         true);
     add("Kontoinhaber PLZ", "ktoiplz", false, true);
@@ -120,18 +144,19 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Austritt", "austritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
-    add("Kündigung", "kuendigung", false,
+    add("KÃ¼ndigung", "kuendigung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Leitweg ID", "leitwegid", false, true);
     add("Zahler ID", "zahlerid", false, false);
     try
     {
-      if (Einstellungen.getEinstellung().getIndividuelleBeitraege())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         add("Individueller Beitrag", "individuellerbeitrag", false, false);
       }
-      if (Einstellungen.getEinstellung().getSterbedatum())
+      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
       {
         add("Sterbedatum", "sterbetag", false,
             new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
@@ -144,7 +169,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     }
     add("Eingabedatum", "eingabedatum", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    add("Letzte Änderung", "letzteaenderung", false,
+    add("Letzte Ã„nderung", "letzteaenderung", false,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     try
     {

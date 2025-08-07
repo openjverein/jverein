@@ -35,12 +35,13 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.GUI;
@@ -71,16 +72,24 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         file = getDateiAuswahl("pdf");
+        if (file == null)
+        {
+          return;
+        }
         formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
         file = getDateiAuswahl("zip");
+        if (file == null)
+        {
+          return;
+        }
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
 
     Formular formular = null;
-    // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
+    // Bei Mahnung ist Formular nÃ¶tig, bei Rechnung ist es individuell in der
     // Rechnung angegeben
     if (typ == TYP.MAHNUNG)
     {
@@ -88,7 +97,7 @@ public class Rechnungsausgabe
           .getValue();
       if (form == null)
       {
-        throw new IOException("Kein Mahnungsformular ausgewählt");
+        throw new IOException("Kein Mahnungsformular ausgewÃ¤hlt");
       }
       formular = (Formular) Einstellungen.getDBService()
           .createObject(Formular.class, form.getID());
@@ -170,15 +179,23 @@ public class Rechnungsausgabe
   private File getDateiAuswahl(String extension) throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    fd.setText("Ausgabedatei wÃ¤hlen.");
     String path = control.getSettings().getString("lastdir",
         System.getProperty("user.home"));
     if (path != null && path.length() > 0)
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname(typ.name(), "",
-        Einstellungen.getEinstellung().getDateinamenmuster(), extension).get());
+    if (typ == TYP.RECHNUNG)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "." + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
@@ -200,17 +217,17 @@ public class Rechnungsausgabe
   {
     if (formular == null)
       formular = re.getFormular();
-    
+
     if (re.getSollbuchungPositionList().size() == 0)
       return;
-    
+
     Map<String, Object> map = new RechnungMap().getMap(re, null);
     map = new MitgliedMap().getMap(re.getMitglied(), map);
     map = new AllgemeineMap().getMap(map);
     fa.writeForm(formular, map);
 
     formular.store();
-    
+
     formular.setZaehlerToFormlink(formular.getZaehler());
   }
 
@@ -218,7 +235,15 @@ public class Rechnungsausgabe
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
     Mitglied m = re.getMitglied();
-    String filename = m.getID() + "#rechnung#" + re.getID() + "#";
+    String filename = "";
+    if (typ == TYP.RECHNUNG)
+    {
+      filename = m.getID() + "#rechnung#" + re.getID() + "#";
+    }
+    else
+    {
+      filename = m.getID() + "#mahnung#" + re.getID() + "#";
+    }
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

@@ -18,15 +18,14 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Action;
@@ -39,7 +38,6 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
-import de.willuhn.logging.Logger;
 
 /**
  * Ein Dialog, ueber den man ein Konto auswaehlen kann.
@@ -57,7 +55,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   {
     super(AbstractDialog.POSITION_CENTER);
     super.setSize(650, 400);
-    this.setTitle("Buchungsübernahme Hibiscus->JVerein");
+    this.setTitle("BuchungsÃ¼bernahme Hibiscus->JVerein");
     this.buchungen = buchungen;
     this.fehlerbuchung = fehlerbuchung;
     this.exception = exeption;
@@ -66,31 +64,11 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    // LabelGroup group = new LabelGroup(parent, "Übernommene Buchungen");
+    // LabelGroup group = new LabelGroup(parent, "Ãœbernommene Buchungen");
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
-    bu.addColumn("Konto", "konto", new Formatter()
-    {
-
-      @Override
-      public String format(Object o)
-      {
-        Konto k = (Konto) o;
-        if (k != null)
-        {
-          try
-          {
-            return k.getBezeichnung();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
-        }
-        return "";
-      }
-    });
+    bu.addColumn("Konto", "konto", new KontoFormatter());
     bu.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Name", "name");
@@ -112,8 +90,8 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
         return s;
       }
     });
-    bu.addColumn("Betrag", "betrag", new CurrencyFormatter("",
-        Einstellungen.DECIMALFORMAT));
+    bu.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     bu.setRememberColWidths(true);
     bu.setRememberOrder(true);
@@ -124,12 +102,12 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
       LabelGroup lbFehler = new LabelGroup(parent, "Fehler");
       if (fehlerbuchung != null)
       {
-        lbFehler.addInput(new LabelInput(new JVDateFormatDATETIME()
-            .format(fehlerbuchung.getDatum())));
+        lbFehler.addInput(new LabelInput(
+            new JVDateFormatDATETIME().format(fehlerbuchung.getDatum())));
         lbFehler.addInput(new LabelInput(fehlerbuchung.getName()));
         lbFehler.addInput(new LabelInput(fehlerbuchung.getZweck()));
-        lbFehler.addInput(new LabelInput(Einstellungen.DECIMALFORMAT
-            .format(fehlerbuchung.getBetrag())));
+        lbFehler.addInput(new LabelInput(
+            Einstellungen.DECIMALFORMAT.format(fehlerbuchung.getBetrag())));
         lbFehler.addText(exception.getMessage(), true);
       }
     }

@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.EigenschaftDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,12 +33,12 @@ public class EigenschaftMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Eigenschaften
    */
-  public EigenschaftMenu()
+  public EigenschaftMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(EigenschaftDetailView.class),
+        new EditAction(EigenschaftDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new EigenschaftDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen", new EigenschaftDeleteAction(),
+        "user-trash-full.png"));
   }
 }

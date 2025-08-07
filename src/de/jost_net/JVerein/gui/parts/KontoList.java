@@ -25,6 +25,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Konto;
@@ -69,20 +70,21 @@ KontoList extends TablePart implements Part
   /**
    * Update Konten-Liste nach neuen Kriterien.
    * 
-   * @param onlyHibiscus, nurAktuelleKonten
+   * @param onlyHibiscus,
+   *          nurAktuelleKonten
    * @throws RemoteException
-   */ 
+   */
   public synchronized void update(boolean onlyHibiscus,
-	      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
+      boolean nurAktuelleKonten, Kontenfilter art) throws RemoteException
   {
     super.removeAll();
     List<Konto> list = init(onlyHibiscus, nurAktuelleKonten, art);
-    for (Konto kto: list) 
+    for (Konto kto : list)
     {
       super.addItem(kto);
     }
   }
-  
+
   /**
    * Initialisiert die Konten-Liste.
    * 
@@ -102,15 +104,14 @@ KontoList extends TablePart implements Part
     {
       Calendar cal = Calendar.getInstance();
       int year = cal.get(Calendar.YEAR);
-      year = year - Einstellungen.getEinstellung().getUnterdrueckungKonten();
+      year = year - (Integer) Einstellungen
+          .getEinstellung(Property.UNTERDRUECKUNGKONTEN);
       i.addFilter("(aufloesung is null or year(aufloesung) >= ?)", year);
     }
     if (art == Kontenfilter.GELDKONTO)
-      i.addFilter("kontoart != ?",
-          new Object[] { Kontoart.ANLAGE.getKey() });
+      i.addFilter("kontoart != ?", new Object[] { Kontoart.ANLAGE.getKey() });
     if (art == Kontenfilter.ANLAGEKONTO)
-      i.addFilter("kontoart = ?",
-          new Object[] { Kontoart.ANLAGE.getKey() });
+      i.addFilter("kontoart = ?", new Object[] { Kontoart.ANLAGE.getKey() });
     i.setOrder("ORDER BY nummer, bezeichnung");
     return i != null ? PseudoIterator.asList(i) : null;
   }

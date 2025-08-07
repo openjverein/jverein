@@ -17,7 +17,9 @@ public class Settings
 {
   @Test
   /**
-   * In den Methoden test01 und test02 wird geprüft, ob die Settings-Klasse sowohl mit den Zeilenende \n als auch \r\n sauber umgeht.
+   * In den Methoden test01 und test02 wird geprÃ¼ft, ob die Settings-Klasse
+   * sowohl mit den Zeilenende \n als auch \r\n sauber umgeht.
+   * 
    * @throws IOException
    */
   public void test01() throws IOException

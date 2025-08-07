@@ -52,11 +52,11 @@ public class MitgliedQuery
   private boolean and = false;
 
   private String sql = "";
-  
+
   String zusatzfeld = null;
-  
+
   String zusatzfelder = null;
-  
+
   String sort = "";
 
   public MitgliedQuery(FilterControl control)
@@ -65,7 +65,8 @@ public class MitgliedQuery
   }
 
   @SuppressWarnings("unchecked")
-  public ArrayList<Mitglied> get(int mitgliedstyp, String sort) throws RemoteException
+  public ArrayList<Mitglied> get(int mitgliedstyp, String sort)
+      throws RemoteException
   {
 
     this.sort = sort;
@@ -88,108 +89,109 @@ public class MitgliedQuery
           int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
           switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
           {
-          case Datentyp.ZEICHENFOLGE:
-          {
-            String value = settings
-                .getString(zusatzfeld + i + ".value", null)
-                .replace('*', '%');
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
-            if (value != null && value.length() > 0)
+            case Datentyp.ZEICHENFOLGE:
             {
-              sql += "join zusatzfelder " + synonym + " on " + synonym
-                  + ".mitglied = mitglied.id  and lower(" + synonym + ".FELD) "
-                  + cond + " lower( ? ) and " + synonym
-                  + ".felddefinition = ? ";
-              synonym++;
-              bedingungen.add(value);
-              bedingungen.add(definition);
-            }
-            break;
-          }
-          case Datentyp.DATUM:
-          {
-            String value = settings.getString(zusatzfeld + i + ".value",
-                null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
-            if (value != null)
-            {
-              try
+              String value = settings.getString(zusatzfeld + i + ".value", null)
+                  .replace('*', '%');
+              String cond = settings.getString(zusatzfeld + i + ".cond", null);
+              if (value != null && value.length() > 0)
               {
-                Date datum = new JVDateFormatTTMMJJJJ().parse(value);
                 sql += "join zusatzfelder " + synonym + " on " + synonym
-                    + ".mitglied = mitglied.id  and " + synonym + ".FELDDATUM "
-                    + cond + " ? and " + synonym + ".felddefinition = ? ";
-                bedingungen.add(datum);
+                    + ".mitglied = mitglied.id  and lower(" + synonym
+                    + ".FELD) " + cond + " lower( ? ) and " + synonym
+                    + ".felddefinition = ? ";
+                synonym++;
+                bedingungen.add(value);
+                bedingungen.add(definition);
+              }
+              break;
+            }
+            case Datentyp.DATUM:
+            {
+              String value = settings.getString(zusatzfeld + i + ".value",
+                  null);
+              String cond = settings.getString(zusatzfeld + i + ".cond", null);
+              if (value != null)
+              {
+                try
+                {
+                  Date datum = new JVDateFormatTTMMJJJJ().parse(value);
+                  sql += "join zusatzfelder " + synonym + " on " + synonym
+                      + ".mitglied = mitglied.id  and " + synonym
+                      + ".FELDDATUM " + cond + " ? and " + synonym
+                      + ".felddefinition = ? ";
+                  bedingungen.add(datum);
+                  bedingungen.add(definition);
+                  synonym++;
+                }
+                catch (ParseException e)
+                {
+                  //
+                }
+              }
+              break;
+            }
+            case Datentyp.GANZZAHL:
+            {
+              Integer value = null;
+              String tmp = settings.getString(zusatzfeld + i + ".value", "");
+              if (tmp != null && !tmp.isEmpty())
+              {
+                value = Integer.parseInt(tmp);
+              }
+              String cond = settings.getString(zusatzfeld + i + ".cond", null);
+              if (value != null)
+              {
+                sql += "join zusatzfelder " + synonym + " on " + synonym
+                    + ".mitglied = mitglied.id  and " + synonym
+                    + ".FELDGANZZAHL " + cond + " ? and " + synonym
+                    + ".felddefinition = ? ";
+                bedingungen.add(value);
                 bedingungen.add(definition);
                 synonym++;
               }
-              catch (ParseException e)
+              break;
+            }
+            case Datentyp.JANEIN:
+            {
+              boolean value = settings.getBoolean(zusatzfeld + i + ".value",
+                  false);
+              if (value)
               {
-                //
-              }
-            }
-            break;
-          }
-          case Datentyp.GANZZAHL:
-          {
-            Integer value = null;
-            String tmp = settings.getString(zusatzfeld + i + ".value", "");
-            if (tmp != null && !tmp.isEmpty())
-            {
-              value = Integer.parseInt(tmp);
-            }
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
-            if (value != null)
-            {
-              sql += "join zusatzfelder " + synonym + " on " + synonym
-                  + ".mitglied = mitglied.id  and " + synonym + ".FELDGANZZAHL "
-                  + cond + " ? and " + synonym + ".felddefinition = ? ";
-              bedingungen.add(value);
-              bedingungen.add(definition);
-              synonym++;
-            }
-            break;
-          }
-          case Datentyp.JANEIN:
-          {
-            boolean value = settings.getBoolean(zusatzfeld + i + ".value",
-                false);
-            if (value)
-            {
-              sql += "join zusatzfelder " + synonym + " on " + synonym
-                  + ".mitglied = mitglied.id  and " + synonym
-                  + ".FELDJANEIN = true and " + synonym
-                  + ".felddefinition = ? ";
-              bedingungen.add(definition);
-              synonym++;
-            }
-            break;
-          }
-          case Datentyp.WAEHRUNG:
-          {
-            String value = settings.getString(zusatzfeld + i + ".value",
-                null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
-            if (value != null)
-            {
-              try
-              {
-                Number n = Einstellungen.DECIMALFORMAT.parse(value);
                 sql += "join zusatzfelder " + synonym + " on " + synonym
                     + ".mitglied = mitglied.id  and " + synonym
-                    + ".FELDWAEHRUNG " + cond + " ? and " + synonym
+                    + ".FELDJANEIN = true and " + synonym
                     + ".felddefinition = ? ";
-                bedingungen.add(n);
                 bedingungen.add(definition);
+                synonym++;
               }
-              catch (ParseException e)
-              {
-                //
-              }
-              synonym++;
+              break;
             }
-            break;
-          }
+            case Datentyp.WAEHRUNG:
+            {
+              String value = settings.getString(zusatzfeld + i + ".value",
+                  null);
+              String cond = settings.getString(zusatzfeld + i + ".cond", null);
+              if (value != null)
+              {
+                try
+                {
+                  Number n = Einstellungen.DECIMALFORMAT.parse(value);
+                  sql += "join zusatzfelder " + synonym + " on " + synonym
+                      + ".mitglied = mitglied.id  and " + synonym
+                      + ".FELDWAEHRUNG " + cond + " ? and " + synonym
+                      + ".felddefinition = ? ";
+                  bedingungen.add(n);
+                  bedingungen.add(definition);
+                }
+                catch (ParseException e)
+                {
+                  //
+                }
+                synonym++;
+              }
+              break;
+            }
           }
         }
       }
@@ -200,8 +202,9 @@ public class MitgliedQuery
           .getValue();
       if (bg != null)
       {
-    	sql += " left join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
-        addCondition("(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
+        sql += " left join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
+        addCondition(
+            "(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
         bedingungen.add(Integer.valueOf(bg.getID()));
         bedingungen.add(Integer.valueOf(bg.getID()));
       }
@@ -218,7 +221,8 @@ public class MitgliedQuery
     {
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
-        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv()
+            && control.getStichtag().getValue() != null)
         {
           addCondition("(eintritt is null or eintritt <= ?)");
           bedingungen.add(control.getStichtag().getValue());
@@ -232,7 +236,8 @@ public class MitgliedQuery
       }
       else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
       {
-        if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
+        if (control.isStichtagAktiv()
+            && control.getStichtag().getValue() != null)
         {
           addCondition("austritt is not null and austritt <= ?");
           bedingungen.add(control.getStichtag(false).getValue());
@@ -268,62 +273,71 @@ public class MitgliedQuery
       }
     }
 
-    if (control.isGeburtsdatumvonAktiv() && control.getGeburtsdatumvon().getValue() != null)
+    if (control.isGeburtsdatumvonAktiv()
+        && control.getGeburtsdatumvon().getValue() != null)
     {
       addCondition("geburtsdatum >= ?");
       Date d = (Date) control.getGeburtsdatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isGeburtsdatumbisAktiv() && control.getGeburtsdatumbis().getValue() != null)
+    if (control.isGeburtsdatumbisAktiv()
+        && control.getGeburtsdatumbis().getValue() != null)
     {
       addCondition("geburtsdatum <= ?");
       Date d = (Date) control.getGeburtsdatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
 
-    if (control.isSterbedatumvonAktiv() && control.getSterbedatumvon().getValue() != null)
+    if (control.isSterbedatumvonAktiv()
+        && control.getSterbedatumvon().getValue() != null)
     {
       addCondition("sterbetag >= ?");
       Date d = (Date) control.getSterbedatumvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isSterbedatumbisAktiv() && control.getSterbedatumbis().getValue() != null)
+    if (control.isSterbedatumbisAktiv()
+        && control.getSterbedatumbis().getValue() != null)
     {
       addCondition("sterbetag <= ?");
       Date d = (Date) control.getSterbedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isSuchGeschlechtAktiv() && control.getSuchGeschlecht().getValue() != null)
+    if (control.isSuchGeschlechtAktiv()
+        && control.getSuchGeschlecht().getValue() != null)
     {
       addCondition("geschlecht = ?");
       String g = (String) control.getSuchGeschlecht().getValue();
       bedingungen.add(g);
     }
-    if (control.isEintrittvonAktiv() && control.getEintrittvon().getValue() != null)
+    if (control.isEintrittvonAktiv()
+        && control.getEintrittvon().getValue() != null)
     {
       addCondition("eintritt >= ?");
       Date d = (Date) control.getEintrittvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isEintrittbisAktiv() && control.getEintrittbis().getValue() != null)
+    if (control.isEintrittbisAktiv()
+        && control.getEintrittbis().getValue() != null)
     {
       addCondition("eintritt <= ?");
       Date d = (Date) control.getEintrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isAustrittvonAktiv() && control.getAustrittvon().getValue() != null)
+    if (control.isAustrittvonAktiv()
+        && control.getAustrittvon().getValue() != null)
     {
       addCondition("austritt >= ?");
       Date d = (Date) control.getAustrittvon().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    if (control.isAustrittbisAktiv() && control.getAustrittbis().getValue() != null)
+    if (control.isAustrittbisAktiv()
+        && control.getAustrittbis().getValue() != null)
     {
       addCondition("austritt <= ?");
       Date d = (Date) control.getAustrittbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
     }
-    
+
     if (control.isAustrittbisAktiv())
     {
       // Was soll das? Das wird nie durchlaufen!
@@ -335,7 +349,7 @@ public class MitgliedQuery
         addCondition("(austritt is null or austritt > current_date())");
       }
     }
-    
+
     if (control.isSuchExterneMitgliedsnummerActive())
     {
       try
@@ -353,7 +367,7 @@ public class MitgliedQuery
       }
       catch (NullPointerException e)
       {
-        // Workaround für einen Bug in IntegerInput
+        // Workaround fÃ¼r einen Bug in IntegerInput
       }
     }
     if (control.isSuchMitgliedsnummerActive())
@@ -382,13 +396,13 @@ public class MitgliedQuery
       }
     };
 
-
-    ArrayList<Long> mitgliederIds = (ArrayList<Long>) 
-        service.execute(sql, bedingungen.toArray(), rs);
+    ArrayList<Long> mitgliederIds = (ArrayList<Long>) service.execute(sql,
+        bedingungen.toArray(), rs);
 
     String eigenschaftenString = control.getEigenschaftenString();
 
-    if (control.isEigenschaftenAuswahlAktiv() && eigenschaftenString.length() > 0)
+    if (control.isEigenschaftenAuswahlAktiv()
+        && eigenschaftenString.length() > 0)
     {
       ArrayList<Long> suchIds = new ArrayList<>();
       HashMap<Long, String> suchauswahl = new HashMap<>();
@@ -396,33 +410,35 @@ public class MitgliedQuery
       while (stt.hasMoreElements())
       {
         String s = stt.nextToken();
-        Long id = Long.valueOf(s.substring(0,s.length()-1));
+        Long id = Long.valueOf(s.substring(0, s.length() - 1));
         suchIds.add(id);
-        suchauswahl.put(id, s.substring(s.length()-1));
-      }    
-      
+        suchauswahl.put(id, s.substring(s.length() - 1));
+      }
+
       // Eigenschaften lesen
       String sql = "SELECT eigenschaften.* from eigenschaften ";
       List<Long[]> mitgliedEigenschaften = (List<Long[]>) service.execute(sql,
-          new Object[] { }, new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws RemoteException, SQLException
-        {
-          List<Long[]> list = new ArrayList<>();
-          while (rs.next())
+          new Object[] {}, new ResultSetExtractor()
           {
-            list.add(new Long[] {rs.getLong(2), rs.getLong(3)}); // Mitglied.Id, Eigenschaft.Id
-          }
-          return list;
-        }
-      });
-      
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              List<Long[]> list = new ArrayList<>();
+              while (rs.next())
+              {
+                list.add(new Long[] { rs.getLong(2), rs.getLong(3) }); // Mitglied.Id,
+                                                                       // Eigenschaft.Id
+              }
+              return list;
+            }
+          });
+
       ArrayList<Long> mitgliederIdsFiltered = new ArrayList<>();
-      for (Long mitglied: mitgliederIds)
+      for (Long mitglied : mitgliederIds)
       {
         ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
-        for (Long[] value: mitgliedEigenschaften)
+        for (Long[] value : mitgliedEigenschaften)
         {
           if (value[0].equals(mitglied))
             mitgliedeigenschaftenIds.add(value[1]);
@@ -434,7 +450,7 @@ public class MitgliedQuery
           if (control.getEigenschaftenVerknuepfung().equals("und"))
           {
             ok = true;
-            if(suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
+            if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
             {
               if (!mitgliedeigenschaftenIds.contains(suchId))
               {
@@ -442,7 +458,7 @@ public class MitgliedQuery
                 break;
               }
             }
-            else  // EigenschaftenNode2.MINUS
+            else // EigenschaftenNode2.MINUS
             {
               if (mitgliedeigenschaftenIds.contains(suchId))
               {
@@ -451,9 +467,9 @@ public class MitgliedQuery
               }
             }
           }
-          else    // Oder
+          else // Oder
           {
-            if(suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
+            if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
             {
               if (mitgliedeigenschaftenIds.contains(suchId))
               {
@@ -461,7 +477,7 @@ public class MitgliedQuery
                 break;
               }
             }
-            else  // EigenschaftenNode2.MINUS
+            else // EigenschaftenNode2.MINUS
             {
               if (!mitgliedeigenschaftenIds.contains(suchId))
               {
@@ -481,14 +497,15 @@ public class MitgliedQuery
       return getMitglieder(mitgliederIds);
     }
   }
-  
-  private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids) 
+
+  private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids)
       throws RemoteException
   {
-    if(ids.size() == 0)
+    if (ids.size() == 0)
       return new ArrayList<Mitglied>();
-    
-    DBIterator<Mitglied> list = Einstellungen.getDBService().createList(Mitglied.class);
+
+    DBIterator<Mitglied> list = Einstellungen.getDBService()
+        .createList(Mitglied.class);
     list.addFilter("id in (" + StringUtils.join(ids, ",") + ")");
     if (sort != null && !sort.isEmpty())
     {
@@ -514,8 +531,9 @@ public class MitgliedQuery
       list.setOrder("ORDER BY name, vorname");
     }
     @SuppressWarnings("unchecked")
-    ArrayList<Mitglied> mitglieder = list != null ? 
-        (ArrayList<Mitglied>) PseudoIterator.asList(list) : null;
+    ArrayList<Mitglied> mitglieder = list != null
+        ? (ArrayList<Mitglied>) PseudoIterator.asList(list)
+        : null;
     return mitglieder;
   }
 

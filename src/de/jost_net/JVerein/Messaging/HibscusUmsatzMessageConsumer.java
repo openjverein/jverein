@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.Messaging;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -48,7 +49,8 @@ public class HibscusUmsatzMessageConsumer implements MessageConsumer
   @Override
   public void handleMessage(Message message) throws Exception
   {
-    if (!Einstellungen.getEinstellung().getGeprueftSynchronisieren())
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN))
       return;
 
     final QueryMessage m = (QueryMessage) message;
@@ -92,4 +94,3 @@ public class HibscusUmsatzMessageConsumer implements MessageConsumer
   }
 
 }
-

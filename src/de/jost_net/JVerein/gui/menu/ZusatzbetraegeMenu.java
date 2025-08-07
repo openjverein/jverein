@@ -18,12 +18,14 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetraegeDeleteAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetragDeleteAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeNaechsteFaelligkeitAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeResetAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeVorherigeFaelligkeitAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.Action;
@@ -31,38 +33,40 @@ import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Zusatzbeträgen.
+ * Kontext-Menu zu den ZusatzbetrÃ¤gen.
  */
 public class ZusatzbetraegeMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
+   * Erzeugt ein Kontext-Menu fuer die Liste der ZusatzbetrÃ¤ge.
    */
-  public ZusatzbetraegeMenu(TablePart table)
+  public ZusatzbetraegeMenu(JVereinTablePart table)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten", new ZusatzbetraegeAction(null),
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(ZusatzbetragDetailView.class, table),
         "text-x-generic.png"));
-    addItem(new ZusatzbetragWiederholtItem("Vorheriges Fälligkeitsdatum",
-        new ZusatzbetraegeVorherigeFaelligkeitAction(table),
-        "office-calendar.png"));
-    addItem(new ZusatzbetragWiederholtItem("Nächstes Fälligkeitsdatum",
-        new ZusatzbetraegeNaechsteFaelligkeitAction(table),
-        "office-calendar.png"));
-    addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
-        new ZusatzbetraegeResetAction(table), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new ZusatzbetraegeDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new ZusatzbetragWiederholtItem("Vorheriges FÃ¤lligkeitsdatum",
+        new ZusatzbetraegeVorherigeFaelligkeitAction(), "office-calendar.png"));
+    addItem(new ZusatzbetragWiederholtItem("NÃ¤chstes FÃ¤lligkeitsdatum",
+        new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
+    addItem(new ZusatzbetragEinmaligItem("Erneut ausfÃ¼hren",
+        new ZusatzbetraegeResetAction(), "view-refresh.png"));
+    addItem(new CheckedContextMenuItem("LÃ¶schen",
+        new ZusatzbetragDeleteAction(), "user-trash-full.png"));
+    if (table != null)
+    {
+      addItem(ContextMenuItem.SEPARATOR);
+      addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+          new MitgliedDetailAction(), "user-friends.png"));
+    }
   }
-  
-  private static class ZusatzbetragEinmaligItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragEinmaligItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragEinmaligItem(String text, Action action, String icon)
     {
@@ -88,8 +92,9 @@ public class ZusatzbetraegeMenu extends ContextMenu
       return false;
     }
   }
-  
-  private static class ZusatzbetragWiederholtItem extends CheckedSingleContextMenuItem
+
+  private static class ZusatzbetragWiederholtItem
+      extends CheckedSingleContextMenuItem
   {
     private ZusatzbetragWiederholtItem(String text, Action action, String icon)
     {
@@ -104,7 +109,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
         Zusatzbetrag z = (Zusatzbetrag) o;
         try
         {
-          return z.getIntervall() != IntervallZusatzzahlung.KEIN ;
+          return z.getIntervall() != IntervallZusatzzahlung.KEIN;
         }
         catch (RemoteException e)
         {

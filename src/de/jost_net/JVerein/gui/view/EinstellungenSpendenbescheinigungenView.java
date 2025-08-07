@@ -39,12 +39,11 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     cont.addLabelPair("Finanzamt", control.getFinanzamt());
     cont.addLabelPair("Steuernummer", control.getSteuernummer());
     cont.addLabelPair("Bescheiddatum", control.getBescheiddatum());
-    cont.addLabelPair("Bescheid nach § 60a AO", control.getVorlaeufig());
-    // cont.addLabelPair("Vorläufig ab", control.getVorlaeufigab());
+    cont.addLabelPair("Bescheid nach Â§ 60a AO", control.getVorlaeufig());
     cont.addLabelPair("Veranlagung von", control.getVeranlagungVon());
     cont.addLabelPair("Veranlagung bis", control.getVeranlagungBis());
-    cont.addLabelPair("Begünstigter Zweck", control.getBeguenstigterzweck());
-    cont.addLabelPair("Mitgliedsbeiträge dürfen bescheinigt werden",
+    cont.addLabelPair("BegÃ¼nstigter Zweck", control.getBeguenstigterzweck());
+    cont.addLabelPair("MitgliedsbeitrÃ¤ge dÃ¼rfen bescheinigt werden",
         control.getMitgliedsbetraege());
     cont.addLabelPair("Mindestbetrag",
         control.getSpendenbescheinigungminbetrag());
@@ -52,13 +51,13 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungverzeichnis());
     cont.addLabelPair("Buchungsart drucken",
         control.getSpendenbescheinigungPrintBuchungsart());
-    cont.addLabelPair("Unterschrift drucken",
-        control.getUnterschriftdrucken());
+    cont.addLabelPair("Unterschrift drucken", control.getUnterschriftdrucken());
     cont.addLabelPair("Unterschrift", control.getUnterschrift());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN, false,
+        "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 

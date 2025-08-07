@@ -22,6 +22,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 
 public class Geschaeftsjahr
 {
@@ -33,8 +34,9 @@ public class Geschaeftsjahr
 
   public Geschaeftsjahr(int jahr) throws ParseException, RemoteException
   {
-    beginnGeschaeftsjahr = Datum.toDate(Einstellungen.getEinstellung()
-        .getBeginnGeschaeftsjahr() + jahr);
+    beginnGeschaeftsjahr = Datum.toDate(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+            + jahr);
     Calendar cal = Calendar.getInstance();
     cal.setTime(beginnGeschaeftsjahr);
     beginnGeschaeftsjahrjahr = cal.get(Calendar.YEAR);
@@ -44,7 +46,7 @@ public class Geschaeftsjahr
   }
 
   /**
-   * Gesch‰ftsjahr zu einem vorgegebenen Datum ermitteln
+   * Gesch√§ftsjahr zu einem vorgegebenen Datum ermitteln
    * 
    * @throws RemoteException
    */
@@ -52,13 +54,15 @@ public class Geschaeftsjahr
   {
     Calendar cal = Calendar.getInstance();
     cal.setTime(datum);
-    beginnGeschaeftsjahr = Datum.toDate(Einstellungen.getEinstellung()
-        .getBeginnGeschaeftsjahr() + cal.get(Calendar.YEAR));
+    beginnGeschaeftsjahr = Datum.toDate(
+        (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+            + cal.get(Calendar.YEAR));
     if (datum.before(beginnGeschaeftsjahr))
     {
       cal.add(Calendar.YEAR, -1);
-      beginnGeschaeftsjahr = Datum.toDate(Einstellungen.getEinstellung()
-          .getBeginnGeschaeftsjahr() + cal.get(Calendar.YEAR));
+      beginnGeschaeftsjahr = Datum.toDate(
+          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+              + cal.get(Calendar.YEAR));
     }
     cal.setTime(beginnGeschaeftsjahr);
     beginnGeschaeftsjahrjahr = cal.get(Calendar.YEAR);

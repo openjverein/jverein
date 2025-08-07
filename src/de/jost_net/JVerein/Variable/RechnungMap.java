@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -32,7 +33,6 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.StringTool;
-import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 
 public class RechnungMap extends AbstractMap
 {
@@ -62,31 +62,45 @@ public class RechnungMap extends AbstractMap
     ArrayList<String> steuersatz = new ArrayList<>();
     ArrayList<Double> steuerbetrag = new ArrayList<>();
     ArrayList<Double> betrag = new ArrayList<>();
+    HashMap<Double, Double> steuerMap = new HashMap<>();
+    HashMap<Double, Double> steuerBetragMap = new HashMap<>();
 
     DecimalFormat format = new DecimalFormat("0.##");
-    CurrencyFormatter formatter = new CurrencyFormatter("%", format);
     double summe = 0;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
       buchungDatum.add(sp.getDatum());
       zweck.add(sp.getZweck());
       nettobetrag.add(sp.getNettobetrag());
-      steuersatz.add(
-          "(" + formatter.format(sp.getSteuersatz()) + ")");
+      steuersatz.add("(" + format.format(sp.getSteuersatz()) + "%)");
       steuerbetrag.add(sp.getSteuerbetrag());
       betrag.add(sp.getBetrag());
       summe += sp.getBetrag();
+      if (sp.getSteuersatz() > 0)
+      {
+        Double steuer = steuerMap.getOrDefault(sp.getSteuersatz(), 0d);
+        steuerMap.put(sp.getSteuersatz(), steuer + sp.getSteuerbetrag());
+        Double brutto = steuerBetragMap.getOrDefault(sp.getSteuersatz(), 0d);
+        steuerBetragMap.put(sp.getSteuersatz(), brutto + sp.getBetrag());
+      }
+    }
+    if (buchungDatum.size() > 1 || steuerMap.size() > 0)
+    {
+      zweck.add("");
+      betrag.add(null);
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
+    {
+      for (Double satz : steuerMap.keySet())
+      {
+        zweck.add("inkl. " + satz + "% USt.  von "
+            + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
+        betrag.add(+steuerMap.get(satz));
+      }
     }
     if (buchungDatum.size() > 1)
     {
-      if (Einstellungen.getEinstellung().getOptiert())
-      {
-        zweck.add("Rechnungsbetrag inkl. USt.");
-      }
-      else
-      {
-        zweck.add("Summe");
-      }
+      zweck.add("Summe");
       betrag.add(summe);
     }
     map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
@@ -118,16 +132,16 @@ public class RechnungMap extends AbstractMap
 
     // Deise Felder gibt es nicht mehr in der Form, damit bei alten
     // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
-    // hinzufügen
+    // hinzufÃ¼gen
     map.put(RechnungVar.DIFFERENZ.getName(), "");
     map.put(RechnungVar.MK_IST.getName(), "");
 
     map.put(RechnungVar.QRCODE_INTRO.getName(),
-        Einstellungen.getEinstellung().getQRCodeIntro());
+        (String) Einstellungen.getEinstellung(Property.QRCODEINTRO));
 
     map.put(RechnungVar.DATUM.getName(), re.getDatum());
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad(re.getID(),
-        Einstellungen.getEinstellung().getZaehlerLaenge(), "0"));
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
 
     map.put(RechnungVar.PERSONENART.getName(), re.getPersonenart());
     map.put(RechnungVar.GESCHLECHT.getName(), re.getGeschlecht());
@@ -153,13 +167,14 @@ public class RechnungMap extends AbstractMap
         VarTools.maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
-    
+
     String zahlungsweg = "";
     switch (re.getZahlungsweg().getKey())
     {
       case Zahlungsweg.BASISLASTSCHRIFT:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextAbbuchung();
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
@@ -168,13 +183,14 @@ public class RechnungMap extends AbstractMap
       }
       case Zahlungsweg.BARZAHLUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung().getRechnungTextBar();
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTBAR);
         break;
       }
-      case Zahlungsweg.ÜBERWEISUNG:
+      case Zahlungsweg.ÃœBERWEISUNG:
       {
-        zahlungsweg = Einstellungen.getEinstellung()
-            .getRechnungTextUeberweisung();
+        zahlungsweg = (String) Einstellungen
+            .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
         break;
       }
     }
@@ -193,6 +209,7 @@ public class RechnungMap extends AbstractMap
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -204,19 +221,47 @@ public class RechnungMap extends AbstractMap
       map = inMap;
     }
 
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(),
+        new Date[] { new Date(), new Date() });
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
+    {
+      map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
+          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "",
+              "inkl. 19% USt. von 10.00", "Summe" });
+      map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 8.4d, 13.8d });
+      map.put(RechnungVar.STEUERSATZ.getName(),
+          new String[] { "(19%)", "(0%)" });
+      map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 1.6d, 0d });
+      map.put(RechnungVar.BETRAG.getName(),
+          new Double[] { 10d, 13.8d, null, 1.6d, 23.8d });
+    }
+    else
+    {
+      map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
+          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "", "Summe" });
+      map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 10d, 13.8d });
+      map.put(RechnungVar.STEUERSATZ.getName(),
+          new String[] { "(0%)", "(0%)" });
+      map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
+      map.put(RechnungVar.BETRAG.getName(),
+          new Double[] { 10d, 13.8d, null, 23.8d });
+    }
+
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
     map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
     map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
     map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf("13.80"));
-    map.put(RechnungVar.QRCODE_INTRO.getName(), "QRCode Intro");
+    map.put(RechnungVar.QRCODE_INTRO.getName(),
+        "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));
-    map.put(RechnungVar.NUMMER.getName(), "Nummer");
+    map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     map.put(RechnungVar.ANREDE.getName(), "Herrn");
     map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
     map.put(RechnungVar.NAME.getName(), "Wichtig");
     map.put(RechnungVar.VORNAME.getName(), "Willi");
     map.put(RechnungVar.STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
+    map.put(RechnungVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei MÃ¼ller");
     map.put(RechnungVar.PLZ.getName(), "12345");
     map.put(RechnungVar.ORT.getName(), "Testenhausen");
     map.put(RechnungVar.STAAT.getName(), "Deutschland");
@@ -231,8 +276,9 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(RechnungVar.EMPFAENGER.getName(),
-        "Herr\nWilli Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
-    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), "Überweisung");
+        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei MÃ¼ller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
+        "Bitte Ã¼berweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     return map;
   }

@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -175,7 +176,8 @@ public class CSVBuchungsImport implements Importer
             bu.setBuchungsartId(Long.valueOf(b1.getID()));
 
             // Steuer aus Buchungsart setzen
-            if (Einstellungen.getEinstellung().getSteuerInBuchung())
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.STEUERINBUCHUNG))
             {
               bu.setSteuer(b1.getSteuer());
             }
@@ -193,8 +195,8 @@ public class CSVBuchungsImport implements Importer
             bit.addFilter("nummer = ?", bukl);
             if (bit.size() != 1)
             {
-              throw new ApplicationException(String
-                  .format("Buchungsklasse %d existiert nicht in JVerein!", bukl));
+              throw new ApplicationException(String.format(
+                  "Buchungsklasse %d existiert nicht in JVerein!", bukl));
             }
             Buchungsklasse b1 = (Buchungsklasse) bit.next();
             bu.setBuchungsklasseId(Long.valueOf(b1.getID()));

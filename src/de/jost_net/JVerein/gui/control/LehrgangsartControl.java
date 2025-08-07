@@ -22,29 +22,28 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangsartDetailView;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangsartControl extends AbstractControl
-    implements Savable
+public class LehrgangsartControl extends VorZurueckControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart lehrgangsartList;
+  private JVereinTablePart lehrgangsartList;
 
   private TextInput bezeichnung;
 
@@ -101,7 +100,7 @@ public class LehrgangsartControl extends AbstractControl
     }
     this.von = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.von.setTitle("Von/am");
-    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w‰hlen");
+    this.von.setText("Bitte Beginn oder Tag der Veranstaltung w√§hlen");
     von.setMandatory(true);
     return von;
   }
@@ -119,7 +118,7 @@ public class LehrgangsartControl extends AbstractControl
     }
     this.bis = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.bis.setTitle("Bis");
-    this.bis.setText("Bitte Ende der Veranstaltung w‰hlen");
+    this.bis.setText("Bitte Ende der Veranstaltung w√§hlen");
     return bis;
   }
 
@@ -134,13 +133,14 @@ public class LehrgangsartControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Lehrgangsart l = getLehrgangsart();
     l.setBezeichnung((String) getBezeichnung(false).getValue());
     l.setVon((Date) getVon().getValue());
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
+    return l;
   }
 
   /**
@@ -148,13 +148,12 @@ public class LehrgangsartControl extends AbstractControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Lehrgangsart l = getLehrgangsart();
-      l.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -171,8 +170,7 @@ public class LehrgangsartControl extends AbstractControl
         .createList(Lehrgangsart.class);
     lehrgangsarten.setOrder("ORDER BY bezeichnung");
 
-    lehrgangsartList = new TablePart(lehrgangsarten,
-        new EditAction(LehrgangsartDetailView.class));
+    lehrgangsartList = new JVereinTablePart(lehrgangsarten, null);
     lehrgangsartList.addColumn("Bezeichnung", "bezeichnung");
     lehrgangsartList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -180,9 +178,12 @@ public class LehrgangsartControl extends AbstractControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgangsartList.addColumn("Veranstalter", "veranstalter");
     lehrgangsartList.setRememberColWidths(true);
-    lehrgangsartList.setContextMenu(new LehrgangsartMenu());
+    lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setRememberOrder(true);
     lehrgangsartList.removeFeature(FeatureSummary.class);
+    lehrgangsartList.setAction(
+        new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
+    VorZurueckControl.setObjektListe(null, null);
     return lehrgangsartList;
   }
 

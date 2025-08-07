@@ -19,48 +19,67 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.MitgliedstypDetailView;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
+import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedstypAction implements Action
+public class FormularfeldNeuAction implements Action
 {
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Mitgliedstyp mt = null;
+    Formularfeld ff = null;
+    Formular f = null;
 
-    if (context != null && (context instanceof Mitgliedstyp))
+    if (context != null && (context instanceof Formular))
     {
-      mt = (Mitgliedstyp) context;
+      f = (Formular) context;
       try
       {
-        if (mt.getJVereinid() > 0)
+        if (f.isNewObject())
         {
           throw new ApplicationException(
-              "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht ver�ndert werden.");
+              "Vor dem Anlegen der Formularfelder muss das Formular gespeichert werden!");
         }
       }
       catch (RemoteException e)
       {
-        throw new ApplicationException("Fehler", e);
+        Logger.error("Fehler", e);
+        throw new ApplicationException(
+            "Fehler bei der Erzeugung eines neuen Formularfeldes", e);
       }
+    }
+    if (context != null && (context instanceof Formularfeld))
+    {
+      ff = (Formularfeld) context;
     }
     else
     {
       try
       {
-        mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
-            Mitgliedstyp.class, null);
+        ff = (Formularfeld) Einstellungen.getDBService()
+            .createObject(Formularfeld.class, null);
+        ff.setFormular(f);
       }
       catch (RemoteException e)
       {
+        Logger.error("Fehler", e);
         throw new ApplicationException(
-            "Fehler bei der Erzeugung eines neuen Mitgliedstypen", e);
+            "Fehler bei der Erzeugung eines neuen Formularfeldes", e);
       }
     }
-    GUI.startView(MitgliedstypDetailView.class.getName(), mt);
+    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
+    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+    if (GUI.getCurrentView().getClass().equals(FormularfeldDetailView.class))
+    {
+      GUI.getCurrentView().setCurrentObject(ff);
+    }
+    GUI.startView(FormularfeldDetailView.class, ff);
   }
 }

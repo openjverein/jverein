@@ -31,10 +31,11 @@ public class CellProcessors
 {
   public static CellProcessor[] createCellProcessors(Map<String, Object> map)
   {
-	  return createCellProcessors(map, map.keySet().toArray(new String[0]));
+    return createCellProcessors(map, map.keySet().toArray(new String[0]));
   }
-  
-  public static CellProcessor[] createCellProcessors(Map<String, Object> map, String[] keys)
+
+  public static CellProcessor[] createCellProcessors(Map<String, Object> map,
+      String[] keys)
   {
     CellProcessor[] ret = new CellProcessor[keys.length];
     int i = 0;

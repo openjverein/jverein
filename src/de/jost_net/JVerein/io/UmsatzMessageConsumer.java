@@ -1,6 +1,7 @@
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericObject;
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
@@ -25,7 +26,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 
 /**
- * Klasse damit wir ueber importierte Hibiscus-Ums‰tze informiert werden.
+ * Klasse damit wir ueber importierte Hibiscus-Ums√§tze informiert werden.
  */
 
 public class UmsatzMessageConsumer implements MessageConsumer
@@ -43,7 +44,7 @@ public class UmsatzMessageConsumer implements MessageConsumer
     {
       return;
     }
-    if (!Einstellungen.getEinstellung().getAutoBuchunguebernahme())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME))
     {
       return;
     }

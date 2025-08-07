@@ -31,60 +31,56 @@ public class Update0446 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("bkinbuchung",
-        COLTYPE.BOOLEAN, 0, null, false, false)));
-    
-    execute(addColumn("buchung", new Column("buchungsklasse",
-        COLTYPE.BIGINT, 0, null, false, false)));
+    execute(addColumn("einstellung",
+        new Column("bkinbuchung", COLTYPE.BOOLEAN, 0, null, false, false)));
+
+    execute(addColumn("buchung",
+        new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false)));
     Index idx = new Index("ixBuchung7", false);
     Column col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
         false);
     idx.add(col);
     execute(idx.getCreateIndex("buchung"));
-    execute(createForeignKey("fkBuchung7", "buchung",
-        "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-    
-    execute(addColumn("mitgliedskonto", new Column("buchungsklasse",
-        COLTYPE.BIGINT, 0, null, false, false)));
+    execute(createForeignKey("fkBuchung7", "buchung", "buchungsklasse",
+        "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
+
+    execute(addColumn("mitgliedskonto",
+        new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false)));
     idx = new Index("ixMitgliedkonto4", false);
-    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
-        false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false);
     idx.add(col);
     execute(idx.getCreateIndex("mitgliedskonto"));
     execute(createForeignKey("fkMitgliedkonto4", "mitgliedskonto",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-    
-    execute(addColumn("zusatzabbuchung", new Column("buchungsklasse",
-        COLTYPE.BIGINT, 0, null, false, false)));
+
+    execute(addColumn("zusatzabbuchung",
+        new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false)));
     idx = new Index("ixZusatzabbuchung3", false);
-    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
-        false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false);
     idx.add(col);
     execute(idx.getCreateIndex("zusatzabbuchung"));
     execute(createForeignKey("fkZusatzabbuchung3", "zusatzabbuchung",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-    
-    execute(addColumn("zusatzbetragvorlage", new Column("buchungsklasse",
-        COLTYPE.BIGINT, 0, null, false, false)));
+
+    execute(addColumn("zusatzbetragvorlage",
+        new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false)));
     idx = new Index("ixZusatzbetragvorlage3", false);
-    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
-        false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false);
     idx.add(col);
     execute(idx.getCreateIndex("zusatzbetragvorlage"));
     execute(createForeignKey("fkZusatzbetragvorlage3", "zusatzbetragvorlage",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-    
-    execute(addColumn("beitragsgruppe", new Column("buchungsklasse",
-        COLTYPE.BIGINT, 0, null, false, false)));
+
+    execute(addColumn("beitragsgruppe",
+        new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false)));
     idx = new Index("ixBeitragsgruppe2", false);
-    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false,
-        false);
+    col = new Column("buchungsklasse", COLTYPE.BIGINT, 0, null, false, false);
     idx.add(col);
     execute(idx.getCreateIndex("beitragsgruppe"));
     execute(createForeignKey("fkBeitragsgruppe2", "beitragsgruppe",
         "buchungsklasse", "buchungsklasse", "id", "RESTRICT", "NO ACTION"));
-    
-    execute(addColumn("buchungsart", new Column("status",
-        COLTYPE.INTEGER, 0, "2", false, false)));
+
+    execute(addColumn("buchungsart",
+        new Column("status", COLTYPE.INTEGER, 0, "2", false, false)));
   }
 }

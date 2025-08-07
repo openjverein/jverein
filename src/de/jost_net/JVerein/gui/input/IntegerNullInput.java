@@ -12,39 +12,45 @@ public class IntegerNullInput extends TextInput
 {
 
   /**
-   * ct.
-   * Parameterloser Konstruktor fuer ein Eingabefeld ohne Wert-Vorbelegung.
+   * ct. Parameterloser Konstruktor fuer ein Eingabefeld ohne Wert-Vorbelegung.
    * BUGZILLA 1275
    */
   public IntegerNullInput()
   {
     super("");
   }
-  
+
   /**
    * Erzeugt ein neues Eingabefeld und schreibt den uebergebenen Wert rein.
-   * @param value anzuzeigender Wert.
+   * 
+   * @param value
+   *          anzuzeigender Wert.
    */
   public IntegerNullInput(int value)
   {
-    super(value < 0 ? "" : "" +value);
+    super(value < 0 ? "" : "" + value);
   }
-  
+
   @Override
   public Control getControl()
   {
     Control c = super.getControl();
-    text.addListener (SWT.Verify, new Listener() {
-      public void handleEvent (Event e) {
+    text.addListener(SWT.Verify, new Listener()
+    {
+      @Override
+      public void handleEvent(Event e)
+      {
         char[] chars = e.text.toCharArray();
-        for (int i=0; i<chars.length; i++) {
-          if (!('0' <= chars[i] && chars[i] <= '9')) {
+        for (int i = 0; i < chars.length; i++)
+        {
+          if (!('0' <= chars[i] && chars[i] <= '9'))
+          {
             e.doit = false;
             return;
           }
         }
       }
-     });
+    });
     return c;
   }
 
@@ -58,16 +64,17 @@ public class IntegerNullInput extends TextInput
     Object value = super.getValue();
     if (value == null || value.toString().length() == 0)
       return null;
-    try {
+    try
+    {
       return Integer.valueOf(value.toString());
     }
     catch (NumberFormatException e)
     {
-      Logger.error("error while parsing from int input",e);
+      Logger.error("error while parsing from int input", e);
     }
     return null;
   }
-  
+
   /**
    * Erwartet ein Objekt des Typs {@link java.lang.Integer}.
    */

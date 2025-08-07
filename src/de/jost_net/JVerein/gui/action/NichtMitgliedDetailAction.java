@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -45,9 +46,10 @@ public class NichtMitgliedDetailAction implements Action
       }
       else
       {
-        m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
-        if (Einstellungen.getEinstellung().getJuristischePersonen())
+        m = (Mitglied) Einstellungen.getDBService().createObject(Mitglied.class,
+            null);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONEN))
         {
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);
@@ -73,9 +75,9 @@ public class NichtMitgliedDetailAction implements Action
       throw new ApplicationException(
           "Fehler bei der Erzeugung eines neuen Nicht-Mitglied", e);
     }
-    // Wenn CurrentObject und View von aktueller und nächster View gleich
+    // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
     // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
-    // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+    // fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste zurÃ¼ck.
     if (GUI.getCurrentView().getClass().equals(NichtMitgliedDetailView.class))
     {
       GUI.getCurrentView().setCurrentObject(m);

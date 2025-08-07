@@ -45,7 +45,7 @@ public class SaldoListTablePart extends TablePart
   {
     super(list, action);
 
-    // ChangeListener für die Summe der ausgewählten Konten
+    // ChangeListener fÃ¼r die Summe der ausgewÃ¤hlten Konten
     addSelectionListener(e -> {
       createFeatureEventContext(Event.REFRESH, ctx);
       Feature feature = this.getFeature(FeatureSummary.class);
@@ -93,13 +93,13 @@ public class SaldoListTablePart extends TablePart
                   AbstractSaldoControl.ART) != AbstractSaldoControl.ART_DETAIL)
               {
                 throw new ApplicationException(
-                    "Summe kann nur für Detail Zeilen berechnet werden");
+                    "Summe kann nur fÃ¼r Detail Zeilen berechnet werden");
               }
             }
             catch (NullPointerException ex)
             {
               throw new ApplicationException(
-                  "Summe kann nur für Detail Zeilen berechnet werden");
+                  "Summe kann nur fÃ¼r Detail Zeilen berechnet werden");
             }
             try
             {
@@ -197,7 +197,7 @@ public class SaldoListTablePart extends TablePart
           }
 
           // String aufbauen
-          // Wenn für eine Spalte aller Felder null sind geben wir die Spalte
+          // Wenn fÃ¼r eine Spalte aller Felder null sind geben wir die Spalte
           // nicht aus.
           summary.append("Summe Auswahl:");
           if (anfangsbestand != null)

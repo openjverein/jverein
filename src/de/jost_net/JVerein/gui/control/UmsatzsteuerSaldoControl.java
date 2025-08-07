@@ -20,6 +20,8 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
@@ -36,11 +38,6 @@ import de.willuhn.util.ApplicationException;
 
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 {
-  /**
-   * Die Art der Buchung: Einnahme (0), Ausgabe (1), Umbuchung (2)
-   */
-  protected static final String ARTBUCHUNGSART = "art";
-
   /**
    * Die Summe
    */
@@ -87,6 +84,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
       saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)
     {
@@ -116,8 +114,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
       String art = null;
       Integer steuerArt = o.getInteger(ARTSTEUERBUCHUNGSART);
-      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || (steuerArt == null
-          && o.getInteger(ARTBUCHUNGSART) == (Integer) ArtBuchungsart.EINNAHME))
+      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || steuerArt == null)
       {
         art = "Umsatzsteuer";
       }
@@ -157,7 +154,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       o.setAttribute(ART, ART_DETAIL);
       if (o.getAttribute(STEUER) == null)
       {
-        o.setAttribute(STEUER, "Steuerfreie Ums‰tze");
+        o.setAttribute(STEUER, "Steuerfreie Ums√§tze");
       }
 
       zeilen.add(o);
@@ -182,7 +179,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     PseudoDBObject saldo = new PseudoDBObject();
     saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
     saldo.setAttribute(GRUPPE,
-        "Verbleibende Umsatzsteuer/Verbleibender ‹berschuss ");
+        "Verbleibende Umsatzsteuer/Verbleibender √úberschuss ");
     saldo.setAttribute(STEUERBETRAG, steuerGesamt);
     zeilen.add(saldo);
 
@@ -198,37 +195,39 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   protected ExtendedDBIterator<PseudoDBObject> getIterator()
       throws RemoteException
   {
-    final boolean steuerInBuchung = Einstellungen.getEinstellung()
-        .getSteuerInBuchung();
+    final boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
     it.addColumn("steuer.name as " + STEUER);
-    it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("steuerbuchungsart.art as " + ARTSTEUERBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
 
     // Bemessungsgrundlage (Netto) berechnen
     it.addColumn(
-        // Alte Steuerbuchungen mit dependencyid direkt nehmen.
-        "COALESCE(SUM(CASE WHEN buchung.dependencyid > -1 then buchung.betrag ELSE "
+        // Alte Steuerbuchungen mit dependencyid direkt nehmen. Auch bei
+        // Anlagebuchungen.
+        "COALESCE(SUM(CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? then buchung.betrag ELSE "
             + "CAST(buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END),0) AS "
-            + SUMME);
+            + SUMME,
+        Kontoart.ANLAGE.getKey());
 
     // Steuer berechnen.
     it.addColumn("COALESCE(SUM("
-        // Alte Steuerbuchungen mit dependencyid keine Steuer berechnen
-        + "CASE WHEN buchung.dependencyid > -1 THEN 0 ELSE "
+        // Alte Steuerbuchungen mit dependencyid keine Steuer berechnen.
+        // Anlagekonten keine Steuer.
+        + "CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? THEN 0 ELSE "
         + "CAST(steuer.satz/100 * buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END "
         // Alte Steuer hinzurechnen
-        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS "
-        + STEUERBETRAG);
+        + "+ COALESCE(buchung_steuer_alt.betrag,0)" + "),0) AS " + STEUERBETRAG,
+        Kontoart.ANLAGE.getKey());
 
     it.join("buchung",
         "buchung.buchungsart = buchungsart.id AND buchung.datum >= ? AND buchung.datum <= ?",
         getDatumvon().getDate(), getDatumbis().getDate());
 
-    // Die Steuer-Splitbuchung mit der gleichen dependecy-ID anh‰ngen um die
+    // Die Steuer-Splitbuchung mit der gleichen dependecy-ID anh√§ngen um die
     // alte Steuer zu ermitteln.
     it.leftJoin("buchung as buchung_steuer_alt",
         "buchung_steuer_alt.splitid = buchung.splitid AND buchung_steuer_alt.dependencyid = buchung.dependencyid"
@@ -239,8 +238,13 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     it.leftJoin("konto", "buchung.konto = konto.id");
     it.addFilter("konto.kontoart is null OR konto.kontoart < ?",
         Kontoart.LIMIT.getKey());
-    // Keine Steuer auf Anlagekonten
-    it.addFilter("konto.kontoart != ?", Kontoart.ANLAGE.getKey());
+    // Von Anlagekonten nur Einnahmen (Sachspenden)
+    it.addFilter("konto.kontoart != ? OR buchungsart.art = ?",
+        Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME);
+
+    // Steuerfrei Buchungen nur Einnahmen
+    it.addFilter("steuerbuchungsart.art IS NOT NULL OR buchungsart.art = ?",
+        ArtBuchungsart.EINNAHME);
 
     if (steuerInBuchung)
     {
@@ -253,9 +257,11 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     it.leftJoin("buchungsart as steuerbuchungsart",
         "steuer.buchungsart = steuerbuchungsart.id");
 
-    it.addGroupBy("steuer.id, buchungsart.art");
+    it.addGroupBy("steuer.id");
+    it.addGroupBy("steuerbuchungsart.art");
+    it.addGroupBy("steuer.name");
 
-    it.setOrder("ORDER BY buchungsart.art, steuerbuchungsart.art, steuer.id");
+    it.setOrder("ORDER BY steuerbuchungsart.art, steuer.id");
 
     return it;
   }

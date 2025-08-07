@@ -26,14 +26,15 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
 import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -44,11 +45,10 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FelddefinitionControl extends AbstractControl
-    implements Savable
+public class FelddefinitionControl extends VorZurueckControl implements Savable
 {
 
-  private TablePart felddefinitionList;
+  private JVereinTablePart felddefinitionList;
 
   private Input name;
 
@@ -124,7 +124,8 @@ public class FelddefinitionControl extends AbstractControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException, ApplicationException
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
     Felddefinition f = getFelddefinition();
     Datentyp d = (Datentyp) getDatentyp().getValue();
@@ -135,15 +136,15 @@ public class FelddefinitionControl extends AbstractControl
     f.setDatentyp(d.getKey());
     Integer i = (Integer) getLaenge().getValue();
     f.setLaenge(i.intValue());
+    return f;
   }
 
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Felddefinition f = getFelddefinition();
-      f.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -161,29 +162,32 @@ public class FelddefinitionControl extends AbstractControl
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<Felddefinition> fdef = service.createList(Felddefinition.class);
-    felddefinitionList = new TablePart(fdef,
-        new EditAction(ZusatzfeldDetailView.class));
+    felddefinitionList = new JVereinTablePart(fdef, null);
     felddefinitionList.addColumn("Name", "name");
     felddefinitionList.addColumn("Label", "label");
     felddefinitionList.addColumn("Datentyp", "datentyp",
         new DatentypFormatter(), false, Column.ALIGN_LEFT);
-    felddefinitionList.addColumn("Länge", "laenge");
-    felddefinitionList.setContextMenu(new FelddefinitionMenu());
+    felddefinitionList.addColumn("LÃ¤nge", "laenge");
+    felddefinitionList
+        .setContextMenu(new FelddefinitionMenu(felddefinitionList));
+    felddefinitionList.setAction(
+        new EditAction(ZusatzfeldDetailView.class, felddefinitionList));
+    VorZurueckControl.setObjektListe(null, null);
     return felddefinitionList;
   }
 
   private void konvertiereTyp(boolean checkOnly, Felddefinition f, Datentyp d)
       throws RemoteException, ApplicationException
   {
-    // Felddefinition enthält den bisherigen Stand, Datentyp ist die neue
+    // Felddefinition enthÃ¤lt den bisherigen Stand, Datentyp ist die neue
     // Auswahl
 
-    // Bei neuen Zusatzfeldern ist keine Prüfung möglich/erforderlich
+    // Bei neuen Zusatzfeldern ist keine PrÃ¼fung mÃ¶glich/erforderlich
     if (f.isNewObject())
     {
       return;
     }
-    // Gibt es eine Veränderung? Wenn nicht: Ende der Prüfung
+    // Gibt es eine VerÃ¤nderung? Wenn nicht: Ende der PrÃ¼fung
     if (f.getDatentyp() == d.getKey())
     {
       return;
@@ -211,7 +215,7 @@ public class FelddefinitionControl extends AbstractControl
         break;
     }
     // Wenn das Zusatzfeld noch bei keinem Mitglied angelegt wurde, kann der Typ
-    // generell geändert werden.
+    // generell geÃ¤ndert werden.
     if (it.size() == 0)
     {
       return;
@@ -414,11 +418,11 @@ public class FelddefinitionControl extends AbstractControl
     {
       case 1:
         throw new RemoteException(
-            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: }"
+            "Typkonvertierung kann nicht durchgefÃ¼hrt werden. Inhalt: }"
                 + wert);
       case 2:
         throw new RemoteException(
-            "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunächst in Zeichenfolge umwandeln.");
+            "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunÃ¤chst in Zeichenfolge umwandeln.");
     }
   }
 

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
@@ -102,7 +103,9 @@ public class MitgliedDetailAction implements Action
         Spendenbescheinigung s = (Spendenbescheinigung) context;
         mitglied = s.getMitglied();
       }
-      else if ((context instanceof Buchung ) && ((Buchung) context).getSollbuchung() != null ) {
+      else if ((context instanceof Buchung)
+          && ((Buchung) context).getSollbuchung() != null)
+      {
         mitglied = ((Buchung) context).getSollbuchung().getMitglied();
       }
       else if (context instanceof MailEmpfaenger)
@@ -112,9 +115,10 @@ public class MitgliedDetailAction implements Action
       }
       else
       {
-        mitglied = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
-        if (Einstellungen.getEinstellung().getJuristischePersonen())
+        mitglied = (Mitglied) Einstellungen.getDBService()
+            .createObject(Mitglied.class, null);
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONEN))
         {
           PersonenartDialog pad = new PersonenartDialog(
               PersonenartDialog.POSITION_CENTER);
@@ -130,9 +134,9 @@ public class MitgliedDetailAction implements Action
           mitglied.setPersonenart("n");
         }
       }
-      // Wenn CurrentObject und View von aktueller und nächster View gleich
+      // Wenn CurrentObject und View von aktueller und nÃ¤chster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
-      // führt der Zurückbutton auch bei "Speichern und neu" zur Liste zurück.
+      // fÃ¼hrt der ZurÃ¼ckbutton auch bei "Speichern und neu" zur Liste zurÃ¼ck.
       if (GUI.getCurrentView().getClass().equals(MitgliedDetailView.class)
           || GUI.getCurrentView().getClass()
               .equals(NichtMitgliedDetailView.class))

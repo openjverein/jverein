@@ -24,7 +24,7 @@ import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Interface für den Export der Salden
+ * Interface fÃ¼r den Export der Salden
  */
 public interface ISaldoExport
 {

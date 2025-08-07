@@ -28,7 +28,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
- * Ein Dialog, ueber den man die Personenart eines neuen Mitglieds ausw‰hlen
+ * Ein Dialog, ueber den man die Personenart eines neuen Mitglieds ausw√§hlen
  * kann.
  */
 public class PersonenartDialog extends AbstractDialog<String>

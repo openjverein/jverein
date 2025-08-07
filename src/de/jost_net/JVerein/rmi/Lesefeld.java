@@ -22,9 +22,9 @@ import de.willuhn.datasource.rmi.DBObject;
 
 /**
  * LeseFelder sind virtuelle Datenbank-Felder. Sie werden mit Hilfe eines
- * Scriptes berechnet und sind daher schreibgeschützt (-> nur lesbar).
+ * Scriptes berechnet und sind daher schreibgeschÃ¼tzt (-> nur lesbar).
  * 
- * Jedes Feld hat eine Bezeichnung (Name), über die auf das Feld später
+ * Jedes Feld hat eine Bezeichnung (Name), Ã¼ber die auf das Feld spÃ¤ter
  * zugegriffen werden kann und Java-Code, das den Inhalt des Feld beschreibt.
  * 
  * @author Julian
@@ -42,15 +42,15 @@ public interface Lesefeld extends DBObject
 
   /**
    * EvaluatedContent kann den Inhalt eines ausgewerteten Skriptes enthalten.
-   * Dieser Wert gilt für ein bestimmtes Mitglied. Dieser Wert wird nicht
-   * gespeichert und dient lediglich als temporärer Speicher.
+   * Dieser Wert gilt fÃ¼r ein bestimmtes Mitglied. Dieser Wert wird nicht
+   * gespeichert und dient lediglich als temporÃ¤rer Speicher.
    */
   public String getEvaluatedContent() throws RemoteException;
 
   /**
    * EvaluatedContent kann den Inhalt eines ausgewerteten Skriptes enthalten.
-   * Dieser Wert gilt für ein bestimmtes Mitglied. Dieser Wert wird nicht
-   * gespeichert und dient lediglich als temporärer Speicher.
+   * Dieser Wert gilt fÃ¼r ein bestimmtes Mitglied. Dieser Wert wird nicht
+   * gespeichert und dient lediglich als temporÃ¤rer Speicher.
    */
   public void setEvaluatedContent(String content) throws RemoteException;
 

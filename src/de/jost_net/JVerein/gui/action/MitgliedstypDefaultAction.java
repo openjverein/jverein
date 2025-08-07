@@ -36,8 +36,8 @@ public class MitgliedstypDefaultAction implements Action
     try
     {
       Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
-          .createObject(
-          Mitgliedstyp.class, String.valueOf(Mitgliedstyp.MITGLIED));
+          .createObject(Mitgliedstyp.class,
+              String.valueOf(Mitgliedstyp.MITGLIED));
       mt.setBezeichnung("Mitglied");
       mt.setJVereinid(Mitgliedstyp.MITGLIED);
       mt.store();
@@ -47,11 +47,11 @@ public class MitgliedstypDefaultAction implements Action
       mt.setJVereinid(Mitgliedstyp.SPENDER);
       mt.store();
 
-      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");
+      GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefÃ¼gt.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Einfügen von Mitgliedstypen.";
+      String fehler = "Fehler beim EinfÃ¼gen von Mitgliedstypen.";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

@@ -40,7 +40,7 @@ public class DokumentShowAction implements Action
   {
     if (context == null || !(context instanceof AbstractDokument))
     {
-      throw new ApplicationException("Kein Dokument ausgewählt");
+      throw new ApplicationException("Kein Dokument ausgewÃ¤hlt");
     }
     try
     {
@@ -59,8 +59,8 @@ public class DokumentShowAction implements Action
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.get").sendSyncMessage(qm);
       byte[] data = (byte[]) qm.getData();
-      final File file = new File(System.getProperty("java.io.tmpdir") + "/"
-          + map.get("filename"));
+      final File file = new File(
+          System.getProperty("java.io.tmpdir") + "/" + map.get("filename"));
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(data);
       fos.close();
@@ -69,7 +69,7 @@ public class DokumentShowAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Löschen des Dokuments";
+      String fehler = "Fehler beim Anzeigen des Dokuments";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }

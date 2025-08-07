@@ -53,7 +53,7 @@ public class LastschriftDetailView extends AbstractView
     left.addInput(control.getVorname());
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
-    
+
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getPLZ());
     right.addInput(control.getOrt());
@@ -68,6 +68,9 @@ public class LastschriftDetailView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
     buttons.paint(this.getParent());
   }
 }

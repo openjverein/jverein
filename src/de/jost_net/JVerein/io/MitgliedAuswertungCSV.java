@@ -63,9 +63,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
     if (filename.length() > 0)
     {
       this.vorlagedateiname = filename;
-      this.name = "Vorlage CSV: "
-          + filename.substring(filename.lastIndexOf(File.separator) + 1,
-              filename.lastIndexOf("."));
+      this.name = "Vorlage CSV: " + filename.substring(
+          filename.lastIndexOf(File.separator) + 1, filename.lastIndexOf("."));
     }
   }
 
@@ -95,16 +94,16 @@ public class MitgliedAuswertungCSV implements IAuswertung
       catch (Exception e)
       {
         Logger.error("error reading " + vorlagedateiname, e);
-        throw new RemoteException("Fehler beim Einlesen der Vorlagedatei "
-            + vorlagedateiname, e);
+        throw new RemoteException(
+            "Fehler beim Einlesen der Vorlagedatei " + vorlagedateiname, e);
       }
 
       // check the file content
       if (headerUser.length == 0)
       {
         Logger.error("No elements in first line: " + vorlagedateiname);
-        throw new RemoteException("Keine Elemente in erster Zeile in Datei "
-            + vorlagedateiname);
+        throw new RemoteException(
+            "Keine Elemente in erster Zeile in Datei " + vorlagedateiname);
       }
       if (headerUser.length != headerKeys.length)
       {
@@ -133,8 +132,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
       }
       else
       {
-        m = (Mitglied) Einstellungen.getDBService().createObject(
-            Mitglied.class, null);
+        m = (Mitglied) Einstellungen.getDBService().createObject(Mitglied.class,
+            null);
       }
 
       if (headerKeys == null || headerUser == null)
@@ -180,8 +179,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
     catch (Exception e)
     {
       Logger.error("Error while creating report", e);
-      throw new ApplicationException("Fehler beim Erzeugen des Reports ("
-          + e.getMessage() + ")", e);
+      throw new ApplicationException(
+          "Fehler beim Erzeugen des Reports (" + e.getMessage() + ")", e);
     }
   }
 

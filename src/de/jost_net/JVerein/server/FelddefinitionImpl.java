@@ -26,8 +26,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FelddefinitionImpl extends AbstractJVereinDBObject
-    implements
-    Felddefinition
+    implements Felddefinition
 {
 
   private static final long serialVersionUID = 1L;
@@ -60,9 +59,13 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getName() == null || getName().length() == 0)
+      if (getName() == null || getName().isEmpty())
       {
         throw new ApplicationException("Bitte Namen des Feldes eingeben");
+      }
+      if (getLabel() == null || getLabel().isEmpty())
+      {
+        throw new ApplicationException("Bitte Namen des Label eingeben");
       }
       setName(getName().toLowerCase());
       String validChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
@@ -72,10 +75,10 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
         char c = testString.charAt(i);
         if (validChars.indexOf(c) == -1)
           throw new ApplicationException(String.format(
-              "Ungültiges Zeichen (%s) im Feldnamen an Position %d", c, i));
+              "UngÃ¼ltiges Zeichen (%s) im Feldnamen an Position %d", c, i));
       }
-      Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-          Mitglied.class, null);
+      Mitglied m = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, null);
       String[] namen = m.getAttributeNames();
       for (String s : namen)
       {
@@ -89,7 +92,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
       if (getDatentyp() == Datentyp.ZEICHENFOLGE
           && (getLaenge() < 1 || getLaenge() > 1000))
       {
-        throw new ApplicationException("Ungültige Feldlänge");
+        throw new ApplicationException("UngÃ¼ltige FeldlÃ¤nge");
       }
     }
     catch (RemoteException e)

@@ -24,13 +24,13 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
 
 public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
 {
@@ -53,13 +53,13 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 60,
           BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Adresse", Element.ALIGN_CENTER,
-          100, BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Telefon", Element.ALIGN_CENTER,
-          50, BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Email", Element.ALIGN_CENTER,
-          80, BaseColor.LIGHT_GRAY);
-      if(Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+      report.addHeaderColumn("Adresse", Element.ALIGN_CENTER, 100,
+          BaseColor.LIGHT_GRAY);
+      report.addHeaderColumn("Telefon", Element.ALIGN_CENTER, 50,
+          BaseColor.LIGHT_GRAY);
+      report.addHeaderColumn("Email", Element.ALIGN_CENTER, 80,
+          BaseColor.LIGHT_GRAY);
+      if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
         report.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 30,
             BaseColor.LIGHT_GRAY);
       report.createHeader(100, Element.ALIGN_CENTER);
@@ -79,33 +79,38 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
         if (m.getTelefondienstlich() != null
             && m.getTelefondienstlich().length() > 0)
         {
-          telefon += "\n" + "dienstl: "
-              + m.getTelefondienstlich();
+          telefon += "\n" + "dienstl: " + m.getTelefondienstlich();
         }
         if (m.getHandy() != null && m.getHandy().length() > 0)
         {
           telefon += "\n" + "Handy: " + m.getHandy();
         }
         report.addColumn(telefon, Element.ALIGN_LEFT);
-        //Bei verwendung von mehreren Mailadresse im Fomar NAME:Mail1@xx.de,mail2@xx.de; trennen wir die Mailadressen
+        // Bei verwendung von mehreren Mailadresse im Fomar
+        // NAME:Mail1@xx.de,mail2@xx.de; trennen wir die Mailadressen
         String mail = m.getEmail();
-        if(mail.indexOf(":") > 0)
+        if (mail.indexOf(":") > 0)
         {
-          mail = mail.substring(mail.indexOf(":")+1).replace(",", "\n").replace(";","").trim();
+          mail = mail.substring(mail.indexOf(":") + 1).replace(",", "\n")
+              .replace(";", "").trim();
         }
         report.addColumn(mail, Element.ALIGN_LEFT);
-        if(Einstellungen.getEinstellung().getGeburtsdatumPflicht())
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.GEBURTSDATUMPFLICHT))
           report.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
       }
       report.closeTable();
 
-      report.add(new Paragraph(String.format("Anzahl %s: %d",
-          mitgliedstyp.getBezeichnungPlural(), list.size()), Reporter.getFreeSans(8)));
+      report
+          .add(new Paragraph(
+              String.format("Anzahl %s: %d",
+                  mitgliedstyp.getBezeichnungPlural(), list.size()),
+              Reporter.getFreeSans(8)));
 
       report.addParams(params);
       report.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d SÃ¤tze.", list.size()));
     }
     catch (Exception e)
     {

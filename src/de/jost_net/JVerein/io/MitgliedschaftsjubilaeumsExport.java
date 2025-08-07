@@ -27,6 +27,7 @@ import java.util.Date;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -112,15 +113,16 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   private JubilaeenParser holeJubelJahreAusEinstellungen()
       throws RemoteException
   {
-    String jubilarListe = Einstellungen.getEinstellung().getJubilaeen();
+    String jubilarListe = (String) Einstellungen
+        .getEinstellung(Property.JUBILAEEN);
     JubilaeenParser jp = new JubilaeenParser(jubilarListe);
     return jp;
   }
 
   /**
-   * Ermittle die Kenndaten die für die Ermittlung der Liste wichtig sind. 1.
-   * jahr - für welches Jahr soll die Liste erstellt werden 2. jubilarStartAlter
-   * - ab welchem Alter beginnt die Zählung der Jubeljahre
+   * Ermittle die Kenndaten die fÃ¼r die Ermittlung der Liste wichtig sind. 1.
+   * jahr - fÃ¼r welches Jahr soll die Liste erstellt werden 2. jubilarStartAlter
+   * - ab welchem Alter beginnt die ZÃ¤hlung der Jubeljahre
    * 
    * @param objects
    * @throws RemoteException
@@ -130,8 +132,9 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   {
     MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
-    jubilarStartAlter = Einstellungen.getEinstellung().getJubilarStartAlter();
-    Logger.debug("Mitgliedschaftsjubiläum, Jahr=" + Integer.toString(jahr)
+    jubilarStartAlter = (Integer) Einstellungen
+        .getEinstellung(Property.JUBILARSTARTALTER);
+    Logger.debug("MitgliedschaftsjubilÃ¤um, Jahr=" + Integer.toString(jahr)
         + " StartAlter= " + Integer.toString(jubilarStartAlter));
   }
 
@@ -155,8 +158,8 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   /**
    * Innerclass hilft beim Ermitteln ob das Mitglied das geforderte Jubilaeum im
    * Jahr imJahr hat. In den Einstellungen kann ein Mindestalter festgelegt
-   * werden ab dem die Mitgliedschaft zu Jubilaeum zählt. Dieses wird hier
-   * berücksichtigt.
+   * werden ab dem die Mitgliedschaft zu Jubilaeum zÃ¤hlt. Dieses wird hier
+   * berÃ¼cksichtigt.
    * 
    * @author Rolf
    */

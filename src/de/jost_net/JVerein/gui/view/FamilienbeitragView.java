@@ -33,7 +33,7 @@ public class FamilienbeitragView extends AbstractView
 
     final MitgliedControl control = new MitgliedControl(this);
     control.init("familie.", null, null);
-    
+
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getMitgliedStatus());
 

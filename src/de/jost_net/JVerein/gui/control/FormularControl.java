@@ -24,14 +24,17 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.FormularImpl;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -42,18 +45,16 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularControl extends FormularPartControl
-    implements Savable
+public class FormularControl extends FormularPartControl implements Savable
 {
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart formularList;
+  private JVereinTablePart formularList;
 
   private TextInput bezeichnung;
 
@@ -95,6 +96,7 @@ public class FormularControl extends FormularPartControl
     {
       bezeichnung.focus();
     }
+    bezeichnung.setMandatory(true);
     return bezeichnung;
   }
 
@@ -107,7 +109,8 @@ public class FormularControl extends FormularPartControl
     FormularArt aktuelleFormularArt = getFormular().getArt();
     ArrayList<FormularArt> list = new ArrayList<FormularArt>(
         Arrays.asList(FormularArt.values()));
-    if (!Einstellungen.getEinstellung().getSpendenbescheinigungenAnzeigen())
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.SPENDENBESCHEINIGUNG)
       {
@@ -118,7 +121,7 @@ public class FormularControl extends FormularPartControl
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
     }
-    if (!Einstellungen.getEinstellung().getRechnungenAnzeigen())
+    if (!(Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       if (aktuelleFormularArt != FormularArt.RECHNUNG)
       {
@@ -133,13 +136,17 @@ public class FormularControl extends FormularPartControl
     return art;
   }
 
-  public FileInput getDatei()
+  public FileInput getDatei() throws RemoteException
   {
     if (datei != null)
     {
       return datei;
     }
     datei = new FileInput("", false, new String[] { "*.pdf", "*.PDF" });
+    if (getFormular().isNewObject())
+    {
+      datei.setMandatory(true);
+    }
     return datei;
   }
 
@@ -184,14 +191,16 @@ public class FormularControl extends FormularPartControl
       @SuppressWarnings("unchecked")
       List<SelectInput> list = formlink.getList();
       int size = list.size();
-      for (int i=0;i<size;++i)
+      for (int i = 0; i < size; ++i)
       {
         Object object = list.get(i);
-        if (object == null) continue;
+        if (object == null)
+          continue;
         // Cast to FormularImpl
         FormularImpl formimpl = (FormularImpl) object;
         // Remove current form object and stop comparing
-        if (Integer.valueOf(formimpl.getID()) == Integer.valueOf(currentForm.getID()))
+        if (Integer.valueOf(formimpl.getID()) == Integer
+            .valueOf(currentForm.getID()))
         {
           list.remove(i);
           formlink.setList(list);
@@ -203,7 +212,7 @@ public class FormularControl extends FormularPartControl
     // Deactivate the select box if it has linked forms
     if (currentForm.hasFormlinks())
     {
-      formlink.setPleaseChoose("Verknüpft");
+      formlink.setPleaseChoose("VerknÃ¼pft");
       formlink.disable();
     }
     else
@@ -214,7 +223,7 @@ public class FormularControl extends FormularPartControl
   }
 
   @Override
-  public void prepareStore() throws RemoteException
+  public JVereinDBObject prepareStore() throws RemoteException
   {
     Formular f = getFormular();
     f.setBezeichnung((String) getBezeichnung(true).getValue());
@@ -231,6 +240,7 @@ public class FormularControl extends FormularPartControl
     {
       f.setFormlink(null);
     }
+    return f;
   }
 
   /**
@@ -238,12 +248,12 @@ public class FormularControl extends FormularPartControl
    * 
    * @throws ApplicationException
    */
+  @Override
   public void handleStore() throws ApplicationException
   {
     try
     {
-      prepareStore();
-      Formular f = getFormular();
+      Formular f = (Formular) prepareStore();
       f.setZaehlerToFormlink((int) getZaehler().getValue());
       String dat = (String) getDatei().getValue();
       if (dat.length() > 0)
@@ -271,19 +281,21 @@ public class FormularControl extends FormularPartControl
     DBIterator<Formular> formulare = service.createList(Formular.class);
     formulare.setOrder("ORDER BY art, bezeichnung");
 
-    formularList = new TablePart(formulare,
-        new EditAction(FormularDetailView.class));
+    formularList = new JVereinTablePart(formulare, null);
     formularList.addColumn("Bezeichnung", "bezeichnung");
     formularList.addColumn("Art", "art", new FormularartFormatter(), false,
         Column.ALIGN_LEFT);
     formularList.addColumn("Fortlaufende Nr.", "zaehler");
-    formularList.addColumn("Verknüpft mit", "formlink",
+    formularList.addColumn("VerknÃ¼pft mit", "formlink",
         new FormularLinkFormatter());
     formularList.setRememberColWidths(true);
-    formularList.setContextMenu(new FormularMenu(this));
+    formularList.setContextMenu(new FormularMenu(this, formularList));
     formularList.setRememberOrder(true);
     formularList.removeFeature(FeatureSummary.class);
     formularList.setMulti(true);
+    formularList
+        .setAction(new EditAction(FormularDetailView.class, formularList));
+    VorZurueckControl.setObjektListe(null, null);
     return formularList;
   }
 

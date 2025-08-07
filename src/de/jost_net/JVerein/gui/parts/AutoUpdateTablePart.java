@@ -27,9 +27,8 @@ import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.Listener;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.TablePart;
 
-public class AutoUpdateTablePart extends TablePart
+public class AutoUpdateTablePart extends JVereinTablePart
 {
 
   private Listener storeListener = new StoreListener();
@@ -83,6 +82,7 @@ public class AutoUpdateTablePart extends TablePart
         GUI.getDisplay().syncExec(new Runnable()
         {
 
+          @Override
           public void run()
           {
             try
