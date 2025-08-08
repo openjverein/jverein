@@ -18,12 +18,6 @@
 
 package de.jost_net.JVerein.gui.parts;
 
-import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.List;
-
-import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
@@ -34,6 +28,11 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.TablePart;
+import org.eclipse.swt.widgets.Composite;
+
+import java.rmi.RemoteException;
+import java.util.Calendar;
+import java.util.List;
 
 /**
  * Implementierung einer fix und fertig vorkonfigurierten Liste aller Konten.
