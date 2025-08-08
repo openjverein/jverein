@@ -834,28 +834,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
         try
         {
           saveDruckMailSettings();
-          Spendenbescheinigung[] spbArray = null;
-          if (currentObject == null)
-          {
-            ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
-            if (spblist.size() == 0)
-            {
-              GUI.getStatusBar()
-                  .setSuccessText("Für die gewählten Filterkriterien wurden "
-                      + "keine Spendenbescheinigungen gefunden");
-              return;
-            }
-            spbArray = spblist
-                .toArray(new Spendenbescheinigung[spblist.size()]);
-          }
-          else if (currentObject instanceof Spendenbescheinigung[])
-          {
-            spbArray = (Spendenbescheinigung[]) currentObject;
-          }
-          else
-          {
-            return;
-          }
+
+          Spendenbescheinigung[] spbArray = getSpbArray(currentObject);
+
           generatePdf((String) mailtext.getValue(),
               (Adressblatt) adressblatt.getValue(), spbArray,
               (Ausgabeart) ausgabeart.getValue());
@@ -864,6 +845,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
             sendeMail((String) mailbetreff.getValue(),
                 (String) mailtext.getValue(), spbArray);
           }
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
@@ -1077,4 +1062,114 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
+  private Spendenbescheinigung[] getSpbArray(Object object)
+      throws RemoteException, ApplicationException
+  {
+    Spendenbescheinigung[] spbArray = null;
+    if (object == null)
+    {
+      ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
+      spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
+    }
+    else if (object instanceof Spendenbescheinigung[])
+    {
+      spbArray = (Spendenbescheinigung[]) object;
+    }
+    if (spbArray == null || spbArray.length == 0)
+    {
+      throw new ApplicationException(
+          "Für die gewählten Filterkriterien wurden keine Spendenbescheinigungen gefunden");
+    }
+    return spbArray;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<Mitglied> mitglieder = new ArrayList<>();
+    String text = "";
+    int ohneMail = 0;
+    int ohneMitglied = 0;
+    Spendenbescheinigung[] spbs = getSpbArray(object);
+    Mitglied m;
+    for (Spendenbescheinigung spb : spbs)
+    {
+      m = spb.getMitglied();
+      if (m != null)
+      {
+        mitglieder.add(m);
+        if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+        {
+          String mail = m.getEmail();
+          if (mail == null || mail.isEmpty())
+          {
+            ohneMail++;
+          }
+        }
+      }
+      else
+      {
+        ohneMitglied++;
+      }
+    }
+    if (ohneMail > 0 && ohneMitglied == 0)
+    {
+      text = getMailText(ohneMail, false);
+    }
+    if (ohneMail == 0 && ohneMitglied > 0)
+    {
+      text = getMitgliedText(ohneMitglied,
+          getAusgabeart().getValue() != Ausgabeart.MAIL);
+    }
+    if (ohneMail > 0 && ohneMitglied > 0)
+    {
+      text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
+    }
+    return new DruckMailEmpfaenger(mitglieder, text);
+  }
+
+  private String getMailText(int ohneMail, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck)
+    {
+      zusatz = " und ";
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse" + zusatz;
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse" + zusatz;
+    }
+    return text;
+  }
+
+  private String getMitgliedText(int ohneMitglied, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck && ohneMitglied == 1)
+    {
+      zusatz = ", wird aber gedruckt.";
+    }
+    if (druck && ohneMitglied > 1)
+    {
+      zusatz = ", werden aber gedruckt.";
+    }
+    if (ohneMitglied == 1)
+    {
+      text = ohneMitglied + " Spendenbescheinigung hat kein Mitglied gesetzt"
+          + zusatz;
+    }
+    else if (ohneMitglied > 1)
+    {
+      text = ohneMitglied
+          + " Spendenbescheinigungen haben kein Mitglied gesetzt" + zusatz;
+    }
+    return text;
+  }
 }

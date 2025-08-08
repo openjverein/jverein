@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -103,6 +104,8 @@ public class RechnungMailView extends AbstractView
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
+    buttons.addButton(control.getDruckMailMitgliederButton(
+        this.getCurrentObject(), TYP.RECHNUNG.toString()));
     buttons.addButton(control.getStartRechnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

@@ -92,6 +92,8 @@ public class FreiesFormularMailView extends AbstractView
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(
+        control.getDruckMailMitgliederButton(this.getCurrentObject(), null));
+    buttons.addButton(
         control.getStartFreieFormulareButton(this.getCurrentObject(), control));
     buttons.paint(this.getParent());
   }

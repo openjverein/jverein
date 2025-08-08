@@ -26,6 +26,8 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -1455,6 +1457,24 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
             Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
         it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
         it.addGroupBy(Sollbuchung.T_MITGLIED);
+
+        MitgliedControl control = MitgliedControl.control;
+        if (control.isDifferenzAktiv()
+            && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
+        {
+          if (control.isDatumvonAktiv()
+              && control.getDatumvon().getValue() != null)
+          {
+            it.addFilter(Sollbuchung.T_DATUM + " >= ?",
+                (Date) control.getDatumvon().getValue());
+          }
+          if (control.isDatumbisAktiv()
+              && control.getDatumbis().getValue() != null)
+          {
+            it.addFilter(Sollbuchung.T_DATUM + " <= ?",
+                (Date) control.getDatumbis().getValue());
+          }
+        }
 
         if (it.hasNext())
         {

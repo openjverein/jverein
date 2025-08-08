@@ -30,12 +30,17 @@ import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.server.EigenschaftenNode;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -378,6 +383,59 @@ public class MitgliedQuery
         addCondition("mitglied.id = ?");
         bedingungen.add(value);
       }
+    }
+
+    if (control.isDifferenzAktiv()
+        && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
+    {
+      Double limit = Double.valueOf(0d);
+      if (control.isDoubleAuswAktiv()
+          && control.getDoubleAusw().getValue() != null)
+      {
+        // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+        limit = Math.abs((Double) control.getDoubleAusw().getValue());
+      }
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          Sollbuchung.TABLE_NAME);
+      it.addColumn(Sollbuchung.T_MITGLIED + " as mid");
+      it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+          + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+      it.leftJoin(
+          "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
+              + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
+              + ") AS buchung",
+          Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+      if (control.isDatumvonAktiv() && control.getDatumvon().getValue() != null)
+      {
+        it.addFilter(Sollbuchung.T_DATUM + " >= ?",
+            (Date) control.getDatumvon().getValue());
+      }
+      if (control.isDatumbisAktiv() && control.getDatumbis().getValue() != null)
+      {
+        it.addFilter(Sollbuchung.T_DATUM + " <= ?",
+            (Date) control.getDatumbis().getValue());
+      }
+      if (control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
+      {
+        it.addHaving("dif < -" + limit.toString());
+      }
+      else
+      {
+        it.addHaving("dif > " + limit.toString());
+      }
+      it.addGroupBy(Sollbuchung.T_MITGLIED);
+      ArrayList<String> diffIds = new ArrayList<>();
+      while (it.hasNext())
+      {
+        PseudoDBObject o = it.next();
+        diffIds.add(String.valueOf(o.getAttribute("mid")));
+      }
+
+      if (diffIds.size() == 0)
+      {
+        return new ArrayList<Mitglied>();
+      }
+      addCondition("mitglied.id in (" + String.join(",", diffIds) + ")");
     }
 
     Logger.debug(sql);

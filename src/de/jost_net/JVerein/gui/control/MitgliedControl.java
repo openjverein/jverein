@@ -335,11 +335,14 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private String eigenschaftenHash;
 
+  public static MitgliedControl control = null;
+
   public MitgliedControl(AbstractView view)
   {
     super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
+    control = this;
   }
 
   public Mitglied getMitglied()
