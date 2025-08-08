@@ -29,7 +29,10 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 
 public class StatistikJahrgaengeExportCSV extends StatistikJahrgaengeExport
@@ -69,9 +72,11 @@ public class StatistikJahrgaengeExportCSV extends StatistikJahrgaengeExport
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "statistikjahrgaenge";
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME,
+        (MitgliedControl) object) + ".csv";
   }
 
   @Override

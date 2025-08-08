@@ -65,7 +65,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -144,9 +143,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private boolean editable = false;
 
-  final static String ExportPDF = "PDF";
+  final static String ExportPDF = ".pdf";
 
-  final static String ExportCSV = "CSV";
+  final static String ExportCSV = ".csv";
 
   public SpendenbescheinigungControl(AbstractView view)
   {
@@ -972,9 +971,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("spendenbescheinigungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          type).get());
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME, this)
+              + "." + type);
 
       final String s = fd.open();
 

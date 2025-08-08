@@ -85,6 +85,7 @@ public class MitgliedMap extends AbstractMap
         Adressaufbereitung.getAnredeDu(mitglied));
     map.put(MitgliedVar.AUSTRITT.getName(),
         Datum.formatDate(mitglied.getAustritt()));
+    map.put(MitgliedVar.AUSTRITT_F.getName(), fromDate(mitglied.getAustritt()));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
         mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
             .format(mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
@@ -122,12 +123,17 @@ public class MitgliedMap extends AbstractMap
             ? mitglied.getBeitragsgruppe().getID()
             : "");
     map.put(MitgliedVar.MANDATDATUM.getName(), mitglied.getMandatDatum());
+    map.put(MitgliedVar.MANDATDATUM_F.getName(),
+        fromDate(mitglied.getMandatDatum()));
     map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
     map.put(MitgliedVar.BIC.getName(), mitglied.getBic());
     map.put(MitgliedVar.EINGABEDATUM.getName(),
         Datum.formatDate(mitglied.getEingabedatum()));
+    map.put(MitgliedVar.EINGABEDATUM_F.getName(),
+        fromDate(mitglied.getEingabedatum()));
     map.put(MitgliedVar.EINTRITT.getName(),
         Datum.formatDate(mitglied.getEintritt()));
+    map.put(MitgliedVar.EINTRITT_F.getName(), fromDate(mitglied.getEintritt()));
     map.put(MitgliedVar.EMAIL.getName(), mitglied.getEmail());
     map.put(MitgliedVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(mitglied));
@@ -135,6 +141,8 @@ public class MitgliedMap extends AbstractMap
         mitglied.getExterneMitgliedsnummer());
     map.put(MitgliedVar.GEBURTSDATUM.getName(),
         Datum.formatDate(mitglied.getGeburtsdatum()));
+    map.put(MitgliedVar.GEBURTSDATUM_F.getName(),
+        fromDate(mitglied.getGeburtsdatum()));
     map.put(MitgliedVar.GESCHLECHT.getName(), mitglied.getGeschlecht());
     map.put(MitgliedVar.HANDY.getName(), mitglied.getHandy());
     map.put(MitgliedVar.IBANMASKIERT.getName(),
@@ -383,22 +391,27 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
     map.put(MitgliedVar.AUSTRITT.getName(), toDate("01.01.2025"));
+    map.put(MitgliedVar.AUSTRITT_F.getName(), "20250101");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(), "50");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(), "10");
     map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(), "Beitrag");
     map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(), "300,00");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(), "1");
     map.put(MitgliedVar.MANDATDATUM.getName(), toDate("01.01.2024"));
+    map.put(MitgliedVar.MANDATDATUM_F.getName(), "20240101");
     map.put(MitgliedVar.MANDATID.getName(), "12345");
     map.put(MitgliedVar.BIC.getName(), "BICXXXXXXXX");
     map.put(MitgliedVar.BLZ.getName(), "");
     map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
+    map.put(MitgliedVar.EINTRITT_F.getName(), "20100101");
     map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
+    map.put(MitgliedVar.EINGABEDATUM_F.getName(), "20100201");
     map.put(MitgliedVar.EMPFAENGER.getName(),
         "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
     map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
     map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
+    map.put(MitgliedVar.GEBURTSDATUM_F.getName(), "19800302");
     map.put(MitgliedVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
     map.put(MitgliedVar.HANDY.getName(), "0152778899");
     map.put(MitgliedVar.IBAN.getName(), "DE89370400440532013000");

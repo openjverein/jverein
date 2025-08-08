@@ -71,12 +71,6 @@ public abstract class KontenrahmenExport implements Exporter
     close();
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "kontenrahmen";
-  }
-
   protected abstract void open() throws IOException;
 
   protected abstract void addKlasse(Buchungsklasse klasse)

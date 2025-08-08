@@ -39,9 +39,10 @@ import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -528,9 +529,9 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "XML").get());
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_SEPA_DATEINAME, this)
+              + ".xml");
       String file = fd.open();
       if (file == null || file.length() == 0)
       {
@@ -564,9 +565,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("abbuchungRCUR", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      fd.setFileName(VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME, this) + ".pdf");
       pdffileRCUR = fd.open();
       if (pdffileRCUR == null)
       {
