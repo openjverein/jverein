@@ -147,7 +147,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
       {
         Sollbuchung sollb = dao.getSollbuchung();
         Buchung buchung = dao.getBuchung();
-        SplitbuchungsContainer.autoSplit(buchung, sollb, false);
+        SplitbuchungsContainer.autoSplit(buchung, sollb, true);
       }
 
       // Darstellung aktualisieren
