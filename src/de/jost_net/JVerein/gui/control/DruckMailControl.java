@@ -9,7 +9,7 @@ import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Ausgabesortierung;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -243,12 +243,12 @@ public abstract class DruckMailControl extends FilterControl
       @Override
       public void handleAction(Object context)
       {
-        List<Mitglied> mitglieder = null;
+        List<DruckMailEmpfaengerEntry> liste = null;
         String text = "";
         try
         {
           DruckMailEmpfaenger result = getDruckMailMitglieder(object, option);
-          mitglieder = result.getMitglieder();
+          liste = result.getMitgliederListe();
           if (result.getText() != null)
           {
             text = result.getText();
@@ -266,7 +266,7 @@ public abstract class DruckMailControl extends FilterControl
         }
         try
         {
-          DruckMailMitgliedDialog mevd = new DruckMailMitgliedDialog(mitglieder,
+          DruckMailMitgliedDialog mevd = new DruckMailMitgliedDialog(liste,
               text, DruckMailMitgliedDialog.POSITION_CENTER);
           mevd.open();
         }
@@ -286,25 +286,92 @@ public abstract class DruckMailControl extends FilterControl
 
   public class DruckMailEmpfaenger
   {
-    private List<Mitglied> mitglieder;
+    private List<DruckMailEmpfaengerEntry> liste;
 
     private String text;
 
-    public DruckMailEmpfaenger(List<Mitglied> mitglieder, String text)
+    public DruckMailEmpfaenger(List<DruckMailEmpfaengerEntry> liste,
+        String text)
     {
-      this.mitglieder = mitglieder;
+      this.liste = liste;
       this.text = text;
 
     }
 
-    public List<Mitglied> getMitglieder()
+    public List<DruckMailEmpfaengerEntry> getMitgliederListe()
     {
-      return mitglieder;
+      return liste;
     }
 
     public String getText()
     {
       return text;
+    }
+  }
+
+  public class DruckMailEmpfaengerEntry
+  {
+    private String dokument;
+
+    private String email;
+
+    private String name;
+
+    private String vorname;
+
+    private Mitgliedstyp mitgliedstyp;
+
+    public DruckMailEmpfaengerEntry(String dokument, String email, String name,
+        String vorname, Mitgliedstyp mitgliedstyp)
+    {
+      this.dokument = dokument;
+      this.email = email;
+      this.name = name;
+      this.vorname = vorname;
+      this.mitgliedstyp = mitgliedstyp;
+    }
+
+    public String getDokument()
+    {
+      return dokument;
+    }
+
+    public String getEmail()
+    {
+      return email;
+    }
+
+    public String getName()
+    {
+      return name;
+    }
+
+    public String getVorname()
+    {
+      return vorname;
+    }
+
+    public Mitgliedstyp getMitgliedstyp()
+    {
+      return mitgliedstyp;
+    }
+
+    public Object getAttribute(String fieldName) throws RemoteException
+    {
+      switch (fieldName)
+      {
+        case "dokument":
+          return dokument;
+        case "email":
+          return email;
+        case "name":
+          return name;
+        case "vorname":
+          return vorname;
+        case "mitgliedstyp":
+          return mitgliedstyp;
+      }
+      return null;
     }
   }
 }

@@ -991,19 +991,22 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       throws RemoteException, ApplicationException
   {
     List<Mitglied> mitglieder = getMitglieder(object);
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
     String text = null;
     int ohneMail = 0;
-    if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+
+    for (Mitglied m : mitglieder)
     {
-      for (Mitglied m : mitglieder)
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
-        String mail = m.getEmail();
-        if (mail == null || mail.isEmpty())
-        {
-          ohneMail++;
-        }
+        ohneMail++;
       }
+      liste.add(new DruckMailEmpfaengerEntry("Kontoauszug", mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
     }
+
     if (ohneMail == 1)
     {
       text = ohneMail + " Mitglied hat keine Mail Adresse.";
@@ -1012,6 +1015,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
-    return new DruckMailEmpfaenger(mitglieder, text);
+    return new DruckMailEmpfaenger(liste, text);
   }
 }

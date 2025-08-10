@@ -50,6 +50,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
@@ -828,21 +829,24 @@ public class RechnungControl extends DruckMailControl implements Savable
   DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
       throws RemoteException, ApplicationException
   {
-    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
     String text = null;
     int ohneMail = 0;
     Rechnung[] rechnungen = getRechnungen(object);
     for (Rechnung r : rechnungen)
     {
-      mitglieder.add(r.getMitglied());
-      if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+      String mail = r.getMitglied().getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
-        String mail = r.getMitglied().getEmail();
-        if (mail == null || mail.isEmpty())
-        {
-          ohneMail++;
-        }
+        ohneMail++;
       }
+      Mitglied m = r.getMitglied();
+      String dokument = "Rechnung " + r.getID() + " von "
+          + Datum.formatDate(r.getDatum()) + " über " + r.getBetrag()
+          + "€ und Fehlbetrag " + (r.getBetrag() - r.getIstSumme()) + "€";
+      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
     }
     if (ohneMail == 1)
     {
@@ -852,6 +856,6 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
-    return new DruckMailEmpfaenger(mitglieder, text);
+    return new DruckMailEmpfaenger(liste, text);
   }
 }

@@ -2,6 +2,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
@@ -90,19 +91,22 @@ public class FreieFormulareControl extends DruckMailControl
       throws RemoteException, ApplicationException
   {
     ArrayList<Mitglied> mitglieder = getMitglieder(object);
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
     String text = null;
     int ohneMail = 0;
-    if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+
+    for (Mitglied m : mitglieder)
     {
-      for (Mitglied m : mitglieder)
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
-        String mail = m.getEmail();
-        if (mail == null || mail.isEmpty())
-        {
-          ohneMail++;
-        }
+        ohneMail++;
       }
+      liste.add(new DruckMailEmpfaengerEntry("Freies Formular", mail,
+          m.getName(), m.getVorname(), m.getMitgliedstyp()));
     }
+
     if (ohneMail == 1)
     {
       text = ohneMail + " Mitglied hat keine Mail Adresse.";
@@ -111,6 +115,6 @@ public class FreieFormulareControl extends DruckMailControl
     {
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
-    return new DruckMailEmpfaenger(mitglieder, text);
+    return new DruckMailEmpfaenger(liste, text);
   }
 }

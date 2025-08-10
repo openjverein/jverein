@@ -66,6 +66,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -1087,30 +1088,38 @@ public class SpendenbescheinigungControl extends DruckMailControl
   DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
       throws RemoteException, ApplicationException
   {
-    List<Mitglied> mitglieder = new ArrayList<>();
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
     String text = "";
     int ohneMail = 0;
     int ohneMitglied = 0;
     Spendenbescheinigung[] spbs = getSpbArray(object);
     Mitglied m;
+    String dokument = "";
     for (Spendenbescheinigung spb : spbs)
     {
       m = spb.getMitglied();
       if (m != null)
       {
-        mitglieder.add(m);
-        if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+        String mail = m.getEmail();
+        if ((mail == null || mail.isEmpty())
+            && getAusgabeart().getValue() == Ausgabeart.MAIL)
         {
-          String mail = m.getEmail();
-          if (mail == null || mail.isEmpty())
-          {
-            ohneMail++;
-          }
+          ohneMail++;
         }
+        dokument = "Spendenbescheinigung von "
+            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
+            + spb.getBetrag() + "€";
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+            m.getVorname(), m.getMitgliedstyp()));
       }
       else
       {
         ohneMitglied++;
+        dokument = "Spendenbescheinigung von "
+            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
+            + spb.getBetrag() + "€ und Zeile 2: " + spb.getZeile2();
+        liste.add(
+            new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
       }
     }
     if (ohneMail > 0 && ohneMitglied == 0)
@@ -1126,7 +1135,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
     }
-    return new DruckMailEmpfaenger(mitglieder, text);
+    return new DruckMailEmpfaenger(liste, text);
   }
 
   private String getMailText(int ohneMail, boolean druck)

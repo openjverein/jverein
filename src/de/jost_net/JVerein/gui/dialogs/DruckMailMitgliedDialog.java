@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.gui.control.DruckMailControl.DruckMailEmpfaengerEntry;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.LabelInput;
@@ -34,17 +34,17 @@ import de.willuhn.jameica.gui.util.LabelGroup;
  */
 public class DruckMailMitgliedDialog extends AbstractDialog<Object>
 {
-  private List<Mitglied> mitglieder = null;
+  private List<DruckMailEmpfaengerEntry> liste = null;
 
   private String text = "";
 
-  public DruckMailMitgliedDialog(List<Mitglied> mitglieder, String text,
-      int position)
+  public DruckMailMitgliedDialog(List<DruckMailEmpfaengerEntry> liste,
+      String text, int position)
   {
     super(position);
     setTitle("Empfaenger Liste");
-    setSize(700, 450);
-    this.mitglieder = mitglieder;
+    setSize(900, 450);
+    this.liste = liste;
     this.text = text;
   }
 
@@ -55,11 +55,12 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
     LabelInput textFeld = new LabelInput(text);
     group.addLabelPair("", textFeld);
 
-    TablePart empfaenger = new TablePart(mitglieder, null);
+    TablePart empfaenger = new TablePart(liste, null);
+    empfaenger.addColumn("Dokument", "dokument");
     empfaenger.addColumn("EMail", "email");
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Vorname", "vorname");
-    empfaenger.addColumn("Mitgliedstyp", Mitglied.MITGLIEDSTYP);
+    empfaenger.addColumn("Mitgliedstyp", "mitgliedstyp");
     empfaenger.setRememberOrder(true);
     empfaenger.setRememberColWidths(true);
     empfaenger.setRememberOrder(true);

@@ -655,7 +655,7 @@ public class PreNotificationControl extends DruckMailControl
   DruckMailEmpfaenger getDruckMailMitglieder(Object currentObject,
       String option) throws RemoteException, ApplicationException
   {
-    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
     String text = null;
     int ohneMail = 0;
     String val = (String) getOutput().getValue();
@@ -675,19 +675,18 @@ public class PreNotificationControl extends DruckMailControl
     }
     for (Lastschrift l : lastschriften)
     {
-      Mitglied m = l.getMitglied();
-      // Die Mail geht an die Adresse in der Lastschrift
-      // Darum zeigen wir diese im Vorschau Dialog an
-      m.setEmail(l.getEmail());
-      mitglieder.add(m);
+      String mail = l.getEmail();
       if (val.equals(EMAIL) && !option.equals(TYP.CENT1.toString()))
       {
-        String mail = l.getEmail();
         if (mail == null || mail.isEmpty())
         {
           ohneMail++;
         }
       }
+      Mitglied m = l.getMitglied();
+      String dokument = "Lastschrift über " + l.getBetrag() + "€";
+      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
     }
     if (ohneMail == 1)
     {
@@ -697,7 +696,7 @@ public class PreNotificationControl extends DruckMailControl
     {
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
-    return new DruckMailEmpfaenger(mitglieder, text);
+    return new DruckMailEmpfaenger(liste, text);
   }
 
 }
