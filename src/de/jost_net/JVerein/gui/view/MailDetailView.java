@@ -129,48 +129,46 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl5 = new GridLayout();
     gl5.marginWidth = 0;
     comp5.setLayout(gl5);
-    Button addAttachment = new Button("    " + "Anlage" + "    ",
-        new Action()
-        {
+    Button addAttachment = new Button("    " + "Anlage" + "    ", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Settings settings = new Settings(this.getClass());
+        settings.setStoreWhenRead(true);
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
+        fd.setFilterPath(
+            settings.getString("lastdir", System.getProperty("user.home")));
+        fd.setText("Bitte wählen Sie einen Anhang aus.");
+        if (fd.open() != null)
+        {
+          try
           {
-            Settings settings = new Settings(this.getClass());
-            settings.setStoreWhenRead(true);
-            FileDialog fd = new FileDialog(GUI.getShell(),
-                SWT.OPEN | SWT.MULTI);
-            fd.setFilterPath(
-                settings.getString("lastdir", System.getProperty("user.home")));
-            fd.setText("Bitte wählen Sie einen Anhang aus.");
-            if (fd.open() != null)
+            for (String f : fd.getFileNames())
             {
-              try
-              {
-                for (String f : fd.getFileNames())
-                {
-                  MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                      .createObject(MailAnhang.class, null);
-                  anh.setDateiname(f);
-                  File file = new File(fd.getFilterPath()
-                      + System.getProperty("file.separator") + f);
-                  FileInputStream fis = new FileInputStream(file);
-                  byte[] buffer = new byte[(int) file.length()];
-                  fis.read(buffer);
-                  anh.setAnhang(buffer);
-                  control.addAnhang(anh);
-                  fis.close();
-                  settings.setAttribute("lastdir", file.getParent());
-                }
-              }
-              catch (Exception e)
-              {
-                Logger.error("", e);
-                throw new ApplicationException(e);
-              }
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              anh.setDateiname(f);
+              File file = new File(fd.getFilterPath()
+                  + System.getProperty("file.separator") + f);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              control.addAnhang(anh);
+              fis.close();
+              settings.setAttribute("lastdir", file.getParent());
             }
           }
-        });
+          catch (Exception e)
+          {
+            Logger.error("", e);
+            throw new ApplicationException(e);
+          }
+        }
+      }
+    });
     addAttachment.paint(comp5);
 
     ButtonArea buttons = new ButtonArea();
@@ -187,12 +185,12 @@ public class MailDetailView extends AbstractDetailView
 
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
-    buttons.addButton(
-        new Button("Vorschau", new MailTextVorschauAction(map, true),
+    buttons
+        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
-    buttons.addButton(new Button("Als Vorlage übernehmen",
-        new MailVorlageUebernehmenAction(), control, false,
-        "document-new.png"));
+    buttons.addButton(
+        new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
+            control, false, "document-new.png"));
     buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
