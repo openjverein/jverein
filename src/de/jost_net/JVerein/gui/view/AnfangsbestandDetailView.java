@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
 import de.willuhn.jameica.gui.GUI;
@@ -44,7 +44,7 @@ public class AnfangsbestandDetailView extends AbstractDetailView
     }
     group.addLabelPair("Betrag", control.getBetrag());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
     buttons.addButton(new SaveButton(control));

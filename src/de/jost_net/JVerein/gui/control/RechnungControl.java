@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
@@ -65,7 +66,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -729,39 +729,35 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
-  public de.jost_net.JVerein.gui.parts.ButtonRtoL getRechnungDruckUndMailButton()
+  public Button getRechnungDruckUndMailButton()
   {
 
-    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
-        "Druck und Mail", new Action()
-        {
+    Button b = new Button("Druck und Mail", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
-          {
-            Rechnung re = getRechnung();
-            GUI.startView(RechnungMailView.class,
-                new Rechnung[] { (Rechnung) re });
-          }
-        }, getRechnung(), false, "document-print.png");
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(RechnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
     return b;
   }
 
-  public de.jost_net.JVerein.gui.parts.ButtonRtoL getMahnungDruckUndMailButton()
+  public Button getMahnungDruckUndMailButton()
   {
 
-    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
-        "Mahnung Druck und Mail", new Action()
-        {
+    Button b = new Button("Mahnung Druck und Mail", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
-          {
-            Rechnung re = getRechnung();
-            GUI.startView(MahnungMailView.class,
-                new Rechnung[] { (Rechnung) re });
-          }
-        }, getRechnung(), false, "document-print.png");
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(MahnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
     return b;
   }
 

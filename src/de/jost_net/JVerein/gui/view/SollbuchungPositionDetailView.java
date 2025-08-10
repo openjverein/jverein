@@ -26,8 +26,8 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -60,7 +60,7 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
       group.addLabelPair("Steuer", control.getSteuer());
     }
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
@@ -83,7 +83,7 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
+    buttons.addButton(new Button("Speichern und neu", context -> {
       try
       {
         control.handleStore();

@@ -31,7 +31,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Fertig konfigurierter Speichern und Neu Button
  */
-public class SaveNeuButton extends ButtonRtoL
+public class SaveNeuButton extends Button
 {
 
   /**

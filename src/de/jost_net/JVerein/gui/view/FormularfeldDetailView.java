@@ -23,8 +23,8 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.control.FormularfeldControl;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.rmi.DBObject;
@@ -53,7 +53,7 @@ public class FormularfeldDetailView extends AbstractDetailView
     group.addLabelPair("Schriftart", control.getFont());
     group.addLabelPair("Schriftgröße", control.getFontsize());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
@@ -75,7 +75,7 @@ public class FormularfeldDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
+    buttons.addButton(new Button("Speichern und neu", context -> {
       try
       {
         control.handleStore();

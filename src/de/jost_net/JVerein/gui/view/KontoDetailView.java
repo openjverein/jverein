@@ -20,7 +20,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.KontoControl;
@@ -82,7 +82,7 @@ public class KontoDetailView extends AbstractDetailView
     afabuttons.addButton(control.getAfabutton());
     right1.addButtonArea(afabuttons);
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KONTEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

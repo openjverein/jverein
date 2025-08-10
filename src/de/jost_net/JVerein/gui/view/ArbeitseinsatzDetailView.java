@@ -20,7 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
@@ -39,7 +39,7 @@ public class ArbeitseinsatzDetailView extends AbstractDetailView
     ArbeitseinsatzPart part = control.getPart();
     part.paint(getParent());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

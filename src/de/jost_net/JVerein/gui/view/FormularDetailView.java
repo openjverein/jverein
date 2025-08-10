@@ -27,7 +27,7 @@ import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.FormularControl;
@@ -62,7 +62,7 @@ public class FormularDetailView extends AbstractDetailView
 
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
 
-    ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
+    ButtonArea buttons1 = new ButtonArea();
     buttons1.addButton("Export", new FormularfelderExportAction(),
         getCurrentObject(), false, "document-save.png");
     buttons1.addButton("Import", new FormularfelderImportAction(control),
@@ -80,7 +80,7 @@ public class FormularDetailView extends AbstractDetailView
 
     cont.addPart(control.getFormularfeldList());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
 

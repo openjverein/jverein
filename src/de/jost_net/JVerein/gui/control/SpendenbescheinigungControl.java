@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
@@ -87,7 +88,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -511,36 +511,35 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  public de.jost_net.JVerein.gui.parts.ButtonRtoL getDruckUndMailButton()
+  public Button getDruckUndMailButton()
   {
 
-    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
-        "Druck und Mail", new Action()
-        {
+    Button b = new Button("Druck und Mail", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Spendenbescheinigung spb = getSpendenbescheinigung();
+        try
+        {
+          if (spb.isNewObject())
           {
-            Spendenbescheinigung spb = getSpendenbescheinigung();
-            try
-            {
-              if (spb.isNewObject())
-              {
-                GUI.getStatusBar()
-                    .setErrorText("Spendenbescheinigung bitte erst speichern!");
-                return;
-              }
-            }
-            catch (RemoteException e)
-            {
-              Logger.error(e.getMessage());
-              throw new ApplicationException(
-                  "Fehler bei der Aufbereitung der Spendenbescheinigung");
-            }
-            GUI.startView(SpendenbescheinigungMailView.class,
-                new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
+            GUI.getStatusBar()
+                .setErrorText("Spendenbescheinigung bitte erst speichern!");
+            return;
           }
-        }, getSpendenbescheinigung(), false, "document-print.png");
+        }
+        catch (RemoteException e)
+        {
+          Logger.error(e.getMessage());
+          throw new ApplicationException(
+              "Fehler bei der Aufbereitung der Spendenbescheinigung");
+        }
+        GUI.startView(SpendenbescheinigungMailView.class,
+            new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
+      }
+    }, getSpendenbescheinigung(), false, "document-print.png");
     return b;
   }
 

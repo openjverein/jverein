@@ -25,8 +25,8 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -60,14 +60,14 @@ public class BuchungDetailView extends AbstractDetailView
     BuchungPart part = new BuchungPart(control, this, !editable);
     part.paint(this.getParent());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
 
-    ButtonRtoL saveButton = new ButtonRtoL("Speichern", context -> {
+    Button saveButton = new Button("Speichern", context -> {
       try
       {
         control.buchungSpeichern();
@@ -86,7 +86,7 @@ public class BuchungDetailView extends AbstractDetailView
     saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
-    ButtonRtoL saveNextButton = new ButtonRtoL("Speichern und neu", context -> {
+    Button saveNextButton = new Button("Speichern und neu", context -> {
       try
       {
         control.buchungSpeichern();

@@ -37,8 +37,8 @@ import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -83,7 +83,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl3 = new GridLayout();
     gl3.marginWidth = 0;
     comp3.setLayout(gl3);
-    ButtonRtoL add = new ButtonRtoL("Hinzufügen", new Action()
+    Button add = new Button("Hinzufügen", new Action()
     {
 
       @Override
@@ -129,7 +129,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl5 = new GridLayout();
     gl5.marginWidth = 0;
     comp5.setLayout(gl5);
-    ButtonRtoL addAttachment = new ButtonRtoL("    " + "Anlage" + "    ",
+    Button addAttachment = new Button("    " + "Anlage" + "    ",
         new Action()
         {
 
@@ -173,13 +173,13 @@ public class MailDetailView extends AbstractDetailView
         });
     addAttachment.paint(comp5);
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(new ButtonRtoL("Mail-Vorlage",
+    buttons.addButton(new Button("Mail-Vorlage",
         new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
 
     Map<String, Object> map = MitgliedMap.getDummyMap(null);
@@ -188,9 +188,9 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
     buttons.addButton(
-        new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true),
+        new Button("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
-    buttons.addButton(new ButtonRtoL("Als Vorlage übernehmen",
+    buttons.addButton(new Button("Als Vorlage übernehmen",
         new MailVorlageUebernehmenAction(), control, false,
         "document-new.png"));
     buttons.addButton(new SaveButton(control));

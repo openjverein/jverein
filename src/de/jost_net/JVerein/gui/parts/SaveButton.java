@@ -24,7 +24,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Fertig konfigurierter Speichern Button
  */
-public class SaveButton extends ButtonRtoL
+public class SaveButton extends Button
 {
   /**
    * Erstellt den Speichern Button

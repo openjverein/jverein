@@ -25,8 +25,8 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -65,8 +65,8 @@ public class SollbuchungDetailView extends AbstractDetailView
     LabelGroup cont = new LabelGroup(scrolled.getComposite(),
         "Sollbuchungspositionen");
 
-    ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
-    ButtonRtoL neu = new ButtonRtoL("Neu", new SollbuchungPositionNeuAction(),
+    ButtonArea buttons1 = new ButtonArea();
+    Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
         getCurrentObject(), false, "document-new.png");
     neu.setEnabled(!hasRechnung);
     buttons1.addButton(neu);
@@ -84,7 +84,7 @@ public class SollbuchungDetailView extends AbstractDetailView
         "Zugeordnete Buchungen");
     buch.addPart(control.getBuchungListPart());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");

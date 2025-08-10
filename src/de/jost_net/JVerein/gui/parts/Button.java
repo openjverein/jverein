@@ -16,13 +16,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.Button;
 
 /**
  * Ein Button.
  */
-public class ButtonRtoL extends Button implements Part
+public class Button extends de.willuhn.jameica.gui.parts.Button
 {
   /**
    * ct.
@@ -32,23 +30,23 @@ public class ButtonRtoL extends Button implements Part
    * @param action
    *          Action, die beim Klick ausgefuehrt werden soll.
    */
-  public ButtonRtoL(String title, Action action)
+  public Button(String title, Action action)
   {
     super(title, action, null, false);
   }
 
-  public ButtonRtoL(String title, Action action, Object context)
+  public Button(String title, Action action, Object context)
   {
     super(title, action, context, false);
   }
 
-  public ButtonRtoL(String title, Action action, Object context,
+  public Button(String title, Action action, Object context,
       boolean defaultButton)
   {
     super(title, action, context, defaultButton, null);
   }
 
-  public ButtonRtoL(String title, Action action, Object context,
+  public Button(String title, Action action, Object context,
       boolean defaultButton, String icon)
   {
     super(title, action, context, defaultButton, icon);

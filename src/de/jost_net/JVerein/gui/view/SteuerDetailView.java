@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SteuerControl;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
@@ -42,7 +42,7 @@ public class SteuerDetailView extends AbstractDetailView
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     group.addLabelPair("Aktiv", control.getAktiv());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.STEUER, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

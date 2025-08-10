@@ -31,9 +31,9 @@ import de.willuhn.jameica.gui.Part;
  * der linken Seite.
  * 
  */
-public class ButtonAreaRtoL implements Part
+public class ButtonArea implements Part
 {
-  private List<ButtonRtoL> buttons = new ArrayList<ButtonRtoL>();
+  private List<Button> buttons = new ArrayList<Button>();
 
   /**
    * @see de.willuhn.jameica.gui.Part#paint(org.eclipse.swt.widgets.Composite)
@@ -61,7 +61,7 @@ public class ButtonAreaRtoL implements Part
    * @param button
    *          der Button.
    */
-  public void addButton(ButtonRtoL button)
+  public void addButton(Button button)
   {
     this.buttons.add(button);
   }
@@ -129,7 +129,7 @@ public class ButtonAreaRtoL implements Part
   public void addButton(String name, final Action action, final Object context,
       boolean isDefault, String icon)
   {
-    this.buttons.add(new ButtonRtoL(name, action, context, isDefault, icon));
+    this.buttons.add(new Button(name, action, context, isDefault, icon));
   }
 
 }

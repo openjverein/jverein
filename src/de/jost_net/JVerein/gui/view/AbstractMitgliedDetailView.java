@@ -40,8 +40,8 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -55,7 +55,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -199,7 +198,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   private void zeichneButtonArea(Composite parent) throws RemoteException
   {
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIED, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -207,18 +206,17 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     if (!control.getMitglied().isNewObject())
     {
-      buttons.addButton(new ButtonRtoL("Kontoauszug", new KontoauszugAction(),
+      buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
           control.getMitglied(), false, "file-invoice.png"));
     }
     if (isMitgliedDetail())
     {
-      buttons
-          .addButton(new ButtonRtoL("Personalbogen", new PersonalbogenAction(),
-              control.getCurrentObject(), false, "receipt.png"));
+      buttons.addButton(new Button("Personalbogen", new PersonalbogenAction(),
+          control.getCurrentObject(), false, "receipt.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
-      buttons.addButton(
-          new ButtonRtoL("Duplizieren", new MitgliedDuplizierenAction(),
+      buttons
+          .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "edit-copy.png"));
     }
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
@@ -241,7 +239,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
+    buttons.addButton(new Button("Speichern und neu", context -> {
       try
       {
         control.handleStore();
@@ -349,7 +347,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         svc.arrangeVertically();
         ButtonArea buttonszus = new ButtonArea();
         buttonszus.addButton(control.getLesefelderEdit());
-        cont.addButtonArea(buttonszus);
+        buttonszus.paint(cont.getComposite());
       }
     }
   }

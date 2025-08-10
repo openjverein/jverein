@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -96,7 +96,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
       grBuchungen.addPart(control.getBuchungListPart());
     }
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());

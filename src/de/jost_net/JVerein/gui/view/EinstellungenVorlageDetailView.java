@@ -21,8 +21,8 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.Button;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -46,7 +46,7 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     grName.addLabelPair("Vorlagenmuster", control.getMuster());
     grName.addLabelPair("Vorschau", control.getVorschau());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -55,7 +55,7 @@ public class EinstellungenVorlageDetailView extends AbstractDetailView
     buttons.addButton("Variablen anzeigen",
         new InsertVariableDialogAction(VorlageUtil.getDummyMap(typ)), control,
         false, "bookmark.png");
-    buttons.addButton(new ButtonRtoL("Update Vorschau",
+    buttons.addButton(new Button("Update Vorschau",
         new VorlageVorschauAction(), control, false, "view-refresh.png"));
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());

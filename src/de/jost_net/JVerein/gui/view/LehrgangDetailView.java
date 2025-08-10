@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonArea;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.LehrgangControl;
@@ -43,7 +43,7 @@ public class LehrgangDetailView extends AbstractDetailView
     group.addLabelPair("Veranstalter", control.getVeranstalter());
     group.addLabelPair("Ergebnis", control.getErgebnis());
 
-    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
