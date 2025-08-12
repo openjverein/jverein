@@ -367,6 +367,7 @@ public class VorlageUtil
     Velocity.init();
     VelocityContext context = new VelocityContext();
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
+    context.put("udateformat", new UniversalDateFormat());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     VarTools.add(context, map);
     StringWriter wdateiname = new StringWriter();
