@@ -256,7 +256,6 @@ public class JVereinUpdateProvider
       AbstractDDLUpdate object = (AbstractDDLUpdate) ctor.newInstance(driver,
           monitor, conn);
       Method method = object.getClass().getMethod("run", new Class[] {});
-
       method.invoke(object, new Object[] {});
       setNewVersion(conn, currentversion);
       conn.commit();
