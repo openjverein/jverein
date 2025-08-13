@@ -17,8 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -34,6 +32,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
@@ -48,13 +47,14 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -311,41 +311,37 @@ public class RechnungControl extends DruckMailControl implements Savable
         // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
         limit = Math.abs((Double) getDoubleAusw().getValue());
       }
-      String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
-          + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
-          + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung on "
-          + Sollbuchung.TABLE_NAME_ID + " = " + Buchung.T_SOLLBUCHUNG
-          + " WHERE " + Sollbuchung.T_RECHNUNG + " is not null " + " group by "
-          + Sollbuchung.TABLE_NAME_ID;
+
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          Sollbuchung.TABLE_NAME);
+      it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
+      it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+          + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+      it.leftJoin(
+          "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
+              + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
+              + ") AS buchung",
+          Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) < "
-            + Sollbuchung.T_BETRAG + " - " + limit.toString();
+        it.addHaving("dif < -" + limit.toString());
       }
       else
       {
-        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
-            + Sollbuchung.T_BETRAG + " + " + limit.toString();
+        it.addHaving("dif > " + limit.toString());
       }
-
-      @SuppressWarnings("unchecked")
-      ArrayList<String> diffIds = (ArrayList<String>) Einstellungen
-          .getDBService().execute(sql, null, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              ArrayList<String> list = new ArrayList<>();
-              while (rs.next())
-              {
-                list.add(rs.getString(1));
-              }
-              return list;
-            }
-          });
+      it.addGroupBy(Sollbuchung.T_RECHNUNG);
+      ArrayList<String> diffIds = new ArrayList<>();
+      while (it.hasNext())
+      {
+        PseudoDBObject o = it.next();
+        diffIds.add(String.valueOf(o.getAttribute("rid")));
+      }
       if (diffIds.size() == 0)
+      {
         return PseudoIterator.fromArray(new GenericObject[] {});
+      }
       rechnungenIt
           .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
     }
@@ -729,39 +725,35 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
-  public de.jost_net.JVerein.gui.parts.ButtonRtoL getRechnungDruckUndMailButton()
+  public ButtonRtoL getRechnungDruckUndMailButton()
   {
 
-    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
-        "Druck und Mail", new Action()
-        {
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
-          {
-            Rechnung re = getRechnung();
-            GUI.startView(RechnungMailView.class,
-                new Rechnung[] { (Rechnung) re });
-          }
-        }, getRechnung(), false, "document-print.png");
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(RechnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
     return b;
   }
 
-  public de.jost_net.JVerein.gui.parts.ButtonRtoL getMahnungDruckUndMailButton()
+  public ButtonRtoL getMahnungDruckUndMailButton()
   {
 
-    de.jost_net.JVerein.gui.parts.ButtonRtoL b = new de.jost_net.JVerein.gui.parts.ButtonRtoL(
-        "Mahnung Druck und Mail", new Action()
-        {
+    ButtonRtoL b = new ButtonRtoL("Mahnung Druck und Mail", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
-          {
-            Rechnung re = getRechnung();
-            GUI.startView(MahnungMailView.class,
-                new Rechnung[] { (Rechnung) re });
-          }
-        }, getRechnung(), false, "document-print.png");
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Rechnung re = getRechnung();
+        GUI.startView(MahnungMailView.class, new Rechnung[] { (Rechnung) re });
+      }
+    }, getRechnung(), false, "document-print.png");
     return b;
   }
 
