@@ -1,10 +1,8 @@
 /**********************************************************************
  *
- * Copyright (c) 2004 Olaf Willuhn
+ * Copyright (c) 2025 Johann Maierhofer
  * All rights reserved.
  * 
- * This software is copyrighted work licensed under the terms of the
- * Jameica License.  Please consult the file "LICENSE" for details. 
  *
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
