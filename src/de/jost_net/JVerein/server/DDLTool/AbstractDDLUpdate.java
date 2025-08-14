@@ -80,8 +80,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return drv;
   }
 
-  public void execute(String statement)
-      throws ApplicationException
+  public void execute(String statement) throws ApplicationException
   {
     if (statement == null)
     {
@@ -96,31 +95,6 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       Logger.error("unable to execute update", e);
       throw new ApplicationException("Fehler beim Ausführen des Updates", e);
-    }
-  }
-
-  public void setNewVersion(int newVersion) throws ApplicationException
-  {
-    try
-    {
-      String msg = "JVerein-DB-Update: " + newVersion;
-      monitor.setStatusText(msg);
-      Logger.info(msg);
-      Statement stmt = conn.createStatement();
-      int anzahl = stmt.executeUpdate(
-          "UPDATE version SET version = " + newVersion + " WHERE id = 1");
-      if (anzahl == 0)
-      {
-        stmt.executeUpdate(
-            "INSERT INTO version VALUES (1, " + newVersion + ")");
-      }
-      stmt.close();
-    }
-    catch (SQLException e)
-    {
-      Logger.error("Versionsnummer kann nicht eingefügt werden.", e);
-      throw new ApplicationException(
-          "Versionsnummer kann nicht gespeichert werden.");
     }
   }
 
@@ -366,7 +340,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         execute("ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS "
             + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
             + reftable + "(" + refcolumn + ") ON DELETE " + ondelete
-            + " ON UPDATE " + onupdate + " NOCHECK;\n", true);
+            + " ON UPDATE " + onupdate + " NOCHECK;\n");
       }
         break;
       case MYSQL:
