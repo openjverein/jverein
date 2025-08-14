@@ -70,6 +70,8 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getSpendenbescheinigungen());
     left.addLabelPair("Rechnungen/Mahnungen anzeigen *",
         control.getRechnungen());
+    left.addLabelPair("Wirtschaftsplanung anzeigen" + "*",
+        control.getWirtschaftsplanung());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
     right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());

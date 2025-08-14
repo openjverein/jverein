@@ -224,6 +224,7 @@ public class Einstellungen
     SPENDENBESCHEINIGUNGENANZEIGEN("spendenbescheinigungenanzeigen",
         Boolean.class, "0"),
     RECHNUNGENANZEIGEN("rechnungenanzeigen", Boolean.class, "0"),
+    WIRTSCHAFTSPLANANZEIGEN("wirtschaftsplananzeigen", Boolean.class, "0"),
     // Anzeige 2.Spalte
     USELESEFELDER("uselesefelder", Boolean.class, ""),
     ZUSATZADRESSEN("zusatzadressen", Boolean.class, "1"),
