@@ -20,9 +20,10 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LesefeldControl;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 /**
@@ -51,7 +52,7 @@ public class LesefeldDetailView extends AbstractDetailView
       control.updateScriptResult();
     }
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LESEFELDER, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -60,6 +61,7 @@ public class LesefeldDetailView extends AbstractDetailView
     buttons.addButton(control.getAktualisierenButton());
     buttons.addButton(control.getVariablenAnzeigenButton());
     buttons.addButton(new SaveButton(control));
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 

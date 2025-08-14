@@ -30,6 +30,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LesefeldMenu;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LesefeldDetailView;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -44,7 +45,6 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
@@ -317,9 +317,9 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * @return Button zur Anzeige der verfügbaren Variablen.
    * 
    */
-  public Button getVariablenAnzeigenButton() throws EvalError
+  public ButtonRtoL getVariablenAnzeigenButton() throws EvalError
   {
-    return new Button("Variablen anzeigen",
+    return new ButtonRtoL("Variablen anzeigen",
         new InsertVariableDialogAction(lesefeldAuswerter.getMap(), false), null,
         false, "bookmark.png");
   }
@@ -328,9 +328,9 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * @return Button zur Aktualisierung der Ausgabe eines Scriptes.
    * 
    */
-  public Button getAktualisierenButton()
+  public ButtonRtoL getAktualisierenButton()
   {
-    return new Button("Aktualisieren", context -> {
+    return new ButtonRtoL("Aktualisieren", context -> {
       updateScriptResult();
     }, this, false, "view-refresh.png");
   }
