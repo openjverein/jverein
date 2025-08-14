@@ -69,7 +69,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       if (getStartdatum() == null)
       {
-        throw new ApplicationException("Bitte Startdatum eingeben");
+        throw new ApplicationException("Bitte erste Fälligkeit eingeben");
       }
       if (getFaelligkeit() == null)
       {

@@ -10,7 +10,7 @@
 	<classpathentry exported="true" kind="src" path="/jameica"/>
 	<classpathentry kind="lib" path="lib/nc.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bsh-3.0.0-20230205.094654-3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/bsh-2.1.1.jar"/>
 	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/hibiscus"/>
 	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>

@@ -291,6 +291,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput ZeigeArbeitseinsatzInTabInput;
 
+  private CheckboxInput ZeigeDokumenteInTabInput;
+
   private CheckboxInput zusatzbetragAusgetretene;
 
   private SelectInput altersmodel;
@@ -1784,6 +1786,17 @@ public class EinstellungControl extends AbstractControl
     return ZeigeArbeitseinsatzInTabInput;
   }
 
+  public CheckboxInput getZeigeDokumenteInTabCheckbox() throws RemoteException
+  {
+    if (ZeigeDokumenteInTabInput != null)
+    {
+      return ZeigeDokumenteInTabInput;
+    }
+    ZeigeDokumenteInTabInput = new CheckboxInput(
+        Einstellungen.getSettingBoolean("ZeigeDokumenteInTab", true));
+    return ZeigeDokumenteInTabInput;
+  }
+
   public SelectInput getBuchungBuchungsartAuswahl() throws RemoteException
   {
     if (null != buchungBuchungsartAuswahl)
@@ -2858,6 +2871,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getZeigeLesefelderInTabCheckbox().getValue());
       Einstellungen.setSettingBoolean("ZeigeArbeitseinsatzInTab",
           (Boolean) getZeigeArbeitseinsatzInTabCheckbox().getValue());
+      Einstellungen.setSettingBoolean("ZeigeDokumenteInTab",
+          (Boolean) getZeigeDokumenteInTabCheckbox().getValue());
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }

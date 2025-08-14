@@ -109,6 +109,10 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
       leftTab.addLabelPair("Zeige Arbeitseinsatz in Tab",
           control.getZeigeArbeitseinsatzInTabCheckbox());
 
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+      leftTab.addLabelPair("Zeige Dokumente in Tab",
+          control.getZeigeDokumenteInTabCheckbox());
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANSICHT, false, "question-circle.png");

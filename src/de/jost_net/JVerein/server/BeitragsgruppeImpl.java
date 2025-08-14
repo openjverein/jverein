@@ -68,9 +68,21 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getBezeichnung() == null || getBezeichnung().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte Bezeichnung eingeben");
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      DBIterator<Beitragsgruppe> gruppeIt = Einstellungen.getDBService()
+          .createList(Beitragsgruppe.class);
+      if (!this.isNewObject())
+      {
+        gruppeIt.addFilter("id != ?", getID());
+      }
+      gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (gruppeIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
       }
       switch (Beitragsmodel.getByKey(
           (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))

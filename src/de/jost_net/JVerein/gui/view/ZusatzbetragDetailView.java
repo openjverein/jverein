@@ -20,10 +20,11 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class ZusatzbetragDetailView extends AbstractDetailView
@@ -43,7 +44,7 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     LabelGroup group2 = new LabelGroup(getParent(), "Vorlagen");
     group2.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -52,6 +53,7 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton(new SaveButton(control));
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(getParent());
   }
 

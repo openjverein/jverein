@@ -36,8 +36,8 @@ public class Update0459 extends AbstractDDLUpdate
       if (getDriver() == DRIVER.H2)
       {
         execute(
-            "SET @max_id = (SELECT case when MAX(zaehler) is null then 1 else MAX(zaehler)+1 end FROM formular WHERE art = 2);"
-                + "ALTER TABLE rechnung ALTER COLUMN id RESTART WITH @max_id;");
+            "SET @max_id = (SELECT case when MAX(zaehler) is null then 1 else MAX(zaehler)+1 end FROM formular WHERE art = 2);");
+        execute("ALTER TABLE rechnung ALTER COLUMN id RESTART WITH @max_id;");
       }
       if (getDriver() == DRIVER.MYSQL)
       {
