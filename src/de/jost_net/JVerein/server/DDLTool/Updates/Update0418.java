@@ -35,6 +35,5 @@ public class Update0418 extends AbstractDDLUpdate
           "CREATE USER readonly PASSWORD 'jverein'; GRANT SELECT ON SCHEMA PUBLIC TO readonly",
           false);
     }
-    setNewVersion(nr);
   }
 }

@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
@@ -512,10 +513,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  public Button getDruckUndMailButton()
+  public ButtonRtoL getDruckUndMailButton()
   {
 
-    Button b = new Button("Druck und Mail", new Action()
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
     {
 
       @Override

@@ -22,11 +22,12 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
@@ -51,7 +52,7 @@ public class MailVorlageDetailView extends AbstractDetailView
     Map<String, Object> map = MitgliedMap
         .getDummyMap(new AllgemeineMap().getMap(null));
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAILVORLAGE, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -59,10 +60,11 @@ public class MailVorlageDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         control, false, "bookmark.png");
-    buttons
-        .addButton(new Button("Vorschau", new MailTextVorschauAction(map, true),
+    buttons.addButton(
+        new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true),
             control, false, "edit-copy.png"));
     buttons.addButton(new SaveButton(control));
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 
