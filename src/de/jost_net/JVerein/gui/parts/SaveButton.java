@@ -15,17 +15,16 @@
  * www.jverein.de
  **********************************************************************/
 
-package de.jost_net.JVerein.gui.input;
+package de.jost_net.JVerein.gui.parts;
 
 import de.jost_net.JVerein.gui.control.Savable;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Fertig konfigurierter Speichern Button
  */
-public class SaveButton extends Button
+public class SaveButton extends ButtonRtoL
 {
   /**
    * Erstellt den Speichern Button

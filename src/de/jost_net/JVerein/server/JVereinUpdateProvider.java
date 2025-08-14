@@ -64,8 +64,8 @@ public class JVereinUpdateProvider
     if (cv == 0)
     {
       install(conn);
+      cv = getCurrentVersion(conn);
     }
-    cv = getCurrentVersion(conn);
     cv++;
     for (int i = cv; i <= 360; i++)
     {
@@ -97,7 +97,7 @@ public class JVereinUpdateProvider
     }
     catch (Exception e)
     {
-      throw new ApplicationException(e.getMessage());
+      throw new ApplicationException(e.getCause().getMessage(), e.getCause());
     }
   }
 
@@ -197,11 +197,6 @@ public class JVereinUpdateProvider
 
   }
 
-  public ProgressMonitor getProgressMonitor()
-  {
-    return progressmonitor;
-  }
-
   private void setNewVersion(Connection conn, int newVersion)
       throws ApplicationException
   {
@@ -237,7 +232,6 @@ public class JVereinUpdateProvider
       DecimalFormat df = new DecimalFormat("0000");
       String methodname = "update" + df.format(currentversion);
       method = this.getClass().getDeclaredMethod(methodname, Connection.class);
-      // Object[] args = new Object[] { conn };
       method.invoke(this, conn);
     }
     catch (Exception e)
@@ -262,12 +256,18 @@ public class JVereinUpdateProvider
       AbstractDDLUpdate object = (AbstractDDLUpdate) ctor.newInstance(driver,
           monitor, conn);
       Method method = object.getClass().getMethod("run", new Class[] {});
-      Object[] args = new Object[] {};
-      method.invoke(object, args);
+      method.invoke(object, new Object[] {});
+      setNewVersion(conn, currentversion);
+      conn.commit();
     }
     catch (ClassNotFoundException e)
     {
       return false;
+    }
+    catch (Exception e)
+    {
+      conn.rollback();
+      throw e;
     }
     return true;
   }
