@@ -138,7 +138,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     {
       right.addLabelPair("Buchungsklasse", sollbPosControl.getBuchungsklasse());
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       right.addLabelPair("Steuer", sollbPosControl.getSteuer());
     }
