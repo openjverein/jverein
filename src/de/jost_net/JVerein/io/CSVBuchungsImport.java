@@ -69,7 +69,8 @@ public class CSVBuchungsImport implements Importer
       // create a Statement object to execute the query with
       Statement stmt = conn.createStatement();
 
-      results = stmt.executeQuery("SELECT * FROM " + fil.substring(0, pos));
+      results = stmt
+          .executeQuery("SELECT * FROM \"" + fil.substring(0, pos) + "\"");
 
       while (results.next())
       {
