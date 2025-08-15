@@ -113,6 +113,8 @@ public class KontoauszugMailView extends AbstractView
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
     buttons.addButton(
+        control.getDruckMailMitgliederButton(this.getCurrentObject(), null));
+    buttons.addButton(
         control.getStartKontoauszugButton(this.getCurrentObject(), control));
     buttons.paint(this.getParent());
   }

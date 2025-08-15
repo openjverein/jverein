@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -47,10 +49,12 @@ import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -420,6 +424,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           }
         }
       }
+
     };
     mitgliedskontoTree.setMulti(true);
     mitgliedskontoTree.addColumn("Name, Vorname", "name");
@@ -677,11 +682,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Kontoauszug(currentObject, control);
+          new Kontoauszug(getMitglieder(currentObject), control);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Kontoauszug Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -937,4 +946,77 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         getMailauswahl().getValue() };
   }
 
+  private List<Mitglied> getMitglieder(Object object)
+      throws RemoteException, ApplicationException
+  {
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
+    {
+      Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.ALLE)
+          .getValue();
+      mitglieder = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()),
+          null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
+    {
+      mitglieder = new MitgliedQuery(this).get(-1, null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object != null && object instanceof Mitglied)
+    {
+      mitglieder.add((Mitglied) object);
+    }
+    else if (object != null && object instanceof Mitglied[])
+    {
+      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) object));
+    }
+    else
+    {
+      throw new ApplicationException("Kein Mitglied ausgewählt!");
+    }
+    return mitglieder;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<Mitglied> mitglieder = getMitglieder(object);
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+
+    for (Mitglied m : mitglieder)
+    {
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      liste.add(new DruckMailEmpfaengerEntry("Kontoauszug", mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
+  }
 }

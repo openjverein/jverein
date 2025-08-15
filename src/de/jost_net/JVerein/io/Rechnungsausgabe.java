@@ -42,8 +42,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
@@ -51,8 +49,6 @@ public class Rechnungsausgabe
 {
 
   RechnungControl control;
-
-  GenericIterator<Rechnung> rechnungen = null;
 
   File file = null;
 
@@ -62,9 +58,8 @@ public class Rechnungsausgabe
 
   RechnungControl.TYP typ;
 
-  @SuppressWarnings("unchecked")
-  public Rechnungsausgabe(RechnungControl control, RechnungControl.TYP typ)
-      throws IOException, ApplicationException
+  public Rechnungsausgabe(Rechnung[] rechnungen, RechnungControl control,
+      RechnungControl.TYP typ) throws IOException, ApplicationException
   {
     this.control = control;
     this.typ = typ;
@@ -84,31 +79,10 @@ public class Rechnungsausgabe
           .createObject(Formular.class, form.getID());
     }
 
-    Object context = control.getCurrentObject();
-    if (context != null && context instanceof Rechnung[])
-    {
-      rechnungen = PseudoIterator.fromArray((Rechnung[]) context);
-    }
-    else if (context != null && context instanceof Rechnung)
-    {
-      rechnungen = PseudoIterator
-          .fromArray(new Rechnung[] { (Rechnung) context });
-    }
-    else
-    {
-      rechnungen = control.getRechnungIterator();
-    }
-
-    if (rechnungen.size() == 0)
-    {
-      GUI.getStatusBar().setErrorText("Keine passende Rechnung gefunden.");
-      return;
-    }
-
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        file = getDateiAuswahl("pdf");
+        file = getDateiAuswahl("pdf", rechnungen);
         if (file == null)
         {
           return;
@@ -116,7 +90,7 @@ public class Rechnungsausgabe
         formularaufbereitung = new FormularAufbereitung(file, true, false);
         break;
       case MAIL:
-        file = getDateiAuswahl("zip");
+        file = getDateiAuswahl("zip", rechnungen);
         if (file == null)
         {
           return;
@@ -124,16 +98,14 @@ public class Rechnungsausgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-
-    aufbereitung(formular);
+    aufbereitung(formular, rechnungen);
   }
 
-  public void aufbereitung(Formular formular)
+  public void aufbereitung(Formular formular, Rechnung[] rechnungen)
       throws IOException, ApplicationException
   {
-    while (rechnungen.hasNext())
+    for (Rechnung re : rechnungen)
     {
-      Rechnung re = rechnungen.next();
       switch ((Ausgabeart) control.getAusgabeart().getValue())
       {
         case DRUCK:
@@ -162,11 +134,9 @@ public class Rechnungsausgabe
     {
       case DRUCK:
         formularaufbereitung.showFormular();
-        if (rechnungen.size() == 1)
+        if (rechnungen.length == 1)
         {
-          rechnungen.begin();
-          formularaufbereitung.addZUGFeRD(rechnungen.next(),
-              typ == TYP.MAHNUNG);
+          formularaufbereitung.addZUGFeRD(rechnungen[0], typ == TYP.MAHNUNG);
         }
         break;
       case MAIL:
@@ -177,7 +147,8 @@ public class Rechnungsausgabe
     }
   }
 
-  private File getDateiAuswahl(String extension) throws RemoteException
+  private File getDateiAuswahl(String extension, Rechnung[] rechnungen)
+      throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -187,9 +158,9 @@ public class Rechnungsausgabe
     {
       fd.setFilterPath(path);
     }
-    if (rechnungen.size() == 1)
+    if (rechnungen.length == 1)
     {
-      Rechnung rechnung = rechnungen.next();
+      Rechnung rechnung = rechnungen[0];
       if (typ == TYP.RECHNUNG)
       {
         fd.setFileName(

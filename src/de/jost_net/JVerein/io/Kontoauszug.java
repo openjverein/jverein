@@ -21,9 +21,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -36,16 +35,12 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
@@ -62,51 +57,21 @@ public class Kontoauszug
 
   private Reporter rpt;
 
-  private ArrayList<Mitglied> mitglieder = new ArrayList<>();
-
   private Kontoauszug() throws IOException, DocumentException
   {
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
-  public Kontoauszug(Object object, SollbuchungControl control) throws Exception
+  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control)
+      throws Exception
   {
     this();
 
-    if (object == null && control.isSuchMitgliedstypActive()
-        && control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
-    {
-      Mitgliedstyp mt = (Mitgliedstyp) control
-          .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
-      mitglieder = new MitgliedQuery(control).get(Integer.parseInt(mt.getID()),
-          null);
-    }
-    else if (object == null && control.isSuchMitgliedstypActive()
-        && control.getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
-    {
-      mitglieder = new MitgliedQuery(control).get(-1, null);
-    }
-    else if (object != null && object instanceof Mitglied)
-    {
-      mitglieder.add((Mitglied) object);
-    }
-    else if (object != null && object instanceof Mitglied[])
-    {
-      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) object));
-    }
-    else
-    {
-      GUI.getStatusBar()
-          .setErrorText("Kein Mitglied ausgewählt. Vorgang abgebrochen.");
-      return;
-    }
-
-    int anzahl = 0;
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        init("pdf");
+        init("pdf", mitglieder);
         if (file == null)
         {
           return;
@@ -114,21 +79,13 @@ public class Kontoauszug
         rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
         for (Mitglied mg : mitglieder)
         {
-          if (generiereMitglied(mg, control))
-            anzahl++;
-        }
-        if (anzahl == 0)
-        {
-          GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
-          file.delete();
-          return;
+          generiereMitglied(mg, control);
         }
         rpt.close();
         zeigeDokument();
         break;
       case MAIL:
-        init("zip");
+        init("zip", mitglieder);
         if (file == null)
         {
           return;
@@ -142,12 +99,8 @@ public class Kontoauszug
           }
           File f = File.createTempFile(getDateiname(mg), ".pdf");
           rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40, false);
-          if (!generiereMitglied(mg, control))
-          {
-            continue;
-          }
+          generiereMitglied(mg, control);
           rpt.close();
-          anzahl++;
           zos.putNextEntry(new ZipEntry(getDateiname(mg) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
@@ -160,20 +113,14 @@ public class Kontoauszug
           in.close();
         }
         zos.close();
-        if (anzahl == 0)
-        {
-          GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
-          file.delete();
-          return;
-        }
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue());
         break;
     }
   }
 
-  private void init(String extension) throws IOException
+  private void init(String extension, List<Mitglied> mitglieder)
+      throws IOException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -209,36 +156,12 @@ public class Kontoauszug
     settings.setAttribute("lastdir", file.getParent());
   }
 
-  private boolean generiereMitglied(Mitglied m, SollbuchungControl control)
+  private void generiereMitglied(Mitglied m, SollbuchungControl control)
       throws RemoteException, DocumentException
   {
-    DIFFERENZ diff = DIFFERENZ.EGAL;
-    if (control.isDifferenzAktiv() && control.getDifferenz().getValue() != null)
-    {
-      diff = (DIFFERENZ) control.getDifferenz().getValue();
-    }
-
     MitgliedskontoNode node = new MitgliedskontoNode(m,
         (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
-
-    Double limit = Double.valueOf(0d);
-    if (control.isDoubleAuswAktiv()
-        && control.getDoubleAusw().getValue() != null)
-    {
-      // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
-      limit = Math.abs((Double) control.getDoubleAusw().getValue());
-    }
-
-    if (diff == DIFFERENZ.FEHLBETRAG && node.getIst() >= node.getSoll() - limit)
-    {
-      return false;
-    }
-    if (diff == DIFFERENZ.UEBERZAHLUNG
-        && node.getSoll() >= node.getIst() - limit)
-    {
-      return false;
-    }
 
     rpt.newPage();
     rpt.add((String) Einstellungen.getEinstellung(Property.NAME), 20);
@@ -276,7 +199,6 @@ public class Kontoauszug
       }
     }
     rpt.closeTable();
-    return true;
   }
 
   private void generiereZeile(MitgliedskontoNode node)
