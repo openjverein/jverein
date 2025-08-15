@@ -392,7 +392,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         final File fx = new File(lastdir + File.separator
             + VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
-                null, ls.getMitglied())
+                ls, ls.getMitglied())
             + ".pdf");
         fa = new FormularAufbereitung(fx, false, false);
       }
