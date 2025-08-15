@@ -22,7 +22,6 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.DruckMailControl.DruckMailEmpfaengerEntry;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -30,7 +29,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 /**
- * Ein Dialog, ueber den man Empfänger für eine Mail auswählen kann.
+ * Ein Dialog, der die Empfänger für eine Mail oder Report anzeigt.
  */
 public class DruckMailMitgliedDialog extends AbstractDialog<Object>
 {
@@ -42,7 +41,7 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
       String text, int position)
   {
     super(position);
-    setTitle("Empfaenger Liste");
+    setTitle("Empfänger Liste");
     setSize(900, 450);
     this.liste = liste;
     this.text = text;
@@ -57,24 +56,16 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
 
     TablePart empfaenger = new TablePart(liste, null);
     empfaenger.addColumn("Dokument", "dokument");
-    empfaenger.addColumn("EMail", "email");
+    empfaenger.addColumn("Mail", "email");
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Vorname", "vorname");
     empfaenger.addColumn("Mitgliedstyp", "mitgliedstyp");
     empfaenger.setRememberOrder(true);
-    empfaenger.setRememberColWidths(true);
-    empfaenger.setRememberOrder(true);
     empfaenger.paint(parent);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Schließen", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        close();
-      }
-    }, null, false, "process-stop.png");
+    buttons.addButton("Schließen", context -> close(), null, false,
+        "process-stop.png");
 
     buttons.paint(parent);
   }

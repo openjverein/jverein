@@ -62,7 +62,7 @@ public class FreieFormulareControl extends DruckMailControl
     }
     catch (Exception e)
     {
-      Logger.error("", e);
+      Logger.error("Fehler bei der Freie Formulare Ausgabe.", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }

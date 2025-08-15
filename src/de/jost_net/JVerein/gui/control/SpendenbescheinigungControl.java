@@ -1109,7 +1109,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
         dokument = "Spendenbescheinigung von "
             + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
-            + spb.getBetrag() + "€";
+            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag()) + "€";
         liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
             m.getVorname(), m.getMitgliedstyp()));
       }
@@ -1118,7 +1118,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
         ohneMitglied++;
         dokument = "Spendenbescheinigung von "
             + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
-            + spb.getBetrag() + "€ und Zeile 2: " + spb.getZeile2();
+            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag())
+            + "€ und Zeile 2: " + spb.getZeile2();
         liste.add(
             new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
       }

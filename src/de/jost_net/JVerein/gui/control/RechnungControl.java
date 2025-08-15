@@ -202,7 +202,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Rechnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -231,7 +231,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Mahnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -838,9 +838,12 @@ public class RechnungControl extends DruckMailControl implements Savable
         ohneMail++;
       }
       Mitglied m = r.getMitglied();
-      String dokument = "Rechnung " + r.getID() + " von "
-          + Datum.formatDate(r.getDatum()) + " über " + r.getBetrag()
-          + "€ und Fehlbetrag " + (r.getBetrag() - r.getIstSumme()) + "€";
+      String dokument = "Rechnung " + r.getID() + " vom "
+          + Datum.formatDate(r.getDatum()) + " über "
+          + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
+          + "€ und Fehlbetrag " + Einstellungen.DECIMALFORMAT
+              .format((r.getBetrag() - r.getIstSumme()))
+          + "€";
       liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
           m.getVorname(), m.getMitgliedstyp()));
     }

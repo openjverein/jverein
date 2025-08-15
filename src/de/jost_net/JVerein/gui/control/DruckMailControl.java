@@ -237,7 +237,7 @@ public abstract class DruckMailControl extends FilterControl
 
   public Button getDruckMailMitgliederButton(final Object object, String option)
   {
-    Button button = new Button("Empfaenger Liste", new Action()
+    Button button = new Button("Empfänger Liste", new Action()
     {
 
       @Override
@@ -260,7 +260,7 @@ public abstract class DruckMailControl extends FilterControl
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Generierung der Empfängerliste.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
           return;
         }
@@ -276,7 +276,8 @@ public abstract class DruckMailControl extends FilterControl
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Anzeige des Empfänger Liste Dialogs.",
+              e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
