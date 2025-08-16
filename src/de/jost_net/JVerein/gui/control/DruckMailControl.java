@@ -37,11 +37,7 @@ public abstract class DruckMailControl extends FilterControl
 
   public static final String NICHT_EINZELN = "Eine PDF-Datei";
 
-  public static final String EINZELN_NUMMERIERT = "Einzelne PDF-Dateien, nummeriert";
-
-  public static final String EINZELN_MITGLIEDSNUMMER = "Einzelne PDF-Dateien, mit Mitgliedsnummer";
-
-  public static final String EINZELN_NUMMERIERT_UND_MNR = "Einzelne PDF-Dateien, nummeriert mit Mitgliedsnummer";
+  public static final String EINZELN = "Einzelne PDF-Dateien";
 
   protected TextAreaInput info = null;
 
@@ -147,10 +143,16 @@ public abstract class DruckMailControl extends FilterControl
     {
       return pdfModus;
     }
-    Object[] values = new Object[] { NICHT_EINZELN, EINZELN_NUMMERIERT,
-        EINZELN_MITGLIEDSNUMMER, EINZELN_NUMMERIERT_UND_MNR };
-    pdfModus = new SelectInput(values,
-        settings.getString(settingsprefix + "pdfModus", NICHT_EINZELN));
+    Object[] values = new Object[] { NICHT_EINZELN, EINZELN };
+    // Wegen gelöschter Werte die noch in den Settings gespeichert sein können
+    String istvalue = EINZELN;
+    String value = settings.getString(settingsprefix + "pdfModus",
+        NICHT_EINZELN);
+    if (value.equals(NICHT_EINZELN) || value.equals(EINZELN))
+    {
+      istvalue = value;
+    }
+    pdfModus = new SelectInput(values, istvalue);
     pdfModus.setName("PDF als");
     return pdfModus;
   }
