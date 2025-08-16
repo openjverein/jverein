@@ -47,14 +47,8 @@ public class BuchungListTablePart extends AutoUpdateTablePart
     super(list, action);
 
     // ChangeListener für die Summe der ausgewählten Buchungen anhängen.
-    addSelectionListener(e -> {
-      createFeatureEventContext(Event.REFRESH, ctx);
-      Feature feature = this.getFeature(FeatureSummary.class);
-      if (feature != null)
-      {
-        feature.handleEvent(Event.REFRESH, ctx);
-      }
-    });
+    addSelectionListener(e -> featureEvent(
+        de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null));
   }
 
   /**
@@ -66,7 +60,8 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class, e))
+    if (this.hasEvent(FeatureSummary.class, e)
+        && (e == Event.REFRESH || e == Event.REMOVED || e == Event.REMOVED_ALL))
     {
       double sumBetrag = 0.0;
       double sumNetto = 0d;
