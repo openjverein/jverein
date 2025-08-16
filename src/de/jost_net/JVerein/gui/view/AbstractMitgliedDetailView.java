@@ -232,6 +232,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         try
         {
           control.handleStore();
+          GUI.getStatusBar().setSuccessText("Gespeichert");
           zeichneUeberschrift();
         }
         catch (RemoteException | ApplicationException e)
@@ -254,6 +255,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           new NichtMitgliedDetailAction().handleAction(null);
         }
+        GUI.getStatusBar().setSuccessText("Gespeichert");
       }
       catch (ApplicationException e)
       {
