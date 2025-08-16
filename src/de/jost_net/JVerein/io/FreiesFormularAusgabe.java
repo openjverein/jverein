@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -70,12 +71,26 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control
-        .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
-    int type = -1;
-    if (mitgliedstyp != null)
-      type = Integer.parseInt(mitgliedstyp.getID());
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(control).get(type, null);
+
+    Object context = control.getCurrentObject();
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    if (context != null && context instanceof Mitglied)
+    {
+      mitglieder.add((Mitglied) context);
+    }
+    else if (context != null && context instanceof Mitglied[])
+    {
+      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) context));
+    }
+    else
+    {
+      Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control
+          .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
+      int type = -1;
+      if (mitgliedstyp != null)
+        type = Integer.parseInt(mitgliedstyp.getID());
+      mitglieder = new MitgliedQuery(control).get(type, null);
+    }
 
     if (mitglieder.size() == 0)
     {

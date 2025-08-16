@@ -372,15 +372,19 @@ public class RechnungControl extends DruckMailControl implements Savable
     {
       if (rechnungen != null)
       {
-        text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt"
-            + "\nFolgende Mitglieder haben keine Mailadresse:";
+        text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt";
+        String fehlen = "";
         for (Rechnung re : rechnungen)
         {
           Mitglied m = re.getMitglied();
           if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
           {
-            text = text + "\n - " + m.getName() + ", " + m.getVorname();
+            fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
           }
+        }
+        if (fehlen.length() > 0)
+        {
+          text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
         }
       }
     }

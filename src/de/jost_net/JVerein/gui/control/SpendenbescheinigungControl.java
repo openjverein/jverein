@@ -793,8 +793,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
     String text = "Es wurden " + spbArr.length
-        + " Spendenbescheinigungen ausgewählt"
-        + "\nFolgende Mitglieder haben keine Mailadresse:";
+        + " Spendenbescheinigungen ausgewählt";
+    String fehlen = "";
+    String keinMitglied = "";
     try
     {
       for (Spendenbescheinigung spb : spbArr)
@@ -802,18 +803,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
         Mitglied m = spb.getMitglied();
         if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          text = text + "\n - " + m.getName() + ", " + m.getVorname();
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
-      }
-      text = text
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
-      for (Spendenbescheinigung spb : spbArr)
-      {
         if (spb.getMitglied() == null)
         {
-          text = text + "\n - " + spb.getZeile1() + ", " + spb.getZeile2()
-              + ", " + spb.getZeile3();
+          keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
+              + spb.getZeile2() + ", " + spb.getZeile3();
         }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+      if (keinMitglied.length() > 0)
+      {
+        text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
+            + keinMitglied;
       }
     }
     catch (Exception ex)

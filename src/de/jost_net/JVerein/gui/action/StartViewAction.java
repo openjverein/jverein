@@ -24,14 +24,23 @@ public class StartViewAction implements Action
 {
   private Class<? extends AbstractView> viewClass;
 
+  private boolean mitContext;
+
   public StartViewAction(Class<? extends AbstractView> viewClass)
   {
+    this(viewClass, false);
+  }
+
+  public StartViewAction(Class<? extends AbstractView> viewClass,
+      boolean mitContext)
+  {
     this.viewClass = viewClass;
+    this.mitContext = mitContext;
   }
 
   @Override
   public void handleAction(Object context)
   {
-    GUI.startView(viewClass, null);
+    GUI.startView(viewClass, mitContext ? context : null);
   }
 }

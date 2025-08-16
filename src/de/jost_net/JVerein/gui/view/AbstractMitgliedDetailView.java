@@ -30,12 +30,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -207,7 +207,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     if (!control.getMitglied().isNewObject())
     {
-      buttons.addButton(new ButtonRtoL("Kontoauszug", new KontoauszugAction(),
+      buttons.addButton(new ButtonRtoL("Kontoauszug",
+          new StartViewAction(KontoauszugMailView.class, true),
           control.getMitglied(), false, "file-invoice.png"));
     }
     if (isMitgliedDetail())
