@@ -51,7 +51,7 @@ public class FreiesFormularAusgabe
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        file = getDateiAuswahl("pdf", formular.getBezeichnung());
+        file = getDateiAuswahl("pdf", formular.getBezeichnung(), mitglieder);
         if (file == null)
         {
           return;
@@ -59,7 +59,7 @@ public class FreiesFormularAusgabe
         formularaufbereitung = new FormularAufbereitung(file, false, false);
         break;
       case MAIL:
-        file = getDateiAuswahl("zip", formular.getBezeichnung());
+        file = getDateiAuswahl("zip", formular.getBezeichnung(), mitglieder);
         if (file == null)
         {
           return;
@@ -67,7 +67,6 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-
     aufbereitung(formular, mitglieder);
   }
 
@@ -117,7 +116,8 @@ public class FreiesFormularAusgabe
 
   }
 
-  File getDateiAuswahl(String extension, String name) throws RemoteException
+  File getDateiAuswahl(String extension, String name,
+      ArrayList<Mitglied> mitglieder) throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -127,11 +127,19 @@ public class FreiesFormularAusgabe
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
-            + extension);
+    if (mitglieder.size() == 1)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+              name, mitglieder.get(0)) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
+              + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
-
     String s = fd.open();
     if (s == null || s.length() == 0)
     {

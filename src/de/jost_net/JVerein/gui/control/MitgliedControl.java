@@ -97,6 +97,7 @@ import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -119,12 +120,12 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -1936,7 +1937,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return jjahr;
   }
 
-  public Input getAusgabe() throws RemoteException
+  public SelectInput getAusgabe() throws RemoteException
   {
     if (ausgabe != null)
     {
@@ -2001,7 +2002,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return vorlagedateicsv;
   }
 
-  public Input getSortierung()
+  public SelectInput getSortierung()
   {
     if (sortierung != null)
     {
@@ -2771,10 +2772,11 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertungmitglied", dateinamensort,
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          ausw.getDateiendung()).get());
-      fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME, this)
+              + "." + ausw.getDateiendung().toLowerCase());
+      fd.setFilterExtensions(
+          new String[] { "*." + ausw.getDateiendung().toLowerCase() });
 
       String s = fd.open();
       if (s == null || s.length() == 0)
@@ -2887,10 +2889,11 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("auswertungnichtmitglied", dateinamensort,
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          ausw.getDateiendung()).get());
-      fd.setFilterExtensions(new String[] { "*." + ausw.getDateiendung() });
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
+              this) + "." + ausw.getDateiendung().toLowerCase());
+      fd.setFilterExtensions(
+          new String[] { "*." + ausw.getDateiendung().toLowerCase() });
 
       String s = fd.open();
       if (s == null || s.length() == 0)
@@ -2959,9 +2962,8 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("statistik", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    fd.setFileName(VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME, this) + ".pdf");
 
     String s = fd.open();
 

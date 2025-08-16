@@ -55,6 +55,7 @@ public enum RechnungVar
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro"),
   DATUM("rechnung_datum"),
+  DATUM_F("rechnung_datum_f"),
   NUMMER("rechnung_nummer"),
   ANREDE("rechnung_anrede"),
   TITEL("rechnung_titel"),
@@ -71,6 +72,7 @@ public enum RechnungVar
   PERSONENART("rechnung_personenart"), //
   MANDATID("rechnung_mandatid"), //
   MANDATDATUM("rechnung_mandatdatum"), //
+  MANDATDATUM_F("rechnung_mandatdatum_f"), //
   BIC("rechnung_bic"), //
   IBAN("rechnung_iban"), //
   IBANMASKIERT("rechnung_ibanmaskiert"), //

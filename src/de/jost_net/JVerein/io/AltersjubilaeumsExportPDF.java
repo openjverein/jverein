@@ -27,8 +27,11 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 
 public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
@@ -73,9 +76,10 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "altersjubilare";
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
+        (MitgliedControl) object) + ".pdf";
   }
 
   @Override

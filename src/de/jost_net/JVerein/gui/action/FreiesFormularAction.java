@@ -23,13 +23,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.FormularAufbereitung;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Settings;
@@ -87,7 +87,7 @@ public class FreiesFormularAction implements Action
     }
   }
 
-  private void generiereFreiesFormular(Mitglied[] m) throws Exception
+  private void generiereFreiesFormular(Mitglied[] mitglieder) throws Exception
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -97,9 +97,19 @@ public class FreiesFormularAction implements Action
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("freiesformular", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    Formular formular = (Formular) Einstellungen.getDBService()
+        .createObject(Formular.class, id);
+    if (mitglieder.length == 1)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+              formular.getBezeichnung(), mitglieder[0]) + ".pdf");
+    }
+    else
+    {
+      fd.setFileName(VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME,
+          formular.getBezeichnung()) + ".pdf");
+    }
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -115,7 +125,7 @@ public class FreiesFormularAction implements Action
     settings.setAttribute("lastdir", file.getParent());
 
     FormularAufbereitung fa = new FormularAufbereitung(file, false, false);
-    for (Mitglied mi : m)
+    for (Mitglied mi : mitglieder)
     {
       Formular fo = (Formular) Einstellungen.getDBService()
           .createObject(Formular.class, id);
