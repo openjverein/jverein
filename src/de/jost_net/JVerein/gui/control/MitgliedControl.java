@@ -24,9 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -39,7 +37,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.ArbeitseinsatzNeuAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LehrgangNeuAction;
@@ -123,7 +120,6 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -280,8 +276,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private Input[] zusatzfelder;
 
-  private Input[] lesefelder;
-
   private TreePart eigenschaftenTree;
 
   // Elemente für die Auswertung
@@ -321,8 +315,6 @@ public class MitgliedControl extends FilterControl implements Savable
   private TablePart familienangehoerige;
 
   private ImageInput foto;
-
-  private LesefeldAuswerter lesefeldAuswerter = null;
 
   private int jjahr = 0;
 
@@ -1627,57 +1619,6 @@ public class MitgliedControl extends FilterControl implements Savable
       i++;
     }
     return zusatzfelder;
-  }
-
-  public Input[] getLesefelder() throws RemoteException
-  {
-    if (lesefelder != null)
-    {
-      return lesefelder;
-    }
-
-    // erstelle lesefeldAuswerter, der alle Daten und Methoden
-    // zum Evaluieren von Skripten enthält.
-    if (lesefeldAuswerter == null)
-    {
-      lesefeldAuswerter = new LesefeldAuswerter();
-      lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
-    }
-
-    // Sind keine Lesefelder definiert, erzeuge keine GUI-Elemente
-    if (lesefeldAuswerter.countLesefelder() == 0)
-      return null;
-
-    // Ist noch keine ID verfügbar, wird das Mitglied gerade angelegt.
-    // Dann darf getMap() nicht aufgerufen werden, da sonst Standard-Werte
-    // für Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
-    // Da lesefeldAuswerter aber einen kompletten Datensatz eines Mitglieds
-    // benötigt um alle Skripte fehlerfrei zu parsen, dürfen die Lesefelder
-    // noch nicht ausgewertet werden. Die GUI-Elemente werden daher beim
-    // ersten Erstellen eines neuen Mitglieds noch nicht angezeigt.
-    if (getMitglied().getID() == null)
-      return null;
-
-    lesefeldAuswerter
-        .setMap(new MitgliedMap().getMap(getMitglied(), null, true));
-
-    lesefelder = new Input[lesefeldAuswerter.countLesefelder()];
-
-    int i = 0;
-    Iterator<Entry<String, Object>> it = lesefeldAuswerter.getLesefelderMap()
-        .entrySet().iterator();
-    while (it.hasNext())
-    {
-      // Evaluiere Skripte und erzeuge für jedes ein TextAreaInput mit
-      // dem ausgewerteten Inhalt sowie dem Skriptnamen davor.
-      Entry<String, Object> pairs = it.next();
-      TextAreaInput t = new TextAreaInput(pairs.getValue().toString());
-      t.setEnabled(false);
-      t.setName(pairs.getKey());
-      lesefelder[i] = t;
-      i++;
-    }
-    return lesefelder;
   }
 
   public void refreshFamilienangehoerigeTable() throws RemoteException

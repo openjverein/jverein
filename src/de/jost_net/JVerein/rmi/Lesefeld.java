@@ -18,8 +18,6 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
 /**
  * LeseFelder sind virtuelle Datenbank-Felder. Sie werden mit Hilfe eines
  * Scriptes berechnet und sind daher schreibgeschützt (-> nur lesbar).
@@ -30,7 +28,7 @@ import de.willuhn.datasource.rmi.DBObject;
  * @author Julian
  * 
  */
-public interface Lesefeld extends DBObject
+public interface Lesefeld extends JVereinDBObject
 {
   public String getBezeichnung() throws RemoteException;
 
