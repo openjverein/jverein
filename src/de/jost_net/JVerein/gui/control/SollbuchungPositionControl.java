@@ -167,6 +167,19 @@ public class SollbuchungPositionControl extends AbstractControl
         }
       }
     });
+    buchungsart.addListener(e -> {
+      if (steuer != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          steuer.setValue(((Buchungsart) buchungsart.getValue()).getSteuer());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler", e1);
+        }
+      }
+    });
     return buchungsart;
   }
 
