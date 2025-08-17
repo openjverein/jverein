@@ -67,6 +67,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -840,28 +841,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
         try
         {
           saveDruckMailSettings();
-          Spendenbescheinigung[] spbArray = null;
-          if (currentObject == null)
-          {
-            ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
-            if (spblist.size() == 0)
-            {
-              GUI.getStatusBar()
-                  .setSuccessText("Für die gewählten Filterkriterien wurden "
-                      + "keine Spendenbescheinigungen gefunden");
-              return;
-            }
-            spbArray = spblist
-                .toArray(new Spendenbescheinigung[spblist.size()]);
-          }
-          else if (currentObject instanceof Spendenbescheinigung[])
-          {
-            spbArray = (Spendenbescheinigung[]) currentObject;
-          }
-          else
-          {
-            return;
-          }
+
+          Spendenbescheinigung[] spbArray = getSpbArray(currentObject);
+
           generatePdf((String) mailtext.getValue(),
               (Adressblatt) adressblatt.getValue(), spbArray,
               (Ausgabeart) ausgabeart.getValue());
@@ -870,6 +852,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
             sendeMail((String) mailbetreff.getValue(),
                 (String) mailtext.getValue(), spbArray);
           }
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
@@ -1083,4 +1069,123 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
+  private Spendenbescheinigung[] getSpbArray(Object object)
+      throws RemoteException, ApplicationException
+  {
+    Spendenbescheinigung[] spbArray = null;
+    if (object == null)
+    {
+      ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
+      spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
+    }
+    else if (object instanceof Spendenbescheinigung[])
+    {
+      spbArray = (Spendenbescheinigung[]) object;
+    }
+    if (spbArray == null || spbArray.length == 0)
+    {
+      throw new ApplicationException(
+          "Für die gewählten Filterkriterien wurden keine Spendenbescheinigungen gefunden");
+    }
+    return spbArray;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = "";
+    int ohneMail = 0;
+    int ohneMitglied = 0;
+    Spendenbescheinigung[] spbs = getSpbArray(object);
+    Mitglied m;
+    String dokument = "";
+    for (Spendenbescheinigung spb : spbs)
+    {
+      m = spb.getMitglied();
+      if (m != null)
+      {
+        String mail = m.getEmail();
+        if ((mail == null || mail.isEmpty())
+            && getAusgabeart().getValue() == Ausgabeart.MAIL)
+        {
+          ohneMail++;
+        }
+        dokument = "Spendenbescheinigung von "
+            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
+            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag()) + "€";
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+            m.getVorname(), m.getMitgliedstyp()));
+      }
+      else
+      {
+        ohneMitglied++;
+        dokument = "Spendenbescheinigung von "
+            + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
+            + Einstellungen.DECIMALFORMAT.format(spb.getBetrag())
+            + "€ und Zeile 2: " + spb.getZeile2();
+        liste.add(
+            new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
+      }
+    }
+    if (ohneMail > 0 && ohneMitglied == 0)
+    {
+      text = getMailText(ohneMail, false);
+    }
+    if (ohneMail == 0 && ohneMitglied > 0)
+    {
+      text = getMitgliedText(ohneMitglied,
+          getAusgabeart().getValue() != Ausgabeart.MAIL);
+    }
+    if (ohneMail > 0 && ohneMitglied > 0)
+    {
+      text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
+    }
+    return new DruckMailEmpfaenger(liste, text);
+  }
+
+  private String getMailText(int ohneMail, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck)
+    {
+      zusatz = " und ";
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse" + zusatz;
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse" + zusatz;
+    }
+    return text;
+  }
+
+  private String getMitgliedText(int ohneMitglied, boolean druck)
+  {
+    String text = "";
+    String zusatz = ".";
+    if (druck && ohneMitglied == 1)
+    {
+      zusatz = ", wird aber gedruckt.";
+    }
+    if (druck && ohneMitglied > 1)
+    {
+      zusatz = ", werden aber gedruckt.";
+    }
+    if (ohneMitglied == 1)
+    {
+      text = ohneMitglied + " Spendenbescheinigung hat kein Mitglied gesetzt"
+          + zusatz;
+    }
+    else if (ohneMitglied > 1)
+    {
+      text = ohneMitglied
+          + " Spendenbescheinigungen haben kein Mitglied gesetzt" + zusatz;
+    }
+    return text;
+  }
 }

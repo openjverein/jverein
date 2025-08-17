@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
+import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -110,6 +111,8 @@ public class MahnungMailView extends AbstractView
      * EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false,
      * "document-save.png"));
      */
+    buttons.addButton(control.getDruckMailMitgliederButton(
+        this.getCurrentObject(), TYP.MAHNUNG.toString()));
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

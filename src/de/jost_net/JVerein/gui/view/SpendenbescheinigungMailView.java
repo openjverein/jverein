@@ -105,6 +105,8 @@ public class SpendenbescheinigungMailView extends AbstractView
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
+    buttons.addButton(
+        control.getDruckMailMitgliederButton(this.getCurrentObject(), null));
     buttons.addButton(control.getStartButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }

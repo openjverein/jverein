@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -39,6 +40,7 @@ import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -47,6 +49,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -190,11 +193,16 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control, RechnungControl.TYP.RECHNUNG);
+          new Rechnungsausgabe(getRechnungen(currentObject), control,
+              TYP.RECHNUNG);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Rechnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -214,11 +222,16 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control, RechnungControl.TYP.MAHNUNG);
+          new Rechnungsausgabe(getRechnungen(currentObject), control,
+              TYP.MAHNUNG);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Mahnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -784,5 +797,68 @@ public class RechnungControl extends DruckMailControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Rechnung[] getRechnungen(Object currentObject)
+      throws RemoteException, ApplicationException
+  {
+    Rechnung[] rechnungen = null;
+    if (currentObject != null && currentObject instanceof Rechnung[])
+    {
+      rechnungen = (Rechnung[]) currentObject;
+    }
+    else if (currentObject != null && currentObject instanceof Rechnung)
+    {
+      rechnungen = (new Rechnung[] { (Rechnung) currentObject });
+    }
+    else
+    {
+      List<Rechnung> rechn = PseudoIterator.asList(getRechnungIterator());
+      rechnungen = (Rechnung[]) rechn.toArray(new Rechnung[rechn.size()]);
+    }
+
+    if (rechnungen == null || rechnungen.length == 0)
+    {
+      throw new ApplicationException("Keine passende Rechnung gefunden.");
+    }
+    return rechnungen;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+    Rechnung[] rechnungen = getRechnungen(object);
+    for (Rechnung r : rechnungen)
+    {
+      String mail = r.getMitglied().getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      Mitglied m = r.getMitglied();
+      String dokument = "Rechnung " + r.getID() + " vom "
+          + Datum.formatDate(r.getDatum()) + " über "
+          + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
+          + "€ und Fehlbetrag " + Einstellungen.DECIMALFORMAT
+              .format((r.getBetrag() - r.getIstSumme()))
+          + "€";
+      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
   }
 }
