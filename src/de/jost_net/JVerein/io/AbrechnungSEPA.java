@@ -53,6 +53,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -1270,6 +1271,14 @@ public class AbrechnungSEPA
       buchung.setName(adress != null ? Adressaufbereitung.getNameVorname(adress)
           : "JVerein");
       buchung.setZweck(adress == null ? "Gegenbuchung" : zweck);
+      buchung.setIban("");
+      buchung.setVerzicht(false);
+      buchung.setArt("Lastschrift");
+      buchung.setKommentar("Abrechnungslauf " + abrl.getNr() + " vom "
+          + Datum.formatDate(abrl.getDatum()));
+      buchung.setBezeichnungSachzuwendung("");
+      buchung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
+      buchung.setUnterlagenWertermittlung(false);
       buchung.store();
 
       if (sollb != null)
