@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,9 +44,6 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.FormularAufbereitung;
-import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
@@ -58,9 +55,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Base64;
 
@@ -70,7 +65,7 @@ import de.willuhn.util.Base64;
  * der Generierung eines Dokuments aus der Detailansicht der
  * Spendenbescheinigung heraus verwendet.
  */
-public class SpendenbescheinigungPrintAction implements Action
+public class SpendenbescheinigungAusgabe
 {
 
   private Adressblatt adressblatt = Adressblatt.OHNE_ADRESSBLATT;
@@ -84,17 +79,6 @@ public class SpendenbescheinigungPrintAction implements Action
   private de.willuhn.jameica.system.Settings settings;
 
   /**
-   * Konstruktor ohne Parameter. Es wird angenommen, dass das Standard-Dokument
-   * aufbereitet werden soll.
-   */
-  public SpendenbescheinigungPrintAction()
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-  }
-
-  /**
    * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
    * oder das individuelle Dokument aufbereitet werden soll.
    * 
@@ -105,7 +89,7 @@ public class SpendenbescheinigungPrintAction implements Action
    * @param adressblatt
    *          enum Adressblatt
    */
-  public SpendenbescheinigungPrintAction(String text, Adressblatt adressblatt,
+  public SpendenbescheinigungAusgabe(String text, Adressblatt adressblatt,
       boolean open)
   {
     super();
@@ -117,73 +101,14 @@ public class SpendenbescheinigungPrintAction implements Action
   }
 
   /**
-   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
-   * oder das individuelle Dokument aufbereitet werden soll.
+   * Aufbereitung der Spendenbescheinigungen
    * 
-   * @param adressblatt
-   *          enum Adressblatt
-   */
-  public SpendenbescheinigungPrintAction(Adressblatt adressblatt, boolean open)
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-    this.adressblatt = adressblatt;
-    this.open = open;
-  }
-
-  /**
-   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
-   * oder das individuelle Dokument aufbereitet werden soll.
-   * 
-   * @param adressblatt
-   *          enum Adressblatt
-   * @param fileName
-   *          Dateiname als Vorgabe inklusive Pfad
-   */
-  public SpendenbescheinigungPrintAction(Adressblatt adressblatt,
-      String fileName)
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-    this.fileName = fileName;
-    this.adressblatt = adressblatt;
-  }
-
-  /**
-   * Aufbereitung der Spendenbescheinigungen Hinweis: Das bzw. die generierten
-   * Formulare werden nicht im Acrobat Reader angezeigt.
-   * 
-   * @param context
+   * @param spbArr
    *          Die Spendenbescheinigung(en)
    */
-  @Override
-  public void handleAction(Object context) throws ApplicationException
+  public void aufbereitung(Spendenbescheinigung[] spbArr)
+      throws ApplicationException
   {
-    Spendenbescheinigung[] spbArr = null;
-    // Prüfung des Contexs, vorhanden, eine oder mehrere
-    if (context instanceof TablePart)
-    {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
-    }
-    if (context == null)
-    {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
-    }
-    else if (context instanceof Spendenbescheinigung)
-    {
-      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
-    }
-    else if (context instanceof Spendenbescheinigung[])
-    {
-      spbArr = (Spendenbescheinigung[]) context;
-    }
-    else
-    {
-      return;
-    }
     // Aufbereitung
     try
     {

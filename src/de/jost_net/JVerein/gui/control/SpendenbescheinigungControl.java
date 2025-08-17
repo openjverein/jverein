@@ -39,7 +39,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -51,6 +50,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.io.ZipMailer;
@@ -874,9 +874,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     boolean open = false;
     if (ausgabeart == Ausgabeart.DRUCK)
       open = true;
-    SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(
-        text, adressblatt, open);
-    action.handleAction(spba);
+    new SpendenbescheinigungAusgabe(text, adressblatt, open).aufbereitung(spba);
   }
 
   private void sendeMail(final String betr, String text,
