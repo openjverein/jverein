@@ -20,9 +20,10 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungDeleteAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -53,7 +54,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
         new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true),
         "file-pdf.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
-        new SpendenbescheinigungSendAction(), "document-print.png"));
+        new StartViewAction(SpendenbescheinigungMailView.class, true),
+        "document-print.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
   }

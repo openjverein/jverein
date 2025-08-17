@@ -21,9 +21,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -47,7 +48,8 @@ public class LastschriftMenu extends ContextMenu
         new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
-        new PreNotificationAction(), "document-new.png"));
+        new StartViewAction(PreNotificationMailView.class),
+        "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);

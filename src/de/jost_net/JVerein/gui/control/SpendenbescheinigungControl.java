@@ -1082,6 +1082,11 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       spbArray = (Spendenbescheinigung[]) object;
     }
+    else if (object instanceof Spendenbescheinigung)
+    {
+      spbArray = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
+    }
+
     if (spbArray == null || spbArray.length == 0)
     {
       throw new ApplicationException(
