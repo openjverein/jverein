@@ -298,19 +298,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getErsatzAufwendungen() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("ersatzaufwendungen"));
-  }
-
-  @Override
-  public void setErsatzAufwendungen(Boolean ersatzaufwendungen)
-      throws RemoteException
-  {
-    setAttribute("ersatzaufwendungen", Boolean.valueOf(ersatzaufwendungen));
-  }
-
-  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");
@@ -445,8 +432,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   /**
    * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
    * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
-   * Die Spendenart wird auf "GELDSPENDE" gesetzt. Das Spendendatum wird auf das
-   * kleinste Datum der Buchungen gesetzt.
+   * Das Spendendatum wird auf das kleinste Datum der Buchungen gesetzt.
    * 
    * @param buchung
    *          Die Buchung zum Hinzufügen
@@ -476,7 +462,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       {
         setSpendedatum(buchung.getDatum());
       }
-      setSpendenart(Spendenart.GELDSPENDE);
     }
   }
 
@@ -515,7 +500,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public List<Buchung> getBuchungen() throws RemoteException
   {
-    if (getSpendenart() == Spendenart.GELDSPENDE && buchungen == null)
+    if (buchungen == null)
     {
       buchungen = new ArrayList<>();
       DBIterator<Buchung> it = Einstellungen.getDBService()
@@ -550,17 +535,4 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
     setAttribute("unterlagenwertermittlung",
         Boolean.valueOf(unterlagenwertermittlung));
   }
-
-  @Override
-  public Boolean getAutocreate() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("autocreate"));
-  }
-
-  @Override
-  public void setAutocreate(Boolean autocreate) throws RemoteException
-  {
-    setAttribute("autocreate", Boolean.valueOf(autocreate));
-  }
-
 }

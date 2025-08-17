@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +31,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.server.SpendenbescheinigungNode;
@@ -60,6 +62,8 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
   private SelectInput formularEinzel;
 
   private SelectInput formularSammel;
+
+  private SelectInput formularSachspende;
 
   public SpendenbescheinigungAutoNeuControl(AbstractView view)
   {
@@ -125,6 +129,19 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
     return formularSammel;
   }
 
+  public SelectInput getFormularSachspende() throws RemoteException
+  {
+    if (formularSachspende != null)
+    {
+      return formularSachspende;
+    }
+    String tmp = settings.getString("formular.sachspende", "");
+    formularSachspende = new FormularInput(FormularArt.SACHSPENDENBESCHEINIGUNG,
+        tmp);
+    formularSachspende.setPleaseChoose("Standard");
+    return formularSachspende;
+  }
+
   /**
    * This method stores the project using the current values.
    */
@@ -159,6 +176,14 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             else
               settings.setAttribute("formular.sammel", "");
           }
+          if (formularSachspende != null)
+          {
+            Formular aa = (Formular) getFormularSachspende().getValue();
+            if (aa != null)
+              settings.setAttribute("formular.sachspende", aa.getID());
+            else
+              settings.setAttribute("formular.sachspende", "");
+          }
 
           @SuppressWarnings("rawtypes")
           List items = spbTree.getItems();
@@ -174,6 +199,7 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
           GenericIterator it1 = spn.getChildren();
           while (it1.hasNext())
           {
+            ArrayList<Buchung> sachspenden = new ArrayList<>();
             SpendenbescheinigungNode sp1 = (SpendenbescheinigungNode) it1
                 .next();
             Spendenbescheinigung spbescheinigung = (Spendenbescheinigung) Einstellungen
@@ -181,11 +207,9 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             spbescheinigung.setSpendenart(Spendenart.GELDSPENDE);
             SpbAdressaufbereitung.adressaufbereitung(sp1.getMitglied(),
                 spbescheinigung);
-            spbescheinigung.setErsatzAufwendungen(false);
             spbescheinigung.setBescheinigungsdatum(new Date());
             spbescheinigung.setSpendedatum(new Date());
             spbescheinigung.setBetrag(0.01);
-            spbescheinigung.setAutocreate(Boolean.TRUE);
             spbescheinigung.setBezeichnungSachzuwendung("");
             spbescheinigung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
             spbescheinigung.setUnterlagenWertermittlung(false);
@@ -194,9 +218,17 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             GenericIterator it2 = sp1.getChildren();
             while (it2.hasNext())
             {
-              SpendenbescheinigungNode sp2 = (SpendenbescheinigungNode) it2
-                  .next();
-              spbescheinigung.addBuchung(sp2.getBuchung());
+              Buchung bu = ((SpendenbescheinigungNode) it2.next()).getBuchung();
+              // Bei Sachspende
+              if (bu.getBezeichnungSachzuwendung() != null
+                  && !bu.getBezeichnungSachzuwendung().isEmpty())
+              {
+                sachspenden.add(bu);
+              }
+              else
+              {
+                spbescheinigung.addBuchung(bu);
+              }
             }
             // Nun noch das korrekte Formular setzen
             if (spbescheinigung.getBuchungen().size() > 1)
@@ -208,12 +240,32 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
             {
               spbescheinigung.setFormular((Formular) getFormular().getValue());
             }
-            // Spendenbescheinigungen erfolgreich erstellt
-            spbescheinigung.store();
-            spbTree.removeAll();
-            GUI.getStatusBar()
-                .setSuccessText("Spendenbescheinigung(en) erstellt");
+            if (spbescheinigung.getBuchungen().size() > 0)
+            {
+              // Spendenbescheinigungen erfolgreich erstellt
+              spbescheinigung.store();
+            }
+            // Jetzt noch Sachspenden erzeugen falls vorhanden
+            for (Buchung bu : sachspenden)
+            {
+              Spendenbescheinigung spb = (Spendenbescheinigung) Einstellungen
+                  .getDBService()
+                  .createObject(Spendenbescheinigung.class, null);
+              spb.setSpendenart(Spendenart.SACHSPENDE);
+              SpbAdressaufbereitung.adressaufbereitung(sp1.getMitglied(), spb);
+              spb.setBuchung(bu);
+              spb.setBescheinigungsdatum(new Date());
+              spb.setSpendedatum(bu.getDatum());
+              spb.setBezeichnungSachzuwendung(bu.getBezeichnungSachzuwendung());
+              spb.setHerkunftSpende(bu.getHerkunftSpende());
+              spb.setUnterlagenWertermittlung(bu.getUnterlagenWertermittlung());
+              spb.setFormular((Formular) getFormularSachspende().getValue());
+              spb.store();
+            }
           }
+          spbTree.removeAll();
+          GUI.getStatusBar()
+              .setSuccessText("Spendenbescheinigung(en) erstellt");
         }
         catch (RemoteException e)
         {
