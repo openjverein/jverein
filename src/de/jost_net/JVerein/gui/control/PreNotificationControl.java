@@ -242,9 +242,7 @@ public class PreNotificationControl extends DruckMailControl
       throws IOException, ApplicationException
   {
     boolean einzelnePdfs = false;
-    if (pdfMode.equals(EINZELN_NUMMERIERT)
-        || pdfMode.equals(EINZELN_MITGLIEDSNUMMER)
-        || pdfMode.equals(EINZELN_NUMMERIERT_UND_MNR))
+    if (pdfMode.equals(EINZELN))
     {
       einzelnePdfs = true;
     }
@@ -271,7 +269,8 @@ public class PreNotificationControl extends DruckMailControl
       s = s + ".pdf";
     }
     final File file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
+    String lastdir = file.getParent();
+    settings.setAttribute("lastdir", lastdir);
     Formular form = (Formular) getFormular(FormularArt.SEPA_PRENOTIFICATION)
         .getValue();
     if (form == null)
@@ -285,30 +284,14 @@ public class PreNotificationControl extends DruckMailControl
       fa = new FormularAufbereitung(file, false, false);
     }
 
-    int dateinummer = 0;
-    String postfix = ".pdf";
-    String prefix = s.substring(0, s.length() - postfix.length());
-
     for (Lastschrift ls : lastschriften)
     {
       if (einzelnePdfs)
       {
-        // schalte Dateinamen um
-        StringBuilder sb = new StringBuilder(prefix);
-        if (pdfMode.equals(EINZELN_MITGLIEDSNUMMER)
-            || pdfMode.equals(EINZELN_NUMMERIERT_UND_MNR))
-        {
-          sb.append("_");
-          sb.append(ls.getMitglied().getID());
-        }
-        if (pdfMode.equals(EINZELN_NUMMERIERT)
-            || pdfMode.equals(EINZELN_NUMMERIERT_UND_MNR))
-        {
-          sb.append(String.format("_%05d", dateinummer));
-        }
-        sb.append(postfix);
-
-        final File fx = new File(sb.toString());
+        final File fx = new File(lastdir + File.separator
+            + VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
+                ls, ls.getMitglied())
+            + ".pdf");
         fa = new FormularAufbereitung(fx, false, false);
       }
 
@@ -318,7 +301,6 @@ public class PreNotificationControl extends DruckMailControl
       {
         fa.closeFormular();
       }
-      dateinummer++;
     }
 
     fa.showFormular();
