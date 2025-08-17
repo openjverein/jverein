@@ -36,6 +36,7 @@ import de.jost_net.JVerein.Variable.AuswertungMitgliederstatistikFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
@@ -56,6 +57,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -102,10 +104,13 @@ public class VorlageUtil
           map = new RechnungMap().getMap((Rechnung) obj, map);
           map = new MitgliedMap().getMap(mitglied, map);
           break;
-        case KONTOAUSZUG_MITGLIED_DATEINAME:
         case PRENOTIFICATION_MITGLIED_DATEINAME:
+          map = new LastschriftMap().getMap((Lastschrift) obj, map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
         case VCARD_MITGLIED_DATEINAME:
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -258,10 +263,13 @@ public class VorlageUtil
           map = RechnungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
           break;
-        case KONTOAUSZUG_MITGLIED_DATEINAME:
         case PRENOTIFICATION_MITGLIED_DATEINAME:
+          map = LastschriftMap.getDummyMap(map);
+          map = MitgliedMap.getDummyMap(map);
+          break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
         case VCARD_MITGLIED_DATEINAME:
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:

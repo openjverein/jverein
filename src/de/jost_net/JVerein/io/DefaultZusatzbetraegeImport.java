@@ -76,7 +76,8 @@ public class DefaultZusatzbetraegeImport implements Importer
       // create a Statement object to execute the query with
       stmt = conn.createStatement();
 
-      results = stmt.executeQuery("SELECT * FROM " + fil.substring(0, pos));
+      results = stmt
+          .executeQuery("SELECT * FROM \"" + fil.substring(0, pos) + "\"");
       String columnMitgliedsnummer = "Mitglieds_Nr";
       String colExtMitgliedsnummer = "Ext_Mitglieds_Nr";
       String colNachname = "Nachname";

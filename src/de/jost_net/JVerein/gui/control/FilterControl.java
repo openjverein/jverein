@@ -1990,7 +1990,7 @@ public abstract class FilterControl extends VorZurueckControl
           calendar.add(Calendar.DAY_OF_MONTH, -1);
           bisDatum.setValue(calendar.getTime());
         }
-        TabRefresh();
+        refresh();
       }
     }, null, false, "go-previous.png");
   }
@@ -2031,7 +2031,7 @@ public abstract class FilterControl extends VorZurueckControl
           calendar.add(Calendar.DAY_OF_MONTH, -1);
           bisDatum.setValue(calendar.getTime());
         }
-        TabRefresh();
+        refresh();
       }
     }, null, false, "go-next.png");
   }
