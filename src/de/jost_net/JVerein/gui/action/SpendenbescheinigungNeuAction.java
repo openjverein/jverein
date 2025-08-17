@@ -250,6 +250,9 @@ public class SpendenbescheinigungNeuAction implements Action
     else
     {
       spb.setSpendenart(Spendenart.GELDSPENDE);
+      spb.setBezeichnungSachzuwendung("");
+      spb.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
+      spb.setUnterlagenWertermittlung(false);
     }
   }
 
