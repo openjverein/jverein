@@ -1270,6 +1270,11 @@ public class AbrechnungSEPA
       buchung.setName(adress != null ? Adressaufbereitung.getNameVorname(adress)
           : "JVerein");
       buchung.setZweck(adress == null ? "Gegenbuchung" : zweck);
+      buchung.setIban("");
+      buchung.setVerzicht(false);
+      buchung.setArt("Lastschrift");
+      buchung.setKommentar("Abrechnungslauf " + abrl.getNr() + " vom "
+          + Datum.formatDate(abrl.getDatum()));
       buchung.store();
 
       if (sollb != null)
