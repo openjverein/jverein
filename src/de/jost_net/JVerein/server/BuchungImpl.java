@@ -245,11 +245,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("abrechnungslauf".equals(field))
-    {
-      return Abrechnungslauf.class;
-    }
-    else if ("spendenbescheinigung".equals(field))
+    if ("spendenbescheinigung".equals(field))
     {
       return Spendenbescheinigung.class;
     }
@@ -486,7 +482,14 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    return (Abrechnungslauf) getAttribute("abrechnungslauf");
+    Object l = (Object) super.getAttribute("abrechnungslauf");
+    if (l == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Abrechnungslauf.class, true);
+    return (Abrechnungslauf) cache.get(l);
   }
 
   @Override

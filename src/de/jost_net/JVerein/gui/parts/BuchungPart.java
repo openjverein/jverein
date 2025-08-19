@@ -102,6 +102,7 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Auszugsnummer", control.getAuszugsnummer());
     grBuchungsinfos.addLabelPair("Blattnummer", control.getBlattnummer());
     grBuchungsinfos.addLabelPair("Sollbuchung", control.getSollbuchung());
+    grBuchungsinfos.addLabelPair("Geprüft", control.getGeprueft());
 
     SimpleContainer grSpendeninfos = grBuchungsinfos;
     grSpendeninfos.addHeadline("Geldspende");
