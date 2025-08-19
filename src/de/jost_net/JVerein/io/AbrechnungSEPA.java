@@ -1279,6 +1279,7 @@ public class AbrechnungSEPA
       buchung.setBezeichnungSachzuwendung("");
       buchung.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
       buchung.setUnterlagenWertermittlung(false);
+      buchung.setGeprueft(false);
       buchung.store();
 
       if (sollb != null)
