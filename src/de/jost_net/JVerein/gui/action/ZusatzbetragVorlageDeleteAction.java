@@ -16,14 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+
+import java.rmi.RemoteException;
 
 /**
  * Loeschen einer Zusatzbetragsvorlage.
@@ -35,8 +35,7 @@ public class ZusatzbetragVorlageDeleteAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     ZusatzbetragVorlage[] z = null;
-    if (context != null && (context instanceof ZusatzbetragVorlage
-        || context instanceof ZusatzbetragVorlage[]))
+    if (context != null && (context instanceof ZusatzbetragVorlage || context instanceof ZusatzbetragVorlage[]))
     {
       if (context instanceof ZusatzbetragVorlage)
       {
@@ -49,12 +48,12 @@ public class ZusatzbetragVorlageDeleteAction implements Action
     }
     if (z == null)
     {
-      throw new ApplicationException("Keine Zusatzbetrag-Vorlage ausgewählt");
+      throw new ApplicationException("Keine Zusatzbetrag-Vorlage ausgew�hlt");
     }
 
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Zusatzbetrag-Vorlage löschen");
-    d.setText(String.format("Wollen Sie %d %s wirklich löschen?", z.length,
+    d.setTitle("Zusatzbetrag-Vorlage l�schen");
+    d.setText(String.format("Wollen Sie %d %s wirklich l�schen?", z.length,
         (z.length == 1 ? "Zusatzbetrag-Vorlage" : "Zusatzbetrag-Vorlagen")));
     Boolean choice;
     try
@@ -80,11 +79,11 @@ public class ZusatzbetragVorlageDeleteAction implements Action
         }
         z1.delete();
       }
-      GUI.getStatusBar().setSuccessText("gelöscht.");
+      GUI.getStatusBar().setSuccessText("gel�scht.");
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler beim Löschen von Zusatzbetrags-Vorlagen";
+      String fehler = "Fehler beim L�schen von Zusatzbetrags-Vorlagen";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
     }
