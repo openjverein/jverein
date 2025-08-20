@@ -44,6 +44,7 @@ public class DropdownDialog<T> extends AbstractDialog<T>
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   protected void paint(Composite parent) throws Exception
   {
     SimpleContainer group = new SimpleContainer(parent);
@@ -54,7 +55,6 @@ public class DropdownDialog<T> extends AbstractDialog<T>
 
     ButtonArea buttonArea = new ButtonArea();
     buttonArea.addButton("OK", e -> {
-      //noinspection unchecked
       value = (T) auswahlInput.getValue();
       close();
     }, null, true, "ok.png");
