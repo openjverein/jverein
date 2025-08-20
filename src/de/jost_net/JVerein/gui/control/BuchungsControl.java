@@ -2074,7 +2074,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return editable = true;
   }
 
-  public boolean isSplitBuchungAbgeschlossen() throws ApplicationException
+  public boolean isSplitBuchungEditable() throws ApplicationException
   {
     try
     {
@@ -2094,14 +2094,14 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                     "Buchung wurde bereits am %s von %s abgeschlossen.",
                     new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
                     ja.getName()));
-            return true;
+            return editable = false;
           }
           Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
           if (spb != null)
           {
             GUI.getStatusBar().setErrorText(
                 "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-            return true;
+            return editable = false;
           }
         }
       }
@@ -2111,7 +2111,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return false;
+    return editable = true;
   }
 
   public void buchungSpeichern() throws ApplicationException
