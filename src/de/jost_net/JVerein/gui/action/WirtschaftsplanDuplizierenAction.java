@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
@@ -29,19 +30,25 @@ public class WirtschaftsplanDuplizierenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof Wirtschaftsplan))
+    if (!(context instanceof Wirtschaftsplan))
     {
-      throw new ApplicationException("Fehler beim Duplizieren!");
+      throw new ApplicationException("Kein Wirtschaftsplan ausgewählt");
     }
-    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) context;
+    Wirtschaftsplan wirtschaftsplan;
     try
     {
       WirtschaftsplanDetailView view = new WirtschaftsplanDetailView();
+      wirtschaftsplan = Einstellungen.getDBService()
+          .createObject(Wirtschaftsplan.class, null);
+      wirtschaftsplan.overwrite((Wirtschaftsplan) context);
+      //Alte ID wird benötigt, damit die Posten korrekt dupliziert werden
+      wirtschaftsplan.setId(((Wirtschaftsplan) context).getID());
       GUI.startView(view, wirtschaftsplan);
       wirtschaftsplan.setId(null);
     }
-    catch (RemoteException e) {
-      throw new ApplicationException("Fehler beim Duplizieren");
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Duplizieren", e);
     }
   }
 }
