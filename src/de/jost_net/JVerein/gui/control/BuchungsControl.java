@@ -275,6 +275,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private SelectInput steuer;
 
+  private CheckboxInput geprueft;
+
   private enum RANGE
   {
     MONAT,
@@ -340,6 +342,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
+    b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
@@ -687,6 +690,16 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     kommentar = new TextAreaInput(getBuchung().getKommentar(), 1024);
     kommentar.setHeight(50);
     return kommentar;
+  }
+
+  public CheckboxInput getGeprueft() throws RemoteException
+  {
+    if (geprueft != null && !geprueft.getControl().isDisposed())
+    {
+      return geprueft;
+    }
+    geprueft = new CheckboxInput(getBuchung().getGeprueft());
+    return geprueft;
   }
 
   public Input getBuchungsart() throws RemoteException
@@ -1565,15 +1578,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     else
     {
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+
       buchungsList.removeAll();
 
       for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
       }
+
+      // Summenzeile neu laden
+      buchungsList.featureEvent(
+          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
       buchungsList.sort();
     }
-
     informKontoChangeListener();
 
     return buchungsList;
@@ -1784,7 +1801,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       BackgroundTask t = new BackgroundTask()
       {
 
-        @SuppressWarnings("unused")
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {

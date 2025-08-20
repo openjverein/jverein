@@ -2,7 +2,6 @@ package de.jost_net.JVerein.server.DDLTool;
 
 import java.io.StringReader;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import de.jost_net.JVerein.server.DBSupportH2Impl;
@@ -83,54 +82,19 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public void execute(String statement) throws ApplicationException
   {
-    execute(statement, true);
-  }
-
-  public void execute(String statement, boolean setVersion)
-      throws ApplicationException
-  {
     if (statement == null)
     {
       throw new ApplicationException("Leeres Statement");
     }
-    try
+    try (Statement stmt = conn.createStatement())
     {
       Logger.info(statement);
-      ScriptExecutor.execute(new StringReader(statement), conn, null);
-      if (setVersion)
-      {
-        setNewVersion(nr);
-      }
+      stmt.executeUpdate(statement);
     }
     catch (Exception e)
     {
       Logger.error("unable to execute update", e);
       throw new ApplicationException("Fehler beim Ausführen des Updates", e);
-    }
-  }
-
-  public void setNewVersion(int newVersion) throws ApplicationException
-  {
-    try
-    {
-      String msg = "JVerein-DB-Update: " + newVersion;
-      monitor.setStatusText(msg);
-      Logger.info(msg);
-      Statement stmt = conn.createStatement();
-      int anzahl = stmt.executeUpdate(
-          "UPDATE version SET version = " + newVersion + " WHERE id = 1");
-      if (anzahl == 0)
-      {
-        stmt.executeUpdate(
-            "INSERT INTO version VALUES (1, " + newVersion + ")");
-      }
-      stmt.close();
-    }
-    catch (SQLException e)
-    {
-      Logger.error("Versionsnummer kann nicht eingefügt werden.", e);
-      throw new ApplicationException(
-          "Versionsnummer kann nicht gespeichert werden.");
     }
   }
 
@@ -140,7 +104,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     switch (drv)
     {
       case H2:
-        sb.append("CREATE TABLE " + table.getName() + "(");
+        sb.append("CREATE TABLE IF NOT EXISTS " + table.getName() + "(");
         for (Column c : table.getColumns())
         {
           if (c.isAutoincrement())
@@ -160,7 +124,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
             "PRIMARY KEY (" + table.getPrimaryKey()[0].getName() + "));\n");
         break;
       case MYSQL:
-        sb.append("CREATE TABLE " + table.getName() + "(");
+        sb.append("CREATE TABLE IF NOT EXISTS " + table.getName() + "(");
         for (Column c : table.getColumns())
         {
           sb.append(c.getName() + " " + getType(c));
@@ -183,10 +147,20 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public String addColumn(String table, Column col)
   {
-    String ret = "ALTER TABLE " + table + " ADD " + col.getName() + " ";
-    ret += getType(col);
-    ret += ";\n";
-    return ret;
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " ADD IF NOT EXISTS " + col.getName()
+            + " " + getType(col) + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER IGNORE TABLE " + table + " ADD " + col.getName() + " "
+            + getType(col) + ";\n";
+      }
+    }
+    return "";
   }
 
   public String alterColumn(String table, Column col)
@@ -246,7 +220,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER TABLE " + table + " CHANGE " + columnold + " "
+        return "ALTER IGNORE TABLE " + table + " CHANGE " + columnold + " "
             + colnew.getName() + " " + getType(colnew) + ";\n";
       }
     }
@@ -255,7 +229,19 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
 
   public String dropColumn(String table, String column)
   {
-    return "ALTER TABLE " + table + " DROP COLUMN " + column + ";\n";
+    switch (drv)
+    {
+      case H2:
+      {
+        return "ALTER TABLE " + table + " DROP COLUMN IF EXISTS " + column
+            + ";\n";
+      }
+      case MYSQL:
+      {
+        return "ALTER IGNORE TABLE " + table + " DROP COLUMN " + column + ";\n";
+      }
+    }
+    return "";
   }
 
   private String getType(Column col)
@@ -354,7 +340,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         execute("ALTER TABLE " + table + " ADD CONSTRAINT IF NOT EXISTS "
             + constraintname + " FOREIGN KEY (" + column + ") REFERENCES "
             + reftable + "(" + refcolumn + ") ON DELETE " + ondelete
-            + " ON UPDATE " + onupdate + " NOCHECK;\n", true);
+            + " ON UPDATE " + onupdate + " NOCHECK;\n");
       }
         break;
       case MYSQL:
@@ -372,14 +358,13 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
         {
           // Wenn Foreign Key schon existiert ist es auch ok;
         }
-        setNewVersion(nr);
       }
     }
   }
 
   public String dropTable(String table)
   {
-    return "drop table " + table + ";\n";
+    return "drop table IF EXISTS " + table + ";\n";
   }
 
   public String dropForeignKey(String constraintname, String table)

@@ -29,7 +29,6 @@ import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
-import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -379,13 +378,13 @@ public class Einstellungen
       return defaultValue;
     }
 
-    public static Ausgabeart getByKey(int key)
+    public static Property getByKey(String key)
     {
-      for (Ausgabeart art : Ausgabeart.values())
+      for (Property prop : Property.values())
       {
-        if (art.getKey() == key)
+        if (prop.getKey() == key)
         {
-          return art;
+          return prop;
         }
       }
       return null;

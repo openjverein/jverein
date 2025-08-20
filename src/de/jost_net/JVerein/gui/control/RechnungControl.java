@@ -17,10 +17,9 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -34,12 +33,14 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -48,13 +49,15 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -190,11 +193,16 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control, RechnungControl.TYP.RECHNUNG);
+          new Rechnungsausgabe(getRechnungen(currentObject), control,
+              TYP.RECHNUNG);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Rechnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -214,11 +222,16 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Rechnungsausgabe(control, RechnungControl.TYP.MAHNUNG);
+          new Rechnungsausgabe(getRechnungen(currentObject), control,
+              TYP.MAHNUNG);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Mahnung Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -311,41 +324,37 @@ public class RechnungControl extends DruckMailControl implements Savable
         // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
         limit = Math.abs((Double) getDoubleAusw().getValue());
       }
-      String sql = "SELECT DISTINCT " + Sollbuchung.T_RECHNUNG + ", "
-          + Sollbuchung.T_BETRAG + ", " + "sum(buchung.betrag) FROM "
-          + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung on "
-          + Sollbuchung.TABLE_NAME_ID + " = " + Buchung.T_SOLLBUCHUNG
-          + " WHERE " + Sollbuchung.T_RECHNUNG + " is not null " + " group by "
-          + Sollbuchung.TABLE_NAME_ID;
+
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          Sollbuchung.TABLE_NAME);
+      it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
+      it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+          + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+      it.leftJoin(
+          "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
+              + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
+              + ") AS buchung",
+          Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+
       if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
       {
-        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) < "
-            + Sollbuchung.T_BETRAG + " - " + limit.toString();
+        it.addHaving("dif < -" + limit.toString());
       }
       else
       {
-        sql += " HAVING CAST(COALESCE(SUM(buchung.betrag),0) AS DECIMAL(10,2)) > "
-            + Sollbuchung.T_BETRAG + " + " + limit.toString();
+        it.addHaving("dif > " + limit.toString());
       }
-
-      @SuppressWarnings("unchecked")
-      ArrayList<String> diffIds = (ArrayList<String>) Einstellungen
-          .getDBService().execute(sql, null, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              ArrayList<String> list = new ArrayList<>();
-              while (rs.next())
-              {
-                list.add(rs.getString(1));
-              }
-              return list;
-            }
-          });
+      it.addGroupBy(Sollbuchung.T_RECHNUNG);
+      ArrayList<String> diffIds = new ArrayList<>();
+      while (it.hasNext())
+      {
+        PseudoDBObject o = it.next();
+        diffIds.add(String.valueOf(o.getAttribute("rid")));
+      }
       if (diffIds.size() == 0)
+      {
         return PseudoIterator.fromArray(new GenericObject[] {});
+      }
       rechnungenIt
           .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
     }
@@ -461,7 +470,7 @@ public class RechnungControl extends DruckMailControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
     nummer.setName("Rechnungsnummer");
     nummer.disable();
-    
+
     return nummer;
   }
 
@@ -729,10 +738,10 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
-  public Button getRechnungDruckUndMailButton()
+  public ButtonRtoL getRechnungDruckUndMailButton()
   {
 
-    Button b = new Button("Druck und Mail", new Action()
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
     {
 
       @Override
@@ -745,10 +754,10 @@ public class RechnungControl extends DruckMailControl implements Savable
     return b;
   }
 
-  public Button getMahnungDruckUndMailButton()
+  public ButtonRtoL getMahnungDruckUndMailButton()
   {
 
-    Button b = new Button("Mahnung Druck und Mail", new Action()
+    ButtonRtoL b = new ButtonRtoL("Mahnung Druck und Mail", new Action()
     {
 
       @Override
@@ -784,5 +793,68 @@ public class RechnungControl extends DruckMailControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private Rechnung[] getRechnungen(Object currentObject)
+      throws RemoteException, ApplicationException
+  {
+    Rechnung[] rechnungen = null;
+    if (currentObject != null && currentObject instanceof Rechnung[])
+    {
+      rechnungen = (Rechnung[]) currentObject;
+    }
+    else if (currentObject != null && currentObject instanceof Rechnung)
+    {
+      rechnungen = (new Rechnung[] { (Rechnung) currentObject });
+    }
+    else
+    {
+      List<Rechnung> rechn = PseudoIterator.asList(getRechnungIterator());
+      rechnungen = (Rechnung[]) rechn.toArray(new Rechnung[rechn.size()]);
+    }
+
+    if (rechnungen == null || rechnungen.length == 0)
+    {
+      throw new ApplicationException("Keine passende Rechnung gefunden.");
+    }
+    return rechnungen;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+    Rechnung[] rechnungen = getRechnungen(object);
+    for (Rechnung r : rechnungen)
+    {
+      String mail = r.getMitglied().getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      Mitglied m = r.getMitglied();
+      String dokument = "Rechnung " + r.getID() + " vom "
+          + Datum.formatDate(r.getDatum()) + " über "
+          + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
+          + "€ und Fehlbetrag " + Einstellungen.DECIMALFORMAT
+              .format((r.getBetrag() - r.getIstSumme()))
+          + "€";
+      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
   }
 }

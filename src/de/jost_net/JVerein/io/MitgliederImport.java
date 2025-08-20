@@ -68,7 +68,8 @@ public class MitgliederImport implements Importer
           props);
       Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
           ResultSet.CONCUR_READ_ONLY);
-      results = stmt.executeQuery("SELECT * FROM " + fil.substring(0, pos));
+      results = stmt
+          .executeQuery("SELECT * FROM \"" + fil.substring(0, pos) + "\"");
 
       try
       {

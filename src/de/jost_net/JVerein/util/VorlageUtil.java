@@ -25,11 +25,13 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -76,8 +78,11 @@ public class VorlageUtil
           map = new RechnungMap().getMap((Rechnung) obj, map);
           map = new MitgliedMap().getMap(mitglied, map);
           break;
-        case KONTOAUSZUG_MITGLIED_DATEINAME:
         case PRENOTIFICATION_MITGLIED_DATEINAME:
+          map = new LastschriftMap().getMap((Lastschrift) obj, map);
+          map = new MitgliedMap().getMap(mitglied, map);
+          break;
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -150,8 +155,11 @@ public class VorlageUtil
           map = RechnungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
           break;
-        case KONTOAUSZUG_MITGLIED_DATEINAME:
         case PRENOTIFICATION_MITGLIED_DATEINAME:
+          map = LastschriftMap.getDummyMap(map);
+          map = MitgliedMap.getDummyMap(map);
+          break;
+        case KONTOAUSZUG_MITGLIED_DATEINAME:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:
