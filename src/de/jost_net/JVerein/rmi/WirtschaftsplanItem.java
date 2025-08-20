@@ -29,7 +29,6 @@ public interface WirtschaftsplanItem extends DBObject
 
   void setBuchungsartId(String buchungsartId) throws RemoteException;
 
-
   Buchungsklasse getBuchungsklasse() throws RemoteException;
 
   void setBuchungsklasseId(String buchungsklasseId) throws RemoteException;

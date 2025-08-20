@@ -35,10 +35,11 @@ import java.util.List;
 public class WirtschaftsplanAddBuchungsartAction implements Action
 {
   private final WirtschaftsplanControl control;
+
   private final int art;
 
-  public WirtschaftsplanAddBuchungsartAction(
-      WirtschaftsplanControl control, int art)
+  public WirtschaftsplanAddBuchungsartAction(WirtschaftsplanControl control,
+      int art)
   {
     this.control = control;
     this.art = art;
@@ -47,7 +48,8 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof WirtschaftsplanNode)) {
+    if (!(context instanceof WirtschaftsplanNode))
+    {
       throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
     }
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
@@ -67,7 +69,8 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
 
       iterator = Einstellungen.getDBService().createList(Buchungsart.class);
       iterator.addFilter("art = ?", art);
-      if (!(boolean) Einstellungen.getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+      if (!(boolean) Einstellungen.getEinstellung(
+          Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         String buchungsklasseId = node.getBuchungsklasse().getID();
         iterator.addFilter("buchungsklasse = ?", buchungsklasseId);
@@ -92,8 +95,7 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
         }
       }
 
-      DropdownDialog<Buchungsart> dialog = new DropdownDialog<>(
-          buchungsarten);
+      DropdownDialog<Buchungsart> dialog = new DropdownDialog<>(buchungsarten);
       Buchungsart buchungsart = dialog.open();
 
       if (buchungsart == null)
@@ -113,11 +115,12 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
         control.getAusgaben();
       }
     }
-    catch (OperationCanceledException ignored) {}
+    catch (OperationCanceledException ignored)
+    {
+    }
     catch (Exception e)
     {
-      throw new ApplicationException(
-          "Fehler beim Hinzufügen der Buchungsart");
+      throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
     }
   }
 }

@@ -54,13 +54,17 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
 
     SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
 
-    LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen", true);
+    LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen",
+        true);
     EditTreePart treeEinnahmen = control.getEinnahmen();
-    treeEinnahmen.setContextMenu(new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
+    treeEinnahmen.setContextMenu(
+        new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
     einnahmen.addPart(treeEinnahmen);
-    LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben", true);
+    LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben",
+        true);
     EditTreePart treeAusgaben = control.getAusgaben();
-    treeAusgaben.setContextMenu(new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
+    treeAusgaben.setContextMenu(
+        new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
     ausgaben.addPart(treeAusgaben);
 
     ButtonArea buttons = new ButtonArea();

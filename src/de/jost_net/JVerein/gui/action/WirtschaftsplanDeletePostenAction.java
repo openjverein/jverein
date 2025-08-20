@@ -77,8 +77,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
             while (artIterator.hasNext())
             {
               WirtschaftsplanNode posten = (WirtschaftsplanNode) artIterator.next();
-              ((WirtschaftsplanNode) posten.getParent()).removeChild(
-                  posten);
+              ((WirtschaftsplanNode) posten.getParent()).removeChild(posten);
             }
 
             if (currentNode.getIst() == 0.)

@@ -28,13 +28,16 @@ public class WirtschaftsplanDeleteAction implements Action
       throw new ApplicationException("Kein Wirtschaftsplan ausgewählt");
     }
 
-    String mehrzahl = wirtschaftsplaene.length > 1 ? "Wirtschaftspläne" : "Wirtschaftsplan";
+    String mehrzahl = wirtschaftsplaene.length > 1 ?
+        "Wirtschaftspläne" :
+        "Wirtschaftsplan";
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle(mehrzahl + " löschen");
     d.setPanelText(mehrzahl + " löschen?");
     d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-    String text = "Wollen Sie diese" + (wirtschaftsplaene.length > 1 ? "":"s") + " " + mehrzahl + " wirklich löschen?"
-        + "\nDiese Daten können nicht wieder hergestellt werden!";
+    String text = "Wollen Sie diese" + (wirtschaftsplaene.length > 1 ?
+        "" :
+        "s") + " " + mehrzahl + " wirklich löschen?" + "\nDiese Daten können nicht wieder hergestellt werden!";
     d.setText(text);
 
     try

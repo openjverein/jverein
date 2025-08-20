@@ -36,7 +36,7 @@ public class WirtschaftsplanAddPostenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (! (context instanceof WirtschaftsplanNode))
+    if (!(context instanceof WirtschaftsplanNode))
     {
       throw new ApplicationException("Fehler beim Anlegen des Postens");
     }
@@ -48,8 +48,7 @@ public class WirtschaftsplanAddPostenAction implements Action
           .createObject(WirtschaftsplanItem.class, null);
       item.setBuchungsartId(node.getBuchungsart().getID());
       item.setBuchungsklasseId(
-          ((WirtschaftsplanNode) node.getParent()).getBuchungsklasse()
-              .getID());
+          ((WirtschaftsplanNode) node.getParent()).getBuchungsklasse().getID());
       item.setSoll(0);
       item.setPosten("Neuer Posten");
 
@@ -57,7 +56,9 @@ public class WirtschaftsplanAddPostenAction implements Action
 
       control.reloadSoll(node);
     }
-    catch (OperationCanceledException ignored) {}
+    catch (OperationCanceledException ignored)
+    {
+    }
     catch (Exception e)
     {
       throw new ApplicationException("Fehler beim Anlegen des Postens");

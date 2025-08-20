@@ -38,8 +38,8 @@ public class WirtschaftsplanPDF
   private final Map<WirtschaftsplanNode, Double> sollSummen;
 
   public WirtschaftsplanPDF(List<WirtschaftsplanNode> einnahmenList,
-                            List<WirtschaftsplanNode> ausgabenList, File file,
-                            Wirtschaftsplan wirtschaftsplan) throws ApplicationException
+      List<WirtschaftsplanNode> ausgabenList, File file,
+      Wirtschaftsplan wirtschaftsplan) throws ApplicationException
   {
     sollSummen = new HashMap<>();
     try

@@ -27,10 +27,11 @@ import java.util.Date;
 public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     implements Wirtschaftsplan
 {
-  private static final long serialVersionUID = 1L;
-
   public final static int EINNAHME = 0;
+
   public final static int AUSGABE = 1;
+
+  private static final long serialVersionUID = 1L;
 
   private final static int BETRAG_COL = 2;
 
@@ -59,12 +60,14 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getBezeichung() throws RemoteException {
+  public String getBezeichung() throws RemoteException
+  {
     return (String) getAttribute("bezeichnung");
   }
 
   @Override
-  public void setBezeichnung(String bezeichnung) throws RemoteException {
+  public void setBezeichnung(String bezeichnung) throws RemoteException
+  {
     setAttribute("bezeichnung", bezeichnung);
   }
 
@@ -97,80 +100,66 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   {
     DBService service = Einstellungen.getDBService();
 
-    String sqlSoll = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " +
-        "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " +
-        "AND wirtschaftsplanitem.buchungsart = buchungsart.id " +
-        "AND buchungsart.art = ? " +
-        "AND wirtschaftsplan.id = ? " +
-        "GROUP BY wirtschaftsplan.id";
+    String sqlSoll = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) " + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan " + "AND wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "AND wirtschaftsplan.id = ? " + "GROUP BY wirtschaftsplan.id";
 
-    String sqlIst = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " +
-        "FROM wirtschaftsplan, buchungsart, buchung, konto " +
-        "WHERE buchung.buchungsart = buchungsart.id " +
-        "AND buchung.konto = konto.id " +
-        "AND buchung.datum >= wirtschaftsplan.datum_von " +
-        "AND buchung.datum <= wirtschaftsplan.datum_bis " +
-        "AND buchungsart.art = ? " +
-        "AND konto.kontoart > ? " +
-        "AND konto.kontoart < ? " +
-        "AND wirtschaftsplan.id = ? " +
-        "GROUP BY wirtschaftsplan.id";
+    String sqlIst = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist " + "FROM wirtschaftsplan, buchungsart, buchung, konto " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.konto = konto.id " + "AND buchung.datum >= wirtschaftsplan.datum_von " + "AND buchung.datum <= wirtschaftsplan.datum_bis " + "AND buchungsart.art = ? " + "AND konto.kontoart > ? " + "AND konto.kontoart < ? " + "AND wirtschaftsplan.id = ? " + "GROUP BY wirtschaftsplan.id";
 
     switch (s)
     {
       case "planEinnahme":
-        return service.execute(sqlSoll, new Object[] { EINNAHME, this.getID() }, resultSet -> {
-          try
-          {
-            resultSet.next();
-            return resultSet.getDouble(BETRAG_COL);
-          }
-          catch (Exception e)
-          {
-            return 0.;
-          }
-        });
+        return service.execute(sqlSoll, new Object[] { EINNAHME, this.getID() },
+            resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
       case "planAusgabe":
-        return service.execute(sqlSoll, new Object[] { AUSGABE, this.getID() }, resultSet -> {
-          try
-          {
-            resultSet.next();
-            return resultSet.getDouble(BETRAG_COL);
-          }
-          catch (Exception e)
-          {
-            return 0.;
-          }
-        });
+        return service.execute(sqlSoll, new Object[] { AUSGABE, this.getID() },
+            resultSet -> {
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
       case "istEinnahme":
         return service.execute(sqlIst,
             new Object[] { EINNAHME, 0, Kontoart.LIMIT.getKey(), this.getID() },
             resultSet -> {
-          try
-          {
-            resultSet.next();
-            return resultSet.getDouble(BETRAG_COL);
-          }
-          catch (Exception e)
-          {
-            return 0.;
-          }
-        });
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
       case "istAusgabe":
         return service.execute(sqlIst,
             new Object[] { AUSGABE, 0, Kontoart.LIMIT.getKey(), this.getID() },
             resultSet -> {
-          try
-          {
-            resultSet.next();
-            return resultSet.getDouble(BETRAG_COL);
-          }
-          catch (Exception e)
-          {
-            return 0.;
-          }
-        });
+              try
+              {
+                resultSet.next();
+                return resultSet.getDouble(BETRAG_COL);
+              }
+              catch (Exception e)
+              {
+                return 0.;
+              }
+            });
       case "istRücklagenGebildet":
         return service.execute(sqlIst,
             new Object[] { EINNAHME, Kontoart.LIMIT.getKey(),
@@ -236,13 +225,15 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
         return (Double) getAttribute("istAusgabe") + (Double) getAttribute(
             "istVerbindlichkeiten");
       case "planSaldo":
-        return (Double) getAttribute("planEinnahme") + (Double) getAttribute("planAusgabe");
+        return (Double) getAttribute("planEinnahme") + (Double) getAttribute(
+            "planAusgabe");
       case "istSaldo":
         return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
             "istAusgabe") + (Double) getAttribute(
             "istForderungen") + (Double) getAttribute("istVerbindlichkeiten");
       case "differenz":
-        return (Double) getAttribute("istSaldo") - (Double) getAttribute("planSaldo");
+        return (Double) getAttribute("istSaldo") - (Double) getAttribute(
+            "planSaldo");
       default:
         return super.getAttribute(s);
     }

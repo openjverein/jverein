@@ -57,18 +57,17 @@ import java.util.*;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
+  public final static String AUSWERTUNG_PDF = "PDF";
+
+  public final static String AUSWERTUNG_CSV = "CSV";
+
   private EditTreePart einnahmen;
 
   private EditTreePart ausgaben;
 
   private WirtschaftsplanUebersichtPart uebersicht;
 
-  public final static String AUSWERTUNG_PDF = "PDF";
-
-  public final static String AUSWERTUNG_CSV = "CSV";
-
   private boolean tableChanged = false;
-
 
   /**
    * Erzeugt einen neuen WirtschaftsplanControl fuer die angegebene View.
@@ -107,8 +106,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
-    wirtschaftsplaene.setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
-    wirtschaftsplaene.setAction(new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
+    wirtschaftsplaene.setContextMenu(
+        new WirtschaftsplanListMenu(wirtschaftsplaene));
+    wirtschaftsplaene.setAction(
+        new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
     VorZurueckControl.setObjektListe(null, null);
 
     return wirtschaftsplaene;
@@ -169,44 +170,40 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     DBService service = Einstellungen.getDBService();
 
-    DBIterator<Buchungsklasse> buchungsklasseIterator = service.createList(Buchungsklasse.class);
+    DBIterator<Buchungsklasse> buchungsklasseIterator = service.createList(
+        Buchungsklasse.class);
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
-      nodes.put(klasse.getID(), new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
+      nodes.put(klasse.getID(),
+          new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " +
-        "FROM wirtschaftsplanitem, buchungsart " +
-        "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " +
-        "GROUP BY wirtschaftsplanitem.buchungsklasse";
+    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) " + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? " + "GROUP BY wirtschaftsplanitem.buchungsklasse";
 
-    service.execute(sql, new Object[] { wirtschaftsplan.getID(), art }, resultSet -> {
-      while (resultSet.next())
-      {
-        DBIterator<Buchungsklasse> iterator = service.createList(
-            Buchungsklasse.class);
-        iterator.addFilter("id = ?", resultSet.getLong(ID_COL));
-        if (!iterator.hasNext())
-        {
-          continue;
-        }
+    service.execute(sql, new Object[] { wirtschaftsplan.getID(), art },
+        resultSet -> {
+          while (resultSet.next())
+          {
+            DBIterator<Buchungsklasse> iterator = service.createList(
+                Buchungsklasse.class);
+            iterator.addFilter("id = ?", resultSet.getLong(ID_COL));
+            if (!iterator.hasNext())
+            {
+              continue;
+            }
 
-        double soll = resultSet.getDouble(BETRAG_COL);
-        nodes.get(resultSet.getString(ID_COL)).setSoll(soll);
-      }
+            double soll = resultSet.getDouble(BETRAG_COL);
+            nodes.get(resultSet.getString(ID_COL)).setSoll(soll);
+          }
 
-      return nodes;
-    });
+          return nodes;
+        });
 
-    sql = "SELECT %s.buchungsklasse, sum(buchung.betrag) " +
-        "FROM buchung, buchungsart " +
-        "WHERE buchung.buchungsart = buchungsart.id " +
-        "AND buchung.datum >= ? AND buchung.datum <= ? " +
-        "AND buchungsart.art = ? " +
-        "GROUP BY %s.buchungsklasse";
+    sql = "SELECT %s.buchungsklasse, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "GROUP BY %s.buchungsklasse";
 
-    if ((Boolean) Einstellungen.getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((Boolean) Einstellungen.getEinstellung(
+        Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       sql = String.format(sql, "buchung", "buchung");
     }
@@ -215,33 +212,34 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       sql = String.format(sql, "buchungsart", "buchungsart");
 
     }
-    service.execute(sql,
-        new Object[] { wirtschaftsplan.getDatumVon(),
-            wirtschaftsplan.getDatumBis(), art }, resultSet -> {
-          while (resultSet.next())
-          {
-            DBIterator<Buchungsklasse> iterator = service.createList(
-                Buchungsklasse.class);
-            String key = resultSet.getString(ID_COL);
-            iterator.addFilter("id = ?", key);
-            if (!iterator.hasNext())
-            {
-              continue;
-            }
+    service.execute(sql, new Object[] { wirtschaftsplan.getDatumVon(),
+        wirtschaftsplan.getDatumBis(), art }, resultSet -> {
+      while (resultSet.next())
+      {
+        DBIterator<Buchungsklasse> iterator = service.createList(
+            Buchungsklasse.class);
+        String key = resultSet.getString(ID_COL);
+        iterator.addFilter("id = ?", key);
+        if (!iterator.hasNext())
+        {
+          continue;
+        }
 
-            double ist = resultSet.getDouble(BETRAG_COL);
-            nodes.get(key).setIst(ist);
-          }
+        double ist = resultSet.getDouble(BETRAG_COL);
+        nodes.get(key).setIst(ist);
+      }
 
-          return nodes;
-        });
+      return nodes;
+    });
 
-    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()), null);
+    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
+        null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
     treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
-    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten", null, true);
+    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten",
+        null, true);
     treePart.addColumn("Soll", "soll", formatter, true);
     treePart.addColumn("Ist", "ist", formatter);
 
@@ -253,22 +251,25 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
       WirtschaftsplanNode node = (WirtschaftsplanNode) object;
 
-
       WirtschaftsplanItem item = node.getWirtschaftsplanItem();
 
-      try {
-        switch (attribute) {
+      try
+      {
+        switch (attribute)
+        {
           case "buchungsartbezeichnung_posten":
             item.setPosten(newValue);
             break;
           case "soll":
-            try {
+            try
+            {
               NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
               item.setSoll(nf.parse(newValue).doubleValue());
             }
             catch (NumberFormatException | ParseException e)
             {
-              GUI.getStatusBar().setErrorText("Bitte gib eine gültige Zahl im deutschen Format ein!");
+              GUI.getStatusBar().setErrorText(
+                  "Bitte gib eine gültige Zahl im deutschen Format ein!");
               throw new ApplicationException("Keine Zahl eingegeben");
             }
             break;
@@ -300,13 +301,14 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return treePart;
   }
 
+  public WirtschaftsplanUebersichtPart getUebersicht()
+  {
+    return uebersicht;
+  }
+
   public void setUebersicht(WirtschaftsplanUebersichtPart uebersicht)
   {
     this.uebersicht = uebersicht;
-  }
-
-  public WirtschaftsplanUebersichtPart getUebersicht() {
-    return uebersicht;
   }
 
   public void reloadSoll(WirtschaftsplanNode parent)
@@ -316,7 +318,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       @SuppressWarnings("rawtypes") GenericIterator outerIterator = parent.getChildren();
       double klasseSoll = 0;
-      while(outerIterator.hasNext())
+      while (outerIterator.hasNext())
       {
         WirtschaftsplanNode child = (WirtschaftsplanNode) outerIterator.next();
         double artSoll = 0;
@@ -390,7 +392,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
         while (iterator.hasNext())
         {
-          iterator.next().delete(); //Löschen alter Einträge, wird später neu angelegt
+          iterator.next()
+              .delete(); //Löschen alter Einträge, wird später neu angelegt
         }
       }
 
@@ -512,8 +515,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
                 getWirtschaftsplan());
             break;
           default:
-            GUI.getStatusBar()
-                .setErrorText("Report konnte nicht erzeugt werden! Das Format ist unbekannt!");
+            GUI.getStatusBar().setErrorText(
+                "Report konnte nicht erzeugt werden! Das Format ist unbekannt!");
         }
       }
 

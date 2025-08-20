@@ -39,22 +39,9 @@ import java.util.Map;
 
 public class WirtschaftsplanCSV
 {
-  private static CellProcessor[] getProcessors()
-  {
-
-    return new CellProcessor[] { new NotNull(), //Buchungsklasse
-        new NotNull(), //Buchungsart
-        new NotNull(), //Posten
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)),
-        //Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT))
-        //Ausgaben
-    };
-  }
-
   @SuppressWarnings("ThrowFromFinallyBlock")
   public WirtschaftsplanCSV(List<WirtschaftsplanNode> einnahmenList,
-                            List<WirtschaftsplanNode> ausgabenList, final File file)
+      List<WirtschaftsplanNode> ausgabenList, final File file)
       throws ApplicationException
   {
     ICsvMapWriter writer = null;
@@ -115,6 +102,19 @@ public class WirtschaftsplanCSV
         }
       }
     }
+  }
+
+  private static CellProcessor[] getProcessors()
+  {
+
+    return new CellProcessor[] { new NotNull(), //Buchungsklasse
+        new NotNull(), //Buchungsart
+        new NotNull(), //Posten
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)),
+        //Einnahmen
+        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT))
+        //Ausgaben
+    };
   }
 
   private void iterateOverNodes(

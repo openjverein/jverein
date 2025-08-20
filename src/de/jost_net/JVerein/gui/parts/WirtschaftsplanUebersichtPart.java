@@ -68,16 +68,17 @@ public class WirtschaftsplanUebersichtPart implements Part
     DBIterator<Konto> ruecklagenIterator = Einstellungen.getDBService()
         .createList(Konto.class);
     ruecklagenIterator.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
-    ruecklagenIterator.addFilter("kontoart < ?", Kontoart.LIMIT_RUECKLAGE.getKey());
+    ruecklagenIterator.addFilter("kontoart < ?",
+        Kontoart.LIMIT_RUECKLAGE.getKey());
 
     DBIterator<Konto> verbindlichkeitenIterator = Einstellungen.getDBService()
         .createList(Konto.class);
-    verbindlichkeitenIterator.addFilter("kontoart > ?", Kontoart.LIMIT_RUECKLAGE.getKey());
+    verbindlichkeitenIterator.addFilter("kontoart > ?",
+        Kontoart.LIMIT_RUECKLAGE.getKey());
 
     SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
 
-    von = new DateInput(
-        control.getWirtschaftsplan().getDatumVon(),
+    von = new DateInput(control.getWirtschaftsplan().getDatumVon(),
         new JVDateFormatTTMMJJJJ());
     einnahmen.addLabelPair("Von", von);
     sollEinnahme = new DecimalInput(
@@ -116,8 +117,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
 
-    bis = new DateInput(
-        control.getWirtschaftsplan().getDatumBis(),
+    bis = new DateInput(control.getWirtschaftsplan().getDatumBis(),
         new JVDateFormatTTMMJJJJ());
     ausgaben.addLabelPair("Bis", bis);
     sollAusgaben = new DecimalInput(
@@ -133,7 +133,8 @@ public class WirtschaftsplanUebersichtPart implements Part
     if (verbindlichkeitenIterator.size() > 0)
     {
       DecimalInput istVerbindlichkeiten = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istVerbindlichkeiten"),
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("istVerbindlichkeiten"),
           Einstellungen.DECIMALFORMAT);
       istVerbindlichkeiten.disable();
       ausgaben.addLabelPair("Verbindlichkeiten Ist", istVerbindlichkeiten);
@@ -167,10 +168,8 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     try
     {
-      einnahmen = (List<WirtschaftsplanNode>) control.getEinnahmen()
-          .getItems();
-      ausgaben = (List<WirtschaftsplanNode>) control.getAusgaben()
-          .getItems();
+      einnahmen = (List<WirtschaftsplanNode>) control.getEinnahmen().getItems();
+      ausgaben = (List<WirtschaftsplanNode>) control.getAusgaben().getItems();
     }
     catch (RemoteException e)
     {
