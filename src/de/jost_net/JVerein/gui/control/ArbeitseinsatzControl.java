@@ -494,6 +494,17 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+                Mitglied.class, (String) z.getAttribute("mitgliedid"));
+            Beitragsgruppe b = m.getBeitragsgruppe();
+            zb.setBuchungsart(b.getBuchungsart());
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+            {
+              zb.setBuchungsklasseId(b.getBuchungsklasseId());
+            }
+            zb.setSteuer(b.getSteuer());
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");
