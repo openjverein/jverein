@@ -39,62 +39,70 @@ public class EinstellungenAnzeigeView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     // Allgemeine Einstellung zu Anzeige
-    ColumnLayout cols1 = new ColumnLayout(cont.getComposite(), 2);
+    ColumnLayout cols1 = new ColumnLayout(cont.getComposite(), 3);
     SimpleContainer left = new SimpleContainer(cols1.getComposite());
 
-    left.addLabelPair("Geburtsdatum Pflichtfeld",
-        control.getGeburtsdatumPflicht());
-    left.addLabelPair("Eintrittsdatum Pflichtfeld",
-        control.getEintrittsdatumPflicht());
-    left.addLabelPair("Sterbedatum", control.getSterbedatum());
-    left.addLabelPair("Kommunikationsdaten anzeigen",
-        control.getKommunikationsdaten());
-    left.addLabelPair("Sekundäre Beitragsgruppen anzeigen *",
-        control.getSekundaereBeitragsgruppen());
-    left.addLabelPair("Zusatzbeträge anzeigen *", control.getZusatzbetrag());
-    left.addLabelPair("Zusatzbeträge auch für Ausgetretene *",
-        control.getZusatzbetragAusgetretene());
-    left.addLabelPair("Vermerke anzeigen", control.getVermerke());
-    left.addLabelPair("Wiedervorlage anzeigen *", control.getWiedervorlage());
+    left.addHeadline("Feature Auswahl");
+    left.addLabelPair("Arbeitseinsatz anzeigen *", control.getArbeitseinsatz());
     left.addLabelPair("Kursteilnehmer anzeigen *", control.getKursteilnehmer());
-    left.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
-        control.getKursteilnehmerGebGesPflicht());
     left.addLabelPair("Lehrgänge anzeigen *", control.getLehrgaenge());
-    left.addLabelPair("Juristische Personen erlaubt",
-        control.getJuristischePersonen());
-    left.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
+    left.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
     left.addLabelPair("Mittelverwendung anzeigen *",
         control.getMittelverwendung());
+    left.addLabelPair("Nicht-Mitglieder anzeigen *",
+        control.getZusatzadressen());
     left.addLabelPair("Projekte anzeigen *", control.getProjekte());
-    left.addLabelPair("Spendenbescheinigungen anzeigen *",
-        control.getSpendenbescheinigungen());
     left.addLabelPair("Rechnungen/Mahnungen anzeigen *",
         control.getRechnungen());
+    left.addLabelPair("Spendenbescheinigungen anzeigen *",
+        control.getSpendenbescheinigungen());
+    left.addLabelPair("Wiedervorlage anzeigen *", control.getWiedervorlage());
+    left.addLabelPair("Zusatzbeträge anzeigen *", control.getZusatzbetrag());
+
+    SimpleContainer middle = new SimpleContainer(cols1.getComposite());
+    middle.addHeadline("Mitglieder Optionen");
+    middle.addLabelPair("Eintrittsdatum Pflichtfeld",
+        control.getEintrittsdatumPflicht());
+    middle.addLabelPair("Externe Mitgliedsnummer",
+        control.getExterneMitgliedsnummer());
+    middle.addLabelPair("(Externe) Mitgliedsnummer bei Namen anzeigen",
+        control.getMitgliedsnummerAnzeigen());
+    middle.addLabelPair("Geburtsdatum Pflichtfeld",
+        control.getGeburtsdatumPflicht());
+    middle.addLabelPair("Individuelle Beiträge *",
+        control.getIndividuelleBeitraege());
+    middle.addLabelPair("Juristische Personen erlaubt",
+        control.getJuristischePersonen());
+    middle.addLabelPair("Kommunikationsdaten anzeigen",
+        control.getKommunikationsdaten());
+    middle.addLabelPair("Mitgliedsfoto *", control.getMitgliedfoto());
+    middle.addLabelPair("Sekundäre Beitragsgruppen anzeigen *",
+        control.getSekundaereBeitragsgruppen());
+    middle.addLabelPair("Sterbedatum", control.getSterbedatum());
+    middle.addLabelPair("Vermerke anzeigen", control.getVermerke());
+    middle.addLabelPair("Zusatzbeträge auch für Ausgetretene *",
+        control.getZusatzbetragAusgetretene());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
-    right.addLabelPair("Lesefelder anzeigen *", control.getUseLesefelder());
-    right.addLabelPair("Nicht-Mitglieder anzeigen *",
-        control.getZusatzadressen());
+    right.addHeadline("Sonstiges");
     right.addLabelPair("Auslandsadressen *", control.getAuslandsadressen());
-    right.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
     right.addLabelPair("Dokumentenspeicherung *",
         control.getDokumentenspeicherung());
-    right.addLabelPair("Individuelle Beiträge *",
-        control.getIndividuelleBeitraege());
-    right.addLabelPair("Externe Mitgliedsnummer",
-        control.getExterneMitgliedsnummer());
-    right.addLabelPair("(Externe) Mitgliedsnummer bei Namen anzeigen",
-        control.getMitgliedsnummerAnzeigen());
+    right.addLabelPair("Kursteilnehmer Geburtsdatum und Geschlecht Pflichtfeld",
+        control.getKursteilnehmerGebGesPflicht());
     right.addLabelPair("Summen Anlagenkonto in Kontensaldo",
         control.getSummenAnlagenkonto());
-    right.addLabelPair("Basis für Berechnung des Alters",
+
+    ColumnLayout cols2 = new ColumnLayout(cont.getComposite(), 1);
+    SimpleContainer unten = new SimpleContainer(cols2.getComposite());
+    unten.addHeadline("Auswahl");
+    unten.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
-    // Einstellung zum Buchungsdialog
-    right.addLabelPair("Buchungsart Auswahl",
+    unten.addLabelPair("Buchungsart Auswahl",
         control.getBuchungBuchungsartAuswahl());
-    right.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
-    right.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
-    right.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
+    unten.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
+    unten.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
+    unten.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     cont.addSeparator();
     cont.addHeadline("* " + "Änderung erfordert Neustart");
