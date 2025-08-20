@@ -712,7 +712,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return geprueft;
     }
     geprueft = new CheckboxInput(getBuchung().getGeprueft());
-    geprueft.setEnabled(editable);
     return geprueft;
   }
 

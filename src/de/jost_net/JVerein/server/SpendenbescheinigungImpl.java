@@ -368,7 +368,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       for (Buchung b : buchungen)
       {
         b.setSpendenbescheinigungId(id);
-        b.store(false);
+        b.store();
       }
     }
   }

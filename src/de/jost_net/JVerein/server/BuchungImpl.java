@@ -970,32 +970,4 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     super.delete();
   }
 
-  @Override
-  public void store() throws RemoteException, ApplicationException
-  {
-    store(true);
-  }
-
-  @Override
-  public void store(boolean check) throws RemoteException, ApplicationException
-  {
-    if (check)
-    {
-      Jahresabschluss ja = getJahresabschluss();
-      if (ja != null)
-      {
-        throw new ApplicationException(
-            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-      }
-    }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit check false gespeichert.
-    super.store();
-  }
-
 }

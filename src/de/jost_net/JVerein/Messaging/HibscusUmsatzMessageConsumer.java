@@ -80,7 +80,7 @@ public class HibscusUmsatzMessageConsumer implements MessageConsumer
 
     Buchung b = list.next();
     b.setGeprueft(state);
-    b.store(false);
+    b.store();
   }
 
   /**

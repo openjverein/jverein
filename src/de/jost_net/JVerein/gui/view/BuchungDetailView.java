@@ -83,7 +83,6 @@ public class BuchungDetailView extends AbstractDetailView
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
     }, null, true, "document-save.png");
-    saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
 
     ButtonRtoL saveNextButton = new ButtonRtoL("Speichern und neu", context -> {
@@ -113,7 +112,6 @@ public class BuchungDetailView extends AbstractDetailView
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
     }, null, false, "go-next.png");
-    saveNextButton.setEnabled(editable);
     if (control.getBuchung().isNewObject())
     {
       buttons.addButton(saveNextButton);
