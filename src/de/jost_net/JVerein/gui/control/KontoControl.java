@@ -1105,7 +1105,7 @@ public class KontoControl extends FilterControl implements Savable
         getAnschaffung().enable();
         getAfaRestwert().enable();
         getAfaRestwert().setValue(
-            (Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
+            (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);
