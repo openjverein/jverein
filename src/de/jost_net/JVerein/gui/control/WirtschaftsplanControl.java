@@ -27,10 +27,10 @@ import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanPDF;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -55,7 +55,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.*;
 
-public class WirtschaftsplanControl extends VorZurueckControl
+public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
   private EditTreePart einnahmen;
 
@@ -66,6 +66,8 @@ public class WirtschaftsplanControl extends VorZurueckControl
   public final static String AUSWERTUNG_PDF = "PDF";
 
   public final static String AUSWERTUNG_CSV = "CSV";
+
+  private boolean tableChanged = false;
 
 
   /**
@@ -279,6 +281,8 @@ public class WirtschaftsplanControl extends VorZurueckControl
 
         WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
         reloadSoll(parent);
+
+        tableChanged = true;
       }
       catch (RemoteException e)
       {
@@ -347,6 +351,22 @@ public class WirtschaftsplanControl extends VorZurueckControl
     uebersicht.updateSoll();
   }
 
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
+
+    wirtschaftsplan.setBezeichnung(
+        (String) uebersicht.getBezeichnung().getValue());
+    Date von = (Date) uebersicht.getVon().getValue();
+    Date bis = (Date) uebersicht.getBis().getValue();
+    wirtschaftsplan.setDatumBis(bis);
+    wirtschaftsplan.setDatumVon(von);
+
+    return wirtschaftsplan;
+  }
+
   public void handleStore()
   {
     try
@@ -355,17 +375,12 @@ public class WirtschaftsplanControl extends VorZurueckControl
       @SuppressWarnings("unchecked") List<WirtschaftsplanNode> rootNodesAusgaben = (List<WirtschaftsplanNode>) ausgaben.getItems();
 
       DBService service = Einstellungen.getDBService();
-      Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
+      Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) prepareStore();
 
       DBTransaction.starten();
 
       checkDate();
 
-      wirtschaftsplan.setBezeichnung((String) uebersicht.getBezeichnung().getValue());
-      Date von = (Date) uebersicht.getVon().getValue();
-      Date bis = (Date) uebersicht.getBis().getValue();
-      wirtschaftsplan.setDatumBis(bis);
-      wirtschaftsplan.setDatumVon(von);
       wirtschaftsplan.store();
 
       if (!wirtschaftsplan.isNewObject())
@@ -389,6 +404,8 @@ public class WirtschaftsplanControl extends VorZurueckControl
       }
 
       DBTransaction.commit();
+
+      tableChanged = false;
 
       view.reload();
 
@@ -453,17 +470,7 @@ public class WirtschaftsplanControl extends VorZurueckControl
       fd.setFilterPath(path);
     }
 
-
-    try
-    {
-      fd.setFileName(new Dateiname("wirtschaftsplan", "",
-          (String) Einstellungen.getEinstellung(Einstellungen.Property.DATEINAMENMUSTER), type).get());
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          String.format("Fehler beim Erstellen der Datei: %s", e.getMessage()));
-    }
+    fd.setFileName("wirtschaftsplan_" + type);
 
     final String s = fd.open();
 
@@ -541,5 +548,27 @@ public class WirtschaftsplanControl extends VorZurueckControl
     {
       throw new ApplicationException("Bis-Datum muss nach Von-Datum liegen");
     }
+  }
+
+  @Override
+  public boolean hasChanged() throws RemoteException
+  {
+    if (!(getCurrentObject() instanceof Wirtschaftsplan))
+    {
+      return false;
+    }
+    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+
+    if (wirtschaftsplan.isNewObject())
+    {
+      return true;
+    }
+
+    if (wirtschaftsplan.isChanged())
+    {
+      return true;
+    }
+
+    return tableChanged;
   }
 }

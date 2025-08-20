@@ -19,13 +19,12 @@ package de.jost_net.JVerein.server;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBService;
 
 import java.rmi.RemoteException;
 import java.util.Date;
 
-public class WirtschaftsplanImpl extends AbstractDBObject
+public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     implements Wirtschaftsplan
 {
   private static final long serialVersionUID = 1L;

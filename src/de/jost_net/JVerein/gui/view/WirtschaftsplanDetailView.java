@@ -17,21 +17,23 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
-public class WirtschaftsplanDetailView extends AbstractView
+public class WirtschaftsplanDetailView extends AbstractDetailView
 {
+  private WirtschaftsplanControl control;
+
   @Override
   public void bind() throws Exception
   {
@@ -43,8 +45,7 @@ public class WirtschaftsplanDetailView extends AbstractView
 
     GUI.getView().setTitle("Wirtschaftsplanung");
 
-    final WirtschaftsplanControl control = new WirtschaftsplanControl(
-        this);
+    control = new WirtschaftsplanControl(this);
 
     WirtschaftsplanUebersichtPart uebersicht = new WirtschaftsplanUebersichtPart(
         control);
@@ -78,5 +79,11 @@ public class WirtschaftsplanDetailView extends AbstractView
     buttons.addButton("Speichern", context -> control.handleStore(), null,
         false, "document-save.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
   }
 }
