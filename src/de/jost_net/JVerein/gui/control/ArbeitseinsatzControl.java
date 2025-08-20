@@ -50,7 +50,9 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -491,6 +493,17 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+                Mitglied.class, (String) z.getAttribute("mitgliedid"));
+            Beitragsgruppe b = m.getBeitragsgruppe();
+            zb.setBuchungsart(b.getBuchungsart());
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+            {
+              zb.setBuchungsklasseId(b.getBuchungsklasseId());
+            }
+            zb.setSteuer(b.getSteuer());
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");

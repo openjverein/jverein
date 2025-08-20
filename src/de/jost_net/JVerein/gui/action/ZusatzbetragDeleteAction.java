@@ -81,7 +81,8 @@ public class ZusatzbetragDeleteAction implements Action
 
         z1.delete();
       }
-      GUI.getStatusBar().setSuccessText("gelöscht.");
+      GUI.getStatusBar().setSuccessText(
+          (z.length == 1 ? "Zusatzbetrag" : "Zusatzbeträge") + " gelöscht.");
     }
     catch (RemoteException e)
     {
