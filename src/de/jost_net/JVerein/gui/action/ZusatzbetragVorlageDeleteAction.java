@@ -16,14 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
 
 /**
  * Loeschen einer Zusatzbetragsvorlage.
@@ -35,7 +35,8 @@ public class ZusatzbetragVorlageDeleteAction implements Action
   public void handleAction(Object context) throws ApplicationException
   {
     ZusatzbetragVorlage[] z = null;
-    if (context != null && (context instanceof ZusatzbetragVorlage || context instanceof ZusatzbetragVorlage[]))
+    if (context != null && (context instanceof ZusatzbetragVorlage
+        || context instanceof ZusatzbetragVorlage[]))
     {
       if (context instanceof ZusatzbetragVorlage)
       {
