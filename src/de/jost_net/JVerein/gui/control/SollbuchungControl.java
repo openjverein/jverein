@@ -157,6 +157,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private BuchungListPart istbuchungList;
 
+  private boolean editable = false;
+
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -225,6 +227,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     });
     this.datum.setMandatory(true);
+    datum.setEnabled(editable);
     return datum;
   }
 
@@ -242,6 +245,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     zweck1 = new TextAreaInput(z, 500);
     zweck1.setHeight(30);
     zweck1.setMandatory(true);
+    zweck1.setEnabled(editable);
     return zweck1;
   }
 
@@ -264,6 +268,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
                 (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setEnabled(editable);
     return zahlungsweg;
   }
 
@@ -562,8 +567,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Part getSollbuchungPositionListPart(boolean hasRechnung)
-      throws RemoteException
+  public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -572,7 +576,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     ArrayList<SollbuchungPosition> list = getSollbuchung()
         .getSollbuchungPositionList();
 
-    if (hasRechnung)
+    if (!editable)
     {
       buchungList = new SollbuchungPositionListPart(list, null);
     }
@@ -583,7 +587,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
 
     buchungList.setRememberColWidths(true);
-    if (!hasRechnung)
+    if (editable)
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
@@ -877,6 +881,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
         ((SelectInput) mitglied).setPreselected(null);
       }
+      mitglied.setEnabled(editable);
     }
     mitglied.setMandatory(true);
     return mitglied;
@@ -900,6 +905,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     }
     zahler.setMandatory(true);
+    zahler.setEnabled(editable);
     return zahler;
   }
 
@@ -926,15 +932,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public boolean hasRechnung() throws RemoteException
+  public boolean isSollbuchungEditable() throws RemoteException
   {
     if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
-      return true;
+      return editable = false;
     }
-    return false;
+    return editable = true;
   }
 
   public Object[] getCVSExportGrenzen() throws RemoteException
