@@ -231,18 +231,15 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
             });
       case "istPlus":
         return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
-            "istRücklagenGebildet") + (Double) getAttribute("istForderungen");
+            "istForderungen");
       case "istMinus":
         return (Double) getAttribute("istAusgabe") + (Double) getAttribute(
-            "istRücklagenAufgelöst") + (Double) getAttribute(
             "istVerbindlichkeiten");
       case "planSaldo":
         return (Double) getAttribute("planEinnahme") + (Double) getAttribute("planAusgabe");
       case "istSaldo":
         return (Double) getAttribute("istEinnahme") + (Double) getAttribute(
             "istAusgabe") + (Double) getAttribute(
-            "istRücklagenGebildet") + (Double) getAttribute(
-            "istRücklagenAufgelöst") + (Double) getAttribute(
             "istForderungen") + (Double) getAttribute("istVerbindlichkeiten");
       case "differenz":
         return (Double) getAttribute("istSaldo") - (Double) getAttribute("planSaldo");

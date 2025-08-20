@@ -102,8 +102,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
     wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
     wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);
-    wirtschaftsplaene.addColumn("Zuflüsse Ist", "istPlus", formatter);
-    wirtschaftsplaene.addColumn("Abflüsse Ist", "istMinus", formatter);
+    wirtschaftsplaene.addColumn("Einnahmen Ist", "istPlus", formatter);
+    wirtschaftsplaene.addColumn("Ausgaben Ist", "istMinus", formatter);
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
