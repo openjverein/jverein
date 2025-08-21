@@ -215,7 +215,10 @@ public class AfaUtil
     buchung.setBetrag(-betrag);
     buchung.setBuchungsartId(konto.getAfaartId());
     buchung.setAbschluss(abschluss);
-    buchung.store();
+    if (abschluss == null)
+      buchung.store(true);
+    else
+      buchung.store(false);
     monitor
         .setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
     return 1;
@@ -323,7 +326,10 @@ public class AfaUtil
     buchung.setBuchungsartId(konto.getAfaartId());
     buchung.setBetrag(-betrag);
     buchung.setAbschluss(abschluss);
-    buchung.store();
+    if (abschluss == null)
+      buchung.store(true);
+    else
+      buchung.store(false);
     monitor
         .setStatusText("Konto " + konto.getNummer() + ": AfA Buchung erzeugt");
     return 1;
