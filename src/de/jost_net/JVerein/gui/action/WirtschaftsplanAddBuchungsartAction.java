@@ -50,7 +50,8 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
   {
     if (!(context instanceof WirtschaftsplanNode))
     {
-      throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
+      throw new ApplicationException(
+          "Kein Eintrag im Wirtschaftsplan ausgewählt");
     }
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
     try

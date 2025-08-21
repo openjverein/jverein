@@ -38,7 +38,8 @@ public class WirtschaftsplanAddPostenAction implements Action
   {
     if (!(context instanceof WirtschaftsplanNode))
     {
-      throw new ApplicationException("Fehler beim Anlegen des Postens");
+      throw new ApplicationException(
+          "Kein Eintrag im Wirtschaftsplan ausgewählt");
     }
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
 

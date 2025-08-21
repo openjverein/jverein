@@ -39,7 +39,8 @@ public class WirtschaftsplanDeletePostenAction implements Action
   {
     if (!(context instanceof WirtschaftsplanNode))
     {
-      throw new ApplicationException("Fehler beim Löschen der Posten");
+      throw new ApplicationException(
+          "Kein Eintrag im Wirtschaftsplan ausgewählt");
     }
 
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
@@ -62,11 +63,6 @@ public class WirtschaftsplanDeletePostenAction implements Action
             ((WirtschaftsplanNode) currentNode.getParent())
                 .removeChild(currentNode);
           }
-          if (node.getIst() == 0.)
-          {
-            ((WirtschaftsplanNode) node.getParent()).removeChild(node);
-          }
-
           control.reloadSoll(node);
           break;
         case BUCHUNGSKLASSE:
@@ -81,12 +77,6 @@ public class WirtschaftsplanDeletePostenAction implements Action
               WirtschaftsplanNode posten = (WirtschaftsplanNode) artIterator
                   .next();
               ((WirtschaftsplanNode) posten.getParent()).removeChild(posten);
-            }
-
-            if (currentNode.getIst() == 0.)
-            {
-              ((WirtschaftsplanNode) currentNode.getParent())
-                  .removeChild(currentNode);
             }
           }
           control.reloadSoll(node);
