@@ -252,14 +252,18 @@ public class MitgliederImport implements Importer
                     + ": Ungültiges Datumsformat für eintritt: " + eintritt);
               }
             }
-            else
+            else if ((Boolean) Einstellungen
+                .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
+            {
               throw new ApplicationException(
                   "Zeile " + anz + ": Mitglied muss ein Eintrittsdatum haben!");
+            }
 
           }
           catch (SQLException e)
           {
-            if (id == null)
+            if (id == null && (Boolean) Einstellungen
+                .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
             {
               throw new ApplicationException(
                   "Mitglied muss ein Eintrittsdatum haben!");
