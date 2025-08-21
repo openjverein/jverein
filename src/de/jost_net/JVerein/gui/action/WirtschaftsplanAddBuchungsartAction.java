@@ -125,5 +125,6 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
     {
       throw new ApplicationException("Fehler beim Hinzufügen der Buchungsart");
     }
+    control.setToChanged();
   }
 }

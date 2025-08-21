@@ -64,5 +64,6 @@ public class WirtschaftsplanAddPostenAction implements Action
     {
       throw new ApplicationException("Fehler beim Anlegen des Postens");
     }
+    control.setToChanged();
   }
 }

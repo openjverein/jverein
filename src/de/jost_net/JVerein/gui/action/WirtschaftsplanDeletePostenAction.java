@@ -84,6 +84,7 @@ public class WirtschaftsplanDeletePostenAction implements Action
         case UNBEKANNT:
           throw new ApplicationException("Fehler beim Löschen der Posten");
       }
+      control.setToChanged();
     }
     catch (RemoteException e)
     {

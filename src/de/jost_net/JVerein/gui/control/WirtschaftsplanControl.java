@@ -627,4 +627,13 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     return tableChanged;
   }
+
+  /**
+   * Setzt den Status des Controls auf "geändert". Wird z.B. von den Editoren
+   * aufgerufen, wenn sich etwas geändert hat.
+   */
+  public void setToChanged()
+  {
+    tableChanged = true;
+  }
 }
