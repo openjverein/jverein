@@ -73,6 +73,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   private WirtschaftsplanUebersichtPart uebersicht;
 
+  private Wirtschaftsplan wirtschaftsplan;
+
   private boolean tableChanged = false;
 
   /**
@@ -89,6 +91,13 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
+  /**
+   * Liefert die Liste der Wirtschaftsplaene.
+   *
+   * @return die Liste der Wirtschaftsplaene.
+   * @throws RemoteException
+   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
+   */
   public Part getWirtschaftsplanungList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
@@ -121,13 +130,27 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return wirtschaftsplaene;
   }
 
-  public Wirtschaftsplan getWirtschaftsplan()
+  /**
+   * Liefert den aktuellen Wirtschaftsplan.
+   *
+   * @return der aktuelle Wirtschaftsplan oder null, wenn kein Wirtschaftsplan
+   *         geladen ist.
+   * @throws RemoteException
+   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
+   */
+  public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
   {
-    if (getCurrentObject() instanceof Wirtschaftsplan)
+    if (wirtschaftsplan != null)
     {
-      return (Wirtschaftsplan) getCurrentObject();
+      return wirtschaftsplan;
     }
-    return null;
+    wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+    if (wirtschaftsplan == null)
+    {
+      wirtschaftsplan = Einstellungen.getDBService()
+          .createObject(Wirtschaftsplan.class, null);
+    }
+    return wirtschaftsplan;
   }
 
   public EditTreePart getEinnahmen() throws RemoteException
@@ -533,8 +556,16 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
             new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
             break;
           case AUSWERTUNG_PDF:
-            new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
-                getWirtschaftsplan());
+            try
+            {
+              new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
+                  getWirtschaftsplan());
+            }
+            catch (RemoteException e)
+            {
+              throw new ApplicationException(
+                  "Fehler beim Zugriff auf den Wirtschaftsplan");
+            }
             break;
           default:
             GUI.getStatusBar().setErrorText(
