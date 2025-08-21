@@ -91,6 +91,7 @@ public class SplitbuchungDetailView extends AbstractView
       }
     }, null, true, "document-save.png");
     buttons.addButton(speichern);
+    speichern.setEnabled(editable);
     buttons.paint(getParent());
   }
 }
