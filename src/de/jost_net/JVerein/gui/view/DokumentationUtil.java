@@ -24,7 +24,7 @@ public class DokumentationUtil
 
   // private static final String ALLGEMEIN = "allgemein/";
 
-  private static final String FUNKTIONEN = PRE + "v/3.1/";
+  private static final String FUNKTIONEN = PRE + "v/3.2/";
   
 
   private static final String AUSWERTUNGEN = FUNKTIONEN + "auswertungen/";
@@ -91,7 +91,7 @@ public class DokumentationUtil
       + "zusatzbetrage-importieren";
   
   
-  // Buchführung
+  // BuchfÃ¼hrung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
@@ -226,7 +226,7 @@ public class DokumentationUtil
   public static final String ADRESSTYPEN = ADMMITGLIEDER + "mitgliedstypen";
   
   
-  // Einstellungen Buchführung
+  // Einstellungen BuchfÃ¼hrung
   public static final String BUCHUNGSART = ADMBUCHF + "buchungsart";
 
   public static final String BUCHUNGSKLASSEN = ADMBUCHF + "buchungsklasse";
