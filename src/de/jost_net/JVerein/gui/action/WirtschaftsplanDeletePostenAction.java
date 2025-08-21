@@ -16,13 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
 
 public class WirtschaftsplanDeletePostenAction implements Action
 {
@@ -57,9 +57,10 @@ public class WirtschaftsplanDeletePostenAction implements Action
           artIterator = node.getChildren();
           while (artIterator.hasNext())
           {
-            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) artIterator.next();
-            ((WirtschaftsplanNode) currentNode.getParent()).removeChild(
-                currentNode);
+            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) artIterator
+                .next();
+            ((WirtschaftsplanNode) currentNode.getParent())
+                .removeChild(currentNode);
           }
           if (node.getIst() == 0.)
           {
@@ -72,18 +73,20 @@ public class WirtschaftsplanDeletePostenAction implements Action
           GenericIterator klasseIterator = node.getChildren();
           while (klasseIterator.hasNext())
           {
-            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) klasseIterator.next();
+            WirtschaftsplanNode currentNode = (WirtschaftsplanNode) klasseIterator
+                .next();
             artIterator = currentNode.getChildren();
             while (artIterator.hasNext())
             {
-              WirtschaftsplanNode posten = (WirtschaftsplanNode) artIterator.next();
+              WirtschaftsplanNode posten = (WirtschaftsplanNode) artIterator
+                  .next();
               ((WirtschaftsplanNode) posten.getParent()).removeChild(posten);
             }
 
             if (currentNode.getIst() == 0.)
             {
-              ((WirtschaftsplanNode) currentNode.getParent()).removeChild(
-                  currentNode);
+              ((WirtschaftsplanNode) currentNode.getParent())
+                  .removeChild(currentNode);
             }
           }
           control.reloadSoll(node);

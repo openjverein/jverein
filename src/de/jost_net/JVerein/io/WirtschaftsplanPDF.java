@@ -16,22 +16,23 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
-import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
-import de.jost_net.JVerein.rmi.Wirtschaftsplan;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.GenericIterator;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
+
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanPDF
 {
@@ -48,13 +49,13 @@ public class WirtschaftsplanPDF
       double sollAusgabenGesamt = calculateSolls(ausgabenList);
 
       FileOutputStream fileOutputStream = new FileOutputStream(file);
-      String subtitle = new JVDateFormatTTMMJJJJ().format(
-          wirtschaftsplan.getDatumVon()) + " - " + new JVDateFormatTTMMJJJJ().format(
-          wirtschaftsplan.getDatumBis());
+      String subtitle = new JVDateFormatTTMMJJJJ()
+          .format(wirtschaftsplan.getDatumVon()) + " - "
+          + new JVDateFormatTTMMJJJJ().format(wirtschaftsplan.getDatumBis());
       int size = einnahmenList.stream()
-          .mapToInt(WirtschaftsplanNode::anzahlLeafs)
-          .sum() + ausgabenList.stream()
-          .mapToInt(WirtschaftsplanNode::anzahlLeafs).sum();
+          .mapToInt(WirtschaftsplanNode::anzahlLeafs).sum()
+          + ausgabenList.stream().mapToInt(WirtschaftsplanNode::anzahlLeafs)
+              .sum();
       Reporter reporter = new Reporter(fileOutputStream, "Wirtschaftsplan",
           subtitle, size);
 

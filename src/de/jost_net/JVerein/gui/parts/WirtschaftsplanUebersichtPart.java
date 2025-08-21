@@ -16,6 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
+import java.rmi.RemoteException;
+import java.util.List;
+
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
@@ -31,10 +36,6 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.util.ApplicationException;
-import org.eclipse.swt.widgets.Composite;
-
-import java.rmi.RemoteException;
-import java.util.List;
 
 public class WirtschaftsplanUebersichtPart implements Part
 {

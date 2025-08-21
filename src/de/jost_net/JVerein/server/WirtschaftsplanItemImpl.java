@@ -16,13 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.willuhn.datasource.db.AbstractDBObject;
-
-import java.rmi.RemoteException;
 
 public class WirtschaftsplanItemImpl extends AbstractDBObject
     implements WirtschaftsplanItem

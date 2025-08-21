@@ -20,7 +20,11 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
-import de.jost_net.JVerein.gui.parts.*;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.EditTreePart;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
+import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.jameica.gui.GUI;
@@ -74,10 +78,14 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
 
-    buttons.addButton("CSV", context -> control.starteAuswertung(
-        WirtschaftsplanControl.AUSWERTUNG_CSV), null, false, "xsd.png");
-    buttons.addButton("PDF", context -> control.starteAuswertung(
-        WirtschaftsplanControl.AUSWERTUNG_PDF), null, false, "file-pdf.png");
+    buttons.addButton("CSV",
+        context -> control
+            .starteAuswertung(WirtschaftsplanControl.AUSWERTUNG_CSV),
+        null, false, "xsd.png");
+    buttons.addButton("PDF",
+        context -> control
+            .starteAuswertung(WirtschaftsplanControl.AUSWERTUNG_PDF),
+        null, false, "file-pdf.png");
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());

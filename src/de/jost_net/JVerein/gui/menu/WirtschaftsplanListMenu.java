@@ -33,8 +33,7 @@ public class WirtschaftsplanListMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Duplizieren",
         new WirtschaftsplanDuplizierenAction(), "edit-copy.png"));
-    addItem(
-        new CheckedContextMenuItem("Löschen", new WirtschaftsplanDeleteAction(),
-            "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new WirtschaftsplanDeleteAction(), "user-trash-full.png"));
   }
 }

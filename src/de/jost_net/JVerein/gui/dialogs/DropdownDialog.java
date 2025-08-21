@@ -16,15 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.OperationCanceledException;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-
-import java.util.List;
 
 public class DropdownDialog<T> extends AbstractDialog<T>
 {

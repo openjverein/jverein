@@ -16,14 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
 
 public class WirtschaftsplanDuplizierenAction implements Action
 {
@@ -41,7 +41,7 @@ public class WirtschaftsplanDuplizierenAction implements Action
       wirtschaftsplan = Einstellungen.getDBService()
           .createObject(Wirtschaftsplan.class, null);
       wirtschaftsplan.overwrite((Wirtschaftsplan) context);
-      //Alte ID wird benötigt, damit die Posten korrekt dupliziert werden
+      // Alte ID wird benötigt, damit die Posten korrekt dupliziert werden
       wirtschaftsplan.setId(((Wirtschaftsplan) context).getID());
       GUI.startView(view, wirtschaftsplan);
       wirtschaftsplan.setId(null);

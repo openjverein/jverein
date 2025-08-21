@@ -13,9 +13,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
-import de.willuhn.datasource.rmi.DBObject;
-
 import java.rmi.RemoteException;
+
+import de.willuhn.datasource.rmi.DBObject;
 
 public interface WirtschaftsplanItem extends DBObject
 {

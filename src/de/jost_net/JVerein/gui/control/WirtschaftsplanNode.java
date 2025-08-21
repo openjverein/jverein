@@ -16,6 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -27,12 +33,6 @@ import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class WirtschaftsplanNode implements GenericObjectNode
 {
@@ -66,10 +66,10 @@ public class WirtschaftsplanNode implements GenericObjectNode
     Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
     DBService service = Einstellungen.getDBService();
 
-    DBIterator<Buchungsart> buchungsartIterator = service.createList(
-        Buchungsart.class);
-    buchungsartIterator.addFilter(
-        "status != 1"); //Ignoriert inaktive Buchungsarten
+    DBIterator<Buchungsart> buchungsartIterator = service
+        .createList(Buchungsart.class);
+    buchungsartIterator.addFilter("status != 1"); // Ignoriert inaktive
+                                                  // Buchungsarten
     buchungsartIterator.addFilter("buchungsklasse = ?", buchungsklasse.getID());
     buchungsartIterator.addFilter("art = ?", art);
     while (buchungsartIterator.hasNext())
@@ -79,15 +79,21 @@ public class WirtschaftsplanNode implements GenericObjectNode
           new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
     }
 
-    String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)" + "FROM wirtschaftsplanitem, buchungsart " + "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id " + "AND buchungsart.art = ? " + "AND wirtschaftsplanitem.buchungsklasse = ? " + "AND wirtschaftsplanitem.wirtschaftsplan = ? " + "GROUP BY wirtschaftsplanitem.buchungsart";
+    String sql = "SELECT wirtschaftsplanitem.buchungsart, sum(wirtschaftsplanitem.soll)"
+        + "FROM wirtschaftsplanitem, buchungsart "
+        + "WHERE wirtschaftsplanitem.buchungsart = buchungsart.id "
+        + "AND buchungsart.art = ? "
+        + "AND wirtschaftsplanitem.buchungsklasse = ? "
+        + "AND wirtschaftsplanitem.wirtschaftsplan = ? "
+        + "GROUP BY wirtschaftsplanitem.buchungsart";
 
     service.execute(sql,
         new Object[] { art, buchungsklasse.getID(), wirtschaftsplan.getID() },
         resultSet -> {
           while (resultSet.next())
           {
-            DBIterator<Buchungsart> iterator = service.createList(
-                Buchungsart.class);
+            DBIterator<Buchungsart> iterator = service
+                .createList(Buchungsart.class);
             iterator.addFilter("id = ?", resultSet.getString(ID_COL));
             if (!iterator.hasNext())
             {
@@ -96,14 +102,14 @@ public class WirtschaftsplanNode implements GenericObjectNode
 
             double soll = resultSet.getDouble(BETRAG_COL);
             String id = resultSet.getString(ID_COL);
-            //Falls die Buchungsklasse vom Standard abweicht, ist noch keine Node vorhanden
+            // Falls die Buchungsklasse vom Standard abweicht, ist noch keine
+            // Node vorhanden
             if (!nodes.containsKey(id))
             {
               Buchungsart buchungsart = service.createObject(Buchungsart.class,
                   id);
-              nodes.put(buchungsart.getID(),
-                  new WirtschaftsplanNode(this, buchungsart, art,
-                      wirtschaftsplan));
+              nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
+                  buchungsart, art, wirtschaftsplan));
             }
             nodes.get(id).setSoll(soll);
           }
@@ -111,10 +117,15 @@ public class WirtschaftsplanNode implements GenericObjectNode
           return nodes;
         });
 
-    sql = "SELECT buchung.buchungsart, sum(buchung.betrag) " + "FROM buchung, buchungsart " + "WHERE buchung.buchungsart = buchungsart.id " + "AND buchung.datum >= ? AND buchung.datum <= ? " + "AND buchungsart.art = ? " + "AND %s.buchungsklasse = ? " + "GROUP BY buchung.buchungsart";
+    sql = "SELECT buchung.buchungsart, sum(buchung.betrag) "
+        + "FROM buchung, buchungsart "
+        + "WHERE buchung.buchungsart = buchungsart.id "
+        + "AND buchung.datum >= ? AND buchung.datum <= ? "
+        + "AND buchungsart.art = ? " + "AND %s.buchungsklasse = ? "
+        + "GROUP BY buchung.buchungsart";
 
-    if ((boolean) Einstellungen.getEinstellung(
-        Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+    if ((boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       sql = String.format(sql, "buchung");
     }
@@ -123,13 +134,14 @@ public class WirtschaftsplanNode implements GenericObjectNode
       sql = String.format(sql, "buchungsart");
     }
 
-    service.execute(sql, new Object[] { wirtschaftsplan.getDatumVon(),
+    service.execute(sql,
+        new Object[] { wirtschaftsplan.getDatumVon(),
             wirtschaftsplan.getDatumBis(), art, buchungsklasse.getID() },
         resultSet -> {
           while (resultSet.next())
           {
-            DBIterator<Buchungsart> iterator = service.createList(
-                Buchungsart.class);
+            DBIterator<Buchungsart> iterator = service
+                .createList(Buchungsart.class);
             String key = resultSet.getString(ID_COL);
             iterator.addFilter("id = ?", key);
             if (!iterator.hasNext())
@@ -138,14 +150,14 @@ public class WirtschaftsplanNode implements GenericObjectNode
             }
 
             double ist = resultSet.getDouble(BETRAG_COL);
-            //Falls die Buchungsklasse vom Standard abweicht, ist noch keine Node vorhanden
+            // Falls die Buchungsklasse vom Standard abweicht, ist noch keine
+            // Node vorhanden
             if (!nodes.containsKey(key))
             {
               Buchungsart buchungsart = service.createObject(Buchungsart.class,
                   key);
-              nodes.put(buchungsart.getID(),
-                  new WirtschaftsplanNode(this, buchungsart, art,
-                      wirtschaftsplan));
+              nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
+                  buchungsart, art, wirtschaftsplan));
             }
             nodes.get(key).setIst(ist);
           }
@@ -180,8 +192,8 @@ public class WirtschaftsplanNode implements GenericObjectNode
       return;
     }
 
-    DBIterator<WirtschaftsplanItem> iterator = service.createList(
-        WirtschaftsplanItem.class);
+    DBIterator<WirtschaftsplanItem> iterator = service
+        .createList(WirtschaftsplanItem.class);
     iterator.join("buchungsart");
     iterator.addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
     iterator.addFilter("wirtschaftsplanitem.buchungsart = ?",

@@ -16,6 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
@@ -27,10 +31,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
-
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class WirtschaftsplanAddBuchungsartAction implements Action
 {
@@ -55,12 +55,14 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
     WirtschaftsplanNode node = (WirtschaftsplanNode) context;
     try
     {
-      @SuppressWarnings("rawtypes") GenericIterator childrenIterator = node.getChildren();
+      @SuppressWarnings("rawtypes")
+      GenericIterator childrenIterator = node.getChildren();
       List<WirtschaftsplanNode> items = new ArrayList<>();
 
       while (childrenIterator.hasNext())
       {
-        WirtschaftsplanNode child = (WirtschaftsplanNode) childrenIterator.next();
+        WirtschaftsplanNode child = (WirtschaftsplanNode) childrenIterator
+            .next();
         items.add(child);
       }
 
@@ -69,8 +71,8 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
 
       iterator = Einstellungen.getDBService().createList(Buchungsart.class);
       iterator.addFilter("art = ?", art);
-      if (!(boolean) Einstellungen.getEinstellung(
-          Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+      if (!(boolean) Einstellungen
+          .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         String buchungsklasseId = node.getBuchungsklasse().getID();
         iterator.addFilter("buchungsklasse = ?", buchungsklasseId);
