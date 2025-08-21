@@ -59,29 +59,50 @@ public class WirtschaftsplanUebersichtPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
-
-    bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung());
-    uebersicht.addLabelPair("Bezeichnung", bezeichnung);
-
-    ColumnLayout columns = new ColumnLayout(uebersicht.getComposite(), 2);
-
     DBIterator<Konto> ruecklagenIterator = Einstellungen.getDBService()
         .createList(Konto.class);
     ruecklagenIterator.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
     ruecklagenIterator.addFilter("kontoart < ?",
         Kontoart.LIMIT_RUECKLAGE.getKey());
+    /*
+     * Ruecklagen sind nur relevant, wenn es mindestens ein Rücklagenkonto gibt.
+     */
+    boolean ruecklagen = ruecklagenIterator.size() > 0;
 
     DBIterator<Konto> verbindlichkeitenIterator = Einstellungen.getDBService()
         .createList(Konto.class);
     verbindlichkeitenIterator.addFilter("kontoart > ?",
         Kontoart.LIMIT_RUECKLAGE.getKey());
+    /*
+     * Verbindlichkeiten sind nur relevant, wenn es mindestens ein Forderungs-
+     * oder Verbindlichkeitenkonto gibt.
+     */
+    boolean verbindlichkeiten = verbindlichkeitenIterator.size() > 0;
 
-    SimpleContainer einnahmen = new SimpleContainer(columns.getComposite());
+    LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
 
+    ColumnLayout baseData = new ColumnLayout(uebersicht.getComposite(), 3);
+
+    SimpleContainer bezeichnungContainer = new SimpleContainer(
+        baseData.getComposite());
+    bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung());
+    bezeichnungContainer.addLabelPair("Bezeichnung", bezeichnung);
+
+    SimpleContainer vonContainer = new SimpleContainer(baseData.getComposite());
     von = new DateInput(control.getWirtschaftsplan().getDatumVon(),
         new JVDateFormatTTMMJJJJ());
-    einnahmen.addLabelPair("Von", von);
+    vonContainer.addLabelPair("Von", von);
+
+    SimpleContainer bisContainer = new SimpleContainer(baseData.getComposite());
+    bis = new DateInput(control.getWirtschaftsplan().getDatumBis(),
+        new JVDateFormatTTMMJJJJ());
+    bisContainer.addLabelPair("Bis", bis);
+
+    ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(),
+        verbindlichkeiten ? 4 : 2); // Falls keine Verbindlichkeiten, entfallen
+                                    // die Spalten
+
+    SimpleContainer einnahmen = new SimpleContainer(finanzData.getComposite());
     sollEinnahme = new DecimalInput(
         (Double) control.getWirtschaftsplan().getAttribute("planEinnahme"),
         Einstellungen.DECIMALFORMAT);
@@ -92,21 +113,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
-
-    if (verbindlichkeitenIterator.size() > 0)
-    {
-      DecimalInput istForderungen = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istForderungen"),
-          Einstellungen.DECIMALFORMAT);
-      istForderungen.disable();
-      einnahmen.addLabelPair("Forderungen Ist", istForderungen);
-      DecimalInput istPositiv = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
-          Einstellungen.DECIMALFORMAT);
-      istPositiv.disable();
-      einnahmen.addLabelPair("Einnahmen inkl. Forderungen Ist", istPositiv);
-    }
-    if (ruecklagenIterator.size() > 0)
+    if (ruecklagen)
     {
       DecimalInput istRuecklagenGebildet = new DecimalInput(
           (Double) control.getWirtschaftsplan()
@@ -116,11 +123,23 @@ public class WirtschaftsplanUebersichtPart implements Part
       einnahmen.addLabelPair("Rücklagen gebildet Ist", istRuecklagenGebildet);
     }
 
-    SimpleContainer ausgaben = new SimpleContainer(columns.getComposite());
+    if (verbindlichkeiten)
+    {
+      SimpleContainer forderungen = new SimpleContainer(
+          finanzData.getComposite());
+      DecimalInput istForderungen = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istForderungen"),
+          Einstellungen.DECIMALFORMAT);
+      istForderungen.disable();
+      forderungen.addLabelPair("Forderungen Ist", istForderungen);
+      DecimalInput istPositiv = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
+          Einstellungen.DECIMALFORMAT);
+      istPositiv.disable();
+      forderungen.addLabelPair("Einnahmen inkl. Forderungen Ist", istPositiv);
+    }
 
-    bis = new DateInput(control.getWirtschaftsplan().getDatumBis(),
-        new JVDateFormatTTMMJJJJ());
-    ausgaben.addLabelPair("Bis", bis);
+    SimpleContainer ausgaben = new SimpleContainer(finanzData.getComposite());
     sollAusgaben = new DecimalInput(
         (Double) control.getWirtschaftsplan().getAttribute("planAusgabe"),
         Einstellungen.DECIMALFORMAT);
@@ -131,21 +150,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
-    if (verbindlichkeitenIterator.size() > 0)
-    {
-      DecimalInput istVerbindlichkeiten = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
-              .getAttribute("istVerbindlichkeiten"),
-          Einstellungen.DECIMALFORMAT);
-      istVerbindlichkeiten.disable();
-      ausgaben.addLabelPair("Verbindlichkeiten Ist", istVerbindlichkeiten);
-      DecimalInput istNegativ = new DecimalInput(
-          (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
-          Einstellungen.DECIMALFORMAT);
-      istNegativ.disable();
-      ausgaben.addLabelPair("Ausgaben inkl. Verbindlichkeiten Ist", istNegativ);
-    }
-    if (ruecklagenIterator.size() > 0)
+    if (ruecklagen)
     {
       DecimalInput istRuecklagenAufgeloest = new DecimalInput(
           (Double) control.getWirtschaftsplan()
@@ -154,8 +159,35 @@ public class WirtschaftsplanUebersichtPart implements Part
       istRuecklagenAufgeloest.disable();
       ausgaben.addLabelPair("Rücklagen aufgelöst Ist", istRuecklagenAufgeloest);
     }
+
+    if (verbindlichkeiten)
+    {
+      SimpleContainer verbindlichkeitenContainer = new SimpleContainer(
+          finanzData.getComposite());
+      DecimalInput istVerbindlichkeiten = new DecimalInput(
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("istVerbindlichkeiten"),
+          Einstellungen.DECIMALFORMAT);
+      istVerbindlichkeiten.disable();
+      verbindlichkeitenContainer.addLabelPair("Verbindlichkeiten Ist",
+          istVerbindlichkeiten);
+      DecimalInput istNegativ = new DecimalInput(
+          (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
+          Einstellungen.DECIMALFORMAT);
+      istNegativ.disable();
+      verbindlichkeitenContainer
+          .addLabelPair("Ausgaben inkl. Verbindlichkeiten Ist", istNegativ);
+    }
   }
 
+  /**
+   * Aktualisiert die Soll-Werte der Einnahmen und Ausgaben. Diese Methode wird
+   * aufgerufen, wenn sich die Einträge in der Übersicht ändern, z.B. durch das
+   * Hinzufügen oder Entfernen von Einträgen.
+   * 
+   * @throws ApplicationException
+   *           wenn ein Fehler auftritt.
+   */
   @SuppressWarnings("unchecked")
   public void updateSoll() throws ApplicationException
   {
