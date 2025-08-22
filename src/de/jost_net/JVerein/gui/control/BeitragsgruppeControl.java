@@ -440,9 +440,15 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     {
       b.setSekundaer(false);
     }
-    ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-    b.setBeitragsArt(ba.getKey());
+    if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
+    {
+      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+      b.setBeitragsArt(ba.getKey());
+    }
+    else
+    {
+      b.setBeitragsArt(ArtBeitragsart.NORMAL.getKey());
+    }
     b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
     Double d = (Double) getArbeitseinsatzStunden().getValue();

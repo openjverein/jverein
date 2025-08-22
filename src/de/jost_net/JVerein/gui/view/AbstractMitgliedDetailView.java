@@ -43,9 +43,7 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -649,15 +647,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
       container.addPart(control.getZukuenftigeBeitraegeView());
 
-      // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familienangehöriger" gibt, zeige Familienverband-Part.
-      // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
-      // kann daher nicht im SimpleVerticalContainer angezeigt werden.
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-      if (it.hasNext())
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         container.addPart(control.getFamilienverband());
       }

@@ -62,7 +62,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -298,46 +297,11 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      prepareStore();
-
-      DBService service = Einstellungen.getDBService();
-      String sql = "SELECT DISTINCT konto.id from konto "
-          + "WHERE (kontoart = ?) ";
-      boolean exist = (boolean) service.execute(sql,
-          new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return true;
-              }
-              return false;
-            }
-          });
-      if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
-      {
-        SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-        d.setTitle("Erstes Anlagenkonto");
-        d.setText(
-            "Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
-        try
-        {
-          d.open();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      Konto k = getKonto();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern des Kontos";
+      String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -642,10 +606,35 @@ public class KontoControl extends FilterControl implements Savable
     {
       art = getKonto().getKontoArt();
     }
-    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
-        Arrays.asList(Kontoart.values()));
-    values.remove(Kontoart.LIMIT);
-    values.remove(Kontoart.LIMIT_RUECKLAGE);
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>();
+    values.add(Kontoart.GELD);
+    values.add(Kontoart.SCHULDEN);
+    if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
+    {
+      values.add(Kontoart.ANLAGE);
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN))
+    {
+      values.add(Kontoart.RUECKLAGE_ZWECK_GEBUNDEN);
+      values.add(Kontoart.RUECKLAGE_BETRIEBSMITTEL);
+      values.add(Kontoart.RUECKLAGE_INVESTITION);
+      values.add(Kontoart.RUECKLAGE_INSTANDHALTUNG);
+      values.add(Kontoart.RUECKLAGE_WIEDERBESCHAFFUNG);
+      values.add(Kontoart.RUECKLAGE_FREI);
+      values.add(Kontoart.RUECKLAGE_ERWERB);
+      values.add(Kontoart.VERMOEGEN);
+      values.add(Kontoart.RUECKLAGE_SONSTIG);
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    {
+      values.add(Kontoart.FORDERUNGEN);
+      values.add(Kontoart.VERBINDLICHKEITEN);
+    }
+    if (!values.contains(art))
+    {
+      values.add(art);
+    }
     kontoart = new SelectInput(values, art);
     kontoart.addListener(new Listener()
     {

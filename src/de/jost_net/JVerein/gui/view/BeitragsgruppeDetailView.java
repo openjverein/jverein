@@ -72,8 +72,10 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         break;
       }
     }
-
-    group.addLabelPair("Beitragsart", control.getBeitragsArt());
+    if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
+    {
+      group.addLabelPair("Beitragsart", control.getBeitragsArt());
+    }
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     if ((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))

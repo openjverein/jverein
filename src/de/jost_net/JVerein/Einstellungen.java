@@ -34,7 +34,6 @@ import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
-import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.Util;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -96,12 +95,6 @@ public class Einstellungen
    * Timeout nach dem die Einstellungen neu geladen werden in sekunden
    */
   private static long TIMEOUT = 60;
-
-  /**
-   * Variable, in der gespeichert wird, ob für den Verein Zusatzfelder vorhanden
-   * sind.
-   */
-  private static Boolean hasZus = null;
 
   static
   {
@@ -209,24 +202,30 @@ public class Einstellungen
     STERBEDATUM("sterbedatum", Boolean.class, "0"),
     KOMMUNIKATIONSDATEN("kommunikationsdaten", Boolean.class, "1"),
     SEKUNDAEREBEITRAGSGRUPPEN("sekundaerebeitragsgruppen", Boolean.class, "0"),
-    ZUSATZBETRAG("zusatzabbuchung", Boolean.class, "1"),
+    ZUSATZBETRAG("zusatzabbuchung", Boolean.class, "0"),
     ZUSATZBETRAGAUSGETRETENE("zusatzbetragausgetretene", Boolean.class, "0"),
     VERMERKE("vermerke", Boolean.class, "1"),
-    WIEDERVORLAGE("wiedervorlage", Boolean.class, "1"),
-    KURSTEILNEHMER("kursteilnehmer", Boolean.class, "1"),
-    KURSTEILNEHMERGEBGESPFLICHT("kursteilnehmergebgespflicht", Boolean.class,
-        "0"),
+    WIEDERVORLAGE("wiedervorlage", Boolean.class, "0"),
+    KURSTEILNEHMER("kursteilnehmer", Boolean.class, "0"),
+    KURSTEILNEHMERGEBPFLICHT("kursteilnehmergebpflicht", Boolean.class, "0"),
+    KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
     LEHRGAENGE("lehrgaenge", Boolean.class, "0"),
     JURISTISCHEPERSONEN("juristischepersonen", Boolean.class, "0"),
     MITGLIEDFOTO("mitgliedfoto", Boolean.class, "0"),
+    FAMILIENBEITRAG("familienbeitrag", Boolean.class, "0"),
+    ANLAGENKONTEN("anlagenkonten", Boolean.class, "0"),
+    RUECKLAGENKONTEN("ruecklagenkonten", Boolean.class, "0"),
+    VERBINDLICHKEITEN_FORDERUNGEN("verbindlichkeitenforderungen", Boolean.class,
+        "0"),
     MITTELVERWENDUNG("mittelverwendung", Boolean.class, "0"),
     PROJEKTEANZEIGEN("projekteanzeigen", Boolean.class, "0"),
     SPENDENBESCHEINIGUNGENANZEIGEN("spendenbescheinigungenanzeigen",
         Boolean.class, "0"),
     RECHNUNGENANZEIGEN("rechnungenanzeigen", Boolean.class, "0"),
     // Anzeige 2.Spalte
-    USELESEFELDER("uselesefelder", Boolean.class, ""),
-    ZUSATZADRESSEN("zusatzadressen", Boolean.class, "1"),
+    USELESEFELDER("uselesefelder", Boolean.class, "0"),
+    USEZUSATZFELDER("usezusatzfelder", Boolean.class, "0"),
+    ZUSATZADRESSEN("zusatzadressen", Boolean.class, "0"),
     AUSLANDSADRESSEN("auslandsadressen", Boolean.class, "0"),
     ARBEITSEINSATZ("arbeitseinsatz", Boolean.class, "0"),
     DOKUMENTENSPEICHERUNG("dokumentenspeicherung", Boolean.class, "0"),
@@ -644,23 +643,6 @@ public class Einstellungen
       Logger.error(text, e);
       throw new RemoteException(text, e);
     }
-  }
-
-  /**
-   * Prüft ob zusatzfelder verwendet werden
-   * 
-   * @return
-   * @throws RemoteException
-   */
-  public static boolean hasZusatzfelder() throws RemoteException
-  {
-    if (hasZus == null)
-    {
-      DBIterator<Felddefinition> it = Einstellungen.getDBService()
-          .createList(Felddefinition.class);
-      hasZus = Boolean.valueOf(it.size() > 0);
-    }
-    return hasZus;
   }
 
   /**

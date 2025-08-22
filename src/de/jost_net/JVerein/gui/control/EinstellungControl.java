@@ -141,6 +141,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput uselesefelder;
 
+  private CheckboxInput usezusatzfelder;
+
   private CheckboxInput zusatzadressen;
 
   private CheckboxInput auslandsadressen;
@@ -151,7 +153,9 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput individuellebeitraege;
 
-  private CheckboxInput kursteilnehmergebgespflicht;
+  private CheckboxInput kursteilnehmergebpflicht;
+
+  private CheckboxInput kursteilnehmergespflicht;
 
   private TextInput rechnungtextabbuchung;
 
@@ -350,6 +354,14 @@ public class EinstellungControl extends AbstractControl
   private TextInput beitragaltersstufen;
 
   private CheckboxInput nummeranzeigen;
+
+  private CheckboxInput familienbeitrag;
+
+  private CheckboxInput anlagenkonten;
+
+  private CheckboxInput ruecklagenkonten;
+
+  private CheckboxInput verbindlichkeitenforderungen;
 
   private CheckboxInput mittelverwendung;
 
@@ -721,15 +733,36 @@ public class EinstellungControl extends AbstractControl
     return mitgliedfoto;
   }
 
-  public CheckboxInput getKursteilnehmerGebGesPflicht() throws RemoteException
+  public CheckboxInput getKursteilnehmerGebPflicht() throws RemoteException
   {
-    if (kursteilnehmergebgespflicht != null)
+    if (kursteilnehmergebpflicht != null)
     {
-      return kursteilnehmergebgespflicht;
+      return kursteilnehmergebpflicht;
     }
-    kursteilnehmergebgespflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT));
-    return kursteilnehmergebgespflicht;
+    kursteilnehmergebpflicht = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT));
+    return kursteilnehmergebpflicht;
+  }
+
+  public CheckboxInput getKursteilnehmerGesPflicht() throws RemoteException
+  {
+    if (kursteilnehmergespflicht != null)
+    {
+      return kursteilnehmergespflicht;
+    }
+    kursteilnehmergespflicht = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT));
+    return kursteilnehmergespflicht;
+  }
+
+  public CheckboxInput getUseZusatzfelder() throws RemoteException
+  {
+    if (usezusatzfelder == null)
+    {
+      usezusatzfelder = new CheckboxInput(
+          (Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER));
+    }
+    return usezusatzfelder;
   }
 
   public CheckboxInput getUseLesefelder() throws RemoteException
@@ -2316,6 +2349,50 @@ public class EinstellungControl extends AbstractControl
     return nummeranzeigen;
   }
 
+  public CheckboxInput getFamilienbeitrag() throws RemoteException
+  {
+    if (familienbeitrag != null)
+    {
+      return familienbeitrag;
+    }
+    familienbeitrag = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG));
+    return familienbeitrag;
+  }
+
+  public CheckboxInput getAnlagenkonten() throws RemoteException
+  {
+    if (anlagenkonten != null)
+    {
+      return anlagenkonten;
+    }
+    anlagenkonten = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN));
+    return anlagenkonten;
+  }
+
+  public CheckboxInput getRuecklagenkonten() throws RemoteException
+  {
+    if (ruecklagenkonten != null)
+    {
+      return ruecklagenkonten;
+    }
+    ruecklagenkonten = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN));
+    return ruecklagenkonten;
+  }
+
+  public CheckboxInput getVerbindlichkeitenForderungen() throws RemoteException
+  {
+    if (verbindlichkeitenforderungen != null)
+    {
+      return verbindlichkeitenforderungen;
+    }
+    verbindlichkeitenforderungen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN));
+    return verbindlichkeitenforderungen;
+  }
+
   public CheckboxInput getMittelverwendung() throws RemoteException
   {
     if (mittelverwendung != null)
@@ -2425,14 +2502,18 @@ public class EinstellungControl extends AbstractControl
           (Boolean) wiedervorlage.getValue());
       Einstellungen.setEinstellung(Property.KURSTEILNEHMER,
           (Boolean) kursteilnehmer.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT,
-          (Boolean) kursteilnehmergebgespflicht.getValue());
+      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBPFLICHT,
+          (Boolean) kursteilnehmergebpflicht.getValue());
+      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
+          (Boolean) kursteilnehmergespflicht.getValue());
       Einstellungen.setEinstellung(Property.LEHRGAENGE,
           (Boolean) lehrgaenge.getValue());
       Einstellungen.setEinstellung(Property.JURISTISCHEPERSONEN,
           (Boolean) juristischepersonen.getValue());
       Einstellungen.setEinstellung(Property.MITGLIEDFOTO,
           (Boolean) mitgliedfoto.getValue());
+      Einstellungen.setEinstellung(Property.USEZUSATZFELDER,
+          (Boolean) usezusatzfelder.getValue());
       Einstellungen.setEinstellung(Property.USELESEFELDER,
           (Boolean) uselesefelder.getValue());
       Einstellungen.setEinstellung(Property.ZUSATZADRESSEN,
@@ -2466,6 +2547,14 @@ public class EinstellungControl extends AbstractControl
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, true);
       Einstellungen.setEinstellung(Property.MITGLIEDSNUMMERANZEIGEN,
           (Boolean) nummeranzeigen.getValue());
+      Einstellungen.setEinstellung(Property.ANLAGENKONTEN,
+          (Boolean) anlagenkonten.getValue());
+      Einstellungen.setEinstellung(Property.FAMILIENBEITRAG,
+          (Boolean) familienbeitrag.getValue());
+      Einstellungen.setEinstellung(Property.RUECKLAGENKONTEN,
+          (Boolean) ruecklagenkonten.getValue());
+      Einstellungen.setEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN,
+          (Boolean) verbindlichkeitenforderungen.getValue());
       Einstellungen.setEinstellung(Property.MITTELVERWENDUNG,
           (Boolean) mittelverwendung.getValue());
       Einstellungen.setEinstellung(Property.PROJEKTEANZEIGEN,
