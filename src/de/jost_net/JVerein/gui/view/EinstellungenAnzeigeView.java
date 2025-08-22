@@ -67,13 +67,6 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont2.addHeadline("Sonstige Feature Auswahl");
     cont2.addLabelPair("Dokumentenspeicherung *",
         control.getDokumentenspeicherung());
-    cont2.addHeadline("Allgemeines");
-    cont2.addLabelPair("Kursteilnehmer Geburtsdatum Pflichtfeld",
-        control.getKursteilnehmerGebPflicht());
-    cont2.addLabelPair("Kursteilnehmer Geschlecht Pflichtfeld",
-        control.getKursteilnehmerGesPflicht());
-    cont2.addLabelPair("Summen Anlagenkonto in Kontensaldo",
-        control.getSummenAnlagenkonto());
 
     SimpleContainer cont3 = new SimpleContainer(cols1.getComposite());
     cont3.addHeadline("Mitglieder Pflichtfelder");
@@ -81,27 +74,35 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getEintrittsdatumPflicht());
     cont3.addLabelPair("Geburtsdatum Pflichtfeld",
         control.getGeburtsdatumPflicht());
-    cont3.addHeadline("Mitglieder Verwaltung");
-    cont3.addLabelPair("Externe Mitgliedsnummer",
-        control.getExterneMitgliedsnummer());
-    cont3.addLabelPair("Individuelle Beiträge",
-        control.getIndividuelleBeitraege());
-    cont3.addLabelPair("Juristische Personen erlaubt",
-        control.getJuristischePersonen());
-    cont3.addLabelPair("Zusatzbeträge auch für Ausgetretene",
-        control.getZusatzbetragAusgetretene());
+    cont3.addHeadline("Mitglieder Anzeige");
+    cont3.addLabelPair("Auslandsadressen (Staat)",
+        control.getAuslandsadressen());
+    cont3.addLabelPair("(Ext.) Mitgliedsnummer bei Namen",
+        control.getMitgliedsnummerAnzeigen());
+    cont3.addLabelPair("Kommunikationsdaten", control.getKommunikationsdaten());
+    cont3.addLabelPair("Mitgliedsfoto", control.getMitgliedfoto());
+    cont3.addLabelPair("Sterbedatum", control.getSterbedatum());
+    cont3.addLabelPair("Vermerke", control.getVermerke());
 
     SimpleContainer cont4 = new SimpleContainer(cols1.getComposite());
-    cont4.addHeadline("Mitglieder Anzeige");
-    cont4.addLabelPair("Auslandsadressen", control.getAuslandsadressen());
-    cont4.addLabelPair("(Ext.) Mitgliedsnummer bei Namen",
-        control.getMitgliedsnummerAnzeigen());
-    cont4.addLabelPair("Kommunikationsdaten", control.getKommunikationsdaten());
-    cont4.addLabelPair("Mitgliedsfoto", control.getMitgliedfoto());
-    cont3.addLabelPair("Sekundäre Beitragsgruppen",
+    cont4.addHeadline("Mitglieder Verwaltung");
+    cont4.addLabelPair("Externe Mitgliedsnummer",
+        control.getExterneMitgliedsnummer());
+    cont4.addLabelPair("Individuelle Beiträge",
+        control.getIndividuelleBeitraege());
+    cont4.addLabelPair("Juristische Personen erlaubt",
+        control.getJuristischePersonen());
+    cont4.addLabelPair("Zusatzbeträge auch für Ausgetretene",
+        control.getZusatzbetragAusgetretene());
+    cont4.addLabelPair("Sekundäre Beitragsgruppen",
         control.getSekundaereBeitragsgruppen());
-    cont4.addLabelPair("Sterbedatum", control.getSterbedatum());
-    cont4.addLabelPair("Vermerke", control.getVermerke());
+    cont4.addHeadline("Allgemeines");
+    cont4.addLabelPair("Kursteilnehmer Geburtsdatum Pflichtfeld",
+        control.getKursteilnehmerGebPflicht());
+    cont4.addLabelPair("Kursteilnehmer Geschlecht Pflichtfeld",
+        control.getKursteilnehmerGesPflicht());
+    cont4.addLabelPair("Summen Anlagenkonto in Kontensaldo",
+        control.getSummenAnlagenkonto());
 
     cont.addSeparator();
     ColumnLayout cols2 = new ColumnLayout(cont.getComposite(), 2);
