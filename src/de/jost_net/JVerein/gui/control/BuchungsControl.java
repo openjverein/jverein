@@ -645,6 +645,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     bezeichnungsachzuwendung = new TextInput(
         getBuchung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung.setEnabled(editable);
     return bezeichnungsachzuwendung;
   }
 
@@ -656,6 +657,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     herkunftspende = new SelectInput(HerkunftSpende.getArray(),
         new HerkunftSpende(getBuchung().getHerkunftSpende()));
+    herkunftspende.setEnabled(editable);
     return herkunftspende;
   }
 
@@ -667,6 +669,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     unterlagenwertermittlung = new CheckboxInput(
         getBuchung().getUnterlagenWertermittlung());
+    unterlagenwertermittlung.setEnabled(editable);
     return unterlagenwertermittlung;
   }
 
