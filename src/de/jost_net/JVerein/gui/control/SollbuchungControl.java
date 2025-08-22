@@ -841,14 +841,18 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       // Aufruf aus Mitglieder View
       if (mitglieder != null)
       {
-        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt"
-            + "\nFolgende Mitglieder haben keine Mailadresse:";
+        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
+        String fehlen = "";
         for (Mitglied m : mitglieder)
         {
           if (m.getEmail() == null || m.getEmail().isEmpty())
           {
-            text = text + "\n - " + m.getName() + ", " + m.getVorname();
+            fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
           }
+        }
+        if (fehlen.length() > 0)
+        {
+          text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
         }
       }
     }

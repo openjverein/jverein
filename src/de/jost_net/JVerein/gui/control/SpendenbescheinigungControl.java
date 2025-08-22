@@ -39,7 +39,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -51,6 +50,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.io.ZipMailer;
@@ -794,8 +794,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
     String text = "Es wurden " + spbArr.length
-        + " Spendenbescheinigungen ausgewählt"
-        + "\nFolgende Mitglieder haben keine Mailadresse:";
+        + " Spendenbescheinigungen ausgewählt";
+    String fehlen = "";
+    String keinMitglied = "";
     try
     {
       for (Spendenbescheinigung spb : spbArr)
@@ -803,18 +804,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
         Mitglied m = spb.getMitglied();
         if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          text = text + "\n - " + m.getName() + ", " + m.getVorname();
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
-      }
-      text = text
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
-      for (Spendenbescheinigung spb : spbArr)
-      {
         if (spb.getMitglied() == null)
         {
-          text = text + "\n - " + spb.getZeile1() + ", " + spb.getZeile2()
-              + ", " + spb.getZeile3();
+          keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
+              + spb.getZeile2() + ", " + spb.getZeile3();
         }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+      if (keinMitglied.length() > 0)
+      {
+        text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
+            + keinMitglied;
       }
     }
     catch (Exception ex)
@@ -869,9 +874,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     boolean open = false;
     if (ausgabeart == Ausgabeart.DRUCK)
       open = true;
-    SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(
-        text, adressblatt, open);
-    action.handleAction(spba);
+    new SpendenbescheinigungAusgabe(text, adressblatt, open).aufbereitung(spba);
   }
 
   private void sendeMail(final String betr, String text,
@@ -1077,6 +1080,11 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       spbArray = (Spendenbescheinigung[]) object;
     }
+    else if (object instanceof Spendenbescheinigung)
+    {
+      spbArray = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
+    }
+
     if (spbArray == null || spbArray.length == 0)
     {
       throw new ApplicationException(

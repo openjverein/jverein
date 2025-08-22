@@ -33,31 +33,45 @@ public class FreiesFormularMailView extends AbstractView
     final FreieFormulareControl control = new FreieFormulareControl(this);
     control.init("freieformulare.", "zusatzfeld.", "zusatzfelder.");
 
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
-
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
-    SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
-    left.addInput(control.getMitgliedStatus());
-    left.addInput(control.getBeitragsgruppeAusw());
-    left.addInput(control.getMailauswahl());
-
-    SimpleContainer mid = new SimpleContainer(cl.getComposite());
-    mid.addInput(control.getSuchname());
-    mid.addInput(control.getGeburtsdatumvon());
-    mid.addInput(control.getGeburtsdatumbis());
-    mid.addInput(control.getSuchGeschlecht());
-
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    right.addInput(eigenschaftenInput);
-    control.updateEigenschaftenAuswahlTooltip();
-    right.addInput(control.getStichtag());
-    if (Einstellungen.hasZusatzfelder())
+    if (this.getCurrentObject() == null)
     {
-      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      right.addInput(zusatzfelderInput);
-      control.updateZusatzfelderAuswahlTooltip();
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+
+      ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+      SimpleContainer left = new SimpleContainer(cl.getComposite());
+      left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
+      left.addInput(control.getMitgliedStatus());
+      left.addInput(control.getBeitragsgruppeAusw());
+      left.addInput(control.getMailauswahl());
+
+      SimpleContainer mid = new SimpleContainer(cl.getComposite());
+      mid.addInput(control.getSuchname());
+      mid.addInput(control.getGeburtsdatumvon());
+      mid.addInput(control.getGeburtsdatumbis());
+      mid.addInput(control.getSuchGeschlecht());
+
+      SimpleContainer right = new SimpleContainer(cl.getComposite());
+      DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
+      right.addInput(eigenschaftenInput);
+      control.updateEigenschaftenAuswahlTooltip();
+      right.addInput(control.getStichtag());
+      if (Einstellungen.hasZusatzfelder())
+      {
+        DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
+        right.addInput(zusatzfelderInput);
+        control.updateZusatzfelderAuswahlTooltip();
+      }
+
+      ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getResetButton());
+      fbuttons.addButton(control.getSpeichernButton());
+      group.addButtonArea(fbuttons);
+    }
+    else
+    {
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
     }
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
@@ -69,11 +83,6 @@ public class FreiesFormularMailView extends AbstractView
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
     cont.addLabelPair("Text", control.getTxt());
-
-    ButtonArea fbuttons = new ButtonArea();
-    fbuttons.addButton(control.getResetButton());
-    fbuttons.addButton(control.getSpeichernButton());
-    group.addButtonArea(fbuttons);
 
     Map<String, Object> map = MitgliedMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);

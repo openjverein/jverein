@@ -24,7 +24,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -39,7 +38,10 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
+import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -219,7 +221,8 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardDateiAction(), "address-card.png"));
     addItem(new CheckedSingleContextMenuItem("vCard QR-Code",
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
-    addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
+    addItem(new CheckedContextMenuItem("Kontoauszug",
+        new StartViewAction(KontoauszugMailView.class, true),
         "file-invoice.png"));
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
@@ -241,10 +244,9 @@ public class MitgliedMenu extends ContextMenu
         new Object[] { FormularArt.FREIESFORMULAR.getKey() });
     if (it.hasNext())
     {
-      addItem(ContextMenuItem.SEPARATOR);
-      ContextMenu freieformularemenu = new FreieFormulareMenu(it);
-      freieformularemenu.setText("Freie Formulare");
-      addMenu(freieformularemenu);
+      addItem(new CheckedContextMenuItem("Freie Formulare",
+          new StartViewAction(FreiesFormularMailView.class, true),
+          "file-invoice.png"));
     }
   }
 }
