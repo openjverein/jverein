@@ -40,7 +40,7 @@ public class SplitbuchungDetailView extends AbstractView
 
     control = new BuchungsControl(this, Kontenfilter.GELDKONTO);
 
-    final boolean buchungabgeschlossen = control.isSplitBuchungAbgeschlossen();
+    final boolean editable = control.isSplitBuchungEditable();
 
     InfoPanel info = new InfoPanel();
     info.setText(SplitbuchungsContainer.getText());
@@ -54,15 +54,15 @@ public class SplitbuchungDetailView extends AbstractView
         DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
     Button neu = new Button("Neu", new SplitbuchungNeuAction(),
         control.getCurrentObject(), false, "document-new.png");
-    neu.setEnabled(!buchungabgeschlossen);
+    neu.setEnabled(editable);
     buttons.addButton(neu);
     Button aufloesen = new Button("Auflösen",
         new SplitbuchungAufloesenAction(control), control.getCurrentObject(),
         false, "unlocked.png");
-    aufloesen.setEnabled(!buchungabgeschlossen);
+    aufloesen.setEnabled(editable);
     buttons.addButton(aufloesen);
     Button sammel = control.getSammelueberweisungButton();
-    sammel.setEnabled(!buchungabgeschlossen);
+    sammel.setEnabled(editable);
     buttons.addButton(sammel);
     Button speichern = new Button("Speichern", new Action()
     {
@@ -90,8 +90,8 @@ public class SplitbuchungDetailView extends AbstractView
         }
       }
     }, null, true, "document-save.png");
-    speichern.setEnabled(!buchungabgeschlossen);
     buttons.addButton(speichern);
+    speichern.setEnabled(editable);
     buttons.paint(getParent());
   }
 }
