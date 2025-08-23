@@ -16,10 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.parts.LesefeldUebersichtPart;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.NewAction;
+import de.jost_net.JVerein.gui.control.LesefeldControl;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class LesefeldListeView extends AbstractView
 {
@@ -29,8 +33,19 @@ public class LesefeldListeView extends AbstractView
   {
     GUI.getView().setTitle("Lesefelder");
 
-    LesefeldUebersichtPart lesefeldEinstellungPart = new LesefeldUebersichtPart(
-        (Mitglied) getCurrentObject());
-    lesefeldEinstellungPart.paint(this.getParent());
+    final LesefeldControl control = new LesefeldControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Parameter");
+    group.addLabelPair("Mitglied", control.getSuchMitglied());
+
+    control.getLesefelderList().paint(this.getParent());
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.LESEFELDER, false, "question-circle.png");
+    buttons.addButton("Neu",
+        new NewAction(LesefeldDetailView.class, Lesefeld.class), null, false,
+        "document-new.png");
+    buttons.paint(this.getParent());
   }
 }
