@@ -97,6 +97,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont4.addLabelPair("Sekundäre Beitragsgruppen",
         control.getSekundaereBeitragsgruppen());
     cont4.addHeadline("Allgemeines");
+    cont4.addLabelPair("Buchungsarten ohne Buchung unterdrücken",
+        control.getUnterdrueckungOhneBuchung());
     cont4.addLabelPair("Kursteilnehmer Geburtsdatum Pflichtfeld",
         control.getKursteilnehmerGebPflicht());
     cont4.addLabelPair("Kursteilnehmer Geschlecht Pflichtfeld",

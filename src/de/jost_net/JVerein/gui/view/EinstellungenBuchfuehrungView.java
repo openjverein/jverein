@@ -46,7 +46,6 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
     cont.addInput(control.getAutoBuchunguebernahme());
     cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
-    cont.addInput(control.getUnterdrueckungOhneBuchung());
     cont.addInput(control.getKontonummerInBuchungsliste());
     cont.addInput(control.getOptiert());
     cont.addInput(control.getOptiertPflicht());

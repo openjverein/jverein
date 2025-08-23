@@ -1132,8 +1132,6 @@ public class EinstellungControl extends AbstractControl
     }
     unterdrueckungohnebuchung = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG));
-    unterdrueckungohnebuchung
-        .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
     return unterdrueckungohnebuchung;
   }
 
