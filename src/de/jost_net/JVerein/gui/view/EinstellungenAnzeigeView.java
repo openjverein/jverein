@@ -92,8 +92,6 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getIndividuelleBeitraege());
     cont4.addLabelPair("Juristische Personen erlaubt",
         control.getJuristischePersonen());
-    cont4.addLabelPair("Zusatzbeträge auch für Ausgetretene",
-        control.getZusatzbetragAusgetretene());
     cont4.addLabelPair("Sekundäre Beitragsgruppen",
         control.getSekundaereBeitragsgruppen());
     cont4.addHeadline("Allgemeines");

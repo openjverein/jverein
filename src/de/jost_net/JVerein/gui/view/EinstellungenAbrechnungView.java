@@ -51,6 +51,8 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getArbeitsstundenmodel());
     cont.addLabelPair("Altersstufen für gestaffelte Beiträge",
         control.getBeitragAltersgruppen());
+    cont.addLabelPair("Zusatzbeträge auch für Ausgetretene abrechnen",
+        control.getZusatzbetragAusgetretene());
     cont.addLabelPair("Abrechnungslauf abschließen",
         control.getAbrlAbschliessen());
     cont.addSeparator();

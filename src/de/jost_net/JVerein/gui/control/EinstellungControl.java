@@ -2220,6 +2220,7 @@ public class EinstellungControl extends AbstractControl
     }
     zusatzbetragAusgetretene = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE));
+    zusatzbetragAusgetretene.setName(" ");
     return zusatzbetragAusgetretene;
   }
 
