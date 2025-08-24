@@ -68,17 +68,6 @@ public class EinstellungenAllgemeinView extends AbstractView
     pflicht.addLabelPair("Kursteilnehmer Geschlecht",
         control.getKursteilnehmerGesPflicht());
 
-    LabelGroup mitglieder = new LabelGroup(scrolled.getComposite(),
-        "Mitglieder Verwaltung", false);
-    mitglieder.addLabelPair("Externe Mitgliedsnummer",
-        control.getExterneMitgliedsnummer());
-    mitglieder.addLabelPair("Individuelle Beiträge",
-        control.getIndividuelleBeitraege());
-    mitglieder.addLabelPair("Juristische Personen erlaubt",
-        control.getJuristischePersonen());
-    mitglieder.addLabelPair("Sekundäre Beitragsgruppen",
-        control.getSekundaereBeitragsgruppen());
-
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false,

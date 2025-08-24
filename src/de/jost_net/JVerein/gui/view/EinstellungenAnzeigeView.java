@@ -72,10 +72,18 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont3.addHeadline("Mitglieder Anzeige");
     cont3.addLabelPair("Auslandsadressen (Staat)",
         control.getAuslandsadressen());
+    cont3.addLabelPair("Externe Mitgliedsnummer",
+        control.getExterneMitgliedsnummer());
     cont3.addLabelPair("(Ext.) Mitgliedsnummer bei Namen",
         control.getMitgliedsnummerAnzeigen());
+    cont3.addLabelPair("Individuelle Beiträge",
+        control.getIndividuelleBeitraege());
+    cont3.addLabelPair("Juristische Personen erlaubt",
+        control.getJuristischePersonen());
     cont3.addLabelPair("Kommunikationsdaten", control.getKommunikationsdaten());
     cont3.addLabelPair("Mitgliedsfoto", control.getMitgliedfoto());
+    cont3.addLabelPair("Sekundäre Beitragsgruppen",
+        control.getSekundaereBeitragsgruppen());
     cont3.addLabelPair("Sterbedatum", control.getSterbedatum());
     cont3.addLabelPair("Vermerke", control.getVermerke());
 
