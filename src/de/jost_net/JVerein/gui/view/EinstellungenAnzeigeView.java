@@ -69,11 +69,6 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getDokumentenspeicherung());
 
     SimpleContainer cont3 = new SimpleContainer(cols1.getComposite());
-    cont3.addHeadline("Mitglieder Pflichtfelder");
-    cont3.addLabelPair("Eintrittsdatum Pflichtfeld",
-        control.getEintrittsdatumPflicht());
-    cont3.addLabelPair("Geburtsdatum Pflichtfeld",
-        control.getGeburtsdatumPflicht());
     cont3.addHeadline("Mitglieder Anzeige");
     cont3.addLabelPair("Auslandsadressen (Staat)",
         control.getAuslandsadressen());
@@ -85,22 +80,9 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont3.addLabelPair("Vermerke", control.getVermerke());
 
     SimpleContainer cont4 = new SimpleContainer(cols1.getComposite());
-    cont4.addHeadline("Mitglieder Verwaltung");
-    cont4.addLabelPair("Externe Mitgliedsnummer",
-        control.getExterneMitgliedsnummer());
-    cont4.addLabelPair("Individuelle Beiträge",
-        control.getIndividuelleBeitraege());
-    cont4.addLabelPair("Juristische Personen erlaubt",
-        control.getJuristischePersonen());
-    cont4.addLabelPair("Sekundäre Beitragsgruppen",
-        control.getSekundaereBeitragsgruppen());
     cont4.addHeadline("Allgemeines");
     cont4.addLabelPair("Buchungsarten ohne Buchung unterdrücken",
         control.getUnterdrueckungOhneBuchung());
-    cont4.addLabelPair("Kursteilnehmer Geburtsdatum Pflichtfeld",
-        control.getKursteilnehmerGebPflicht());
-    cont4.addLabelPair("Kursteilnehmer Geschlecht Pflichtfeld",
-        control.getKursteilnehmerGesPflicht());
     cont4.addLabelPair("Summen Anlagenkonto in Kontensaldo",
         control.getSummenAnlagenkonto());
 

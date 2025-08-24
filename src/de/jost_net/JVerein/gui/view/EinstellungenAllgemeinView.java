@@ -23,7 +23,10 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class EinstellungenAllgemeinView extends AbstractView
 {
@@ -35,20 +38,46 @@ public class EinstellungenAllgemeinView extends AbstractView
 
     final EinstellungControl control = new EinstellungControl(this);
 
-    ScrolledContainer cont = new ScrolledContainer(getParent());
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
-    cont.addHeadline("Allgemein");
-    cont.addLabelPair("Name", control.getName(true));
-    cont.addLabelPair("Straße", control.getStrasse());
-    cont.addLabelPair("PLZ", control.getPlz());
-    cont.addLabelPair("Ort", control.getOrt());
-    cont.addLabelPair("Staat", control.getStaat());
+    LabelGroup verein = new LabelGroup(scrolled.getComposite(), "Vereinsdaten",
+        false);
+    ColumnLayout cols1 = new ColumnLayout(verein.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cols1.getComposite());
+    left.addLabelPair("Name", control.getName(true));
+    left.addLabelPair("Straße", control.getStrasse());
+    left.addLabelPair("PLZ", control.getPlz());
+    left.addLabelPair("Ort", control.getOrt());
+    left.addLabelPair("Staat", control.getStaat());
+    SimpleContainer right = new SimpleContainer(cols1.getComposite());
     TextInput bic = control.getBic(); // vor IBAN initialisieren, da IBAN eine
                                       // Referenz auf bic benötigt!
-    cont.addLabelPair("IBAN", control.getIban());
-    cont.addLabelPair("BIC", bic);
-    cont.addLabelPair("Gläubiger-ID", control.getGlaeubigerID());
-    cont.addLabelPair("USt-ID", control.getUstID());
+    right.addLabelPair("IBAN", control.getIban());
+    right.addLabelPair("BIC", bic);
+    right.addLabelPair("Gläubiger-ID", control.getGlaeubigerID());
+    right.addLabelPair("USt-ID", control.getUstID());
+
+    LabelGroup pflicht = new LabelGroup(scrolled.getComposite(),
+        "Pflichtfelder", false);
+    pflicht.addLabelPair("Mitglieder Eintrittsdatum",
+        control.getEintrittsdatumPflicht());
+    pflicht.addLabelPair("Mitglieder Geburtsdatum",
+        control.getGeburtsdatumPflicht());
+    pflicht.addLabelPair("Kursteilnehmer Geburtsdatum",
+        control.getKursteilnehmerGebPflicht());
+    pflicht.addLabelPair("Kursteilnehmer Geschlecht",
+        control.getKursteilnehmerGesPflicht());
+
+    LabelGroup mitglieder = new LabelGroup(scrolled.getComposite(),
+        "Mitglieder Verwaltung", false);
+    mitglieder.addLabelPair("Externe Mitgliedsnummer",
+        control.getExterneMitgliedsnummer());
+    mitglieder.addLabelPair("Individuelle Beiträge",
+        control.getIndividuelleBeitraege());
+    mitglieder.addLabelPair("Juristische Personen erlaubt",
+        control.getJuristischePersonen());
+    mitglieder.addLabelPair("Sekundäre Beitragsgruppen",
+        control.getSekundaereBeitragsgruppen());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
