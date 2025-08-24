@@ -880,7 +880,6 @@ public class EinstellungControl extends AbstractControl
     }
     optiert = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.OPTIERT));
-    optiert.setName("Umsatzsteuer Support (Neustart erforderlich)");
     optiert.addListener(e -> {
       try
       {
@@ -905,8 +904,6 @@ public class EinstellungControl extends AbstractControl
     }
     optiertpflicht = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT));
-    optiertpflicht.setName("Umsatzsteuer Pflicht");
-
     optiertpflicht.setEnabled((boolean) getOptiert().getValue());
     return optiertpflicht;
   }
@@ -919,8 +916,6 @@ public class EinstellungControl extends AbstractControl
     }
     steuerInBuchung = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG));
-    steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
-
     steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
   }
@@ -933,8 +928,6 @@ public class EinstellungControl extends AbstractControl
     }
     splitpositionzweck = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.SPLITPOSITIONZWECK));
-    splitpositionzweck.setName("Bei automatischem Splitten den "
-        + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
     return splitpositionzweck;
   }
 
@@ -946,8 +939,6 @@ public class EinstellungControl extends AbstractControl
     }
     geprueftsynchronisieren = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
-    geprueftsynchronisieren
-        .setName("Geprüft Markierung mit Hibiscus synchronisieren");
     return geprueftsynchronisieren;
   }
 
@@ -959,8 +950,6 @@ public class EinstellungControl extends AbstractControl
     }
     freiebuchungsklasse = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG));
-    freiebuchungsklasse.setName(
-        "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
   }
 
@@ -1119,8 +1108,6 @@ public class EinstellungControl extends AbstractControl
     }
     autobuchunguebernahme = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME));
-    autobuchunguebernahme
-        .setName("Automatische Buchungsübernahme aus Hibiscus");
     return autobuchunguebernahme;
   }
 
@@ -1163,7 +1150,6 @@ public class EinstellungControl extends AbstractControl
     }
     kontonummer_in_buchungsliste = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE));
-    kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
     return kontonummer_in_buchungsliste;
   }
 
@@ -1177,8 +1163,6 @@ public class EinstellungControl extends AbstractControl
     automatische_buchungskorrektur_hibiscus = new CheckboxInput(
         (Boolean) Einstellungen
             .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS));
-    automatische_buchungskorrektur_hibiscus.setName(
-        "Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen");
     return automatische_buchungskorrektur_hibiscus;
   }
 

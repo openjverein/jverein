@@ -38,21 +38,29 @@ public class EinstellungenBuchfuehrungView extends AbstractView
 
     cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
         control.getBeginnGeschaeftsjahr());
-    cont.addLabelPair("Intervall für aktive Konten (Jahre)",
-        control.getUnterdrueckungKonten());
-    cont.addLabelPair(
-        "Buchungsarten die seit x Monaten nicht benutzt werden unterdrücken",
-        control.getUnterdrueckungLaenge());
     cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
-    cont.addInput(control.getAutoBuchunguebernahme());
-    cont.addInput(control.getAutomatischeBuchungskorrekturHibiscus());
-    cont.addInput(control.getKontonummerInBuchungsliste());
-    cont.addInput(control.getOptiert());
-    cont.addInput(control.getOptiertPflicht());
-    cont.addInput(control.getSteuerInBuchung());
-    cont.addInput(control.getFreieBuchungsklasse());
-    cont.addInput(control.getSplitPositionZweck());
-    cont.addInput(control.getGeprueftSynchronisieren());
+    cont.addLabelPair("Automatische Buchungsübernahme aus Hibiscus",
+        control.getAutoBuchunguebernahme());
+    cont.addLabelPair(
+        "Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen",
+        control.getAutomatischeBuchungskorrekturHibiscus());
+    cont.addLabelPair("Geprüft Markierung mit Hibiscus synchronisieren",
+        control.getGeprueftSynchronisieren());
+    cont.addLabelPair(
+        "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
+        control.getKontonummerInBuchungsliste());
+    cont.addLabelPair("Umsatzsteuer Support (Neustart erforderlich)",
+        control.getOptiert());
+    cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
+    cont.addLabelPair("Steuer individuell pro Buchung setzen",
+        control.getSteuerInBuchung());
+    cont.addLabelPair(
+        "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42",
+        control.getFreieBuchungsklasse());
+    cont.addLabelPair(
+        "Bei automatischem Splitten den "
+            + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
+        control.getSplitPositionZweck());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

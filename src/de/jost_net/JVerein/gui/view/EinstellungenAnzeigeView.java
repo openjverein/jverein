@@ -107,11 +107,15 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont.addSeparator();
     ColumnLayout cols2 = new ColumnLayout(cont.getComposite(), 2);
     SimpleContainer links = new SimpleContainer(cols2.getComposite());
+    links.addLabelPair("Intervall für aktive Konten (Jahre)",
+        control.getUnterdrueckungKonten());
     links.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     links.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
 
     SimpleContainer rechts = new SimpleContainer(cols2.getComposite());
+    rechts.addLabelPair("Ungenutzte Auto Buchungsarten unterdrücken (Monate)",
+        control.getUnterdrueckungLaenge());
     rechts.addLabelPair("Buchungsart Auswahl",
         control.getBuchungBuchungsartAuswahl());
     rechts.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
