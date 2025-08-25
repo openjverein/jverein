@@ -195,20 +195,21 @@ public class Einstellungen
     IBAN("iban", String.class, ""),
     GLAEUBIGERID("glaeubigerid", String.class, ""),
     USTID("ustid", String.class, ""),
+    GEBURTSDATUMPFLICHT("geburtsdatumpflicht", Boolean.class, "1"),
+    NICHTMITGLIEDGEBURTSDATUMPFLICHT("nichtmitgliedgeburtsdatumpflicht",
+        Boolean.class, "0"),
+    EINTRITTSDATUMPFLICHT("eintrittsdatumpflicht", Boolean.class, "1"),
+    KURSTEILNEHMERGEBPFLICHT("kursteilnehmergebpflicht", Boolean.class, "0"),
+    KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
 
     // Anzeige
-    GEBURTSDATUMPFLICHT("geburtsdatumpflicht", Boolean.class, "1"),
-    EINTRITTSDATUMPFLICHT("eintrittsdatumpflicht", Boolean.class, "1"),
     STERBEDATUM("sterbedatum", Boolean.class, "0"),
     KOMMUNIKATIONSDATEN("kommunikationsdaten", Boolean.class, "1"),
     SEKUNDAEREBEITRAGSGRUPPEN("sekundaerebeitragsgruppen", Boolean.class, "0"),
     ZUSATZBETRAG("zusatzabbuchung", Boolean.class, "0"),
-    ZUSATZBETRAGAUSGETRETENE("zusatzbetragausgetretene", Boolean.class, "0"),
     VERMERKE("vermerke", Boolean.class, "1"),
     WIEDERVORLAGE("wiedervorlage", Boolean.class, "0"),
     KURSTEILNEHMER("kursteilnehmer", Boolean.class, "0"),
-    KURSTEILNEHMERGEBPFLICHT("kursteilnehmergebpflicht", Boolean.class, "0"),
-    KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
     LEHRGAENGE("lehrgaenge", Boolean.class, "0"),
     JURISTISCHEPERSONEN("juristischepersonen", Boolean.class, "0"),
     MITGLIEDFOTO("mitgliedfoto", Boolean.class, "0"),
@@ -241,6 +242,9 @@ public class Einstellungen
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),
+    UNTERDRUECKUNGOHNEBUCHUNG("unterdrueckungohnebuchung", Boolean.class, "1"),
+    UNTERDRUECKUNGKONTEN("unterdrueckungkonten", Integer.class, "2"),
+    UNTERDRUECKUNGLAENGE("unterdrueckunglaenge", Integer.class, "0"),
 
     // Abrechnung
     BEITRAGSMODEL("beitragsmodel", Integer.class,
@@ -258,6 +262,7 @@ public class Einstellungen
     ABRLABSCHLIESSEN("abrlabschliessen", Boolean.class, "0"),
     SEPAMANDATIDSOURCE("mandatid_source", Integer.class,
         ((Integer) SepaMandatIdSource.DBID).toString()),
+    ZUSATZBETRAGAUSGETRETENE("zusatzbetragausgetretene", Boolean.class, "0"),
 
     // Dateinamen
     DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
@@ -283,13 +288,11 @@ public class Einstellungen
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
-    UNTERDRUECKUNGKONTEN("unterdrueckungkonten", Integer.class, "2"),
-    UNTERDRUECKUNGLAENGE("unterdrueckunglaenge", Integer.class, "0"),
     AFARESTWERT("afarestwert", Double.class, "1"),
     AUTOBUCHUNGUEBERNAHME("autobuchunguebernahme", Boolean.class, "1"),
     AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS("autobuchungskorrekturhibiscus",
         Boolean.class, "1"),
-    UNTERDRUECKUNGOHNEBUCHUNG("unterdrueckungohnebuchung", Boolean.class, "1"),
+
     KONTONUMMERINBUCHUNGSLISTE("kontonummer_in_buchungsliste", Boolean.class,
         "0"),
     OPTIERT("optiert", Boolean.class, "0"),
