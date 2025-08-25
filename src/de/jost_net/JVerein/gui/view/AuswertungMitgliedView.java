@@ -60,7 +60,7 @@ public class AuswertungMitgliedView extends AbstractView
     control.updateEigenschaftenAuswahlTooltip();
     left.addInput(control.getBeitragsgruppeAusw());
 
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       left.addInput(zusatzfelderInput);

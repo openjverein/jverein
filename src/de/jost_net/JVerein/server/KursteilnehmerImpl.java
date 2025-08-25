@@ -93,12 +93,16 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
       throw new ApplicationException("Bitte Datum des Mandats eingeben");
     }
     if ((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT))
     {
       if (getGeburtsdatum() == null)
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben");
       }
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT))
+    {
       if (getGeschlecht() == null)
       {
         throw new ApplicationException("Bitte Geschlecht eingeben");

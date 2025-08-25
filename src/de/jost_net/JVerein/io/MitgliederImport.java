@@ -644,18 +644,25 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if ((Boolean) Einstellungen
+          else if (((Boolean) Einstellungen
               .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              || ((Boolean) Einstellungen
+                  .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getMitgliedstyp()
+                      .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
-          if (id == null
-              && (Boolean) Einstellungen
-                  .getEinstellung(Property.GEBURTSDATUMPFLICHT)
+          if (id == null && ((Boolean) Einstellungen
+              .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              || ((Boolean) Einstellungen
+                  .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getMitgliedstyp()
+                      .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException("Geburtsdatum fehlt");
         }
 

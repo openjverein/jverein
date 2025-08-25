@@ -168,9 +168,20 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       throw new ApplicationException("Bitte Geburtsdatum eingeben");
     }
-    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
         && getPersonenart().equalsIgnoreCase("n")
+        && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
+        && (Boolean) Einstellungen
+            .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))
+    {
+      throw new ApplicationException("Bitte Geburtsdatum eingeben");
+    }
+    if (getPersonenart().equalsIgnoreCase("n") && ((getMitgliedstyp()
+        .getJVereinid() == Mitgliedstyp.MITGLIED
         && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+        || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+            && (Boolean) Einstellungen
+                .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))))
     {
       Calendar cal1 = Calendar.getInstance();
       cal1.setTime(getGeburtsdatum());

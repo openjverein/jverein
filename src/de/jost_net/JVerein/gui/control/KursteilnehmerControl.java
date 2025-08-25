@@ -363,7 +363,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     if ((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT))
     {
       this.geburtsdatum.setMandatory(true);
     }
@@ -380,7 +380,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     geschlecht.setName("Geschlecht");
     geschlecht.setPleaseChoose("Bitte auswählen");
     if ((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT))
     {
       geschlecht.setMandatory(true);
     }
