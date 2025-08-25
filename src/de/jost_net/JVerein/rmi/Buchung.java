@@ -183,4 +183,19 @@ public interface Buchung extends JVereinDBObject
 
   public void setSteuerId(Long id) throws RemoteException;
 
+  // Für Sachspenden
+  public String getBezeichnungSachzuwendung() throws RemoteException;
+
+  public void setBezeichnungSachzuwendung(String bezeichungsachzuwendung)
+      throws RemoteException;
+
+  public int getHerkunftSpende() throws RemoteException;
+
+  public void setHerkunftSpende(int herkunftspende) throws RemoteException;
+
+  public Boolean getUnterlagenWertermittlung() throws RemoteException;
+
+  public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
+      throws RemoteException;
+
 }
