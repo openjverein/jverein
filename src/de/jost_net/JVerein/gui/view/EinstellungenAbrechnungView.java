@@ -53,7 +53,7 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getBeitragAltersgruppen());
     cont.addLabelPair("Zusatzbeträge auch für Ausgetretene abrechnen",
         control.getZusatzbetragAusgetretene());
-    cont.addLabelPair("Keine Istbuchungen bei Lastschrift erzeugen",
+    cont.addLabelPair("Keine Istbuchung bei Lastschriften erzeugen",
         control.getKeineIstbuchungBeiLastschrift());
     cont.addLabelPair("Abrechnungslauf abschließen",
         control.getAbrlAbschliessen());
