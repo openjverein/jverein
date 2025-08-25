@@ -263,6 +263,8 @@ public class Einstellungen
     SEPAMANDATIDSOURCE("mandatid_source", Integer.class,
         ((Integer) SepaMandatIdSource.DBID).toString()),
     ZUSATZBETRAGAUSGETRETENE("zusatzbetragausgetretene", Boolean.class, "0"),
+    KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
+        Boolean.class, "0"),
 
     // Dateinamen
     DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),

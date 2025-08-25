@@ -607,30 +607,33 @@ public class KontoControl extends FilterControl implements Savable
       art = getKonto().getKontoArt();
     }
     ArrayList<Kontoart> values = new ArrayList<Kontoart>();
-    values.add(Kontoart.GELD);
-    values.add(Kontoart.SCHULDEN);
-    if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
+    ArrayList<Kontoart> arten = new ArrayList<Kontoart>(
+        Arrays.asList(Kontoart.values()));
+    for (Kontoart ka : arten)
     {
-      values.add(Kontoart.ANLAGE);
+      if (ka.getKey() < Kontoart.LIMIT.getKey() && ka != Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN)
+          && ka == Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN)
+          && ka.getKey() > Kontoart.LIMIT.getKey()
+          && ka.getKey() < Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN)
+          && ka.getKey() > Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN))
-    {
-      values.add(Kontoart.RUECKLAGE_ZWECK_GEBUNDEN);
-      values.add(Kontoart.RUECKLAGE_BETRIEBSMITTEL);
-      values.add(Kontoart.RUECKLAGE_INVESTITION);
-      values.add(Kontoart.RUECKLAGE_INSTANDHALTUNG);
-      values.add(Kontoart.RUECKLAGE_WIEDERBESCHAFFUNG);
-      values.add(Kontoart.RUECKLAGE_FREI);
-      values.add(Kontoart.RUECKLAGE_ERWERB);
-      values.add(Kontoart.VERMOEGEN);
-      values.add(Kontoart.RUECKLAGE_SONSTIG);
-    }
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
-    {
-      values.add(Kontoart.FORDERUNGEN);
-      values.add(Kontoart.VERBINDLICHKEITEN);
-    }
+
     if (!values.contains(art))
     {
       values.add(art);
