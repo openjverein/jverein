@@ -319,6 +319,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput freiebuchungsklasse;
 
+  private CheckboxInput wirtschaftsplanung;
+
   private CheckboxInput summenAnlagenkonto;
 
   private IntegerInput qrcodesize;
@@ -929,6 +931,18 @@ public class EinstellungControl extends AbstractControl
     freiebuchungsklasse.setName(
         "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
+  }
+
+  public CheckboxInput getWirtschaftsplanung() throws RemoteException
+  {
+    if (wirtschaftsplanung != null)
+    {
+      return wirtschaftsplanung;
+    }
+    wirtschaftsplanung =
+        new CheckboxInput((Boolean) Einstellungen
+            .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN));
+    return wirtschaftsplanung;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -2459,6 +2473,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) spendenbescheinigungen.getValue());
       Einstellungen.setEinstellung(Property.RECHNUNGENANZEIGEN,
           (Boolean) rechnungen.getValue());
+      Einstellungen.setEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN,
+          wirtschaftsplanung.getValue());
 
       DBTransaction.commit();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
