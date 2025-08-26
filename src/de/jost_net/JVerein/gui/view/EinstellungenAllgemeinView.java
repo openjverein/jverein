@@ -74,6 +74,16 @@ public class EinstellungenAllgemeinView extends AbstractView
     right2.addLabelPair("Kursteilnehmer Geschlecht",
         control.getKursteilnehmerGesPflicht());
 
+    LabelGroup pflichteigenschaften = new LabelGroup(scrolled.getComposite(),
+        "Pflicht Eigenschaften", false);
+    ColumnLayout cols3 = new ColumnLayout(pflichteigenschaften.getComposite(),
+        1);
+    SimpleContainer left3 = new SimpleContainer(cols3.getComposite());
+    left3.addLabelPair("Pflicht Eigenschaften auch für Juristische Personen",
+        control.getJuristischePersonPflichtEigenschaften());
+    left3.addLabelPair("Pflicht Eigenschaften auch für Nicht-Mitglieder",
+        control.getNichtMitgliedPflichtEigenschaften());
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false,

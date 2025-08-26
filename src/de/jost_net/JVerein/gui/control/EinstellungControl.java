@@ -119,6 +119,10 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput nichtmitgliedgeburtsdatumpflicht;
 
+  private CheckboxInput nichtmitgliedpflichteigenschaften;
+
+  private CheckboxInput juristischepersonpflichteigenschaften;
+
   private CheckboxInput eintrittsdatumpflicht;
 
   private CheckboxInput sterbedatum;
@@ -624,6 +628,32 @@ public class EinstellungControl extends AbstractControl
     nichtmitgliedgeburtsdatumpflicht = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT));
     return nichtmitgliedgeburtsdatumpflicht;
+  }
+
+  public CheckboxInput getNichtMitgliedPflichtEigenschaften()
+      throws RemoteException
+  {
+    if (nichtmitgliedpflichteigenschaften != null)
+    {
+      return nichtmitgliedpflichteigenschaften;
+    }
+    nichtmitgliedpflichteigenschaften = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return nichtmitgliedpflichteigenschaften;
+  }
+
+  public CheckboxInput getJuristischePersonPflichtEigenschaften()
+      throws RemoteException
+  {
+    if (juristischepersonpflichteigenschaften != null)
+    {
+      return juristischepersonpflichteigenschaften;
+    }
+    juristischepersonpflichteigenschaften = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN));
+    return juristischepersonpflichteigenschaften;
   }
 
   public CheckboxInput getEintrittsdatumPflicht() throws RemoteException
@@ -2471,6 +2501,11 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kursteilnehmergebpflicht.getValue());
       Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
           (Boolean) kursteilnehmergespflicht.getValue());
+      Einstellungen.setEinstellung(
+          Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN,
+          (Boolean) juristischepersonpflichteigenschaften.getValue());
+      Einstellungen.setEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) nichtmitgliedpflichteigenschaften.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen Allgemein gespeichert");

@@ -201,6 +201,10 @@ public class Einstellungen
     EINTRITTSDATUMPFLICHT("eintrittsdatumpflicht", Boolean.class, "1"),
     KURSTEILNEHMERGEBPFLICHT("kursteilnehmergebpflicht", Boolean.class, "0"),
     KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
+    NICHTMITGLIEDPFLICHTEIGENSCHAFTEN("nichtmitgliedpflichteigenschaften",
+        Boolean.class, "1"),
+    JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN(
+        "juristischepersonpflichteigenschaften", Boolean.class, "1"),
 
     // Anzeige
     STERBEDATUM("sterbedatum", Boolean.class, "0"),

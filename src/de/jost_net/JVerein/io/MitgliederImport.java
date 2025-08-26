@@ -646,6 +646,7 @@ public class MitgliederImport implements Importer
           }
           else if (((Boolean) Einstellungen
               .getEinstellung(Property.GEBURTSDATUMPFLICHT)
+              && m.getPersonenart().equalsIgnoreCase("n")
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
@@ -656,9 +657,12 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          if (id == null && ((Boolean) Einstellungen
-              .getEinstellung(Property.GEBURTSDATUMPFLICHT)
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+          if (id == null
+              && ((Boolean) Einstellungen
+                  .getEinstellung(Property.GEBURTSDATUMPFLICHT)
+                  && m.getPersonenart().equalsIgnoreCase("n")
+                  && m.getMitgliedstyp()
+                      .getJVereinid() == Mitgliedstyp.MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
                   && m.getMitgliedstyp()
