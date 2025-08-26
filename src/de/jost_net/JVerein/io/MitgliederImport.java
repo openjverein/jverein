@@ -650,6 +650,7 @@ public class MitgliederImport implements Importer
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getPersonenart().equalsIgnoreCase("n")
                   && m.getMitgliedstyp()
                       .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException(
@@ -665,6 +666,7 @@ public class MitgliederImport implements Importer
                       .getJVereinid() == Mitgliedstyp.MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getPersonenart().equalsIgnoreCase("n")
                   && m.getMitgliedstyp()
                       .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException("Geburtsdatum fehlt");
