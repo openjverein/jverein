@@ -2283,10 +2283,10 @@ public class MitgliedControl extends FilterControl implements Savable
       boolean checkMitglied = typ == Mitgliedstyp.MITGLIED
           && m.getPersonenart().equalsIgnoreCase("n");
       boolean checkNichtMitglied = typ != Mitgliedstyp.MITGLIED
-          && (Boolean) Einstellungen
+          && m.getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
               .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJuristischePerson = typ == Mitgliedstyp.MITGLIED
-          && m.getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+      boolean checkJuristischePerson = m.getPersonenart().equalsIgnoreCase("j")
+          && (Boolean) Einstellungen
               .getEinstellung(Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN);
       if (checkMitglied || checkNichtMitglied || checkJuristischePerson)
       {
