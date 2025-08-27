@@ -121,7 +121,9 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput nichtmitgliedpflichteigenschaften;
 
-  private CheckboxInput juristischepersonpflichteigenschaften;
+  private CheckboxInput jmitgliedpflichteigenschaften;
+
+  private CheckboxInput jnichtmitgliedpflichteigenschaften;
 
   private CheckboxInput eintrittsdatumpflicht;
 
@@ -643,17 +645,28 @@ public class EinstellungControl extends AbstractControl
     return nichtmitgliedpflichteigenschaften;
   }
 
-  public CheckboxInput getJuristischePersonPflichtEigenschaften()
+  public CheckboxInput getJMitgliedPflichtEigenschaften() throws RemoteException
+  {
+    if (jmitgliedpflichteigenschaften != null)
+    {
+      return jmitgliedpflichteigenschaften;
+    }
+    jmitgliedpflichteigenschaften = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return jmitgliedpflichteigenschaften;
+  }
+
+  public CheckboxInput getJNichtMitgliedPflichtEigenschaften()
       throws RemoteException
   {
-    if (juristischepersonpflichteigenschaften != null)
+    if (jnichtmitgliedpflichteigenschaften != null)
     {
-      return juristischepersonpflichteigenschaften;
+      return jnichtmitgliedpflichteigenschaften;
     }
-    juristischepersonpflichteigenschaften = new CheckboxInput(
+    jnichtmitgliedpflichteigenschaften = new CheckboxInput(
         (Boolean) Einstellungen
-            .getEinstellung(Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN));
-    return juristischepersonpflichteigenschaften;
+            .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return jnichtmitgliedpflichteigenschaften;
   }
 
   public CheckboxInput getEintrittsdatumPflicht() throws RemoteException
@@ -2501,9 +2514,10 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kursteilnehmergebpflicht.getValue());
       Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
           (Boolean) kursteilnehmergespflicht.getValue());
-      Einstellungen.setEinstellung(
-          Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN,
-          (Boolean) juristischepersonpflichteigenschaften.getValue());
+      Einstellungen.setEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) jmitgliedpflichteigenschaften.getValue());
+      Einstellungen.setEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) jnichtmitgliedpflichteigenschaften.getValue());
       Einstellungen.setEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
           (Boolean) nichtmitgliedpflichteigenschaften.getValue());
       DBTransaction.commit();

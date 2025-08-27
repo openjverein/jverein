@@ -203,8 +203,10 @@ public class Einstellungen
     KURSTEILNEHMERGESPFLICHT("kursteilnehmergespflicht", Boolean.class, "0"),
     NICHTMITGLIEDPFLICHTEIGENSCHAFTEN("nichtmitgliedpflichteigenschaften",
         Boolean.class, "1"),
-    JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN(
-        "juristischepersonpflichteigenschaften", Boolean.class, "1"),
+    JMITGLIEDPFLICHTEIGENSCHAFTEN("jmitgliedpflichteigenschaften",
+        Boolean.class, "1"),
+    JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN("jnichtmitgliedpflichteigenschaften",
+        Boolean.class, "1"),
 
     // Anzeige
     STERBEDATUM("sterbedatum", Boolean.class, "0"),

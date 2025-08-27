@@ -207,9 +207,17 @@ public class EigenschaftenAuswahlDialog
         {
           continue;
         }
-        if (mitglied.getPersonenart().equalsIgnoreCase("j")
+        if (mitglied.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+            && mitglied.getPersonenart().equalsIgnoreCase("j")
             && !(Boolean) Einstellungen
-                .getEinstellung(Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN))
+                .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN))
+        {
+          continue;
+        }
+        if (mitglied.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+            && mitglied.getPersonenart().equalsIgnoreCase("j")
+            && !(Boolean) Einstellungen
+                .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN))
         {
           continue;
         }

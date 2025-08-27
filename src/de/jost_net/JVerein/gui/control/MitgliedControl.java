@@ -2285,10 +2285,14 @@ public class MitgliedControl extends FilterControl implements Savable
       boolean checkNichtMitglied = typ != Mitgliedstyp.MITGLIED
           && m.getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
               .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJuristischePerson = m.getPersonenart().equalsIgnoreCase("j")
-          && (Boolean) Einstellungen
-              .getEinstellung(Property.JURISTISCHEPERSONPFLICHTEIGENSCHAFTEN);
-      if (checkMitglied || checkNichtMitglied || checkJuristischePerson)
+      boolean checkJMitglied = typ == Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
+      boolean checkJNichtMitglied = typ != Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+      if (checkMitglied || checkNichtMitglied || checkJMitglied
+          || checkJNichtMitglied)
       {
         HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
         DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()

@@ -79,9 +79,11 @@ public class EinstellungenAllgemeinView extends AbstractView
     ColumnLayout cols3 = new ColumnLayout(pflichteigenschaften.getComposite(),
         1);
     SimpleContainer left3 = new SimpleContainer(cols3.getComposite());
-    left3.addLabelPair("Pflicht Eigenschaften auch für Juristische Personen",
-        control.getJuristischePersonPflichtEigenschaften());
-    left3.addLabelPair("Pflicht Eigenschaften auch für Nicht-Mitglieder",
+    left3.addLabelPair("Auch für Juristische Personen (Mitglied)",
+        control.getJMitgliedPflichtEigenschaften());
+    left3.addLabelPair("Auch für Juristische Personen (Nicht-Mitglied)",
+        control.getJNichtMitgliedPflichtEigenschaften());
+    left3.addLabelPair("Auch für Nicht-Mitglieder",
         control.getNichtMitgliedPflichtEigenschaften());
 
     ButtonArea buttons = new ButtonArea();
