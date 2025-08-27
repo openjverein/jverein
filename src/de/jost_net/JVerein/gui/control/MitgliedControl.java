@@ -582,8 +582,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
-    if (this.getMitglied().getMitgliedstyp()
-        .getJVereinid() == Mitgliedstyp.MITGLIED)
+    if (((AbstractMitgliedDetailView) view).isMitgliedDetail())
     {
       this.geburtsdatum.setMandatory(
           (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));

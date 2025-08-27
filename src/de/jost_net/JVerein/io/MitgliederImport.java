@@ -606,7 +606,8 @@ public class MitgliederImport implements Importer
         }
 
         if ((Boolean) Einstellungen
-            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+            && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           try
           {
