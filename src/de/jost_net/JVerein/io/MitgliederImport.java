@@ -1146,12 +1146,14 @@ public class MitgliederImport implements Importer
           {
             m.setVorname(vorname);
           }
-          else
+          else if (m.getPersonenart().equalsIgnoreCase("n"))
+          {
             throw new ApplicationException("Zeile " + anz + ": Vorname fehlt");
+          }
         }
         catch (SQLException e)
         {
-          if (id == null)
+          if (id == null && m.getPersonenart().equalsIgnoreCase("n"))
           {
             throw new ApplicationException("Vorname fehlt");
           }
