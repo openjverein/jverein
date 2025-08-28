@@ -67,7 +67,7 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
         control.getBeitragsgruppeAusw().getText());
     try
     {
-      if (Einstellungen.hasZusatzfelder())
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
         map.put(AuswertungMitgliedFilterVar.ZUSATZFELDER.getName(),
             control.getZusatzfelderAuswahl().getText());
@@ -167,7 +167,7 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     map.put(AuswertungMitgliedFilterVar.BEITRAGSGRUPPE.getName(), "Alle");
     try
     {
-      if (Einstellungen.hasZusatzfelder())
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
         map.put(AuswertungMitgliedFilterVar.ZUSATZFELDER.getName(),
             "Kein Feld ausgewählt");

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 
@@ -52,7 +53,7 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
         control.getEigenschaftenAuswahl().getText());
     try
     {
-      if (Einstellungen.hasZusatzfelder())
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
         map.put(AuswertungNichtMitgliedFilterVar.ZUSATZFELDER.getName(),
             control.getZusatzfelderAuswahl().getText());
@@ -104,7 +105,7 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
         "+Eigenschaft");
     try
     {
-      if (Einstellungen.hasZusatzfelder())
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
         map.put(AuswertungNichtMitgliedFilterVar.ZUSATZFELDER.getName(),
             "Kein Feld ausgewählt");
