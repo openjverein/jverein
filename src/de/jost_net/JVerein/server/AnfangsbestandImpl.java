@@ -55,9 +55,22 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getJahresabschluss() != null)
+      {
+        throw new ApplicationException(
+            "Der Zeitraum ist bereits abgeschlossen.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String msg = "Anfangsbestand kann nicht gelöscht werden. Siehe system log";
+      Logger.error(msg, e);
+      throw new ApplicationException(msg);
+    }
   }
 
   @Override
@@ -65,8 +78,8 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
   {
     try
     {
-      checkDate1();
-      checkDateInsert();
+      updateCheck();
+      checkInsert();
     }
     catch (RemoteException e)
     {
@@ -81,7 +94,16 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
   {
     try
     {
-      checkDate1();
+      if (getBetrag() == null)
+      {
+        throw new ApplicationException("Bitte Betrag eingeben!");
+      }
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Der Zeitraum ist bereits abgeschlossen.");
+      }
     }
     catch (RemoteException e)
     {
@@ -91,27 +113,22 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     }
   }
 
-  private void checkDate1() throws RemoteException, ApplicationException
-  {
-    if (getDatum() == null)
-    {
-      throw new ApplicationException("Bitte Datum eingeben");
-    }
-    if (getDatum().after(new Date()))
-    {
-      throw new ApplicationException("Keine Anfangsbestände in der Zukunft");
-    }
-    Jahresabschluss ja = getJahresabschluss();
-    if (ja != null)
-    {
-      throw new ApplicationException("Der Zeitraum ist bereits abgeschlossen.");
-    }
-  }
-
-  private void checkDateInsert() throws RemoteException, ApplicationException
+  private void checkInsert() throws RemoteException, ApplicationException
   {
     try
     {
+      if (getDatum() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben!");
+      }
+      if (getDatum().after(new Date()))
+      {
+        throw new ApplicationException("Keine Anfangsbestände in der Zukunft.");
+      }
+      if (getKonto() == null)
+      {
+        throw new ApplicationException("Kein Konto eingegeben!");
+      }
       Date beginngeschaeftsjahr = new JVDateFormatTTMMJJJJ().parse(
           (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
               + "2009");
@@ -199,20 +216,15 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override
