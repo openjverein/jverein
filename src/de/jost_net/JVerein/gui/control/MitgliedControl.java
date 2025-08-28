@@ -582,8 +582,16 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
-    this.geburtsdatum.setMandatory(
-        (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
+    if (((AbstractMitgliedDetailView) view).isMitgliedDetail())
+    {
+      this.geburtsdatum.setMandatory(
+          (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
+    }
+    else
+    {
+      this.geburtsdatum.setMandatory((Boolean) Einstellungen
+          .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT));
+    }
     return geburtsdatum;
   }
 
@@ -2264,37 +2272,59 @@ public class MitgliedControl extends FilterControl implements Savable
       // liefert nur denRoot
       ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
       EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
-
-      HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
-      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
-          .createList(EigenschaftGruppe.class);
-      it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
-      while (it.hasNext())
+      // Mitgliedstyp wird erst in handleStore() gesetzt!!
+      int typ = Mitgliedstyp.MITGLIED;
+      if (mitgliedstyp != null)
       {
-        EigenschaftGruppe eg = it.next();
-        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
+        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+        typ = Integer.valueOf(mt.getID());
       }
-
-      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+      boolean checkMitglied = typ == Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("n");
+      boolean checkNichtMitglied = typ != Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
+              .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+      boolean checkJMitglied = typ == Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
+      boolean checkJNichtMitglied = typ != Mitgliedstyp.MITGLIED
+          && m.getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+      if (checkMitglied || checkNichtMitglied || checkJMitglied
+          || checkJNichtMitglied)
       {
-        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-        pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
-            Boolean.valueOf(true));
-      }
-      for (String key : pflichtgruppen.keySet())
-      {
-        if (!pflichtgruppen.get(key))
+        HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
+        DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+            .createList(EigenschaftGruppe.class);
+        it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
+        while (it.hasNext())
         {
-          EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
-              .getDBService().createObject(EigenschaftGruppe.class, key);
-          throw new ApplicationException(String.format(
-              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
-              eg.getBezeichnung()));
+          EigenschaftGruppe eg = it.next();
+          pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
+        }
+
+        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+        {
+          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+          pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
+              Boolean.valueOf(true));
+        }
+        for (String key : pflichtgruppen.keySet())
+        {
+          if (!pflichtgruppen.get(key))
+          {
+            EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
+                .getDBService().createObject(EigenschaftGruppe.class, key);
+            throw new ApplicationException(String.format(
+                "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
+                eg.getBezeichnung()));
+          }
         }
       }
       // Max eine Eigenschaft pro Gruppe
       HashMap<String, Boolean> max1gruppen = new HashMap<>();
-      it = Einstellungen.getDBService().createList(EigenschaftGruppe.class);
+      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
       it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
       while (it.hasNext())
       {

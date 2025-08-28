@@ -606,7 +606,8 @@ public class MitgliederImport implements Importer
         }
 
         if ((Boolean) Einstellungen
-            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+            .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
+            && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
         {
           try
           {
@@ -644,18 +645,31 @@ public class MitgliederImport implements Importer
                   "Zeile " + anz + ": Geburtsdatum liegt in der Zukunft");
             m.setGeburtsdatum(Datum.toDate(geburtsdatum));
           }
-          else if ((Boolean) Einstellungen
+          else if (((Boolean) Einstellungen
               .getEinstellung(Property.GEBURTSDATUMPFLICHT)
+              && m.getPersonenart().equalsIgnoreCase("n")
               && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              || ((Boolean) Einstellungen
+                  .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getPersonenart().equalsIgnoreCase("n")
+                  && m.getMitgliedstyp()
+                      .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
         catch (SQLException e)
         {
           if (id == null
-              && (Boolean) Einstellungen
+              && ((Boolean) Einstellungen
                   .getEinstellung(Property.GEBURTSDATUMPFLICHT)
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+                  && m.getPersonenart().equalsIgnoreCase("n")
+                  && m.getMitgliedstyp()
+                      .getJVereinid() == Mitgliedstyp.MITGLIED)
+              || ((Boolean) Einstellungen
+                  .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
+                  && m.getPersonenart().equalsIgnoreCase("n")
+                  && m.getMitgliedstyp()
+                      .getJVereinid() != Mitgliedstyp.MITGLIED))
             throw new ApplicationException("Geburtsdatum fehlt");
         }
 
@@ -1133,12 +1147,14 @@ public class MitgliederImport implements Importer
           {
             m.setVorname(vorname);
           }
-          else
+          else if (m.getPersonenart().equalsIgnoreCase("n"))
+          {
             throw new ApplicationException("Zeile " + anz + ": Vorname fehlt");
+          }
         }
         catch (SQLException e)
         {
-          if (id == null)
+          if (id == null && m.getPersonenart().equalsIgnoreCase("n"))
           {
             throw new ApplicationException("Vorname fehlt");
           }

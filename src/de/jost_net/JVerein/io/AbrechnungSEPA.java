@@ -1260,7 +1260,8 @@ public class AbrechnungSEPA
       summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
-    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
+    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT && !((Boolean) Einstellungen
+        .getEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT)))
     {
       Buchung buchung = (Buchung) Einstellungen.getDBService()
           .createObject(Buchung.class, null);

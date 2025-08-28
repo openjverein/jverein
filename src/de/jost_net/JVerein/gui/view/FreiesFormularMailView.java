@@ -3,6 +3,7 @@ package de.jost_net.JVerein.gui.view;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -53,7 +54,7 @@ public class FreiesFormularMailView extends AbstractView
     right.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
     right.addInput(control.getStichtag());
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       right.addInput(zusatzfelderInput);

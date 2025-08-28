@@ -75,7 +75,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     middle.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       middle.addInput(zusatzfelderInput);
