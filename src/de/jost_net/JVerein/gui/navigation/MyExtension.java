@@ -16,10 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
@@ -97,12 +93,6 @@ import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
@@ -119,31 +109,6 @@ public class MyExtension implements Extension
   {
     try
     {
-      // Check ob es ein Anlagenkonto gibt
-      boolean anlagenkonto = false;
-      try
-      {
-        DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.id from konto " + "WHERE (kontoart = ?) ";
-        anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-            {
-              @Override
-              public Object extract(ResultSet rs)
-                  throws RemoteException, SQLException
-              {
-                if (rs.next())
-                {
-                  return true;
-                }
-                return false;
-              }
-            });
-      }
-      catch (Exception e)
-      {
-        
-      }
       NavigationItem jverein = (NavigationItem) extendable;
 
       NavigationItem mitglieder = null;
@@ -163,16 +128,11 @@ public class MyExtension implements Extension
             new StartViewAction(KursteilnehmerListeView.class),
             "user-friends.png"));
       }
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
-      if (it.size() > 0)
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new StartViewAction(FamilienbeitragView.class), "users.png"));
       }
-
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -247,7 +207,7 @@ public class MyExtension implements Extension
             new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
       }
       // Anlagen
-      if (anlagenkonto)
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
             new StartViewAction(AnlagenbuchungListeView.class),
@@ -417,9 +377,12 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
           "Eigenschaften", new StartViewAction(EigenschaftListeView.class),
           "document-properties.png"));
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
-              new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+      {
+        einstellungenmitglieder
+            .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
+                new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
