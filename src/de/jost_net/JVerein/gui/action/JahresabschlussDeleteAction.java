@@ -56,14 +56,6 @@ public class JahresabschlussDeleteAction implements Action
       {
         return;
       }
-      DBIterator<Jahresabschluss> it1 = Einstellungen.getDBService()
-          .createList(Jahresabschluss.class);
-      it1.addFilter("von > ?", new Object[] { a.getVon() });
-      if (it1.hasNext())
-      {
-        throw new ApplicationException(
-            "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
-      }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
       d.setTitle("Jahresabschluss löschen");
