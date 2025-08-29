@@ -32,6 +32,9 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
 
   private static final long serialVersionUID = 1L;
 
+  // Speichert ob Löschen ohne Delete Check gemacht wird
+  protected boolean forcedDelete = false;
+
   public AbstractJVereinDBObject() throws RemoteException
   {
     super();
@@ -75,5 +78,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       super.store();
     }
+  }
+
+  // Löschen ohne Delete Check oder eingeschränktem Check
+  @Override
+  public void deleteForced() throws RemoteException, ApplicationException
+  {
+    this.forcedDelete = true;
+    super.delete();
   }
 }
