@@ -118,7 +118,6 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -326,12 +325,18 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public static MitgliedControl control = null;
 
+  private boolean isMitglied = false;
+
   public MitgliedControl(AbstractView view)
   {
     super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     control = this;
+    if (view instanceof AbstractMitgliedDetailView)
+    {
+      isMitglied = ((AbstractMitgliedDetailView) view).isMitgliedDetail();
+    }
   }
 
   public Mitglied getMitglied()
@@ -384,11 +389,10 @@ public class MitgliedControl extends FilterControl implements Savable
   {
     if (!((Boolean) Einstellungen
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
+    {
       return false;
-    if (!(view instanceof AbstractMitgliedDetailView))
-      return false;
-    AbstractMitgliedDetailView detailView = (AbstractMitgliedDetailView) view;
-    return detailView.isMitgliedDetail();
+    }
+    return isMitglied;
   }
 
   public TextInput getMitgliedsnummer() throws RemoteException
@@ -2262,48 +2266,90 @@ public class MitgliedControl extends FilterControl implements Savable
       throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
-    m.checkEigenschaften(eigenschaftenTree);
-    m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
-    m.setAustritt((Date) getAustritt().getValue());
-    m.setAnrede((String) getAnrede().getValue());
-    GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-    if (mitgliedstyp == null)
+    // Für natürliche Personen oder juristische Personen
+    if (m.getPersonenart().equalsIgnoreCase("n"))
     {
-      try
-      {
-        Beitragsgruppe bg = (Beitragsgruppe) o;
-        m.setBeitragsgruppe(bg);
-        if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-        {
-          m.setVollZahlerID(null);
-        }
-      }
-      catch (NullPointerException e)
-      {
-        throw new ApplicationException("Beitragsgruppe fehlt");
-      }
+      m.setTitel((String) getTitel().getValue());
+      m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
+      m.setGeschlecht((String) getGeschlecht().getValue());
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+    else
     {
-      if (getIndividuellerBeitrag().getValue() != null)
+      m.setLeitwegID((String) getLeitwegID().getValue());
+    }
+    // Für Mitglieder
+    if (isMitglied)
+    {
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      {
+        m.setExterneMitgliedsnummer(
+            (String) getExterneMitgliedsnummer().getValue());
+      }
+      Beitragsgruppe bg = (Beitragsgruppe) getBeitragsgruppe(true).getValue();
+      m.setBeitragsgruppe(bg);
+      if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      {
+        m.setVollZahlerID(null);
+      }
+      m.setEintritt((Date) getEintritt().getValue());
+      m.setAustritt((Date) getAustritt().getValue());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
         m.setIndividuellerBeitrag(
             (Double) getIndividuellerBeitrag().getValue());
       }
-      else
+      m.setKuendigung((Date) getKuendigung().getValue());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
+          && m.getPersonenart().equalsIgnoreCase("n"))
       {
-        m.setIndividuellerBeitrag(null);
+        m.setSterbetag((Date) getSterbetag().getValue());
       }
     }
+
+    // Stammdaten
+    m.setAnrede((String) getAnrede().getValue());
+    m.setName((String) getName(false).getValue());
+    m.setVorname((String) getVorname().getValue());
+    m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
+    m.setStrasse((String) getStrasse().getValue());
+    m.setPlz((String) getPlz().getValue());
+    m.setOrt((String) getOrt().getValue());
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+    {
+      m.setStaat(getStaat().getValue() == null ? ""
+          : ((Staat) getStaat().getValue()).getKey());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.KOMMUNIKATIONSDATEN))
+    {
+      m.setTelefonprivat((String) getTelefonprivat().getValue());
+      m.setHandy((String) getHandy().getValue());
+      m.setTelefondienstlich((String) getTelefondienstlich().getValue());
+      m.setEmail((String) getEmail().getValue());
+    }
+
+    // Zahlung
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     m.setZahlungsweg(zw.getKey());
-    Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
-    m.setZahlungsrhythmus(zr.getKey());
-    Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
-    if (zt != null)
+    if (isMitglied)
     {
-      m.setZahlungstermin(zt.getKey());
+      if (zahlungsrhytmus != null)
+      {
+        Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus()
+            .getValue();
+        m.setZahlungsrhythmus(zr.getKey());
+      }
+      if (zahlungstermin != null)
+      {
+        Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
+        if (zt != null)
+        {
+          m.setZahlungstermin(zt.getKey());
+        }
+      }
     }
+    m.setMandatID((String) getMandatID().getValue());
     m.setMandatDatum((Date) getMandatDatum().getValue());
     m.setMandatVersion((Integer) getMandatVersion().getValue());
     m.setBic((String) getBic().getValue());
@@ -2312,43 +2358,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.toUpperCase().replace(" ", ""));
-    m.setEintritt((Date) getEintritt().getValue());
-    m.setEmail((String) getEmail().getValue());
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-    {
-      if (externemitgliedsnummer != null)
-      {
-        String mitgliedsnummer = (String) getExterneMitgliedsnummer()
-            .getValue();
-        if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
-        {
-          m.setExterneMitgliedsnummer(mitgliedsnummer);
-        }
-        else
-        {
-          throw new ApplicationException("Externe Mitgliedsnummer fehlt");
-        }
-      }
-    }
-    else
-    {
-      m.setExterneMitgliedsnummer(null);
-    }
-
-    if (m.getPersonenart().equalsIgnoreCase("n"))
-    {
-      m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
-      if (getGeschlecht().getSelectedValue() == null)
-      {
-        throw new ApplicationException("Bitte Geschlecht auswählen!");
-      }
-
-      m.setGeschlecht((String) getGeschlecht().getValue());
-    }
-    else
-    {
-      m.setLeitwegID((String) getLeitwegID().getValue());
-    }
+    // Abweichender Kontoinhaber
     m.setKtoiAdressierungszusatz(
         (String) getKtoiAdressierungszusatz().getValue());
     m.setKtoiAnrede((String) getKtoiAnrede().getValue());
@@ -2358,31 +2368,24 @@ public class MitgliedControl extends FilterControl implements Savable
     String persa = (String) getKtoiPersonenart().getValue();
     m.setKtoiPersonenart(persa.substring(0, 1));
     m.setKtoiPlz((String) getKtoiPlz().getValue());
-    m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
-        : ((Staat) getKtoiStaat().getValue()).getKey());
+    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+    {
+      m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
+          : ((Staat) getKtoiStaat().getValue()).getKey());
+    }
     m.setKtoiStrasse((String) getKtoiStrasse().getValue());
     m.setKtoiTitel((String) getKtoiTitel().getValue());
     m.setKtoiVorname((String) getKtoiVorname().getValue());
     m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
-    m.setKuendigung((Date) getKuendigung().getValue());
-    m.setSterbetag((Date) getSterbetag().getValue());
-    m.setName((String) getName(false).getValue());
-    m.setOrt((String) getOrt().getValue());
-    m.setPlz((String) getPlz().getValue());
-    m.setStaat(getStaat().getValue() == null ? ""
-        : ((Staat) getStaat().getValue()).getKey());
-    m.setStrasse((String) getStrasse().getValue());
-    m.setTelefondienstlich((String) getTelefondienstlich().getValue());
-    m.setTelefonprivat((String) getTelefonprivat().getValue());
-    m.setHandy((String) getHandy().getValue());
-    m.setTitel((String) getTitel().getValue());
+    // Vermerke
     m.setVermerk1((String) getVermerk1().getValue());
     m.setVermerk2((String) getVermerk2().getValue());
-    m.setVorname((String) getVorname().getValue());
+
     if (m.getID() == null)
     {
       m.setEingabedatum();
     }
+
     return m;
   }
 
@@ -2392,7 +2395,11 @@ public class MitgliedControl extends FilterControl implements Savable
     try
     {
       Mitglied m = (Mitglied) prepareStore();
-      m.setMandatID((String) getMandatID().getValue());
+
+      // Es wird hier geprüft weil die Daten nur im Tree sind und erst nach dem
+      // store() in die DB geschrieben werden
+      m.checkEigenschaften(eigenschaftenTree);
+
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
       // Eintrag immer als geändert erkannt.

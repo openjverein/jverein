@@ -134,226 +134,228 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     try
     {
-      plausi();
+      checkExterneMitgliedsnummer();
+
+      if (getPersonenart() == null || (!getPersonenart().equalsIgnoreCase("n")
+          && !getPersonenart().equalsIgnoreCase("j")))
+      {
+        throw new ApplicationException(
+            "Personenstatus ist nicht 'N' oder 'J'!");
+      }
+      if (getName() == null || getName().length() == 0)
+      {
+        throw new ApplicationException("Bitte Namen eingeben!");
+      }
+      if (getPersonenart().equalsIgnoreCase("n")
+          && (getVorname() == null || getVorname().length() == 0))
+      {
+        throw new ApplicationException("Bitte Vornamen eingeben!");
+      }
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+          && getBeitragsgruppe() == null)
+      {
+        throw new ApplicationException("Bitte Beitragsgruppe eingeben!");
+      }
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("n")
+          && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
+          && (Boolean) Einstellungen
+              .getEinstellung(Property.GEBURTSDATUMPFLICHT))
+      {
+        throw new ApplicationException("Bitte Geburtsdatum eingeben!");
+      }
+      if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("n")
+          && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
+          && (Boolean) Einstellungen
+              .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))
+      {
+        throw new ApplicationException("Bitte Geburtsdatum eingeben!");
+      }
+      if (getPersonenart().equalsIgnoreCase("n")
+          && ((getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+              && (Boolean) Einstellungen
+                  .getEinstellung(Property.GEBURTSDATUMPFLICHT))
+              || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+                  && (Boolean) Einstellungen.getEinstellung(
+                      Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))))
+      {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(getGeburtsdatum());
+        Calendar cal2 = Calendar.getInstance();
+        if (cal1.after(cal2))
+        {
+          throw new ApplicationException("Geburtsdatum liegt in der Zukunft.");
+        }
+        if (getSterbetag() != null)
+        {
+          cal2.setTime(getSterbetag());
+        }
+        cal2.add(Calendar.YEAR, -150);
+        if (cal1.before(cal2))
+        {
+          throw new ApplicationException(
+              "Ist das Mitglied wirklich älter als 150 Jahre?");
+        }
+      }
+      if (getPersonenart().equalsIgnoreCase("n") && getGeschlecht() == null)
+      {
+        throw new ApplicationException("Bitte Geschlecht auswählen!");
+      }
+      if (getEmail() != null && getEmail().length() > 0)
+      {
+        if (!EmailValidator.isValid(getEmail()))
+        {
+          throw new ApplicationException("Ungültige Email-Adresse.");
+        }
+      }
+
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+          && getEintritt().getTime() == Einstellungen.NODATE.getTime()
+          && (Boolean) Einstellungen
+              .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
+      {
+        throw new ApplicationException("Bitte Eintrittsdatum eingeben!");
+      }
+      if (getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+      {
+        if (getIban() == null || getIban().length() == 0)
+        {
+          throw new ApplicationException("Bitte IBAN eingeben!");
+        }
+        if (getMandatID() == null || getMandatID().isEmpty())
+        {
+          throw new ApplicationException("Bitte Mandats-ID eingeben!");
+        }
+        else if (getMandatID().length() > 35)
+        {
+          throw new ApplicationException("Mandats-ID hat mehr als 35 Stellen.");
+        }
+        if (getMandatDatum() == Einstellungen.NODATE)
+        {
+          throw new ApplicationException("Bitte Datum des Mandat eingeben!");
+        }
+        else if (getMandatDatum().after(new Date()))
+        {
+          throw new ApplicationException(
+              "Datum des Mandat liegt in der Zukunft!");
+        }
+      }
+      if (getIban() != null && getIban().length() != 0)
+      {
+        try
+        {
+          new IBAN(getIban());
+        }
+        catch (SEPAException e)
+        {
+          throw new ApplicationException("Ungültige IBAN");
+        }
+      }
+      if (getBic() != null && getBic().length() != 0)
+      {
+        try
+        {
+          new BIC(getBic());
+        }
+        catch (SEPAException e)
+        {
+          throw new ApplicationException("Ungültige BIC");
+        }
+      }
+      if (getZahlungsrhythmus() == null)
+      {
+        throw new ApplicationException(
+            "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
+      }
+      if (getSterbetag() != null && getAustritt() == null)
+      {
+        throw new ApplicationException(
+            "Bei verstorbenem Mitglied muss das Austrittsdatum gefüllt sein!");
+      }
+      if (getAustritt() != null)
+      {
+        // Person ist ausgetreten
+        // Ist das Mitglied Vollzahler in einem Familienverband?
+        if (getBeitragsgruppe() != null && getBeitragsgruppe()
+            .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+        {
+          DBIterator<Mitglied> famang = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          famang.addFilter("zahlerid = " + getID());
+          famang.addFilter("(austritt is null or austritt > ?)", getAustritt());
+          if (famang.hasNext())
+          {
+            throw new ApplicationException(
+                "Dieses Mitglied ist Vollzahler für andere. Zunächst Beitragsart der Angehörigen ändern!");
+          }
+        }
+      }
+      // Ist das Mitglied Teil eines Familienverbandes?
+      if (getBeitragsgruppe() != null
+          && getBeitragsgruppe()
+              .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+          && getVollZahlerID() != null)
+      {
+        // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
+        // sein!
+        DBIterator<Mitglied> zahler = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        zahler.addFilter("id = " + getVollZahlerID());
+        if (getAustritt() != null)
+          zahler.addFilter("(austritt is not null and austritt < ?)",
+              getAustritt());
+        Mitglied z = null;
+        if (zahler.hasNext())
+          z = zahler.next();
+        if (z != null && ((Mitglied) z).getAustritt() != null)
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt()
+                  + ". Bitte anderen Vollzahler wählen!");
+        }
+        if (z != null && ((Mitglied) z).getEintritt().after(new Date())
+            && ((Mitglied) z).getEintritt().after(getEintritt()))
+        {
+          throw new ApplicationException(
+              "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt()
+                  + ". Bitte anderen Vollzahler wählen!");
+        }
+      }
+      // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
+      if (getBeitragsgruppe() != null && getBeitragsgruppe()
+          .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      {
+        // Es darf keine Familienangehörigen geben
+        DBIterator<Mitglied> famang = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        famang.addFilter("zahlerid = " + getID());
+        if (famang.hasNext())
+        {
+          throw new ApplicationException(
+              "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
+        }
+      }
+      if (getBeitragsgruppe() != null
+          && getBeitragsgruppe()
+              .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
+          && getVollZahlerID() == null)
+      {
+        throw new ApplicationException("Bitte Vollzahler auswählen!");
+      }
+
+      // Individueller Beitrag darf nicht kleiner als 0 sein
+      if (getIndividuellerBeitrag() != null && getIndividuellerBeitrag() < 0)
+      {
+        throw new ApplicationException(
+            "Individueller Beitrag darf nicht negativ sein!");
+      }
     }
     catch (RemoteException e)
     {
       String fehler = "Mitglied kann nicht gespeichert werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
-    }
-  }
-
-  @SuppressWarnings("unused")
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    checkExterneMitgliedsnummer();
-
-    if (getPersonenart() == null || (!getPersonenart().equalsIgnoreCase("n")
-        && !getPersonenart().equalsIgnoreCase("j")))
-    {
-      throw new ApplicationException("Personenstatus ist nicht 'N' oder 'J'");
-    }
-    if (getName() == null || getName().length() == 0)
-    {
-      throw new ApplicationException("Bitte Namen eingeben");
-    }
-    if (getPersonenart().equalsIgnoreCase("n")
-        && (getVorname() == null || getVorname().length() == 0))
-    {
-      throw new ApplicationException("Bitte Vornamen eingeben");
-    }
-    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
-        && getPersonenart().equalsIgnoreCase("n")
-        && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
-        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
-    {
-      throw new ApplicationException("Bitte Geburtsdatum eingeben");
-    }
-    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
-        && getPersonenart().equalsIgnoreCase("n")
-        && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
-        && (Boolean) Einstellungen
-            .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))
-    {
-      throw new ApplicationException("Bitte Geburtsdatum eingeben");
-    }
-    if (getPersonenart().equalsIgnoreCase("n") && ((getMitgliedstyp()
-        .getJVereinid() == Mitgliedstyp.MITGLIED
-        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
-        || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
-            && (Boolean) Einstellungen
-                .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))))
-    {
-      Calendar cal1 = Calendar.getInstance();
-      cal1.setTime(getGeburtsdatum());
-      Calendar cal2 = Calendar.getInstance();
-      if (cal1.after(cal2))
-      {
-        throw new ApplicationException("Geburtsdatum liegt in der Zukunft");
-      }
-      if (getSterbetag() != null)
-      {
-        cal2.setTime(getSterbetag());
-      }
-      cal2.add(Calendar.YEAR, -150);
-      if (cal1.before(cal2))
-      {
-        throw new ApplicationException(
-            "Ist das Mitglied wirklich älter als 150 Jahre?");
-      }
-    }
-    if (getPersonenart().equalsIgnoreCase("n") && getGeschlecht() == null)
-    {
-      throw new ApplicationException("Bitte Geschlecht auswählen");
-    }
-    if (getEmail() != null && getEmail().length() > 0)
-    {
-      if (!EmailValidator.isValid(getEmail()))
-      {
-        throw new ApplicationException("Ungültige Email-Adresse.");
-      }
-    }
-
-    if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
-        && getEintritt().getTime() == Einstellungen.NODATE.getTime()
-        && (Boolean) Einstellungen
-            .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
-    {
-      throw new ApplicationException("Bitte Eintrittsdatum eingeben");
-    }
-    if (getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
-    {
-      if (getIban() == null || getIban().length() == 0)
-      {
-        throw new ApplicationException("Bitte IBAN eingeben");
-      }
-      if (getMandatID() == null || getMandatID().isEmpty())
-      {
-        throw new ApplicationException("Bitte Mandats-ID eingeben");
-      }
-      else if (getMandatID().length() > 35)
-      {
-        throw new ApplicationException("Mandats-ID hat mehr als 35 Stellen");
-      }
-      if (getMandatDatum() == Einstellungen.NODATE)
-      {
-        throw new ApplicationException("Bitte Datum des Mandat eingeben");
-      }
-      else if (getMandatDatum().after(new Date()))
-      {
-        throw new ApplicationException(
-            "Datum des Mandat liegt in der Zukunft!");
-      }
-    }
-    if (getIban() != null && getIban().length() != 0)
-    {
-      try
-      {
-        new IBAN(getIban());
-      }
-      catch (SEPAException e)
-      {
-        throw new ApplicationException("Ungültige IBAN");
-      }
-    }
-    if (getBic() != null && getBic().length() != 0)
-    {
-      try
-      {
-        new BIC(getBic());
-      }
-      catch (SEPAException e)
-      {
-        throw new ApplicationException("Ungültige BIC");
-      }
-    }
-    if (getZahlungsrhythmus() == null)
-    {
-      throw new ApplicationException(
-          "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
-    }
-    if (getSterbetag() != null && getAustritt() == null)
-    {
-      throw new ApplicationException(
-          "Bei verstorbenem Mitglied muss das Austrittsdatum gefüllt sein!");
-    }
-    if (getAustritt() != null)
-    {
-      // Person ist ausgetreten
-      // Ist das Mitglied Vollzahler in einem Familienverband?
-      if (getBeitragsgruppe() != null && getBeitragsgruppe()
-          .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      {
-        DBIterator<Mitglied> famang = Einstellungen.getDBService()
-            .createList(Mitglied.class);
-        famang.addFilter("zahlerid = " + getID());
-        famang.addFilter("(austritt is null or austritt > ?)", getAustritt());
-        if (famang.hasNext())
-        {
-          throw new ApplicationException(
-              "Dieses Mitglied ist Vollzahler für andere. Zunächst Beitragsart der Angehörigen ändern!");
-        }
-      }
-    }
-    // Ist das Mitglied Teil eines Familienverbandes?
-    if (getBeitragsgruppe() != null
-        && getBeitragsgruppe()
-            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-        && getVollZahlerID() != null)
-    {
-      // ja, suche Vollzahler. Er darf nicht, bzw nicht früher, ausgetreten
-      // sein!
-      DBIterator<Mitglied> zahler = Einstellungen.getDBService()
-          .createList(Mitglied.class);
-      zahler.addFilter("id = " + getVollZahlerID());
-      if (getAustritt() != null)
-        zahler.addFilter("(austritt is not null and austritt < ?)",
-            getAustritt());
-      Mitglied z = null;
-      if (zahler.hasNext())
-        z = zahler.next();
-      if (z != null && ((Mitglied) z).getAustritt() != null)
-      {
-        throw new ApplicationException(
-            "Der ausgewählte Vollzahler ist ausgetreten zu " + z.getAustritt()
-                + ". Bitte anderen Vollzahler wählen!");
-      }
-      if (z != null && ((Mitglied) z).getEintritt().after(new Date())
-          && ((Mitglied) z).getEintritt().after(getEintritt()))
-      {
-        throw new ApplicationException(
-            "Der ausgewählte Vollzahler tritt erst ein zu " + z.getEintritt()
-                + ". Bitte anderen Vollzahler wählen!");
-      }
-    }
-    // Check ob das Mitglied vorher ein Vollzahler eines Familienverbandes war
-    if (getBeitragsgruppe() != null && getBeitragsgruppe()
-        .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-    {
-      // Es darf keine Familienangehörigen geben
-      DBIterator<Mitglied> famang = Einstellungen.getDBService()
-          .createList(Mitglied.class);
-      famang.addFilter("zahlerid = " + getID());
-      if (famang.hasNext())
-      {
-        throw new ApplicationException(
-            "Dieses Mitglied ist Vollzahler in einem Familienverband.. Zunächst Beitragsart der Angehörigen ändern!");
-      }
-    }
-    if (getBeitragsgruppe() != null
-        && getBeitragsgruppe()
-            .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER
-        && getVollZahlerID() == null)
-    {
-      throw new ApplicationException("Bitte Vollzahler auswählen!");
-    }
-
-    // Individueller Beitrag darf nicht kleiner als 0 sein
-    if (getIndividuellerBeitrag() != null && getIndividuellerBeitrag() < 0)
-    {
-      throw new ApplicationException(
-          "Individueller Beitrag darf nicht negativ sein!");
     }
   }
 
@@ -493,16 +495,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    try
-    {
-      plausi();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Mitglied kann nicht gespeichert werden. Siehe system log";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
+    insertCheck();
   }
 
   @Override
@@ -1530,7 +1523,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       try
       {
-        plausi();
+        insertCheck();
+        checkEigenschaften();
         return true;
       }
       catch (Exception e)

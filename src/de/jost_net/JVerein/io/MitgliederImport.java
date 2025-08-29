@@ -2,6 +2,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -30,6 +31,7 @@ import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
+import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.EmailValidator;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -39,6 +41,7 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -1158,6 +1161,19 @@ public class MitgliederImport implements Importer
           {
             throw new ApplicationException("Vorname fehlt");
           }
+        }
+
+        // Eigenschaften prüfen
+        TreePart eigenschaftenTree = new TreePart(
+            new EigenschaftenNode(m, eigenschaftList), null);
+        try
+        {
+          m.checkEigenschaften(eigenschaftenTree);
+        }
+        catch (RemoteException | ApplicationException ex)
+        {
+          throw new ApplicationException(
+              "Zeile " + anz + ": " + ex.getMessage());
         }
 
         if (id == null)
