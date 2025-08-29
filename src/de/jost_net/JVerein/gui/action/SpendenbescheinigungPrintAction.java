@@ -487,32 +487,16 @@ public class SpendenbescheinigungPrintAction implements Action
      * Bei Sammelbestätigungen ist der Verweis auf Verzicht in der Anlage
      * vermerkt
      */
-    String verzicht = "";
     char verzichtJa = (char) 113; // box leer
     char verzichtNein = (char) 53; // X
 
-    if (spb.getAutocreate())
+    if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
     {
-      if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
-      {
-        if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
-        {
-          verzichtJa = (char) 53; // X
-          verzichtNein = (char) 113; // box leer
-        }
-      }
-    }
-    else
-    {
-      if (spb.getErsatzAufwendungen())
+      if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
       {
         verzichtJa = (char) 53; // X
         verzichtNein = (char) 113; // box leer
       }
-    }
-
-    if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
-    {
       Paragraph p = new Paragraph();
       p.setFont(Reporter.getFreeSans(8));
       p.setAlignment(Element.ALIGN_LEFT);
@@ -783,6 +767,7 @@ public class SpendenbescheinigungPrintAction implements Action
           verwendung = buchung.getZweck();
         }
         rpt.addColumn(verwendung, Element.ALIGN_LEFT);
+        String verzicht = "";
         if (buchung.getVerzicht().booleanValue())
         {
           verzicht = "ja";
