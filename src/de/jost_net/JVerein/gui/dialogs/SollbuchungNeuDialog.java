@@ -71,6 +71,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         .createObject(SollbuchungPosition.class, null);
 
     sollbControl = new SollbuchungControl(null, sollbuchung);
+    sollbControl.isSollbuchungEditable();
     sollbPosControl = new SollbuchungPositionControl(null, sollbuchungPosition);
 
     LabelGroup group = new LabelGroup(parent, null);
