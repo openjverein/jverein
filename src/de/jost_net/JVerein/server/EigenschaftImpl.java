@@ -59,36 +59,32 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   {
     try
     {
-      plausi();
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      if (getEigenschaftGruppe() == null)
+      {
+        throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
+      }
+      DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      if (!this.isNewObject())
+      {
+        eigIt.addFilter("id != ?", getID());
+      }
+      eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (eigIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
+      }
     }
     catch (RemoteException e)
     {
       Logger.error("insert check of eigenschaft failed", e);
       throw new ApplicationException(
           "Eigenschaft kann nicht gespeichert werden. Siehe system log.");
-    }
-  }
-
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    if (getBezeichnung() == null || getBezeichnung().isEmpty())
-    {
-      throw new ApplicationException("Bitte Bezeichnung eingeben!");
-    }
-    if (getEigenschaftGruppe() == null)
-    {
-      throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
-    }
-    DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
-        .createList(Eigenschaft.class);
-    if (!this.isNewObject())
-    {
-      eigIt.addFilter("id != ?", getID());
-    }
-    eigIt.addFilter("bezeichnung = ?", getBezeichnung());
-    if (eigIt.hasNext())
-    {
-      throw new ApplicationException("Bitte eindeutige Bezeichnung eingeben!");
     }
   }
 
