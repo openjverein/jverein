@@ -54,7 +54,7 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    //
   }
 
   @Override
@@ -68,7 +68,7 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
     {
       Logger.error("insert check of projekt failed", e);
       throw new ApplicationException(
-          "Projekt kann nicht gespeichert werden. Siehe system log");
+          "Projekt kann nicht gespeichert werden. Siehe system log.");
     }
   }
 
@@ -76,14 +76,14 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   {
     if (getBezeichnung() == null || getBezeichnung().isEmpty())
     {
-      throw new ApplicationException("Bitte Bezeichnung eingeben");
+      throw new ApplicationException("Bitte Bezeichnung eingeben!");
     }
 
     if (isStartDatumGesetzt() && isEndeDatumGesetzt()
         && getEndeDatum().before(getStartDatum()))
     {
       throw new ApplicationException(
-          "Endedatum muss nach dem Startdatum liegen");
+          "Endedatum muss nach dem Startdatum liegen!");
     }
   }
 

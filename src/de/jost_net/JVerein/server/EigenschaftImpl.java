@@ -51,7 +51,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    //
   }
 
   @Override
@@ -65,7 +65,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     {
       Logger.error("insert check of eigenschaft failed", e);
       throw new ApplicationException(
-          "Eigenschaft kann nicht gespeichert werden. Siehe system log");
+          "Eigenschaft kann nicht gespeichert werden. Siehe system log.");
     }
   }
 
@@ -77,7 +77,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     }
     if (getEigenschaftGruppe() == null)
     {
-      throw new ApplicationException("Bitte Eigenschaftengruppe auswählen");
+      throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
     }
     DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
         .createList(Eigenschaft.class);

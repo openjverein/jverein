@@ -62,7 +62,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
     }
     catch (RemoteException e)
     {
-      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -77,7 +77,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
     }
     catch (RemoteException e)
     {
-      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -85,13 +85,17 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
 
   private void plausi() throws RemoteException, ApplicationException
   {
+    if (getMitglied() == null)
+    {
+      throw new ApplicationException("Bitte Mitglied eingeben!");
+    }
     if (getLehrgangsart() == null)
     {
-      throw new ApplicationException("Bitte Lehrgangsart auswählen");
+      throw new ApplicationException("Bitte Lehrgangsart auswählen!");
     }
     if (getVon() == null)
     {
-      throw new ApplicationException("Bitte Datum eingeben");
+      throw new ApplicationException("Bitte Datum eingeben!");
     }
   }
 
@@ -117,9 +121,9 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
