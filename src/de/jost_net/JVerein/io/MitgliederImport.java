@@ -238,7 +238,7 @@ public class MitgliederImport implements Importer
           }
         }
 
-        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
         {
           try
           {
@@ -316,7 +316,7 @@ public class MitgliederImport implements Importer
         try
         {
           // Beitragsgruppe nur bei Mitgliedern möglich
-          if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+          if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             String beitragsgruppe = results.getString("beitragsgruppe");
             DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
@@ -486,7 +486,7 @@ public class MitgliederImport implements Importer
             m.setMandatDatum(Datum.toDate(mandatdatum));
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             throw new ApplicationException(
                 "Zeile " + anz + ": Mandatdatum fehlt");
@@ -496,7 +496,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift pflicht
           if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             throw new ApplicationException("Mandatdatum fehlt");
           }
@@ -510,7 +510,7 @@ public class MitgliederImport implements Importer
             m.setMandatVersion(Integer.parseInt(mandatversion));
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             m.setMandatVersion(0);
           }
@@ -519,7 +519,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift nötig. 0 als default nehmen
           if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             m.setMandatVersion(0);
           }
@@ -545,7 +545,7 @@ public class MitgliederImport implements Importer
             }
           }
           else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             throw new ApplicationException("Zeile " + anz + ": IBAN fehlt");
           }
@@ -554,7 +554,7 @@ public class MitgliederImport implements Importer
         {
           // Nur bei Zahlungsweg Lastschrift nötig
           if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
           {
             throw new ApplicationException("IBAN fehlt");
           }
@@ -610,7 +610,7 @@ public class MitgliederImport implements Importer
 
         if ((Boolean) Einstellungen
             .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
-            && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+            && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
         {
           try
           {
@@ -651,12 +651,12 @@ public class MitgliederImport implements Importer
           else if (((Boolean) Einstellungen
               .getEinstellung(Property.GEBURTSDATUMPFLICHT)
               && m.getPersonenart().equalsIgnoreCase("n")
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
                   && m.getPersonenart().equalsIgnoreCase("n")
                   && m.getMitgliedstyp()
-                      .getJVereinid() != Mitgliedstyp.MITGLIED))
+                      .getJVereinid() != Mitgliedstyp.ID_MITGLIED))
             throw new ApplicationException(
                 "Zeile " + anz + ": Geburtsdatum fehlt");
         }
@@ -667,12 +667,12 @@ public class MitgliederImport implements Importer
                   .getEinstellung(Property.GEBURTSDATUMPFLICHT)
                   && m.getPersonenart().equalsIgnoreCase("n")
                   && m.getMitgliedstyp()
-                      .getJVereinid() == Mitgliedstyp.MITGLIED)
+                      .getJVereinid() == Mitgliedstyp.ID_MITGLIED)
               || ((Boolean) Einstellungen
                   .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT)
                   && m.getPersonenart().equalsIgnoreCase("n")
                   && m.getMitgliedstyp()
-                      .getJVereinid() != Mitgliedstyp.MITGLIED))
+                      .getJVereinid() != Mitgliedstyp.ID_MITGLIED))
             throw new ApplicationException("Geburtsdatum fehlt");
         }
 
@@ -1316,7 +1316,7 @@ public class MitgliederImport implements Importer
           }
         }
         // Sekundaere-Beitragsgruppe nur bei Mitgliedern möglich
-        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+        if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
         {
           for (Beitragsgruppe bg : sekundaerList)
           {
