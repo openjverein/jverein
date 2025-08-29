@@ -177,6 +177,18 @@ public class WiedervorlageControl extends FilterControl implements Savable
     w.setDatum((Date) getDatum(false).getValue());
     w.setVermerk((String) getVermerk().getValue());
     w.setErledigung((Date) getErledigung().getValue());
+    if (w.isNewObject())
+    {
+      if (getMitglied().getValue() != null)
+      {
+        Mitglied m = (Mitglied) getMitglied().getValue();
+        w.setMitglied(Integer.parseInt(m.getID()));
+      }
+      else
+      {
+        w.setMitglied(null);
+      }
+    }
     return w;
   }
 
@@ -185,20 +197,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
   {
     try
     {
-      Wiedervorlage w = (Wiedervorlage) prepareStore();
-      if (w.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getMitglied().getValue();
-          w.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-      w.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
