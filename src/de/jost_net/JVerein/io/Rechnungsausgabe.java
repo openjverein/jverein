@@ -42,7 +42,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
@@ -50,8 +49,6 @@ public class Rechnungsausgabe
 {
 
   RechnungControl control;
-
-  GenericIterator<Rechnung> rechnungen = null;
 
   File file = null;
 
@@ -66,25 +63,6 @@ public class Rechnungsausgabe
   {
     this.control = control;
     this.typ = typ;
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
-    {
-      case DRUCK:
-        file = getDateiAuswahl("pdf");
-        if (file == null)
-        {
-          return;
-        }
-        formularaufbereitung = new FormularAufbereitung(file, true, false);
-        break;
-      case MAIL:
-        file = getDateiAuswahl("zip");
-        if (file == null)
-        {
-          return;
-        }
-        zos = new ZipOutputStream(new FileOutputStream(file));
-        break;
-    }
 
     Formular formular = null;
     // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
@@ -101,6 +79,25 @@ public class Rechnungsausgabe
           .createObject(Formular.class, form.getID());
     }
 
+    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    {
+      case DRUCK:
+        file = getDateiAuswahl("pdf", rechnungen);
+        if (file == null)
+        {
+          return;
+        }
+        formularaufbereitung = new FormularAufbereitung(file, true, false);
+        break;
+      case MAIL:
+        file = getDateiAuswahl("zip", rechnungen);
+        if (file == null)
+        {
+          return;
+        }
+        zos = new ZipOutputStream(new FileOutputStream(file));
+        break;
+    }
     aufbereitung(formular, rechnungen);
   }
 
@@ -150,7 +147,8 @@ public class Rechnungsausgabe
     }
   }
 
-  private File getDateiAuswahl(String extension) throws RemoteException
+  private File getDateiAuswahl(String extension, Rechnung[] rechnungen)
+      throws RemoteException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -160,15 +158,34 @@ public class Rechnungsausgabe
     {
       fd.setFilterPath(path);
     }
-    if (typ == TYP.RECHNUNG)
+    if (rechnungen.length == 1)
     {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "." + extension);
+      Rechnung rechnung = rechnungen[0];
+      if (typ == TYP.RECHNUNG)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
+                rechnung, rechnung.getMitglied()) + "." + extension);
+      }
+      else
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, rechnung,
+                rechnung.getMitglied()) + "." + extension);
+      }
     }
     else
     {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "." + extension);
+      if (typ == TYP.RECHNUNG)
+      {
+        fd.setFileName(VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "."
+            + extension);
+      }
+      else
+      {
+        fd.setFileName(VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "."
+            + extension);
+      }
     }
     fd.setFilterExtensions(new String[] { "*." + extension });
 

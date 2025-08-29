@@ -21,7 +21,6 @@ import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -37,9 +36,7 @@ public class StatistikJahrgaengeExportAction implements Action
   {
     try
     {
-      SelectInput cjahr = (SelectInput) context;
-      final Integer jahr = (Integer) cjahr.getValue();
-      ExportDialog d = new ExportDialog(new Object[] { jahr },
+      ExportDialog d = new ExportDialog(new Object[] { context },
           StatistikJahrgaengeView.class, DokumentationUtil.STATISTIKJAHRGAENGE);
       d.open();
     }
