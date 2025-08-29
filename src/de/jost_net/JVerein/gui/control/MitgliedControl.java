@@ -2266,6 +2266,7 @@ public class MitgliedControl extends FilterControl implements Savable
       throws RemoteException, ApplicationException
   {
     Mitglied m = getMitglied();
+
     // Für natürliche Personen oder juristische Personen
     if (m.getPersonenart().equalsIgnoreCase("n"))
     {
@@ -2280,6 +2281,7 @@ public class MitgliedControl extends FilterControl implements Savable
     // Für Mitglieder
     if (isMitglied)
     {
+      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
       if ((Boolean) Einstellungen
           .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
@@ -2306,6 +2308,11 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         m.setSterbetag((Date) getSterbetag().getValue());
       }
+    }
+    else
+    {
+      Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+      m.setMitgliedstyp(Long.valueOf(mt.getID()));
     }
 
     // Stammdaten
@@ -2403,20 +2410,12 @@ public class MitgliedControl extends FilterControl implements Savable
       // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
       // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
       // Eintrag immer als geändert erkannt.
-      if (mitgliedstyp != null)
-      {
-        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
-        m.setMitgliedstyp(Integer.valueOf(mt.getID()));
-      }
-      else
-      {
-        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
-      }
+
       m.setLetzteAenderung();
       m.store();
 
       boolean ist_mitglied = m.getMitgliedstyp()
-          .getJVereinid() == Mitgliedstyp.MITGLIED;
+          .getJVereinid() == Mitgliedstyp.ID_MITGLIED;
       if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO)
           && ist_mitglied)
       {
@@ -3061,7 +3060,7 @@ public class MitgliedControl extends FilterControl implements Savable
     Mitglied m = getMitglied();
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
-        && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+        && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
     {
       // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
       // bereits gespeichert sind. Ggfls. speichern.

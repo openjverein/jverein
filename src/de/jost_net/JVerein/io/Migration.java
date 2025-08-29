@@ -899,7 +899,7 @@ public class Migration
     {
       if (mitgliedstyp.matches("[0-9]+"))
       {
-        m.setMitgliedstyp(Integer.parseInt(mitgliedstyp));
+        m.setMitgliedstyp(Long.parseLong(mitgliedstyp));
       }
       else
       {

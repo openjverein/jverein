@@ -151,12 +151,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Vornamen eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
           && getBeitragsgruppe() == null)
       {
         throw new ApplicationException("Bitte Beitragsgruppe eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
           && getPersonenart().equalsIgnoreCase("n")
           && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
@@ -164,7 +164,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+      if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED
           && getPersonenart().equalsIgnoreCase("n")
           && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
@@ -173,10 +173,10 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         throw new ApplicationException("Bitte Geburtsdatum eingeben!");
       }
       if (getPersonenart().equalsIgnoreCase("n")
-          && ((getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+          && ((getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
               && (Boolean) Einstellungen
                   .getEinstellung(Property.GEBURTSDATUMPFLICHT))
-              || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+              || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED
                   && (Boolean) Einstellungen.getEinstellung(
                       Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))))
       {
@@ -210,7 +210,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         }
       }
 
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
           && getEintritt().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
               .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
@@ -370,7 +370,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   private void checkExterneMitgliedsnummer()
       throws RemoteException, ApplicationException
   {
-    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
+    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED)
       return;
     if (!((Boolean) Einstellungen
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
@@ -513,7 +513,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public void setMitgliedstyp(Integer mitgliedstyp) throws RemoteException
+  public void setMitgliedstyp(Long mitgliedstyp) throws RemoteException
   {
     setAttribute(MITGLIEDSTYP, mitgliedstyp);
   }

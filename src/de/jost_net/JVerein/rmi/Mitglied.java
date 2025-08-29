@@ -47,7 +47,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void setID(String id) throws RemoteException;
 
-  public void setMitgliedstyp(Integer mitgliedstyp) throws RemoteException;
+  public void setMitgliedstyp(Long mitgliedstyp) throws RemoteException;
 
   public Mitgliedstyp getMitgliedstyp() throws RemoteException;
 

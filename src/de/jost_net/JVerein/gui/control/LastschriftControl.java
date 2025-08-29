@@ -264,7 +264,7 @@ public class LastschriftControl extends FilterControl
     if (getLastschrift().getKursteilnehmer() != null)
       text = "Kursteilnehmer";
     else if (getLastschrift().getMitglied().getMitgliedstyp()
-        .getJVereinid() == Mitgliedstyp.MITGLIED)
+        .getJVereinid() == Mitgliedstyp.ID_MITGLIED)
       text = "Mitglied";
     else
       text = "Nicht-Mitglied";
