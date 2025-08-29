@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -56,6 +57,7 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
@@ -392,6 +394,99 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       throw new ApplicationException(
           "Die externe Mitgliedsnummer wird bereits verwendet für Mitglied : "
               + test.getAttribute("namevorname"));
+    }
+  }
+
+  // Prüft die gespeicherten Eigenschaften aus der DB
+  public void checkEigenschaften() throws RemoteException, ApplicationException
+  {
+    TreePart eigenschaftenTree = new TreePart(new EigenschaftenNode(this),
+        null);
+    checkEigenschaften(eigenschaftenTree);
+  }
+
+  // Prüft die Eigenschaften aus dem TreePart
+  public void checkEigenschaften(TreePart eigenschaftenTree)
+      throws RemoteException, ApplicationException
+  {
+    if (eigenschaftenTree != null)
+    {
+      // liefert nur denRoot
+      ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
+      EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
+      // Mitgliedstyp wird erst in handleStore() gesetzt!!
+      int typ = Integer.valueOf(getMitgliedstyp().getID());
+      boolean checkMitglied = typ == Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("n");
+      boolean checkNichtMitglied = typ != Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
+              .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+      boolean checkJMitglied = typ == Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
+      boolean checkJNichtMitglied = typ != Mitgliedstyp.MITGLIED
+          && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
+              .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
+      if (checkMitglied || checkNichtMitglied || checkJMitglied
+          || checkJNichtMitglied)
+      {
+        HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
+        DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+            .createList(EigenschaftGruppe.class);
+        it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
+        while (it.hasNext())
+        {
+          EigenschaftGruppe eg = it.next();
+          pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
+        }
+
+        for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+        {
+          Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+          pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
+              Boolean.valueOf(true));
+        }
+        for (String key : pflichtgruppen.keySet())
+        {
+          if (!pflichtgruppen.get(key))
+          {
+            EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
+                .getDBService().createObject(EigenschaftGruppe.class, key);
+            throw new ApplicationException(String.format(
+                "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
+                eg.getBezeichnung()));
+          }
+        }
+      }
+      // Max eine Eigenschaft pro Gruppe
+      HashMap<String, Boolean> max1gruppen = new HashMap<>();
+      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+          .createList(EigenschaftGruppe.class);
+      it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
+      while (it.hasNext())
+      {
+        EigenschaftGruppe eg = it.next();
+        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
+      }
+      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
+      {
+        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
+        Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
+        if (m1 != null)
+        {
+          if (m1)
+          {
+            throw new ApplicationException(String.format(
+                "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
+                ei.getEigenschaftGruppe().getBezeichnung()));
+          }
+          else
+          {
+            max1gruppen.put(ei.getEigenschaftGruppe().getID(),
+                Boolean.valueOf(true));
+          }
+        }
+      }
     }
   }
 
