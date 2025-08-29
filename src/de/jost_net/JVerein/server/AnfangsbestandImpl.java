@@ -79,44 +79,6 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     try
     {
       updateCheck();
-      checkInsert();
-    }
-    catch (RemoteException e)
-    {
-      String msg = "Anfangsbestand kann nicht gespeichert werden. Siehe system log";
-      Logger.error(msg, e);
-      throw new ApplicationException(msg);
-    }
-  }
-
-  @Override
-  protected void updateCheck() throws ApplicationException
-  {
-    try
-    {
-      if (getBetrag() == null)
-      {
-        throw new ApplicationException("Bitte Betrag eingeben!");
-      }
-      Jahresabschluss ja = getJahresabschluss();
-      if (ja != null)
-      {
-        throw new ApplicationException(
-            "Der Zeitraum ist bereits abgeschlossen.");
-      }
-    }
-    catch (RemoteException e)
-    {
-      String msg = "Anfangsbestand kann nicht gespeichert werden. Siehe system log";
-      Logger.error(msg, e);
-      throw new ApplicationException(msg);
-    }
-  }
-
-  private void checkInsert() throws RemoteException, ApplicationException
-  {
-    try
-    {
       if (getDatum() == null)
       {
         throw new ApplicationException("Bitte Datum eingeben!");
@@ -162,10 +124,40 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
       throw new ApplicationException(
           "Tag und Monat müssen mit dem Beginn des Geschäftsjahres übereinstimmen.");
     }
+    catch (RemoteException e)
+    {
+      String msg = "Anfangsbestand kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(msg, e);
+      throw new ApplicationException(msg);
+    }
     catch (ParseException e)
     {
       throw new ApplicationException(
           "Beginn des Geschäftsjahres ist in den Einstellungen nicht gesetzt.");
+    }
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getBetrag() == null)
+      {
+        throw new ApplicationException("Bitte Betrag eingeben!");
+      }
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Der Zeitraum ist bereits abgeschlossen.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String msg = "Anfangsbestand kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(msg, e);
+      throw new ApplicationException(msg);
     }
   }
 
