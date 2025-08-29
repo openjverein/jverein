@@ -19,7 +19,9 @@ package de.jost_net.JVerein.gui.menu;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.AnfangsbestandDeleteAction;
-import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -35,10 +37,11 @@ public class AnfangsbestandMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
    */
-  public AnfangsbestandMenu()
+  public AnfangsbestandMenu(JVereinTablePart part)
   {
-    addItem(new SingleAnfangsbestandItem("Bearbeiten",
-        new AnfangsbestandDetailAction(), "text-x-generic.png"));
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(AnfangsbestandDetailView.class, part),
+        "text-x-generic.png"));
     addItem(new SingleAnfangsbestandItem("Löschen",
         new AnfangsbestandDeleteAction(), "user-trash-full.png"));
   }

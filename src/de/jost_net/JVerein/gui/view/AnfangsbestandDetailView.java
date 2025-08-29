@@ -34,20 +34,22 @@ public class AnfangsbestandDetailView extends AbstractDetailView
     GUI.getView().setTitle("Anfangsbestand");
 
     control = new AnfangsbestandControl(this);
+    final boolean editable = control.isAnfangsbestandEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Anfangsbestand");
     group.addLabelPair("Konto", control.getKonto());
-    group.addLabelPair("Datum", control.getDatum(true));
-    if (control.getAnfangsbestand().getID() != null)
-    {
-      control.getDatum(false).setEnabled(false);
-    }
+    group.addLabelPair("Datum", control.getDatum());
     group.addLabelPair("Betrag", control.getBetrag());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
-    buttons.addButton(new SaveButton(control));
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    SaveButton saveButton = new SaveButton(control);
+    saveButton.setEnabled(editable);
+    buttons.addButton(saveButton);
     buttons.paint(this.getParent());
   }
 

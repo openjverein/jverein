@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -50,19 +49,6 @@ public class AnfangsbestandDeleteAction implements Action
       if (a.isNewObject())
       {
         return;
-      }
-      try
-      {
-        Jahresabschluss ja = a.getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(
-              "Anfangsbestand ist bereits abgeschlossen.");
-        }
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(e.getMessage());
       }
 
       YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
