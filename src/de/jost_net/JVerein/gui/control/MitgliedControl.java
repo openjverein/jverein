@@ -2291,37 +2291,40 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         m.setVollZahlerID(null);
       }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      {
+        String mitgliedsnummer = (String) getExterneMitgliedsnummer()
+            .getValue();
+        if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
+        {
+          m.setExterneMitgliedsnummer(mitgliedsnummer);
+        }
+        else
+        {
+          m.setExterneMitgliedsnummer(null);
+        }
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
+      {
+        m.setIndividuellerBeitrag(
+            (Double) getIndividuellerBeitrag().getValue());
+      }
+      else
+      {
+        m.setIndividuellerBeitrag(null);
+      }
+      m.setEintritt((Date) getEintritt().getValue());
+      m.setAustritt((Date) getAustritt().getValue());
+      m.setKuendigung((Date) getKuendigung().getValue());
+      m.setSterbetag((Date) getSterbetag().getValue());
     }
     else
     {
       Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
       m.setMitgliedstyp(Long.valueOf(mt.getID()));
     }
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-    {
-      String mitgliedsnummer = (String) getExterneMitgliedsnummer().getValue();
-      if (mitgliedsnummer != null && !mitgliedsnummer.isEmpty())
-      {
-        m.setExterneMitgliedsnummer(mitgliedsnummer);
-      }
-      else
-      {
-        m.setExterneMitgliedsnummer(null);
-      }
-    }
-
-    m.setEintritt((Date) getEintritt().getValue());
-    m.setAustritt((Date) getAustritt().getValue());
-    if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
-    {
-      m.setIndividuellerBeitrag((Double) getIndividuellerBeitrag().getValue());
-    }
-    else
-    {
-      m.setIndividuellerBeitrag(null);
-    }
-    m.setKuendigung((Date) getKuendigung().getValue());
-    m.setSterbetag((Date) getSterbetag().getValue());
 
     // Stammdaten
     m.setAnrede((String) getAnrede().getValue());
@@ -2392,6 +2395,15 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setEingabedatum();
     }
 
+    // ManadatID hier setzen wenn sie editierbar ist
+    int sepaMandatIdSource = (Integer) Einstellungen
+        .getEinstellung(Property.SEPAMANDATIDSOURCE);
+    if (sepaMandatIdSource != SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+        && sepaMandatIdSource != SepaMandatIdSource.DBID)
+    {
+      m.setMandatID((String) getMandatID().getValue());
+    }
+
     return m;
   }
 
@@ -2405,8 +2417,15 @@ public class MitgliedControl extends FilterControl implements Savable
       // Es wird hier geprüft weil die Daten nur im Tree sind und erst nach dem
       // store() in die DB geschrieben werden
       m.checkEigenschaften(eigenschaftenTree);
-      // MandatID hier setzen weil es automatisch modifiziert wird
-      m.setMandatID((String) getMandatID().getValue());
+      // MandatID hier setzen weil sie bei früheren Mitgliedern nicht
+      // gespeichert war
+      int sepaMandatIdSource = (Integer) Einstellungen
+          .getEinstellung(Property.SEPAMANDATIDSOURCE);
+      if (sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+          || sepaMandatIdSource == SepaMandatIdSource.DBID)
+      {
+        m.setMandatID((String) getMandatID().getValue());
+      }
       m.store();
       // Änderungsdatum nur speichern wenn wirklich geändert wurde
       // Wenn der insert oder update Check schief geht nicht speichern
