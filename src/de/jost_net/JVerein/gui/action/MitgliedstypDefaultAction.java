@@ -39,12 +39,12 @@ public class MitgliedstypDefaultAction implements Action
           .createObject(Mitgliedstyp.class,
               String.valueOf(Mitgliedstyp.MITGLIED));
       mt.setBezeichnung("Mitglied");
-      mt.setJVereinid(Mitgliedstyp.MITGLIED);
+      mt.setJVereinid(Mitgliedstyp.ID_MITGLIED);
       mt.store();
       mt = (Mitgliedstyp) Einstellungen.getDBService().createObject(
           Mitgliedstyp.class, String.valueOf(Mitgliedstyp.SPENDER));
       mt.setBezeichnung("Spender/in");
-      mt.setJVereinid(Mitgliedstyp.SPENDER);
+      mt.setJVereinid(Mitgliedstyp.ID_SPENDER);
       mt.store();
 
       GUI.getStatusBar().setSuccessText("Mitgliedstypen eingefügt.");

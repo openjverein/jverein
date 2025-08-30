@@ -243,11 +243,13 @@ public abstract class FilterControl extends VorZurueckControl
     switch (typ)
     {
       case MITGLIED:
-        mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
+        mtIt.addFilter(
+            Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.ID_MITGLIED);
         break;
       case NICHTMITGLIED:
-        mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
-            + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
+        mtIt.addFilter(
+            Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.ID_MITGLIED + " OR "
+                + Mitgliedstyp.JVEREINID + " IS NULL");
         break;
       case NOT_USED:
       case ALLE:

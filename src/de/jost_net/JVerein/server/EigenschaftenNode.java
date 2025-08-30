@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -545,6 +546,31 @@ public class EigenschaftenNode implements GenericObjectNode
     {
       this.preset = preset;
       this.base = base;
+    }
+  }
+
+  // Aufruf aus Mitglieder Import
+  public EigenschaftenNode(Mitglied mitglied,
+      LinkedList<Eigenschaft> eigenschaftList) throws RemoteException
+  {
+    this.onlyChecked = true;
+    nodetype = ROOT;
+    this.mitglied = mitglied;
+
+    for (Eigenschaft ei : eigenschaftList)
+    {
+      config.put(ei.getID(),
+          new Config(EigenschaftenNode.CHECKED, EigenschaftenNode.UNCHECKED));
+    }
+
+    childrens = new ArrayList<>();
+    DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
+        .createList(EigenschaftGruppe.class);
+    it.setOrder("order by bezeichnung");
+    while (it.hasNext())
+    {
+      EigenschaftGruppe eg = (EigenschaftGruppe) it.next();
+      childrens.add(new EigenschaftenNode(this, onlyChecked, eg, config));
     }
   }
 }
