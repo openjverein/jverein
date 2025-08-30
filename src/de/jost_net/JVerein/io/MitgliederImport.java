@@ -434,18 +434,21 @@ public class MitgliederImport implements Importer
             }
             else
             {
-              m.setZahlungsrhythmus(Zahlungsrhythmus.MONATLICH);
+              m.setZahlungsrhythmus((Integer) Einstellungen
+                  .getEinstellung(Property.ZAHLUNGSRHYTMUS));
             }
           }
           else
-            m.setZahlungsrhythmus(Zahlungsrhythmus.MONATLICH);
+            m.setZahlungsrhythmus((Integer) Einstellungen
+                .getEinstellung(Property.ZAHLUNGSRHYTMUS));
         }
         catch (SQLException e)
         {
           if (id == null)
           {
-            // wenn nicht vorhanden Monatlich als default nehmen
-            m.setZahlungsrhythmus(Zahlungsrhythmus.MONATLICH);
+            // wenn nicht den Wert aus den Properties als default nehmen
+            m.setZahlungsrhythmus((Integer) Einstellungen
+                .getEinstellung(Property.ZAHLUNGSRHYTMUS));
           }
         }
 
@@ -509,17 +512,14 @@ public class MitgliederImport implements Importer
           {
             m.setMandatVersion(Integer.parseInt(mandatversion));
           }
-          else if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+          else
           {
             m.setMandatVersion(0);
           }
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig. 0 als default nehmen
-          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+          if (id == null)
           {
             m.setMandatVersion(0);
           }
@@ -552,11 +552,14 @@ public class MitgliederImport implements Importer
         }
         catch (SQLException e)
         {
-          // Nur bei Zahlungsweg Lastschrift nötig
-          if (id == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-              && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+          if (id == null)
           {
-            throw new ApplicationException("IBAN fehlt");
+            m.setIban("");
+            if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT && m
+                .getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+            {
+              throw new ApplicationException("IBAN fehlt");
+            }
           }
         }
 
@@ -580,11 +583,15 @@ public class MitgliederImport implements Importer
         catch (SQLException e)
         {
           // Optionaler Parameter
-          if (id == null && m.getBic() == "" && m.getIban() != null
-              && m.getIban().length() != 0)
+          if (id == null)
           {
-            IBAN i = new IBAN(m.getIban());
-            m.setBic(i.getBIC());
+            m.setBic("");
+            if (m.getBic() == "" && m.getIban() != null
+                && m.getIban().length() != 0)
+            {
+              IBAN i = new IBAN(m.getIban());
+              m.setBic(i.getBIC());
+            }
           }
         }
 
@@ -798,13 +805,16 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            if (m.getPersonenart() == null)
-              m.setPersonenart("N");
+            if (m.getKtoiPersonenart() == null)
+              m.setKtoiPersonenart("N");
           }
         }
         catch (SQLException e)
         {
-          // Optionaler Parameter
+          if (id == null)
+          {
+            m.setKtoiPersonenart("N");
+          }
         }
 
         try
