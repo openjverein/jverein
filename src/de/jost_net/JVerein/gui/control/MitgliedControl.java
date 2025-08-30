@@ -2309,10 +2309,6 @@ public class MitgliedControl extends FilterControl implements Savable
         m.setExterneMitgliedsnummer(null);
       }
     }
-    else
-    {
-      m.setExterneMitgliedsnummer(null);
-    }
 
     m.setEintritt((Date) getEintritt().getValue());
     m.setAustritt((Date) getAustritt().getValue());
@@ -2409,7 +2405,11 @@ public class MitgliedControl extends FilterControl implements Savable
       // Es wird hier geprüft weil die Daten nur im Tree sind und erst nach dem
       // store() in die DB geschrieben werden
       m.checkEigenschaften(eigenschaftenTree);
+      // MandatID hier setzen weil es automatisch modifiziert wird
       m.setMandatID((String) getMandatID().getValue());
+      m.store();
+      // Änderungsdatum nur speichern wenn wirklich geändert wurde
+      // Wenn der insert oder update Check schief geht nicht speichern
       m.setLetzteAenderung();
       m.store();
 
