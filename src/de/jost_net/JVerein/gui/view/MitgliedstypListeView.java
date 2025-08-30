@@ -48,8 +48,8 @@ public class MitgliedstypListeView extends AbstractView
 
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
-    mtIt.addFilter(Mitgliedstyp.JVEREINID + " >= " + Mitgliedstyp.MITGLIED
-        + " AND " + Mitgliedstyp.JVEREINID + " <= " + Mitgliedstyp.SPENDER);
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " >= " + Mitgliedstyp.ID_MITGLIED
+        + " AND " + Mitgliedstyp.JVEREINID + " <= " + Mitgliedstyp.ID_SPENDER);
     if (mtIt.size() == 0)
     {
       buttons.addButton("Default-Mitgliedstypen einrichten",
