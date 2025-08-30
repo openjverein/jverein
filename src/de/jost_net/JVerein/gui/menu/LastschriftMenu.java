@@ -18,8 +18,8 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.LastschriftDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -48,7 +48,8 @@ public class LastschriftMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new LastschriftDeleteAction(),
+    addItem(new CheckedContextMenuItem("Löschen",
+        new DeleteAction("Lastschrift", "Lastschriften"),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",

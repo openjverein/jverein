@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzDeleteAction;
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -41,7 +41,8 @@ public class ArbeitseinsatzMenu extends ContextMenu
         new EditAction(ArbeitseinsatzDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
-        new ArbeitseinsatzDeleteAction(), "user-trash-full.png"));
+        new DeleteAction("Arbeitseinsatz", "Arbeitseinsätze"),
+        "user-trash-full.png"));
     if (part != null)
     {
       addItem(ContextMenuItem.SEPARATOR);

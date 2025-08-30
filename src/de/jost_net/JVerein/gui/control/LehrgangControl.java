@@ -301,6 +301,7 @@ public class LehrgangControl extends FilterControl implements Savable
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
+      lehrgaengeList.setMulti(true);
       lehrgaengeList
           .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
       VorZurueckControl.setObjektListe(null, null);

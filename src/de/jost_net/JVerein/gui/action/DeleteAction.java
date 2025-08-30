@@ -18,7 +18,8 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
+import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -26,36 +27,43 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen einer Zusatzbetragsvorlage.
+ * Loeschen eines Eintrags oder Einträge.
  */
-public class ZusatzbetragVorlageDeleteAction implements Action
+public class DeleteAction implements Action
 {
+  private String name;
+
+  private String namen;
+
+  private String attribute;
+
+  public DeleteAction(String name, String namen)
+  {
+    this.name = name;
+    this.namen = namen;
+  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    ZusatzbetragVorlage[] z = null;
-    if (context != null && (context instanceof ZusatzbetragVorlage
-        || context instanceof ZusatzbetragVorlage[]))
+    if (context == null)
     {
-      if (context instanceof ZusatzbetragVorlage)
-      {
-        z = new ZusatzbetragVorlage[] { (ZusatzbetragVorlage) context };
-      }
-      else if (context instanceof ZusatzbetragVorlage[])
-      {
-        z = (ZusatzbetragVorlage[]) context;
-      }
+      throw new ApplicationException("Kein Objekt ausgewählt");
     }
-    if (z == null)
+    DBObject[] objekte = null;
+    if (context instanceof DBObject)
     {
-      throw new ApplicationException("Keine Zusatzbetrag-Vorlage ausgewählt");
+      objekte = new DBObject[] { (DBObject) context };
+    }
+    else if (context instanceof DBObject[])
+    {
+      objekte = (DBObject[]) context;
     }
 
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Zusatzbetrag-Vorlage löschen");
-    d.setText(String.format("Wollen Sie %d %s wirklich löschen?", z.length,
-        (z.length == 1 ? "Zusatzbetrag-Vorlage" : "Zusatzbetrag-Vorlagen")));
+    d.setTitle(name + " löschen");
+    d.setText(String.format("Wollen Sie %d %s wirklich löschen?",
+        objekte.length, (objekte.length == 1 ? name : namen)));
     Boolean choice;
     try
     {
@@ -67,26 +75,33 @@ public class ZusatzbetragVorlageDeleteAction implements Action
     }
     catch (Exception e1)
     {
-      Logger.error("Fehler", e1);
+      Logger.error("Fehler beim Löschen von " + namen + ": ", e1);
+      return;
     }
 
     try
     {
-      for (ZusatzbetragVorlage z1 : z)
+      DBTransaction.starten();
+      for (DBObject o : objekte)
       {
-        if (z1.isNewObject())
+        if (o.isNewObject())
         {
           continue;
         }
-        z1.delete();
+        attribute = (String) o.getAttribute(o.getPrimaryAttribute());
+        o.delete();
       }
-      GUI.getStatusBar().setSuccessText("gelöscht.");
+      DBTransaction.commit();
+      GUI.getStatusBar()
+          .setSuccessText((objekte.length == 1 ? name : namen) + " gelöscht.");
     }
-    catch (RemoteException e)
+    catch (RemoteException e2)
     {
-      String fehler = "Fehler beim Löschen von Zusatzbetrags-Vorlagen";
+      DBTransaction.rollback();
+      String fehler = "Fehler beim Löschen von " + name + " " + attribute
+          + ". Es wird eventuell von anderen Objekten referenziert.";
       GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      Logger.error(fehler, e2);
     }
   }
 }

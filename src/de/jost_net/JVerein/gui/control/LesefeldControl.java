@@ -439,6 +439,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
       lesefeldList.setRememberColWidths(true);
       lesefeldList.setRememberOrder(true);
       lesefeldList.addFeature(new FeatureSummary());
+      lesefeldList.setMulti(true);
       lesefeldList
           .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
       VorZurueckControl.setObjektListe(null, null);

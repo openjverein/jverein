@@ -67,6 +67,7 @@ public class WiedervorlageList extends TablePart implements Part
       wiedervorlageList.setRememberColWidths(true);
       wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.addFeature(new FeatureSummary());
+      wiedervorlageList.setMulti(true);
       wiedervorlageList.setAction(
           new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
       VorZurueckControl.setObjektListe(null, null);

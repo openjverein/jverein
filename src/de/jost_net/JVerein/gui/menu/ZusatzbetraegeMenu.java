@@ -18,9 +18,9 @@ package de.jost_net.JVerein.gui.menu;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetragDeleteAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeNaechsteFaelligkeitAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeResetAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeVorherigeFaelligkeitAction;
@@ -56,7 +56,8 @@ public class ZusatzbetraegeMenu extends ContextMenu
     addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
     addItem(new CheckedContextMenuItem("Löschen",
-        new ZusatzbetragDeleteAction(), "user-trash-full.png"));
+        new DeleteAction("Zusatzbetrag", "Zusatzbeträge"),
+        "user-trash-full.png"));
     if (table != null)
     {
       addItem(ContextMenuItem.SEPARATOR);
