@@ -144,7 +144,14 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       if (getName() == null || getName().length() == 0)
       {
-        throw new ApplicationException("Bitte Namen eingeben!");
+        if (getPersonenart().equalsIgnoreCase("n"))
+        {
+          throw new ApplicationException("Bitte Namen eingeben!");
+        }
+        else
+        {
+          throw new ApplicationException("Bitte Name Zeile 1 eingeben!");
+        }
       }
       if (getPersonenart().equalsIgnoreCase("n")
           && (getVorname() == null || getVorname().length() == 0))
