@@ -46,10 +46,7 @@ public class DeleteAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null)
-    {
-      throw new ApplicationException("Kein Objekt ausgewählt");
-    }
+
     DBObject[] objekte = null;
     if (context instanceof DBObject)
     {
@@ -58,6 +55,10 @@ public class DeleteAction implements Action
     else if (context instanceof DBObject[])
     {
       objekte = (DBObject[]) context;
+    }
+    else
+    {
+      throw new ApplicationException("Kein Objekt ausgewählt");
     }
 
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
@@ -88,7 +89,7 @@ public class DeleteAction implements Action
         {
           continue;
         }
-        attribute = (String) o.getAttribute(o.getPrimaryAttribute());
+        attribute = (o.getAttribute(o.getPrimaryAttribute())).toString();
         o.delete();
       }
       DBTransaction.commit();

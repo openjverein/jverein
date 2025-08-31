@@ -22,10 +22,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
-import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -53,7 +53,8 @@ public class SollbuchungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Löschen", new SollbuchungLoeschenAction(),
+    addItem(new SollOhneIstItem("Löschen",
+        new DeleteAction("Sollbuchung", "Sollbuchungen"),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
