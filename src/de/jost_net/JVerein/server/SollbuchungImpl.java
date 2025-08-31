@@ -73,6 +73,14 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
             "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
                 + "Rechnung gehört!");
       }
+      DBIterator<Buchung> it;
+      it = Einstellungen.getDBService().createList(Buchung.class);
+      it.addFilter(Buchung.SOLLBUCHUNG + " = ?", new Object[] { this.getID() });
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Sollbuchung kann nicht gelöscht werden weil ihr Buchungen zugeordnet sind!");
+      }
     }
     catch (ObjectNotFoundException e)
     {
