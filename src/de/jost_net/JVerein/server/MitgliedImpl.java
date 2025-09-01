@@ -1580,14 +1580,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getObjektName()
   {
-    // TODO Auto-generated method stub
     return "Mitglied";
   }
 
   @Override
   public String getObjektNameMehrzahl()
   {
-    // TODO Auto-generated method stub
     return "Mitglieder";
   }
 
