@@ -44,8 +44,7 @@ public class KursteilnehmerMenu extends ContextMenu
         new KursteilnehmerAbuResetAction(table), "user-trash-full.png"));
     addItem(new CheckedSingleContextMenuItem("Zu Mitglied übernehmen",
         new KursteilnehmerWirdMitgliedAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new DeleteAction("Kursteilnehmer", "Kursteilnehmer"),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
   }
 }

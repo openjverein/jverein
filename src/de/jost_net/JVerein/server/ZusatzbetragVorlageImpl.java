@@ -314,4 +314,16 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
   {
     setAttribute("steuer", steuer);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Zusatzbetrag Vorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Zusatzbetrag Vorlagen";
+  }
 }

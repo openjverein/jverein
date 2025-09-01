@@ -621,4 +621,16 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   {
     setAttribute("zweck", zweck.getKey());
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Konto";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Konten";
+  }
 }

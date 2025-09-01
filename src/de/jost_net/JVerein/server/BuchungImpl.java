@@ -998,4 +998,16 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     super.store();
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Buchung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungen";
+  }
+
 }

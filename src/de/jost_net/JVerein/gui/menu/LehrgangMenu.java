@@ -39,8 +39,8 @@ public class LehrgangMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(LehrgangDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new DeleteAction("Lehrgang", "Lehrgänge"), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
     if (part != null)
     {
       addItem(ContextMenuItem.SEPARATOR);

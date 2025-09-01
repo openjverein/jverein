@@ -415,4 +415,16 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
     return buchungen;
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Sollbuchung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Sollbuchungen";
+  }
 }

@@ -131,4 +131,16 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
     setAttribute("max1", max1);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaftengruppe";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaftengruppen";
+  }
+
 }

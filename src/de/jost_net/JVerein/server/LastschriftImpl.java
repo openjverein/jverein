@@ -408,4 +408,16 @@ public class LastschriftImpl extends AbstractJVereinDBObject
     }
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Lastschrift";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lastschriften";
+  }
+
 }

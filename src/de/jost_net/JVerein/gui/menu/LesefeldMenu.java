@@ -37,7 +37,7 @@ public class LesefeldMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(LesefeldDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new DeleteAction("Lesefeld", "Lesefelder"), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
   }
 }

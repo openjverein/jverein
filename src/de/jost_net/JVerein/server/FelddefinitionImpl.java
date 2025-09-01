@@ -184,4 +184,16 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   {
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Felddefinition";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Felddefinitionen";
+  }
 }

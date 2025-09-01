@@ -229,4 +229,16 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   {
     return "id";
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Steuer";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Steuern";
+  }
 }

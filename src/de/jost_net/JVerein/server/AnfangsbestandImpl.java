@@ -251,4 +251,16 @@ public class AnfangsbestandImpl extends AbstractJVereinDBObject
     return null;
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Anfangsbestand";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Anfangsbestände";
+  }
+
 }

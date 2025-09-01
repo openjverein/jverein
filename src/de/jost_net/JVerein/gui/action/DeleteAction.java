@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -34,45 +34,60 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class DeleteAction implements Action
 {
-  private String name;
+  private String name = "";
 
-  private String namen;
+  private String namen = "";
 
   private String attribut = "";
-
-  public DeleteAction(String name, String namen)
-  {
-    this.name = name;
-    this.namen = namen;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
 
-    DBObject objekt = null;
-    DBObject[] ote = null;
+    JVereinDBObject objekt = null;
+    JVereinDBObject[] ote = null;
     int length;
-    if (context instanceof DBObject)
+    if (context instanceof JVereinDBObject)
     {
-      objekt = (DBObject) context;
+      objekt = (JVereinDBObject) context;
       length = 1;
+      try
+      {
+        name = objekt.getObjektName();
+        namen = objekt.getObjektNameMehrzahl();
+      }
+      catch (RemoteException e)
+      {
+        // Das kann nicht passieren ist aber nötig wegen der
+        // throws RemoteException Deklaration in JVereinDBObject
+      }
     }
-    else if (context instanceof DBObject[])
+    else if (context instanceof JVereinDBObject[])
     {
-      ote = (DBObject[]) context;
+      ote = (JVereinDBObject[]) context;
+      if (ote.length == 0)
+      {
+        throw new ApplicationException("Kein Objekt ausgewählt");
+      }
       length = ote.length;
+      try
+      {
+        name = ote[0].getObjektName();
+        namen = ote[0].getObjektNameMehrzahl();
+      }
+      catch (RemoteException e)
+      {
+        // Das kann nicht passieren ist aber nötig wegen der
+        // throws RemoteException Deklaration in JVereinDBObject
+      }
     }
     else
     {
       throw new ApplicationException("Kein Objekt ausgewählt");
     }
-    if (ote != null && ote.length == 0)
-    {
-      throw new ApplicationException("Kein Objekt ausgewählt");
-    }
+
     // final wegen BackgroundTask
-    final DBObject[] objekte = ote;
+    final JVereinDBObject[] objekte = ote;
 
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle(name + " löschen");
@@ -133,7 +148,7 @@ public class DeleteAction implements Action
         int count = 0;
         int skip = 0;
         monitor.setStatusText("Lösche " + objekte.length + " " + namen);
-        for (DBObject o : objekte)
+        for (JVereinDBObject o : objekte)
         {
           if (isInterrupted())
           {
@@ -187,7 +202,7 @@ public class DeleteAction implements Action
     Application.getController().start(t);
   }
 
-  private String getAttribute(DBObject objekt)
+  private String getAttribute(JVereinDBObject objekt)
   {
     Object obj;
     try
@@ -200,9 +215,9 @@ public class DeleteAction implements Action
         {
           return (String) obj;
         }
-        if (obj instanceof DBObject)
+        if (obj instanceof JVereinDBObject)
         {
-          objekt = (DBObject) obj;
+          objekt = (JVereinDBObject) obj;
         }
         else
         {

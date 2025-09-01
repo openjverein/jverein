@@ -40,8 +40,7 @@ public class ArbeitseinsatzMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ArbeitseinsatzDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new DeleteAction("Arbeitseinsatz", "Arbeitseinsätze"),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     if (part != null)
     {

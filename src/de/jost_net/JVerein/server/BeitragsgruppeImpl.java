@@ -518,4 +518,16 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     setAttribute("steuer", steuer);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Beitragsgruppe";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Beitragsgruppen";
+  }
 }

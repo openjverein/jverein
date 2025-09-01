@@ -141,4 +141,16 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaft";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaften";
+  }
+
 }

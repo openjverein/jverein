@@ -178,4 +178,16 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Lehrgang";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lehrgänge";
+  }
+
 }

@@ -215,4 +215,18 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   {
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    // TODO Auto-generated method stub
+    return "Formularfeld";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    // TODO Auto-generated method stub
+    return "Formularfelder";
+  }
 }

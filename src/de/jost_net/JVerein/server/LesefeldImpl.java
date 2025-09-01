@@ -149,4 +149,16 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
   {
     sampleContent = content;
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Lesefeld";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lesefelder";
+  }
 }

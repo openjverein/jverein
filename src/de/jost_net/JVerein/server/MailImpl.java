@@ -187,4 +187,16 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     }
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Mail";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mails";
+  }
 }

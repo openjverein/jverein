@@ -563,4 +563,16 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
     setAttribute("autocreate", Boolean.valueOf(autocreate));
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Spendenbescheinigung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Spendenbescheinigungen";
+  }
+
 }

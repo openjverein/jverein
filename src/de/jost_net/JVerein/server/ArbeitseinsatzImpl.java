@@ -160,4 +160,16 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   {
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Arbeitseinsatz";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Arbeitseinsätze";
+  }
 }

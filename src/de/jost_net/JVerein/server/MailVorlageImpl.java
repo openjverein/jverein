@@ -133,4 +133,16 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
   {
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Mailvorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mailvorlagen";
+  }
 }

@@ -55,8 +55,7 @@ public class ZusatzbetraegeMenu extends ContextMenu
         new ZusatzbetraegeNaechsteFaelligkeitAction(), "office-calendar.png"));
     addItem(new ZusatzbetragEinmaligItem("Erneut ausführen",
         new ZusatzbetraegeResetAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new DeleteAction("Zusatzbetrag", "Zusatzbeträge"),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     if (table != null)
     {

@@ -34,4 +34,14 @@ public interface JVereinDBObject extends DBObject
    * @throws RemoteException
    */
   public boolean isChanged() throws RemoteException;
+
+  // Liefert den Namen des Objekts
+  // Die throws Deklaration ist nötig weil sonst ein Check in Jameica schief
+  // geht
+  public String getObjektName() throws RemoteException;
+
+  // Liefert den Mehrzahl Namen der Objekts
+  // Die throws Deklaration ist nötig weil sonst ein Check in Jameica schief
+  // geht
+  public String getObjektNameMehrzahl() throws RemoteException;
 }

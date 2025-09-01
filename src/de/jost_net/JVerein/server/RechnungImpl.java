@@ -500,4 +500,16 @@ public class RechnungImpl extends AbstractJVereinDBObject
     }
     return (String) getAttribute("kommentar");
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Rechnung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Rechnungen";
+  }
 }
