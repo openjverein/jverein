@@ -45,7 +45,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "name";
   }
 
   @Override

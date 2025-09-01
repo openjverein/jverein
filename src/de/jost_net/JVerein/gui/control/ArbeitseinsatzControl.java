@@ -624,6 +624,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList
         .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
+    arbeitseinsatzList.addColumn("Nr", "id-int");
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

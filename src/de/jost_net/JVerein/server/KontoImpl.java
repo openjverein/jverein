@@ -57,7 +57,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override

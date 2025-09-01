@@ -227,7 +227,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
-    return "id";
+    return "name";
   }
 
   @Override

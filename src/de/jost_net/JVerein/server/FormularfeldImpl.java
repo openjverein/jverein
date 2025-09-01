@@ -45,7 +45,7 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "name";
   }
 
   @Override

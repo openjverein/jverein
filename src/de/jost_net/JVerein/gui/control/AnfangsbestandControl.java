@@ -157,6 +157,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     }
     anfangsbestandList = new TablePart(getAnfangsstaende(),
         new AnfangsbestandDetailAction());
+    anfangsbestandList.addColumn("Nr", "id-int");
     anfangsbestandList.addColumn("Nummer", "nummer");
     anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",

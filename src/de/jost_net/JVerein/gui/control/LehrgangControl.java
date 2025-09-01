@@ -289,6 +289,7 @@ public class LehrgangControl extends FilterControl implements Savable
     if (lehrgaengeList == null)
     {
       lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
+      lehrgaengeList.addColumn("Nr", "id-int");
       lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
       lehrgaengeList.addColumn("Von/am", "von",

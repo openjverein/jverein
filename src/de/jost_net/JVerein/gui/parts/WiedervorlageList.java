@@ -56,6 +56,7 @@ public class WiedervorlageList extends TablePart implements Part
     if (wiedervorlageList == null)
     {
       wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen, null);
+      wiedervorlageList.addColumn("Nr", "id-int");
       wiedervorlageList.addColumn("Name", "mitglied");
       wiedervorlageList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

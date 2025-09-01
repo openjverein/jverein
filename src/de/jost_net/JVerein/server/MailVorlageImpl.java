@@ -44,7 +44,7 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "betreff";
   }
 
   @Override

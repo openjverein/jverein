@@ -207,28 +207,26 @@ public class DeleteAction implements Action
     Object obj;
     try
     {
-      // Nicht mehr als 5 mal prüfen
-      for (int i = 0; i < 5; i++)
+      obj = objekt.getAttribute(objekt.getPrimaryAttribute());
+      if (obj instanceof String)
       {
-        obj = objekt.getAttribute(objekt.getPrimaryAttribute());
-        if (obj instanceof String)
+        if (objekt.getPrimaryAttribute().equals("id"))
         {
-          return (String) obj;
-        }
-        if (obj instanceof JVereinDBObject)
-        {
-          objekt = (JVereinDBObject) obj;
+          return "mit Nr. " + (String) obj;
         }
         else
         {
-          return "";
+          return (String) obj;
         }
+      }
+      else
+      {
+        return "";
       }
     }
     catch (RemoteException e)
     {
       return "";
     }
-    return "";
   }
 }
