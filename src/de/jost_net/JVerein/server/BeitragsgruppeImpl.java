@@ -28,6 +28,7 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -58,9 +59,51 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getSekundaer())
+      {
+        DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
+            .createList(SekundaereBeitragsgruppe.class);
+        sek.addFilter("beitragsgruppe = ?", new Object[] { getID() });
+        sek.setLimit(1);
+        if (sek.size() > 0)
+        {
+          throw new ApplicationException(String.format(
+              "%d Mitglied(er) sind dieser sekundären Beitragsgruppe zugeordnet.",
+              sek.size()));
+        }
+      }
+      else
+      {
+        DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
+            .createList(Mitglied.class);
+        mitgl.addFilter("beitragsgruppe = ?", new Object[] { getID() });
+        if (mitgl.size() > 0)
+        {
+          throw new ApplicationException(String.format(
+              " %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
+              mitgl.size()));
+        }
+      }
+      DBIterator<MitgliedNextBGruppe> nextbg = Einstellungen.getDBService()
+          .createList(MitgliedNextBGruppe.class);
+      nextbg.addFilter("beitragsgruppe = ?", new Object[] { getID() });
+      if (nextbg.size() > 0)
+      {
+        throw new ApplicationException(String.format(
+            "Bei %d Mitglied(er) ist diese Beitragsgruppe als zukünftige Beitragsgrupe hinterlegt.",
+            nextbg.size()));
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Beitragsgruppe kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override

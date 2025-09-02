@@ -17,10 +17,14 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -47,9 +51,40 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      // Prüfen ob Buchungsklasse schon verwendet wird
+      DBService service = Einstellungen.getDBService();
+      String sql = "SELECT buchungsart.id from buchungsart "
+          + "WHERE (buchungsklasse = ?) ";
+      boolean benutzt = (boolean) service.execute(sql, new Object[] { getID() },
+          new ResultSetExtractor()
+          {
+            @Override
+            public Object extract(ResultSet rs)
+                throws RemoteException, SQLException
+            {
+              if (rs.next())
+              {
+                return true;
+              }
+              return false;
+            }
+          });
+      if (benutzt)
+      {
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von einer Buchungsart benutzt.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Buchungsklasse kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -56,6 +57,16 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException(
             "Dieser Datensatz darf nicht gelöscht werden!");
+      }
+      DBIterator<Mitglied> it = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      it.addFilter(Mitglied.MITGLIEDSTYP + " = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(String.format(
+            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
+            getBezeichnung()));
       }
     }
     catch (RemoteException e)
