@@ -23,6 +23,7 @@ import java.util.regex.PatternSyntaxException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -57,7 +58,24 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("buchungsart = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existieren Buchungen mit dieser Buchungsart.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Projekt kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
