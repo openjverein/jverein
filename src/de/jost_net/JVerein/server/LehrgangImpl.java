@@ -173,24 +173,6 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
-  {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-    return super.getAttribute(fieldName);
-  }
-
-  @Override
   public String getObjektName()
   {
     return "Lehrgang";

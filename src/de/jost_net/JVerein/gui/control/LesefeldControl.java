@@ -494,6 +494,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     lesefeldMitgliedList.setContextMenu(new LesefeldMenu(null));
     lesefeldMitgliedList.setRememberColWidths(true);
     lesefeldMitgliedList.setRememberOrder(true);
+    lesefeldMitgliedList.setMulti(true);
     return lesefeldMitgliedList;
   }
 

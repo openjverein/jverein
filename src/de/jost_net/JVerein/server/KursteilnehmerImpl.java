@@ -474,18 +474,6 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
     if (fieldName.equals("mandatid"))
     {
       return getMandatID();

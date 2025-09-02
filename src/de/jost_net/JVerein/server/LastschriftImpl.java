@@ -25,7 +25,6 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.logging.Logger;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift
@@ -389,18 +388,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
     else if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
-    }
-    else if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
     }
     else
     {
