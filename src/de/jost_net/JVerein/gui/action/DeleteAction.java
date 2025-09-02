@@ -184,7 +184,10 @@ public class DeleteAction implements Action
         }
         monitor.setPercentComplete(100);
         monitor.setStatusText(count + " " + namen + " gelöscht.");
-        monitor.setStatusText(skip + " " + namen + " übersprungen.");
+        if (skip > 0)
+        {
+          monitor.setStatusText(skip + " " + namen + " übersprungen.");
+        }
       }
 
       @Override
@@ -216,7 +219,7 @@ public class DeleteAction implements Action
         }
         else
         {
-          return (String) obj;
+          return "'" + (String) obj + "'";
         }
       }
       else
