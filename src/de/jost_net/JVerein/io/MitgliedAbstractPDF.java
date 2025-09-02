@@ -80,7 +80,7 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
     {
       DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
           .createList(Mitgliedstyp.class);
-      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.ID_MITGLIED);
+      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
       mitgliedstyp = (Mitgliedstyp) mtIt.next();
     }
     initParams();

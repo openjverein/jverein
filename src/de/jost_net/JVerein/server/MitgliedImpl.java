@@ -158,12 +158,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Vornamen eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
+      if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
           && getBeitragsgruppe() == null)
       {
         throw new ApplicationException("Bitte Beitragsgruppe eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
+      if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("n")
           && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
@@ -171,7 +171,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben!");
       }
-      if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED
+      if (!getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("n")
           && getGeburtsdatum().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
@@ -180,10 +180,10 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         throw new ApplicationException("Bitte Geburtsdatum eingeben!");
       }
       if (getPersonenart().equalsIgnoreCase("n")
-          && ((getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
+          && ((getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
               && (Boolean) Einstellungen
                   .getEinstellung(Property.GEBURTSDATUMPFLICHT))
-              || (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED
+              || (!getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
                   && (Boolean) Einstellungen.getEinstellung(
                       Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT))))
       {
@@ -217,7 +217,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         }
       }
 
-      if (getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED
+      if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
           && getEintritt().getTime() == Einstellungen.NODATE.getTime()
           && (Boolean) Einstellungen
               .getEinstellung(Property.EINTRITTSDATUMPFLICHT))
@@ -377,7 +377,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   private void checkExterneMitgliedsnummer()
       throws RemoteException, ApplicationException
   {
-    if (getMitgliedstyp().getJVereinid() != Mitgliedstyp.ID_MITGLIED)
+    if (!getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       return;
     if (!((Boolean) Einstellungen
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
@@ -424,16 +424,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
       EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
       // Mitgliedstyp wird erst in handleStore() gesetzt!!
-      int typ = Integer.valueOf(getMitgliedstyp().getID());
-      boolean checkMitglied = typ == Mitgliedstyp.MITGLIED
+      String typ = getMitgliedstyp().getID();
+      boolean checkMitglied = typ.equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("n");
-      boolean checkNichtMitglied = typ != Mitgliedstyp.MITGLIED
+      boolean checkNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("n") && (Boolean) Einstellungen
               .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJMitglied = typ == Mitgliedstyp.MITGLIED
+      boolean checkJMitglied = typ.equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
               .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN);
-      boolean checkJNichtMitglied = typ != Mitgliedstyp.MITGLIED
+      boolean checkJNichtMitglied = !typ.equals(Mitgliedstyp.MITGLIED)
           && getPersonenart().equalsIgnoreCase("j") && (Boolean) Einstellungen
               .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN);
       if (checkMitglied || checkNichtMitglied || checkJMitglied

@@ -243,13 +243,11 @@ public abstract class FilterControl extends VorZurueckControl
     switch (typ)
     {
       case MITGLIED:
-        mtIt.addFilter(
-            Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.ID_MITGLIED);
+        mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
         break;
       case NICHTMITGLIED:
-        mtIt.addFilter(
-            Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.ID_MITGLIED + " OR "
-                + Mitgliedstyp.JVEREINID + " IS NULL");
+        mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
+            + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
         break;
       case NOT_USED:
       case ALLE:
@@ -260,8 +258,7 @@ public abstract class FilterControl extends VorZurueckControl
     if (typ == Mitgliedstypen.MITGLIED)
     {
       Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
-          .createObject(Mitgliedstyp.class,
-              String.valueOf(Mitgliedstyp.MITGLIED));
+          .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
       suchmitgliedstyp = new SelectInput(
           mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }

@@ -129,7 +129,7 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
                 m.setEingabedatum();
                 GUI.startView(MitgliedDetailView.class.getName(), m);
               }
@@ -166,7 +166,7 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Mitgliedstyp.SPENDER);
+                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
                 m.setEingabedatum();
                 m.setBeitragsgruppe(null);
                 m.setExterneMitgliedsnummer(null);

@@ -40,7 +40,7 @@ public class MitgliedDuplizierenAction implements Action
     {
       m = Einstellungen.getDBService().createObject(Mitglied.class, null);
       m.overwrite((Mitglied) context);
-      if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+      if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
         GUI.startView(new MitgliedDetailView(), m);
       }

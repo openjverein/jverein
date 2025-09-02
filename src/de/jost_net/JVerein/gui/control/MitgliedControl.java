@@ -362,7 +362,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
-    mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.ID_MITGLIED
+    mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
         + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
     mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
     mitgliedstyp = new SelectNoScrollInput(
@@ -2283,7 +2283,7 @@ public class MitgliedControl extends FilterControl implements Savable
     // Für Mitglieder
     if (isMitglied)
     {
-      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+      m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       Beitragsgruppe bg = (Beitragsgruppe) getBeitragsgruppe(true).getValue();
       m.setBeitragsgruppe(bg);
       if (bg != null
@@ -2432,8 +2432,8 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setLetzteAenderung();
       m.store();
 
-      boolean ist_mitglied = m.getMitgliedstyp()
-          .getJVereinid() == Mitgliedstyp.ID_MITGLIED;
+      boolean ist_mitglied = m.getMitgliedstyp().getID()
+          .equals(Mitgliedstyp.MITGLIED);
       if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO)
           && ist_mitglied)
       {
@@ -3078,7 +3078,7 @@ public class MitgliedControl extends FilterControl implements Savable
     Mitglied m = getMitglied();
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
-        && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.ID_MITGLIED)
+        && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
       // bereits gespeichert sind. Ggfls. speichern.

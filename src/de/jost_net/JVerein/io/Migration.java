@@ -590,7 +590,7 @@ public class Migration
       final Map<String, Integer> beitragsGruppen)
       throws RemoteException, SQLException, ApplicationException, ParseException
   {
-    m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+    m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
 
     /*
      * necessary columns
@@ -906,12 +906,12 @@ public class Migration
         progMonitor.log(String.format(
             "Mitgliedstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
             Adressaufbereitung.getNameVorname(m)));
-        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+        m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       }
     }
     else
     { // Default value
-      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+      m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
     }
 
     m.setVermerk1(getResultFrom(results, InternalColumns.VERMERKA));
