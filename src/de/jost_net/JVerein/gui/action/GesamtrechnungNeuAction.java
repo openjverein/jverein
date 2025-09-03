@@ -151,7 +151,7 @@ public class GesamtrechnungNeuAction implements Action
       {
         summe += sollb.getBetrag();
         sollb.setRechnung(rechnung);
-        sollb.store();
+        sollb.updateForced();
       }
       rechnung.setBetrag(summe);
       rechnung.store();

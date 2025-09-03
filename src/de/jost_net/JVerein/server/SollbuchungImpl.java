@@ -128,27 +128,30 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    insertCheck();
-    try
+    if (!forcedUpdate)
     {
-      if (getRechnung() != null)
+      try
       {
-        throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden weil sie zu einer Rechnung gehört");
+        if (getRechnung() != null)
+        {
+          throw new ApplicationException(
+              "Sollbuchung kann nicht geändert werden weil sie zu einer Rechnung gehört");
+        }
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Alles ok, es gibt keine Rechnung
+        // Das passiert wenn sie kurz vorher gelöscht wurde aber
+        // die ID noch im Cache gespeichert ist
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
       }
     }
-    catch (ObjectNotFoundException e)
-    {
-      // Alles ok, es gibt keine Rechnung
-      // Das passiert wenn sie kurz vorher gelöscht wurde aber
-      // die ID noch im Cache gespeichert ist
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
+    insertCheck();
   }
 
   @Override

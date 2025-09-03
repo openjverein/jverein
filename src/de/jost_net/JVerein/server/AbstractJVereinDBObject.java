@@ -32,6 +32,9 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
 
   private static final long serialVersionUID = 1L;
 
+  // Speichert ob Update ohne Update Check gemacht wird
+  protected boolean forcedUpdate = false;
+
   public AbstractJVereinDBObject() throws RemoteException
   {
     super();
@@ -75,5 +78,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       super.store();
     }
+  }
+
+  // Update ohne Update Check oder eingeschränktem Check
+  @Override
+  public void updateForced() throws RemoteException, ApplicationException
+  {
+    this.forcedUpdate = true;
+    super.store();
   }
 }
