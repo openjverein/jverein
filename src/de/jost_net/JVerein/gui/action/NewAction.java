@@ -79,8 +79,11 @@ public class NewAction implements Action
           throw new ApplicationException(
               "Neues Mitglied bitte erst speichern.");
         }
-        ((IMitglied) object)
-            .setMitglied(Integer.valueOf(mitglied.getID()).intValue());
+        if (object instanceof IMitglied)
+        {
+          ((IMitglied) object)
+              .setMitglied(Integer.valueOf(mitglied.getID()).intValue());
+        }
       }
       if (noHistory)
       {
