@@ -40,13 +40,14 @@ public class DeleteAction implements Action
 
   private String attribut = "";
 
+  private int length = 0;
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
 
     JVereinDBObject objekt = null;
     JVereinDBObject[] ote = null;
-    int length;
     if (context instanceof JVereinDBObject)
     {
       objekt = (JVereinDBObject) context;
@@ -55,6 +56,7 @@ public class DeleteAction implements Action
       {
         name = objekt.getObjektName();
         namen = objekt.getObjektNameMehrzahl();
+        attribut = getAttribute(objekt);
       }
       catch (RemoteException e)
       {
@@ -89,10 +91,30 @@ public class DeleteAction implements Action
     // final wegen BackgroundTask
     final JVereinDBObject[] objekte = ote;
 
+    // Den Text für den Dialog holen. Er kann von abgeleiteten Klassen
+    // geliefert werden
+    String text = "";
+    try
+    {
+      text = getText(objekt);
+    }
+    catch (ApplicationException e)
+    {
+      String fehler = "Fehler beim Löschen von " + name + " " + attribut + ": ";
+      GUI.getStatusBar().setErrorText(fehler + e.getMessage());
+      return;
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Löschen von " + name + " " + attribut + ".";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
+      return;
+    }
+
     YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
     d.setTitle(name + " löschen");
-    d.setText(String.format("Wollen Sie %d %s wirklich löschen?", length,
-        (length == 1 ? name : namen)));
+    d.setText(text);
     Boolean choice;
     try
     {
@@ -119,14 +141,14 @@ public class DeleteAction implements Action
           return;
         }
         attribut = getAttribute(objekt);
-        objekt.delete();
+        doDelete(objekt);
         GUI.getStatusBar().setSuccessText(name + " gelöscht.");
       }
-      catch (ApplicationException e2)
+      catch (ApplicationException e1)
       {
         String fehler = "Fehler beim Löschen von " + name + " " + attribut
             + ": ";
-        GUI.getStatusBar().setErrorText(fehler + e2.getMessage());
+        GUI.getStatusBar().setErrorText(fehler + e1.getMessage());
       }
       catch (RemoteException e1)
       {
@@ -162,7 +184,7 @@ public class DeleteAction implements Action
               continue;
             }
             attribut = getAttribute(o);
-            o.delete();
+            doDelete(o);
             count++;
           }
           catch (ApplicationException e2)
@@ -231,5 +253,27 @@ public class DeleteAction implements Action
     {
       return "";
     }
+  }
+
+  /**
+   * @param object
+   *          Das zu löschende Objekt. Das geht nur bei single Selection, sonst
+   *          ist es null
+   */
+  protected String getText(JVereinDBObject object)
+      throws RemoteException, ApplicationException
+  {
+    return String.format("Wollen Sie %d %s wirklich löschen?", length,
+        (length == 1 ? name : namen));
+  }
+
+  /**
+   * @param object
+   *          Das zu löschende Objekt
+   */
+  protected void doDelete(JVereinDBObject object)
+      throws RemoteException, ApplicationException
+  {
+    object.delete();
   }
 }
