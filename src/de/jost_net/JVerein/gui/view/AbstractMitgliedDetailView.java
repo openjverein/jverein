@@ -31,10 +31,10 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
-import de.jost_net.JVerein.gui.action.LesefeldNeuAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -370,9 +371,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         lesefeldControl.initLesefeldMitgliedList(control.getMitglied());
       }
       ButtonArea buttonslesefelder = new ButtonArea();
-      buttonslesefelder.addButton(new Button("Neues Lesefeld",
-          new LesefeldNeuAction(control.getMitglied()), null, false,
-          "document-new.png"));
+      buttonslesefelder.addButton(new Button(
+          "Neues Lesefeld", new NewAction(LesefeldDetailView.class,
+              Lesefeld.class, control.getMitglied()),
+          null, false, "document-new.png"));
       buttonslesefelder.paint(cont.getComposite());
 
       lesefeldControl.getLesefeldMitgliedList().paint(cont.getComposite());

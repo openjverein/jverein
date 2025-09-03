@@ -20,11 +20,13 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Lesefeld;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
+public class LesefeldImpl extends AbstractJVereinDBObject
+    implements Lesefeld, IMitglied
 {
 
   private static final long serialVersionUID = 1610434197155984031L;
@@ -148,5 +150,18 @@ public class LesefeldImpl extends AbstractJVereinDBObject implements Lesefeld
   public void setEvaluatedContent(String content)
   {
     sampleContent = content;
+  }
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    // Nur wegen IMitglied, aber nichts tun
+    return null;
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Nur wegen IMitglied, aber nichts tun
   }
 }
