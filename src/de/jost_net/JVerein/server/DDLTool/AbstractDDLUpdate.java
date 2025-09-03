@@ -2,6 +2,8 @@ package de.jost_net.JVerein.server.DDLTool;
 
 import java.io.StringReader;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import de.jost_net.JVerein.server.DBSupportH2Impl;
@@ -77,6 +79,11 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     {
       throw new ApplicationException("Leeres Statement");
     }
+    if (statement.isBlank())
+    {
+      Logger.debug("ignore empty Statement");
+      return;
+    }
     try (Statement stmt = conn.createStatement())
     {
       Logger.info(statement);
@@ -137,7 +144,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return sb.toString();
   }
 
-  public String addColumn(String table, Column col)
+  public String addColumn(String table, Column col) throws ApplicationException
   {
     switch (drv)
     {
@@ -148,8 +155,24 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER IGNORE TABLE " + table + " ADD " + col.getName() + " "
-            + getType(col) + ";\n";
+        // Prüfen, ob die Spalte bereits existeiert, ist bei MySQL leider nicht
+        // mehr per SQL möglich
+        try
+        {
+          ResultSet meta = conn.getMetaData().getColumns(conn.getCatalog(),
+              null, table, col.getName());
+          if (meta.next())
+          {
+            return "";
+          }
+        }
+        catch (SQLException e)
+        {
+          throw new ApplicationException("Fehler beim Abfragen der Metadaten",
+              e);
+        }
+        return "ALTER TABLE " + table + " ADD " + col.getName() + " "
+            + getType(col);
       }
     }
     return "";
@@ -202,6 +225,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   }
 
   public String renameColumn(String table, String columnold, Column colnew)
+      throws ApplicationException
   {
     switch (drv)
     {
@@ -212,7 +236,23 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER IGNORE TABLE " + table + " CHANGE " + columnold + " "
+        // Prüfen, ob die Spalte bereits existeiert, ist bei MySQL leider nicht
+        // mehr per SQL möglich
+        try
+        {
+          ResultSet meta = conn.getMetaData().getColumns(conn.getCatalog(),
+              null, table, colnew.getName());
+          if (meta.next())
+          {
+            return "";
+          }
+        }
+        catch (SQLException e)
+        {
+          throw new ApplicationException("Fehler beim Abfragen der Metadaten",
+              e);
+        }
+        return "ALTER TABLE " + table + " CHANGE " + columnold + " "
             + colnew.getName() + " " + getType(colnew) + ";\n";
       }
     }
@@ -220,6 +260,7 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
   }
 
   public String dropColumn(String table, String column)
+      throws ApplicationException
   {
     switch (drv)
     {
@@ -230,7 +271,23 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER IGNORE TABLE " + table + " DROP COLUMN " + column + ";\n";
+        // Prüfen, ob die Spalte noch existeiert, ist bei MySQL leider nicht
+        // mehr per SQL möglich
+        try
+        {
+          ResultSet meta = conn.getMetaData().getColumns(conn.getCatalog(),
+              null, table, column);
+          if (!meta.next())
+          {
+            return "";
+          }
+        }
+        catch (SQLException e)
+        {
+          throw new ApplicationException("Fehler beim Abfragen der Metadaten",
+              e);
+        }
+        return "ALTER TABLE " + table + " DROP COLUMN " + column + ";\n";
       }
     }
     return "";
@@ -370,8 +427,8 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
       }
       case MYSQL:
       {
-        return "ALTER IGNORE TABLE " + table + " DROP FOREIGN KEY "
-            + constraintname + ";\n";
+        return "ALTER TABLE " + table + " DROP FOREIGN KEY " + constraintname
+            + ";\n";
       }
     }
     return "";
