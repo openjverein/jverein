@@ -344,6 +344,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
     sollb.setZweck1((String) getZweck1().getValue());
+    sollb.setMitglied((Mitglied) getMitglied().getValue());
     return sollb;
   }
 
@@ -352,17 +353,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     try
     {
-      Sollbuchung sollb = (Sollbuchung) prepareStore();
-
-      if (getZahler().getValue() == null)
-      {
-        throw new ApplicationException("Bitte Zahler eingeben");
-      }
-      sollb.setMitglied((Mitglied) getMitglied().getValue());
-      if (sollb.getRechnung() != null)
-        throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      sollb.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

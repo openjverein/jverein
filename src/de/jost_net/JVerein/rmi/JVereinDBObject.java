@@ -20,6 +20,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Basis-Interface fuer alle DB-Klassen in JVerein.
@@ -34,4 +35,7 @@ public interface JVereinDBObject extends DBObject
    * @throws RemoteException
    */
   public boolean isChanged() throws RemoteException;
+
+  // Update ohne Update Check oder eingeschränktem Check
+  public void updateForced() throws RemoteException, ApplicationException;
 }

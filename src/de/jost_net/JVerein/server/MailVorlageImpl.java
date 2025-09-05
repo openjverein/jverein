@@ -18,7 +18,9 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.MailVorlage;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -60,22 +62,33 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Betreff eingeben");
       }
+      DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
+          .createList(MailVorlage.class);
+      if (!this.isNewObject())
+      {
+        vorlagen.addFilter("id != ?", getID());
+      }
+      vorlagen.addFilter("betreff = ?", getBetreff());
+      if (vorlagen.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existiert bereits eine Vorlage mit diesem Betreff!");
+      }
       if (getTxt() == null || getTxt().length() == 0)
       {
-        throw new ApplicationException("Bitte Text eingeben");
+        throw new ApplicationException("Bitte Text eingeben!");
       }
       if (getTxt().length() > 10000)
       {
         throw new ApplicationException(
-            "Maximale Länge des Textes 10.000 Zeichen");
+            "Maximale Länge des Textes 10.000 Zeichen!");
       }
-
     }
     catch (RemoteException e)
     {
       Logger.error("insert check of mailvorlage failed", e);
       throw new ApplicationException(
-          "MailVorlage kann nicht gespeichert werden. Siehe system log");
+          "MailVorlage kann nicht gespeichert werden. Siehe system log.");
     }
   }
 

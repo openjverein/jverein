@@ -64,7 +64,7 @@ public class BuchungGeprueftAction implements Action
       for (Buchung b : buchungen)
       {
         b.setGeprueft(geprueft);
-        b.store(false);
+        b.updateForced();
 
         // ggfs. mit Hibiscus syncronisieren
         // wir verwenden hier die SynTAX-MessageQueue, da diese bereits

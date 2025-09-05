@@ -34,7 +34,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragImpl extends AbstractJVereinDBObject
-    implements Zusatzbetrag
+    implements Zusatzbetrag, IMitglied
 {
 
   private static final long serialVersionUID = 1L;
@@ -67,44 +67,48 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
       if (getStartdatum() == null)
       {
-        throw new ApplicationException("Bitte erste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte erste Fälligkeit eingeben!");
       }
       if (getFaelligkeit() == null)
       {
-        throw new ApplicationException("Bitte nächste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte nächste Fälligkeit eingeben!");
       }
       if (getIntervall() == null)
       {
-        throw new ApplicationException("Bitte Intervall eingeben");
+        throw new ApplicationException("Bitte Intervall eingeben!");
       }
       if (getBuchungstext() == null || getBuchungstext().length() == 0)
       {
-        throw new ApplicationException("Bitte Buchungstext eingeben");
+        throw new ApplicationException("Bitte Buchungstext eingeben!");
       }
       if (getEndedatum() != null)
       {
         if (!Datum.isImInterval(getStartdatum(), getEndedatum(),
             getIntervall()))
         {
-          throw new ApplicationException("Endedatum liegt nicht im Intervall");
+          throw new ApplicationException("Endedatum liegt nicht im Intervall.");
         }
       }
       if (getFaelligkeit().getTime() < getStartdatum().getTime())
       {
         throw new ApplicationException(
-            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen");
+            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen.");
       }
       if (!Datum.isImInterval(getStartdatum(), getFaelligkeit(),
           getIntervall()))
       {
         throw new ApplicationException(
-            "Nächste Fälligkeit liegt nicht im Intervall");
+            "Nächste Fälligkeit liegt nicht im Intervall.");
       }
       if (getBetrag() == null)
       {
-        throw new ApplicationException("Bitte Betrag eingeben");
+        throw new ApplicationException("Bitte Betrag eingeben!");
       }
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
@@ -156,7 +160,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Zusatzbetrag kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Zusatzbetrag kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -193,9 +197,9 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override

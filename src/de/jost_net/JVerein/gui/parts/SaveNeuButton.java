@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.Savable;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -42,7 +43,7 @@ public class SaveNeuButton extends ButtonRtoL
    */
   public SaveNeuButton(Savable control)
   {
-    this(control, true);
+    this(control, true, null);
   }
 
   /**
@@ -50,10 +51,26 @@ public class SaveNeuButton extends ButtonRtoL
    * 
    * @param control
    *          Das control
+   * @param mitglied
+   *          Ein Mitglied
+   */
+  public SaveNeuButton(Savable control, Mitglied mitglied)
+  {
+    this(control, true, mitglied);
+  }
+
+  /**
+   * Erstellt den Speichern und NeuButton
+   * 
+   * @param control
+   *          Das control
    * @param noHistory
    *          Keine View Historie
+   * 
+   * @param mitglied
+   *          optionales Mitglied
    */
-  public SaveNeuButton(Savable control, boolean noHistory)
+  public SaveNeuButton(Savable control, boolean noHistory, Mitglied mitglied)
   {
     super("Speichern und neu", context -> {
       try
@@ -61,7 +78,7 @@ public class SaveNeuButton extends ButtonRtoL
         control.handleStore();
         AbstractView view = GUI.getCurrentView();
         DBObject object = (DBObject) view.getCurrentObject();
-        new NewAction(view.getClass(), object.getClass(), noHistory)
+        new NewAction(view.getClass(), object.getClass(), noHistory, mitglied)
             .handleAction(null);
         GUI.getStatusBar().setSuccessText("Gespeichert");
       }

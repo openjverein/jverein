@@ -113,7 +113,7 @@ public class RechnungNeuAction implements Action
         rechnung.store();
 
         sollb.setRechnung(rechnung);
-        sollb.store();
+        sollb.updateForced();
         erstellt++;
       }
       if (erstellt == 0)

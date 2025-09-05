@@ -71,7 +71,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException(
             "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
-                + "Rechnung gehört");
+                + "Rechnung gehört!");
       }
     }
     catch (ObjectNotFoundException e)
@@ -84,7 +84,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Sollbuchung kann nicht gelöscht werden. Siehe system log");
+          "Sollbuchung kann nicht gelöscht werden. Siehe system log.");
     }
   }
 
@@ -95,19 +95,23 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     {
       if (getMitglied() == null)
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
+      if (getZahler() == null)
+      {
+        throw new ApplicationException("Bitte Zahler eingeben!");
       }
       if (getDatum() == null)
       {
-        throw new ApplicationException("Datum fehlt");
+        throw new ApplicationException("Bitte Datum eingeben!");
       }
       if (getZweck1().length() == 0)
       {
-        throw new ApplicationException("Verwendungszweck fehlt");
+        throw new ApplicationException("Bitt Verwendungszweck eingeben!");
       }
       if (getBetrag() == null)
       {
-        String fehler = "Betrag fehlt";
+        String fehler = "Bitte Betrag eingeben!";
         Logger.error(fehler);
         throw new ApplicationException(fehler);
       }
@@ -115,7 +119,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -124,6 +128,29 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    if (!forcedUpdate)
+    {
+      try
+      {
+        if (getRechnung() != null)
+        {
+          throw new ApplicationException(
+              "Sollbuchung kann nicht geändert werden weil sie zu einer Rechnung gehört");
+        }
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Alles ok, es gibt keine Rechnung
+        // Das passiert wenn sie kurz vorher gelöscht wurde aber
+        // die ID noch im Cache gespeichert ist
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 

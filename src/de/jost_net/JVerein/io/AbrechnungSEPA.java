@@ -1252,7 +1252,7 @@ public class AbrechnungSEPA
         }
         sollb.setZweck1(zweck);
       }
-      sollb.store();
+      sollb.updateForced();
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
