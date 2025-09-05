@@ -53,7 +53,8 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(new SaveNeuButton(control));
+    buttons.addButton(
+        new SaveNeuButton(control, control.getZusatzbetrag().getMitglied()));
     buttons.paint(getParent());
   }
 

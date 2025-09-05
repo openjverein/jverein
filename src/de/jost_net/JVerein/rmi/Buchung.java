@@ -169,8 +169,6 @@ public interface Buchung extends JVereinDBObject
 
   public void plausi() throws RemoteException, ApplicationException;
 
-  public void store(boolean check) throws RemoteException, ApplicationException;
-
   public Boolean getGeprueft() throws RemoteException;
 
   public void setGeprueft(Boolean geprueft) throws RemoteException;

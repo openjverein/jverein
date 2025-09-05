@@ -258,8 +258,7 @@ public abstract class FilterControl extends VorZurueckControl
     if (typ == Mitgliedstypen.MITGLIED)
     {
       Mitgliedstyp mt = (Mitgliedstyp) Einstellungen.getDBService()
-          .createObject(Mitgliedstyp.class,
-              String.valueOf(Mitgliedstyp.MITGLIED));
+          .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
       suchmitgliedstyp = new SelectInput(
           mtIt != null ? PseudoIterator.asList(mtIt) : null, mt);
     }

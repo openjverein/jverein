@@ -193,6 +193,18 @@ public class LehrgangControl extends FilterControl implements Savable
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
     l.setErgebnis((String) getErgebnis().getValue());
+    if (l.isNewObject())
+    {
+      if (getMitglied().getValue() != null)
+      {
+        l.setMitglied(
+            Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
+      }
+      else
+      {
+        l.setMitglied(null);
+      }
+    }
     return l;
   }
 
@@ -201,21 +213,7 @@ public class LehrgangControl extends FilterControl implements Savable
   {
     try
     {
-      Lehrgang l = (Lehrgang) prepareStore();
-      if (l.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          l.setMitglied(
-              Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-
-      l.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {

@@ -302,8 +302,7 @@ public class PersonalbogenAction implements Action
       kommunikation += "Email: " + m.getEmail();
     }
     rpt.addColumn(kommunikation, Element.ALIGN_LEFT);
-    if (m.getMitgliedstyp().getID()
-        .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+    if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);

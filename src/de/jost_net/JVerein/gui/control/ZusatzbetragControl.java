@@ -213,6 +213,18 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     {
       z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
     }
+    if (z.isNewObject())
+    {
+      if (getZusatzbetragPart().getMitglied().getValue() != null)
+      {
+        Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+        z.setMitglied(Integer.parseInt(m.getID()));
+      }
+      else
+      {
+        z.setMitglied(null);
+      }
+    }
     return z;
   }
 
@@ -222,19 +234,6 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     try
     {
       Zusatzbetrag z = (Zusatzbetrag) prepareStore();
-      if (z.isNewObject())
-      {
-        if (getZusatzbetragPart().getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied()
-              .getValue();
-          z.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))

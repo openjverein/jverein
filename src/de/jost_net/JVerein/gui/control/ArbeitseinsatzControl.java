@@ -145,7 +145,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
       }
       else
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        ae.setMitglied(null);
       }
     }
     ae.setDatum((Date) part.getDatum().getValue());

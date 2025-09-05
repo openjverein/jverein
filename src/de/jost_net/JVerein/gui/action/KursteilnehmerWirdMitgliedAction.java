@@ -41,7 +41,7 @@ public class KursteilnehmerWirdMitgliedAction implements Action
     {
       Mitglied m = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, null);
-      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+      m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       m.setAnrede(k.getAnrede());
       m.setBic(k.getBic());
       m.setEmail(k.getEmail());
