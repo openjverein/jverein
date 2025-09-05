@@ -46,7 +46,8 @@ public class ArbeitseinsatzDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(new SaveNeuButton(control));
+    buttons.addButton(
+        new SaveNeuButton(control, control.getArbeitseinsatz().getMitglied()));
     buttons.paint(this.getParent());
   }
 

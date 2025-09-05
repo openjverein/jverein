@@ -14,34 +14,16 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
-public interface Lehrgang extends JVereinDBObject
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
+
+public interface IMitglied extends JVereinDBObject
 {
   public Mitglied getMitglied() throws RemoteException;
 
   public void setMitglied(Integer mitglied) throws RemoteException;
-
-  public Lehrgangsart getLehrgangsart() throws RemoteException;
-
-  public void setLehrgangsart(Long lehrgangsart) throws RemoteException;
-
-  public Date getVon() throws RemoteException;
-
-  public void setVon(Date von) throws RemoteException;
-
-  public Date getBis() throws RemoteException;
-
-  public void setBis(Date bis) throws RemoteException;
-
-  public String getVeranstalter() throws RemoteException;
-
-  public void setVeranstalter(String veranstalter) throws RemoteException;
-
-  public String getErgebnis() throws RemoteException;
-
-  public void setErgebnis(String ergebnis) throws RemoteException;
 }

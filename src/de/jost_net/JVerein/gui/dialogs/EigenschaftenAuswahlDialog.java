@@ -200,21 +200,21 @@ public class EigenschaftenAuswahlDialog
     {
       for (Mitglied mitglied : mitglieder)
       {
-        if (mitglied.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+        if (!mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
             && mitglied.getPersonenart().equalsIgnoreCase("n")
             && !(Boolean) Einstellungen
                 .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN))
         {
           continue;
         }
-        if (mitglied.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+        if (mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
             && mitglied.getPersonenart().equalsIgnoreCase("j")
             && !(Boolean) Einstellungen
                 .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN))
         {
           continue;
         }
-        if (mitglied.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
+        if (!mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
             && mitglied.getPersonenart().equalsIgnoreCase("j")
             && !(Boolean) Einstellungen
                 .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN))

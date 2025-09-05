@@ -35,6 +35,9 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
   // Speichert ob Löschen ohne Delete Check gemacht wird
   protected boolean forcedDelete = false;
 
+  // Speichert ob Update ohne Update Check gemacht wird
+  protected boolean forcedUpdate = false;
+
   public AbstractJVereinDBObject() throws RemoteException
   {
     super();
@@ -86,5 +89,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
   {
     this.forcedDelete = true;
     super.delete();
+  }
+
+  // Update ohne Update Check oder eingeschränktem Check
+  @Override
+  public void updateForced() throws RemoteException, ApplicationException
+  {
+    this.forcedUpdate = true;
+    super.store();
   }
 }
