@@ -18,43 +18,32 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.Messaging.MailAnhangMessage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailAnhang;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Löschen eines Mailanhanges
  */
-public class MailAnhangDeleteAction implements Action
+public class MailAnhangDeleteAction extends DeleteAction
 {
-
-  private MailControl control = null;
-
-  public MailAnhangDeleteAction(MailControl control)
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    this.control = control;
+    if (!(object instanceof MailAnhang))
+    {
+      return;
+    }
+    Application.getMessagingFactory()
+        .sendMessage(new MailAnhangMessage(object));
   }
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected boolean isNewAllowed()
   {
-    if (context == null || !(context instanceof MailAnhang))
-    {
-      throw new ApplicationException("Keinen Mail-Anhang ausgewählt");
-    }
-    try
-    {
-      MailAnhang ma = (MailAnhang) context;
-      control.removeAnhang(ma);
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim entfernen eines Mailanhanges";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    return true;
   }
 }

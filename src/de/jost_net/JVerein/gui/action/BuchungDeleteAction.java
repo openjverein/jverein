@@ -18,22 +18,20 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Loeschen einer Buchung.
  */
-public class BuchungDeleteAction implements Action
+public class BuchungDeleteAction extends DeleteAction
 {
   private boolean splitbuchung;
+
+  private boolean spendenbescheinigung = false;
 
   public BuchungDeleteAction(boolean splitbuchung)
   {
@@ -41,136 +39,85 @@ public class BuchungDeleteAction implements Action
   }
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected String getText(JVereinDBObject object[])
+      throws RemoteException, ApplicationException
   {
-    if (context == null
-        || (!(context instanceof Buchung) && !(context instanceof Buchung[])))
+    if (object == null || object.length == 0 || !(object[0] instanceof Buchung))
     {
       throw new ApplicationException("Keine Buchung ausgewählt");
     }
-    try
+
+    // Check ob einer der Buchungen
+    // eine Spendenbescheinigung zugeordnet ist
+    for (JVereinDBObject o : object)
     {
-      Buchung[] b = null;
-      if (context instanceof Buchung)
+      Buchung bu = (Buchung) o;
+      if (bu.getSpendenbescheinigung() != null)
       {
-        b = new Buchung[1];
-        b[0] = (Buchung) context;
+        spendenbescheinigung = true;
+        break;
       }
-      else if (context instanceof Buchung[])
-      {
-        b = (Buchung[]) context;
-      }
-      if (b == null)
-      {
-        return;
-      }
-      if (b.length == 0)
-      {
-        return;
-      }
-      if (b[0].isNewObject())
-      {
-        return;
-      }
+    }
 
-      // Check ob einer der Buchungen
-      // eine Spendenbescheinigung zugeordnet ist
-      boolean spendenbescheinigung = false;
-      for (Buchung bu : b)
+    if (!spendenbescheinigung)
+    {
+      return "Wollen Sie " + object.length + " Buchung"
+          + (object.length > 1 ? "en" : "") + " wirklich löschen?";
+    }
+    else
+    {
+      if (object.length == 1)
       {
-        if (bu.getSpendenbescheinigung() != null)
-        {
-          spendenbescheinigung = true;
-          break;
-        }
-      }
-
-      String text = "";
-      if (!spendenbescheinigung)
-      {
-        text = "Wollen Sie diese Buchung" + (b.length > 1 ? "en" : "")
-            + " wirklich löschen?";
+        return "Die Buchung gehört zu einer Spendenbescheinigung.\n"
+            + "Sie können nur zusammen gelöscht werden.\n" + "Beide löschen?";
       }
       else
       {
-        if (b.length == 1)
-        {
-          text = "Die Buchung gehört zu einer Spendenbescheinigung.\n"
-              + "Sie können nur zusammen gelöscht werden.\n" + "Beide löschen?";
-        }
-        else
-        {
-          text = "Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
-              + "Sie können nur zusammen gelöscht werden.\n"
-              + "Jeweils auch die Spendenbescheinigungen löschen?";
-        }
+        return "Mindestens eine Buchung gehört zu einer Spendenbescheinigung.\n"
+            + "Sie können nur zusammen gelöscht werden.\n"
+            + "Auch Buchungen mit Spendenbescheinigungen löschen?";
       }
+    }
+  }
 
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Buchung" + (b.length > 1 ? "en" : "") + " löschen");
-      d.setText(text);
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen der Buchung", e);
-        return;
-      }
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
+  {
+    if (!(object instanceof Buchung))
+    {
+      return;
+    }
 
-      int count = 0;
-      for (Buchung bu : b)
-      {
-        Jahresabschluss ja = bu.getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(String.format(
-              "Buchung wurde bereits am %s von %s abgeschlossen.",
-              new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
-        }
-        Spendenbescheinigung spb = bu.getSpendenbescheinigung();
-        if (spb != null)
-        {
-          throw new ApplicationException(
-              "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-        }
-        if (bu.getSplitId() == null)
-        {
-          if (bu.getSpendenbescheinigung() != null)
-            bu.getSpendenbescheinigung().delete();
-          bu.delete();
-          count++;
-        }
-        else if (splitbuchung)
-        {
-          bu.setDelete(true);
-          count++;
-        }
-      }
-      if (count > 0)
-      {
-        GUI.getStatusBar().setSuccessText(String.format(
-            "%d Buchung" + (count != 1 ? "en" : "") + " gelöscht.", count));
-      }
-      else
-      {
-        GUI.getStatusBar().setErrorText("Keine Buchung gelöscht");
-      }
-    }
-    catch (ApplicationException e)
+    Buchung bu = (Buchung) object;
+    Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+    if (spb != null && selection == YesNoCancelDialog.NO)
     {
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      throw new ApplicationException(
+          "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
     }
-    catch (RemoteException e)
+    if (bu.getSplitId() == null)
     {
-      String fehler = "Fehler beim Löschen der Buchung.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      if (bu.getSpendenbescheinigung() != null)
+      {
+        bu.getSpendenbescheinigung().delete();
+      }
+      bu.delete();
     }
+    else if (splitbuchung)
+    {
+      bu.setDelete(true);
+    }
+    else
+    {
+      throw new ApplicationException(
+          "Splitbuchungen können nicht gelöscht werden!");
+    }
+  }
+
+  @Override
+  protected boolean getMitNo(JVereinDBObject object[])
+  {
+    return spendenbescheinigung && object.length > 1;
   }
 }

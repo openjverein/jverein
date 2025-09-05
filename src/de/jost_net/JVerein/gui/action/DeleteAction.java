@@ -18,6 +18,9 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.graphics.Image;
+
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -40,63 +43,55 @@ public class DeleteAction implements Action
 
   private String attribut = "";
 
-  private int length = 0;
+  private Integer selection = YesNoCancelDialog.CANCEL;
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-
-    JVereinDBObject objekt = null;
     JVereinDBObject[] ote = null;
     if (context instanceof JVereinDBObject)
     {
-      objekt = (JVereinDBObject) context;
-      length = 1;
-      try
-      {
-        name = objekt.getObjektName();
-        namen = objekt.getObjektNameMehrzahl();
-        attribut = getAttribute(objekt);
-      }
-      catch (RemoteException e)
-      {
-        // Das kann nicht passieren ist aber nötig wegen der
-        // throws RemoteException Deklaration in JVereinDBObject
-      }
+      ote = new JVereinDBObject[] { (JVereinDBObject) context };
+      attribut = getAttribute(ote[0]);
     }
     else if (context instanceof JVereinDBObject[])
     {
       ote = (JVereinDBObject[]) context;
-      if (ote.length == 0)
-      {
-        throw new ApplicationException("Kein Objekt ausgewählt");
-      }
-      length = ote.length;
-      try
-      {
-        name = ote[0].getObjektName();
-        namen = ote[0].getObjektNameMehrzahl();
-      }
-      catch (RemoteException e)
-      {
-        // Das kann nicht passieren ist aber nötig wegen der
-        // throws RemoteException Deklaration in JVereinDBObject
-      }
     }
     else
     {
       throw new ApplicationException("Kein Objekt ausgewählt");
     }
 
+    if (ote.length == 0)
+    {
+      throw new ApplicationException("Kein Objekt ausgewählt");
+    }
+
+    try
+    {
+      name = ote[0].getObjektName();
+      namen = ote[0].getObjektNameMehrzahl();
+    }
+    catch (RemoteException e)
+    {
+      // Das kann nicht passieren ist aber nötig wegen der
+      // throws RemoteException Deklaration in JVereinDBObject
+    }
+
     // final wegen BackgroundTask
     final JVereinDBObject[] objekte = ote;
 
-    // Den Text für den Dialog holen. Er kann von abgeleiteten Klassen
-    // geliefert werden
+    // Den Text un Button Info für den Dialog holen.
+    // Er kann von abgeleiteten Klassen geliefert werden
     String text = "";
+    boolean mitNo = false;
+    Image image = null;
     try
     {
-      text = getText(objekt);
+      text = getText(objekte);
+      mitNo = getMitNo(objekte);
+      image = getImage();
     }
     catch (ApplicationException e)
     {
@@ -112,17 +107,25 @@ public class DeleteAction implements Action
       return;
     }
 
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle(name + " löschen");
+    YesNoCancelDialog d = new YesNoCancelDialog(YesNoDialog.POSITION_CENTER,
+        mitNo);
+    d.setTitle((objekte.length > 1 ? namen : name) + " löschen");
     d.setText(text);
-    Boolean choice;
+    if (image != null)
+    {
+      d.setSideImage(image);
+    }
     try
     {
-      choice = (Boolean) d.open();
-      if (!choice.booleanValue())
+      selection = (Integer) d.open();
+      if (selection == YesNoCancelDialog.CANCEL)
       {
         return;
       }
+    }
+    catch (OperationCanceledException ex)
+    {
+      throw new OperationCanceledException();
     }
     catch (Exception e1)
     {
@@ -132,16 +135,16 @@ public class DeleteAction implements Action
     }
 
     // Bei nur einem Objekt direkt löschen
-    if (objekt != null)
+    if (objekte.length == 1)
     {
       try
       {
-        if (objekt.isNewObject())
+        if (objekte[0].isNewObject() && !isNewAllowed())
         {
           return;
         }
-        attribut = getAttribute(objekt);
-        doDelete(objekt);
+        attribut = getAttribute(objekte[0]);
+        doDelete(objekte[0], selection);
         GUI.getStatusBar().setSuccessText(name + " gelöscht.");
       }
       catch (ApplicationException e1)
@@ -178,13 +181,13 @@ public class DeleteAction implements Action
           }
           try
           {
-            if (o.isNewObject())
+            if (o.isNewObject() && !isNewAllowed())
             {
               skip++;
               continue;
             }
             attribut = getAttribute(o);
-            doDelete(o);
+            doDelete(o, selection);
             count++;
           }
           catch (ApplicationException e2)
@@ -257,23 +260,43 @@ public class DeleteAction implements Action
 
   /**
    * @param object
-   *          Das zu löschende Objekt. Das geht nur bei single Selection, sonst
-   *          ist es null
+   *          Die zu löschenden Objekte
    */
-  protected String getText(JVereinDBObject object)
+  protected String getText(JVereinDBObject object[])
       throws RemoteException, ApplicationException
   {
-    return String.format("Wollen Sie %d %s wirklich löschen?", length,
-        (length == 1 ? name : namen));
+    return String.format("Wollen Sie %d %s wirklich löschen?", object.length,
+        (object.length == 1 ? name : namen));
   }
 
   /**
    * @param object
    *          Das zu löschende Objekt
    */
-  protected void doDelete(JVereinDBObject object)
+  protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
   {
     object.delete();
+  }
+
+  // Gibt zurück ob der Dialog mit dem No Button angezeigt werden soll
+  // Kann von abgeleiteten Klassen überschrieben werden
+  protected boolean getMitNo(JVereinDBObject object[])
+  {
+    return false;
+  }
+
+  // Liefert ein Image für die Anzeige im Dialog
+  // Kann von abgeleiteten Klassen überschrieben werden
+  protected Image getImage()
+  {
+    return null;
+  }
+
+  // Liefert zurück ob auch neue Objekte gelöscht werden können
+  // Sie Löschen von Mailanhang aus der Anhang Liste
+  protected boolean isNewAllowed()
+  {
+    return false;
   }
 }

@@ -20,11 +20,10 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MailAnhangImpl extends AbstractDBObject
+public class MailAnhangImpl extends AbstractJVereinDBObject
     implements MailAnhang, Comparable<MailAnhang>
 {
 
@@ -44,7 +43,7 @@ public class MailAnhangImpl extends AbstractDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "dateiname";
   }
 
   @Override
@@ -149,6 +148,18 @@ public class MailAnhangImpl extends AbstractDBObject
       //
     }
     return 0;
+  }
+
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Mailanhang";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Mailanhänge";
   }
 
 }

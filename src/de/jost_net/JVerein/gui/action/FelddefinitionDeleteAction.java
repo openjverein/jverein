@@ -19,77 +19,93 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Löschen einer Felddefiniton
  */
-public class FelddefinitionDeleteAction implements Action
+public class FelddefinitionDeleteAction extends DeleteAction
 {
+  // Speichert, ob die Felddefinition bei Mitgliedern verwendet wird
+  private boolean verwendung = false;
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected String getText(JVereinDBObject object[])
+      throws RemoteException, ApplicationException
   {
-    if (context instanceof TablePart)
+    if (object == null || object.length == 0
+        || !(object[0] instanceof Felddefinition))
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
+      throw new ApplicationException("Kein Zusatzfeld ausgewählt");
     }
-    if (context == null || !(context instanceof Felddefinition))
+
+    // Check ob eine Felddefinition bei Mitgliedern verwendet wird
+    for (JVereinDBObject o : object)
     {
-      throw new ApplicationException("Keine Felddefinition ausgewählt");
-    }
-    try
-    {
-      Felddefinition fd = (Felddefinition) context;
       DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
           .createList(Zusatzfelder.class);
-      it.addFilter("felddefinition=?", new Object[] { fd.getID() });
-      if (fd.isNewObject())
+      it.addFilter("felddefinition=?", new Object[] { o.getID() });
+      if (it.size() > 0)
       {
-        return;
+        verwendung = true;
       }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Felddefinition löschen");
-      d.setText("Das Feld ist bei " + it.size()
-          + " Mitgliedern gespeichert. Wollen Sie diese Felddefinition wirklich löschen?");
+    }
 
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen der Felddefinition", e);
-        return;
-      }
-      while (it.hasNext())
-      {
-        Zusatzfelder zf1 = it.next();
-        Zusatzfelder zf2 = (Zusatzfelder) Einstellungen.getDBService()
-            .createObject(Zusatzfelder.class, zf1.getID());
-        zf2.delete();
-      }
-      fd.delete();
-      GUI.getStatusBar().setSuccessText("Felddefinition gelöscht.");
-    }
-    catch (RemoteException e)
+    if (!verwendung)
     {
-      String fehler = "Fehler beim Löschen der Felddefinition";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      return "Wollen Sie " + object.length + " Zusatzfeld"
+          + (object.length > 1 ? "er" : "") + " wirklich löschen?";
     }
+    else
+    {
+      if (object.length == 1)
+      {
+        return "Das Zusatzfeld wird bereits von Mitgliedern verwendet.\n"
+            + "Soll es trotzdem gelöscht werden?";
+      }
+      else
+      {
+        return "Mindestens ein Zusatzfeld wird bereits von Mitgliedern verwendet.\n"
+            + "Auch bereits verwendete Zusatzfelder löschen?";
+      }
+    }
+  }
+
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
+  {
+    if (!(object instanceof Felddefinition))
+    {
+      return;
+    }
+
+    DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
+        .createList(Zusatzfelder.class);
+    it.addFilter("felddefinition=?", new Object[] { object.getID() });
+    if (it.size() > 0 && selection == YesNoCancelDialog.NO)
+    {
+      throw new ApplicationException(
+          "Übersprungen, da es bereits von Mitgliedern verwendet wird.");
+    }
+    while (it.hasNext())
+    {
+      Zusatzfelder zf1 = it.next();
+      Zusatzfelder zf2 = (Zusatzfelder) Einstellungen.getDBService()
+          .createObject(Zusatzfelder.class, zf1.getID());
+      zf2.delete();
+    }
+    object.delete();
+  }
+
+  @Override
+  protected boolean getMitNo(JVereinDBObject object[])
+  {
+    return verwendung && object.length > 1;
   }
 }

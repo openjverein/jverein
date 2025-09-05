@@ -41,13 +41,15 @@ import de.willuhn.util.ApplicationException;
 public class AbrechnungslaufDeleteAction extends DeleteAction
 {
   @Override
-  protected String getText(JVereinDBObject object)
+  protected String getText(JVereinDBObject object[])
       throws RemoteException, ApplicationException
   {
-    if (!(object instanceof Abrechnungslauf))
+    if (object == null || object.length != 1
+        || !(object[0] instanceof Abrechnungslauf))
     {
       throw new ApplicationException("Kein Abrechnungslauf ausgewählt");
     }
+    Abrechnungslauf abrl = (Abrechnungslauf) object[0];
 
     // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
     final DBService service = Einstellungen.getDBService();
@@ -74,7 +76,7 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
       String sql2 = "SELECT DISTINCT buchung.id from buchung "
           + "WHERE (abrechnungslauf = ? and datum <= ?) ";
       boolean abgeschlossen = (boolean) service.execute(sql2,
-          new Object[] { object.getID(), bis }, new ResultSetExtractor()
+          new Object[] { abrl.getID(), bis }, new ResultSetExtractor()
           {
             @Override
             public Object extract(ResultSet rs)
@@ -99,7 +101,7 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
     String sql3 = "SELECT DISTINCT buchung.id from buchung "
         + "WHERE (abrechnungslauf = ? and spendenbescheinigung IS NOT NULL) ";
     boolean spendenbescheinigung = (boolean) service.execute(sql3,
-        new Object[] { object.getID() }, new ResultSetExtractor()
+        new Object[] { abrl.getID() }, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -119,7 +121,7 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
         + Sollbuchung.TABLE_NAME + " WHERE (" + Sollbuchung.ABRECHNUNGSLAUF
         + " = ? and " + Sollbuchung.RECHNUNG + " IS NOT NULL) ";
     boolean rechnung = (boolean) service.execute(sql4,
-        new Object[] { object.getID() }, new ResultSetExtractor()
+        new Object[] { abrl.getID() }, new ResultSetExtractor()
         {
           @Override
           public Object extract(ResultSet rs)
@@ -162,7 +164,8 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
     return "";
   }
 
-  protected void doDelete(JVereinDBObject object)
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
   {
     if (!(object instanceof Abrechnungslauf))

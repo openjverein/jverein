@@ -28,6 +28,7 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Messaging.MailAnhangMessage;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
@@ -57,6 +58,8 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.messaging.Message;
+import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -79,6 +82,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   private Mail mail;
 
   private JVereinTablePart mailsList;
+
+  private MailAnhangMessageConsumer mailAnhangConsumer = null;
 
   public MailControl(AbstractView view)
   {
@@ -241,12 +246,16 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     {
       anhang2.add(ma);
     }
+    this.mailAnhangConsumer = new MailAnhangMessageConsumer();
+    Application.getMessagingFactory()
+        .registerMessageConsumer(this.mailAnhangConsumer);
     anhang = new TablePart(anhang2, null);
     anhang.addColumn("Dateiname", "dateiname");
     anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));
     anhang.setRememberOrder(true);
     anhang.removeFeature(FeatureSummary.class);
+    anhang.setMulti(true);
     return anhang;
   }
 
@@ -730,5 +739,58 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mails.setOrder("ORDER BY betreff");
 
     return mails;
+  }
+
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class MailAnhangMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { MailAnhangMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            removeAnhang(
+                (MailAnhang) ((MailAnhangMessage) message).getObject());
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("Fehler beim Mail Anhang löschen", e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(MailAnhangMessageConsumer.this);
+          }
+        }
+      });
+    }
   }
 }

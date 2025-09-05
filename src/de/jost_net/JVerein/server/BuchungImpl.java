@@ -82,6 +82,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   {
     try
     {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(String.format(
+            "Buchung wurde bereits am %s von %s abgeschlossen.",
+            new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+      }
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(

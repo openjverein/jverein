@@ -14,34 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.Messaging;
 
-import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.util.ApplicationException;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
 /**
- * Löschen von Dokumenten
+ * Wird versendet, wenn ein MailAnhang gelöscht werden soll.
  */
-public class DokumentDeleteAction extends DeleteAction
+public class MailAnhangMessage extends ObjectMessage
 {
-  @Override
-  protected void doDelete(JVereinDBObject object, Integer selection)
-      throws RemoteException, ApplicationException
+  public MailAnhangMessage(GenericObject object)
   {
-    if (!(object instanceof AbstractDokument))
-    {
-      return;
-    }
-
-    AbstractDokument ad = (AbstractDokument) object;
-    QueryMessage qm = new QueryMessage(ad.getUUID(), null);
-    Application.getMessagingFactory().getMessagingQueue("jameica.messaging.del")
-        .sendSyncMessage(qm);
-    ad.delete();
+    super(object);
   }
 }
