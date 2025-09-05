@@ -17,7 +17,9 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -25,12 +27,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -139,84 +140,74 @@ public class DefaultZusatzbetraegeImport implements Importer
                 + " oder Nachname/Vorname zur Zuordnung des Mitglieds enhalten. Es ist keine Information vorhanden. Abbruch!");
       }
 
-      List<Zusatzbetrag> zusatzbetraegeList = new ArrayList<>();
       monitor.setStatusText(
           "Überprüfung der Spaltenüberschriften erfolgreich abgeschlossen.");
 
       int anz = 0;
-      while (results.next())
+      String mitgliedIdString = "";
+      int zeilen = (int) Files.lines(Paths.get(file.getPath())).count();
+      try
       {
-        anz++;
-        monitor.setPercentComplete(10);
+        DBTransaction.starten();
+        while (results.next())
+        {
+          anz++;
+          monitor.setPercentComplete(100 * anz / zeilen);
 
-        DBIterator<Mitglied> list = Einstellungen.getDBService()
-            .createList(Mitglied.class);
-        if (b_mitgliedsnummer)
-        {
-          list.addFilter("id = ? ", results.getString(columnMitgliedsnummer));
-        }
-        if (b_extmitgliedsnummer)
-        {
-          list.addFilter("externemitgliedsnummer = ? ",
-              results.getString(colExtMitgliedsnummer));
-        }
-        if (b_nachname)
-        {
-          list.addFilter("name = ? ", results.getString(colNachname));
-        }
-        if (b_vorname)
-        {
-          list.addFilter("vorname = ? ", results.getString(colVorname));
-        }
+          DBIterator<Mitglied> list = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          if (b_mitgliedsnummer)
+          {
+            list.addFilter("id = ? ", results.getString(columnMitgliedsnummer));
+          }
+          if (b_extmitgliedsnummer)
+          {
+            list.addFilter("externemitgliedsnummer = ? ",
+                results.getString(colExtMitgliedsnummer));
+          }
+          if (b_nachname)
+          {
+            list.addFilter("name = ? ", results.getString(colNachname));
+          }
+          if (b_vorname)
+          {
+            list.addFilter("vorname = ? ", results.getString(colVorname));
+          }
 
-        String mitgliedIdString = "";
-        if (b_mitgliedsnummer)
-          mitgliedIdString = columnMitgliedsnummer + "="
-              + results.getString(columnMitgliedsnummer);
-        else if (b_extmitgliedsnummer)
-        {
-          mitgliedIdString = colExtMitgliedsnummer + "="
-              + results.getString(colExtMitgliedsnummer);
-        }
-        else
-          mitgliedIdString = colNachname + "=" + results.getString(colNachname)
-              + ", " + colVorname + "=" + results.getString(colVorname);
+          if (b_mitgliedsnummer)
+            mitgliedIdString = columnMitgliedsnummer + "="
+                + results.getString(columnMitgliedsnummer);
+          else if (b_extmitgliedsnummer)
+          {
+            mitgliedIdString = colExtMitgliedsnummer + "="
+                + results.getString(colExtMitgliedsnummer);
+          }
+          else
+            mitgliedIdString = colNachname + "="
+                + results.getString(colNachname) + ", " + colVorname + "="
+                + results.getString(colVorname);
 
-        if (list.size() == 0)
-        {
-          throw new ApplicationException(String.format(
-              "Für die Importzeile %d (%s) kein Mitglied in JVerein-Datenbank gefunden. Abbruch!",
-              anz, mitgliedIdString));
-        }
-        else if (list.size() > 1)
-        {
-          throw new ApplicationException(String.format(
-              "Für die Importzeile %d (%s) mehr als ein Mitglied gefunden. Abbruch!",
-              anz, mitgliedIdString));
-        }
-        else
-        // list.size() == 1
-        {
+          if (list.size() == 0)
+          {
+            throw new ApplicationException(
+                "Kein Mitglied in JVerein-Datenbank gefunden.");
+          }
+          else if (list.size() > 1)
+          {
+            throw new ApplicationException("Mehr als ein Mitglied gefunden.");
+          }
+
           Mitglied m = (Mitglied) list.next();
           Zusatzbetrag zus = (Zusatzbetrag) Einstellungen.getDBService()
               .createObject(Zusatzbetrag.class, null);
           zus.setMitglied(Integer.valueOf(m.getID()));
           double betrag = results.getDouble("Betrag");
-          if (betrag == 0)
-          {
-            throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte die Fließkommazahl in der Spalte Betrag"
-                    + " nicht verarbeitet werden. Zahl muss größer 0 sein. Abbruch!",
-                anz, mitgliedIdString));
-          }
           zus.setBetrag(betrag);
           String buchungstext = results.getString("Buchungstext");
           if (buchungstext.length() > 140)
           {
-            throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte der Text in der Spalte Buchungstext nicht verarbeitet werden."
-                    + " Länge des Buchungstextes ist auf 140 Zeichen begrenzt. Abbruch!",
-                anz, mitgliedIdString));
+            throw new ApplicationException(
+                "Buchungstextes zu lang (max 140 Zeichen).");
           }
           zus.setBuchungstext(buchungstext);
           try
@@ -228,18 +219,14 @@ public class DefaultZusatzbetraegeImport implements Importer
           }
           catch (ParseException e)
           {
-            throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
-                anz, mitgliedIdString));
+            throw new ApplicationException("Ungültiges Fälligkeitsdatum.");
           }
 
           int intervall = results.getInt("Intervall");
           if (intervall < 0)
           {
-            throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte die Zahl in der Spalte Intervall nicht verarbeitet werden."
-                    + " Zahl muss größer oder gleich 0 sein. Abbruch!",
-                anz, mitgliedIdString));
+            throw new ApplicationException(
+                "Ungültiges Intervall, Zahl muss größer oder gleich 0 sein.");
           }
           zus.setIntervall(intervall);
           try
@@ -254,9 +241,7 @@ public class DefaultZusatzbetraegeImport implements Importer
           }
           catch (ParseException e)
           {
-            throw new ApplicationException(String.format(
-                "Für die Importzeile %d (%s) konnte das Datum in der Spalte Fälligkeit nicht verarbeitet werden. Abbruch!",
-                anz, mitgliedIdString));
+            throw new ApplicationException("Ungültiges Endedatum.");
           }
           catch (SQLException e)
           {
@@ -350,28 +335,25 @@ public class DefaultZusatzbetraegeImport implements Importer
           {
             zus.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
           }
-          zusatzbetraegeList.add(zus);
-        }
-
-        // überprüfen und parsen der Daten beendet.
-        monitor.setStatusText(String.format(
-            "Überprüfen aller Zusatzbeiträge erfolgreich abschlossen. %d Zusatzbeiträge werden importiert...",
-            anz));
-        int count = 0;
-        for (Zusatzbetrag zusatzbetrag : zusatzbetraegeList)
-        {
-          anz++;
-          monitor.setPercentComplete(
-              10 + (count * 90 / zusatzbetraegeList.size()));
-          zusatzbetrag.store();
           monitor.setStatusText(String.format(
               "Zusatzbeitrag für Mitglied %s erfolgreich importiert.",
-              Adressaufbereitung.getNameVorname(zusatzbetrag.getMitglied())));
+              Adressaufbereitung.getNameVorname(zus.getMitglied())));
+          zus.store();
         }
-        monitor.setStatusText("Import komplett abgeschlossen.");
+        // überprüfen und parsen der Daten beendet.
+        monitor
+            .setStatusText(String.format("%d Zusatzbeiträge importiert", anz));
+        DBTransaction.commit();
+      }
+      catch (ApplicationException e)
+      {
+        DBTransaction.rollback();
+        throw new ApplicationException(
+            String.format("Importzeile %d (%s):", anz, mitgliedIdString)
+                + e.getMessage());
       }
     }
-    catch (RemoteException | SQLException e)
+    catch (IOException | SQLException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
