@@ -14,29 +14,16 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
-public interface Anfangsbestand extends JVereinDBObject
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
+
+public interface IMitglied extends JVereinDBObject
 {
-  public Konto getKonto() throws RemoteException;
+  public Mitglied getMitglied() throws RemoteException;
 
-  public String getKontoText() throws RemoteException;
-
-  public void setKonto(Konto konto) throws RemoteException;
-
-  public void setKontoId(String id) throws RemoteException;
-
-  public Date getDatum() throws RemoteException;
-
-  public void setDatum(Date datum) throws RemoteException;
-
-  public void setBetrag(Double betrag) throws RemoteException;
-
-  public Double getBetrag() throws RemoteException;
-
-  public Jahresabschluss getJahresabschluss() throws RemoteException;
-
+  public void setMitglied(Integer mitglied) throws RemoteException;
 }

@@ -48,7 +48,8 @@ public class WiedervorlageDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(new SaveNeuButton(control));
+    buttons.addButton(
+        new SaveNeuButton(control, control.getWiedervorlage().getMitglied()));
     buttons.paint(getParent());
   }
 

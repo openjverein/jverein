@@ -236,6 +236,31 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
+    // gespeichert
+    // werden kann. Dann muss man die Buchung auch bei bestehendem
+    // Jahresabschluss speichern
+    // können. In diesem Fall wird mit updateForced() gespeichert.
+    if (!forcedUpdate)
+    {
+      try
+      {
+        Jahresabschluss ja = getJahresabschluss();
+        if (ja != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 
@@ -965,34 +990,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void store() throws RemoteException, ApplicationException
-  {
-    store(true);
-  }
-
-  @Override
-  public void store(boolean check) throws RemoteException, ApplicationException
-  {
-    if (check)
-    {
-      Jahresabschluss ja = getJahresabschluss();
-      if (ja != null)
-      {
-        throw new ApplicationException(
-            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-      }
-    }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit check false gespeichert.
-    super.store();
-  }
-
-  @Override
   public String getObjektName()
   {
     return "Buchung";
@@ -1003,5 +1000,4 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   {
     return "Buchungen";
   }
-
 }

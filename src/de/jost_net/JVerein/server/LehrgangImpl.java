@@ -25,7 +25,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
+public class LehrgangImpl extends AbstractJVereinDBObject
+    implements Lehrgang, IMitglied
 {
 
   private static final long serialVersionUID = 380278347818535726L;

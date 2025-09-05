@@ -67,7 +67,7 @@ public abstract class Spaltenauswahl
     {
       if (spalte.isChecked())
       {
-        if (mitgliedstyp == Mitgliedstyp.MITGLIED
+        if (mitgliedstyp == Integer.valueOf(Mitgliedstyp.MITGLIED)
             || spalte.isAuchNichtMitglied())
         {
           part.addColumn(spalte.getSpaltenbezeichnung(),
