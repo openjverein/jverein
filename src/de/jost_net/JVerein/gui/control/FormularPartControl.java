@@ -64,6 +64,7 @@ public abstract class FormularPartControl extends VorZurueckControl
     formularfelderList.setContextMenu(new FormularfeldMenu());
     formularfelderList.setRememberOrder(true);
     formularfelderList.removeFeature(FeatureSummary.class);
+    formularfelderList.setMulti(true);
     return formularfelderList;
   }
 

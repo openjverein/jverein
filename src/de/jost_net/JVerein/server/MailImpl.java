@@ -171,20 +171,14 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
+  public String getObjektName()
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-    return super.getAttribute(fieldName);
+    return "Mail";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mails";
   }
 }

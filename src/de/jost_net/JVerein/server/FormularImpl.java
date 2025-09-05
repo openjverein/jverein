@@ -251,4 +251,16 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     return Boolean.valueOf(formList.size() > 0);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Formular";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Formulare";
+  }
+
 }

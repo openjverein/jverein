@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -68,7 +67,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
-    bu.addColumn("Konto", "konto", new KontoFormatter());
+    bu.addColumn("Konto", "konto");
     bu.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Name", "name");

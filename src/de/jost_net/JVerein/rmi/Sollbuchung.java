@@ -27,7 +27,7 @@ public interface Sollbuchung extends JVereinDBObject
 
   public static final String TABLE_NAME_ID = "mitgliedskonto.id";
 
-  public static final String PRIMARY_ATTRIBUTE = "mitglied";
+  public static final String PRIMARY_ATTRIBUTE = "id";
 
   public static final String ABRECHNUNGSLAUF = "abrechnungslauf";
 

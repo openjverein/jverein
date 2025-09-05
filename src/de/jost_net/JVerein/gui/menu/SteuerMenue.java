@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.SteuerDeleteAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -36,7 +36,7 @@ public class SteuerMenue extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SteuerDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new SteuerDeleteAction(),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
   }
 }

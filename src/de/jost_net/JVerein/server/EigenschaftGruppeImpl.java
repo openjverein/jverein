@@ -44,7 +44,7 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
@@ -129,6 +129,18 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   public void setMax1(Boolean max1) throws RemoteException
   {
     setAttribute("max1", max1);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaftengruppe";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaftengruppen";
   }
 
 }

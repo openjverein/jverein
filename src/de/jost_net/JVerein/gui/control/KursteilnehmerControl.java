@@ -395,7 +395,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
     part = new JVereinTablePart(kursteilnehmer, null);
-
+    part.addColumn("Nr", "id-int");
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
     part.addColumn("Straße", "strasse");

@@ -99,4 +99,16 @@ public class VorlageImpl extends AbstractJVereinDBObject implements Vorlage
 
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Vorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Vorlagen";
+  }
 }

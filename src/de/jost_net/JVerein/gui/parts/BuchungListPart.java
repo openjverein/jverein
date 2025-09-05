@@ -23,7 +23,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -49,7 +48,7 @@ public class BuchungListPart extends BuchungListTablePart
     super(list, action);
 
     addColumn("Nr", "id-int");
-    addColumn("Konto", "konto", new KontoFormatter());
+    addColumn("Konto", "konto");
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Auszug", "auszugsnummer");
     addColumn("Blatt", "blattnummer");

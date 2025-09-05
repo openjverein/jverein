@@ -457,4 +457,16 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       return false;
     }
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchungsart";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungsarten";
+  }
 }

@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.EigenschaftGruppeFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
@@ -149,8 +148,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     {
       eigenschaftList = new JVereinTablePart(eigenschaften, null);
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
-      eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe",
-          new EigenschaftGruppeFormatter());
+      eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
       eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
       eigenschaftList.setRememberColWidths(true);
       eigenschaftList.setRememberOrder(true);

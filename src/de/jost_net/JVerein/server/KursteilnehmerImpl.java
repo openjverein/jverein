@@ -495,4 +495,16 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     }
     return d;
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Kursteilnehmer";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Kursteilnehmer";
+  }
 }

@@ -284,4 +284,16 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
     setAttribute("bemerkung", bemerkung);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Abrechnungslauf";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Abrechnungsläufe";
+  }
+
 }

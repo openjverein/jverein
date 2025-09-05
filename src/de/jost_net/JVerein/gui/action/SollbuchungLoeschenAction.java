@@ -36,8 +36,7 @@ public class SollbuchungLoeschenAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !((context instanceof MitgliedskontoNode)
-        || context instanceof Sollbuchung))
+    if (context == null || !(context instanceof MitgliedskontoNode))
     {
       throw new ApplicationException("Keine Sollbuchung ausgewählt");
     }

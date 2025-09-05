@@ -140,4 +140,16 @@ public class LehrgangsartImpl extends AbstractJVereinDBObject
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Lehrgangsart";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lehrgangsarten";
+  }
+
 }

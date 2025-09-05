@@ -142,4 +142,16 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   {
     setAttribute("erledigung", erledigung);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Wiedervorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Wiedervorlagen";
+  }
 }

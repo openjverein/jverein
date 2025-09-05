@@ -325,4 +325,16 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     }
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Sollbuchungsposition";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Sollbuchungspositionen";
+  }
 }

@@ -392,6 +392,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     {
       zusatzbetragVorlageList = new JVereinTablePart(zusatzbetragsvorlagen,
           null);
+      zusatzbetragVorlageList.addColumn("Nr", "id-int");
       zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",

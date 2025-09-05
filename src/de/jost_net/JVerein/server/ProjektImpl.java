@@ -185,4 +185,16 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
     }
     return d;
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Projekt";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Projekte";
+  }
 }
