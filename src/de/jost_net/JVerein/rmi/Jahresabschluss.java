@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.util.Date;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Jahresabschluss extends DBObject
+public interface Jahresabschluss extends JVereinDBObject
 {
   public Date getVon() throws RemoteException;
 

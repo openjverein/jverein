@@ -894,7 +894,7 @@ public class DbBereinigenControl extends AbstractControl
               continue;
             }
           }
-          ja.delete();
+          ja.deleteForced();
           DBIterator<Anfangsbestand> it2 = Einstellungen.getDBService()
               .createList(Anfangsbestand.class);
           it2.addFilter("datum = ?",

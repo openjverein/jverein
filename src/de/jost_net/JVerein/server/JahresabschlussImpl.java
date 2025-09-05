@@ -26,12 +26,11 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class JahresabschlussImpl extends AbstractDBObject
+public class JahresabschlussImpl extends AbstractJVereinDBObject
     implements Jahresabschluss
 {
 
@@ -52,6 +51,31 @@ public class JahresabschlussImpl extends AbstractDBObject
   public String getPrimaryAttribute()
   {
     return "id";
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    if (!forcedDelete)
+    {
+      try
+      {
+        DBIterator<Jahresabschluss> it;
+        it = Einstellungen.getDBService().createList(Jahresabschluss.class);
+        it.addFilter("von > ?", new Object[] { getVon() });
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        String msg = "Jahresabschluss kann nicht gelöscht werden. Siehe system log";
+        throw new ApplicationException(msg);
+      }
+    }
   }
 
   @Override

@@ -38,4 +38,7 @@ public interface JVereinDBObject extends DBObject
 
   // Update ohne Update Check oder eingeschränktem Check
   public void updateForced() throws RemoteException, ApplicationException;
+
+  // Löschen ohne Delete Check oder eingeschränktem Check
+  public void deleteForced() throws RemoteException, ApplicationException;
 }

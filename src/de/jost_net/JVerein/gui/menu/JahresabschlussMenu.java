@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.JahresabschlussDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -36,10 +37,11 @@ public class JahresabschlussMenu extends ContextMenu
    * 
    * @throws RemoteException
    */
-  public JahresabschlussMenu() throws RemoteException
+  public JahresabschlussMenu(JVereinTablePart part) throws RemoteException
   {
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
-        new EditAction(JahresabschlussDetailView.class), "text-x-generic.png"));
+        new EditAction(JahresabschlussDetailView.class, part),
+        "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new JahresabschlussDeleteAction(), "user-trash-full.png"));
   }
