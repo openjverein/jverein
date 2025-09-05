@@ -25,4 +25,8 @@ public interface Version extends DBObject
   public int getVersion() throws RemoteException;
 
   public void setVersion(int version) throws RemoteException;
+
+  public String getProgramVersion() throws RemoteException;
+
+  public void setVersion(String programversion) throws RemoteException;
 }

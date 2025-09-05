@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.boxes;
 
 import java.rmi.RemoteException;
-import java.text.DecimalFormat;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -26,10 +25,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.rmi.Version;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.system.Application;
 
 public class DBVersionTest extends AbstractBox
 {
@@ -53,29 +54,14 @@ public class DBVersionTest extends AbstractBox
   {
     try
     {
-      int istVersion = ((Version) Einstellungen.getDBService()
-          .createObject(Version.class, "1")).getVersion();
-      int sollVersion = 361;
-      try
-      {
+      de.willuhn.jameica.plugin.Version programIstVersion = Application
+          .getPluginLoader().getPlugin(JVereinPlugin.class).getManifest()
+          .getVersion();
+      de.willuhn.jameica.plugin.Version programSollVersion = new de.willuhn.jameica.plugin.Version(
+          ((Version) Einstellungen.getDBService().createObject(Version.class,
+              "1")).getProgramVersion());
 
-        DecimalFormat df = new DecimalFormat("0000");
-        // Solange durchlaufen bis es zur Exception kommt, dann gibt es das
-        // Update nicht.
-        while (true)
-        {
-          String clazzname = "de.jost_net.JVerein.server.DDLTool.Updates.Update"
-              + df.format(sollVersion);
-          Class.forName(clazzname);
-          sollVersion++;
-        }
-      }
-      catch (ClassNotFoundException e)
-      {
-        // Die gabe es nicht, also ist es eine Nummer kleiner.
-        sollVersion--;
-      }
-      return sollVersion < istVersion;
+      return programIstVersion.getMajor() < programSollVersion.getMajor();
     }
     catch (RemoteException e)
     {
