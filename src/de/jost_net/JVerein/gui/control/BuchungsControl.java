@@ -1707,6 +1707,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       refreshSplitbuchungen();
     }
+    splitbuchungsList.setMulti(true);
     return splitbuchungsList;
   }
 

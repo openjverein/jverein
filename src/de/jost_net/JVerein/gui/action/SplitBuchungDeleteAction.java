@@ -18,19 +18,25 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.logging.Logger;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Loeschen einer Buchung.
  */
-public class SplitBuchungDeleteAction implements Action
+public class SplitBuchungDeleteAction extends BuchungDeleteAction
 {
   private BuchungsControl control;
+
+  // Der sollte nicht verwendet werden!
+  public SplitBuchungDeleteAction()
+  {
+    super();
+  }
 
   public SplitBuchungDeleteAction(BuchungsControl control)
   {
@@ -38,31 +44,42 @@ public class SplitBuchungDeleteAction implements Action
   }
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    if (context == null || !(context instanceof Buchung))
+    if (!(object instanceof Buchung))
     {
-      throw new ApplicationException("Keine Buchung ausgewählt");
+      return;
     }
-    try
+
+    Buchung bu = (Buchung) object;
+    if (bu.isNewObject())
     {
-      Buchung bu = (Buchung) context;
-      if (((Buchung) context).isNewObject())
+      SplitbuchungsContainer.get().remove(bu);
+    }
+    else
+    {
+      Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+      if (spb != null && selection == YesNoCancelDialog.NO)
       {
-        SplitbuchungsContainer.get().remove(bu);
+        throw new ApplicationException(
+            "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
       }
-      else
-      {
-        BuchungDeleteAction action = new BuchungDeleteAction(true);
-        action.handleAction(context);
-      }
-      control.refreshSplitbuchungen();
+      bu.setDelete(true);
     }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Löschen der Buchung.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    control.refreshSplitbuchungen();
+  }
+
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
+  }
+
+  @Override
+  protected boolean supportsMulti()
+  {
+    // Das würde zu invalid Thread Access führen
+    return false;
   }
 }

@@ -29,14 +29,7 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungDeleteAction extends DeleteAction
 {
-  private boolean splitbuchung;
-
   private boolean spendenbescheinigung = false;
-
-  public BuchungDeleteAction(boolean splitbuchung)
-  {
-    this.splitbuchung = splitbuchung;
-  }
 
   @Override
   protected String getText(JVereinDBObject object[])
@@ -103,10 +96,6 @@ public class BuchungDeleteAction extends DeleteAction
         bu.getSpendenbescheinigung().delete();
       }
       bu.delete();
-    }
-    else if (splitbuchung)
-    {
-      bu.setDelete(true);
     }
     else
     {
