@@ -30,14 +30,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -128,9 +126,9 @@ public abstract class AbstractSaldoControl extends AbstractControl
 
   public static final int ART_LEERZEILE = 8;
 
-  final static String AuswertungPDF = "PDF";
+  final static String AuswertungPDF = ".pdf";
 
-  final static String AuswertungCSV = "CSV";
+  final static String AuswertungCSV = ".csv";
 
   public AbstractSaldoControl(AbstractView view) throws RemoteException
   {
@@ -197,6 +195,13 @@ public abstract class AbstractSaldoControl extends AbstractControl
   protected abstract String getAuswertungTitle();
 
   /**
+   * Holt den Dateinamen für die Auswertungen
+   * 
+   * @return
+   */
+  protected abstract String getDateiname();
+
+  /**
    * Git ein Object, dass das Interface ISaldoExport implementiert zurück.
    * 
    * @param type
@@ -218,8 +223,6 @@ public abstract class AbstractSaldoControl extends AbstractControl
   {
     try
     {
-      String title = getAuswertungTitle();
-
       ArrayList<PseudoDBObject> zeile = getList();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -233,9 +236,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname(title, "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          type).get());
+      fd.setFileName(getDateiname() + type);
 
       final String s = fd.open();
 
@@ -335,7 +336,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
     return datumbis;
   }
 
-  public Input getGeschaeftsjahr()
+  public TextInput getGeschaeftsjahr()
   {
     if (geschaeftsjahr != null)
     {

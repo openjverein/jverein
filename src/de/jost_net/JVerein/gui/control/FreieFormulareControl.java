@@ -117,4 +117,10 @@ public class FreieFormulareControl extends DruckMailControl
     }
     return new DruckMailEmpfaenger(liste, text);
   }
+
+  @Override
+  protected void TabRefresh()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+  }
 }

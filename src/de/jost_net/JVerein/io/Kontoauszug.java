@@ -68,11 +68,10 @@ public class Kontoauszug
   {
     this();
 
-    int anzahl = 0;
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        init("pdf");
+        init("pdf", mitglieder);
         if (file == null)
         {
           return;
@@ -81,20 +80,12 @@ public class Kontoauszug
         for (Mitglied mg : mitglieder)
         {
           generiereMitglied(mg, control);
-          anzahl++;
-        }
-        if (anzahl == 0)
-        {
-          GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
-          file.delete();
-          return;
         }
         rpt.close();
         zeigeDokument();
         break;
       case MAIL:
-        init("zip");
+        init("zip", mitglieder);
         if (file == null)
         {
           return;
@@ -110,7 +101,6 @@ public class Kontoauszug
           rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40, false);
           generiereMitglied(mg, control);
           rpt.close();
-          anzahl++;
           zos.putNextEntry(new ZipEntry(getDateiname(mg) + ".pdf"));
           FileInputStream in = new FileInputStream(f);
           // buffer size
@@ -123,20 +113,14 @@ public class Kontoauszug
           in.close();
         }
         zos.close();
-        if (anzahl == 0)
-        {
-          GUI.getStatusBar()
-              .setErrorText("Kein Mitglied erfüllt das Differenz Kriterium.");
-          file.delete();
-          return;
-        }
         new ZipMailer(file, (String) control.getBetreff().getValue(),
             (String) control.getTxt().getValue());
         break;
     }
   }
 
-  private void init(String extension) throws IOException
+  private void init(String extension, List<Mitglied> mitglieder)
+      throws IOException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -146,8 +130,17 @@ public class Kontoauszug
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
-        + extension);
+    if (mitglieder.size() == 1)
+    {
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+              mitglieder.get(0)) + "." + extension);
+    }
+    else
+    {
+      fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
+          + extension);
+    }
     fd.setFilterExtensions(new String[] { "*." + extension });
 
     String s = fd.open();
