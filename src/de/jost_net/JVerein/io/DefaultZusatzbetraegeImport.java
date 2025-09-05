@@ -194,7 +194,6 @@ public class DefaultZusatzbetraegeImport implements Importer
           }
           else if (list.size() > 1)
           {
-            DBTransaction.rollback();
             throw new ApplicationException("Mehr als ein Mitglied gefunden.");
           }
 
@@ -220,7 +219,6 @@ public class DefaultZusatzbetraegeImport implements Importer
           }
           catch (ParseException e)
           {
-            DBTransaction.rollback();
             throw new ApplicationException("Ungültiges Fälligkeitsdatum.");
           }
 
