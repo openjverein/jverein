@@ -51,8 +51,7 @@ public class JVereinAdressbuch implements Addressbook
     {
       Mitglied m = (Mitglied) it.next();
       String kategorie = m.getMitgliedstyp().getBezeichnung();
-      if (m.getMitgliedstyp().getID()
-          .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+      if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
         kategorie = m.getBeitragsgruppe().getBezeichnung();
       }
