@@ -130,7 +130,7 @@ public class DBSupportMySqlImpl extends AbstractDBSupportImpl
       catch (Exception e2)
       {
         Logger.error("Datenbankupdate kann nicht ausgeführt werden.", e2);
-        throw new ApplicationException(e2);
+        throw new ApplicationException(e2.getMessage(), e2);
       }
     }
   }

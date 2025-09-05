@@ -25,7 +25,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageImpl extends AbstractJVereinDBObject
-    implements Wiedervorlage
+    implements Wiedervorlage, IMitglied
 {
 
   private static final long serialVersionUID = 1L;

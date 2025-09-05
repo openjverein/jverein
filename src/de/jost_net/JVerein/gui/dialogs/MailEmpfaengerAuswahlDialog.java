@@ -150,7 +150,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+            if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
                 && m.isAngemeldet(stichtag))
             {
               control.getMitgliedMitMail().setChecked(o, true);
@@ -175,7 +175,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+            if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
                 && !m.isAngemeldet(stichtag))
             {
               control.getMitgliedMitMail().setChecked(o, true);
@@ -199,7 +199,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED)
+            if (!m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
             {
               control.getMitgliedMitMail().setChecked(o, true);
             }
@@ -223,8 +223,8 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
           for (Object o : control.getMitgliedMitMail().getItems(false))
           {
             Mitglied m = (Mitglied) o;
-            if (m.getMitgliedstyp().getJVereinid() != Mitgliedstyp.MITGLIED
-                || (m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED
+            if (!m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+                || (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
                     && m.isAngemeldet(stichtag)))
             {
               control.getMitgliedMitMail().setChecked(o, true);

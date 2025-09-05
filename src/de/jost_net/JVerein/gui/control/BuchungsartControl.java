@@ -583,7 +583,9 @@ public class BuchungsartControl extends FilterControl implements Savable
               reporter.addColumn("", Element.ALIGN_LEFT);
             }
             reporter.addColumn(b.getSpende());
-            reporter.addColumn(b.getSteuer().getName(), Element.ALIGN_RIGHT);
+            reporter.addColumn(
+                b.getSteuer() == null ? "" : b.getSteuer().getName(),
+                Element.ALIGN_RIGHT);
           }
           reporter.closeTable();
           reporter.close();

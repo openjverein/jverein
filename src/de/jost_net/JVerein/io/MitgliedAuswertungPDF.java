@@ -62,7 +62,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
           130, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+      if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
       {
         report
             .addHeaderColumn(
@@ -129,7 +129,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+        if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
         {
           report.addColumn(zelle, Element.ALIGN_LEFT);
         }

@@ -28,7 +28,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
-    implements Arbeitseinsatz
+    implements Arbeitseinsatz, IMitglied
 {
 
   private static final long serialVersionUID = 380278347818535726L;
