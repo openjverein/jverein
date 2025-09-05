@@ -28,7 +28,7 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Messaging.MailAnhangMessage;
+import de.jost_net.JVerein.Messaging.MailMessage;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
@@ -762,7 +762,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     @Override
     public Class<?>[] getExpectedMessageTypes()
     {
-      return new Class[] { MailAnhangMessage.class };
+      return new Class[] { MailMessage.class };
     }
 
     /**
@@ -779,8 +779,17 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         {
           try
           {
-            removeAnhang(
-                (MailAnhang) ((MailAnhangMessage) message).getObject());
+            if (((MailMessage) message).getObject() instanceof MailAnhang)
+            {
+              removeAnhang(
+                  (MailAnhang) ((MailMessage) message).getObject());
+            }
+            else if (((MailMessage) message)
+                .getObject() instanceof MailEmpfaenger)
+            {
+              removeEmpfaenger(
+                  (MailEmpfaenger) ((MailMessage) message).getObject());
+            }
           }
           catch (Exception e)
           {

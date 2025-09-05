@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -51,10 +52,16 @@ public class MitgliedDeleteAction extends DeleteAction
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
 
+    String nicht = " ";
+    if (!((Mitglied) object[0]).getMitgliedstyp().getID()
+        .equals(Mitgliedstyp.MITGLIED))
+    {
+      nicht = " Nicht-";
+    }
     String mehrzahl = object.length > 1 ? "er" : "";
-    return "Wollen Sie diese" + (object.length > 1 ? "" : "s") + " Mitglied"
-        + mehrzahl + " wirklich löschen?"
-        + "\nDies löscht auch alle Mitglied bezogenen Daten wie"
+    return "Wollen Sie diese" + (object.length > 1 ? "" : "s") + nicht
+        + "Mitglied" + mehrzahl + " wirklich löschen?"
+        + "\nDies löscht auch alle" + nicht + "Mitglieder bezogenen Daten wie"
         + "\nz.B. Sollbuchungen, Mails etc."
         + "\nDiese Daten können nicht wieder hergestellt werden!";
   }

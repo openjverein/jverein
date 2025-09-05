@@ -54,7 +54,7 @@ public class DeleteAction implements Action
       ote = new JVereinDBObject[] { (JVereinDBObject) context };
       attribut = getAttribute(ote[0]);
     }
-    else if (context instanceof JVereinDBObject[])
+    else if (context instanceof JVereinDBObject[] && supportsMulti())
     {
       ote = (JVereinDBObject[]) context;
     }
@@ -298,5 +298,11 @@ public class DeleteAction implements Action
   protected boolean isNewAllowed()
   {
     return false;
+  }
+
+  // Support für Multi Selection
+  protected boolean supportsMulti()
+  {
+    return true;
   }
 }

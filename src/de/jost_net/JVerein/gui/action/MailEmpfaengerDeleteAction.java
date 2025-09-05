@@ -20,20 +20,20 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Messaging.MailMessage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Mailanhanges
+ * Loeschen von Mailempfaengern.
  */
-public class MailAnhangDeleteAction extends DeleteAction
+public class MailEmpfaengerDeleteAction extends DeleteAction
 {
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
   {
-    if (!(object instanceof MailAnhang))
+    if (!(object instanceof MailEmpfaenger))
     {
       return;
     }

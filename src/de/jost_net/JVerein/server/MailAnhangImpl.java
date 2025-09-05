@@ -153,13 +153,13 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   @Override
   public String getObjektName() throws RemoteException
   {
-    return "Mailanhang";
+    return "Anhang";
   }
 
   @Override
   public String getObjektNameMehrzahl() throws RemoteException
   {
-    return "Mailanhänge";
+    return "Anhänge";
   }
 
 }
