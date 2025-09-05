@@ -86,7 +86,7 @@ public class SteuerControl extends AbstractControl implements Savable
       steuerList.addColumn("Name", "name");
       steuerList.addColumn("Steuersatz", "satz",
           o -> {
-            return (Double) o + "%";
+            return Einstellungen.DECIMALFORMAT.format(o) + "%";
           }, false,
           Column.ALIGN_RIGHT);
       steuerList.addColumn("Buchungsart", "buchungsart",
