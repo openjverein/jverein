@@ -2751,24 +2751,6 @@ public class MitgliedControl extends FilterControl implements Savable
     list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
     try
     {
-      String dateinamensort = "";
-      if (sort.equals("Name, Vorname"))
-      {
-        dateinamensort = "name";
-      }
-      else if (sort.equals("Eintrittsdatum"))
-      {
-        dateinamensort = "eintrittsdatum";
-      }
-      else if (sort.equals("Geburtsdatum"))
-      {
-        dateinamensort = "geburtsdatum";
-      }
-      else if (sort.equals("Geburtstagsliste"))
-      {
-        dateinamensort = "geburtstagsliste";
-      }
-
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
 
