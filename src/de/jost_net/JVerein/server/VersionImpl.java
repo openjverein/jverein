@@ -85,10 +85,4 @@ public class VersionImpl extends AbstractDBObject implements Version
   {
     return (String) getAttribute("programversion");
   }
-
-  @Override
-  public void setVersion(String programversion) throws RemoteException
-  {
-    setAttribute("programversion", programversion);
-  }
 }
