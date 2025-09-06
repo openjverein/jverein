@@ -41,7 +41,7 @@ public class SplitBuchungMenu extends ContextMenu
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "text-x-generic.png"));
     addItem(new DeleteSplitBuchungItem("Löschen",
-        new SplitBuchungDeleteAction(control), "user-trash-full.png"));
+        new SplitBuchungDeleteAction(), "user-trash-full.png"));
     addItem(new RestoreSplitBuchungItem("Wiederherstellen",
         new SplitBuchungWiederherstellenAction(control), "edit-undo.png"));
   }
@@ -82,17 +82,29 @@ public class SplitBuchungMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
-      if (o instanceof Buchung)
+      try
       {
-        Buchung b = (Buchung) o;
-        try
+        if (o instanceof Buchung)
         {
+          Buchung b = (Buchung) o;
+
           return !b.isToDelete() && b.getSplitTyp() == SplitbuchungTyp.SPLIT;
         }
-        catch (RemoteException e)
+        if (o instanceof Buchung[])
         {
-          Logger.error("Fehler", e);
+          for (Buchung b : ((Buchung[]) o))
+          {
+            if (b.isToDelete() || b.getSplitTyp() != SplitbuchungTyp.SPLIT)
+            {
+              return false;
+            }
+          }
+          return true;
         }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
       }
       return false;
     }

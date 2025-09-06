@@ -19,79 +19,41 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.Messaging.SollbuchungMessage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Formularfeldes
+ * Löschen eine Sollbuchung Position
  */
-public class SollbuchungPositionDeleteAction implements Action
+public class SollbuchungPositionDeleteAction extends DeleteAction
 {
-
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    if (context instanceof TablePart)
+    if (!(object instanceof SollbuchungPosition))
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
+      return;
     }
-    if (context == null || !(context instanceof SollbuchungPosition))
-    {
-      throw new ApplicationException("Keine Sollbuchungsposition ausgewählt");
-    }
-    try
-    {
-      SollbuchungPosition position = (SollbuchungPosition) context;
-      if (position.isNewObject())
-      {
-        return;
-      }
 
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Sollbuchungsposition löschen");
-      d.setText("Wollen Sie diese Sollbuchungsposition wirklich löschen?");
-
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen der Sollbuchungsposition", e);
-        return;
-      }
-      position.delete();
-      // Betrag in Sollbuchung neu berechnen
-      Double betrag = 0.0;
-      Sollbuchung sollb = position.getSollbuchung();
-      ArrayList<SollbuchungPosition> sollbpList = sollb
-          .getSollbuchungPositionList();
-      for (SollbuchungPosition sollp : sollbpList)
-      {
-        betrag += sollp.getBetrag();
-      }
-      sollb.setBetrag(betrag);
-      sollb.store();
-      GUI.startView(SollbuchungDetailView.class.getName(), sollb);
-      GUI.getStatusBar().setSuccessText("Sollbuchungsposition gelöscht.");
-    }
-    catch (RemoteException e)
+    SollbuchungPosition position = (SollbuchungPosition) object;
+    position.delete();
+    // Betrag in Sollbuchung neu berechnen
+    Double betrag = 0.0;
+    Sollbuchung sollb = position.getSollbuchung();
+    ArrayList<SollbuchungPosition> sollbpList = sollb
+        .getSollbuchungPositionList();
+    for (SollbuchungPosition sollp : sollbpList)
     {
-      String fehler = "Fehler beim Löschen der Sollbuchungsposition";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      betrag += sollp.getBetrag();
     }
+    sollb.setBetrag(betrag);
+    sollb.store();
+    Application.getMessagingFactory()
+        .sendMessage(new SollbuchungMessage(sollb));
   }
 }
