@@ -223,7 +223,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setMitglied(Mitglied mitglied) throws RemoteException
   {
-    setAttribute(MITGLIED, Integer.valueOf(mitglied.getID()));
+    setAttribute(MITGLIED, Long.valueOf(mitglied.getID()));
   }
 
   @Override
