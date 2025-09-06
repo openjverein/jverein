@@ -342,7 +342,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());
-    sollb.setBetrag((Double) getBetrag().getValue());
     sollb.setDatum((Date) getDatum().getValue());
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
@@ -585,6 +584,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
+    buchungList.setMulti(true);
     sollbuchungConsumer = new SollbuchungMessageConsumer();
     Application.getMessagingFactory()
         .registerMessageConsumer(sollbuchungConsumer);
