@@ -116,7 +116,7 @@ public class BuchungGegenbuchungAction implements Action
           }
           else
           {
-            GUI.startView(new BuchungDetailView(), buchungen[0]);
+            GUI.startView(new BuchungDetailView(), bu);
           }
         }
       }
