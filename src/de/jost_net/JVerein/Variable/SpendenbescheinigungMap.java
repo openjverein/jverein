@@ -65,7 +65,6 @@ public class SpendenbescheinigungMap extends AbstractMap
       spb.setBescheinigungsdatum(new Date());
       spb.setBetrag(1234.56);
       spb.setBezeichnungSachzuwendung("Buch");
-      spb.setErsatzAufwendungen(false);
       spb.setHerkunftSpende(1);
       spb.setSpendedatum(new Date());
       spb.setSpendenart(Spendenart.GELDSPENDE);
@@ -146,50 +145,39 @@ public class SpendenbescheinigungMap extends AbstractMap
         spb.getUnterlagenWertermittlung()
             ? "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor."
             : "");
-    // Unterscheidung bis 2012 / ab 2013
-    if (gc.get(GregorianCalendar.YEAR) <= 2012)
+
+    // ab 2013
+    switch (spb.getHerkunftSpende())
     {
-      map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-          HerkunftSpende.get(spb.getHerkunftSpende()));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (spb.getErsatzAufwendungen() ? "X" : ""));
+      case HerkunftSpende.BETRIEBSVERMOEGEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
+                + newLineStr
+                + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
+        break;
+      case HerkunftSpende.PRIVATVERMOEGEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
+        break;
+      case HerkunftSpende.KEINEANGABEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
+        break;
     }
-    else
+
+    boolean ersatz = false;
+    // Geldspende und keine Sammelbestätigung
+    if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1
+        && spb.getSpendenart() == Spendenart.GELDSPENDE)
     {
-      // ab 2013
-      switch (spb.getHerkunftSpende())
-      {
-        case HerkunftSpende.BETRIEBSVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
-                  + newLineStr
-                  + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
-          break;
-        case HerkunftSpende.PRIVATVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
-          break;
-        case HerkunftSpende.KEINEANGABEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
-          break;
-      }
-      boolean ersatz = spb.getErsatzAufwendungen();
-      if (spb.getAutocreate())
-      {
-        // Geldspende und keine Sammelbestätigung
-        if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1)
-        {
-          ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
-        }
-      }
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (ersatz ? "Ja" : "Nein"));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
-          (ersatz ? "X" : " "));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-          (ersatz ? " " : "X"));
+      ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
     }
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
+        (ersatz ? "Ja" : "Nein"));
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
+        (ersatz ? "X" : " "));
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
+        (ersatz ? " " : "X"));
 
     // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
     if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
@@ -455,10 +443,9 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), "01.01.2025");
     map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
         "01.01.2025 bis 01.03.2025");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "X");
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "Nein");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(), "X");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-        (char) 113);
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(), "X");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Liste");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Daten");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
