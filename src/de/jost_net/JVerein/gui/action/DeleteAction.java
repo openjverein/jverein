@@ -58,14 +58,21 @@ public class DeleteAction implements Action
     {
       ote = (JVereinDBObject[]) context;
     }
+    else if (context instanceof JVereinDBObject[] && !supportsMulti())
+    {
+      // Das sollte nicht passieren, da es schon im Menü oder der Tabelle
+      // abgefangen wird. Sicherheitshalber wird es auch hier geprüft.
+      throw new ApplicationException(
+          "Auswahl mehrerer Einträge für dieses Objekt ist nicht unterstützt.");
+    }
     else
     {
-      throw new ApplicationException("Kein Objekt ausgewählt");
+      throw new ApplicationException("Kein Objekt ausgewählt.");
     }
 
     if (ote.length == 0)
     {
-      throw new ApplicationException("Kein Objekt ausgewählt");
+      throw new ApplicationException("Kein Objekt ausgewählt.");
     }
 
     try

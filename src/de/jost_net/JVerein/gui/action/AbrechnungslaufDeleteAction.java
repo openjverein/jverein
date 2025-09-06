@@ -44,7 +44,7 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
   protected String getText(JVereinDBObject object[])
       throws RemoteException, ApplicationException
   {
-    if (object == null || object.length != 1
+    if (object == null || object.length == 0
         || !(object[0] instanceof Abrechnungslauf))
     {
       throw new ApplicationException("Kein Abrechnungslauf ausgewählt");
@@ -236,5 +236,13 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
       }
     }
     object.delete();
+  }
+
+  @Override
+  protected boolean supportsMulti()
+  {
+    // Multi Selection ist nicht geplant
+    // Der Check oben ist für genau einen Abrechnungslauf
+    return false;
   }
 }
