@@ -28,12 +28,17 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.rmi.Version;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
+import de.willuhn.jameica.gui.internal.action.PluginListOpen;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.system.Application;
 
 public class DBVersionTest extends AbstractBox
 {
+  private de.willuhn.jameica.plugin.Version programIstVersion;
+
+  private de.willuhn.jameica.plugin.Version programSollVersion;
 
   @Override
   public boolean isActive()
@@ -54,10 +59,10 @@ public class DBVersionTest extends AbstractBox
   {
     try
     {
-      de.willuhn.jameica.plugin.Version programIstVersion = Application
-          .getPluginLoader().getPlugin(JVereinPlugin.class).getManifest()
-          .getVersion();
-      de.willuhn.jameica.plugin.Version programSollVersion = new de.willuhn.jameica.plugin.Version(
+      programIstVersion = Application.getPluginLoader()
+          .getPlugin(JVereinPlugin.class).getManifest().getVersion();
+
+      programSollVersion = new de.willuhn.jameica.plugin.Version(
           ((Version) Einstellungen.getDBService().createObject(Version.class,
               "1")).getProgramVersion());
 
@@ -90,6 +95,9 @@ public class DBVersionTest extends AbstractBox
   @Override
   public void paint(Composite parent) throws RemoteException
   {
+    Application.getPluginLoader().getPlugin(JVereinPlugin.class).getManifest()
+        .getNavigation().setEnabled(false, true);
+
     // 2-spaltige Anzeige. Links das Icon, rechts Text und Buttons
     parent.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     parent.setLayout(new GridLayout(2, false));
@@ -104,12 +112,19 @@ public class DBVersionTest extends AbstractBox
     Label title = new Label(parent, SWT.NONE);
     title.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     title.setFont(Font.H2.getSWTFont());
-    title.setText("Datenbank Version zu neu.");
+    title.setText("Datenbank Version zu neu");
 
     Label desc = new Label(parent, SWT.WRAP);
     desc.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    desc.setText("Die Version der Datenbank ist höher als die Programversion.\n"
-        + "Das kann zu inkonsitenten Daten führen!");
+    desc.setText("Die Version der Datenbank (" + programSollVersion
+        + ") ist höher als die Programversion (" + programIstVersion + "). "
+        + "Das kann zu inkonsitenten Daten führen!\n"
+        + "Bitte OpenJVerein aktualisieren oder Datenbank Backup einspielen.");
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("nach Updates suchen", new PluginListOpen(), null, false,
+        "emblem-package.png");
+    buttons.paint(parent);
 
   }
 
