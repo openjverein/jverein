@@ -31,6 +31,8 @@ import de.willuhn.util.ApplicationException;
  */
 public class SollbuchungPositionDeleteAction extends DeleteAction
 {
+  private Sollbuchung sollb;
+
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
@@ -41,19 +43,27 @@ public class SollbuchungPositionDeleteAction extends DeleteAction
     }
 
     SollbuchungPosition position = (SollbuchungPosition) object;
+    sollb = position.getSollbuchung();
     position.delete();
-    // Betrag in Sollbuchung neu berechnen
-    Double betrag = 0.0;
-    Sollbuchung sollb = position.getSollbuchung();
-    ArrayList<SollbuchungPosition> sollbpList = sollb
-        .getSollbuchungPositionList();
-    for (SollbuchungPosition sollp : sollbpList)
+  }
+
+  @Override
+  protected void doFinally() throws RemoteException, ApplicationException
+  {
+    if (sollb != null)
     {
-      betrag += sollp.getBetrag();
+      // Betrag in Sollbuchung neu berechnen
+      Double betrag = 0.0;
+      ArrayList<SollbuchungPosition> sollbpList = sollb
+          .getSollbuchungPositionList();
+      for (SollbuchungPosition sollp : sollbpList)
+      {
+        betrag += sollp.getBetrag();
+      }
+      sollb.setBetrag(betrag);
+      sollb.store();
+      Application.getMessagingFactory()
+          .sendMessage(new SollbuchungMessage(sollb));
     }
-    sollb.setBetrag(betrag);
-    sollb.store();
-    Application.getMessagingFactory()
-        .sendMessage(new SollbuchungMessage(sollb));
   }
 }

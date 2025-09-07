@@ -152,6 +152,7 @@ public class DeleteAction implements Action
         }
         attribut = getAttribute(objekte[0]);
         doDelete(objekte[0], selection);
+        doFinally();
         GUI.getStatusBar().setSuccessText(name + " gelöscht.");
       }
       catch (ApplicationException e1)
@@ -213,6 +214,23 @@ public class DeleteAction implements Action
             Logger.error(fehler, e3);
           }
           monitor.setPercentComplete(100 * (count + skip) / objekte.length);
+        }
+        try
+        {
+          doFinally();
+        }
+        catch (ApplicationException e2)
+        {
+          skip++;
+          String fehler = "Fehler beim Löschen von " + namen + ": ";
+          monitor.setStatusText(fehler + e2.getMessage());
+        }
+        catch (RemoteException e3)
+        {
+          skip++;
+          String fehler = "Fehler beim Löschen von " + namen;
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e3);
         }
         monitor.setPercentComplete(100);
         monitor.setStatusText(count + " " + namen + " gelöscht.");
@@ -284,6 +302,14 @@ public class DeleteAction implements Action
       throws RemoteException, ApplicationException
   {
     object.delete();
+  }
+
+  // Wird nach doDelete aufgerufen, bei Multi Selection nach dem letzten
+  // doDelete. Damit können abgeleitete Klassen Actionen nach Ende der Schleife
+  // machen
+  protected void doFinally() throws RemoteException, ApplicationException
+  {
+    // Ist für abgeleitete Klassen gedacht
   }
 
   // Gibt zurück ob der Dialog mit dem No Button angezeigt werden soll

@@ -32,6 +32,8 @@ import de.willuhn.util.ApplicationException;
  */
 public class SplitBuchungDeleteAction extends BuchungDeleteAction
 {
+  private Buchung bu;
+
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
@@ -41,7 +43,7 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
       return;
     }
 
-    Buchung bu = (Buchung) object;
+    bu = (Buchung) object;
     if (bu.isNewObject())
     {
       SplitbuchungsContainer.get().remove(bu);
@@ -56,6 +58,11 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
       }
       bu.setDelete(true);
     }
+  }
+
+  @Override
+  protected void doFinally()
+  {
     Application.getMessagingFactory().sendMessage(new SplitbuchungMessage(bu));
   }
 
