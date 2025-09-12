@@ -340,6 +340,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
+    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
     if (getSteuer() != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
@@ -613,6 +614,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public DialogInput getSollbuchung() throws RemoteException
   {
+    if (sollbuchung != null)
+    {
+      return sollbuchung;
+    }
     sollbuchung = new SollbuchungAuswahlInput(getBuchung())
         .getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
@@ -1784,7 +1789,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       BackgroundTask t = new BackgroundTask()
       {
 
-        @SuppressWarnings("unused")
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
@@ -1873,7 +1877,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -1917,7 +1920,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {

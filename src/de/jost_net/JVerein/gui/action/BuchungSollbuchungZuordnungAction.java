@@ -163,7 +163,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
               if (buchung == null)
               {
                 // Wenn keine Restbuchung existiert wurde alles zugewies und es
-                // nichts mehr für die restlichen Sollbuchungen übrig.
+                // ist nichts mehr für die restlichen Sollbuchungen übrig.
                 break;
               }
               buchung = SplitbuchungsContainer.autoSplit(buchung, s, false);
@@ -244,6 +244,10 @@ public class BuchungSollbuchungZuordnungAction implements Action
           GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
         }
       }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
     }
     catch (ApplicationException ae)
     {

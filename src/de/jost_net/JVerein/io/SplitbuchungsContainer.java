@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -455,11 +456,11 @@ public class SplitbuchungsContainer
         String zweck = splitZweckMap.get(key);
         if (zweck == null)
         {
-          zweck = sp.getZweck() + " " + sp.getBetrag();
+          zweck = sp.getZweck();
         }
         else
         {
-          zweck = zweck + ", " + sp.getZweck() + " " + sp.getBetrag();
+          zweck = zweck + ", " + sp.getZweck();
         }
         splitZweckMap.put(key, zweck);
       }
@@ -482,22 +483,22 @@ public class SplitbuchungsContainer
         Double sollBetrag = splitMap.get(key);
         if (sollBetrag == null)
         {
-          // TODO Text
-          // TODO muss hier wirlich abgebrochen werden, oder ist das auch anders
-          // möglich?
-          throw new ApplicationException(
-              "Der Sollbuchung ist eine Istbuchung zugeordnet, "
-                  + "dessen Buchungsart und Steuer nicht als Position existieren.");
+          // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
+          // nicht, das ignorieren wir.
         }
-        // TODO test für Guthaben
-        if (sollBetrag < istBuchung.getBetrag())
+        else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
+            || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
         {
-          // throw new ApplicationException(
-          // "Der Sollbuchung ist eine Istbuchung zugeordnet, "
-          // + "die größer als das Soll diser Position ist.");
+          // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
+          // Soll diser Position ist, wir entfernen sie. Es bleibt eine
+          // Überzahlung erhalten.
+          splitMap.remove(key);
         }
-        // Restbetrag in die Map schreiben
-        splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+        else
+        {
+          // Restbetrag in die Map schreiben
+          splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+        }
       }
 
       // Das Splittbuchungen immmer eine Buchungsart haben müssen, ordnen wir
@@ -550,19 +551,22 @@ public class SplitbuchungsContainer
       boolean splitPositionZweck = (Boolean) Einstellungen
           .getEinstellung(Property.SPLITPOSITIONZWECK);
       double zugeordnet = 0d;
-      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().iterator();
+      // Wir nehmen die kleinsten Beträge zuerst, so werden ggf. Guthaben als
+      // erstes ausgeglichen.
+      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().stream()
+          .sorted(Map.Entry.comparingByValue()).iterator();
       while (iterator.hasNext())
       {
         Entry<String, Double> entry = iterator.next();
 
         // Wenn der Restbetrag kleiner als der Fehlbetrag ist, nur den Rest
         // zuordnen.
-        // TODO wie mit Guthaben umgehen?
         double betragZuordnen = entry.getValue();
-        if (betragZuordnen > buchung.getBetrag() - zugeordnet)
+        if ((buchung.getBetrag() > 0
+            && betragZuordnen > buchung.getBetrag() - zugeordnet)
+            || (buchung.getBetrag() < 0
+                && betragZuordnen < buchung.getBetrag() - zugeordnet))
         {
-          // TODO in dem Fall sollte die richtige Postion mit diesem
-          // Fehlbetrag gesucht werden
           betragZuordnen = buchung.getBetrag() - zugeordnet;
         }
         if (Math.abs(betragZuordnen) < 0.1d)
