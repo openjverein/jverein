@@ -14,26 +14,30 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
+package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
+import de.jost_net.JVerein.gui.action.DeleteAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.LesefeldDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.willuhn.jameica.gui.formatter.Formatter;
-
-public class BeitragsgruppeFormatter implements Formatter
+/**
+ * Kontext-Menu zu den Lehrgangsarten.
+ */
+public class LesefeldMenu extends ContextMenu
 {
-  @Override
-  public String format(Object o)
+
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Lesefelder.
+   */
+  public LesefeldMenu(JVereinTablePart part)
   {
-    Beitragsgruppe beitragsgruppe = (Beitragsgruppe) o;
-    try
-    {
-      return beitragsgruppe.getBezeichnung();
-    }
-    catch (RemoteException e)
-    {
-      return e.getMessage();
-    }
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(LesefeldDetailView.class, part), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
   }
 }

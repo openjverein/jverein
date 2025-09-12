@@ -117,6 +117,14 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput geburtsdatumpflicht;
 
+  private CheckboxInput nichtmitgliedgeburtsdatumpflicht;
+
+  private CheckboxInput nichtmitgliedpflichteigenschaften;
+
+  private CheckboxInput jmitgliedpflichteigenschaften;
+
+  private CheckboxInput jnichtmitgliedpflichteigenschaften;
+
   private CheckboxInput eintrittsdatumpflicht;
 
   private CheckboxInput sterbedatum;
@@ -141,6 +149,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput uselesefelder;
 
+  private CheckboxInput usezusatzfelder;
+
   private CheckboxInput zusatzadressen;
 
   private CheckboxInput auslandsadressen;
@@ -151,7 +161,9 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput individuellebeitraege;
 
-  private CheckboxInput kursteilnehmergebgespflicht;
+  private CheckboxInput kursteilnehmergebpflicht;
+
+  private CheckboxInput kursteilnehmergespflicht;
 
   private TextInput rechnungtextabbuchung;
 
@@ -259,8 +271,6 @@ public class EinstellungControl extends AbstractControl
 
   private IntegerInput AnzahlSpaltenZusatzfelderInput;
 
-  private IntegerInput AnzahlSpaltenLesefelderInput;
-
   private IntegerInput AnzahlSpaltenMitgliedschaftInput;
 
   private IntegerInput AnzahlSpaltenZahlungInput;
@@ -296,6 +306,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput ZeigeDokumenteInTabInput;
 
   private CheckboxInput zusatzbetragAusgetretene;
+
+  private CheckboxInput keineistbuchungbeilastschrift;
 
   private SelectInput altersmodel;
 
@@ -350,6 +362,14 @@ public class EinstellungControl extends AbstractControl
   private TextInput beitragaltersstufen;
 
   private CheckboxInput nummeranzeigen;
+
+  private CheckboxInput familienbeitrag;
+
+  private CheckboxInput anlagenkonten;
+
+  private CheckboxInput ruecklagenkonten;
+
+  private CheckboxInput verbindlichkeitenforderungen;
 
   private CheckboxInput mittelverwendung;
 
@@ -600,6 +620,55 @@ public class EinstellungControl extends AbstractControl
     return geburtsdatumpflicht;
   }
 
+  public CheckboxInput getNichtMitgliedGeburtsdatumPflicht()
+      throws RemoteException
+  {
+    if (nichtmitgliedgeburtsdatumpflicht != null)
+    {
+      return nichtmitgliedgeburtsdatumpflicht;
+    }
+    nichtmitgliedgeburtsdatumpflicht = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT));
+    return nichtmitgliedgeburtsdatumpflicht;
+  }
+
+  public CheckboxInput getNichtMitgliedPflichtEigenschaften()
+      throws RemoteException
+  {
+    if (nichtmitgliedpflichteigenschaften != null)
+    {
+      return nichtmitgliedpflichteigenschaften;
+    }
+    nichtmitgliedpflichteigenschaften = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return nichtmitgliedpflichteigenschaften;
+  }
+
+  public CheckboxInput getJMitgliedPflichtEigenschaften() throws RemoteException
+  {
+    if (jmitgliedpflichteigenschaften != null)
+    {
+      return jmitgliedpflichteigenschaften;
+    }
+    jmitgliedpflichteigenschaften = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return jmitgliedpflichteigenschaften;
+  }
+
+  public CheckboxInput getJNichtMitgliedPflichtEigenschaften()
+      throws RemoteException
+  {
+    if (jnichtmitgliedpflichteigenschaften != null)
+    {
+      return jnichtmitgliedpflichteigenschaften;
+    }
+    jnichtmitgliedpflichteigenschaften = new CheckboxInput(
+        (Boolean) Einstellungen
+            .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN));
+    return jnichtmitgliedpflichteigenschaften;
+  }
+
   public CheckboxInput getEintrittsdatumPflicht() throws RemoteException
   {
     if (eintrittsdatumpflicht != null)
@@ -721,15 +790,36 @@ public class EinstellungControl extends AbstractControl
     return mitgliedfoto;
   }
 
-  public CheckboxInput getKursteilnehmerGebGesPflicht() throws RemoteException
+  public CheckboxInput getKursteilnehmerGebPflicht() throws RemoteException
   {
-    if (kursteilnehmergebgespflicht != null)
+    if (kursteilnehmergebpflicht != null)
     {
-      return kursteilnehmergebgespflicht;
+      return kursteilnehmergebpflicht;
     }
-    kursteilnehmergebgespflicht = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT));
-    return kursteilnehmergebgespflicht;
+    kursteilnehmergebpflicht = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT));
+    return kursteilnehmergebpflicht;
+  }
+
+  public CheckboxInput getKursteilnehmerGesPflicht() throws RemoteException
+  {
+    if (kursteilnehmergespflicht != null)
+    {
+      return kursteilnehmergespflicht;
+    }
+    kursteilnehmergespflicht = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT));
+    return kursteilnehmergespflicht;
+  }
+
+  public CheckboxInput getUseZusatzfelder() throws RemoteException
+  {
+    if (usezusatzfelder == null)
+    {
+      usezusatzfelder = new CheckboxInput(
+          (Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER));
+    }
+    return usezusatzfelder;
   }
 
   public CheckboxInput getUseLesefelder() throws RemoteException
@@ -849,7 +939,6 @@ public class EinstellungControl extends AbstractControl
     }
     optiert = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.OPTIERT));
-    optiert.setName("Umsatzsteuer Support (Neustart erforderlich)");
     optiert.addListener(e -> {
       try
       {
@@ -874,8 +963,6 @@ public class EinstellungControl extends AbstractControl
     }
     optiertpflicht = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT));
-    optiertpflicht.setName("Umsatzsteuer Pflicht");
-
     optiertpflicht.setEnabled((boolean) getOptiert().getValue());
     return optiertpflicht;
   }
@@ -888,8 +975,6 @@ public class EinstellungControl extends AbstractControl
     }
     steuerInBuchung = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG));
-    steuerInBuchung.setName("Steuer individuell pro Buchung setzen");
-
     steuerInBuchung.setEnabled((boolean) getOptiert().getValue());
     return steuerInBuchung;
   }
@@ -902,8 +987,6 @@ public class EinstellungControl extends AbstractControl
     }
     splitpositionzweck = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.SPLITPOSITIONZWECK));
-    splitpositionzweck.setName("Bei automatischem Splitten den "
-        + "Verwendungszweck aus den Sollbuchungspositionen übernehmen");
     return splitpositionzweck;
   }
 
@@ -915,8 +998,6 @@ public class EinstellungControl extends AbstractControl
     }
     geprueftsynchronisieren = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
-    geprueftsynchronisieren
-        .setName("Geprüft Markierung mit Hibiscus synchronisieren");
     return geprueftsynchronisieren;
   }
 
@@ -928,8 +1009,6 @@ public class EinstellungControl extends AbstractControl
     }
     freiebuchungsklasse = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG));
-    freiebuchungsklasse.setName(
-        "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42");
     return freiebuchungsklasse;
   }
 
@@ -1088,8 +1167,6 @@ public class EinstellungControl extends AbstractControl
     }
     autobuchunguebernahme = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.AUTOBUCHUNGUEBERNAHME));
-    autobuchunguebernahme
-        .setName("Automatische Buchungsübernahme aus Hibiscus");
     return autobuchunguebernahme;
   }
 
@@ -1101,8 +1178,6 @@ public class EinstellungControl extends AbstractControl
     }
     unterdrueckungohnebuchung = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG));
-    unterdrueckungohnebuchung
-        .setName("Listen: Buchungsarten ohne Buchung unterdrücken");
     return unterdrueckungohnebuchung;
   }
 
@@ -1134,7 +1209,6 @@ public class EinstellungControl extends AbstractControl
     }
     kontonummer_in_buchungsliste = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE));
-    kontonummer_in_buchungsliste.setName("Zeige Kontonummer in Buchungsliste");
     return kontonummer_in_buchungsliste;
   }
 
@@ -1148,8 +1222,6 @@ public class EinstellungControl extends AbstractControl
     automatische_buchungskorrektur_hibiscus = new CheckboxInput(
         (Boolean) Einstellungen
             .getEinstellung(Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS));
-    automatische_buchungskorrektur_hibiscus.setName(
-        "Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen");
     return automatische_buchungskorrektur_hibiscus;
   }
 
@@ -1584,19 +1656,6 @@ public class EinstellungControl extends AbstractControl
       AnzahlSpaltenStammdatenInput = new IntegerInput(
           Einstellungen.getSettingInt("AnzahlSpaltenStammdaten", 2));
       return AnzahlSpaltenStammdatenInput;
-    }
-  }
-
-  public IntegerInput getAnzahlSpaltenLesefelderInput() throws RemoteException
-  {
-    {
-      if (AnzahlSpaltenLesefelderInput != null)
-      {
-        return AnzahlSpaltenLesefelderInput;
-      }
-      AnzahlSpaltenLesefelderInput = new IntegerInput(
-          Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1));
-      return AnzahlSpaltenLesefelderInput;
     }
   }
 
@@ -2204,7 +2263,20 @@ public class EinstellungControl extends AbstractControl
     }
     zusatzbetragAusgetretene = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE));
+    zusatzbetragAusgetretene.setName(" ");
     return zusatzbetragAusgetretene;
+  }
+
+  public CheckboxInput getKeineIstbuchungBeiLastschrift() throws RemoteException
+  {
+    if (keineistbuchungbeilastschrift != null)
+    {
+      return keineistbuchungbeilastschrift;
+    }
+    keineistbuchungbeilastschrift = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT));
+    keineistbuchungbeilastschrift.setName(" ");
+    return keineistbuchungbeilastschrift;
   }
 
   public CheckboxInput getAbrlAbschliessen() throws RemoteException
@@ -2316,6 +2388,50 @@ public class EinstellungControl extends AbstractControl
     return nummeranzeigen;
   }
 
+  public CheckboxInput getFamilienbeitrag() throws RemoteException
+  {
+    if (familienbeitrag != null)
+    {
+      return familienbeitrag;
+    }
+    familienbeitrag = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG));
+    return familienbeitrag;
+  }
+
+  public CheckboxInput getAnlagenkonten() throws RemoteException
+  {
+    if (anlagenkonten != null)
+    {
+      return anlagenkonten;
+    }
+    anlagenkonten = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN));
+    return anlagenkonten;
+  }
+
+  public CheckboxInput getRuecklagenkonten() throws RemoteException
+  {
+    if (ruecklagenkonten != null)
+    {
+      return ruecklagenkonten;
+    }
+    ruecklagenkonten = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN));
+    return ruecklagenkonten;
+  }
+
+  public CheckboxInput getVerbindlichkeitenForderungen() throws RemoteException
+  {
+    if (verbindlichkeitenforderungen != null)
+    {
+      return verbindlichkeitenforderungen;
+    }
+    verbindlichkeitenforderungen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN));
+    return verbindlichkeitenforderungen;
+  }
+
   public CheckboxInput getMittelverwendung() throws RemoteException
   {
     if (mittelverwendung != null)
@@ -2388,6 +2504,22 @@ public class EinstellungControl extends AbstractControl
           ((Staat) getStaat().getValue()).getKey());
       Einstellungen.setEinstellung(Property.USTID,
           (String) getUstID().getValue());
+      Einstellungen.setEinstellung(Property.GEBURTSDATUMPFLICHT,
+          (Boolean) geburtsdatumpflicht.getValue());
+      Einstellungen.setEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT,
+          (Boolean) nichtmitgliedgeburtsdatumpflicht.getValue());
+      Einstellungen.setEinstellung(Property.EINTRITTSDATUMPFLICHT,
+          (Boolean) eintrittsdatumpflicht.getValue());
+      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBPFLICHT,
+          (Boolean) kursteilnehmergebpflicht.getValue());
+      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGESPFLICHT,
+          (Boolean) kursteilnehmergespflicht.getValue());
+      Einstellungen.setEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) jmitgliedpflichteigenschaften.getValue());
+      Einstellungen.setEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) jnichtmitgliedpflichteigenschaften.getValue());
+      Einstellungen.setEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
+          (Boolean) nichtmitgliedpflichteigenschaften.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen Allgemein gespeichert");
@@ -2405,10 +2537,6 @@ public class EinstellungControl extends AbstractControl
     try
     {
       DBTransaction.starten();
-      Einstellungen.setEinstellung(Property.GEBURTSDATUMPFLICHT,
-          (Boolean) geburtsdatumpflicht.getValue());
-      Einstellungen.setEinstellung(Property.EINTRITTSDATUMPFLICHT,
-          (Boolean) eintrittsdatumpflicht.getValue());
       Einstellungen.setEinstellung(Property.STERBEDATUM,
           (Boolean) sterbedatum.getValue());
       Einstellungen.setEinstellung(Property.KOMMUNIKATIONSDATEN,
@@ -2417,22 +2545,20 @@ public class EinstellungControl extends AbstractControl
           (Boolean) sekundaerebeitragsgruppen.getValue());
       Einstellungen.setEinstellung(Property.ZUSATZBETRAG,
           (Boolean) zusatzbetrag.getValue());
-      Einstellungen.setEinstellung(Property.ZUSATZBETRAGAUSGETRETENE,
-          (Boolean) zusatzbetragAusgetretene.getValue());
       Einstellungen.setEinstellung(Property.VERMERKE,
           (Boolean) vermerke.getValue());
       Einstellungen.setEinstellung(Property.WIEDERVORLAGE,
           (Boolean) wiedervorlage.getValue());
       Einstellungen.setEinstellung(Property.KURSTEILNEHMER,
           (Boolean) kursteilnehmer.getValue());
-      Einstellungen.setEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT,
-          (Boolean) kursteilnehmergebgespflicht.getValue());
       Einstellungen.setEinstellung(Property.LEHRGAENGE,
           (Boolean) lehrgaenge.getValue());
       Einstellungen.setEinstellung(Property.JURISTISCHEPERSONEN,
           (Boolean) juristischepersonen.getValue());
       Einstellungen.setEinstellung(Property.MITGLIEDFOTO,
           (Boolean) mitgliedfoto.getValue());
+      Einstellungen.setEinstellung(Property.USEZUSATZFELDER,
+          (Boolean) usezusatzfelder.getValue());
       Einstellungen.setEinstellung(Property.USELESEFELDER,
           (Boolean) uselesefelder.getValue());
       Einstellungen.setEinstellung(Property.ZUSATZADRESSEN,
@@ -2466,6 +2592,14 @@ public class EinstellungControl extends AbstractControl
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, true);
       Einstellungen.setEinstellung(Property.MITGLIEDSNUMMERANZEIGEN,
           (Boolean) nummeranzeigen.getValue());
+      Einstellungen.setEinstellung(Property.ANLAGENKONTEN,
+          (Boolean) anlagenkonten.getValue());
+      Einstellungen.setEinstellung(Property.FAMILIENBEITRAG,
+          (Boolean) familienbeitrag.getValue());
+      Einstellungen.setEinstellung(Property.RUECKLAGENKONTEN,
+          (Boolean) ruecklagenkonten.getValue());
+      Einstellungen.setEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN,
+          (Boolean) verbindlichkeitenforderungen.getValue());
       Einstellungen.setEinstellung(Property.MITTELVERWENDUNG,
           (Boolean) mittelverwendung.getValue());
       Einstellungen.setEinstellung(Property.PROJEKTEANZEIGEN,
@@ -2474,6 +2608,12 @@ public class EinstellungControl extends AbstractControl
           (Boolean) spendenbescheinigungen.getValue());
       Einstellungen.setEinstellung(Property.RECHNUNGENANZEIGEN,
           (Boolean) rechnungen.getValue());
+      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG,
+          (Boolean) unterdrueckungohnebuchung.getValue());
+      Integer ulength = (Integer) unterdrueckunglaenge.getValue();
+      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGLAENGE, ulength);
+      Integer klength = (Integer) unterdrueckungkonten.getValue();
+      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGKONTEN, klength);
 
       DBTransaction.commit();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -2524,6 +2664,10 @@ public class EinstellungControl extends AbstractControl
             (Integer.parseInt(
                 (String) ((Konto) verrechnungskonto.getValue()).getID())));
       }
+      Einstellungen.setEinstellung(Property.ZUSATZBETRAGAUSGETRETENE,
+          (Boolean) zusatzbetragAusgetretene.getValue());
+      Einstellungen.setEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT,
+          (Boolean) keineistbuchungbeilastschrift.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -2647,12 +2791,6 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(
           Property.AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS,
           (Boolean) getAutomatischeBuchungskorrekturHibiscus().getValue());
-      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG,
-          (Boolean) unterdrueckungohnebuchung.getValue());
-      Integer ulength = (Integer) unterdrueckunglaenge.getValue();
-      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGLAENGE, ulength);
-      Integer klength = (Integer) unterdrueckungkonten.getValue();
-      Einstellungen.setEinstellung(Property.UNTERDRUECKUNGKONTEN, klength);
       Einstellungen.setEinstellung(Property.AFARESTWERT,
           (Double) afarestwert.getValue());
       Einstellungen.setEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE,
@@ -2852,8 +2990,6 @@ public class EinstellungControl extends AbstractControl
     {
       Einstellungen.setSettingInt("AnzahlSpaltenStammdaten",
           (Integer) getAnzahlSpaltenStammdatenInput().getValue());
-      Einstellungen.setSettingInt("AnzahlSpaltenLesefelder",
-          (Integer) getAnzahlSpaltenLesefelderInput().getValue());
       Einstellungen.setSettingInt("AnzahlSpaltenZusatzfelder",
           (Integer) getAnzahlSpaltenZusatzfelderInput().getValue());
       Einstellungen.setSettingInt("AnzahlSpaltenMitgliedschaft",

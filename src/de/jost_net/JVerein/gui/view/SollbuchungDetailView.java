@@ -25,10 +25,10 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -44,6 +44,7 @@ public class SollbuchungDetailView extends AbstractDetailView
     GUI.getView().setTitle("Sollbuchung");
 
     control = new SollbuchungControl(this);
+    final boolean isEditable = control.isSollbuchungEditable();
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
     LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
@@ -57,18 +58,15 @@ public class SollbuchungDetailView extends AbstractDetailView
     SimpleContainer right = new SimpleContainer(cols.getComposite());
     right.addLabelPair("Zahler", control.getZahler());
     right.addLabelPair("Verwendungszweck", control.getZweck1());
-    control.getBetrag().setMandatory(true);
     right.addLabelPair("Betrag", control.getBetrag());
-
-    boolean hasRechnung = control.hasRechnung();
 
     LabelGroup cont = new LabelGroup(scrolled.getComposite(),
         "Sollbuchungspositionen");
 
-    ButtonArea buttons1 = new ButtonArea();
-    Button neu = new Button("Neu", new SollbuchungPositionNeuAction(),
+    ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
+    ButtonRtoL neu = new ButtonRtoL("Neu", new SollbuchungPositionNeuAction(),
         getCurrentObject(), false, "document-new.png");
-    neu.setEnabled(!hasRechnung);
+    neu.setEnabled(isEditable);
     buttons1.addButton(neu);
 
     // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
@@ -78,21 +76,21 @@ public class SollbuchungDetailView extends AbstractDetailView
     comp.setLayoutData(new GridData(GridData.END));
 
     buttons1.paint(cont.getComposite());
-    cont.addPart(control.getSollbuchungPositionListPart(hasRechnung));
+    cont.addPart(control.getSollbuchungPositionListPart());
 
     LabelGroup buch = new LabelGroup(scrolled.getComposite(),
         "Zugeordnete Buchungen");
     buch.addPart(control.getBuchungListPart());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    Button save = new SaveButton(control);
-    save.setEnabled(!hasRechnung);
+    SaveButton save = new SaveButton(control);
+    save.setEnabled(isEditable);
     buttons.addButton(save);
 
     buttons.paint(this.getParent());

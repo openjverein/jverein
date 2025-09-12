@@ -18,10 +18,10 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.control.AnfangsbestandControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class AnfangsbestandDetailView extends AbstractDetailView
@@ -34,20 +34,22 @@ public class AnfangsbestandDetailView extends AbstractDetailView
     GUI.getView().setTitle("Anfangsbestand");
 
     control = new AnfangsbestandControl(this);
+    final boolean editable = control.isAnfangsbestandEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Anfangsbestand");
     group.addLabelPair("Konto", control.getKonto());
-    group.addLabelPair("Datum", control.getDatum(true));
-    if (control.getAnfangsbestand().getID() != null)
-    {
-      control.getDatum(false).setEnabled(false);
-    }
+    group.addLabelPair("Datum", control.getDatum());
     group.addLabelPair("Betrag", control.getBetrag());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ANFANGSBESTAENDE, false, "question-circle.png");
-    buttons.addButton(new SaveButton(control));
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    SaveButton saveButton = new SaveButton(control);
+    saveButton.setEnabled(editable);
+    buttons.addButton(saveButton);
     buttons.paint(this.getParent());
   }
 

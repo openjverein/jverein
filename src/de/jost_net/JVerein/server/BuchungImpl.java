@@ -229,17 +229,38 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der
+    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
+    // gespeichert
+    // werden kann. Dann muss man die Buchung auch bei bestehendem
+    // Jahresabschluss speichern
+    // können. In diesem Fall wird mit updateForced() gespeichert.
+    if (!forcedUpdate)
+    {
+      try
+      {
+        Jahresabschluss ja = getJahresabschluss();
+        if (ja != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("abrechnungslauf".equals(field))
-    {
-      return Abrechnungslauf.class;
-    }
-    else if ("spendenbescheinigung".equals(field))
+    if ("spendenbescheinigung".equals(field))
     {
       return Spendenbescheinigung.class;
     }
@@ -476,7 +497,14 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    return (Abrechnungslauf) getAttribute("abrechnungslauf");
+    Object l = (Object) super.getAttribute("abrechnungslauf");
+    if (l == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Abrechnungslauf.class, true);
+    return (Abrechnungslauf) cache.get(l);
   }
 
   @Override
@@ -798,19 +826,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Long.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
 
@@ -968,31 +983,14 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public void store() throws RemoteException, ApplicationException
+  public String getObjektName()
   {
-    store(true);
+    return "Buchung";
   }
 
   @Override
-  public void store(boolean check) throws RemoteException, ApplicationException
+  public String getObjektNameMehrzahl()
   {
-    if (check)
-    {
-      Jahresabschluss ja = getJahresabschluss();
-      if (ja != null)
-      {
-        throw new ApplicationException(
-            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-      }
-    }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit check false gespeichert.
-    super.store();
+    return "Buchungen";
   }
-
 }

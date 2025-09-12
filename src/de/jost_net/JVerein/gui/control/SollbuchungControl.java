@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -30,6 +31,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -47,10 +49,12 @@ import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungPositionDetailView;
 import de.jost_net.JVerein.io.Kontoauszug;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -153,6 +157,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private BuchungListPart istbuchungList;
 
+  private boolean editable = false;
+
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -221,6 +227,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     });
     this.datum.setMandatory(true);
+    datum.setEnabled(editable);
     return datum;
   }
 
@@ -238,6 +245,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     zweck1 = new TextAreaInput(z, 500);
     zweck1.setHeight(30);
     zweck1.setMandatory(true);
+    zweck1.setEnabled(editable);
     return zweck1;
   }
 
@@ -260,6 +268,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
                 (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setEnabled(editable);
     return zahlungsweg;
   }
 
@@ -335,6 +344,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
     sollb.setZweck1((String) getZweck1().getValue());
+    sollb.setMitglied((Mitglied) getMitglied().getValue());
     return sollb;
   }
 
@@ -343,17 +353,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     try
     {
-      Sollbuchung sollb = (Sollbuchung) prepareStore();
-
-      if (getZahler().getValue() == null)
-      {
-        throw new ApplicationException("Bitte Zahler eingeben");
-      }
-      sollb.setMitglied((Mitglied) getMitglied().getValue());
-      if (sollb.getRechnung() != null)
-        throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      sollb.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -420,6 +420,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           }
         }
       }
+
     };
     mitgliedskontoTree.setMulti(true);
     mitgliedskontoTree.addColumn("Name, Vorname", "name");
@@ -557,8 +558,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Part getSollbuchungPositionListPart(boolean hasRechnung)
-      throws RemoteException
+  public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -567,7 +567,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     ArrayList<SollbuchungPosition> list = getSollbuchung()
         .getSollbuchungPositionList();
 
-    if (hasRechnung)
+    if (!editable)
     {
       buchungList = new SollbuchungPositionListPart(list, null);
     }
@@ -578,7 +578,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
 
     buchungList.setRememberColWidths(true);
-    if (!hasRechnung)
+    if (editable)
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
@@ -677,11 +677,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Kontoauszug(currentObject, control);
+          new Kontoauszug(getMitglieder(currentObject), control);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Kontoauszug Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -868,6 +872,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
         ((SelectInput) mitglied).setPreselected(null);
       }
+      mitglied.setEnabled(editable);
     }
     mitglied.setMandatory(true);
     return mitglied;
@@ -891,6 +896,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     }
     zahler.setMandatory(true);
+    zahler.setEnabled(editable);
     return zahler;
   }
 
@@ -917,15 +923,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public boolean hasRechnung() throws RemoteException
+  public boolean isSollbuchungEditable() throws RemoteException
   {
     if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
-      return true;
+      return editable = false;
     }
-    return false;
+    return editable = true;
   }
 
   public Object[] getCVSExportGrenzen() throws RemoteException
@@ -935,4 +941,77 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         getDatumbis().getValue(), getMailauswahl().getValue() };
   }
 
+  private List<Mitglied> getMitglieder(Object object)
+      throws RemoteException, ApplicationException
+  {
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
+    {
+      Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.ALLE)
+          .getValue();
+      mitglieder = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()),
+          null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
+    {
+      mitglieder = new MitgliedQuery(this).get(-1, null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object != null && object instanceof Mitglied)
+    {
+      mitglieder.add((Mitglied) object);
+    }
+    else if (object != null && object instanceof Mitglied[])
+    {
+      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) object));
+    }
+    else
+    {
+      throw new ApplicationException("Kein Mitglied ausgewählt!");
+    }
+    return mitglieder;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<Mitglied> mitglieder = getMitglieder(object);
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+
+    for (Mitglied m : mitglieder)
+    {
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      liste.add(new DruckMailEmpfaengerEntry("Kontoauszug", mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
+  }
 }

@@ -47,8 +47,6 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
-import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -215,6 +213,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private TreeMap<String, String> params;
 
+  private boolean editable = false;
+
   public enum Kontenfilter
   {
     GELDKONTO, // Beinhaltet Rückstellungen
@@ -274,6 +274,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private CheckboxInput ungeprueft;
 
   private SelectInput steuer;
+
+  private CheckboxInput geprueft;
 
   private enum RANGE
   {
@@ -341,6 +343,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
     b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
+    b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
@@ -389,6 +392,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       konto.focus();
     }
     konto.setMandatory(true);
+    konto.setEnabled(editable);
     return konto;
   }
 
@@ -421,6 +425,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     auszugsnummer = new IntegerInput(
         intAuszugsnummer != null ? intAuszugsnummer : -1);
+    auszugsnummer.setEnabled(editable);
     return auszugsnummer;
   }
 
@@ -441,6 +446,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     blattnummer = new IntegerInput(
         intBlattnummer != null ? intBlattnummer : -1);
+    blattnummer.setEnabled(editable);
     return blattnummer;
   }
 
@@ -451,6 +457,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return name;
     }
     name = new TextInput(getBuchung().getName(), 100);
+    name.setEnabled(editable);
     return name;
   }
 
@@ -471,6 +478,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           Einstellungen.DECIMALFORMAT);
     }
     betrag.setMandatory(true);
+    betrag.setEnabled(editable);
     return betrag;
   }
 
@@ -482,6 +490,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     zweck = new TextAreaInput(getBuchung().getZweck(), 500);
     zweck.setHeight(50);
+    zweck.setEnabled(editable);
     return zweck;
   }
 
@@ -496,6 +505,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     this.datum.setTitle("Datum");
     this.datum.setText("Bitte Datum wählen");
     datum.setMandatory(true);
+    datum.setEnabled(editable);
     return datum;
   }
 
@@ -609,6 +619,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       vz = Boolean.FALSE;
     }
     verzicht = new CheckboxInput(vz);
+    verzicht.setEnabled(editable);
     return verzicht;
   }
 
@@ -670,6 +681,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         Logger.error("Fehler", e);
       }
     });
+    sollbuchung.setEnabled(editable);
     return sollbuchung;
   }
 
@@ -680,6 +692,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return art;
     }
     art = new TextInput(getBuchung().getArt(), 100);
+    art.setEnabled(editable);
     return art;
   }
 
@@ -691,7 +704,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     kommentar = new TextAreaInput(getBuchung().getKommentar(), 1024);
     kommentar.setHeight(50);
+    kommentar.setEnabled(editable);
     return kommentar;
+  }
+
+  public CheckboxInput getGeprueft() throws RemoteException
+  {
+    if (geprueft != null && !geprueft.getControl().isDisposed())
+    {
+      return geprueft;
+    }
+    geprueft = new CheckboxInput(getBuchung().getGeprueft());
+    geprueft.setEnabled(editable);
+    return geprueft;
   }
 
   public Input getBuchungsart() throws RemoteException
@@ -739,6 +764,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       }
     });
+    buchungsart.setEnabled(editable);
     return buchungsart;
   }
 
@@ -755,6 +781,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       buchungsklasse.setMandatory(true);
     }
+    buchungsklasse.setEnabled(editable);
     return buchungsklasse;
   }
 
@@ -782,6 +809,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
     projekt.setPleaseChoose("Bitte auswählen");
+    projekt.setEnabled(editable);
     return projekt;
   }
 
@@ -984,7 +1012,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     steuer = new SteuerInput(getBuchung().getSteuer());
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
-
+    steuer.setEnabled(editable);
     return steuer;
   }
 
@@ -1484,7 +1512,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      buchungsList.addColumn("Konto", "konto");
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1554,7 +1582,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+        buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
@@ -1570,15 +1598,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     else
     {
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+
       buchungsList.removeAll();
 
       for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
       }
+
+      // Summenzeile neu laden
+      buchungsList.featureEvent(
+          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
       buchungsList.sort();
     }
-
     informKontoChangeListener();
 
     return buchungsList;
@@ -1591,7 +1623,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      splitbuchungsList.addColumn("Konto", "konto");
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
@@ -1644,8 +1676,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           new SollbuchungFormatter());
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        splitbuchungsList.addColumn("Projekt", "projekt",
-            new ProjektFormatter());
+        splitbuchungsList.addColumn("Projekt", "projekt");
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
@@ -2018,21 +2049,21 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           GUI.getStatusBar().setErrorText(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
-          return false;
+          return editable = false;
         }
         Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
         if (spb != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-          return false;
+          return editable = false;
         }
         // Aufruf einer Splitbuchung aus Vor Zurueck
         if (getBuchung().getSpeicherung() && getBuchung().getSplitId() != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Splitbuchung zugeordnet.");
-          return false;
+          return editable = false;
         }
       }
     }
@@ -2041,10 +2072,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return true;
+    return editable = true;
   }
 
-  public boolean isSplitBuchungAbgeschlossen() throws ApplicationException
+  public boolean isSplitBuchungEditable() throws ApplicationException
   {
     try
     {
@@ -2064,14 +2095,14 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                     "Buchung wurde bereits am %s von %s abgeschlossen.",
                     new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
                     ja.getName()));
-            return true;
+            return editable = false;
           }
           Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
           if (spb != null)
           {
             GUI.getStatusBar().setErrorText(
                 "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-            return true;
+            return editable = false;
           }
         }
       }
@@ -2081,7 +2112,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return false;
+    return editable = true;
   }
 
   public void buchungSpeichern() throws ApplicationException
@@ -2153,6 +2184,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()),
         new TextInput(""));
+    iban.setEnabled(editable);
     return iban;
   }
 

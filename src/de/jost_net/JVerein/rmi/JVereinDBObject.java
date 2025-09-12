@@ -20,6 +20,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Basis-Interface fuer alle DB-Klassen in JVerein.
@@ -34,4 +35,17 @@ public interface JVereinDBObject extends DBObject
    * @throws RemoteException
    */
   public boolean isChanged() throws RemoteException;
+
+  // Liefert den Namen des Objekts
+  // Die throws Deklaration ist nötig weil sonst ein Check in Jameica schief
+  // geht
+  public String getObjektName() throws RemoteException;
+
+  // Liefert den Mehrzahl Namen der Objekts
+  // Die throws Deklaration ist nötig weil sonst ein Check in Jameica schief
+  // geht
+  public String getObjektNameMehrzahl() throws RemoteException;
+
+  // Update ohne Update Check oder eingeschränktem Check
+  public void updateForced() throws RemoteException, ApplicationException;
 }

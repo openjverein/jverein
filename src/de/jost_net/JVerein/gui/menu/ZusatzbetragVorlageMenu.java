@@ -16,8 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -32,12 +33,12 @@ public class ZusatzbetragVorlageMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
    */
-  public ZusatzbetragVorlageMenu()
+  public ZusatzbetragVorlageMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new EditAction(ZusatzbetragVorlageDetailView.class),
+        new EditAction(ZusatzbetragVorlageDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new ZusatzbetragVorlageDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
   }
 }

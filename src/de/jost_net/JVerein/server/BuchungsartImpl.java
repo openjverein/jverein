@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -63,6 +65,18 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if ((Boolean) getRegexp())
+      {
+        try
+        {
+          Pattern.compile((String) getSuchbegriff());
+        }
+        catch (PatternSyntaxException pse)
+        {
+          throw new ApplicationException(
+              "Regulärer Ausdruck ungültig: " + pse.getDescription());
+        }
+      }
       if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
@@ -107,7 +121,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Buchungsart kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Buchungsart kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -442,5 +456,17 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       e.printStackTrace();
       return false;
     }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchungsart";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungsarten";
   }
 }

@@ -49,7 +49,9 @@ import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -142,7 +144,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
       }
       else
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        ae.setMitglied(null);
       }
     }
     ae.setDatum((Date) part.getDatum().getValue());
@@ -492,6 +494,17 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+                Mitglied.class, (String) z.getAttribute("mitgliedid"));
+            Beitragsgruppe b = m.getBeitragsgruppe();
+            zb.setBuchungsart(b.getBuchungsart());
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+            {
+              zb.setBuchungsklasseId(b.getBuchungsklasseId());
+            }
+            zb.setSteuer(b.getSteuer());
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");
@@ -608,8 +621,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList
         .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
+    arbeitseinsatzList.addColumn("Nr", "id-int");
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

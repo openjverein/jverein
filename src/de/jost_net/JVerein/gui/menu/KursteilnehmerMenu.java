@@ -16,9 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerAbuResetAction;
-import de.jost_net.JVerein.gui.action.KursteilnehmerDeleteAction;
 import de.jost_net.JVerein.gui.action.KursteilnehmerWirdMitgliedAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
@@ -44,7 +44,7 @@ public class KursteilnehmerMenu extends ContextMenu
         new KursteilnehmerAbuResetAction(table), "user-trash-full.png"));
     addItem(new CheckedSingleContextMenuItem("Zu Mitglied übernehmen",
         new KursteilnehmerWirdMitgliedAction(), "view-refresh.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new KursteilnehmerDeleteAction(), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
   }
 }

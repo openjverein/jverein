@@ -14,32 +14,37 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.gui.parts;
 
-import de.jost_net.JVerein.rmi.Konto;
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.logging.Logger;
+import de.jost_net.JVerein.gui.control.Savable;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
 
-public class KontoFormatter implements Formatter
+/**
+ * Fertig konfigurierter Speichern Button
+ */
+public class SaveButton extends ButtonRtoL
 {
-  @Override
-  public String format(Object o)
+  /**
+   * Erstellt den Speichern Button
+   * 
+   * @param control
+   *          Das control
+   */
+  public SaveButton(Savable control)
   {
-
-    Konto k = (Konto) o;
-    if (k != null)
-    {
+    super("Speichern", context -> {
       try
       {
-        return k.getBezeichnung();
+        control.handleStore();
+        GUI.getStatusBar().setSuccessText("Gespeichert");
       }
-      catch (RemoteException e)
+      catch (ApplicationException ae)
       {
-        Logger.error("Fehler", e);
+        GUI.getStatusBar().setErrorText(ae.getMessage());
       }
-    }
-    return "";
+    }, null, true, "document-save.png");
   }
+
 }

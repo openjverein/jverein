@@ -20,21 +20,22 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
+import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -42,7 +43,7 @@ import de.willuhn.util.ApplicationException;
 public class AnfangsbestandControl extends FilterControl implements Savable
 {
 
-  private TablePart anfangsbestandList;
+  private JVereinTablePart anfangsbestandList;
 
   private TextInput konto;
 
@@ -51,6 +52,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   private DecimalInput betrag;
 
   private Anfangsbestand anfangsbestand;
+
+  private boolean editable = false;
 
   public AnfangsbestandControl(AbstractView view)
   {
@@ -69,6 +72,17 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     return anfangsbestand;
   }
 
+  public boolean isAnfangsbestandEditable() throws RemoteException
+  {
+    if (getAnfangsbestand().getJahresabschluss() != null)
+    {
+      GUI.getStatusBar()
+          .setErrorText("Anfangsbestand ist bereits abgeschlossen.");
+      return editable = false;
+    }
+    return editable = true;
+  }
+
   public TextInput getKonto() throws RemoteException
   {
     if (konto != null)
@@ -80,17 +94,19 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     return konto;
   }
 
-  public DateInput getDatum(boolean withFocus) throws RemoteException
+  public DateInput getDatum() throws RemoteException
   {
     if (datum != null)
     {
       return datum;
     }
     datum = new DateInput(getAnfangsbestand().getDatum());
-    if (withFocus)
+    datum.focus();
+    if (!getAnfangsbestand().isNewObject())
     {
-      datum.focus();
+      datum.setEnabled(false);
     }
+    datum.setMandatory(true);
     return datum;
   }
 
@@ -102,6 +118,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     }
     betrag = new DecimalInput(getAnfangsbestand().getBetrag(),
         Einstellungen.DECIMALFORMAT);
+    betrag.setMandatory(true);
+    betrag.setEnabled(editable);
     return betrag;
   }
 
@@ -109,22 +127,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Anfangsbestand a = getAnfangsbestand();
-    DBIterator<Konto> konten = Einstellungen.getDBService()
-        .createList(Konto.class);
-    konten.addFilter("nummer = ?",
-        new Object[] { (String) getKonto().getValue() });
-    if (konten.size() == 0)
-    {
-      throw new RemoteException("Konto nicht gefunden");
-    }
-    if (konten.size() > 1)
-    {
-      throw new RemoteException(
-          "Mehrere Konten mit gleicher Nummer sind nicht zulässig!");
-    }
-    Konto k = konten.next();
-    a.setKonto(k);
-    a.setDatum((Date) getDatum(false).getValue());
+    // Konto ist schon gesetzt und ist nicht editierbar
+    a.setDatum((Date) getDatum().getValue());
     a.setBetrag((Double) getBetrag().getValue());
     return a;
   }
@@ -155,8 +159,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     {
       return anfangsbestandList;
     }
-    anfangsbestandList = new TablePart(getAnfangsstaende(),
-        new AnfangsbestandDetailAction());
+    anfangsbestandList = new JVereinTablePart(getAnfangsstaende(), null);
+    anfangsbestandList.addColumn("Nr", "id-int");
     anfangsbestandList.addColumn("Nummer", "nummer");
     anfangsbestandList.addColumn("Bezeichnung", "bezeichnung");
     anfangsbestandList.addColumn("Datum", "datum",
@@ -164,9 +168,13 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     anfangsbestandList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     anfangsbestandList.setRememberColWidths(true);
-    anfangsbestandList.setContextMenu(new AnfangsbestandMenu());
+    anfangsbestandList
+        .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
     anfangsbestandList.setRememberOrder(true);
     anfangsbestandList.removeFeature(FeatureSummary.class);
+    anfangsbestandList.setAction(
+        new EditAction(AnfangsbestandDetailView.class, anfangsbestandList));
+    VorZurueckControl.setObjektListe(null, null);
     return anfangsbestandList;
   }
 

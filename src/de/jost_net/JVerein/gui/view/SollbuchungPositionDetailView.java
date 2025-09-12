@@ -18,16 +18,19 @@ package de.jost_net.JVerein.gui.view;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.widgets.Composite;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungPositionControl;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.util.ApplicationException;
 
@@ -57,7 +60,7 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
       group.addLabelPair("Steuer", control.getSteuer());
     }
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
         "question-circle.png");
@@ -80,7 +83,7 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new Button("Speichern und neu", context -> {
+    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
       {
         control.handleStore();
@@ -99,7 +102,17 @@ public class SollbuchungPositionDetailView extends AbstractDetailView
             .setErrorText("Fehler beim Speichern der Sollbuchungsposition: "
                 + e.getMessage());
       }
-    }, null, false, "go-next.png"));
+    }, null, false, "go-next.png")
+    {
+      @Override
+      public void paint(Composite parent) throws RemoteException
+      {
+        if (((DBObject) getCurrentObject()).isNewObject())
+        {
+          super.paint(parent);
+        }
+      }
+    });
     buttons.paint(this.getParent());
   }
 

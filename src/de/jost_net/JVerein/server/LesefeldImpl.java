@@ -18,12 +18,15 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Lesefeld;
-import de.willuhn.datasource.db.AbstractDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LesefeldImpl extends AbstractDBObject implements Lesefeld
+public class LesefeldImpl extends AbstractJVereinDBObject
+    implements Lesefeld, IMitglied
 {
 
   private static final long serialVersionUID = 1610434197155984031L;
@@ -52,11 +55,31 @@ public class LesefeldImpl extends AbstractDBObject implements Lesefeld
   {
     try
     {
-      if (getScript() == null || getScript().length() == 0)
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
-        throw new ApplicationException("Bitte gültiges Script eingeben");
+        throw new ApplicationException("Bitte Skript-Namen eingeben!");
       }
-
+      if (getBezeichnung().contains(" "))
+      {
+        throw new ApplicationException(
+            "Der Skript-Name darf keine Leerzeichen enthalten!");
+      }
+      if (getScript() == null || getScript().isEmpty())
+      {
+        throw new ApplicationException("Bitte gültiges Script eingeben!");
+      }
+      DBIterator<Lesefeld> lesefelderIt = Einstellungen.getDBService()
+          .createList(Lesefeld.class);
+      if (!this.isNewObject())
+      {
+        lesefelderIt.addFilter("id != ?", getID());
+      }
+      lesefelderIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (lesefelderIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutigen Skript-Namen eingeben!");
+      }
     }
     catch (RemoteException e)
     {
@@ -105,6 +128,15 @@ public class LesefeldImpl extends AbstractDBObject implements Lesefeld
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("ausgabe".equals(fieldName))
+    {
+      String ausgabe = getEvaluatedContent();
+      if (ausgabe != null && ausgabe.contains("\n"))
+      {
+        ausgabe = ausgabe.substring(0, ausgabe.indexOf("\n"));
+      }
+      return ausgabe;
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -118,5 +150,30 @@ public class LesefeldImpl extends AbstractDBObject implements Lesefeld
   public void setEvaluatedContent(String content)
   {
     sampleContent = content;
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Lesefeld";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lesefelder";
+  }
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    // Nur wegen IMitglied, aber nichts tun
+    return null;
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Nur wegen IMitglied, aber nichts tun
   }
 }

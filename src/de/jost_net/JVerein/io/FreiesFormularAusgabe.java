@@ -13,15 +13,12 @@ import java.util.zip.ZipOutputStream;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.StringTool;
@@ -39,8 +36,8 @@ public class FreiesFormularAusgabe
 
   ZipOutputStream zos = null;
 
-  public FreiesFormularAusgabe(FreieFormulareControl control)
-      throws IOException, ApplicationException
+  public FreiesFormularAusgabe(ArrayList<Mitglied> mitglieder,
+      FreieFormulareControl control) throws IOException, ApplicationException
   {
     this.control = control;
     Formular formular = (Formular) control
@@ -70,19 +67,7 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) control
-        .getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue();
-    int type = -1;
-    if (mitgliedstyp != null)
-      type = Integer.parseInt(mitgliedstyp.getID());
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(control).get(type, null);
 
-    if (mitglieder.size() == 0)
-    {
-      GUI.getStatusBar().setErrorText("Keine passenden Mitglieder gefunden.");
-      file.delete();
-      return;
-    }
     aufbereitung(formular, mitglieder);
   }
 

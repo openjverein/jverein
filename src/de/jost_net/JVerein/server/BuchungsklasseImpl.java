@@ -141,4 +141,16 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
     }
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchungsklasse";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungsklassen";
+  }
 }

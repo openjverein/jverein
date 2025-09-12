@@ -18,10 +18,11 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
-import de.jost_net.JVerein.gui.input.SaveButton;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
+import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class MitgliedstypDetailView extends AbstractDetailView
@@ -34,25 +35,22 @@ public class MitgliedstypDetailView extends AbstractDetailView
     GUI.getView().setTitle("Mitgliedstyp");
 
     control = new MitgliedstypControl(this);
+    final boolean editable = control.isMitgliedstypEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
     group.addLabelPair("Bezeichnung Plural", control.getBezeichnungPlural());
 
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     SaveButton saveButton = new SaveButton(control);
+    saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
-    if (control.getMitgliedstyp().getJVereinid() > 0)
-    {
-      saveButton.setEnabled(false);
-      GUI.getStatusBar().setErrorText(
-          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
-    }
+    buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
   }
 

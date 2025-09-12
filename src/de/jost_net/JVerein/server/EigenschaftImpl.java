@@ -45,13 +45,13 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    //
   }
 
   @Override
@@ -59,36 +59,32 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   {
     try
     {
-      plausi();
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      if (getEigenschaftGruppe() == null)
+      {
+        throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
+      }
+      DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      if (!this.isNewObject())
+      {
+        eigIt.addFilter("id != ?", getID());
+      }
+      eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (eigIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
+      }
     }
     catch (RemoteException e)
     {
       Logger.error("insert check of eigenschaft failed", e);
       throw new ApplicationException(
-          "Eigenschaft kann nicht gespeichert werden. Siehe system log");
-    }
-  }
-
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    if (getBezeichnung() == null || getBezeichnung().isEmpty())
-    {
-      throw new ApplicationException("Bitte Bezeichnung eingeben!");
-    }
-    if (getEigenschaftGruppe() == null)
-    {
-      throw new ApplicationException("Bitte Eigenschaftengruppe auswählen");
-    }
-    DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
-        .createList(Eigenschaft.class);
-    if (!this.isNewObject())
-    {
-      eigIt.addFilter("id != ?", getID());
-    }
-    eigIt.addFilter("bezeichnung = ?", getBezeichnung());
-    if (eigIt.hasNext())
-    {
-      throw new ApplicationException("Bitte eindeutige Bezeichnung eingeben!");
+          "Eigenschaft kann nicht gespeichert werden. Siehe system log.");
     }
   }
 
@@ -143,6 +139,18 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaft";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaften";
   }
 
 }

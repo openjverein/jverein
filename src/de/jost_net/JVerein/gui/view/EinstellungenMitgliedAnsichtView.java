@@ -56,10 +56,6 @@ public class EinstellungenMitgliedAnsichtView extends AbstractView
     leftMitglied.addLabelPair("Anzahl Spalten Zusatzfelder",
         control.getAnzahlSpaltenZusatzfelderInput());
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
-      leftMitglied.addLabelPair("Anzahl Spalten Lesefelder",
-          control.getAnzahlSpaltenLesefelderInput());
-
     cont.addHeadline("In Tab anzeigen");
     ColumnLayout colsTab = new ColumnLayout(cont.getComposite(), 2);
     SimpleContainer leftTab = new SimpleContainer(colsTab.getComposite());

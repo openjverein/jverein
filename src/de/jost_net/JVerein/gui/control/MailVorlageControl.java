@@ -107,21 +107,7 @@ public class MailVorlageControl extends VorZurueckControl
       throws RemoteException, ApplicationException
   {
     MailVorlage mv = getMailVorlage();
-    String betreff = (String) getBetreff(false).getValue();
-    if (betreff == null || betreff.isEmpty())
-    {
-      throw new ApplicationException("Bitte Betreff eingeben!");
-    }
-    DBIterator<MailVorlage> vorlagen = Einstellungen.getDBService()
-        .createList(MailVorlage.class);
-    vorlagen.addFilter("betreff = ?", betreff);
-    if (vorlagen.hasNext() && mv.isNewObject())
-    {
-      throw new ApplicationException(
-          "Es existiert bereits eine Vorlage mit diesem Betreff!");
-    }
-
-    mv.setBetreff(betreff);
+    mv.setBetreff((String) getBetreff(false).getValue());
     mv.setTxt((String) getTxt().getValue());
     return mv;
   }
@@ -158,6 +144,7 @@ public class MailVorlageControl extends VorZurueckControl
     }
     else
     {
+      mailvorlageList.setMulti(true);
       mailvorlageList.setAction(
           new EditAction(MailVorlageDetailView.class, mailvorlageList));
     }

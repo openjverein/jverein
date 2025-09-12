@@ -75,7 +75,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     middle.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       middle.addInput(zusatzfelderInput);
@@ -88,7 +88,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     right.addInput(control.getStichtag());
 
     // Zeiter Tab
-    TabGroup tab2 = new TabGroup(folder, "Erweitert", true, 3);
+    TabGroup tab2 = new TabGroup(folder, "Datum", true, 3);
     SimpleContainer left2 = new SimpleContainer(tab2.getComposite());
     left2.addInput(control.getGeburtsdatumvon());
     left2.addInput(control.getGeburtsdatumbis());
@@ -100,6 +100,16 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     SimpleContainer right2 = new SimpleContainer(tab2.getComposite());
     right2.addInput(control.getAustrittvon());
     right2.addInput(control.getAustrittbis());
+
+    // Dritter Tab
+    TabGroup tab3 = new TabGroup(folder, "Mitgliedskonto", true, 2);
+    SimpleContainer left3 = new SimpleContainer(tab3.getComposite());
+    left3.addInput(control.getDifferenz());
+    left3.addLabelPair("Differenz Limit", control.getDoubleAusw());
+
+    SimpleContainer right3 = new SimpleContainer(tab3.getComposite());
+    right3.addInput(control.getDatumvon());
+    right3.addInput(control.getDatumbis());
 
     // Buttons
     ButtonArea buttons = new ButtonArea();

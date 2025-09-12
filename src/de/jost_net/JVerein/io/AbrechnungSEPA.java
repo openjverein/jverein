@@ -1251,7 +1251,7 @@ public class AbrechnungSEPA
         }
         sollb.setZweck1(zweck);
       }
-      sollb.store();
+      sollb.updateForced();
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
@@ -1259,7 +1259,8 @@ public class AbrechnungSEPA
       summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
-    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
+    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT && !((Boolean) Einstellungen
+        .getEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT)))
     {
       Buchung buchung = (Buchung) Einstellungen.getDBService()
           .createObject(Buchung.class, null);
@@ -1270,6 +1271,11 @@ public class AbrechnungSEPA
       buchung.setName(adress != null ? Adressaufbereitung.getNameVorname(adress)
           : "JVerein");
       buchung.setZweck(adress == null ? "Gegenbuchung" : zweck);
+      buchung.setIban("");
+      buchung.setVerzicht(false);
+      buchung.setArt("Lastschrift");
+      buchung.setKommentar("Abrechnungslauf " + abrl.getNr() + " vom "
+          + Datum.formatDate(abrl.getDatum()));
       buchung.store();
 
       if (sollb != null)

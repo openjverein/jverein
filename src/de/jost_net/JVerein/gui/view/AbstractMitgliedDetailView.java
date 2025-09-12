@@ -34,24 +34,27 @@ import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
+import de.jost_net.JVerein.gui.control.LesefeldControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
@@ -74,6 +77,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   int funktion = 'B';
 
   final MitgliedControl control = new MitgliedControl(this);
+
+  final LesefeldControl lesefeldControl = new LesefeldControl(null);
 
   @Override
   public void bind() throws Exception
@@ -159,7 +164,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1);
     showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true);
-    zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
+    zeichneLesefelder(showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getSettingBoolean("ZeigeArbeitseinsatzInTab",
         true);
@@ -172,6 +177,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
+      checkLesefelder(folder);
     }
     folder.addSelectionListener(new SelectionListener()
     {
@@ -182,6 +188,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       public void widgetSelected(SelectionEvent arg0)
       {
         tabindex = folder.getSelectionIndex();
+        checkLesefelder(folder);
       }
 
       @Override
@@ -195,9 +202,37 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   }
 
+  /**
+   * Die Lesefelder werden nicht direkt beim Aufruf des MitgliedDetailView aus
+   * der DB geladen, sondern erst wenn der Lesefelder Tab erstmalig angezeigt
+   * wird. Wird der Tab selektiert, wird der Update im lesefeldControl
+   * aufgerufen.
+   * 
+   * @param folder
+   *          Der selektierte Folder unten im View
+   */
+  private void checkLesefelder(TabFolder folder)
+  {
+    // Index kann außerhalb dem Range liegen wenn Lesefelder selektiert waren
+    // und dann auf Anzeige außerhalb der Tabs umgeschaltet wurde.
+    if (tabindex < folder.getItemCount()
+        && folder.getItem(tabindex).getText().equals("Lesefelder"))
+    {
+      try
+      {
+        lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+            false);
+      }
+      catch (RemoteException e)
+      {
+        //
+      }
+    }
+  }
+
   private void zeichneButtonArea(Composite parent) throws RemoteException
   {
-    ButtonArea buttons = new ButtonArea();
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITGLIED, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
@@ -205,17 +240,18 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     if (!control.getMitglied().isNewObject())
     {
-      buttons.addButton(new Button("Kontoauszug", new KontoauszugAction(),
+      buttons.addButton(new ButtonRtoL("Kontoauszug", new KontoauszugAction(),
           control.getMitglied(), false, "file-invoice.png"));
     }
     if (isMitgliedDetail())
     {
-      buttons.addButton(new Button("Personalbogen", new PersonalbogenAction(),
-          control.getCurrentObject(), false, "receipt.png"));
+      buttons
+          .addButton(new ButtonRtoL("Personalbogen", new PersonalbogenAction(),
+              control.getCurrentObject(), false, "receipt.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
-      buttons
-          .addButton(new Button("Duplizieren", new MitgliedDuplizierenAction(),
+      buttons.addButton(
+          new ButtonRtoL("Duplizieren", new MitgliedDuplizierenAction(),
               control.getCurrentObject(), false, "edit-copy.png"));
     }
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
@@ -229,7 +265,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         try
         {
           control.handleStore();
+          GUI.getStatusBar().setSuccessText("Gespeichert");
           zeichneUeberschrift();
+          lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+              true);
         }
         catch (RemoteException | ApplicationException e)
         {
@@ -238,7 +277,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       }
     }, null, true, "document-save.png");
 
-    buttons.addButton(new Button("Speichern und neu", context -> {
+    buttons.addButton(new ButtonRtoL("Speichern und neu", context -> {
       try
       {
         control.handleStore();
@@ -251,12 +290,23 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           new NichtMitgliedDetailAction().handleAction(null);
         }
+        GUI.getStatusBar().setSuccessText("Gespeichert");
       }
       catch (ApplicationException e)
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-    }, null, false, "go-next.png"));
+    }, null, false, "go-next.png")
+    {
+      @Override
+      public void paint(Composite parent) throws RemoteException
+      {
+        if (((DBObject) getCurrentObject()).isNewObject())
+        {
+          super.paint(parent);
+        }
+      }
+    });
 
     buttons.paint(parent);
   }
@@ -305,39 +355,29 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
   }
 
-  private void zeichneLesefelder(Composite parentComposite, int spaltenanzahl)
+  private void zeichneLesefelder(Composite parentComposite)
       throws RemoteException
   {
-    // TODO: getLesefelder() ist zu langsam. Inhalt von Lesefeldern sollte erst
-    // evaluiert werden, wenn Lesefelder-Tab angeklickt wird.
     if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
     {
-      Input[] lesefelder = control.getLesefelder();
-      if (lesefelder != null)
+      Container cont = getTabOrLabelContainer(parentComposite, "Lesefelder");
+
+      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      cont.getComposite().setLayout(new GridLayout(1, false));
+      // Wenn Lesefelder nicht in der Tab Group angezeigt werden sondern oben,
+      // dann gleich alle zeichen, sonst erst wenn der Tab selektiert wird
+      if (cont instanceof LabelGroup)
       {
-        Container cont = getTabOrLabelContainer(parentComposite, "Lesefelder");
-        SimpleVerticalContainer svc = new SimpleVerticalContainer(
-            cont.getComposite(), false, spaltenanzahl);
-        for (Input inp : lesefelder)
-        {
-          if (inp == null)
-          {
-            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
-            Input errorInput = new TextInput(errorText);
-            errorInput.setEnabled(false);
-            svc.addInput(errorInput);
-            GUI.getStatusBar().setErrorText(errorText);
-          }
-          else
-          {
-            svc.addInput(inp);
-          }
-        }
-        svc.arrangeVertically();
-        ButtonArea buttonszus = new ButtonArea();
-        buttonszus.addButton(control.getLesefelderEdit());
-        cont.addButtonArea(buttonszus);
+        lesefeldControl.initLesefeldMitgliedList(control.getMitglied());
       }
+      ButtonArea buttonslesefelder = new ButtonArea();
+      buttonslesefelder.addButton(new Button(
+          "Neues Lesefeld", new NewAction(LesefeldDetailView.class,
+              Lesefeld.class, control.getMitglied()),
+          null, false, "document-new.png"));
+      buttonslesefelder.paint(cont.getComposite());
+
+      lesefeldControl.getLesefeldMitgliedList().paint(cont.getComposite());
     }
   }
 
@@ -634,15 +674,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
       container.addPart(control.getZukuenftigeBeitraegeView());
 
-      // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familienangehöriger" gibt, zeige Familienverband-Part.
-      // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
-      // kann daher nicht im SimpleVerticalContainer angezeigt werden.
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-      if (it.hasNext())
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         container.addPart(control.getFamilienverband());
       }

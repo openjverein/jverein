@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -31,6 +32,9 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
 {
 
   private static final long serialVersionUID = 1L;
+
+  // Speichert ob Update ohne Update Check gemacht wird
+  protected boolean forcedUpdate = false;
 
   public AbstractJVereinDBObject() throws RemoteException
   {
@@ -51,6 +55,24 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
       value = Long.parseLong(((AbstractDBObject) value).getID());
     }
     return super.setAttribute(fieldName, value);
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("id-int".equals(fieldName))
+    {
+      try
+      {
+        return Integer.valueOf(getID());
+      }
+      catch (Exception e)
+      {
+        Logger.error("unable to parse id: " + getID());
+        return getID();
+      }
+    }
+    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -75,5 +97,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       super.store();
     }
+  }
+
+  // Update ohne Update Check oder eingeschränktem Check
+  @Override
+  public void updateForced() throws RemoteException, ApplicationException
+  {
+    this.forcedUpdate = true;
+    super.store();
   }
 }
