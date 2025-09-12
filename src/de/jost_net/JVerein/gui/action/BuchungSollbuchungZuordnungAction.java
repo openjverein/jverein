@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -41,6 +42,13 @@ import de.willuhn.util.ApplicationException;
  */
 public class BuchungSollbuchungZuordnungAction implements Action
 {
+  private BuchungsControl control;
+
+  public BuchungSollbuchungZuordnungAction(BuchungsControl control)
+  {
+    this.control = control;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -201,25 +209,46 @@ public class BuchungSollbuchungZuordnungAction implements Action
         {
           if (b.length == 1)
           {
-            Buchung restbuchung = SplitbuchungsContainer.autoSplit(b[0], sollb,
-                true);
-            if (restbuchung != null)
+            Buchung buchung = b[0];
+            if (Math.abs(buchung.getBetrag() - sollb.getBetrag()) >= 0.01d)
             {
+              // TODO hier könnte auch der YesNoCancelDialog aus #1066 verwendet
+              // werden
               YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
               dialog.setTitle("Buchung splitten");
               dialog.setText(
-                  "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchung.\n"
-                      + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
-              try
+                  "Die Beträge von Buchung und Sollbuchung stimmten nicht überein.\n"
+                      + "Soll die Buchung automatisch gesplittet werden?\n"
+                      + "Bei 'Nein' wird die Sollbuchung ohne Splitten zugeordnet.");
+              if ((Boolean) dialog.open())
               {
-                if ((Boolean) dialog.open())
+                Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung,
+                    sollb, true);
+                if (restbuchung != null)
                 {
-                  restbuchung.setSollbuchung(sollb);
-                  restbuchung.store();
+                  YesNoDialog restbuchungDialog = new YesNoDialog(
+                      YesNoDialog.POSITION_CENTER);
+                  restbuchungDialog.setTitle("Restbuchung zuordnen");
+                  restbuchungDialog.setText(
+                      "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchung.\n"
+                          + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
+                  try
+                  {
+                    if ((Boolean) restbuchungDialog.open())
+                    {
+                      restbuchung.setSollbuchung(sollb);
+                      restbuchung.store();
+                    }
+                  }
+                  catch (OperationCanceledException ignore)
+                  {
+                  }
                 }
               }
-              catch (OperationCanceledException ignore)
+              else
               {
+                buchung.setSollbuchung(sollb);
+                buchung.store();
               }
             }
           }
@@ -242,6 +271,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
         else
         {
           GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
+          control.refreshBuchungsList();
         }
       }
     }
