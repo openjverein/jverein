@@ -2567,4 +2567,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       });
     }
   }
+
+  public void deregisterSplitbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(splitbuchungConsumer);
+  }
 }

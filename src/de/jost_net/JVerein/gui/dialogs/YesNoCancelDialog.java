@@ -25,7 +25,7 @@ import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
 /**
- * Dialog zur Zuordnung einer Buchungsart.
+ * Dialog mit Ja, Abbrechen und optionalem Nein Button.
  */
 public class YesNoCancelDialog extends AbstractDialog<Integer>
 {

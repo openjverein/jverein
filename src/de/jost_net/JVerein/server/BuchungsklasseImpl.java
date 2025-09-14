@@ -17,14 +17,12 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -56,28 +54,26 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
     try
     {
       // Prüfen ob Buchungsklasse schon verwendet wird
-      DBService service = Einstellungen.getDBService();
-      String sql = "SELECT buchungsart.id from buchungsart "
-          + "WHERE (buchungsklasse = ?) ";
-      boolean benutzt = (boolean) service.execute(sql, new Object[] { getID() },
-          new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return true;
-              }
-              return false;
-            }
-          });
-      if (benutzt)
+      DBIterator<Buchungsart> baIt = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      baIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      if (baIt.size() > 0)
+      {
+        throw new ApplicationException(String.format(
+            "Die Buchungsklasse wird von %d Buchungsart(en) benutzt.",
+            baIt.size()));
+      }
+
+      DBIterator<Buchung> buIt = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      buIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      if (buIt.size() > 0)
       {
         throw new ApplicationException(
-            "Die Buchungsklasse wird von einer Buchungsart benutzt.");
+            String.format("Die Buchungsklasse wird von %d Buchung(en) benutzt.",
+                buIt.size()));
       }
+
     }
     catch (RemoteException e)
     {

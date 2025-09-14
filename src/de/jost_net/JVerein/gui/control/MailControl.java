@@ -28,7 +28,7 @@ import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Messaging.MailMessage;
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
@@ -83,7 +83,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   private JVereinTablePart mailsList;
 
-  private MailAnhangMessageConsumer mailAnhangConsumer = null;
+  private MailDeleteMessageConsumer mailDeleteConsumer = null;
 
   public MailControl(AbstractView view)
   {
@@ -246,9 +246,9 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     {
       anhang2.add(ma);
     }
-    this.mailAnhangConsumer = new MailAnhangMessageConsumer();
+    this.mailDeleteConsumer = new MailDeleteMessageConsumer();
     Application.getMessagingFactory()
-        .registerMessageConsumer(this.mailAnhangConsumer);
+        .registerMessageConsumer(this.mailDeleteConsumer);
     anhang = new TablePart(anhang2, null);
     anhang.addColumn("Dateiname", "dateiname");
     anhang.setRememberColWidths(true);
@@ -744,7 +744,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
    */
-  private class MailAnhangMessageConsumer implements MessageConsumer
+  private class MailDeleteMessageConsumer implements MessageConsumer
   {
 
     /**
@@ -762,7 +762,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     @Override
     public Class<?>[] getExpectedMessageTypes()
     {
-      return new Class[] { MailMessage.class };
+      return new Class[] { MailDeleteMessage.class };
     }
 
     /**
@@ -779,16 +779,16 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         {
           try
           {
-            if (((MailMessage) message).getObject() instanceof MailAnhang)
+            if (((MailDeleteMessage) message).getObject() instanceof MailAnhang)
             {
               removeAnhang(
-                  (MailAnhang) ((MailMessage) message).getObject());
+                  (MailAnhang) ((MailDeleteMessage) message).getObject());
             }
-            else if (((MailMessage) message)
+            else if (((MailDeleteMessage) message)
                 .getObject() instanceof MailEmpfaenger)
             {
               removeEmpfaenger(
-                  (MailEmpfaenger) ((MailMessage) message).getObject());
+                  (MailEmpfaenger) ((MailDeleteMessage) message).getObject());
             }
           }
           catch (Exception e)
@@ -796,10 +796,16 @@ public class MailControl extends FilterControl implements IMailControl, Savable
             // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
             Logger.error("Fehler beim Mail Anhang löschen", e);
             Application.getMessagingFactory()
-                .unRegisterMessageConsumer(MailAnhangMessageConsumer.this);
+                .unRegisterMessageConsumer(MailDeleteMessageConsumer.this);
           }
         }
       });
     }
+  }
+
+  public void deregisterMailDeleteConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(mailDeleteConsumer);
   }
 }

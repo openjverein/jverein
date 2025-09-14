@@ -84,24 +84,22 @@ public class BuchungDeleteAction extends DeleteAction
 
     Buchung bu = (Buchung) object;
     Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+
+    if (bu.getSplitId() != null)
+    {
+      throw new ApplicationException(
+          "Splitbuchungen können nicht gelöscht werden, sie müssen erst aufgelöst werden!");
+    }
     if (spb != null && selection == YesNoCancelDialog.NO)
     {
       throw new ApplicationException(
           "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
     }
-    if (bu.getSplitId() == null)
+    if (bu.getSpendenbescheinigung() != null)
     {
-      if (bu.getSpendenbescheinigung() != null)
-      {
-        bu.getSpendenbescheinigung().delete();
-      }
-      bu.delete();
+      bu.getSpendenbescheinigung().delete();
     }
-    else
-    {
-      throw new ApplicationException(
-          "Splitbuchungen können nicht gelöscht werden!");
-    }
+    bu.delete();
   }
 
   @Override

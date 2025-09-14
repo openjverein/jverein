@@ -21,7 +21,7 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
 /**
- * Wird versendet, wenn eine Sollbuchung Position gelöscht werden soll.
+ * Wird versendet, wenn eine Buchung einer Splitbuchung gelöscht werden soll.
  */
 public class SplitbuchungMessage extends ObjectMessage
 {

@@ -1075,4 +1075,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       });
     }
   }
+
+  public void deregisterSollbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(sollbuchungConsumer);
+  }
 }

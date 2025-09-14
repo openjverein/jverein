@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.Messaging.MailMessage;
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.willuhn.jameica.system.Application;
@@ -38,7 +38,7 @@ public class MailEmpfaengerDeleteAction extends DeleteAction
       return;
     }
     Application.getMessagingFactory()
-        .sendMessage(new MailMessage(object));
+        .sendMessage(new MailDeleteMessage(object));
   }
 
   @Override

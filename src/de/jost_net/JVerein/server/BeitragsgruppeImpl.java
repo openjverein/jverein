@@ -68,7 +68,6 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);
         sek.addFilter("beitragsgruppe = ?", new Object[] { getID() });
-        sek.setLimit(1);
         if (sek.size() > 0)
         {
           throw new ApplicationException(String.format(

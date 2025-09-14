@@ -50,6 +50,7 @@ public class FelddefinitionDeleteAction extends DeleteAction
       DBIterator<Zusatzfelder> it = Einstellungen.getDBService()
           .createList(Zusatzfelder.class);
       it.addFilter("felddefinition=?", new Object[] { o.getID() });
+      it.setLimit(1);
       if (it.size() > 0)
       {
         verwendung = true;

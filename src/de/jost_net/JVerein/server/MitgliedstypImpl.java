@@ -64,9 +64,8 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
       it.setLimit(1);
       if (it.hasNext())
       {
-        throw new ApplicationException(String.format(
-            "Mitgliedstyp '%s' kann nicht gelöscht werden. Es existieren Nicht-Mitglieder dieses Typs.",
-            getBezeichnung()));
+        throw new ApplicationException(
+            "Es existieren Nicht-Mitglieder dieses Typs.");
       }
     }
     catch (RemoteException e)

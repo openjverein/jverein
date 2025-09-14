@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -44,6 +45,17 @@ public class SplitBuchungDeleteAction extends BuchungDeleteAction
     }
 
     bu = (Buchung) object;
+    if (bu.getSplitTyp() == SplitbuchungTyp.HAUPT)
+    {
+      throw new ApplicationException(
+          "Hauptbuchungen können nicht geloscht werden.");
+    }
+    if (bu.getSplitTyp() == SplitbuchungTyp.GEGEN)
+    {
+      throw new ApplicationException(
+          "Gegenbuchungen können nicht geloscht werden.");
+    }
+
     if (bu.isNewObject())
     {
       SplitbuchungsContainer.get().remove(bu);

@@ -58,7 +58,6 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       DBIterator<Eigenschaften> it = Einstellungen.getDBService()
           .createList(Eigenschaften.class);
       it.addFilter("eigenschaft = ?", new Object[] { getID() });
-      it.setLimit(1);
       if (it.size() > 0)
       {
         throw new ApplicationException(String

@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -56,11 +57,19 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       DBIterator<Spendenbescheinigung> spb = Einstellungen.getDBService()
           .createList(Spendenbescheinigung.class);
       spb.addFilter("formular = ?", new Object[] { getID() });
-      spb.setLimit(1);
       if (spb.size() > 0)
       {
         throw new ApplicationException(String.format(
             "Es ist bei %d Spendenbescheinigung(en) hinterlegt.", spb.size()));
+      }
+
+      DBIterator<Rechnung> reIt = Einstellungen.getDBService()
+          .createList(Rechnung.class);
+      reIt.addFilter("formular = ?", new Object[] { getID() });
+      if (reIt.size() > 0)
+      {
+        throw new ApplicationException(String
+            .format("Es ist bei %d Rechnung(en) hinterlegt.", reIt.size()));
       }
 
       // Do not delete a form if it is linked by other forms

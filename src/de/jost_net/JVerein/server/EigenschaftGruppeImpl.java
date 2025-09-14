@@ -56,7 +56,6 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       DBIterator<Eigenschaft> it = Einstellungen.getDBService()
           .createList(Eigenschaft.class);
       it.addFilter("eigenschaftgruppe = ?", new Object[] { getID() });
-      it.setLimit(1);
       if (it.size() > 0)
       {
         throw new ApplicationException(

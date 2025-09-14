@@ -37,9 +37,9 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class DeleteAction implements Action
 {
-  private String name = "";
+  protected String name = "";
 
-  private String namen = "";
+  protected String namen = "";
 
   private String attribut = "";
 
@@ -127,12 +127,12 @@ public class DeleteAction implements Action
       selection = (Integer) d.open();
       if (selection == YesNoCancelDialog.CANCEL)
       {
-        return;
+        throw new OperationCanceledException();
       }
     }
     catch (OperationCanceledException ex)
     {
-      throw new OperationCanceledException();
+      throw ex;
     }
     catch (Exception e1)
     {
@@ -255,6 +255,10 @@ public class DeleteAction implements Action
     Application.getController().start(t);
   }
 
+  /**
+   * @param object
+   *          Das zu löschende Objekte
+   */
   private String getAttribute(JVereinDBObject objekt)
   {
     Object obj;
@@ -284,8 +288,10 @@ public class DeleteAction implements Action
   }
 
   /**
-   * @param object
+   * @param object[]
    *          Die zu löschenden Objekte
+   * @throws RemoteException
+   * @throws ApplicationException
    */
   protected String getText(JVereinDBObject object[])
       throws RemoteException, ApplicationException
@@ -297,6 +303,10 @@ public class DeleteAction implements Action
   /**
    * @param object
    *          Das zu löschende Objekt
+   * @param selection
+   *          Selektierte Auswahl im Dialog
+   * @throws RemoteException
+   * @throws ApplicationException
    */
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
@@ -304,36 +314,51 @@ public class DeleteAction implements Action
     object.delete();
   }
 
-  // Wird nach doDelete aufgerufen, bei Multi Selection nach dem letzten
-  // doDelete. Damit können abgeleitete Klassen Actionen nach Ende der Schleife
-  // machen
+  /**
+   * Wird nach doDelete aufgerufen, bei Multi Selection nach dem letzten
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
   protected void doFinally() throws RemoteException, ApplicationException
   {
     // Ist für abgeleitete Klassen gedacht
   }
 
-  // Gibt zurück ob der Dialog mit dem No Button angezeigt werden soll
-  // Kann von abgeleiteten Klassen überschrieben werden
+  /**
+   * @param object[]
+   *          Die zu löschenden Objekte
+   * @return Gibt zurück ob der Dialog mit dem No Button angezeigt werden soll
+   */
   protected boolean getMitNo(JVereinDBObject object[])
   {
     return false;
   }
 
-  // Liefert ein Image für die Anzeige im Dialog
-  // Kann von abgeleiteten Klassen überschrieben werden
+  /**
+   * Kann von abgeleiteten Klassen überschrieben werden
+   * 
+   * @return Liefert ein Image für die Anzeige im Dialog
+   */
   protected Image getImage()
   {
     return null;
   }
 
-  // Liefert zurück ob auch neue Objekte gelöscht werden können
-  // Sie Löschen von Mailanhang aus der Anhang Liste
+  /**
+   * 
+   * @return Liefert zurück ob auch neue Objekte gelöscht werden können
+   */
   protected boolean isNewAllowed()
   {
     return false;
   }
 
-  // Support für Multi Selection
+  /**
+   * Support für Multi Selection
+   * 
+   * @return Ob Multi Selection erlaubt ist
+   */
   protected boolean supportsMulti()
   {
     return true;

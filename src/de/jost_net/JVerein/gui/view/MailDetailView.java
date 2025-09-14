@@ -204,4 +204,11 @@ public class MailDetailView extends AbstractDetailView
   {
     return control;
   }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterMailDeleteConsumer();
+    super.unbind();
+  }
 }

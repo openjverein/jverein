@@ -23,9 +23,9 @@ import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 /**
  * Wird versendet, wenn ein MailAnhang gelöscht werden soll.
  */
-public class MailMessage extends ObjectMessage
+public class MailDeleteMessage extends ObjectMessage
 {
-  public MailMessage(GenericObject object)
+  public MailDeleteMessage(GenericObject object)
   {
     super(object);
   }
