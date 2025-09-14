@@ -57,7 +57,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
@@ -620,5 +620,17 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException
   {
     setAttribute("zweck", zweck.getKey());
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Konto";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Konten";
   }
 }

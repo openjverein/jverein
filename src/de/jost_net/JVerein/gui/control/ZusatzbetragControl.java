@@ -274,6 +274,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     if (zusatzbetraegeList == null)
     {
       zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
+      zusatzbetraegeList.addColumn("Nr", "id-int");
       zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

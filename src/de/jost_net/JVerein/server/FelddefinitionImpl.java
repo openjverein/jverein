@@ -45,7 +45,7 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "name";
   }
 
   @Override
@@ -183,5 +183,17 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Felddefinition";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Felddefinitionen";
   }
 }

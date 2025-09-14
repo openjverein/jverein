@@ -59,7 +59,7 @@ import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
+import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
@@ -1700,7 +1700,7 @@ public class MitgliedControl extends FilterControl implements Savable
         new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
-
+    zusatzbetraegeList.setMulti(true);
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
@@ -1772,6 +1772,7 @@ public class MitgliedControl extends FilterControl implements Savable
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
     wiedervorlageList.setRememberColWidths(true);
     wiedervorlageList.setRememberOrder(true);
+    wiedervorlageList.setMulti(true);
     return wiedervorlageList;
   }
 
@@ -1789,13 +1790,13 @@ public class MitgliedControl extends FilterControl implements Savable
     mailList = new TablePart(me, new MailDetailAction());
     mailList.setRememberColWidths(true);
     mailList.setRememberOrder(true);
-
+    mailList.setMulti(true);
     mailList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "betreff");
-    mailList.setContextMenu(new MitgliedMailMenu(this));
+    mailList.setContextMenu(new MailMenu(null));
     return mailList;
   }
 
@@ -1815,7 +1816,7 @@ public class MitgliedControl extends FilterControl implements Savable
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
-
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
@@ -1839,7 +1840,7 @@ public class MitgliedControl extends FilterControl implements Savable
         new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
-
+    lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

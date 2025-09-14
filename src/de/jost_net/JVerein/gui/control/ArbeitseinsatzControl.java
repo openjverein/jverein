@@ -620,8 +620,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList
         .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
+    arbeitseinsatzList.addColumn("Nr", "id-int");
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

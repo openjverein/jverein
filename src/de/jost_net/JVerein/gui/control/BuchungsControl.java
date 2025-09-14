@@ -47,8 +47,6 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
-import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -1510,7 +1508,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      buchungsList.addColumn("Konto", "konto");
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1580,7 +1578,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+        buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
@@ -1621,7 +1619,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      splitbuchungsList.addColumn("Konto", "konto");
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
@@ -1674,8 +1672,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           new SollbuchungFormatter());
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        splitbuchungsList.addColumn("Projekt", "projekt",
-            new ProjektFormatter());
+        splitbuchungsList.addColumn("Projekt", "projekt");
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);

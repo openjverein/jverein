@@ -45,7 +45,7 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
@@ -139,6 +139,18 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaft";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaften";
   }
 
 }

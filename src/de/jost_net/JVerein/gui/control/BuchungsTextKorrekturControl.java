@@ -21,7 +21,6 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
@@ -64,7 +63,7 @@ public class BuchungsTextKorrekturControl extends AbstractControl
       buchungsList.addColumn("S", "splitid", o -> {
         return (o != null ? "S" : " ");
       });
-      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      buchungsList.addColumn("Konto", "konto");
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
