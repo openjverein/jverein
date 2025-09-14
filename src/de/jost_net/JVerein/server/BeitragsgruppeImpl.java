@@ -54,7 +54,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
@@ -517,5 +517,17 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   public void setSteuer(Steuer steuer) throws RemoteException
   {
     setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Beitragsgruppe";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Beitragsgruppen";
   }
 }

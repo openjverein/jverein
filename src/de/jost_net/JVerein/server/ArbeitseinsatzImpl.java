@@ -156,8 +156,14 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
+  public String getObjektName()
   {
-    return super.getAttribute(fieldName);
+    return "Arbeitseinsatz";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Arbeitseinsätze";
   }
 }

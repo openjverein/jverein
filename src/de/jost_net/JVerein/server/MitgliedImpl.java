@@ -1673,4 +1673,16 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     return true;
   }
 
+  @Override
+  public String getObjektName()
+  {
+    return "Mitglied";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mitglieder";
+  }
+
 }

@@ -92,7 +92,8 @@ public class Update0479 extends AbstractDDLUpdate
             break;
           case Types.CHAR:
           case Types.VARCHAR:
-            value = result.getString(i).replace("\n", "\\n");
+            value = result.getString(i).replace("\n", "\\n").replace("\\",
+                "\\\\");
             break;
           case Types.INTEGER:
           case Types.TINYINT:

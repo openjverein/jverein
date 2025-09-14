@@ -156,4 +156,16 @@ public class MitgliedstypImpl extends AbstractJVereinDBObject
   {
     return super.getAttribute(fieldName);
   }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Mitgliedstyp";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mitgliedstypen";
+  }
 }

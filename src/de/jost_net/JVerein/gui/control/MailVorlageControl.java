@@ -144,6 +144,7 @@ public class MailVorlageControl extends VorZurueckControl
     }
     else
     {
+      mailvorlageList.setMulti(true);
       mailvorlageList.setAction(
           new EditAction(MailVorlageDetailView.class, mailvorlageList));
     }
