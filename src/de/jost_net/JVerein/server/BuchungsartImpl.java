@@ -63,10 +63,11 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       DBIterator<Buchung> it = Einstellungen.getDBService()
           .createList(Buchung.class);
       it.addFilter("buchungsart = ?", new Object[] { getID() });
+      it.setLimit(1);
       if (it.size() > 0)
       {
-        throw new ApplicationException(String.format(
-            "Es existieren %d Buchung(en) mit dieser Buchungsart.", it.size()));
+        throw new ApplicationException(
+            "Es existieren Buchungen mit dieser Buchungsart.");
       }
     }
     catch (RemoteException e)

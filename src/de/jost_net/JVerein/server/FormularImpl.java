@@ -57,19 +57,20 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
       DBIterator<Spendenbescheinigung> spb = Einstellungen.getDBService()
           .createList(Spendenbescheinigung.class);
       spb.addFilter("formular = ?", new Object[] { getID() });
+      spb.setLimit(1);
       if (spb.size() > 0)
       {
-        throw new ApplicationException(String.format(
-            "Es ist bei %d Spendenbescheinigung(en) hinterlegt.", spb.size()));
+        throw new ApplicationException(
+            "Es ist bei Spendenbescheinigungen hinterlegt.");
       }
 
       DBIterator<Rechnung> reIt = Einstellungen.getDBService()
           .createList(Rechnung.class);
       reIt.addFilter("formular = ?", new Object[] { getID() });
+      reIt.setLimit(1);
       if (reIt.size() > 0)
       {
-        throw new ApplicationException(String
-            .format("Es ist bei %d Rechnung(en) hinterlegt.", reIt.size()));
+        throw new ApplicationException("Es ist bei Rechnungen hinterlegt.");
       }
 
       // Do not delete a form if it is linked by other forms

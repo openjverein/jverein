@@ -2103,13 +2103,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                     ja.getName()));
             return editable = false;
           }
-          Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
-          if (spb != null)
-          {
-            GUI.getStatusBar().setErrorText(
-                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-            return editable = false;
-          }
         }
       }
     }

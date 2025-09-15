@@ -58,10 +58,11 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       DBIterator<Eigenschaften> it = Einstellungen.getDBService()
           .createList(Eigenschaften.class);
       it.addFilter("eigenschaft = ?", new Object[] { getID() });
+      it.setLimit(1);
       if (it.size() > 0)
       {
-        throw new ApplicationException(String
-            .format("Sie ist noch mit %d Mitglied(ern) verknüpft.", it.size()));
+        throw new ApplicationException(
+            "Sie ist noch mit Mitgliedern verknüpft.");
       }
     }
     catch (RemoteException e)

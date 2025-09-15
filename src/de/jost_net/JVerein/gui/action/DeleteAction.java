@@ -256,8 +256,12 @@ public class DeleteAction implements Action
   }
 
   /**
+   * Liefert das primary Attribut des Objekt für die Ausgabe bei
+   * Fehlermeldungen.
+   * 
    * @param object
    *          Das zu löschende Objekte
+   * @return Das primary Attribut des Objekt
    */
   private String getAttribute(JVereinDBObject objekt)
   {
@@ -288,10 +292,14 @@ public class DeleteAction implements Action
   }
 
   /**
+   * Die Methode liefert den Text für die Ausgabe im YesNoCancel Dialog. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
+   * 
    * @param object[]
    *          Die zu löschenden Objekte
    * @throws RemoteException
    * @throws ApplicationException
+   * @return Der Text für die Ausgabe im YesNoCancel Dialog
    */
   protected String getText(JVereinDBObject object[])
       throws RemoteException, ApplicationException
@@ -301,10 +309,13 @@ public class DeleteAction implements Action
   }
 
   /**
+   * Die Methode führt die Löschoperation des Objekts durch. Die Methode kann
+   * von abgeleiteten Klassen überschrieben werden.
+   * 
    * @param object
    *          Das zu löschende Objekt
    * @param selection
-   *          Selektierte Auswahl im Dialog
+   *          Selektierte Auswahl im YesNoCancel Dialog
    * @throws RemoteException
    * @throws ApplicationException
    */
@@ -315,7 +326,9 @@ public class DeleteAction implements Action
   }
 
   /**
-   * Wird nach doDelete aufgerufen, bei Multi Selection nach dem letzten
+   * Die Methode wird nach doDelete aufgerufen, bei Multi Selection nach dem
+   * letzten doDelete. Die Methode kann von abgeleiteten Klassen überschrieben
+   * werden.
    * 
    * @throws RemoteException
    * @throws ApplicationException
@@ -326,9 +339,13 @@ public class DeleteAction implements Action
   }
 
   /**
+   * Die Methode ibt zurück ob der YesNoCancel Dialog mit dem No Button
+   * angezeigt werden soll. Die Methode kann von abgeleiteten Klassen
+   * überschrieben werden.
+   * 
    * @param object[]
    *          Die zu löschenden Objekte
-   * @return Gibt zurück ob der Dialog mit dem No Button angezeigt werden soll
+   * @return YesNoCancel Dialog mit oder ohne No Button
    */
   protected boolean getMitNo(JVereinDBObject object[])
   {
@@ -336,9 +353,10 @@ public class DeleteAction implements Action
   }
 
   /**
-   * Kann von abgeleiteten Klassen überschrieben werden
+   * Die Methode liefert ein Image für die Anzeige im YesNoCancel Dialog. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
    * 
-   * @return Liefert ein Image für die Anzeige im Dialog
+   * @return Das Image für die Anzeige im YesNoCancel Dialog
    */
   protected Image getImage()
   {
@@ -346,8 +364,10 @@ public class DeleteAction implements Action
   }
 
   /**
+   * Die Methode liefert zurück ob auch neue Objekte gelöscht werden können. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
    * 
-   * @return Liefert zurück ob auch neue Objekte gelöscht werden können
+   * @return Neue Objekte löschen Ja/Nein
    */
   protected boolean isNewAllowed()
   {
@@ -355,7 +375,8 @@ public class DeleteAction implements Action
   }
 
   /**
-   * Support für Multi Selection
+   * Support für Multi Selection. Die Methode kann von abgeleiteten Klassen
+   * überschrieben werden.
    * 
    * @return Ob Multi Selection erlaubt ist
    */

@@ -57,21 +57,21 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       DBIterator<Buchungsart> baIt = Einstellungen.getDBService()
           .createList(Buchungsart.class);
       baIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      baIt.setLimit(1);
       if (baIt.size() > 0)
       {
-        throw new ApplicationException(String.format(
-            "Die Buchungsklasse wird von %d Buchungsart(en) benutzt.",
-            baIt.size()));
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von Buchungsarten benutzt.");
       }
 
       DBIterator<Buchung> buIt = Einstellungen.getDBService()
           .createList(Buchung.class);
       buIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      buIt.setLimit(1);
       if (buIt.size() > 0)
       {
         throw new ApplicationException(
-            String.format("Die Buchungsklasse wird von %d Buchung(en) benutzt.",
-                buIt.size()));
+            "Die Buchungsklasse wird von Buchungen benutzt.");
       }
 
     }

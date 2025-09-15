@@ -68,10 +68,11 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         DBIterator<SekundaereBeitragsgruppe> sek = Einstellungen.getDBService()
             .createList(SekundaereBeitragsgruppe.class);
         sek.addFilter("beitragsgruppe = ?", new Object[] { getID() });
+        sek.setLimit(1);
         if (sek.size() > 0)
         {
           throw new ApplicationException(String.format(
-              "%d Mitglied(er) sind dieser sekundären Beitragsgruppe zugeordnet.",
+              "Die sekundäre Beitragsgruppe ist Mitgliedern zugeordnet.",
               sek.size()));
         }
       }
@@ -80,11 +81,11 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
             .createList(Mitglied.class);
         mitgl.addFilter("beitragsgruppe = ?", new Object[] { getID() });
+        mitgl.setLimit(1);
         if (mitgl.size() > 0)
         {
-          throw new ApplicationException(String.format(
-              " %d Mitglied(er) sind dieser Beitragsgruppe zugeordnet.",
-              mitgl.size()));
+          throw new ApplicationException(
+              "Die Beitragsgruppe ist Mitgliedern zugeordnet.");
         }
       }
       DBIterator<MitgliedNextBGruppe> nextbg = Einstellungen.getDBService()
