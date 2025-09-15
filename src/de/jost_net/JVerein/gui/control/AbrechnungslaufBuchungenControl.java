@@ -169,6 +169,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
       sollbuchungsList.setRememberColWidths(true);
       sollbuchungsList.setRememberOrder(true);
       sollbuchungsList.addFeature(new FeatureSummary());
+      sollbuchungsList.setMulti(true);
       sollbuchungsList.setContextMenu(new SollbuchungMenu(sollbuchungsList));
       sollbuchungsList.setAction(
           new EditAction(SollbuchungDetailView.class, sollbuchungsList));

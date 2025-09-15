@@ -84,5 +84,6 @@ public class SollbuchungPositionListPart extends TablePart
     setRememberColWidths(true);
     setRememberOrder(true);
     addFeature(new FeatureSummary());
+    setMulti(true);
   }
 }

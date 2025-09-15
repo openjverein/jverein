@@ -21,6 +21,8 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -48,9 +50,52 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Spendenbescheinigung> spb = Einstellungen.getDBService()
+          .createList(Spendenbescheinigung.class);
+      spb.addFilter("formular = ?", new Object[] { getID() });
+      spb.setLimit(1);
+      if (spb.size() > 0)
+      {
+        throw new ApplicationException(
+            "Es ist bei Spendenbescheinigungen hinterlegt.");
+      }
+
+      DBIterator<Rechnung> reIt = Einstellungen.getDBService()
+          .createList(Rechnung.class);
+      reIt.addFilter("formular = ?", new Object[] { getID() });
+      reIt.setLimit(1);
+      if (reIt.size() > 0)
+      {
+        throw new ApplicationException("Es ist bei Rechnungen hinterlegt.");
+      }
+
+      // Do not delete a form if it is linked by other forms
+      if (hasFormlinks())
+      {
+        throw new ApplicationException(String.format(
+            "Es ist noch mit %d Formular(en) verknüpft.", getLinked().size()));
+      }
+
+      // Do not delete a form if it is linked to another
+      Long formlink = getFormlink();
+      if (formlink > 0)
+      {
+        Formular fo = (Formular) Einstellungen.getDBService()
+            .createObject(Formular.class, String.valueOf(formlink));
+        throw new ApplicationException(String.format(
+            "Es ist mit dem Formular \"%s\" verknüpft.", fo.getBezeichnung()));
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Formular kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -94,7 +139,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     }
     catch (RemoteException e)
     {
-      String fehler = "Formularfeld kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Formular kann nicht gespeichert werden. Siehe system log";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }

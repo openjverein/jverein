@@ -85,6 +85,7 @@ public class MitgliedSuchProfilControl extends AbstractControl
     profillist.setRememberColWidths(true);
     profillist.setRememberOrder(true);
     profillist.setContextMenu(new SuchprofilMenu(this));
+    profillist.setMulti(true);
     this.mc = new SuchprofilMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
     return profillist;

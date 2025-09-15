@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedInZwischenablageKopierenAction;
@@ -202,16 +201,8 @@ public class MitgliedMenu extends ContextMenu
             }
           }, "view-refresh.png"));
     }
-    if (detailaction instanceof NichtMitgliedDetailAction)
-    {
-      addItem(new CheckedContextMenuItem("Löschen",
-          new NichtMitgliedDeleteAction(), "user-trash-full.png"));
-    }
-    else
-    {
-      addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
-          "user-trash-full.png"));
-    }
+    addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));

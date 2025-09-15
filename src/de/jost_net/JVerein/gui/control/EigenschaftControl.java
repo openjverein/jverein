@@ -154,6 +154,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
       eigenschaftList.addFeature(new FeatureSummary());
+      eigenschaftList.setMulti(true);
       eigenschaftList.setAction(
           new EditAction(EigenschaftDetailView.class, eigenschaftList));
       VorZurueckControl.setObjektListe(null, null);
