@@ -143,6 +143,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     buchungsklassenList.setRememberColWidths(true);
     buchungsklassenList.setRememberOrder(true);
     buchungsklassenList.addFeature(new FeatureSummary());
+    buchungsklassenList.setMulti(true);
     buchungsklassenList.setAction(
         new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
     VorZurueckControl.setObjektListe(null, null);

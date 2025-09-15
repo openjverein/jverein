@@ -172,6 +172,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
         .setContextMenu(new FelddefinitionMenu(felddefinitionList));
     felddefinitionList.setAction(
         new EditAction(ZusatzfeldDetailView.class, felddefinitionList));
+    felddefinitionList.setMulti(true);
     VorZurueckControl.setObjektListe(null, null);
     return felddefinitionList;
   }

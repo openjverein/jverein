@@ -153,6 +153,18 @@ public class LesefeldImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public String getObjektName()
+  {
+    return "Lesefeld";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lesefelder";
+  }
+
+  @Override
   public Mitglied getMitglied() throws RemoteException
   {
     // Nur wegen IMitglied, aber nichts tun

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -44,13 +45,29 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Eigenschaft> it = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      it.addFilter("eigenschaftgruppe = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException("Sie enthält noch Eigenschaften.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "EigenschaftGruppe kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -129,6 +146,18 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
   public void setMax1(Boolean max1) throws RemoteException
   {
     setAttribute("max1", max1);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaftengruppe";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaftengruppen";
   }
 
 }

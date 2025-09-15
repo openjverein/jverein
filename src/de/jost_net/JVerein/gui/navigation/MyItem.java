@@ -27,6 +27,7 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Item;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.util.SWTUtil;
@@ -49,6 +50,8 @@ public class MyItem implements NavigationItem
   private static int maxId = 0;
 
   private int id;
+
+  private boolean enabled = true;
 
   public MyItem(NavigationItem item, String navitext, Action action)
   {
@@ -140,7 +143,7 @@ public class MyItem implements NavigationItem
   @Override
   public boolean isEnabled()
   {
-    return true;
+    return this.enabled;
   }
 
   /**
@@ -148,25 +151,30 @@ public class MyItem implements NavigationItem
    */
   @Override
   public void setEnabled(boolean enabled, boolean recursive)
+      throws RemoteException
   {
-    // ignore
+    this.enabled = enabled;
+    GUI.getNavigation().update(this);
+
+    if (recursive)
+    {
+      for (int i = 0; i < this.children.size(); ++i)
+      {
+        NavigationItem child = (NavigationItem) this.children.get(i);
+        child.setEnabled(enabled, recursive);
+      }
+    }
   }
 
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getChildren()
    */
+  @SuppressWarnings({ "rawtypes" })
   @Override
   public GenericIterator getChildren() throws RemoteException
   {
-    // if (children.size() == 0)
-    // {
-    // return null;
-    // }
-    // else
-    // {
     return PseudoIterator
         .fromArray(children.toArray(new MyItem[children.size()]));
-    // }
   }
 
   /**
@@ -194,6 +202,7 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getPossibleParents()
    */
+  @SuppressWarnings("rawtypes")
   @Override
   public GenericIterator getPossibleParents() throws RemoteException
   {

@@ -14,29 +14,36 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.action.MailDetailAction;
-import de.jost_net.JVerein.gui.action.MailemfaengerDeleteAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.util.ApplicationException;
 
 /**
- * Kontext-Menu zu den Mails eines Mitgliedes.
+ * Loeschen von Mailempfaengern.
  */
-public class MitgliedMailMenu extends ContextMenu
+public class MailEmpfaengerDeleteAction extends DeleteAction
 {
-
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Mails eines Mitgliedes.
-   */
-  public MitgliedMailMenu(MitgliedControl mc)
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new MailDetailAction(), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new MailemfaengerDeleteAction(mc), "user-trash-full.png"));
+    if (!(object instanceof MailEmpfaenger))
+    {
+      return;
+    }
+    Application.getMessagingFactory()
+        .sendMessage(new MailDeleteMessage(object));
+  }
+
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
   }
 }

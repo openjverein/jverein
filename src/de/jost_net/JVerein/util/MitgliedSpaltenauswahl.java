@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.formatter.BeitragsgruppeFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
@@ -139,8 +138,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Eintritt", "eintritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
-    add("Beitragsgruppe", "beitragsgruppe", false,
-        new BeitragsgruppeFormatter(), Column.ALIGN_LEFT, false);
+    add("Beitragsgruppe", "beitragsgruppe", false, false);
     add("Austritt", "austritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);

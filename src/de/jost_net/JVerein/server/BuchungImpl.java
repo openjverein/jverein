@@ -82,6 +82,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   {
     try
     {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(String.format(
+            "Buchung wurde bereits am %s von %s abgeschlossen.",
+            new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+      }
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(
@@ -826,19 +833,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Long.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
 
@@ -993,5 +987,17 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
           .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungen";
   }
 }

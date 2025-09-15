@@ -1673,4 +1673,30 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     return true;
   }
 
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+    {
+      return "Mitglied";
+    }
+    else
+    {
+      return "Nicht-Mitglied";
+    }
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+    {
+      return "Mitglieder";
+    }
+    else
+    {
+      return "Nicht-Mitglieder";
+    }
+  }
+
 }

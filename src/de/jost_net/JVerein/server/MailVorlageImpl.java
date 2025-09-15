@@ -44,7 +44,7 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "betreff";
   }
 
   @Override
@@ -132,5 +132,17 @@ public class MailVorlageImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Mailvorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Mailvorlagen";
   }
 }
