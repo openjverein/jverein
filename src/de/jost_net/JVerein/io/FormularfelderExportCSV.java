@@ -101,7 +101,7 @@ public class FormularfelderExportCSV extends FormularfelderExport
       writer = new CsvMapWriter(new FileWriter(file),
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
       header = new String[] { "Name", "Seite", "X", "Y", "Font", "Fontsize",
-          "Fontstyle" };
+          "Fontstyle", "Ausrichtung" };
       writer.writeHeader(header);
     }
     catch (IOException e)
@@ -123,6 +123,7 @@ public class FormularfelderExportCSV extends FormularfelderExport
       ffmap.put("Font", ff.getFont());
       ffmap.put("Fontsize", ff.getFontsize());
       ffmap.put("Fontstyle", ff.getFontstyle());
+      ffmap.put("Ausrichtung", ff.getAusrichtung().getKey());
       writer.write(ffmap, header);
     }
     writer.close();

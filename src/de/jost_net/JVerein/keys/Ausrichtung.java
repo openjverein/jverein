@@ -16,10 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
+import java.rmi.RemoteException;
+
+import de.willuhn.datasource.GenericObject;
+
 /**
- * Ausrichtung von Formularfeldern
+ * Ausrichtung von Formularfeldern GenericObject damit beim XML Export der Key
+ * und nicht der Text gespeichert wird.
  */
-public enum Ausrichtung
+public enum Ausrichtung implements GenericObject
 {
 
   LINKS("Links", 0),
@@ -57,5 +62,35 @@ public enum Ausrichtung
   public String toString()
   {
     return text;
+  }
+
+  @Override
+  public String[] getAttributeNames() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public String getID() throws RemoteException
+  {
+    return "" + key;
+  }
+
+  @Override
+  public String getPrimaryAttribute() throws RemoteException
+  {
+    return "key";
+  }
+
+  @Override
+  public boolean equals(GenericObject other) throws RemoteException
+  {
+    return false;
+  }
+
+  @Override
+  public Object getAttribute(String name) throws RemoteException
+  {
+    return null;
   }
 }
