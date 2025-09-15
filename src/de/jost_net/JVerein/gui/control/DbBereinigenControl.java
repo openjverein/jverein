@@ -25,7 +25,6 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -33,7 +32,6 @@ import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.Datum;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -159,6 +157,19 @@ public class DbBereinigenControl extends AbstractControl
           monitor.setPercentComplete(0);
           double progress = 1.0d;
 
+          // Jahresabschluss löschen
+          if (jloeschen && jdate == null)
+          {
+            monitor.log(
+                "Jahresabschlüsse löschen: Kein gültiges Datum eingegeben");
+          }
+          else if (jloeschen && jdate != null)
+          {
+            jahresabschlussLoeschen(monitor, jdate);
+          }
+          monitor.setPercentComplete((int) (progress / anzahl * 100d));
+          progress++;
+
           // Rechnungen löschen
           if (rloeschen && rdate == null)
           {
@@ -218,19 +229,6 @@ public class DbBereinigenControl extends AbstractControl
           else if (aloeschen && adate != null)
           {
             abrechnungslaufLoeschen(monitor, adate);
-          }
-          monitor.setPercentComplete((int) (progress / anzahl * 100d));
-          progress++;
-
-          // Jahresabschluss löschen
-          if (jloeschen && jdate == null)
-          {
-            monitor.log(
-                "Jahresabschlüsse löschen: Kein gültiges Datum eingegeben");
-          }
-          else if (jloeschen && jdate != null)
-          {
-            jahresabschlussLoeschen(monitor, jdate);
           }
           monitor.setPercentComplete((int) (progress / anzahl * 100d));
           progress++;
@@ -852,25 +850,6 @@ public class DbBereinigenControl extends AbstractControl
   {
     try
     {
-      // Suche Datum der ältesten Buchung
-      final DBService service = Einstellungen.getDBService();
-      String sql = "SELECT buchung.datum from buchung " + "WHERE datum < ? "
-          + "order by datum ";
-      Date buchungdate = (Date) service.execute(sql, new Object[] { date },
-          new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return rs.getDate(1);
-              }
-              return null;
-            }
-          });
-
       DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
           .createList(Jahresabschluss.class);
       it.addFilter("bis < ?", date);
@@ -882,27 +861,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           ja = it.next();
-          if (buchungdate != null)
-          {
-            Date bis = ja.getBis();
-            if (!bis.before(buchungdate))
-            {
-              String fehler = "Der Jahresabschluss mit der Nr " + ja.getID()
-                  + " wurde nicht gelöscht. Es existieren noch Buchungen"
-                  + " in diesem oder vorangehenden Jahresabschlüssen";
-              monitor.setStatusText(fehler);
-              continue;
-            }
-          }
           ja.deleteForced();
-          DBIterator<Anfangsbestand> it2 = Einstellungen.getDBService()
-              .createList(Anfangsbestand.class);
-          it2.addFilter("datum = ?",
-              new Object[] { Datum.addTage(ja.getBis(), 1) });
-          while (it2.hasNext())
-          {
-            it2.next().delete();
-          }
           count++;
         }
         catch (OperationCanceledException oce)

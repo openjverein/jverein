@@ -65,8 +65,7 @@ public class JahresabschlussImpl extends AbstractJVereinDBObject
         it.addFilter("von > ?", new Object[] { getVon() });
         if (it.hasNext())
         {
-          throw new ApplicationException(
-              "Jahresabschluss kann nicht gelöscht werden. Es existieren neuere Abschlüsse!");
+          throw new ApplicationException("Es existieren neuere Abschlüsse!");
         }
       }
       catch (RemoteException e)
