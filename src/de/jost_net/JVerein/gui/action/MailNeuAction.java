@@ -27,45 +27,37 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
-public class MailDetailAction implements Action
+public class MailNeuAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
     Mail m = null;
-
-    if (context != null && (context instanceof Mail))
+    try
     {
-      m = (Mail) context;
-    }
-    else
-    {
-      try
+      MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
+          new MailVorlageControl(null),
+          MailVorlagenAuswahlDialog.POSITION_CENTER, true);
+      m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
+      MailVorlage mv = mvad.open();
+      if (!mvad.getAbort())
       {
-        MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
-            new MailVorlageControl(null),
-            MailVorlagenAuswahlDialog.POSITION_CENTER, true);
-        m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
-        MailVorlage mv = mvad.open();
-        if (!mvad.getAbort())
+        if (mv != null)
         {
-          if (mv != null)
-          {
-            m.setBetreff(mv.getBetreff());
-            m.setTxt(mv.getTxt());
-          }
+          m.setBetreff(mv.getBetreff());
+          m.setTxt(mv.getTxt());
         }
       }
-      catch (OperationCanceledException oce)
-      {
-        throw oce;
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(
-            "Fehler bei der Erzeugung der neuen Mail", e);
-      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException("Fehler bei der Erzeugung der neuen Mail",
+          e);
     }
     GUI.startView(MailDetailView.class.getName(), m);
   }

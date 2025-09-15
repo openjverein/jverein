@@ -652,6 +652,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         }
       }
     });
+    beitragsgruppeList.setMulti(true);
     beitragsgruppeList.setAction(
         new EditAction(BeitragsgruppeDetailView.class, beitragsgruppeList));
     VorZurueckControl.setObjektListe(null, null);

@@ -23,9 +23,8 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.willuhn.datasource.db.AbstractDBObject;
 
-public class MailEmpfaengerImpl extends AbstractDBObject
+public class MailEmpfaengerImpl extends AbstractJVereinDBObject
     implements MailEmpfaenger, Comparable<MailEmpfaenger>
 {
 
@@ -163,5 +162,17 @@ public class MailEmpfaengerImpl extends AbstractDBObject
       //
     }
     return 0;
+  }
+
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Empfänger";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Empfänger";
   }
 }

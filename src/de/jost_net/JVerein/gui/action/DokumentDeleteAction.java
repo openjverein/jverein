@@ -19,68 +19,29 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Löschen von Dokumenten
  */
-public class DokumentDeleteAction implements Action
+public class DokumentDeleteAction extends DeleteAction
 {
-
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    if (context instanceof TablePart)
+    if (!(object instanceof AbstractDokument))
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
+      return;
     }
-    if (context == null || !(context instanceof AbstractDokument))
-    {
-      throw new ApplicationException("Kein Dokument ausgewählt");
-    }
-    try
-    {
-      AbstractDokument ad = (AbstractDokument) context;
-      if (ad.isNewObject())
-      {
-        return;
-      }
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Dokument löschen");
-      d.setText("Wollen Sie dieses Dokument wirklich löschen?");
 
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-        QueryMessage qm = new QueryMessage(ad.getUUID(), null);
-        Application.getMessagingFactory()
-            .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
-        ad.delete();
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen des Dokuments", e);
-        return;
-      }
-      GUI.getStatusBar().setSuccessText("Dokument gelöscht.");
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Löschen des Dokuments";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    AbstractDokument ad = (AbstractDokument) object;
+    QueryMessage qm = new QueryMessage(ad.getUUID(), null);
+    Application.getMessagingFactory().getMessagingQueue("jameica.messaging.del")
+        .sendSyncMessage(qm);
+    ad.delete();
   }
 }

@@ -15,8 +15,6 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
 
-import de.jost_net.JVerein.Variable.RechnungVar;
-import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
@@ -29,30 +27,11 @@ public class Update0485 extends AbstractDDLUpdate
     super(driver, monitor, conn);
   }
 
-  @SuppressWarnings("deprecation")
   @Override
   public void run() throws ApplicationException
   {
-    Column col = new Column("name", COLTYPE.VARCHAR, 1000, "''", true, false);
-    execute(alterColumn("formularfeld", col));
-
-    col = new Column("ausrichtung", COLTYPE.INTEGER, 1, "0", true, false);
-    execute(addColumn("formularfeld", col));
-
-    // Bisher waren Double Felder und der Steuersatz rechts ausgerichtet
-    execute("UPDATE formularfeld SET ausrichtung = 1 WHERE name IN('"
-        + RechnungVar.SUMME.getName() + "','" + RechnungVar.IST.getName()
-        + "','" + RechnungVar.SUMME_OFFEN.getName() + "','"
-        + RechnungVar.STAND.getName() + "','" + RechnungVar.STEUERSATZ.getName()
-        + "','" + RechnungVar.MK_STEUERSATZ.getName() + "','"
-        + RechnungVar.MK_SUMME_OFFEN.getName() + "','"
-        + RechnungVar.MK_STAND.getName() + "','"
-        + SpendenbescheinigungVar.BETRAG.getName() + "','"
-        + RechnungVar.NETTOBETRAG.getName() + "','"
-        + RechnungVar.STEUERBETRAG.getName() + "','"
-        + RechnungVar.BETRAG.getName() + "','"
-        + RechnungVar.MK_NETTOBETRAG.getName() + "','"
-        + RechnungVar.MK_STEUERBETRAG.getName() + "','"
-        + RechnungVar.MK_BETRAG.getName() + "')");
+    Column programVersion = new Column("programversion", COLTYPE.VARCHAR, 15,
+        "null", false, false);
+    execute(addColumn("version", programVersion));
   }
 }

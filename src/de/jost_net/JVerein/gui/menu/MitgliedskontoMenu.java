@@ -25,7 +25,7 @@ import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -54,7 +54,7 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
         "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new SollbuchungLoeschenAction(), "user-trash-full.png"));
+        new MitgliedskontoSollbuchungDeleteAction(), "user-trash-full.png"));
     try
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -158,7 +158,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SollOhneIstItem extends CheckedSingleContextMenuItem
+  private static class SollOhneIstItem extends CheckedContextMenuItem
   {
 
     private SollOhneIstItem(String text, Action action, String icon)
@@ -169,9 +169,23 @@ public class MitgliedskontoMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
+      MitgliedskontoNode[] nodes = null;
+
       if (o instanceof MitgliedskontoNode)
       {
-        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
+        nodes = new MitgliedskontoNode[] { (MitgliedskontoNode) o };
+      }
+      else if (o instanceof MitgliedskontoNode[])
+      {
+        nodes = (MitgliedskontoNode[]) o;
+      }
+      else
+      {
+        return false;
+      }
+
+      for (MitgliedskontoNode mkn : nodes)
+      {
         if (mkn.getType() == MitgliedskontoNode.SOLL)
         {
           DBIterator<Buchung> it;
@@ -180,23 +194,24 @@ public class MitgliedskontoMenu extends ContextMenu
             it = Einstellungen.getDBService().createList(Buchung.class);
             it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
                 new Object[] { mkn.getID() });
-            if (it.size() == 0)
+            if (it.size() != 0)
             {
-              return true;
+              return false;
             }
           }
           catch (RemoteException e)
           {
             Logger.error("Fehler", e);
+            return false;
           }
-          return false;
         }
         else
         {
           return false;
         }
       }
-      return super.isEnabledFor(o);
+
+      return true;
     }
   }
 
