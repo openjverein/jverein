@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -52,10 +53,14 @@ public class FormularfeldDetailView extends AbstractDetailView
     group.addLabelPair("Von unten", control.getY());
     group.addLabelPair("Schriftart", control.getFont());
     group.addLabelPair("Schriftgröße", control.getFontsize());
+    group.addLabelPair("Ausrichtung", control.getAusrichtung());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
+    buttons.addButton("Variablen anzeigen",
+        new InsertVariableDialogAction(control.getMap()), control, false,
+        "bookmark.png");
     buttons.addButton("Speichern", new Action()
     {
 

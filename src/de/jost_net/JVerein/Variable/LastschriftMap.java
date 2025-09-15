@@ -47,39 +47,13 @@ public class LastschriftMap extends AbstractMap
     {
       map = inma;
     }
-    Abrechnungslauf abrl = null;
+
     if (ls.getID() == null)
     {
-      abrl = (Abrechnungslauf) Einstellungen.getDBService()
-          .createObject(Abrechnungslauf.class, null);
-      abrl.setDatum(new Date());
-      abrl.setFaelligkeit(new Date());
-      abrl.setID("123");
-      ls.setAdressierungszusatz("Hinterhaus bei Lieschen Müller");
-      ls.setAnrede("Herrn");
-      ls.setBetrag(123.45d);
-      ls.setBIC("XXXXXXXXXXX");
-      ls.setEmail("willi.wichtig@mail.de");
-      ls.setIBAN("DE89370400440532013000");
-      ls.setIBAN("DE89370400440532013000");
-      ls.setGeschlecht(GeschlechtInput.MAENNLICH);
-      ls.setMandatDatum(new Date());
-      ls.setMandatSequence("FRST");
-      ls.setMandatID("1234");
-      ls.setName("Wichtig");
-      ls.setOrt("Testenhausen");
-      ls.setPersonenart("n");
-      ls.setPlz("12345");
-      ls.setStaat("Deutschland");
-      ls.setStrasse("Bahnhofstr. 1");
-      ls.setTitel("Dr.");
-      ls.setVerwendungszweck("Beitrag 2013 Willi Wichtig");
-      ls.setVorname("Willi");
+      return getDummyMap(map);
     }
-    else
-    {
-      abrl = ls.getAbrechnungslauf();
-    }
+
+    Abrechnungslauf abrl = ls.getAbrechnungslauf();
 
     map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
     map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
