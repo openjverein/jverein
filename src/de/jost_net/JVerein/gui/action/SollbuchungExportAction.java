@@ -40,7 +40,8 @@ public class SollbuchungExportAction implements Action
     try
     {
       ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
-          Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
+          Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT,
+          context);
       d.open();
     }
     catch (OperationCanceledException oce)

@@ -55,14 +55,13 @@ public abstract class SollbuchungExport implements Exporter
       throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
-    // Index 0 ist der Control!
-    this.control.getSuchname().setValue(objects[1]);
-    this.control.getDifferenz().setValue(objects[2]);
-    this.control.getOhneAbbucher().setValue(objects[3]);
-    this.control.getDatumvon().setValue(objects[4]);
-    this.control.getDatumbis().setValue(objects[5]);
+    this.control.getSuchname().setValue(objects[0]);
+    this.control.getDifferenz().setValue(objects[1]);
+    this.control.getOhneAbbucher().setValue(objects[2]);
+    this.control.getDatumvon().setValue(objects[3]);
+    this.control.getDatumbis().setValue(objects[4]);
     this.control.getMailauswahl()
-        .setValue(new MailAuswertungObject((int) objects[6]));
+        .setValue(new MailAuswertungObject((int) objects[5]));
 
     open();
 

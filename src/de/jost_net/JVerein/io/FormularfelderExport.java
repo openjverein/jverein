@@ -54,10 +54,9 @@ public abstract class FormularfelderExport implements Exporter
     this.file = file;
     Logger.debug(String.format("Formularfelder Export"));
     open();
-    // Index 0 ist das Formular!
-    for (int i = 1; i < objects.length; i++)
+    for (Object ob : objects)
     {
-      add((Formularfeld) objects[i]);
+      add((Formularfeld) ob);
     }
     close();
   }

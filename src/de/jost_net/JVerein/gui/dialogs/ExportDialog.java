@@ -69,6 +69,8 @@ public class ExportDialog extends AbstractDialog<Object>
 
   private String helplink = null;
 
+  private Object dateinameObject = null;
+
   /**
    * ct.
    * 
@@ -77,7 +79,8 @@ public class ExportDialog extends AbstractDialog<Object>
    * @param type
    *          die Art der zu exportierenden Objekte.
    */
-  public ExportDialog(Object[] objects, Class<?> type, String helplink)
+  public ExportDialog(Object[] objects, Class<?> type, String helplink,
+      Object dateinameObject)
   {
     super(POSITION_CENTER);
     setTitle(i18n.tr("Daten-Export"));
@@ -85,6 +88,7 @@ public class ExportDialog extends AbstractDialog<Object>
 
     this.objects = objects;
     this.type = type;
+    this.dateinameObject = dateinameObject;
 
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
@@ -175,9 +179,7 @@ public class ExportDialog extends AbstractDialog<Object>
     String ext = se == null ? "" : se[0];
     ext = ext.replaceAll("\\*.", ""); // "*." entfernen
 
-    // objects[0] ist immer der Control bzw. das Objekt welches für die
-    // Dateinamen Map benutzt wird
-    fd.setFileName(exp.exporter.getDateiname(objects[0]));
+    fd.setFileName(exp.exporter.getDateiname(dateinameObject));
 
     String path = settings.getString("lastdir",
         System.getProperty("user.home"));

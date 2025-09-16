@@ -24,7 +24,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.AbrechnungParameterMap;
+import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
@@ -146,7 +146,7 @@ public class VorlageUtil
           break;
         case ABRECHNUNGSLAUF_SEPA_DATEINAME:
         case ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME:
-          map = new AbrechnungParameterMap().getMap((AbrechnungSEPAControl) obj,
+          map = new AbrechnungslaufParameterMap().getMap((AbrechnungSEPAControl) obj,
               map);
           break;
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
@@ -309,7 +309,7 @@ public class VorlageUtil
           break;
         case ABRECHNUNGSLAUF_SEPA_DATEINAME:
         case ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME:
-          map = AbrechnungParameterMap.getDummyMap(map);
+          map = AbrechnungslaufParameterMap.getDummyMap(map);
           break;
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
@@ -372,18 +372,27 @@ public class VorlageUtil
 
   public static String translate(Map<String, Object> map, String inString)
   {
-    Velocity.init();
-    VelocityContext context = new VelocityContext();
-    context.put("dateformat", new JVDateFormatTTMMJJJJ());
-    context.put("udateformat", new UniversalDateFormat());
-    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-    VarTools.add(context, map);
-    StringWriter wdateiname = new StringWriter();
-    String in = inString.replaceAll("-\\$", " \\$");
-    Velocity.evaluate(context, wdateiname, "LOG", in);
-    String str = wdateiname.toString();
-    str = str.replaceAll(" ", "-");
-    return str;
+    try
+    {
+      Velocity.init();
+      VelocityContext context = new VelocityContext();
+      context.put("dateformat", new JVDateFormatTTMMJJJJ());
+      context.put("udateformat", new UniversalDateFormat());
+      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+      VarTools.add(context, map);
+      StringWriter wdateiname = new StringWriter();
+      String in = inString.replaceAll("-\\$", " \\$");
+      Velocity.evaluate(context, wdateiname, "LOG", in);
+      String str = wdateiname.toString();
+      str = str.replaceAll(" ", "-");
+      return str;
+    }
+    catch (Exception e)
+    {
+      Logger.error(
+          "Format Fehler bei der Dateinamen Ersetzung: " + e.getMessage());
+      return "Format Fehler bei der Dateinamen Ersetzung.";
+    }
   }
 
   public static String getVorlageMuster(VorlageTyp typ) throws RemoteException

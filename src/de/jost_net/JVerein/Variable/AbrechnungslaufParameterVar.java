@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-public enum AbrechnungParameterVar
+public enum AbrechnungslaufParameterVar
 {
   DATUM_FAELLIGKEIT_F("parameter_faelligkeit_f"),
   DATUM_FAELLIGKEIT_U("parameter_faelligkeit_u"),
@@ -34,7 +34,7 @@ public enum AbrechnungParameterVar
 
   private String name;
 
-  AbrechnungParameterVar(String name)
+  AbrechnungslaufParameterVar(String name)
   {
     this.name = name;
   }
