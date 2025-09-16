@@ -160,6 +160,7 @@ public class ProjektControl extends FilterControl implements Savable
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
     projektList.addFeature(new FeatureSummary());
+    projektList.setMulti(true);
     projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
     VorZurueckControl.setObjektListe(null, null);
     return projektList;

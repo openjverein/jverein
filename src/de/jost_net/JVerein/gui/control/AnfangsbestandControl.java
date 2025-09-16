@@ -172,6 +172,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
         .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
     anfangsbestandList.setRememberOrder(true);
     anfangsbestandList.removeFeature(FeatureSummary.class);
+    anfangsbestandList.setMulti(true);
     anfangsbestandList.setAction(
         new EditAction(AnfangsbestandDetailView.class, anfangsbestandList));
     VorZurueckControl.setObjektListe(null, null);

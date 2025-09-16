@@ -115,7 +115,7 @@ public class MailDetailView extends AbstractDetailView
     JameicaUtil.addLabel("Anhang", comp, GridData.VERTICAL_ALIGN_BEGINNING);
     Composite comp4 = new Composite(comp, SWT.NONE);
     GridData gd4 = new GridData(GridData.FILL_HORIZONTAL);
-    gd4.heightHint = 90;
+    gd4.heightHint = 100;
     comp4.setLayoutData(gd4);
     GridLayout gl4 = new GridLayout();
     gl4.marginWidth = 0;
@@ -203,5 +203,12 @@ public class MailDetailView extends AbstractDetailView
   protected Savable getControl()
   {
     return control;
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterMailDeleteConsumer();
+    super.unbind();
   }
 }

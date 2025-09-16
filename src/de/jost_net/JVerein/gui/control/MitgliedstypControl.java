@@ -147,6 +147,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mitgliedstypList.setRememberColWidths(true);
     mitgliedstypList.setRememberOrder(true);
     mitgliedstypList.addFeature(new FeatureSummary());
+    mitgliedstypList.setMulti(true);
     mitgliedstypList.setAction(
         new EditAction(MitgliedstypDetailView.class, mitgliedstypList));
     VorZurueckControl.setObjektListe(null, null);

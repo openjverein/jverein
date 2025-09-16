@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.util.ApplicationException;
 
 public class AbrechnungslaufImpl extends AbstractJVereinDBObject
     implements Abrechnungslauf
@@ -47,9 +48,20 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(e.getMessage());
+    }
   }
 
   @Override

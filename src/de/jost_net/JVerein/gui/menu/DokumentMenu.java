@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentDeleteAction;
 import de.jost_net.JVerein.gui.action.DokumentInfoBearbeitenAction;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
@@ -32,9 +33,9 @@ public class DokumentMenu extends ContextMenu
   public DokumentMenu(boolean enabled)
   {
     new ContextMenuItem();
-    addItem(new CheckedContextMenuItem("Anzeigen", new DokumentShowAction(),
-        "eye.png"));
-    addItem(new CheckedContextMenuItem("Infos bearbeiten",
+    addItem(new CheckedSingleContextMenuItem("Anzeigen",
+        new DokumentShowAction(), "eye.png"));
+    addItem(new CheckedSingleContextMenuItem("Infos bearbeiten",
         new DokumentInfoBearbeitenAction(), "text-x-generic.png"));
     if (enabled)
     {

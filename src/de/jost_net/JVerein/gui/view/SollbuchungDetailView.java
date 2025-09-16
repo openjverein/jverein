@@ -33,6 +33,8 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungDetailView extends AbstractDetailView
 {
@@ -100,5 +102,12 @@ public class SollbuchungDetailView extends AbstractDetailView
   protected Savable getControl()
   {
     return control;
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterSollbuchungConsumer();
+    super.unbind();
   }
 }

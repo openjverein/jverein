@@ -19,25 +19,16 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.control.MitgliedSuchProfilControl;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Suchprofil;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
  * Löschen eines Suchprofiles
  */
-public class SuchprofilDeleteAction implements Action
+public class SuchprofilDeleteAction extends DeleteAction
 {
   private MitgliedSuchProfilControl control;
-
-  protected SuchprofilDeleteAction()
-  {
-    //
-  }
 
   public SuchprofilDeleteAction(MitgliedSuchProfilControl control)
   {
@@ -45,55 +36,20 @@ public class SuchprofilDeleteAction implements Action
   }
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    if (context instanceof TablePart)
+    if (!(object instanceof Suchprofil))
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
+      return;
     }
-    if (context == null || !(context instanceof Suchprofil))
-    {
-      throw new ApplicationException("Kein Suchprofil ausgewählt");
-    }
-    try
-    {
-      Suchprofil sp = (Suchprofil) context;
-      if (sp.isNewObject())
-      {
-        return;
-      }
 
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Suchprofil löschen");
-      d.setText(("Wollen Sie dieses Suchprofil wirklich löschen?"));
-
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen des Suchprofiles", e);
-        return;
-      }
-      if (control.getSettings().getString("id", "").equals(sp.getID()))
-      {
-        control.getSettings().setAttribute("id", "");
-        control.getSettings().setAttribute("profilname", "");
-      }
-      sp.delete();
-      GUI.getStatusBar().setSuccessText("Suchprofil gelöscht.");
-    }
-    catch (RemoteException e)
+    Suchprofil sp = (Suchprofil) object;
+    if (control.getSettings().getString("id", "").equals(sp.getID()))
     {
-      String fehler = "Fehler beim Löschen des Suchprofiles";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      control.getSettings().setAttribute("id", "");
+      control.getSettings().setAttribute("profilname", "");
     }
+    sp.delete();
   }
 }
