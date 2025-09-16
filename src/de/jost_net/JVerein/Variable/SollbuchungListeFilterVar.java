@@ -25,9 +25,7 @@ public enum SollbuchungListeFilterVar
   DIFFERENZ_LIMIT("filter_differenz_limit"),
   OHNE_ABBUCHER("filter_ohne_abbucher"),
   DATUM_VON_F("filter_datum_von_f"),
-  DATUM_VON_U("filter_datum_von_u"),
-  DATUM_BIS_F("filter_datum_bis_f"),
-  DATUM_BIS_U("filter_datum_bis_u");
+  DATUM_BIS_F("filter_datum_bis_f");
 
   private String name;
 

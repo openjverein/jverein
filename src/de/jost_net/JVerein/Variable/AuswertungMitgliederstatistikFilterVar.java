@@ -18,8 +18,7 @@ package de.jost_net.JVerein.Variable;
 
 public enum AuswertungMitgliederstatistikFilterVar
 {
-  DATUM_STICHTAG_F("filter_stichtag_f"),
-  DATUM_STICHTAG_U("filter_stichtag_u");
+  DATUM_STICHTAG_F("filter_stichtag_f");
 
   private String name;
 

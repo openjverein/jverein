@@ -82,46 +82,28 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     map.put(AuswertungMitgliedFilterVar.GESCHLECHT.getName(),
         control.getSuchGeschlecht().getText());
 
-    map.put(AuswertungMitgliedFilterVar.STICHTAG_U.getName(),
-        control.getStichtag(false).getValue());
     map.put(AuswertungMitgliedFilterVar.STICHTAG_F.getName(),
         fromDate((Date) control.getStichtag(false).getValue()));
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_U.getName(),
-        control.getGeburtsdatumvon().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
         fromDate((Date) control.getGeburtsdatumvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_U.getName(),
-        control.getGeburtsdatumbis().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
         fromDate((Date) control.getGeburtsdatumbis().getValue()));
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_U.getName(),
-        control.getEintrittvon().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_F.getName(),
         fromDate((Date) control.getEintrittvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_U.getName(),
-        control.getEintrittbis().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_F.getName(),
         fromDate((Date) control.getEintrittbis().getValue()));
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_U.getName(),
-        control.getAustrittvon().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_F.getName(),
         fromDate((Date) control.getAustrittvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_U.getName(),
-        control.getAustrittbis().getValue());
     map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_F.getName(),
         fromDate((Date) control.getAustrittbis().getValue()));
 
     if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
     {
-      map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_U.getName(),
-          control.getSterbedatumvon().getValue());
       map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_F.getName(),
           fromDate((Date) control.getSterbedatumvon().getValue()));
-      map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_U.getName(),
-          control.getSterbedatumbis().getValue());
       map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_F.getName(),
           fromDate((Date) control.getSterbedatumbis().getValue()));
     }
@@ -180,34 +162,20 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     map.put(AuswertungMitgliedFilterVar.MAIL.getName(), "Alle");
     map.put(AuswertungMitgliedFilterVar.GESCHLECHT.getName(), "Alle");
 
-    map.put(AuswertungMitgliedFilterVar.STICHTAG_U.getName(),
-        toDate("01.01.2024"));
     map.put(AuswertungMitgliedFilterVar.STICHTAG_F.getName(), "20240101");
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_U.getName(),
-        toDate("01.01.2000"));
     map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
         "20000101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
         "20241231");
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_F.getName(),
         "20240101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_F.getName(),
         "20241231");
 
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_F.getName(),
         "20240101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_F.getName(),
         "20241231");
 
@@ -215,12 +183,8 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
       {
-        map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_U.getName(),
-            toDate("01.01.2024"));
         map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_F.getName(),
             "20240101");
-        map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_U.getName(),
-            toDate("31.12.2024"));
         map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_F.getName(),
             "20241231");
       }

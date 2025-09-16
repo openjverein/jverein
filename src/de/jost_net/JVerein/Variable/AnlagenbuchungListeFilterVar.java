@@ -25,9 +25,7 @@ public enum AnlagenbuchungListeFilterVar
   SPLITBUCHUNG("filter_splitbuchung"),
   BETRAG("filter_betrag"),
   DATUM_VON_F("filter_datum_von_f"),
-  DATUM_VON_U("filter_datum_von_u"),
   DATUM_BIS_F("filter_datum_bis_f"),
-  DATUM_BIS_U("filter_datum_bis_u"),
   ENTHALTENER_TEXT("filter_enthaltener_text");
 
   private String name;

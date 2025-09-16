@@ -44,12 +44,8 @@ public class AuswertungKursteilnehmerFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_U.getName(),
-        control.getAbbuchungsdatumvon().getValue());
     map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_F.getName(),
         fromDate((Date) control.getAbbuchungsdatumvon().getValue()));
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_U.getName(),
-        control.getAbbuchungsdatumbis().getValue());
     map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_F.getName(),
         fromDate((Date) control.getAbbuchungsdatumbis().getValue()));
 
@@ -68,12 +64,8 @@ public class AuswertungKursteilnehmerFilterMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_F.getName(),
         "20240101");
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_F.getName(),
         "20241231");
 

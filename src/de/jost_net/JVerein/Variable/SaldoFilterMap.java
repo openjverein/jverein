@@ -46,12 +46,8 @@ public class SaldoFilterMap extends AbstractMap
 
     map.put(SaldoFilterVar.DATUM_VON_F.getName(),
         fromDate(toDate((String) control.getDatumvon().getValue())));
-    map.put(SaldoFilterVar.DATUM_VON_U.getName(),
-        toDate((String) control.getDatumvon().getValue()));
     map.put(SaldoFilterVar.DATUM_BIS_F.getName(),
         fromDate(toDate((String) control.getDatumbis().getValue())));
-    map.put(SaldoFilterVar.DATUM_BIS_U.getName(),
-        toDate((String) control.getDatumbis().getValue()));
     map.put(SaldoFilterVar.JAHR.getName(),
         control.getGeschaeftsjahr().getValue().toString());
 
@@ -70,9 +66,7 @@ public class SaldoFilterMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(SaldoFilterVar.DATUM_VON_U.getName(), toDate("01.01.2024"));
     map.put(SaldoFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(SaldoFilterVar.DATUM_BIS_U.getName(), toDate("31.12.2024"));
     map.put(SaldoFilterVar.DATUM_BIS_F.getName(), "20241231");
     map.put(SaldoFilterVar.JAHR.getName(), "2024");
 

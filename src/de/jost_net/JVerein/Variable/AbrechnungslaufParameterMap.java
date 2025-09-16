@@ -47,24 +47,14 @@ public class AbrechnungslaufParameterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_U.getName(),
-        control.getFaelligkeit().getValue());
     map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_F.getName(),
         fromDate((Date) control.getFaelligkeit().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_U.getName(),
-        control.getStichtag().getValue());
     map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_F.getName(),
         fromDate((Date) control.getStichtag().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_U.getName(),
-        control.getVondatum().getValue());
     map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_F.getName(),
         fromDate((Date) control.getVondatum().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_U.getName(),
-        control.getVonEingabedatum().getValue());
     map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_F.getName(),
         fromDate((Date) control.getVonEingabedatum().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_U.getName(),
-        control.getBisdatum().getValue());
     map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_F.getName(),
         fromDate((Date) control.getBisdatum().getValue()));
     map.put(AbrechnungslaufParameterVar.ZAHLUNGSGRUND.getName(),
@@ -94,27 +84,20 @@ public class AbrechnungslaufParameterMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_U.getName(),
-        toDate("01.01.2024"));
-    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_U.getName(),
-        toDate("01.01.2024"));
+    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_F.getName(),
+        "20240101");
     map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_U.getName(),
-        toDate("01.01.2024"));
     map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_U.getName(),
-        toDate("01.01.2024"));
     map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_U.getName(),
-        toDate("01.01.2024"));
     map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.ZAHLUNGSGRUND.getName(), "Zahlungsgrund");
+    map.put(AbrechnungslaufParameterVar.ZAHLUNGSGRUND.getName(),
+        "Zahlungsgrund");
     map.put(AbrechnungslaufParameterVar.MODUS.getName(), "Alle");
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
-      map.put(AbrechnungslaufParameterVar.ABREACHNUNGSMONAT.getName(), "Januar");
+      map.put(AbrechnungslaufParameterVar.ABREACHNUNGSMONAT.getName(),
+          "Januar");
     }
 
     return map;

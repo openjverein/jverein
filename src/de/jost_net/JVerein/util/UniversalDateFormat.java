@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,5 +25,10 @@ public class UniversalDateFormat
   public String format(String format, Date date)
   {
     return new SimpleDateFormat(format).format(date);
+  }
+
+  public Date parse(String format, String date) throws ParseException
+  {
+    return new SimpleDateFormat(format).parse(date);
   }
 }

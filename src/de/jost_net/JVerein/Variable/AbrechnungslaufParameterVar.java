@@ -19,15 +19,10 @@ package de.jost_net.JVerein.Variable;
 public enum AbrechnungslaufParameterVar
 {
   DATUM_FAELLIGKEIT_F("parameter_faelligkeit_f"),
-  DATUM_FAELLIGKEIT_U("parameter_faelligkeit_u"),
   DATUM_STICHTAG_F("parameter_stichtag_f"),
-  DATUM_STICHTAG_U("parameter_stichtag_u"),
   DATUM_EINTRITT_F("parameter_eintritt_f"),
-  DATUM_EINTRITT_U("parameter_eintritt_u"),
   DATUM_EINGABE_F("parameter_eingabe_f"),
-  DATUM_EINGABE_U("parameter_eingabe_u"),
   DATUM_AUSTRITT_F("parameter_austritt_f"),
-  DATUM_AUSTRITT_U("parameter_austritt_u"),
   ABREACHNUNGSMONAT("parameter_abrechnungsmonat"),
   ZAHLUNGSGRUND("parameter_zahlungsgrund"),
   MODUS("parameter_modus");

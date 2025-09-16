@@ -70,12 +70,8 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
         control.getSuchSplibuchung().getText());
     map.put(AnlagenbuchungListeFilterVar.BETRAG.getName(),
         control.getSuchBetrag().getValue().toString());
-    map.put(AnlagenbuchungListeFilterVar.DATUM_VON_U.getName(),
-        control.getVondatum().getValue());
     map.put(AnlagenbuchungListeFilterVar.DATUM_VON_F.getName(),
         fromDate((Date) control.getVondatum().getValue()));
-    map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_U.getName(),
-        control.getBisdatum().getValue());
     map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_F.getName(),
         fromDate((Date) control.getBisdatum().getValue()));
     map.put(AnlagenbuchungListeFilterVar.ENTHALTENER_TEXT.getName(),
@@ -106,11 +102,7 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
     }
     map.put(AnlagenbuchungListeFilterVar.SPLITBUCHUNG.getName(), "Alle");
     map.put(AnlagenbuchungListeFilterVar.BETRAG.getName(), "100");
-    map.put(AnlagenbuchungListeFilterVar.DATUM_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(AnlagenbuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
     map.put(AnlagenbuchungListeFilterVar.ENTHALTENER_TEXT.getName(), "Text");
 

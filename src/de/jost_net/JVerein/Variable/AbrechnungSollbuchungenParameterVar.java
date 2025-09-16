@@ -19,7 +19,6 @@ package de.jost_net.JVerein.Variable;
 public enum AbrechnungSollbuchungenParameterVar
 {
   DATUM_F("parameter_datum_f"),
-  DATUM_U("parameter_datum_u"),
   LAUF("parameter_lauf"),
   ZAHLUNGSGRUND("parameter_zahlungsgrund"),
   BEMERKUNG("parameter_bemerkung");

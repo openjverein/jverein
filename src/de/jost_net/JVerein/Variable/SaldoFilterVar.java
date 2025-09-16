@@ -19,9 +19,7 @@ package de.jost_net.JVerein.Variable;
 public enum SaldoFilterVar
 {
   DATUM_VON_F("zeitraum_von_f"),
-  DATUM_VON_U("zeitraum_von_u"),
   DATUM_BIS_F("zeitraum_bis_f"),
-  DATUM_BIS_U("zeitraum_bis_u"),
   JAHR("zeitraum_jahr");
 
   private String name;

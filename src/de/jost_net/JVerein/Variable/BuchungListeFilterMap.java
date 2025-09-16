@@ -70,12 +70,8 @@ public class BuchungListeFilterMap extends AbstractMap
         control.getSuchSplibuchung().getText());
     map.put(BuchungListeFilterVar.BETRAG.getName(),
         control.getSuchBetrag().getValue().toString());
-    map.put(BuchungListeFilterVar.DATUM_VON_U.getName(),
-        control.getVondatum().getValue());
     map.put(BuchungListeFilterVar.DATUM_VON_F.getName(),
         fromDate((Date) control.getVondatum().getValue()));
-    map.put(BuchungListeFilterVar.DATUM_BIS_U.getName(),
-        control.getBisdatum().getValue());
     map.put(BuchungListeFilterVar.DATUM_BIS_F.getName(),
         fromDate((Date) control.getBisdatum().getValue()));
     String u = (Boolean) control.getUngeprueft().getValue() ? "Ja" : "Nein";
@@ -117,9 +113,7 @@ public class BuchungListeFilterMap extends AbstractMap
     }
     map.put(BuchungListeFilterVar.SPLITBUCHUNG.getName(), "Alle");
     map.put(BuchungListeFilterVar.BETRAG.getName(), "100");
-    map.put(BuchungListeFilterVar.DATUM_VON_U.getName(), toDate("01.01.2024"));
     map.put(BuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(BuchungListeFilterVar.DATUM_BIS_U.getName(), toDate("31.12.2024"));
     map.put(BuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
     map.put(BuchungListeFilterVar.UNGEPRUEFT.getName(), "Nein");
     map.put(BuchungListeFilterVar.ENTHALTENER_TEXT.getName(), "Text");

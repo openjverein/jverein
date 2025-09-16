@@ -19,13 +19,9 @@ package de.jost_net.JVerein.Variable;
 public enum SpendenbescheinigungListeFilterVar
 {
   DATUM_BESCHEINIGUNG_VON_F("filter_bescheinigungdatum_von_f"),
-  DATUM_BESCHEINIGUNG_VON_U("filter_bescheinigungdatum_von_u"),
   DATUM_BESCHEINIGUNG_BIS_F("filter_bescheinigungdatum_bis_f"),
-  DATUM_BESCHEINIGUNG_BIS_U("filter_bescheinigungdatum_bis_u"),
   DATUM_SPENDE_VON_F("filter_spendedatum_von_f"),
-  DATUM_SPENDE_VON_U("filter_spendedatum_von_u"),
   DATUM_SPENDE_BIS_F("filter_spendedatum_bis_f"),
-  DATUM_SPENDE_BIS_U("filter_spendedatum_bis_u"),
   ZEILE2("filter_zeile2"),
   MAIL("filter_mail"),
   SPENDENART("filter_spendeart");

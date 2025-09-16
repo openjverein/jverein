@@ -45,23 +45,13 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
     }
 
     map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_U.getName(),
-        control.getDatumvon().getValue());
-    map.put(
         SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_F.getName(),
         fromDate((Date) control.getDatumvon().getValue()));
     map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_U.getName(),
-        control.getDatumbis().getValue());
-    map.put(
         SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_F.getName(),
         fromDate((Date) control.getDatumbis().getValue()));
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_U.getName(),
-        control.getEingabedatumvon().getValue());
     map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_F.getName(),
         fromDate((Date) control.getEingabedatumvon().getValue()));
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_U.getName(),
-        control.getEingabedatumbis().getValue());
     map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_F.getName(),
         fromDate((Date) control.getEingabedatumbis().getValue()));
     map.put(SpendenbescheinigungListeFilterVar.ZEILE2.getName(),
@@ -87,23 +77,13 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
     }
 
     map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_U.getName(),
-        toDate("01.01.2024"));
-    map.put(
         SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_F.getName(),
         "20240101");
     map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_U.getName(),
-        toDate("31.12.2024"));
-    map.put(
         SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_F.getName(),
         "20241231");
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_F.getName(),
         "20240101");
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_F.getName(),
         "20241231");
     map.put(SpendenbescheinigungListeFilterVar.ZEILE2.getName(), "Zeile2");

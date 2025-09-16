@@ -19,9 +19,7 @@ package de.jost_net.JVerein.Variable;
 public enum AuswertungKursteilnehmerFilterVar
 {
   DATUM_ABBUCHUNG_VON_F("filter_abbuchung_von_f"),
-  DATUM_ABBUCHUNG_VON_U("filter_abbuchung_von_u"),
-  DATUM_ABBUCHUNG_BIS_F("filter_abbuchung_bis_f"),
-  DATUM_ABBUCHUNG_BIS_U("filter_abbuchung_bis_u");
+  DATUM_ABBUCHUNG_BIS_F("filter_abbuchung_bis_f");
 
   private String name;
 

@@ -44,8 +44,6 @@ public class AuswertungMitgliederstatistikFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_U.getName(),
-        control.getStichtag(true).getValue());
     map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_F.getName(),
         fromDate((Date) control.getStichtag(true).getValue()));
 
@@ -64,8 +62,6 @@ public class AuswertungMitgliederstatistikFilterMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_F.getName(),
         "20241231");
 

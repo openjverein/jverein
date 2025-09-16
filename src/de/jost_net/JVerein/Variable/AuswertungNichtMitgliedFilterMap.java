@@ -68,12 +68,8 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
     map.put(AuswertungNichtMitgliedFilterVar.GESCHLECHT.getName(),
         control.getSuchGeschlecht().getText());
 
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_U.getName(),
-        control.getGeburtsdatumvon().getValue());
     map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
         fromDate((Date) control.getGeburtsdatumvon().getValue()));
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_U.getName(),
-        control.getGeburtsdatumbis().getValue());
     map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
         fromDate((Date) control.getGeburtsdatumbis().getValue()));
 
@@ -118,12 +114,8 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
     map.put(AuswertungNichtMitgliedFilterVar.MAIL.getName(), "Alle");
     map.put(AuswertungNichtMitgliedFilterVar.GESCHLECHT.getName(), "Alle");
 
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_U.getName(),
-        toDate("01.01.2000"));
     map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
         "20000101");
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
         "20241231");
 

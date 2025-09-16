@@ -44,8 +44,6 @@ public class AbrechnungSollbuchungenParameterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AbrechnungSollbuchungenParameterVar.DATUM_U.getName(),
-        control.getDatum(false).getValue());
     map.put(AbrechnungSollbuchungenParameterVar.DATUM_F.getName(),
         fromDate((Date) control.getDatum(false).getValue()));
     map.put(AbrechnungSollbuchungenParameterVar.ZAHLUNGSGRUND.getName(),
@@ -71,8 +69,6 @@ public class AbrechnungSollbuchungenParameterMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(AbrechnungSollbuchungenParameterVar.DATUM_U.getName(),
-        toDate("01.01.2024"));
     map.put(AbrechnungSollbuchungenParameterVar.DATUM_F.getName(), "20240101");
     map.put(AbrechnungSollbuchungenParameterVar.ZAHLUNGSGRUND.getName(),
         "Zahlungsgrund");

@@ -63,12 +63,8 @@ public class SollbuchungListeFilterMap extends AbstractMap
     }
     String o = (Boolean) control.getOhneAbbucher().getValue() ? "Ja" : "Nein";
     map.put(SollbuchungListeFilterVar.OHNE_ABBUCHER.getName(), o);
-    map.put(SollbuchungListeFilterVar.DATUM_VON_U.getName(),
-        control.getDatumvon().getValue());
     map.put(SollbuchungListeFilterVar.DATUM_VON_F.getName(),
         fromDate((Date) control.getDatumvon().getValue()));
-    map.put(SollbuchungListeFilterVar.DATUM_BIS_U.getName(),
-        control.getDatumbis().getValue());
     map.put(SollbuchungListeFilterVar.DATUM_BIS_F.getName(),
         fromDate((Date) control.getDatumbis().getValue()));
 
@@ -94,11 +90,7 @@ public class SollbuchungListeFilterMap extends AbstractMap
     map.put(SollbuchungListeFilterVar.DIFFERENZ.getName(), "Egal");
     map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(), "100");
     map.put(SollbuchungListeFilterVar.OHNE_ABBUCHER.getName(), "Nein");
-    map.put(SollbuchungListeFilterVar.DATUM_VON_U.getName(),
-        toDate("01.01.2024"));
     map.put(SollbuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(SollbuchungListeFilterVar.DATUM_BIS_U.getName(),
-        toDate("31.12.2024"));
     map.put(SollbuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
 
     return map;

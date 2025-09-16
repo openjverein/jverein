@@ -24,9 +24,7 @@ public enum AuswertungNichtMitgliedFilterVar
   MAIL("filter_mail"),
   GESCHLECHT("filter_geschlecht"),
   DATUM_GEBURT_VON_F("filter_geburtsdatum_von_f"),
-  DATUM_GEBURT_VON_U("filter_geburtsdatum_von_u"),
   DATUM_GEBURT_BIS_F("filter_geburtsdatum_bis_f"),
-  DATUM_GEBURT_BIS_U("filter_geburtsdatum_bis_u"),
   SORTIERUNG("ausgabe_sortierung"),
   UEBERSCHRIFT("ausgabe_ueberschrift"),
   AUSGABE("ausgabe_ausgabe");
