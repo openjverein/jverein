@@ -32,7 +32,6 @@ import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -45,7 +44,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AbstractSaldoControl extends AbstractControl
+public abstract class AbstractSaldoControl extends VorZurueckControl
 {
   /**
    * Die Art des Eintrags: Header, Detail, Footer (siehe Konstanten)
