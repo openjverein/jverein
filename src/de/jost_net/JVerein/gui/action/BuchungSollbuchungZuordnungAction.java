@@ -131,7 +131,16 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
         }
 
-        if (open instanceof Sollbuchung[])
+        if (open == null)
+        {
+          for (Buchung buchung : b)
+          {
+            buchung.setSollbuchung(null);
+            buchung.store();
+          }
+          GUI.getStatusBar().setSuccessText("Sollbuchung von Buchung gelöst");
+        }
+        else if (open instanceof Sollbuchung[])
         {
           if (b.length > 1)
           {
@@ -264,15 +273,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
         }
 
-        if (sollb == null)
-        {
-          GUI.getStatusBar().setSuccessText("Sollbuchung von Buchung gelöst");
-        }
-        else
-        {
-          GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
-          control.refreshBuchungsList();
-        }
+        GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
+        control.refreshBuchungsList();
       }
     }
     catch (OperationCanceledException oce)
