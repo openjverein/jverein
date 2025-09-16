@@ -36,8 +36,9 @@ public class StatistikJahrgaengeExportAction implements Action
   {
     try
     {
-      ExportDialog d = new ExportDialog(new Object[] { context },
-          StatistikJahrgaengeView.class, DokumentationUtil.STATISTIKJAHRGAENGE);
+      Object[] objects = new Object[] { context };
+      ExportDialog d = new ExportDialog(objects, StatistikJahrgaengeView.class,
+          DokumentationUtil.STATISTIKJAHRGAENGE, objects[0]);
       d.open();
     }
     catch (OperationCanceledException oce)
