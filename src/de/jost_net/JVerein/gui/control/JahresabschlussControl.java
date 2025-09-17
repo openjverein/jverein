@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -50,7 +51,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -60,7 +60,7 @@ public class JahresabschlussControl extends KontensaldoControl
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private TablePart jahresabschlussList;
+  private JVereinTablePart jahresabschlussList;
 
   private DateInput datum;
 
@@ -371,8 +371,7 @@ public class JahresabschlussControl extends KontensaldoControl
         .createList(Jahresabschluss.class);
     jahresabschluesse.setOrder("ORDER BY von desc");
 
-    jahresabschlussList = new TablePart(jahresabschluesse,
-        new EditAction(JahresabschlussDetailView.class));
+    jahresabschlussList = new JVereinTablePart(jahresabschluesse, null);
     jahresabschlussList.addColumn("Nr", "id-int");
     jahresabschlussList.addColumn("Von", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -382,9 +381,13 @@ public class JahresabschlussControl extends KontensaldoControl
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Name", "name");
     jahresabschlussList.setRememberColWidths(true);
-    jahresabschlussList.setContextMenu(new JahresabschlussMenu());
+    jahresabschlussList
+        .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
     jahresabschlussList.setRememberOrder(true);
     jahresabschlussList.removeFeature(FeatureSummary.class);
+    jahresabschlussList.setAction(
+        new EditAction(JahresabschlussDetailView.class, jahresabschlussList));
+    VorZurueckControl.setObjektListe(null, null);
     return jahresabschlussList;
   }
 
