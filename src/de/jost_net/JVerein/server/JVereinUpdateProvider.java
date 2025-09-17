@@ -211,14 +211,30 @@ public class JVereinUpdateProvider
           .getPlugin(JVereinPlugin.class).getManifest().getVersion().toString();
 
       Statement stmt = conn.createStatement();
-      int anzahl = stmt
-          .executeUpdate("UPDATE version SET version = " + newVersion
-              + ",programversion = '" + programversion + "' WHERE id = 1");
-      if (anzahl == 0)
+
+      // Die Spalte programversion existiert erst ab Update 485
+      if (newVersion < 485)
       {
-        stmt.executeUpdate("INSERT INTO version VALUES (1, " + newVersion + ",'"
-            + programversion + "')");
+        int anzahl = stmt.executeUpdate(
+            "UPDATE version SET version = " + newVersion + " WHERE id = 1");
+        if (anzahl == 0)
+        {
+          stmt.executeUpdate(
+              "INSERT INTO version VALUES (1, " + newVersion + ")");
+        }
       }
+      else
+      {
+        int anzahl = stmt
+            .executeUpdate("UPDATE version SET version = " + newVersion
+                + ",programversion = '" + programversion + "' WHERE id = 1");
+        if (anzahl == 0)
+        {
+          stmt.executeUpdate("INSERT INTO version VALUES (1, " + newVersion
+              + ",'" + programversion + "')");
+        }
+      }
+
       stmt.close();
     }
     catch (SQLException e)
