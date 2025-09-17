@@ -430,7 +430,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.PERSONENART.getName(), "n");
     map.put(MitgliedVar.PLZ.getName(), "12345");
     map.put(MitgliedVar.STAAT.getName(), "Deutschland");
-    map.put(MitgliedVar.STERBETAG.getName(), ("31.12.2024"));
+    map.put(MitgliedVar.STERBETAG.getName(), "31.12.2024");
     map.put(MitgliedVar.STRASSE.getName(), "Bahnhofstr. 22");
     map.put(MitgliedVar.TELEFONDIENSTLICH.getName(), "011/123456789");
     map.put(MitgliedVar.TELEFONPRIVAT.getName(), "011/123456");
