@@ -107,7 +107,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       }
       if (getZweck1().length() == 0)
       {
-        throw new ApplicationException("Bitt Verwendungszweck eingeben!");
+        throw new ApplicationException("Bitte Verwendungszweck eingeben!");
       }
       if (getBetrag() == null)
       {
