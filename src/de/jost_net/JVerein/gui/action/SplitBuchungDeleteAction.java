@@ -17,52 +17,70 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
+
+import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.logging.Logger;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen einer Buchung.
+ * Loeschen einer Splitbuchung Buchung.
  */
-public class SplitBuchungDeleteAction implements Action
+public class SplitBuchungDeleteAction extends BuchungDeleteAction
 {
-  private BuchungsControl control;
+  private Buchung bu;
 
-  public SplitBuchungDeleteAction(BuchungsControl control)
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    this.control = control;
+    if (!(object instanceof Buchung))
+    {
+      return;
+    }
+
+    bu = (Buchung) object;
+    if (bu.getSplitTyp() == SplitbuchungTyp.HAUPT)
+    {
+      throw new ApplicationException(
+          "Hauptbuchungen können nicht geloscht werden.");
+    }
+    if (bu.getSplitTyp() == SplitbuchungTyp.GEGEN)
+    {
+      throw new ApplicationException(
+          "Gegenbuchungen können nicht geloscht werden.");
+    }
+
+    if (bu.isNewObject())
+    {
+      SplitbuchungsContainer.get().remove(bu);
+    }
+    else
+    {
+      Spendenbescheinigung spb = bu.getSpendenbescheinigung();
+      if (spb != null && selection == YesNoCancelDialog.NO)
+      {
+        throw new ApplicationException(
+            "Übersprungen, da ihr eine Spendenbescheinigung zugeordnet ist.");
+      }
+      bu.setDelete(true);
+    }
   }
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected void doFinally()
   {
-    if (context == null || !(context instanceof Buchung))
-    {
-      throw new ApplicationException("Keine Buchung ausgewählt");
-    }
-    try
-    {
-      Buchung bu = (Buchung) context;
-      if (((Buchung) context).isNewObject())
-      {
-        SplitbuchungsContainer.get().remove(bu);
-      }
-      else
-      {
-        BuchungDeleteAction action = new BuchungDeleteAction(true);
-        action.handleAction(context);
-      }
-      control.refreshSplitbuchungen();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler beim Löschen der Buchung.";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
-    }
+    Application.getMessagingFactory().sendMessage(new SplitbuchungMessage(bu));
+  }
+
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
   }
 }

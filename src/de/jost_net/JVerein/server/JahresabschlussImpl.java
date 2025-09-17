@@ -54,6 +54,30 @@ public class JahresabschlussImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    if (!forcedDelete)
+    {
+      try
+      {
+        DBIterator<Jahresabschluss> it;
+        it = Einstellungen.getDBService().createList(Jahresabschluss.class);
+        it.addFilter("von > ?", new Object[] { getVon() });
+        if (it.hasNext())
+        {
+          throw new ApplicationException("Es existieren neuere Abschlüsse!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        String msg = "Jahresabschluss kann nicht gelöscht werden. Siehe system log";
+        throw new ApplicationException(msg);
+      }
+    }
+  }
+
+  @Override
   protected void insertCheck() throws ApplicationException
   {
     try

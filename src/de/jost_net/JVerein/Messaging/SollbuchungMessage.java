@@ -10,32 +10,23 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.control.MailControl;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
+package de.jost_net.JVerein.Messaging;
+
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
 /**
- * Kontext-Menu zur MailEmpfänger-Auswahl.
+ * Wird versendet, wenn eine Sollbuchung Position gelöscht werden soll.
  */
-public class MailEmpfaengerMenu extends ContextMenu
+public class SollbuchungMessage extends ObjectMessage
 {
-
-  public MailEmpfaengerMenu(MailControl control)
+  public SollbuchungMessage(GenericObject object)
   {
-    addItem(new CheckedContextMenuItem("Entfernen",
-        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    super(object);
   }
 }

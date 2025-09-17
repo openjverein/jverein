@@ -20,9 +20,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.willuhn.datasource.db.AbstractDBObject;
 
-public abstract class AbstractDokumentImpl extends AbstractDBObject
+public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     implements AbstractDokument
 {
 
@@ -36,7 +35,7 @@ public abstract class AbstractDokumentImpl extends AbstractDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bemerkung";
   }
 
   @Override
@@ -115,6 +114,18 @@ public abstract class AbstractDokumentImpl extends AbstractDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Dokument";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Dokumente";
   }
 
 }

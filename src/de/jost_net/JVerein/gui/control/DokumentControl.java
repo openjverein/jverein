@@ -219,6 +219,7 @@ public class DokumentControl extends AbstractControl
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setRememberOrder(true);
     docsList.addFeature(new FeatureSummary());
+    docsList.setMulti(true);
     this.mc = new DokumentMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
 

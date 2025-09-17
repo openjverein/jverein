@@ -188,12 +188,12 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
   @Override
   public String getObjektName()
   {
-    return "Felddefinition";
+    return "Zusatzfeld";
   }
 
   @Override
   public String getObjektNameMehrzahl()
   {
-    return "Felddefinitionen";
+    return "Zusatzfelder";
   }
 }

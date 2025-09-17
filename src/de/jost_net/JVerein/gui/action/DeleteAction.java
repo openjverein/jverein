@@ -18,6 +18,9 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.graphics.Image;
+
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -34,73 +37,102 @@ import de.willuhn.util.ProgressMonitor;
  */
 public class DeleteAction implements Action
 {
-  private String name = "";
+  protected String name = "";
 
-  private String namen = "";
+  protected String namen = "";
 
   private String attribut = "";
+
+  private Integer selection = YesNoCancelDialog.CANCEL;
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-
-    JVereinDBObject objekt = null;
     JVereinDBObject[] ote = null;
-    int length;
     if (context instanceof JVereinDBObject)
     {
-      objekt = (JVereinDBObject) context;
-      length = 1;
-      try
-      {
-        name = objekt.getObjektName();
-        namen = objekt.getObjektNameMehrzahl();
-      }
-      catch (RemoteException e)
-      {
-        // Das kann nicht passieren ist aber nötig wegen der
-        // throws RemoteException Deklaration in JVereinDBObject
-      }
+      ote = new JVereinDBObject[] { (JVereinDBObject) context };
+      attribut = getAttribute(ote[0]);
     }
-    else if (context instanceof JVereinDBObject[])
+    else if (context instanceof JVereinDBObject[] && supportsMulti())
     {
       ote = (JVereinDBObject[]) context;
-      if (ote.length == 0)
-      {
-        throw new ApplicationException("Kein Objekt ausgewählt");
-      }
-      length = ote.length;
-      try
-      {
-        name = ote[0].getObjektName();
-        namen = ote[0].getObjektNameMehrzahl();
-      }
-      catch (RemoteException e)
-      {
-        // Das kann nicht passieren ist aber nötig wegen der
-        // throws RemoteException Deklaration in JVereinDBObject
-      }
+    }
+    else if (context instanceof JVereinDBObject[] && !supportsMulti())
+    {
+      // Das sollte nicht passieren, da es schon im Menü oder der Tabelle
+      // abgefangen wird. Sicherheitshalber wird es auch hier geprüft.
+      throw new ApplicationException(
+          "Auswahl mehrerer Einträge für dieses Objekt ist nicht unterstützt.");
     }
     else
     {
-      throw new ApplicationException("Kein Objekt ausgewählt");
+      throw new ApplicationException("Kein Objekt ausgewählt.");
+    }
+
+    if (ote.length == 0)
+    {
+      throw new ApplicationException("Kein Objekt ausgewählt.");
+    }
+
+    try
+    {
+      name = ote[0].getObjektName();
+      namen = ote[0].getObjektNameMehrzahl();
+    }
+    catch (RemoteException e)
+    {
+      // Das kann nicht passieren ist aber nötig wegen der
+      // throws RemoteException Deklaration in JVereinDBObject
     }
 
     // final wegen BackgroundTask
     final JVereinDBObject[] objekte = ote;
 
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle(name + " löschen");
-    d.setText(String.format("Wollen Sie %d %s wirklich löschen?", length,
-        (length == 1 ? name : namen)));
-    Boolean choice;
+    // Den Text un Button Info für den Dialog holen.
+    // Er kann von abgeleiteten Klassen geliefert werden
+    String text = "";
+    boolean mitNo = false;
+    Image image = null;
     try
     {
-      choice = (Boolean) d.open();
-      if (!choice.booleanValue())
+      text = getText(objekte);
+      mitNo = getMitNo(objekte);
+      image = getImage();
+    }
+    catch (ApplicationException e)
+    {
+      String fehler = "Fehler beim Löschen von " + name + " " + attribut + ": ";
+      GUI.getStatusBar().setErrorText(fehler + e.getMessage());
+      return;
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Löschen von " + name + " " + attribut + ".";
+      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
+      return;
+    }
+
+    YesNoCancelDialog d = new YesNoCancelDialog(YesNoDialog.POSITION_CENTER,
+        mitNo);
+    d.setTitle((objekte.length > 1 ? namen : name) + " löschen");
+    d.setText(text);
+    if (image != null)
+    {
+      d.setSideImage(image);
+    }
+    try
+    {
+      selection = (Integer) d.open();
+      if (selection == YesNoCancelDialog.CANCEL)
       {
-        return;
+        throw new OperationCanceledException();
       }
+    }
+    catch (OperationCanceledException ex)
+    {
+      throw ex;
     }
     catch (Exception e1)
     {
@@ -110,23 +142,24 @@ public class DeleteAction implements Action
     }
 
     // Bei nur einem Objekt direkt löschen
-    if (objekt != null)
+    if (objekte.length == 1)
     {
       try
       {
-        if (objekt.isNewObject())
+        if (objekte[0].isNewObject() && !isNewAllowed())
         {
           return;
         }
-        attribut = getAttribute(objekt);
-        objekt.delete();
+        attribut = getAttribute(objekte[0]);
+        doDelete(objekte[0], selection);
+        doFinally();
         GUI.getStatusBar().setSuccessText(name + " gelöscht.");
       }
-      catch (ApplicationException e2)
+      catch (ApplicationException e1)
       {
         String fehler = "Fehler beim Löschen von " + name + " " + attribut
             + ": ";
-        GUI.getStatusBar().setErrorText(fehler + e2.getMessage());
+        GUI.getStatusBar().setErrorText(fehler + e1.getMessage());
       }
       catch (RemoteException e1)
       {
@@ -156,13 +189,13 @@ public class DeleteAction implements Action
           }
           try
           {
-            if (o.isNewObject())
+            if (o.isNewObject() && !isNewAllowed())
             {
               skip++;
               continue;
             }
             attribut = getAttribute(o);
-            o.delete();
+            doDelete(o, selection);
             count++;
           }
           catch (ApplicationException e2)
@@ -181,6 +214,23 @@ public class DeleteAction implements Action
             Logger.error(fehler, e3);
           }
           monitor.setPercentComplete(100 * (count + skip) / objekte.length);
+        }
+        try
+        {
+          doFinally();
+        }
+        catch (ApplicationException e2)
+        {
+          skip++;
+          String fehler = "Fehler beim Löschen von " + namen + ": ";
+          monitor.setStatusText(fehler + e2.getMessage());
+        }
+        catch (RemoteException e3)
+        {
+          skip++;
+          String fehler = "Fehler beim Löschen von " + namen;
+          monitor.setStatusText(fehler);
+          Logger.error(fehler, e3);
         }
         monitor.setPercentComplete(100);
         monitor.setStatusText(count + " " + namen + " gelöscht.");
@@ -205,6 +255,14 @@ public class DeleteAction implements Action
     Application.getController().start(t);
   }
 
+  /**
+   * Liefert das primary Attribut des Objekt für die Ausgabe bei
+   * Fehlermeldungen.
+   * 
+   * @param object
+   *          Das zu löschende Objekte
+   * @return Das primary Attribut des Objekt
+   */
   private String getAttribute(JVereinDBObject objekt)
   {
     Object obj;
@@ -231,5 +289,99 @@ public class DeleteAction implements Action
     {
       return "";
     }
+  }
+
+  /**
+   * Die Methode liefert den Text für die Ausgabe im YesNoCancel Dialog. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
+   * 
+   * @param object[]
+   *          Die zu löschenden Objekte
+   * @throws RemoteException
+   * @throws ApplicationException
+   * @return Der Text für die Ausgabe im YesNoCancel Dialog
+   */
+  protected String getText(JVereinDBObject object[])
+      throws RemoteException, ApplicationException
+  {
+    return String.format("Wollen Sie %d %s wirklich löschen?", object.length,
+        (object.length == 1 ? name : namen));
+  }
+
+  /**
+   * Die Methode führt die Löschoperation des Objekts durch. Die Methode kann
+   * von abgeleiteten Klassen überschrieben werden.
+   * 
+   * @param object
+   *          Das zu löschende Objekt
+   * @param selection
+   *          Selektierte Auswahl im YesNoCancel Dialog
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
+  {
+    object.delete();
+  }
+
+  /**
+   * Die Methode wird nach doDelete aufgerufen, bei Multi Selection nach dem
+   * letzten doDelete. Die Methode kann von abgeleiteten Klassen überschrieben
+   * werden.
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  protected void doFinally() throws RemoteException, ApplicationException
+  {
+    // Ist für abgeleitete Klassen gedacht
+  }
+
+  /**
+   * Die Methode ibt zurück ob der YesNoCancel Dialog mit dem No Button
+   * angezeigt werden soll. Die Methode kann von abgeleiteten Klassen
+   * überschrieben werden.
+   * 
+   * @param object[]
+   *          Die zu löschenden Objekte
+   * @return YesNoCancel Dialog mit oder ohne No Button
+   */
+  protected boolean getMitNo(JVereinDBObject object[])
+  {
+    return false;
+  }
+
+  /**
+   * Die Methode liefert ein Image für die Anzeige im YesNoCancel Dialog. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
+   * 
+   * @return Das Image für die Anzeige im YesNoCancel Dialog
+   */
+  protected Image getImage()
+  {
+    return null;
+  }
+
+  /**
+   * Die Methode liefert zurück ob auch neue Objekte gelöscht werden können. Die
+   * Methode kann von abgeleiteten Klassen überschrieben werden.
+   * 
+   * @return Neue Objekte löschen Ja/Nein
+   */
+  protected boolean isNewAllowed()
+  {
+    return false;
+  }
+
+  /**
+   * Support für Multi Selection. Die Methode kann von abgeleiteten Klassen
+   * überschrieben werden.
+   * 
+   * @return Ob Multi Selection erlaubt ist
+   */
+  protected boolean supportsMulti()
+  {
+    return true;
   }
 }

@@ -19,11 +19,11 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.rmi.Suchprofil;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
+public class SuchprofilImpl extends AbstractJVereinDBObject
+    implements Suchprofil
 {
 
   private static final long serialVersionUID = 1603994510932244220L;
@@ -134,4 +134,15 @@ public class SuchprofilImpl extends AbstractDBObject implements Suchprofil
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Suchprofil";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Suchprofile";
+  }
 }

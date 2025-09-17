@@ -10,32 +10,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
+package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.control.MailControl;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.util.ApplicationException;
 
 /**
- * Kontext-Menu zur MailEmpfänger-Auswahl.
+ * Loeschen von Mailempfaengern.
  */
-public class MailEmpfaengerMenu extends ContextMenu
+public class MailEmpfaengerDeleteAction extends DeleteAction
 {
-
-  public MailEmpfaengerMenu(MailControl control)
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
   {
-    addItem(new CheckedContextMenuItem("Entfernen",
-        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    if (!(object instanceof MailEmpfaenger))
+    {
+      return;
+    }
+    Application.getMessagingFactory()
+        .sendMessage(new MailDeleteMessage(object));
+  }
+
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
   }
 }

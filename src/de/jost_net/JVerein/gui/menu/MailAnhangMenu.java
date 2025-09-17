@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
 import de.jost_net.JVerein.gui.action.MailAnhangDeleteAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -30,9 +31,9 @@ public class MailAnhangMenu extends ContextMenu
 
   public MailAnhangMenu(MailControl control)
   {
-    addItem(new CheckedContextMenuItem("Anzeigen",
+    addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new MailAnhangAnzeigeAction(), "eye.png"));
     addItem(new CheckedContextMenuItem("Entfernen",
-        new MailAnhangDeleteAction(control), "user-trash-full.png"));
+        new MailAnhangDeleteAction(), "user-trash-full.png"));
   }
 }

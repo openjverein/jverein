@@ -19,9 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface MailEmpfaenger extends DBObject
+public interface MailEmpfaenger extends JVereinDBObject
 {
   @Override
   public String getID() throws RemoteException;

@@ -28,6 +28,8 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 public class SplitbuchungDetailView extends AbstractView
 {
@@ -93,5 +95,12 @@ public class SplitbuchungDetailView extends AbstractView
     buttons.addButton(speichern);
     speichern.setEnabled(editable);
     buttons.paint(getParent());
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterSplitbuchungConsumer();
+    super.unbind();
   }
 }
