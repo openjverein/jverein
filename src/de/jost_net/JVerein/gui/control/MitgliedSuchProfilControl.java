@@ -290,4 +290,8 @@ public class MitgliedSuchProfilControl extends AbstractControl
     }
   }
 
+  public void deregisterSuchprofilConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
+  }
 }

@@ -23,17 +23,17 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 public class MitgliedSuchProfilListeView extends AbstractView
 {
+  final MitgliedSuchProfilControl control = new MitgliedSuchProfilControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mitglieder Such-Profil");
-
-    final MitgliedSuchProfilControl control = new MitgliedSuchProfilControl(
-        this);
 
     SimpleContainer sc = new SimpleContainer(getParent());
     sc.addInput(control.getProfilname());
@@ -61,5 +61,12 @@ public class MitgliedSuchProfilListeView extends AbstractView
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());
     control.getSuchprofilList().paint(this.getParent());
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterSuchprofilConsumer();
+    super.unbind();
   }
 }

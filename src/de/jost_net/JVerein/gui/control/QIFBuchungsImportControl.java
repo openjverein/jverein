@@ -1288,4 +1288,9 @@ public class QIFBuchungsImportControl extends AbstractControl
 
   }
 
+  public void deregisterQIFImportHeaderConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(headerMessageConsumer);
+  }
 }
