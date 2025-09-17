@@ -14,26 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.Messaging;
 
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
-public class BeitragsgruppeFormatter implements Formatter
+/**
+ * Wird versendet, wenn eine Sollbuchung Position gelöscht werden soll.
+ */
+public class SollbuchungMessage extends ObjectMessage
 {
-  @Override
-  public String format(Object o)
+  public SollbuchungMessage(GenericObject object)
   {
-    Beitragsgruppe beitragsgruppe = (Beitragsgruppe) o;
-    try
-    {
-      return beitragsgruppe.getBezeichnung();
-    }
-    catch (RemoteException e)
-    {
-      return e.getMessage();
-    }
+    super(object);
   }
 }

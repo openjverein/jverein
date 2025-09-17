@@ -24,64 +24,64 @@ import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SollbuchungLoeschenAction implements Action
+public class MitgliedskontoSollbuchungDeleteAction implements Action
 {
+  private Mitglied mitglied;
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !((context instanceof MitgliedskontoNode)
-        || context instanceof Sollbuchung))
-    {
-      throw new ApplicationException("Keine Sollbuchung ausgewählt");
-    }
+    MitgliedskontoNode[] nodes = null;
 
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-    d.setTitle("Sollbuchung löschen");
-    d.setText("Wollen Sie die Sollbuchung wirklich löschen?");
+    if (context instanceof MitgliedskontoNode)
+    {
+      nodes = new MitgliedskontoNode[] { (MitgliedskontoNode) context };
+    }
+    else if (context instanceof MitgliedskontoNode[])
+    {
+      nodes = (MitgliedskontoNode[]) context;
+    }
+    else
+    {
+      throw new ApplicationException("Kein Objekt ausgewählt.");
+    }
 
     try
     {
-      Boolean choice = (Boolean) d.open();
-      if (!choice.booleanValue())
+      mitglied = nodes[0].getMitglied();
+      Sollbuchung[] sollbuchungen = new Sollbuchung[nodes.length];
+      for (int i = 0; i < nodes.length; i++)
       {
-        return;
+        if (nodes[i].getType() == MitgliedskontoNode.SOLL)
+        {
+          sollbuchungen[i] = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, nodes[i].getID());
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Ein anderer Eintrag als Sollbuchung ausgewählt.");
+        }
       }
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      return;
-    }
-    MitgliedskontoNode mkn = null;
-    Sollbuchung sollb = null;
-    try
-    {
-      if (context instanceof MitgliedskontoNode)
-      {
-        mkn = (MitgliedskontoNode) context;
-        sollb = (Sollbuchung) Einstellungen.getDBService()
-            .createObject(Sollbuchung.class, mkn.getID());
-      }
-      else
-      {
-        sollb = (Sollbuchung) context;
-      }
-      Mitglied mitglied = sollb.getMitglied();
-      sollb.delete();
-      GUI.getStatusBar().setSuccessText("Sollbuchung gelöscht.");
-      Application.getMessagingFactory()
-          .sendMessage(new MitgliedskontoMessage(mitglied));
+      new SollbuchungDeleteAction().handleAction(sollbuchungen);
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim Löschen einer Sollbuchung");
+      throw new ApplicationException("Fehler beim Löschen einer Sollbuchung.");
     }
   }
+
+  private class SollbuchungDeleteAction extends DeleteAction
+  {
+    @Override
+    protected void doFinally()
+    {
+      Application.getMessagingFactory()
+          .sendMessage(new MitgliedskontoMessage(mitglied));
+    }
+  }
+
 }

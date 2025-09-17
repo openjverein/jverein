@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.SuchprofilDeleteAction;
 import de.jost_net.JVerein.gui.action.SuchprofilLadenAction;
 import de.jost_net.JVerein.gui.control.MitgliedSuchProfilControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
@@ -29,8 +30,8 @@ public class SuchprofilMenu extends ContextMenu
 {
   public SuchprofilMenu(MitgliedSuchProfilControl control)
   {
-    addItem(new CheckedContextMenuItem("Laden", new SuchprofilLadenAction(),
-        "document-open.png"));
+    addItem(new CheckedSingleContextMenuItem("Laden",
+        new SuchprofilLadenAction(), "document-open.png"));
     addItem(new CheckedContextMenuItem("Löschen",
         new SuchprofilDeleteAction(control), "user-trash-full.png"));
   }

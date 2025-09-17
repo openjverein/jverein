@@ -18,9 +18,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface Suchprofil extends DBObject
+public interface Suchprofil extends JVereinDBObject
 {
   public void setID(String id) throws RemoteException;
 

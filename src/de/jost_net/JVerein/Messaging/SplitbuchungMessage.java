@@ -14,32 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.Messaging;
 
-import de.jost_net.JVerein.rmi.Konto;
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.logging.Logger;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
-public class KontoFormatter implements Formatter
+/**
+ * Wird versendet, wenn eine Buchung einer Splitbuchung gelöscht werden soll.
+ */
+public class SplitbuchungMessage extends ObjectMessage
 {
-  @Override
-  public String format(Object o)
+  public SplitbuchungMessage(GenericObject object)
   {
-
-    Konto k = (Konto) o;
-    if (k != null)
-    {
-      try
-      {
-        return k.getBezeichnung();
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-    }
-    return "";
+    super(object);
   }
 }

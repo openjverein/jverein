@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -37,6 +38,7 @@ import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.willuhn.jameica.security.Wallet;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.sql.ScriptExecutor;
 import de.willuhn.util.ApplicationException;
@@ -205,14 +207,34 @@ public class JVereinUpdateProvider
       String msg = "JVerein-DB-Update: " + newVersion;
       progressmonitor.setStatusText(msg);
       Logger.info(msg);
+      String programversion = Application.getPluginLoader()
+          .getPlugin(JVereinPlugin.class).getManifest().getVersion().toString();
+
       Statement stmt = conn.createStatement();
-      int anzahl = stmt.executeUpdate(
-          "UPDATE version SET version = " + newVersion + " WHERE id = 1");
-      if (anzahl == 0)
+
+      // Die Spalte programversion existiert erst ab Update 485
+      if (newVersion < 485)
       {
-        stmt.executeUpdate(
-            "INSERT INTO version VALUES (1, " + newVersion + ")");
+        int anzahl = stmt.executeUpdate(
+            "UPDATE version SET version = " + newVersion + " WHERE id = 1");
+        if (anzahl == 0)
+        {
+          stmt.executeUpdate(
+              "INSERT INTO version VALUES (1, " + newVersion + ")");
+        }
       }
+      else
+      {
+        int anzahl = stmt
+            .executeUpdate("UPDATE version SET version = " + newVersion
+                + ",programversion = '" + programversion + "' WHERE id = 1");
+        if (anzahl == 0)
+        {
+          stmt.executeUpdate("INSERT INTO version VALUES (1, " + newVersion
+              + ",'" + programversion + "')");
+        }
+      }
+
       stmt.close();
     }
     catch (SQLException e)

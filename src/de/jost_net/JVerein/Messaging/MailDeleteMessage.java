@@ -14,33 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.Messaging;
 
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.logging.Logger;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
-public class EigenschaftGruppeFormatter implements Formatter
+/**
+ * Wird versendet, wenn ein MailAnhang gelöscht werden soll.
+ */
+public class MailDeleteMessage extends ObjectMessage
 {
-  @Override
-  public String format(Object o)
+  public MailDeleteMessage(GenericObject object)
   {
-    EigenschaftGruppe eg = (EigenschaftGruppe) o;
-    if (eg == null)
-    {
-      return null;
-    }
-    String bez = null;
-    try
-    {
-      bez = eg.getBezeichnung();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-    return bez;
+    super(object);
   }
 }

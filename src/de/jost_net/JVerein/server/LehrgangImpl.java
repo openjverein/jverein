@@ -45,7 +45,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "bezeichnung";
+    return "id";
   }
 
   @Override
@@ -174,9 +174,15 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
+  public String getObjektName()
   {
-    return super.getAttribute(fieldName);
+    return "Lehrgang";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lehrgänge";
   }
 
 }

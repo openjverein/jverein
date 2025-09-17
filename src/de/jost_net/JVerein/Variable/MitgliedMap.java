@@ -241,7 +241,6 @@ public class MitgliedMap extends AbstractMap
     }
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
 
-    HashMap<String, String> format = new HashMap<>();
     DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
         .createList(Felddefinition.class);
     while (itfd.hasNext())
@@ -266,7 +265,6 @@ public class MitgliedMap extends AbstractMap
         case Datentyp.DATUM:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               Datum.formatDate(z.getFeldDatum()));
-          format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "DATE");
           break;
         case Datentyp.JANEIN:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
@@ -275,14 +273,12 @@ public class MitgliedMap extends AbstractMap
         case Datentyp.GANZZAHL:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
               z.getFeldGanzzahl() + "");
-          format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "INTEGER");
           break;
         case Datentyp.WAEHRUNG:
           if (z.getFeldWaehrung() != null)
           {
             map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
                 Einstellungen.DECIMALFORMAT.format(z.getFeldWaehrung()));
-            format.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "DOUBLE");
           }
           else
           {
@@ -382,7 +378,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
-    map.put(MitgliedVar.AUSTRITT.getName(), toDate("01.01.2025"));
+    map.put(MitgliedVar.AUSTRITT.getName(), "01.01.2025");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(), "50");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(), "10");
     map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(), "Beitrag");
@@ -392,13 +388,13 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.MANDATID.getName(), "12345");
     map.put(MitgliedVar.BIC.getName(), "BICXXXXXXXX");
     map.put(MitgliedVar.BLZ.getName(), "");
-    map.put(MitgliedVar.EINTRITT.getName(), toDate("01.01.2010"));
-    map.put(MitgliedVar.EINGABEDATUM.getName(), toDate("01.02.2010"));
+    map.put(MitgliedVar.EINTRITT.getName(), "01.01.2010");
+    map.put(MitgliedVar.EINGABEDATUM.getName(), "01.02.2010");
     map.put(MitgliedVar.EMPFAENGER.getName(),
         "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
     map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
-    map.put(MitgliedVar.GEBURTSDATUM.getName(), toDate("02.03.1980"));
+    map.put(MitgliedVar.GEBURTSDATUM.getName(), "02.03.1980");
     map.put(MitgliedVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
     map.put(MitgliedVar.HANDY.getName(), "0152778899");
     map.put(MitgliedVar.IBAN.getName(), "DE89370400440532013000");
@@ -426,15 +422,15 @@ public class MitgliedMap extends AbstractMap
         "werner.maier@jverein.de");
     map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
         GeschlechtInput.MAENNLICH);
-    map.put(MitgliedVar.KUENDIGUNG.getName(), toDate("01.11.2024"));
-    map.put(MitgliedVar.LETZTEAENDERUNG.getName(), toDate("01.11.2024"));
+    map.put(MitgliedVar.KUENDIGUNG.getName(), "01.11.2024");
+    map.put(MitgliedVar.LETZTEAENDERUNG.getName(), "01.11.2024");
     map.put(MitgliedVar.NAME.getName(), "Wichtig");
     map.put(MitgliedVar.NAMEVORNAME.getName(), "Wichtig, Dr. Dr. Willi");
     map.put(MitgliedVar.ORT.getName(), "Testenhausen");
     map.put(MitgliedVar.PERSONENART.getName(), "n");
     map.put(MitgliedVar.PLZ.getName(), "12345");
     map.put(MitgliedVar.STAAT.getName(), "Deutschland");
-    map.put(MitgliedVar.STERBETAG.getName(), toDate(("31.12.2024")));
+    map.put(MitgliedVar.STERBETAG.getName(), "31.12.2024");
     map.put(MitgliedVar.STRASSE.getName(), "Bahnhofstr. 22");
     map.put(MitgliedVar.TELEFONDIENSTLICH.getName(), "011/123456789");
     map.put(MitgliedVar.TELEFONPRIVAT.getName(), "011/123456");
@@ -463,8 +459,7 @@ public class MitgliedMap extends AbstractMap
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              toDate(("31.12.2024")));
+          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "31.12.2024");
           break;
         case Datentyp.JANEIN:
           map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "X");

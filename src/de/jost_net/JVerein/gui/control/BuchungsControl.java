@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -47,8 +48,6 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
-import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -116,6 +115,8 @@ import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
+import de.willuhn.jameica.messaging.Message;
+import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -216,6 +217,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private TreeMap<String, String> params;
 
   private boolean editable = false;
+
+  private SplitbuchungMessageConsumer splitbuchungConsumer = null;
 
   public enum Kontenfilter
   {
@@ -1509,7 +1512,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      buchungsList.addColumn("Konto", "konto");
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1579,7 +1582,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+        buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
       buchungsList.setMulti(true);
@@ -1620,7 +1623,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      splitbuchungsList.addColumn("Konto", "konto");
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
@@ -1673,8 +1676,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           new SollbuchungFormatter());
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        splitbuchungsList.addColumn("Projekt", "projekt",
-            new ProjektFormatter());
+        splitbuchungsList.addColumn("Projekt", "projekt");
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
@@ -1705,11 +1707,15 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           }
         }
       });
+      splitbuchungConsumer = new SplitbuchungMessageConsumer();
+      Application.getMessagingFactory()
+          .registerMessageConsumer(splitbuchungConsumer);
     }
     else
     {
       refreshSplitbuchungen();
     }
+    splitbuchungsList.setMulti(true);
     return splitbuchungsList;
   }
 
@@ -2095,13 +2101,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                     "Buchung wurde bereits am %s von %s abgeschlossen.",
                     new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
                     ja.getName()));
-            return editable = false;
-          }
-          Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
-          if (spb != null)
-          {
-            GUI.getStatusBar().setErrorText(
-                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
             return editable = false;
           }
         }
@@ -2510,4 +2509,61 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class SplitbuchungMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { SplitbuchungMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            refreshSplitbuchungen();
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("Fehler beim Update der Splitbuchung Anzeige.", e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(SplitbuchungMessageConsumer.this);
+          }
+        }
+      });
+    }
+  }
+
+  public void deregisterSplitbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(splitbuchungConsumer);
+  }
 }

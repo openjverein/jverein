@@ -82,7 +82,7 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen",
         new SplitbuchungBulkAufloesenAction(control), "unlocked.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+    addItem(new CheckedContextMenuItem("Löschen", new BuchungDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
@@ -172,42 +172,6 @@ public class BuchungMenu extends ContextMenu
         {
           Logger.error("Fehler", e);
         }
-      }
-      return false;
-    }
-  }
-
-  private static class BuchungItem extends CheckedContextMenuItem
-  {
-    private BuchungItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      try
-      {
-        if (o instanceof Buchung)
-        {
-          return ((Buchung) o).getSplitId() == null;
-        }
-        if (o instanceof Buchung[])
-        {
-          for (Buchung bu : ((Buchung[]) o))
-          {
-            if (bu.getSplitId() != null)
-            {
-              return false;
-            }
-          }
-          return true;
-        }
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
       }
       return false;
     }
