@@ -257,8 +257,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     {
       setGeprueft(false);
     }
-    // Betrag auf zwei Nachkommastellen runden
-    setBetrag(Math.round(getBetrag() * 100d) / 100d);
   }
 
   @Override
