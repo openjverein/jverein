@@ -342,6 +342,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());
+    // Betrag hier nicht setzen sonst kann es zu Änderungsmeldungen kommen
+    // wenn Positionen gelöscht werden
     sollb.setDatum((Date) getDatum().getValue());
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
