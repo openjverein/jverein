@@ -254,11 +254,11 @@ public class BuchungSollbuchungZuordnungAction implements Action
                   }
                 }
               }
-              else
-              {
-                buchung.setSollbuchung(sollb);
-                buchung.store();
-              }
+            }
+            else
+            {
+              buchung.setSollbuchung(sollb);
+              buchung.store();
             }
           }
           else
