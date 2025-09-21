@@ -65,6 +65,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -80,6 +81,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   final LesefeldControl lesefeldControl = new LesefeldControl(null);
 
+  final SollbuchungControl controlSollb = new SollbuchungControl(this);
+
+  private DokumentControl dcontrol;
+
   @Override
   public void bind() throws Exception
   {
@@ -93,8 +98,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
 
     zeichneUeberschrift(); // Einschub Ende
-
-    final SollbuchungControl controlSollb = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -322,7 +325,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
       mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
-      DokumentControl dcontrol = new DokumentControl(this, "mitglieder", true);
+      dcontrol = new DokumentControl(this, "mitglieder", true);
 
       ButtonArea butts = new ButtonArea();
       butts.addButton(dcontrol.getNeuButton(mido));
@@ -817,6 +820,25 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
               Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),
               StatusBarMessage.TYPE_ERROR));
     }
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    controlSollb.deregisterMitgliedskontoConsumer();
+    try
+    {
+      if (JVereinPlugin.isArchiveServiceActive()
+          && !control.getMitglied().isNewObject())
+      {
+        dcontrol.deregisterDocumentConsumer();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
+    }
+    super.unbind();
   }
 
   @Override

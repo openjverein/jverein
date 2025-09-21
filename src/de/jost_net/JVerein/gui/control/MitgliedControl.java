@@ -3103,4 +3103,9 @@ public class MitgliedControl extends FilterControl implements Savable
       }
     }
   }
+
+  public void deregisterFamilienbeitragConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(fbc);
+  }
 }

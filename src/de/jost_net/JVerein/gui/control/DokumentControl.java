@@ -323,4 +323,9 @@ public class DokumentControl extends AbstractControl
       fd.setFilterPath(path);
     }
   }
+
+  public void deregisterDocumentConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
+  }
 }

@@ -1083,4 +1083,9 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     Application.getMessagingFactory()
         .unRegisterMessageConsumer(sollbuchungConsumer);
   }
+
+  public void deregisterMitgliedskontoConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
+  }
 }

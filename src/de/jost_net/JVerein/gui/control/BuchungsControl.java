@@ -1586,6 +1586,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      {
+        buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
+      }
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
       buchungsList.setRememberColWidths(true);
