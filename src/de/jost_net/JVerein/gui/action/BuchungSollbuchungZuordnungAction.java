@@ -182,8 +182,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
             {
               if (buchung == null)
               {
-                // Wenn keine Restbuchung existiert wurde alles zugewies und es
-                // ist nichts mehr für die restlichen Sollbuchungen übrig.
+                // Wenn keine Restbuchung existiert wurde alles zugewiesen und
+                // es ist nichts mehr für die restlichen Sollbuchungen übrig.
                 break;
               }
               buchung = SplitbuchungsContainer.autoSplit(buchung, s, false);
@@ -230,7 +230,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
                   YesNoDialog.POSITION_CENTER, true);
               dialog.setTitle("Buchung splitten");
               dialog.setText(
-                  "Die Fehlbetrag der Sollbuchung und der Betrag der Buchung stimmten nicht überein.\n"
+                  "Die Fehlbetrag der Sollbuchung und der Betrag der Buchung stimmen nicht überein.\n"
                       + "Soll die Buchung automatisch gesplittet werden?\n"
                       + "Bei 'Nein' wird die Sollbuchung ohne Splitten zugeordnet.");
               int ret = dialog.open();
