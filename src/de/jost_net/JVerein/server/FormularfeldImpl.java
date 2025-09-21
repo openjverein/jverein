@@ -45,7 +45,7 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "name";
   }
 
   @Override
@@ -214,5 +214,17 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Formularfeld";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Formularfelder";
   }
 }

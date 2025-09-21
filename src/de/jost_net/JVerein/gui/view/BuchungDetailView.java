@@ -21,9 +21,9 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
-import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.BuchungPart;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -39,6 +39,8 @@ import de.willuhn.util.ApplicationException;
 public class BuchungDetailView extends AbstractDetailView
 {
   private BuchungsControl control;
+
+  private BuchungPart part;
 
   @Override
   public void bind() throws Exception
@@ -57,7 +59,7 @@ public class BuchungDetailView extends AbstractDetailView
     final boolean editable = control.isBuchungEditable();
     final boolean speicherung = control.getBuchung().getSpeicherung();
 
-    BuchungPart part = new BuchungPart(control, this, !editable);
+    part = new BuchungPart(control, this, !editable);
     part.paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -131,6 +133,7 @@ public class BuchungDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
+    part.deregisterDocumentConsumer();
     // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
     // direkt gespeichert wird.
     try

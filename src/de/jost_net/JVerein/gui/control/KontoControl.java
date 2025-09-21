@@ -62,7 +62,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -298,46 +297,11 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      prepareStore();
-
-      DBService service = Einstellungen.getDBService();
-      String sql = "SELECT DISTINCT konto.id from konto "
-          + "WHERE (kontoart = ?) ";
-      boolean exist = (boolean) service.execute(sql,
-          new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return true;
-              }
-              return false;
-            }
-          });
-      if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
-      {
-        SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-        d.setTitle("Erstes Anlagenkonto");
-        d.setText(
-            "Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
-        try
-        {
-          d.open();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      Konto k = getKonto();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern des Kontos";
+      String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -395,6 +359,7 @@ public class KontoControl extends FilterControl implements Savable
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
+    kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);
     return kontenList;
@@ -642,10 +607,38 @@ public class KontoControl extends FilterControl implements Savable
     {
       art = getKonto().getKontoArt();
     }
-    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>();
+    ArrayList<Kontoart> arten = new ArrayList<Kontoart>(
         Arrays.asList(Kontoart.values()));
-    values.remove(Kontoart.LIMIT);
-    values.remove(Kontoart.LIMIT_RUECKLAGE);
+    for (Kontoart ka : arten)
+    {
+      if (ka.getKey() < Kontoart.LIMIT.getKey() && ka != Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN)
+          && ka == Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN)
+          && ka.getKey() > Kontoart.LIMIT.getKey()
+          && ka.getKey() < Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN)
+          && ka.getKey() > Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+    }
+
+    if (!values.contains(art))
+    {
+      values.add(art);
+    }
     kontoart = new SelectInput(values, art);
     kontoart.addListener(new Listener()
     {
@@ -1105,7 +1098,7 @@ public class KontoControl extends FilterControl implements Savable
         getAnschaffung().enable();
         getAfaRestwert().enable();
         getAfaRestwert().setValue(
-            (Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
+            (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);

@@ -22,7 +22,6 @@ import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungWiederherstellenAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -40,8 +39,8 @@ public class SplitBuchungMenu extends ContextMenu
   {
     addItem(new CheckedSplitBuchungItem("Bearbeiten", new BuchungAction(true),
         "text-x-generic.png"));
-    addItem(new DeleteSplitBuchungItem("Löschen",
-        new SplitBuchungDeleteAction(control), "user-trash-full.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new SplitBuchungDeleteAction(), "user-trash-full.png"));
     addItem(new RestoreSplitBuchungItem("Wiederherstellen",
         new SplitBuchungWiederherstellenAction(control), "edit-undo.png"));
   }
@@ -62,32 +61,6 @@ public class SplitBuchungMenu extends ContextMenu
         try
         {
           return !((Buchung) o).isToDelete();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      return false;
-    }
-  }
-
-  private static class DeleteSplitBuchungItem extends CheckedContextMenuItem
-  {
-    private DeleteSplitBuchungItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Buchung)
-      {
-        Buchung b = (Buchung) o;
-        try
-        {
-          return !b.isToDelete() && b.getSplitTyp() == SplitbuchungTyp.SPLIT;
         }
         catch (RemoteException e)
         {

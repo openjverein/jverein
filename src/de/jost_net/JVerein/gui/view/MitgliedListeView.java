@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -34,7 +35,6 @@ import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 
 public class MitgliedListeView extends AbstractMitgliedListeView
 {
@@ -75,7 +75,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     middle.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       middle.addInput(zusatzfelderInput);

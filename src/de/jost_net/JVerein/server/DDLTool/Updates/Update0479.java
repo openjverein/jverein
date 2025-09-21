@@ -13,6 +13,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
@@ -26,12 +32,6 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Base64;
 import de.willuhn.util.ProgressMonitor;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Types;
 
 public class Update0479 extends AbstractDDLUpdate
 {
@@ -92,7 +92,8 @@ public class Update0479 extends AbstractDDLUpdate
             break;
           case Types.CHAR:
           case Types.VARCHAR:
-            value = result.getString(i).replace("\n", "\\n");
+            value = result.getString(i).replace("\n", "\\n").replace("\\",
+                "\\\\");
             break;
           case Types.INTEGER:
           case Types.TINYINT:

@@ -19,11 +19,11 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.BeitragsgruppeControl;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.jameica.gui.GUI;
@@ -72,8 +72,10 @@ public class BeitragsgruppeDetailView extends AbstractDetailView
         break;
       }
     }
-
-    group.addLabelPair("Beitragsart", control.getBeitragsArt());
+    if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
+    {
+      group.addLabelPair("Beitragsart", control.getBeitragsArt());
+    }
     group.addLabelPair("Buchungsart", control.getBuchungsart());
     if ((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))

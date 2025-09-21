@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.MailAuswahlDeleteAction;
+import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -33,7 +33,7 @@ public class MailEmpfaengerMenu extends ContextMenu
   public MailEmpfaengerMenu(MailControl control)
   {
     addItem(new CheckedContextMenuItem("Entfernen",
-        new MailAuswahlDeleteAction(control), "user-trash-full.png"));
+        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));

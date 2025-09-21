@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
+import de.jost_net.JVerein.Messaging.SollbuchungMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -157,6 +158,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private BuchungListPart istbuchungList;
 
+  private boolean editable = false;
+
+  private SollbuchungMessageConsumer sollbuchungConsumer = null;
+
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -225,6 +230,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     });
     this.datum.setMandatory(true);
+    datum.setEnabled(editable);
     return datum;
   }
 
@@ -242,6 +248,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     zweck1 = new TextAreaInput(z, 500);
     zweck1.setHeight(30);
     zweck1.setMandatory(true);
+    zweck1.setEnabled(editable);
     return zweck1;
   }
 
@@ -264,6 +271,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
                 (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
             : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
     zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setEnabled(editable);
     return zahlungsweg;
   }
 
@@ -334,11 +342,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     Sollbuchung sollb = getSollbuchung();
     sollb.setZahlerId(getSelectedZahlerId());
-    sollb.setBetrag((Double) getBetrag().getValue());
+    // Betrag hier nicht setzen sonst kann es zu Änderungsmeldungen kommen
+    // wenn Positionen gelöscht werden
     sollb.setDatum((Date) getDatum().getValue());
     Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
     sollb.setZahlungsweg(zw.getKey());
     sollb.setZweck1((String) getZweck1().getValue());
+    sollb.setMitglied((Mitglied) getMitglied().getValue());
     return sollb;
   }
 
@@ -347,17 +357,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     try
     {
-      Sollbuchung sollb = (Sollbuchung) prepareStore();
-
-      if (getZahler().getValue() == null)
-      {
-        throw new ApplicationException("Bitte Zahler eingeben");
-      }
-      sollb.setMitglied((Mitglied) getMitglied().getValue());
-      if (sollb.getRechnung() != null)
-        throw new ApplicationException(
-            "Sollbuchung kann nicht geändert werden, es existiert eine Rechnung darüber.");
-      sollb.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -562,8 +562,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Part getSollbuchungPositionListPart(boolean hasRechnung)
-      throws RemoteException
+  public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -572,7 +571,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     ArrayList<SollbuchungPosition> list = getSollbuchung()
         .getSollbuchungPositionList();
 
-    if (hasRechnung)
+    if (!editable)
     {
       buchungList = new SollbuchungPositionListPart(list, null);
     }
@@ -583,10 +582,14 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
 
     buchungList.setRememberColWidths(true);
-    if (!hasRechnung)
+    if (editable)
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
+    buchungList.setMulti(true);
+    sollbuchungConsumer = new SollbuchungMessageConsumer();
+    Application.getMessagingFactory()
+        .registerMessageConsumer(sollbuchungConsumer);
     return buchungList;
   }
 
@@ -877,6 +880,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
         ((SelectInput) mitglied).setPreselected(null);
       }
+      mitglied.setEnabled(editable);
     }
     mitglied.setMandatory(true);
     return mitglied;
@@ -900,6 +904,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     }
     zahler.setMandatory(true);
+    zahler.setEnabled(editable);
     return zahler;
   }
 
@@ -926,15 +931,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public boolean hasRechnung() throws RemoteException
+  public boolean isSollbuchungEditable() throws RemoteException
   {
     if (getSollbuchung().getRechnung() != null)
     {
       GUI.getStatusBar().setErrorText(
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
-      return true;
+      return editable = false;
     }
-    return false;
+    return editable = true;
   }
 
   public Object[] getCVSExportGrenzen() throws RemoteException
@@ -1016,5 +1021,71 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class SollbuchungMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { SollbuchungMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            Sollbuchung sollb = (Sollbuchung) ((SollbuchungMessage) message)
+                .getObject();
+            getBetrag().setValue(sollb.getBetrag());
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("Fehler beim Update der Sollbuchung Betrag Anzeige.",
+                e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(SollbuchungMessageConsumer.this);
+          }
+        }
+      });
+    }
+  }
+
+  public void deregisterSollbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(sollbuchungConsumer);
+  }
+
+  public void deregisterMitgliedskontoConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
   }
 }

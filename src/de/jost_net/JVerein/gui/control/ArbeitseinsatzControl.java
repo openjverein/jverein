@@ -144,7 +144,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
       }
       else
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        ae.setMitglied(null);
       }
     }
     ae.setDatum((Date) part.getDatum().getValue());
@@ -280,7 +280,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
         (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+        .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -383,7 +383,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
     fd.setFileName(new Dateiname("arbeitseinsaetze", "",
         (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "csv")
-            .get());
+        .get());
     fd.setFilterExtensions(new String[] { "*.csv" });
 
     String s = fd.open();
@@ -621,8 +621,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList
         .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
+    arbeitseinsatzList.addColumn("Nr", "id-int");
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

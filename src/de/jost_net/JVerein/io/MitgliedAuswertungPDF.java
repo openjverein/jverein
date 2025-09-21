@@ -29,8 +29,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Tools.EigenschaftenTool;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
@@ -62,7 +62,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
           130, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+      if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
       {
         report
             .addHeaderColumn(
@@ -129,7 +129,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+        if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
         {
           report.addColumn(zelle, Element.ALIGN_LEFT);
         }

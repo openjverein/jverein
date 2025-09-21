@@ -16,56 +16,49 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
+import de.jost_net.JVerein.gui.view.MailDetailView;
+import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
-public class WiedervorlageNeuAction implements Action
+public class MailNeuAction implements Action
 {
-
-  private Mitglied m;
-
-  public WiedervorlageNeuAction(Mitglied m)
-  {
-    super();
-    this.m = m;
-  }
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Wiedervorlage w = null;
-
+    Mail m = null;
     try
     {
-      w = (Wiedervorlage) Einstellungen.getDBService()
-          .createObject(Wiedervorlage.class, null);
-      if (m != null)
+      MailVorlagenAuswahlDialog mvad = new MailVorlagenAuswahlDialog(
+          new MailVorlageControl(null),
+          MailVorlagenAuswahlDialog.POSITION_CENTER, true);
+      m = (Mail) Einstellungen.getDBService().createObject(Mail.class, null);
+      MailVorlage mv = mvad.open();
+      if (!mvad.getAbort())
       {
-        if (m.getID() == null)
+        if (mv != null)
         {
-          throw new ApplicationException(
-              "Neues Mitglied bitte erst speichern. Dann können Wiedervorlagen aufgenommen werden.");
+          m.setBetreff(mv.getBetreff());
+          m.setTxt(mv.getTxt());
         }
-        w.setMitglied(Integer.valueOf(m.getID()).intValue());
-      }
-      else
-      {
-        throw new ApplicationException("Kein Mitglied ausgewählt");
       }
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException oce)
     {
-      throw new ApplicationException(
-          "Fehler bei der Erzeugung einer neuen Wiedervorlage", e);
+      throw oce;
     }
-
-    GUI.startView(WiedervorlageDetailView.class.getName(), w);
+    catch (Exception e)
+    {
+      throw new ApplicationException("Fehler bei der Erzeugung der neuen Mail",
+          e);
+    }
+    GUI.startView(MailDetailView.class.getName(), m);
   }
 }

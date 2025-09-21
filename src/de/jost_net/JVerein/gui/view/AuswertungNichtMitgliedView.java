@@ -19,9 +19,10 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -58,7 +59,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);
     control.updateEigenschaftenAuswahlTooltip();
-    if (Einstellungen.hasZusatzfelder())
+    if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
       DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
       left.addInput(zusatzfelderInput);

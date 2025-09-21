@@ -341,24 +341,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
-  {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-    return super.getAttribute(fieldName);
-  }
-
-  @Override
   public void store() throws RemoteException, ApplicationException
   {
     super.store();
@@ -368,7 +350,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       for (Buchung b : buchungen)
       {
         b.setSpendenbescheinigungId(id);
-        b.store(false);
+        b.updateForced();
       }
     }
   }
@@ -561,6 +543,18 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   public void setAutocreate(Boolean autocreate) throws RemoteException
   {
     setAttribute("autocreate", Boolean.valueOf(autocreate));
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Spendenbescheinigung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Spendenbescheinigungen";
   }
 
 }

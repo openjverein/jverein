@@ -22,16 +22,18 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 public class FamilienbeitragView extends AbstractView
 {
+  final MitgliedControl control = new MitgliedControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Familienbeitrag");
 
-    final MitgliedControl control = new MitgliedControl(this);
     control.init("familie.", null, null);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
@@ -43,5 +45,12 @@ public class FamilienbeitragView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FAMILIENBEITRAG, false, "question-circle.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterFamilienbeitragConsumer();
+    super.unbind();
   }
 }

@@ -17,11 +17,11 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.MitgliedstypControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -35,6 +35,7 @@ public class MitgliedstypDetailView extends AbstractDetailView
     GUI.getView().setTitle("Mitgliedstyp");
 
     control = new MitgliedstypControl(this);
+    final boolean editable = control.isMitgliedstypEditable();
 
     LabelGroup group = new LabelGroup(getParent(), "Mitgliedstyp");
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
@@ -47,14 +48,9 @@ public class MitgliedstypDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     SaveButton saveButton = new SaveButton(control);
+    saveButton.setEnabled(editable);
     buttons.addButton(saveButton);
     buttons.addButton(new SaveNeuButton(control));
-    if (control.getMitgliedstyp().getJVereinid() > 0)
-    {
-      saveButton.setEnabled(false);
-      GUI.getStatusBar().setErrorText(
-          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
-    }
     buttons.paint(this.getParent());
   }
 

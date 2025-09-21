@@ -34,18 +34,19 @@ import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
-import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
+import de.jost_net.JVerein.gui.control.LesefeldControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -54,7 +55,7 @@ import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.Container;
@@ -64,6 +65,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -76,6 +78,12 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   int funktion = 'B';
 
   final MitgliedControl control = new MitgliedControl(this);
+
+  final LesefeldControl lesefeldControl = new LesefeldControl(null);
+
+  final SollbuchungControl controlSollb = new SollbuchungControl(this);
+
+  private DokumentControl dcontrol;
 
   @Override
   public void bind() throws Exception
@@ -90,8 +98,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
 
     zeichneUeberschrift(); // Einschub Ende
-
-    final SollbuchungControl controlSollb = new SollbuchungControl(this);
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
 
@@ -161,7 +167,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     anzahlSpalten = Einstellungen.getSettingInt("AnzahlSpaltenLesefelder", 1);
     showInTab = Einstellungen.getSettingBoolean("ZeigeLesefelderInTab", true);
-    zeichneLesefelder(showInTab ? folder : oben.getComposite(), anzahlSpalten);
+    zeichneLesefelder(showInTab ? folder : oben.getComposite());
 
     showInTab = Einstellungen.getSettingBoolean("ZeigeArbeitseinsatzInTab",
         true);
@@ -174,6 +180,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
+      checkLesefelder(folder);
     }
     folder.addSelectionListener(new SelectionListener()
     {
@@ -184,6 +191,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       public void widgetSelected(SelectionEvent arg0)
       {
         tabindex = folder.getSelectionIndex();
+        checkLesefelder(folder);
       }
 
       @Override
@@ -195,6 +203,34 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     zeichneButtonArea(getParent());
 
+  }
+
+  /**
+   * Die Lesefelder werden nicht direkt beim Aufruf des MitgliedDetailView aus
+   * der DB geladen, sondern erst wenn der Lesefelder Tab erstmalig angezeigt
+   * wird. Wird der Tab selektiert, wird der Update im lesefeldControl
+   * aufgerufen.
+   * 
+   * @param folder
+   *          Der selektierte Folder unten im View
+   */
+  private void checkLesefelder(TabFolder folder)
+  {
+    // Index kann außerhalb dem Range liegen wenn Lesefelder selektiert waren
+    // und dann auf Anzeige außerhalb der Tabs umgeschaltet wurde.
+    if (tabindex < folder.getItemCount()
+        && folder.getItem(tabindex).getText().equals("Lesefelder"))
+    {
+      try
+      {
+        lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+            false);
+      }
+      catch (RemoteException e)
+      {
+        //
+      }
+    }
   }
 
   private void zeichneButtonArea(Composite parent) throws RemoteException
@@ -234,6 +270,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           control.handleStore();
           GUI.getStatusBar().setSuccessText("Gespeichert");
           zeichneUeberschrift();
+          lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
+              true);
         }
         catch (RemoteException | ApplicationException e)
         {
@@ -287,7 +325,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
       mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
-      DokumentControl dcontrol = new DokumentControl(this, "mitglieder", true);
+      dcontrol = new DokumentControl(this, "mitglieder", true);
 
       ButtonArea butts = new ButtonArea();
       butts.addButton(dcontrol.getNeuButton(mido));
@@ -320,39 +358,29 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
   }
 
-  private void zeichneLesefelder(Composite parentComposite, int spaltenanzahl)
+  private void zeichneLesefelder(Composite parentComposite)
       throws RemoteException
   {
-    // TODO: getLesefelder() ist zu langsam. Inhalt von Lesefeldern sollte erst
-    // evaluiert werden, wenn Lesefelder-Tab angeklickt wird.
     if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
     {
-      Input[] lesefelder = control.getLesefelder();
-      if (lesefelder != null)
+      Container cont = getTabOrLabelContainer(parentComposite, "Lesefelder");
+
+      cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
+      cont.getComposite().setLayout(new GridLayout(1, false));
+      // Wenn Lesefelder nicht in der Tab Group angezeigt werden sondern oben,
+      // dann gleich alle zeichen, sonst erst wenn der Tab selektiert wird
+      if (cont instanceof LabelGroup)
       {
-        Container cont = getTabOrLabelContainer(parentComposite, "Lesefelder");
-        SimpleVerticalContainer svc = new SimpleVerticalContainer(
-            cont.getComposite(), false, spaltenanzahl);
-        for (Input inp : lesefelder)
-        {
-          if (inp == null)
-          {
-            String errorText = "Achtung! Ungültiges Lesefeld-Skript gefunden. Diesen Fehler bitte unter https://github.com/openjverein/jverein/issues melden!";
-            Input errorInput = new TextInput(errorText);
-            errorInput.setEnabled(false);
-            svc.addInput(errorInput);
-            GUI.getStatusBar().setErrorText(errorText);
-          }
-          else
-          {
-            svc.addInput(inp);
-          }
-        }
-        svc.arrangeVertically();
-        ButtonArea buttonszus = new ButtonArea();
-        buttonszus.addButton(control.getLesefelderEdit());
-        cont.addButtonArea(buttonszus);
+        lesefeldControl.initLesefeldMitgliedList(control.getMitglied());
       }
+      ButtonArea buttonslesefelder = new ButtonArea();
+      buttonslesefelder.addButton(new Button(
+          "Neues Lesefeld", new NewAction(LesefeldDetailView.class,
+              Lesefeld.class, control.getMitglied()),
+          null, false, "document-new.png"));
+      buttonslesefelder.paint(cont.getComposite());
+
+      lesefeldControl.getLesefeldMitgliedList().paint(cont.getComposite());
     }
   }
 
@@ -649,15 +677,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
       container.addPart(control.getZukuenftigeBeitraegeView());
 
-      // Wenn es mindestens eine Beitragsgruppe mit Beitragsart
-      // "Familienangehöriger" gibt, zeige Familienverband-Part.
-      // Dieser Familien-Part soll über die komplette Breite angezeigt werden,
-      // kann daher nicht im SimpleVerticalContainer angezeigt werden.
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey());
-      if (it.hasNext())
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         container.addPart(control.getFamilienverband());
       }
@@ -800,6 +820,25 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
               Application.getI18n().tr("Fehler beim Anzeigen des Buttons."),
               StatusBarMessage.TYPE_ERROR));
     }
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    controlSollb.deregisterMitgliedskontoConsumer();
+    try
+    {
+      if (JVereinPlugin.isArchiveServiceActive()
+          && !control.getMitglied().isNewObject())
+      {
+        dcontrol.deregisterDocumentConsumer();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
+    }
+    super.unbind();
   }
 
   @Override

@@ -29,13 +29,12 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
@@ -275,18 +274,6 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
     if ("ist".equals(fieldName))
     {
       return getIstSumme();
@@ -499,5 +486,17 @@ public class RechnungImpl extends AbstractJVereinDBObject
       return "";
     }
     return (String) getAttribute("kommentar");
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Rechnung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Rechnungen";
   }
 }

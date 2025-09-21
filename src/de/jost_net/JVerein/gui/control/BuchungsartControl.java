@@ -19,11 +19,10 @@ package de.jost_net.JVerein.gui.control;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
@@ -331,18 +330,6 @@ public class BuchungsartControl extends FilterControl implements Savable
     b.setStatus(st.getKey());
     b.setSuchbegriff((String) getSuchbegriff().getValue());
     b.setRegexp((Boolean) getRegexp().getValue());
-    if ((Boolean) getRegexp().getValue())
-    {
-      try
-      {
-        Pattern.compile((String) getSuchbegriff().getValue());
-      }
-      catch (PatternSyntaxException pse)
-      {
-        throw new ApplicationException(
-            "Regulärer Ausdruck ungültig: " + pse.getDescription());
-      }
-    }
     if (steuer != null)
     {
       b.setSteuer((Steuer) steuer.getValue());
@@ -543,7 +530,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     fd.setFileName(new Dateiname("buchungsarten", "",
         (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+        .get());
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -597,7 +584,9 @@ public class BuchungsartControl extends FilterControl implements Savable
               reporter.addColumn("", Element.ALIGN_LEFT);
             }
             reporter.addColumn(b.getSpende());
-            reporter.addColumn(b.getSteuer().getName(), Element.ALIGN_RIGHT);
+            reporter.addColumn(
+                b.getSteuer() == null ? "" : b.getSteuer().getName(),
+                Element.ALIGN_RIGHT);
           }
           reporter.closeTable();
           reporter.close();

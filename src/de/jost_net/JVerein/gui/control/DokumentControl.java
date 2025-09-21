@@ -219,6 +219,7 @@ public class DokumentControl extends AbstractControl
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setRememberOrder(true);
     docsList.addFeature(new FeatureSummary());
+    docsList.setMulti(true);
     this.mc = new DokumentMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
 
@@ -321,5 +322,10 @@ public class DokumentControl extends AbstractControl
     {
       fd.setFilterPath(path);
     }
+  }
+
+  public void deregisterDocumentConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
   }
 }

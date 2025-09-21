@@ -1251,7 +1251,7 @@ public class AbrechnungSEPA
         }
         sollb.setZweck1(zweck);
       }
-      sollb.store();
+      sollb.updateForced();
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {
@@ -1259,7 +1259,8 @@ public class AbrechnungSEPA
       summe = ((Kursteilnehmer) adress).getBetrag();
     }
 
-    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
+    if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT && !((Boolean) Einstellungen
+        .getEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT)))
     {
       Buchung buchung = (Buchung) Einstellungen.getDBService()
           .createObject(Buchung.class, null);

@@ -14,29 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.MailDetailAction;
-import de.jost_net.JVerein.gui.action.MailemfaengerDeleteAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
-import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
-import de.willuhn.jameica.gui.parts.ContextMenu;
+package de.jost_net.JVerein.Messaging;
+
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
 /**
- * Kontext-Menu zu den Mails eines Mitgliedes.
+ * Wird versendet, wenn eine Buchung einer Splitbuchung gelöscht werden soll.
  */
-public class MitgliedMailMenu extends ContextMenu
+public class SplitbuchungMessage extends ObjectMessage
 {
-
-  /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Mails eines Mitgliedes.
-   */
-  public MitgliedMailMenu(MitgliedControl mc)
+  public SplitbuchungMessage(GenericObject object)
   {
-    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new MailDetailAction(), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen",
-        new MailemfaengerDeleteAction(mc), "user-trash-full.png"));
+    super(object);
   }
 }

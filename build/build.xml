@@ -98,7 +98,7 @@
       </manifest>
       <fileset dir="${class.dir}" />
       <fileset dir="${src.dir}">
-        <exclude name="*.java" />
+          <exclude name="**/*.java"/>
       </fileset>
     </jar>
 

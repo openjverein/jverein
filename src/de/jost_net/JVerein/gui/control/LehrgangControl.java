@@ -193,6 +193,18 @@ public class LehrgangControl extends FilterControl implements Savable
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
     l.setErgebnis((String) getErgebnis().getValue());
+    if (l.isNewObject())
+    {
+      if (getMitglied().getValue() != null)
+      {
+        l.setMitglied(
+            Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
+      }
+      else
+      {
+        l.setMitglied(null);
+      }
+    }
     return l;
   }
 
@@ -201,21 +213,7 @@ public class LehrgangControl extends FilterControl implements Savable
   {
     try
     {
-      Lehrgang l = (Lehrgang) prepareStore();
-      if (l.isNewObject())
-      {
-        if (getMitglied().getValue() != null)
-        {
-          l.setMitglied(
-              Integer.valueOf(((Mitglied) getMitglied().getValue()).getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
-
-      l.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
@@ -291,6 +289,7 @@ public class LehrgangControl extends FilterControl implements Savable
     if (lehrgaengeList == null)
     {
       lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
+      lehrgaengeList.addColumn("Nr", "id-int");
       lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
       lehrgaengeList.addColumn("Von/am", "von",
@@ -303,6 +302,7 @@ public class LehrgangControl extends FilterControl implements Savable
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.addFeature(new FeatureSummary());
+      lehrgaengeList.setMulti(true);
       lehrgaengeList
           .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
       VorZurueckControl.setObjektListe(null, null);

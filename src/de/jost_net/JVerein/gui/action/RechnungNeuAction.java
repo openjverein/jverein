@@ -23,8 +23,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.RechnungDialog;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -113,7 +113,7 @@ public class RechnungNeuAction implements Action
         rechnung.store();
 
         sollb.setRechnung(rechnung);
-        sollb.store();
+        sollb.updateForced();
         erstellt++;
       }
       if (erstellt == 0)

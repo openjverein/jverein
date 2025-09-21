@@ -16,10 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
@@ -40,12 +36,11 @@ import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
 import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
+import de.jost_net.JVerein.gui.view.BuchungsTextKorrekturView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
-import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
-import de.jost_net.JVerein.gui.view.BuchungListeView;
-import de.jost_net.JVerein.gui.view.BuchungsTextKorrekturView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;
@@ -53,21 +48,21 @@ import de.jost_net.JVerein.gui.view.EinstellungenAbrechnungView;
 import de.jost_net.JVerein.gui.view.EinstellungenAllgemeinView;
 import de.jost_net.JVerein.gui.view.EinstellungenAnzeigeView;
 import de.jost_net.JVerein.gui.view.EinstellungenBuchfuehrungView;
-import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
 import de.jost_net.JVerein.gui.view.EinstellungenMailView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliedAnsichtView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliederSpaltenView;
 import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
+import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
+import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
-import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
 import de.jost_net.JVerein.gui.view.JubilaeenView;
-import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
+import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.KursteilnehmerListeView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
@@ -95,23 +90,14 @@ import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
-import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
 import de.willuhn.logging.Logger;
-
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class MyExtension implements Extension
 {
@@ -124,31 +110,6 @@ public class MyExtension implements Extension
   {
     try
     {
-      // Check ob es ein Anlagenkonto gibt
-      boolean anlagenkonto = false;
-      try
-      {
-        DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.id from konto " + "WHERE (kontoart = ?) ";
-        anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-            {
-              @Override
-              public Object extract(ResultSet rs)
-                  throws RemoteException, SQLException
-              {
-                if (rs.next())
-                {
-                  return true;
-                }
-                return false;
-              }
-            });
-      }
-      catch (Exception e)
-      {
-
-      }
       NavigationItem jverein = (NavigationItem) extendable;
 
       NavigationItem mitglieder = null;
@@ -168,16 +129,11 @@ public class MyExtension implements Extension
             new StartViewAction(KursteilnehmerListeView.class),
             "user-friends.png"));
       }
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
-      if (it.size() > 0)
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new StartViewAction(FamilienbeitragView.class), "users.png"));
       }
-
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -252,7 +208,7 @@ public class MyExtension implements Extension
             new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
       }
       // Anlagen
-      if (anlagenkonto)
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
             new StartViewAction(AnlagenbuchungListeView.class),
@@ -277,12 +233,13 @@ public class MyExtension implements Extension
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
       // Wirtschaftsplan
-      if ((Boolean) Einstellungen.getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
-            new StartViewAction(WirtschaftsplanListeView.class), "x-office-spreadsheet.png"));
+            new StartViewAction(WirtschaftsplanListeView.class),
+            "x-office-spreadsheet.png"));
       }
-
 
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
@@ -429,9 +386,12 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
           "Eigenschaften", new StartViewAction(EigenschaftListeView.class),
           "document-properties.png"));
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
-              new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+      {
+        einstellungenmitglieder
+            .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
+                new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,

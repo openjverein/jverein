@@ -14,33 +14,16 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.formatter;
+package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
-import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.logging.Logger;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
 
-public class EigenschaftGruppeFormatter implements Formatter
+public interface IMitglied extends JVereinDBObject
 {
-  @Override
-  public String format(Object o)
-  {
-    EigenschaftGruppe eg = (EigenschaftGruppe) o;
-    if (eg == null)
-    {
-      return null;
-    }
-    String bez = null;
-    try
-    {
-      bez = eg.getBezeichnung();
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-    return bez;
-  }
+  public Mitglied getMitglied() throws RemoteException;
+
+  public void setMitglied(Integer mitglied) throws RemoteException;
 }

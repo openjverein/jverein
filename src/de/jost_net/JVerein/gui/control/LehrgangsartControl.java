@@ -181,6 +181,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setRememberOrder(true);
     lehrgangsartList.removeFeature(FeatureSummary.class);
+    lehrgangsartList.setMulti(true);
     lehrgangsartList.setAction(
         new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
     VorZurueckControl.setObjektListe(null, null);

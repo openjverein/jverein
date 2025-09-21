@@ -142,6 +142,7 @@ public class LesefeldAuswerter
   {
     DBIterator<Lesefeld> itlesefelder = Einstellungen.getDBService()
         .createList(Lesefeld.class);
+    lesefelder.removeAll(lesefelder);
     while (itlesefelder.hasNext())
     {
       Lesefeld lesefeld = itlesefelder.next();

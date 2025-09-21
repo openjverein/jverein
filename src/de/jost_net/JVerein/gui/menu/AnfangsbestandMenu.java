@@ -16,15 +16,13 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.gui.action.AnfangsbestandDeleteAction;
-import de.jost_net.JVerein.gui.action.AnfangsbestandDetailAction;
-import de.jost_net.JVerein.rmi.Anfangsbestand;
-import de.willuhn.jameica.gui.Action;
+import de.jost_net.JVerein.gui.action.DeleteAction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Anfangsbeständen.
@@ -35,38 +33,12 @@ public class AnfangsbestandMenu extends ContextMenu
   /**
    * Erzeugt ein Kontext-Menu fuer die Liste der Zusatzbeträge.
    */
-  public AnfangsbestandMenu()
+  public AnfangsbestandMenu(JVereinTablePart part)
   {
-    addItem(new SingleAnfangsbestandItem("Bearbeiten",
-        new AnfangsbestandDetailAction(), "text-x-generic.png"));
-    addItem(new SingleAnfangsbestandItem("Löschen",
-        new AnfangsbestandDeleteAction(), "user-trash-full.png"));
-  }
-
-  private static class SingleAnfangsbestandItem
-      extends CheckedSingleContextMenuItem
-  {
-    private SingleAnfangsbestandItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Anfangsbestand)
-      {
-        Anfangsbestand a = (Anfangsbestand) o;
-        try
-        {
-          return a.getJahresabschluss() == null;
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      return false;
-    }
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(AnfangsbestandDetailView.class, part),
+        "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
   }
 }

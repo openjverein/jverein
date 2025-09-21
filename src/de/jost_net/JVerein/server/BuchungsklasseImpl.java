@@ -19,6 +19,8 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -47,9 +49,38 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      // Prüfen ob Buchungsklasse schon verwendet wird
+      DBIterator<Buchungsart> baIt = Einstellungen.getDBService()
+          .createList(Buchungsart.class);
+      baIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      baIt.setLimit(1);
+      if (baIt.size() > 0)
+      {
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von Buchungsarten benutzt.");
+      }
+
+      DBIterator<Buchung> buIt = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      buIt.addFilter("buchungsklasse = ?", new Object[] { getID() });
+      buIt.setLimit(1);
+      if (buIt.size() > 0)
+      {
+        throw new ApplicationException(
+            "Die Buchungsklasse wird von Buchungen benutzt.");
+      }
+
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Buchungsklasse kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -140,5 +171,17 @@ public class BuchungsklasseImpl extends AbstractJVereinDBObject
       }
     }
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchungsklasse";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungsklassen";
   }
 }

@@ -20,21 +20,21 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
-import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Lehrgang;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
-import de.jost_net.JVerein.rmi.Lehrgang;
-import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -143,8 +143,8 @@ public class MitgliedDetailAction implements Action
       {
         GUI.getCurrentView().setCurrentObject(mitglied);
       }
-      if (mitglied.getMitgliedstyp() == null || mitglied.getMitgliedstyp()
-          .getID().equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+      if (mitglied.getMitgliedstyp() == null
+          || mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
         GUI.startView(new MitgliedDetailView(), mitglied);
       }

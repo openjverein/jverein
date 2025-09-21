@@ -19,6 +19,8 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.IMitglied;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -33,18 +35,34 @@ public class NewAction implements Action
 
   private boolean noHistory = false;
 
+  private Mitglied mitglied = null;
+
   public NewAction(Class<? extends AbstractView> viewClass,
       Class<? extends DBObject> objectClass)
   {
-    this(viewClass, objectClass, false);
+    this(viewClass, objectClass, false, null);
   }
 
   public NewAction(Class<? extends AbstractView> viewClass,
       Class<? extends DBObject> objectClass, boolean noHistory)
   {
+    this(viewClass, objectClass, noHistory, null);
+  }
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass, Mitglied mitglied)
+  {
+    this(viewClass, objectClass, false, mitglied);
+  }
+
+  public NewAction(Class<? extends AbstractView> viewClass,
+      Class<? extends DBObject> objectClass, boolean noHistory,
+      Mitglied mitglied)
+  {
     this.viewClass = viewClass;
     this.objectClass = objectClass;
     this.noHistory = noHistory;
+    this.mitglied = mitglied;
   }
 
   @Override
@@ -54,6 +72,19 @@ public class NewAction implements Action
     {
       DBObject object = Einstellungen.getDBService().createObject(objectClass,
           null);
+      if (mitglied != null)
+      {
+        if (mitglied.getID() == null)
+        {
+          throw new ApplicationException(
+              "Neues Mitglied bitte erst speichern.");
+        }
+        if (object instanceof IMitglied)
+        {
+          ((IMitglied) object)
+              .setMitglied(Integer.valueOf(mitglied.getID()).intValue());
+        }
+      }
       if (noHistory)
       {
         // Wenn CurrentObject und View von aktueller und nächster View gleich

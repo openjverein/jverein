@@ -23,10 +23,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -39,17 +36,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.ArbeitseinsatzNeuAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.LehrgangNeuAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
-import de.jost_net.JVerein.gui.action.MailDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
-import de.jost_net.JVerein.gui.action.WiedervorlageNeuAction;
-import de.jost_net.JVerein.gui.action.ZusatzbetragNeuAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -66,7 +58,7 @@ import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
+import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
@@ -81,6 +73,7 @@ import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
@@ -102,8 +95,6 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.Eigenschaft;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -123,9 +114,7 @@ import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -280,8 +269,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private Input[] zusatzfelder;
 
-  private Input[] lesefelder;
-
   private TreePart eigenschaftenTree;
 
   // Elemente für die Auswertung
@@ -322,8 +309,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private ImageInput foto;
 
-  private LesefeldAuswerter lesefeldAuswerter = null;
-
   private int jjahr = 0;
 
   private TablePart beitragsTabelle;
@@ -337,12 +322,18 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public static MitgliedControl control = null;
 
+  private boolean isMitglied = false;
+
   public MitgliedControl(AbstractView view)
   {
     super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     control = this;
+    if (view instanceof AbstractMitgliedDetailView)
+    {
+      isMitglied = ((AbstractMitgliedDetailView) view).isMitgliedDetail();
+    }
   }
 
   public Mitglied getMitglied()
@@ -395,11 +386,10 @@ public class MitgliedControl extends FilterControl implements Savable
   {
     if (!((Boolean) Einstellungen
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)))
+    {
       return false;
-    if (!(view instanceof AbstractMitgliedDetailView))
-      return false;
-    AbstractMitgliedDetailView detailView = (AbstractMitgliedDetailView) view;
-    return detailView.isMitgliedDetail();
+    }
+    return isMitglied;
   }
 
   public TextInput getMitgliedsnummer() throws RemoteException
@@ -590,8 +580,16 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
-    this.geburtsdatum.setMandatory(
-        (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
+    if (((AbstractMitgliedDetailView) view).isMitgliedDetail())
+    {
+      this.geburtsdatum.setMandatory(
+          (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
+    }
+    else
+    {
+      this.geburtsdatum.setMandatory((Boolean) Einstellungen
+          .getEinstellung(Property.NICHTMITGLIEDGEBURTSDATUMPFLICHT));
+    }
     return geburtsdatum;
   }
 
@@ -1629,57 +1627,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return zusatzfelder;
   }
 
-  public Input[] getLesefelder() throws RemoteException
-  {
-    if (lesefelder != null)
-    {
-      return lesefelder;
-    }
-
-    // erstelle lesefeldAuswerter, der alle Daten und Methoden
-    // zum Evaluieren von Skripten enthält.
-    if (lesefeldAuswerter == null)
-    {
-      lesefeldAuswerter = new LesefeldAuswerter();
-      lesefeldAuswerter.setLesefelderDefinitionsFromDatabase();
-    }
-
-    // Sind keine Lesefelder definiert, erzeuge keine GUI-Elemente
-    if (lesefeldAuswerter.countLesefelder() == 0)
-      return null;
-
-    // Ist noch keine ID verfügbar, wird das Mitglied gerade angelegt.
-    // Dann darf getMap() nicht aufgerufen werden, da sonst Standard-Werte
-    // für Mitglied gesetzt werden (z.B. das Sterbedatum auf heute!)
-    // Da lesefeldAuswerter aber einen kompletten Datensatz eines Mitglieds
-    // benötigt um alle Skripte fehlerfrei zu parsen, dürfen die Lesefelder
-    // noch nicht ausgewertet werden. Die GUI-Elemente werden daher beim
-    // ersten Erstellen eines neuen Mitglieds noch nicht angezeigt.
-    if (getMitglied().getID() == null)
-      return null;
-
-    lesefeldAuswerter
-        .setMap(new MitgliedMap().getMap(getMitglied(), null, true));
-
-    lesefelder = new Input[lesefeldAuswerter.countLesefelder()];
-
-    int i = 0;
-    Iterator<Entry<String, Object>> it = lesefeldAuswerter.getLesefelderMap()
-        .entrySet().iterator();
-    while (it.hasNext())
-    {
-      // Evaluiere Skripte und erzeuge für jedes ein TextAreaInput mit
-      // dem ausgewerteten Inhalt sowie dem Skriptnamen davor.
-      Entry<String, Object> pairs = it.next();
-      TextAreaInput t = new TextAreaInput(pairs.getValue().toString());
-      t.setEnabled(false);
-      t.setName(pairs.getKey());
-      lesefelder[i] = t;
-      i++;
-    }
-    return lesefelder;
-  }
-
   public void refreshFamilienangehoerigeTable() throws RemoteException
   {
     if (familienangehoerige == null)
@@ -1752,7 +1699,7 @@ public class MitgliedControl extends FilterControl implements Savable
         new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
-
+    zusatzbetraegeList.setMulti(true);
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
@@ -1824,6 +1771,7 @@ public class MitgliedControl extends FilterControl implements Savable
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
     wiedervorlageList.setRememberColWidths(true);
     wiedervorlageList.setRememberOrder(true);
+    wiedervorlageList.setMulti(true);
     return wiedervorlageList;
   }
 
@@ -1838,16 +1786,16 @@ public class MitgliedControl extends FilterControl implements Savable
     me.join("mailempfaenger");
     me.addFilter("mailempfaenger.mail = mail.id");
     me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
-    mailList = new TablePart(me, new MailDetailAction());
+    mailList = new TablePart(me, new EditAction(MailDetailView.class));
     mailList.setRememberColWidths(true);
     mailList.setRememberOrder(true);
-
+    mailList.setMulti(true);
     mailList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "betreff");
-    mailList.setContextMenu(new MitgliedMailMenu(this));
+    mailList.setContextMenu(new MailMenu(null));
     return mailList;
   }
 
@@ -1867,7 +1815,7 @@ public class MitgliedControl extends FilterControl implements Savable
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
-
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     arbeitseinsatzList.addColumn("Stunden", "stunden",
@@ -1891,7 +1839,7 @@ public class MitgliedControl extends FilterControl implements Savable
         new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
-
+    lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -2198,9 +2146,10 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getZusatzbetragNeu()
   {
-    return new Button("Neuer Zusatzbetrag",
-        new ZusatzbetragNeuAction(getMitglied()), null, false,
-        "document-new.png");
+    return new Button(
+        "Neuer Zusatzbetrag", new NewAction(ZusatzbetragDetailView.class,
+            Zusatzbetrag.class, getMitglied()),
+        null, false, "document-new.png");
   }
 
   public Button getSollbuchungNeu()
@@ -2212,21 +2161,24 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getWiedervorlageNeu()
   {
-    return new Button("Neue Wiedervorlage",
-        new WiedervorlageNeuAction(getMitglied()), null, false,
-        "document-new.png");
+    return new Button(
+        "Neue Wiedervorlage", new NewAction(WiedervorlageDetailView.class,
+            Wiedervorlage.class, getMitglied()),
+        null, false, "document-new.png");
   }
 
   public Button getArbeitseinsatzNeu()
   {
-    return new Button("Neuer Arbeitseinsatz",
-        new ArbeitseinsatzNeuAction(getMitglied()), null, false,
-        "document-new.png");
+    return new Button(
+        "Neuer Arbeitseinsatz", new NewAction(ArbeitseinsatzDetailView.class,
+            Arbeitseinsatz.class, getMitglied()),
+        null, false, "document-new.png");
   }
 
   public Button getLehrgangNeu()
   {
-    return new Button("Neuer Lehrgang", new LehrgangNeuAction(getMitglied()),
+    return new Button("Neuer Lehrgang",
+        new NewAction(LehrgangDetailView.class, Lehrgang.class, getMitglied()),
         null, false, "document-new.png");
   }
 
@@ -2317,124 +2269,32 @@ public class MitgliedControl extends FilterControl implements Savable
   {
     Mitglied m = getMitglied();
 
-    // Eigenschaften testen
-    if (eigenschaftenTree != null)
+    if (m.getPersonenart().equalsIgnoreCase("n"))
     {
-      // liefert nur denRoot
-      ArrayList<?> rootNodes = (ArrayList<?>) eigenschaftenTree.getItems();
-      EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
-
-      HashMap<String, Boolean> pflichtgruppen = new HashMap<>();
-      DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
-          .createList(EigenschaftGruppe.class);
-      it.addFilter("pflicht = ?", new Object[] { Boolean.TRUE });
-      while (it.hasNext())
-      {
-        EigenschaftGruppe eg = it.next();
-        pflichtgruppen.put(eg.getID(), Boolean.valueOf(false));
-      }
-
-      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
-      {
-        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-        pflichtgruppen.put(ei.getEigenschaftGruppeId() + "",
-            Boolean.valueOf(true));
-      }
-      for (String key : pflichtgruppen.keySet())
-      {
-        if (!pflichtgruppen.get(key))
-        {
-          EigenschaftGruppe eg = (EigenschaftGruppe) Einstellungen
-              .getDBService().createObject(EigenschaftGruppe.class, key);
-          throw new ApplicationException(String.format(
-              "In der Eigenschaftengruppe \"%s\" fehlt ein Eintrag!",
-              eg.getBezeichnung()));
-        }
-      }
-      // Max eine Eigenschaft pro Gruppe
-      HashMap<String, Boolean> max1gruppen = new HashMap<>();
-      it = Einstellungen.getDBService().createList(EigenschaftGruppe.class);
-      it.addFilter("max1 = ?", new Object[] { Boolean.TRUE });
-      while (it.hasNext())
-      {
-        EigenschaftGruppe eg = it.next();
-        max1gruppen.put(eg.getID(), Boolean.valueOf(false));
-      }
-      for (EigenschaftenNode checkedNode : root.getCheckedNodes())
-      {
-        Eigenschaft ei = (Eigenschaft) checkedNode.getObject();
-        Boolean m1 = max1gruppen.get(ei.getEigenschaftGruppe().getID());
-        if (m1 != null)
-        {
-          if (m1)
-          {
-            throw new ApplicationException(String.format(
-                "In der Eigenschaftengruppe '%s' mehr als ein Eintrag markiert!",
-                ei.getEigenschaftGruppe().getBezeichnung()));
-          }
-          else
-          {
-            max1gruppen.put(ei.getEigenschaftGruppe().getID(),
-                Boolean.valueOf(true));
-          }
-        }
-      }
+      // Für natürliche Personen
+      m.setTitel((String) getTitel().getValue());
+      m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
+      m.setGeschlecht((String) getGeschlecht().getValue());
     }
-
-    m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
-    m.setAustritt((Date) getAustritt().getValue());
-    m.setAnrede((String) getAnrede().getValue());
-    GenericObject o = (GenericObject) getBeitragsgruppe(true).getValue();
-    if (mitgliedstyp == null)
-    {
-      try
-      {
-        Beitragsgruppe bg = (Beitragsgruppe) o;
-        m.setBeitragsgruppe(bg);
-        if (bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-        {
-          m.setVollZahlerID(null);
-        }
-      }
-      catch (NullPointerException e)
-      {
-        throw new ApplicationException("Beitragsgruppe fehlt");
-      }
-    }
-    if ((Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
-    {
-      if (getIndividuellerBeitrag().getValue() != null)
-      {
-        m.setIndividuellerBeitrag(
-            (Double) getIndividuellerBeitrag().getValue());
-      }
-      else
-      {
-        m.setIndividuellerBeitrag(null);
-      }
-    }
-    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
-    m.setZahlungsweg(zw.getKey());
-    Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
-    m.setZahlungsrhythmus(zr.getKey());
-    Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
-    if (zt != null)
-    {
-      m.setZahlungstermin(zt.getKey());
-    }
-    m.setMandatDatum((Date) getMandatDatum().getValue());
-    m.setMandatVersion((Integer) getMandatVersion().getValue());
-    m.setBic((String) getBic().getValue());
-    String ib = (String) getIban().getValue();
-    if (ib == null)
-      m.setIban("");
     else
-      m.setIban(ib.toUpperCase().replace(" ", ""));
-    m.setEintritt((Date) getEintritt().getValue());
-    m.setEmail((String) getEmail().getValue());
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
-      if (externemitgliedsnummer != null)
+      // Für juristische Personen
+      m.setLeitwegID((String) getLeitwegID().getValue());
+    }
+
+    // Für Mitglieder
+    if (isMitglied)
+    {
+      m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
+      Beitragsgruppe bg = (Beitragsgruppe) getBeitragsgruppe(true).getValue();
+      m.setBeitragsgruppe(bg);
+      if (bg != null
+          && bg.getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+      {
+        m.setVollZahlerID(null);
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
       {
         String mitgliedsnummer = (String) getExterneMitgliedsnummer()
             .getValue();
@@ -2444,29 +2304,75 @@ public class MitgliedControl extends FilterControl implements Savable
         }
         else
         {
-          throw new ApplicationException("Externe Mitgliedsnummer fehlt");
+          m.setExterneMitgliedsnummer(null);
         }
       }
-    }
-    else
-    {
-      m.setExterneMitgliedsnummer(null);
-    }
-
-    if (m.getPersonenart().equalsIgnoreCase("n"))
-    {
-      m.setGeburtsdatum((Date) getGeburtsdatum().getValue());
-      if (getGeschlecht().getSelectedValue() == null)
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
-        throw new ApplicationException("Bitte Geschlecht auswählen!");
+        m.setIndividuellerBeitrag(
+            (Double) getIndividuellerBeitrag().getValue());
       }
-
-      m.setGeschlecht((String) getGeschlecht().getValue());
+      else
+      {
+        m.setIndividuellerBeitrag(null);
+      }
+      m.setEintritt((Date) getEintritt().getValue());
+      m.setAustritt((Date) getAustritt().getValue());
+      m.setKuendigung((Date) getKuendigung().getValue());
+      m.setSterbetag((Date) getSterbetag().getValue());
     }
     else
     {
-      m.setLeitwegID((String) getLeitwegID().getValue());
+      Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
+      m.setMitgliedstyp(Long.valueOf(mt.getID()));
     }
+
+    // Stammdaten
+    m.setAnrede((String) getAnrede().getValue());
+    m.setName((String) getName(false).getValue());
+    m.setVorname((String) getVorname().getValue());
+    m.setAdressierungszusatz((String) getAdressierungszusatz().getValue());
+    m.setStrasse((String) getStrasse().getValue());
+    m.setPlz((String) getPlz().getValue());
+    m.setOrt((String) getOrt().getValue());
+    m.setStaat(getStaat().getValue() == null ? ""
+        : ((Staat) getStaat().getValue()).getKey());
+    m.setTelefonprivat((String) getTelefonprivat().getValue());
+    m.setHandy((String) getHandy().getValue());
+    m.setTelefondienstlich((String) getTelefondienstlich().getValue());
+    m.setEmail((String) getEmail().getValue());
+
+    // Zahlung
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    m.setZahlungsweg(zw.getKey());
+    if (zahlungsrhytmus != null)
+    {
+      Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
+      m.setZahlungsrhythmus(zr.getKey());
+    }
+    else
+    {
+      m.setZahlungsrhythmus(
+          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS));
+    }
+    if (zahlungstermin != null)
+    {
+      Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
+      if (zt != null)
+      {
+        m.setZahlungstermin(zt.getKey());
+      }
+    }
+    m.setMandatDatum((Date) getMandatDatum().getValue());
+    m.setMandatVersion((Integer) getMandatVersion().getValue());
+    m.setBic((String) getBic().getValue());
+    String ib = (String) getIban().getValue();
+    if (ib == null)
+      m.setIban("");
+    else
+      m.setIban(ib.toUpperCase().replace(" ", ""));
+    // Abweichender Kontoinhaber
     m.setKtoiAdressierungszusatz(
         (String) getKtoiAdressierungszusatz().getValue());
     m.setKtoiAnrede((String) getKtoiAnrede().getValue());
@@ -2482,25 +2388,24 @@ public class MitgliedControl extends FilterControl implements Savable
     m.setKtoiTitel((String) getKtoiTitel().getValue());
     m.setKtoiVorname((String) getKtoiVorname().getValue());
     m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
-    m.setKuendigung((Date) getKuendigung().getValue());
-    m.setSterbetag((Date) getSterbetag().getValue());
-    m.setName((String) getName(false).getValue());
-    m.setOrt((String) getOrt().getValue());
-    m.setPlz((String) getPlz().getValue());
-    m.setStaat(getStaat().getValue() == null ? ""
-        : ((Staat) getStaat().getValue()).getKey());
-    m.setStrasse((String) getStrasse().getValue());
-    m.setTelefondienstlich((String) getTelefondienstlich().getValue());
-    m.setTelefonprivat((String) getTelefonprivat().getValue());
-    m.setHandy((String) getHandy().getValue());
-    m.setTitel((String) getTitel().getValue());
+    // Vermerke
     m.setVermerk1((String) getVermerk1().getValue());
     m.setVermerk2((String) getVermerk2().getValue());
-    m.setVorname((String) getVorname().getValue());
+
     if (m.getID() == null)
     {
       m.setEingabedatum();
     }
+
+    // ManadatID hier setzen wenn sie editierbar ist
+    int sepaMandatIdSource = (Integer) Einstellungen
+        .getEinstellung(Property.SEPAMANDATIDSOURCE);
+    if (sepaMandatIdSource != SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+        && sepaMandatIdSource != SepaMandatIdSource.DBID)
+    {
+      m.setMandatID((String) getMandatID().getValue());
+    }
+
     return m;
   }
 
@@ -2510,24 +2415,27 @@ public class MitgliedControl extends FilterControl implements Savable
     try
     {
       Mitglied m = (Mitglied) prepareStore();
-      m.setMandatID((String) getMandatID().getValue());
-      // Mitgleidstyp ist in der DB als Long, wird jedoch sonst als Integer
-      // verwendet, daher können wir ihn nicht in fill() setzen, sonst wird der
-      // Eintrag immer als geändert erkannt.
-      if (mitgliedstyp != null)
+
+      // Es wird hier geprüft weil die Daten nur im Tree sind und erst nach dem
+      // store() in die DB geschrieben werden
+      m.checkEigenschaften(eigenschaftenTree);
+      // MandatID hier setzen weil sie bei früheren Mitgliedern nicht
+      // gespeichert war
+      int sepaMandatIdSource = (Integer) Einstellungen
+          .getEinstellung(Property.SEPAMANDATIDSOURCE);
+      if (sepaMandatIdSource == SepaMandatIdSource.EXTERNE_MITGLIEDSNUMMER
+          || sepaMandatIdSource == SepaMandatIdSource.DBID)
       {
-        Mitgliedstyp mt = (Mitgliedstyp) getMitgliedstyp().getValue();
-        m.setMitgliedstyp(Integer.valueOf(mt.getID()));
+        m.setMandatID((String) getMandatID().getValue());
       }
-      else
-      {
-        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
-      }
+      m.store();
+      // Änderungsdatum nur speichern wenn wirklich geändert wurde
+      // Wenn der insert oder update Check schief geht nicht speichern
       m.setLetzteAenderung();
       m.store();
 
-      boolean ist_mitglied = m.getMitgliedstyp()
-          .getJVereinid() == Mitgliedstyp.MITGLIED;
+      boolean ist_mitglied = m.getMitgliedstyp().getID()
+          .equals(Mitgliedstyp.MITGLIED);
       if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDFOTO)
           && ist_mitglied)
       {
@@ -2961,7 +2869,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     fd.setFileName(new Dateiname("statistik", "",
         (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+        .get());
 
     String s = fd.open();
 
@@ -3172,7 +3080,7 @@ public class MitgliedControl extends FilterControl implements Savable
     Mitglied m = getMitglied();
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN)
-        && m.getMitgliedstyp().getJVereinid() == Mitgliedstyp.MITGLIED)
+        && m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       // Schritt 1: Die selektierten sekundären Beitragsgruppe prüfen, ob sie
       // bereits gespeichert sind. Ggfls. speichern.
@@ -3228,5 +3136,10 @@ public class MitgliedControl extends FilterControl implements Savable
         settings.setAttribute("auswertung.vorlagedateicsv", "");
       }
     }
+  }
+
+  public void deregisterFamilienbeitragConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(fbc);
   }
 }
