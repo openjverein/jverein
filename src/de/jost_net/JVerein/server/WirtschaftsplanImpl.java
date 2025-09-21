@@ -254,4 +254,16 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
         return super.getAttribute(s);
     }
   }
+
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Wirtschaftsplan";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Wirtschaftspläne";
+  }
 }
