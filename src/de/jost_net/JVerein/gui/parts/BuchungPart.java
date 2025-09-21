@@ -36,14 +36,19 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.logging.Logger;
 
 public class BuchungPart implements Part
 {
   private BuchungsControl control;
 
+  private DokumentControl dcontrol;
+
   private AbstractView view;
 
   private boolean buchungabgeschlossen;
+
+  private Buchung bu;
 
   public BuchungPart(BuchungsControl control, AbstractView view,
       boolean buchungabgeschlossen)
@@ -116,7 +121,7 @@ public class BuchungPart implements Part
 
     if (JVereinPlugin.isArchiveServiceActive())
     {
-      Buchung bu = (Buchung) control.getCurrentObject();
+      bu = (Buchung) control.getBuchung();
       if (!bu.isNewObject())
       {
         LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
@@ -124,13 +129,28 @@ public class BuchungPart implements Part
         BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
             .createObject(BuchungDokument.class, null);
         budo.setReferenz(Long.valueOf(bu.getID()));
-        DokumentControl dcontrol = new DokumentControl(view, "buchungen",
+        dcontrol = new DokumentControl(view, "buchungen",
             !buchungabgeschlossen);
         grDokument.addPart(dcontrol.getDokumenteList(budo));
         ButtonArea butts = new ButtonArea();
         butts.addButton(dcontrol.getNeuButton(budo));
         butts.paint(scrolled.getComposite());
       }
+    }
+  }
+
+  public void deregisterDocumentConsumer()
+  {
+    try
+    {
+      if (JVereinPlugin.isArchiveServiceActive() && !bu.isNewObject())
+      {
+        dcontrol.deregisterDocumentConsumer();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
     }
   }
 }
