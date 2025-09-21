@@ -23,6 +23,7 @@ import java.util.Arrays;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -131,6 +132,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
         }
 
+        // Sollbuchung entfernen
         if (open == null)
         {
           for (Buchung buchung : b)
@@ -140,6 +142,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           }
           GUI.getStatusBar().setSuccessText("Sollbuchung von Buchung gelöst");
         }
+        // Buchung mehreren Sollbuchungen zuordnen
         else if (open instanceof Sollbuchung[])
         {
           if (b.length > 1)
@@ -214,22 +217,24 @@ public class BuchungSollbuchungZuordnungAction implements Action
                 "Fehler beim Splitten der Buchung: " + e.getLocalizedMessage());
           }
         }
+        // Buchung einer Sollbuchung zuordnen
         else
         {
           if (b.length == 1)
           {
             Buchung buchung = b[0];
-            if (Math.abs(buchung.getBetrag() - sollb.getBetrag()) >= 0.01d)
+            if (Math.abs(buchung.getBetrag()
+                - (sollb.getBetrag() - sollb.getIstSumme())) >= 0.01d)
             {
-              // TODO hier könnte auch der YesNoCancelDialog aus #1066 verwendet
-              // werden
-              YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+              YesNoCancelDialog dialog = new YesNoCancelDialog(
+                  YesNoDialog.POSITION_CENTER, true);
               dialog.setTitle("Buchung splitten");
               dialog.setText(
-                  "Die Beträge von Buchung und Sollbuchung stimmten nicht überein.\n"
+                  "Die Fehlbetrag der Sollbuchung und der Betrag der Buchung stimmten nicht überein.\n"
                       + "Soll die Buchung automatisch gesplittet werden?\n"
                       + "Bei 'Nein' wird die Sollbuchung ohne Splitten zugeordnet.");
-              if ((Boolean) dialog.open())
+              int ret = dialog.open();
+              if (ret == YesNoCancelDialog.YES)
               {
                 Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung,
                     sollb, true);
@@ -254,11 +259,22 @@ public class BuchungSollbuchungZuordnungAction implements Action
                   }
                 }
               }
+              else if (ret == YesNoCancelDialog.NO)
+              {
+                // Bei NEIN ohne Splitten zuordnen
+                buchung.setSollbuchung(sollb);
+                buchung.store();
+              }
+              else if (ret == YesNoCancelDialog.CANCEL)
+              {
+                throw new OperationCanceledException();
+              }
+
             }
             else
             {
-              buchung.setSollbuchung(sollb);
-              buchung.store();
+              // Fehlbetrag und Buchungs-Betrag stimmen überein
+              SplitbuchungsContainer.autoSplit(buchung, sollb, true);
             }
           }
           else
