@@ -105,7 +105,7 @@ public class WirtschaftsplanNode implements GenericObjectNode
       }
 
       double soll = obj.getDouble(SUMME);
-      String id = (String) obj.getAttribute(ID);
+      String id = obj.getAttribute(ID).toString();
       // Falls die Buchungsklasse vom Standard abweicht, ist noch keine
       // Node vorhanden
       if (!nodes.containsKey(id))
@@ -118,7 +118,7 @@ public class WirtschaftsplanNode implements GenericObjectNode
     }
 
     extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
-    extendedDBIterator.addColumn("buchung.buchungsart as" + ID);
+    extendedDBIterator.addColumn("buchung.buchungsart as " + ID);
     extendedDBIterator.addColumn("sum(buchung.betrag) as " + SUMME);
     extendedDBIterator.addFilter("buchung.buchungsart = buchungsart.id");
     extendedDBIterator.addFilter("buchung.datum >= ?",
@@ -145,7 +145,11 @@ public class WirtschaftsplanNode implements GenericObjectNode
     {
       PseudoDBObject obj = extendedDBIterator.next();
       DBIterator<Buchungsart> iterator = service.createList(Buchungsart.class);
-      String key = (String) obj.getAttribute(ID);
+      if (obj.getAttribute(ID) == null)
+      {
+        continue;
+      }
+      String key = obj.getAttribute(ID).toString();
       iterator.addFilter("id = ?", key);
       if (!iterator.hasNext())
       {

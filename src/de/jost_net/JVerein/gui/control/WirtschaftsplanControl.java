@@ -236,7 +236,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       PseudoDBObject obj = extendedDBIterator.next();
       double soll = getBuchunsklassenSumme(obj);
-      nodes.get(((String) obj.getAttribute(ID))).setSoll(soll);
+      nodes.get(obj.getAttribute(ID).toString()).setSoll(soll);
     }
 
     extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
@@ -264,7 +264,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       PseudoDBObject obj = extendedDBIterator.next();
       double ist = getBuchunsklassenSumme(obj);
-      nodes.get(((String) obj.getAttribute(ID))).setIst(ist);
+      nodes.get(obj.getAttribute(ID).toString()).setIst(ist);
     }
 
     EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
