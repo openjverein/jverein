@@ -44,6 +44,8 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -66,6 +68,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public final static String AUSWERTUNG_PDF = "PDF";
 
   public final static String AUSWERTUNG_CSV = "CSV";
+
+  private final String ID = "id";
+
+  private final String SUMME = "summe";
 
   private EditTreePart einnahmen;
 
@@ -144,13 +150,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       return wirtschaftsplan;
     }
-    wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
-    if (wirtschaftsplan == null)
-    {
-      wirtschaftsplan = Einstellungen.getDBService()
-          .createObject(Wirtschaftsplan.class, null);
-    }
-    return wirtschaftsplan;
+    return (Wirtschaftsplan) getCurrentObject();
   }
 
   public EditTreePart getEinnahmen() throws RemoteException
@@ -185,11 +185,22 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return ausgaben;
   }
 
+  private double getBuchunsklassenSumme(PseudoDBObject obj)
+      throws RemoteException
+  {
+    DBIterator<Buchungsklasse> iterator = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    iterator.addFilter("id = ?", obj.getAttribute(ID));
+    if (!iterator.hasNext())
+    {
+      return 0;
+    }
+
+    return obj.getDouble(SUMME);
+  }
+
   private EditTreePart generateTree(int art) throws RemoteException
   {
-    final int ID_COL = 1;
-    final int BETRAG_COL = 2;
-
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
     if (wirtschaftsplan == null)
@@ -210,65 +221,51 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
           new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    String sql = "SELECT wirtschaftsplanitem.buchungsklasse, sum(soll) "
-        + "FROM wirtschaftsplanitem, buchungsart "
-        + "WHERE wirtschaftsplan = ? AND wirtschaftsplanitem.buchungsart = buchungsart.id AND buchungsart.art = ? "
-        + "GROUP BY wirtschaftsplanitem.buchungsklasse";
+    ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
+        "wirtschaftsplanitem, buchungsart");
+    extendedDBIterator.addColumn("wirtschaftsplanitem.buchungsklasse as " + ID);
+    extendedDBIterator.addColumn("sum(soll) as " + SUMME);
+    extendedDBIterator.addFilter("wirtschaftsplan = ?",
+        wirtschaftsplan.getID());
+    extendedDBIterator
+        .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+    extendedDBIterator.addFilter("buchungsart.art = ?", art);
+    extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsklasse");
 
-    service.execute(sql, new Object[] { wirtschaftsplan.getID(), art },
-        resultSet -> {
-          while (resultSet.next())
-          {
-            DBIterator<Buchungsklasse> iterator = service
-                .createList(Buchungsklasse.class);
-            iterator.addFilter("id = ?", resultSet.getLong(ID_COL));
-            if (!iterator.hasNext())
-            {
-              continue;
-            }
+    while (extendedDBIterator.hasNext())
+    {
+      PseudoDBObject obj = extendedDBIterator.next();
+      double soll = getBuchunsklassenSumme(obj);
+      nodes.get(((String) obj.getAttribute(ID))).setSoll(soll);
+    }
 
-            double soll = resultSet.getDouble(BETRAG_COL);
-            nodes.get(resultSet.getString(ID_COL)).setSoll(soll);
-          }
-
-          return nodes;
-        });
-
-    sql = "SELECT %s.buchungsklasse, sum(buchung.betrag) "
-        + "FROM buchung, buchungsart "
-        + "WHERE buchung.buchungsart = buchungsart.id "
-        + "AND buchung.datum >= ? AND buchung.datum <= ? "
-        + "AND buchungsart.art = ? " + "GROUP BY %s.buchungsklasse";
+    extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
+    extendedDBIterator.addColumn("sum(buchung.betrag) as " + SUMME);
+    extendedDBIterator.addFilter("buchung.buchungsart = buchungsart.id");
+    extendedDBIterator.addFilter("buchung.datum >= ?",
+        wirtschaftsplan.getDatumVon());
+    extendedDBIterator.addFilter("buchung.datum <= ?",
+        wirtschaftsplan.getDatumBis());
+    extendedDBIterator.addFilter("buchungsart.art = ?", art);
 
     if ((Boolean) Einstellungen
         .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      sql = String.format(sql, "buchung", "buchung");
+      extendedDBIterator.addColumn("buchung.buchungsklasse as " + ID);
+      extendedDBIterator.addGroupBy("buchung.buchungsklasse");
     }
     else
     {
-      sql = String.format(sql, "buchungsart", "buchungsart");
-
+      extendedDBIterator.addColumn("buchungsart.buchungsklasse as " + ID);
+      extendedDBIterator.addGroupBy("buchungsart.buchungsklasse");
     }
-    service.execute(sql, new Object[] { wirtschaftsplan.getDatumVon(),
-        wirtschaftsplan.getDatumBis(), art }, resultSet -> {
-          while (resultSet.next())
-          {
-            DBIterator<Buchungsklasse> iterator = service
-                .createList(Buchungsklasse.class);
-            String key = resultSet.getString(ID_COL);
-            iterator.addFilter("id = ?", key);
-            if (!iterator.hasNext())
-            {
-              continue;
-            }
 
-            double ist = resultSet.getDouble(BETRAG_COL);
-            nodes.get(key).setIst(ist);
-          }
-
-          return nodes;
-        });
+    while (extendedDBIterator.hasNext())
+    {
+      PseudoDBObject obj = extendedDBIterator.next();
+      double ist = getBuchunsklassenSumme(obj);
+      nodes.get(((String) obj.getAttribute(ID))).setIst(ist);
+    }
 
     EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
         null);

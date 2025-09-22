@@ -69,7 +69,14 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   @Override
   public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
   {
-    return (Wirtschaftsplan) getAttribute("wirtschaftsplan");
+    Object l = super.getAttribute("wirtschaftsplan");
+    if (l == null)
+    {
+      return null; // Kein Wirtschaftsplan zugeordnet
+    }
+
+    Cache cache = Cache.get(Wirtschaftsplan.class, true);
+    return (Wirtschaftsplan) cache.get(l);
   }
 
   @Override
@@ -83,7 +90,14 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    return (Buchungsart) getAttribute("buchungsart");
+    Object l = super.getAttribute("buchungsart");
+    if (l == null)
+    {
+      return null; // Keine Buchungsart zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsart.class, true);
+    return (Buchungsart) cache.get(l);
   }
 
   @Override
@@ -95,7 +109,14 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    return (Buchungsklasse) getAttribute("buchungsklasse");
+    Object l = super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null; // Keine Buchungsklasse zugeordnet
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
   }
 
   @Override
@@ -132,5 +153,21 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   public void setSoll(double soll) throws RemoteException
   {
     setAttribute("soll", soll);
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    switch (fieldName)
+    {
+      case "wirtschaftsplan":
+        return getWirtschaftsplan();
+      case "buchungsart":
+        return getBuchungsart();
+      case "buchungsklasse":
+        return getBuchungsklasse();
+      default:
+        return super.getAttribute(fieldName);
+    }
   }
 }

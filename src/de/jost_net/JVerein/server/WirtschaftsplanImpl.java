@@ -33,7 +33,9 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = 1L;
 
-  private final static int BETRAG_COL = 2;
+  private final static String BETRAG_ALIAS = "betrag";
+
+  private final static String ID_ALIAS = "id";
 
   public WirtschaftsplanImpl() throws RemoteException
   {
@@ -100,139 +102,111 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   {
     DBService service = Einstellungen.getDBService();
 
-    String sqlSoll = "SELECT wirtschaftsplan.id, SUM(wirtschaftsplanitem.soll) "
-        + "FROM wirtschaftsplan, wirtschaftsplanitem, buchungsart "
-        + "WHERE wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan "
-        + "AND wirtschaftsplanitem.buchungsart = buchungsart.id "
-        + "AND buchungsart.art = ? " + "AND wirtschaftsplan.id = ? "
-        + "GROUP BY wirtschaftsplan.id";
+    ExtendedDBIterator<PseudoDBObject> sollIterator = new ExtendedDBIterator<>(
+        "wirtschaftsplan, wirtschaftsplanitem, buchungsart");
+    sollIterator.addColumn("wirtschaftsplan.id as " + ID_ALIAS);
+    sollIterator.addColumn("SUM(wirtschaftsplanitem.soll) as " + BETRAG_ALIAS);
+    sollIterator
+        .addFilter("wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan");
+    sollIterator.addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+    sollIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
+    sollIterator.addGroupBy("wirtschaftsplan.id");
 
-    String sqlIst = "SELECT wirtschaftsplan.id, SUM(buchung.betrag) AS ist "
-        + "FROM wirtschaftsplan, buchungsart, buchung, konto "
-        + "WHERE buchung.buchungsart = buchungsart.id "
-        + "AND buchung.konto = konto.id "
-        + "AND buchung.datum >= wirtschaftsplan.datum_von "
-        + "AND buchung.datum <= wirtschaftsplan.datum_bis "
-        + "AND buchungsart.art = ? " + "AND konto.kontoart > ? "
-        + "AND konto.kontoart < ? " + "AND wirtschaftsplan.id = ? "
-        + "GROUP BY wirtschaftsplan.id";
+    ExtendedDBIterator<PseudoDBObject> istIterator = new ExtendedDBIterator<>(
+        "wirtschaftsplan, buchungsart, buchung, konto");
+    istIterator.addColumn("wirtschaftsplan.id as " + ID_ALIAS);
+    istIterator.addColumn("SUM(buchung.betrag) as " + BETRAG_ALIAS);
+    istIterator.addFilter("buchung.buchungsart = buchungsart.id");
+    istIterator.addFilter("buchung.konto = konto.id");
+    istIterator.addFilter("buchung.datum >= wirtschaftsplan.datum_von");
+    istIterator.addFilter("buchung.datum <= wirtschaftsplan.datum_bis");
+    istIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
+    istIterator.addGroupBy("wirtschaftsplan.id");
 
     switch (s)
     {
       case "planEinnahme":
-        return service.execute(sqlSoll, new Object[] { EINNAHME, this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        sollIterator.addFilter("buchungsart.art = ?", EINNAHME);
+        if (sollIterator.hasNext())
+        {
+          return sollIterator.next().getDouble(BETRAG_ALIAS);
+        }
+        else
+        {
+          return 0.;
+        }
       case "planAusgabe":
-        return service.execute(sqlSoll, new Object[] { AUSGABE, this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        sollIterator.addFilter("buchungsart.art = ?", AUSGABE);
+        if (sollIterator.hasNext())
+        {
+          return sollIterator.next().getDouble(BETRAG_ALIAS);
+        }
+        else
+        {
+          return 0.;
+        }
       case "istEinnahme":
-        return service.execute(sqlIst,
-            new Object[] { EINNAHME, 0, Kontoart.LIMIT.getKey(), this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart > ?", 0);
+        istIterator.addFilter("konto.kontoart < ?", Kontoart.LIMIT.getKey());
+        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istAusgabe":
-        return service.execute(sqlIst,
-            new Object[] { AUSGABE, 0, Kontoart.LIMIT.getKey(), this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart > ?", 0);
+        istIterator.addFilter("konto.kontoart < ?", Kontoart.LIMIT.getKey());
+        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istRücklagenGebildet":
-        return service.execute(sqlIst,
-            new Object[] { EINNAHME, Kontoart.LIMIT.getKey(),
-                Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart >= ?", Kontoart.LIMIT.getKey());
+        istIterator.addFilter("konto.kontoart < ?",
+            Kontoart.LIMIT_RUECKLAGE.getKey());
+        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istRücklagenAufgelöst":
-        return service.execute(sqlIst,
-            new Object[] { AUSGABE, Kontoart.LIMIT.getKey(),
-                Kontoart.LIMIT_RUECKLAGE.getKey(), this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart >= ?", Kontoart.LIMIT.getKey());
+        istIterator.addFilter("konto.kontoart < ?",
+            Kontoart.LIMIT_RUECKLAGE.getKey());
+        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istForderungen":
-        return service.execute(sqlIst,
-            new Object[] { EINNAHME, Kontoart.LIMIT_RUECKLAGE.getKey(),
-                Integer.MAX_VALUE, this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart >= ?",
+            Kontoart.LIMIT_RUECKLAGE.getKey());
+        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istVerbindlichkeiten":
-        return service.execute(sqlIst,
-            new Object[] { AUSGABE, Kontoart.LIMIT_RUECKLAGE.getKey(),
-                Integer.MAX_VALUE, this.getID() },
-            resultSet -> {
-              try
-              {
-                resultSet.next();
-                return resultSet.getDouble(BETRAG_COL);
-              }
-              catch (Exception e)
-              {
-                return 0.;
-              }
-            });
+        istIterator.addFilter("konto.kontoart >= ?",
+            Kontoart.LIMIT_RUECKLAGE.getKey());
+        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
+        if (!istIterator.hasNext())
+        {
+          return 0.;
+        }
+
+        return istIterator.next().getDouble(BETRAG_ALIAS);
       case "istPlus":
         return (Double) getAttribute("istEinnahme")
             + (Double) getAttribute("istForderungen");
