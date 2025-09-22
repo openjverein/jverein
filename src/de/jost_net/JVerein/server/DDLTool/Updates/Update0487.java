@@ -23,9 +23,9 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 @SuppressWarnings("unused")
-public class Updatexxx extends AbstractDDLUpdate
+public class Update0487 extends AbstractDDLUpdate
 {
-  public Updatexxx(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0487(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
