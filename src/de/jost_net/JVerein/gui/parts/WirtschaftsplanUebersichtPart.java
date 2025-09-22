@@ -24,9 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
-import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -34,7 +32,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.hbci.rmi.Konto;
 import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanUebersichtPart implements Part
@@ -59,25 +56,10 @@ public class WirtschaftsplanUebersichtPart implements Part
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    DBIterator<Konto> ruecklagenIterator = Einstellungen.getDBService()
-        .createList(Konto.class);
-    ruecklagenIterator.addFilter("kontoart > ?", Kontoart.LIMIT.getKey());
-    ruecklagenIterator.addFilter("kontoart < ?",
-        Kontoart.LIMIT_RUECKLAGE.getKey());
-    /*
-     * Ruecklagen sind nur relevant, wenn es mindestens ein Rücklagenkonto gibt.
-     */
-    boolean ruecklagen = ruecklagenIterator.size() > 0;
-
-    DBIterator<Konto> verbindlichkeitenIterator = Einstellungen.getDBService()
-        .createList(Konto.class);
-    verbindlichkeitenIterator.addFilter("kontoart > ?",
-        Kontoart.LIMIT_RUECKLAGE.getKey());
-    /*
-     * Verbindlichkeiten sind nur relevant, wenn es mindestens ein Forderungs-
-     * oder Verbindlichkeitenkonto gibt.
-     */
-    boolean verbindlichkeiten = verbindlichkeitenIterator.size() > 0;
+    boolean ruecklagen = ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN));
+    boolean verbindlichkeiten = ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.VERBINDLICHKEITEN_FORDERUNGEN));
 
     LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
 

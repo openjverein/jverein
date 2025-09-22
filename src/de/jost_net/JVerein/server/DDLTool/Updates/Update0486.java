@@ -33,9 +33,6 @@ public class Update0486 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("einstellung", new Column("wirtschaftsplanung",
-        COLTYPE.BOOLEAN, 0, null, false, false)));
-
     Table wirtschaftsplan = new Table("wirtschaftsplan");
     Column id = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplan.add(id);

@@ -55,13 +55,12 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont1.addLabelPair("Wiedervorlage *", control.getWiedervorlage());
     cont1.addLabelPair("Zusatzbeträge *", control.getZusatzbetrag());
     cont1.addLabelPair("Zusatzfelder *", control.getUseZusatzfelder());
-    cont1.addLabelPair("Wirtschaftsplanung *",
-        control.getWirtschaftsplanung());
 
     SimpleContainer cont2 = new SimpleContainer(cols1.getComposite());
     cont2.addHeadline("Buchführung Feature Auswahl");
     cont2.addLabelPair("Projekte *", control.getProjekte());
     cont2.addLabelPair("Mittelverwendung *", control.getMittelverwendung());
+    cont2.addLabelPair("Wirtschaftsplanung *", control.getWirtschaftsplanung());
     cont2.addLabelPair("Anlagenkonten *", control.getAnlagenkonten());
     cont2.addLabelPair("Rücklagenkonten", control.getRuecklagenkonten());
     cont2.addLabelPair("Forderungen/Verbindlichkeiten Konten",
