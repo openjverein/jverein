@@ -60,6 +60,7 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont2.addHeadline("Buchführung Feature Auswahl");
     cont2.addLabelPair("Projekte *", control.getProjekte());
     cont2.addLabelPair("Mittelverwendung *", control.getMittelverwendung());
+    cont2.addLabelPair("Wirtschaftsplanung *", control.getWirtschaftsplanung());
     cont2.addLabelPair("Anlagenkonten *", control.getAnlagenkonten());
     cont2.addLabelPair("Rücklagenkonten", control.getRuecklagenkonten());
     cont2.addLabelPair("Forderungen/Verbindlichkeiten Konten",
