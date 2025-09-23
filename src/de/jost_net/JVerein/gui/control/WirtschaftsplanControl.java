@@ -44,8 +44,6 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
-import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -68,10 +66,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public final static String AUSWERTUNG_PDF = "PDF";
 
   public final static String AUSWERTUNG_CSV = "CSV";
-
-  private final String ID = "id";
-
-  private final String SUMME = "summe";
 
   private EditTreePart einnahmen;
 
@@ -185,20 +179,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return ausgaben;
   }
 
-  private double getBuchunsklassenSumme(PseudoDBObject obj)
-      throws RemoteException
-  {
-    DBIterator<Buchungsklasse> iterator = Einstellungen.getDBService()
-        .createList(Buchungsklasse.class);
-    iterator.addFilter("id = ?", obj.getAttribute(ID));
-    if (!iterator.hasNext())
-    {
-      return 0;
-    }
-
-    return obj.getDouble(SUMME);
-  }
-
   private EditTreePart generateTree(int art) throws RemoteException
   {
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
@@ -219,52 +199,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       Buchungsklasse klasse = buchungsklasseIterator.next();
       nodes.put(klasse.getID(),
           new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
-    }
-
-    ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
-        "wirtschaftsplanitem, buchungsart");
-    extendedDBIterator.addColumn("wirtschaftsplanitem.buchungsklasse as " + ID);
-    extendedDBIterator.addColumn("sum(soll) as " + SUMME);
-    extendedDBIterator.addFilter("wirtschaftsplan = ?",
-        wirtschaftsplan.getID());
-    extendedDBIterator
-        .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
-    extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsklasse");
-
-    while (extendedDBIterator.hasNext())
-    {
-      PseudoDBObject obj = extendedDBIterator.next();
-      double soll = getBuchunsklassenSumme(obj);
-      nodes.get(obj.getAttribute(ID).toString()).setSoll(soll);
-    }
-
-    extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
-    extendedDBIterator.addColumn("sum(buchung.betrag) as " + SUMME);
-    extendedDBIterator.addFilter("buchung.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchung.datum >= ?",
-        wirtschaftsplan.getDatumVon());
-    extendedDBIterator.addFilter("buchung.datum <= ?",
-        wirtschaftsplan.getDatumBis());
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
-
-    if ((Boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      extendedDBIterator.addColumn("buchung.buchungsklasse as " + ID);
-      extendedDBIterator.addGroupBy("buchung.buchungsklasse");
-    }
-    else
-    {
-      extendedDBIterator.addColumn("buchungsart.buchungsklasse as " + ID);
-      extendedDBIterator.addGroupBy("buchungsart.buchungsklasse");
-    }
-
-    while (extendedDBIterator.hasNext())
-    {
-      PseudoDBObject obj = extendedDBIterator.next();
-      double ist = getBuchunsklassenSumme(obj);
-      nodes.get(obj.getAttribute(ID).toString()).setIst(ist);
     }
 
     EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
