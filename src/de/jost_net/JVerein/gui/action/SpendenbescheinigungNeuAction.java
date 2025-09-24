@@ -26,10 +26,12 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -197,6 +199,17 @@ public class SpendenbescheinigungNeuAction implements Action
     spb.setBezeichnungSachzuwendung("");
     spb.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
     spb.setUnterlagenWertermittlung(false);
+    if (anzahlGeldspenden > 1)
+    {
+      spb.setFormular(
+          (Formular) FormularInput.initdefault((String) Einstellungen
+              .getEinstellung(Property.FORMULARSAMMELSPENDE)));
+    }
+    else
+    {
+      spb.setFormular((Formular) FormularInput.initdefault(
+          (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE)));
+    }
 
     // Nur Geldspenden
     if (anzahlGeldspenden == buchungen.size())
@@ -246,6 +259,8 @@ public class SpendenbescheinigungNeuAction implements Action
       spb.setBezeichnungSachzuwendung(b.getBezeichnungSachzuwendung());
       spb.setHerkunftSpende(b.getHerkunftSpende());
       spb.setUnterlagenWertermittlung(b.getUnterlagenWertermittlung());
+      spb.setFormular((Formular) FormularInput.initdefault(
+          (String) Einstellungen.getEinstellung(Property.FORMULARSACHSPENDE)));
     }
     else
     {
@@ -253,6 +268,8 @@ public class SpendenbescheinigungNeuAction implements Action
       spb.setBezeichnungSachzuwendung("");
       spb.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
       spb.setUnterlagenWertermittlung(false);
+      spb.setFormular((Formular) FormularInput.initdefault(
+          (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE)));
     }
   }
 

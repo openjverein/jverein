@@ -294,6 +294,9 @@ public class Einstellungen
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
     UNTERSCHRIFT("unterschrift", String.class, ""),
+    FORMULARGELDSPENDE("formulargeldspende", String.class, ""),
+    FORMULARSAMMELSPENDE("formularsammelspende", String.class, ""),
+    FORMULARSACHSPENDE("formularsachspende", String.class, ""),
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),

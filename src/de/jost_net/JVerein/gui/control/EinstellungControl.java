@@ -33,6 +33,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
@@ -46,10 +47,12 @@ import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 
@@ -392,6 +395,12 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput geprueftsynchronisieren;
 
   private CheckboxInput steuerInBuchung;
+
+  private FormularInput formularEinzel;
+
+  private FormularInput formularSammel;
+
+  private FormularInput formularSachspende;
 
   public EinstellungControl(AbstractView view)
   {
@@ -2489,6 +2498,42 @@ public class EinstellungControl extends AbstractControl
     return rechnungen;
   }
 
+  public SelectInput getFormularEinzelbestaetigung() throws RemoteException
+  {
+    if (formularEinzel != null)
+    {
+      return formularEinzel;
+    }
+    formularEinzel = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE));
+    formularEinzel.setPleaseChoose("Standard");
+    return formularEinzel;
+  }
+
+  public SelectInput getFormularSammelbestaetigung() throws RemoteException
+  {
+    if (formularSammel != null)
+    {
+      return formularSammel;
+    }
+    formularSammel = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARSAMMELSPENDE));
+    formularSammel.setPleaseChoose("Standard");
+    return formularSammel;
+  }
+
+  public SelectInput getFormularSachspende() throws RemoteException
+  {
+    if (formularSachspende != null)
+    {
+      return formularSachspende;
+    }
+    formularSachspende = new FormularInput(FormularArt.SACHSPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARSACHSPENDE));
+    formularSachspende.setPleaseChoose("Standard");
+    return formularSachspende;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2751,6 +2796,36 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERSCHRIFT,
           unterschrift.getValue() == null ? null
               : Base64.encode((byte[]) unterschrift.getValue()));
+      Formular formular = (Formular) formularEinzel.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARGELDSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARGELDSPENDE, "");
+      }
+      formular = (Formular) formularSammel.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSAMMELSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSAMMELSPENDE, "");
+      }
+      formular = (Formular) formularSachspende.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSACHSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSACHSPENDE, "");
+      }
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

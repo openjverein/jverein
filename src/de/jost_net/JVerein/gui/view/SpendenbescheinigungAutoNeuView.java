@@ -24,9 +24,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.InfoPanel;
-import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class SpendenbescheinigungAutoNeuView extends AbstractView
 {
@@ -68,19 +66,6 @@ public class SpendenbescheinigungAutoNeuView extends AbstractView
     info.paint(getParent());
     LabelGroup group1 = new LabelGroup(getParent(), "Filter");
     group1.addLabelPair("Jahr", control.getJahr());
-
-    LabelGroup group2 = new LabelGroup(getParent(), "Formulare");
-    ColumnLayout cl = new ColumnLayout(group2.getComposite(), 3);
-
-    SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Einzelbestätigung", control.getFormular());
-
-    SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Sammelbestätigung",
-        control.getFormularSammelbestaetigung());
-
-    SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Sachspende", control.getFormularSachspende());
 
     control.getSpendenbescheinigungTree().paint(this.getParent());
 
