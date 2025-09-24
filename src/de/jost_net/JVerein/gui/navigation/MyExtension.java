@@ -92,6 +92,7 @@ import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
@@ -231,6 +232,14 @@ public class MyExtension implements Extension
           new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
       jverein.addChild(buchfuehrung);
+      // Wirtschaftsplan
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
+            new StartViewAction(WirtschaftsplanListeView.class),
+            "x-office-spreadsheet.png"));
+      }
 
       NavigationItem abrechnung = null;
       abrechnung = new MyItem(abrechnung, "Abrechnung", null);
