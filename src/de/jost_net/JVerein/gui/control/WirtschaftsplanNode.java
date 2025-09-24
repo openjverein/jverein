@@ -24,6 +24,9 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -82,6 +85,18 @@ public class WirtschaftsplanNode implements GenericObjectNode
                                                   // Buchungsarten
     buchungsartIterator.addFilter("buchungsklasse = ?", buchungsklasse.getID());
     buchungsartIterator.addFilter("art = ?", art);
+
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsartIterator.setOrder("Order by -nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        buchungsartIterator
+            .setOrder("Order by bezeichnung is NULL, bezeichnung ");
+    }
+
     while (buchungsartIterator.hasNext())
     {
       Buchungsart buchungsart = buchungsartIterator.next();
@@ -101,6 +116,17 @@ public class WirtschaftsplanNode implements GenericObjectNode
     extendedDBIterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
         wirtschaftsplan.getID());
     extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsart");
+
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        extendedDBIterator.setOrder("Order by -buchungsart.nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        extendedDBIterator.setOrder(
+            "Order by buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
+    }
 
     double sollSumme = 0d;
     while (extendedDBIterator.hasNext())
@@ -137,6 +163,17 @@ public class WirtschaftsplanNode implements GenericObjectNode
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
+
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        istIt.setOrder("Order by -buchungsart.nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        istIt.setOrder(
+            "Order by buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
+    }
 
     if ((boolean) Einstellungen
         .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
@@ -272,6 +309,8 @@ public class WirtschaftsplanNode implements GenericObjectNode
     iterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
         wirtschaftsplan.getID());
 
+    iterator.setOrder("ORDER BY wirtschaftsplanitem.posten");
+
     double sollSumme = 0d;
     while (iterator.hasNext())
     {
@@ -352,13 +391,13 @@ public class WirtschaftsplanNode implements GenericObjectNode
       case "buchungsklassebezeichnung":
         if (type == Type.BUCHUNGSKLASSE)
         {
-          return buchungsklasse.getBezeichnung();
+          return new BuchungsklasseFormatter().format(buchungsklasse);
         }
         return "";
       case "buchungsartbezeichnung_posten":
         if (type == Type.BUCHUNGSART)
         {
-          return buchungsart.getBezeichnung();
+          return new BuchungsartFormatter().format(buchungsart);
         }
         if (type == Type.POSTEN)
         {

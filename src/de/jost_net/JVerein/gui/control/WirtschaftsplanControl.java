@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
@@ -40,6 +41,7 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanPDF;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
@@ -194,6 +196,17 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     DBIterator<Buchungsklasse> buchungsklasseIterator = service
         .createList(Buchungsklasse.class);
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        buchungsklasseIterator
+            .setOrder("Order by bezeichnung is NULL, bezeichnung");
+        break;
+    }
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
