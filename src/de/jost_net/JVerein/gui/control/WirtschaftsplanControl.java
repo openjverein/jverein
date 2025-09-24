@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanPDF;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -65,9 +67,9 @@ import de.willuhn.util.ProgressMonitor;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
-  public final static String AUSWERTUNG_PDF = "PDF";
+  public final static String AUSWERTUNG_PDF = ".pdf";
 
-  public final static String AUSWERTUNG_CSV = "CSV";
+  public final static String AUSWERTUNG_CSV = ".csv";
 
   private final String ID = "id";
 
@@ -141,10 +143,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
    *
    * @return der aktuelle Wirtschaftsplan oder null, wenn kein Wirtschaftsplan
    *         geladen ist.
-   * @throws RemoteException
-   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
    */
-  public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
+  public Wirtschaftsplan getWirtschaftsplan()
   {
     if (wirtschaftsplan != null)
     {
@@ -516,7 +516,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       fd.setFilterPath(path);
     }
 
-    fd.setFileName("wirtschaftsplan." + type);
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, this) + type);
 
     final String s = fd.open();
 
@@ -553,16 +554,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
             new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
             break;
           case AUSWERTUNG_PDF:
-            try
-            {
-              new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
-                  getWirtschaftsplan());
-            }
-            catch (RemoteException e)
-            {
-              throw new ApplicationException(
-                  "Fehler beim Zugriff auf den Wirtschaftsplan");
-            }
+            new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
+                getWirtschaftsplan());
             break;
           default:
             GUI.getStatusBar().setErrorText(

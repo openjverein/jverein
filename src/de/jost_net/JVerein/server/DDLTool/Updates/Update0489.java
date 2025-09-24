@@ -42,7 +42,7 @@ public class Update0489 extends AbstractDDLUpdate
     execute(
         "INSERT into vorlage (name, muster) VALUES ('sollbuchungen-dateiname', 'Sollbuchungen-Differenz-$filter_differenz-$filter_datum_von_f-$filter_datum_bis_f-$aktuellesdatum-$aktuellezeit');\n");
     execute(
-        "INSERT into vorlage (name, muster) VALUES ('spendenbescheinigungen-dateiname', 'Spendenbescheinigungen-$filter_spendeart-$aktuellesdatum-$aktuellezeit');\n");
+        "INSERT into vorlage (name, muster) VALUES ('spendenbescheinigungen-dateiname', 'Spendenbescheinigungen-$filter_spendeart-$aktuellesdatum');\n");
     execute(
         "INSERT into vorlage (name, muster) VALUES ('zusatzbetraege-dateiname', 'Zusatzbetraege-$filter_ausfuehrungstag-$aktuellesdatum-$aktuellezeit');\n");
 
@@ -79,6 +79,8 @@ public class Update0489 extends AbstractDDLUpdate
         "INSERT into vorlage (name, muster) VALUES ('mittelverwendung-saldo-dateiname', 'Mittelverwendung-Saldo-$zeitraum_jahr-$aktuellesdatum-$aktuellezeit');\n");
     execute(
         "INSERT into vorlage (name, muster) VALUES ('mittelverwendungssaldo-dateiname', 'Mittelverwendungssaldo-$zeitraum_von_f-$zeitraum_bis_f-$aktuellesdatum-$aktuellezeit');\n");
+    execute(
+        "INSERT into vorlage (name, muster) VALUES ('wirtschaftsplan-dateiname', 'Wirtschaftsplan-$parameter_bezeichnung-$parameter_datum_von_f-$parameter_datum_bis_f-$aktuellesdatum-$aktuellezeit');\n");
 
     // Abrechnung
     execute(

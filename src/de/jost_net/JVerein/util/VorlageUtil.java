@@ -44,6 +44,7 @@ import de.jost_net.JVerein.Variable.SollbuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungListeFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
+import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufBuchungenControl;
@@ -55,6 +56,7 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -146,8 +148,8 @@ public class VorlageUtil
           break;
         case ABRECHNUNGSLAUF_SEPA_DATEINAME:
         case ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME:
-          map = new AbrechnungslaufParameterMap().getMap((AbrechnungSEPAControl) obj,
-              map);
+          map = new AbrechnungslaufParameterMap()
+              .getMap((AbrechnungSEPAControl) obj, map);
           break;
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
           map = new AbrechnungSollbuchungenParameterMap()
@@ -207,6 +209,10 @@ public class VorlageUtil
         case BUCHUNGSARTEN_DATEINAME:
           map = new BuchungsartListeFilterMap().getMap((BuchungsartControl) obj,
               map);
+          break;
+        case WIRTSCHAFTSPLAN_DATEINAME:
+          map = new WirtschaftsplanParameterMap()
+              .getMap((WirtschaftsplanControl) obj, map);
           break;
         default:
           Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
@@ -357,6 +363,9 @@ public class VorlageUtil
           break;
         case BUCHUNGSARTEN_DATEINAME:
           map = BuchungsartListeFilterMap.getDummyMap(map);
+          break;
+        case WIRTSCHAFTSPLAN_DATEINAME:
+          map = WirtschaftsplanParameterMap.getDummyMap(map);
           break;
         default:
           Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
