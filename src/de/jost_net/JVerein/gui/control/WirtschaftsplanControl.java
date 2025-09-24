@@ -22,11 +22,8 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
@@ -146,7 +143,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       return wirtschaftsplan;
     }
-    return (Wirtschaftsplan) getCurrentObject();
+    wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+    return wirtschaftsplan;
   }
 
   public EditTreePart getEinnahmen() throws RemoteException
@@ -190,7 +188,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       return null;
     }
 
-    Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
+    ArrayList<WirtschaftsplanNode> nodes = new ArrayList<>();
 
     DBService service = Einstellungen.getDBService();
 
@@ -210,12 +208,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
-      nodes.put(klasse.getID(),
-          new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
+      nodes.add(new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
-        null);
+    EditTreePart treePart = new EditTreePart(nodes, null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -553,11 +549,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   @Override
   public boolean hasChanged() throws RemoteException
   {
-    if (!(getCurrentObject() instanceof Wirtschaftsplan))
+    if (!(getWirtschaftsplan() instanceof Wirtschaftsplan))
     {
       return false;
     }
-    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
     if (wirtschaftsplan.isNewObject())
     {
