@@ -1,0 +1,636 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * <p>
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ * <p>
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.io.File;
+import java.rmi.RemoteException;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
+import de.jost_net.JVerein.gui.parts.EditTreePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
+import de.jost_net.JVerein.io.WirtschaftsplanCSV;
+import de.jost_net.JVerein.io.WirtschaftsplanPDF;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
+import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
+
+public class WirtschaftsplanControl extends VorZurueckControl implements Savable
+{
+  public final static String AUSWERTUNG_PDF = "PDF";
+
+  public final static String AUSWERTUNG_CSV = "CSV";
+
+  private final String ID = "id";
+
+  private final String SUMME = "summe";
+
+  private EditTreePart einnahmen;
+
+  private EditTreePart ausgaben;
+
+  private WirtschaftsplanUebersichtPart uebersicht;
+
+  private Wirtschaftsplan wirtschaftsplan;
+
+  private boolean tableChanged = false;
+
+  /**
+   * Erzeugt einen neuen WirtschaftsplanControl fuer die angegebene View.
+   *
+   * @param view
+   *          die View, fuer die dieser WirtschaftsplanControl zustaendig ist.
+   */
+  public WirtschaftsplanControl(AbstractView view)
+  {
+    super(view);
+    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
+        this.getClass());
+    settings.setStoreWhenRead(true);
+  }
+
+  /**
+   * Liefert die Liste der Wirtschaftsplaene.
+   *
+   * @return die Liste der Wirtschaftsplaene.
+   * @throws RemoteException
+   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
+   */
+  public Part getWirtschaftsplanungList() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+
+    JVereinTablePart wirtschaftsplaene = new JVereinTablePart(
+        service.createList(Wirtschaftsplan.class), null);
+
+    CurrencyFormatter formatter = new CurrencyFormatter("",
+        Einstellungen.DECIMALFORMAT);
+    DateFormatter dateFormatter = new DateFormatter(new JVDateFormatTTMMJJJJ());
+
+    wirtschaftsplaene.addColumn("ID", "id");
+    wirtschaftsplaene.addColumn("Bezeichnung", "bezeichnung");
+    wirtschaftsplaene.addColumn("Von", "datum_von", dateFormatter);
+    wirtschaftsplaene.addColumn("Bis", "datum_bis", dateFormatter);
+    wirtschaftsplaene.addColumn("Einnahmen Soll", "planEinnahme", formatter);
+    wirtschaftsplaene.addColumn("Ausgaben Soll", "planAusgabe", formatter);
+    wirtschaftsplaene.addColumn("Saldo Soll", "planSaldo", formatter);
+    wirtschaftsplaene.addColumn("Einnahmen Ist", "istPlus", formatter);
+    wirtschaftsplaene.addColumn("Ausgaben Ist", "istMinus", formatter);
+    wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
+    wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
+
+    wirtschaftsplaene
+        .setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
+    wirtschaftsplaene.setAction(
+        new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
+    VorZurueckControl.setObjektListe(null, null);
+
+    return wirtschaftsplaene;
+  }
+
+  /**
+   * Liefert den aktuellen Wirtschaftsplan.
+   *
+   * @return der aktuelle Wirtschaftsplan oder null, wenn kein Wirtschaftsplan
+   *         geladen ist.
+   * @throws RemoteException
+   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
+   */
+  public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
+  {
+    if (wirtschaftsplan != null)
+    {
+      return wirtschaftsplan;
+    }
+    return (Wirtschaftsplan) getCurrentObject();
+  }
+
+  public EditTreePart getEinnahmen() throws RemoteException
+  {
+    if (einnahmen == null)
+    {
+      einnahmen = generateTree(WirtschaftsplanImpl.EINNAHME);
+    }
+    else
+    {
+      @SuppressWarnings("rawtypes")
+      List items = einnahmen.getItems();
+      einnahmen.removeAll();
+      einnahmen.setList(items);
+    }
+    return einnahmen;
+  }
+
+  public EditTreePart getAusgaben() throws RemoteException
+  {
+    if (ausgaben == null)
+    {
+      ausgaben = generateTree(WirtschaftsplanImpl.AUSGABE);
+    }
+    else
+    {
+      @SuppressWarnings("rawtypes")
+      List items = ausgaben.getItems();
+      ausgaben.removeAll();
+      ausgaben.setList(items);
+    }
+    return ausgaben;
+  }
+
+  private double getBuchunsklassenSumme(PseudoDBObject obj)
+      throws RemoteException
+  {
+    DBIterator<Buchungsklasse> iterator = Einstellungen.getDBService()
+        .createList(Buchungsklasse.class);
+    iterator.addFilter("id = ?", obj.getAttribute(ID));
+    if (!iterator.hasNext())
+    {
+      return 0;
+    }
+
+    return obj.getDouble(SUMME);
+  }
+
+  private EditTreePart generateTree(int art) throws RemoteException
+  {
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
+
+    if (wirtschaftsplan == null)
+    {
+      return null;
+    }
+
+    Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
+
+    DBService service = Einstellungen.getDBService();
+
+    DBIterator<Buchungsklasse> buchungsklasseIterator = service
+        .createList(Buchungsklasse.class);
+    while (buchungsklasseIterator.hasNext())
+    {
+      Buchungsklasse klasse = buchungsklasseIterator.next();
+      nodes.put(klasse.getID(),
+          new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
+    }
+
+    ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
+        "wirtschaftsplanitem, buchungsart");
+    extendedDBIterator.addColumn("wirtschaftsplanitem.buchungsklasse as " + ID);
+    extendedDBIterator.addColumn("sum(soll) as " + SUMME);
+    extendedDBIterator.addFilter("wirtschaftsplan = ?",
+        wirtschaftsplan.getID());
+    extendedDBIterator
+        .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+    extendedDBIterator.addFilter("buchungsart.art = ?", art);
+    extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsklasse");
+
+    while (extendedDBIterator.hasNext())
+    {
+      PseudoDBObject obj = extendedDBIterator.next();
+      double soll = getBuchunsklassenSumme(obj);
+      nodes.get(obj.getAttribute(ID).toString()).setSoll(soll);
+    }
+
+    extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
+    extendedDBIterator.addColumn("sum(buchung.betrag) as " + SUMME);
+    extendedDBIterator.addFilter("buchung.buchungsart = buchungsart.id");
+    extendedDBIterator.addFilter("buchung.datum >= ?",
+        wirtschaftsplan.getDatumVon());
+    extendedDBIterator.addFilter("buchung.datum <= ?",
+        wirtschaftsplan.getDatumBis());
+    extendedDBIterator.addFilter("buchungsart.art = ?", art);
+
+    if ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      extendedDBIterator.addColumn("buchung.buchungsklasse as " + ID);
+      extendedDBIterator.addGroupBy("buchung.buchungsklasse");
+    }
+    else
+    {
+      extendedDBIterator.addColumn("buchungsart.buchungsklasse as " + ID);
+      extendedDBIterator.addGroupBy("buchungsart.buchungsklasse");
+    }
+
+    while (extendedDBIterator.hasNext())
+    {
+      PseudoDBObject obj = extendedDBIterator.next();
+      double ist = getBuchunsklassenSumme(obj);
+      nodes.get(obj.getAttribute(ID).toString()).setIst(ist);
+    }
+
+    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
+        null);
+
+    CurrencyFormatter formatter = new CurrencyFormatter("",
+        Einstellungen.DECIMALFORMAT);
+    treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
+    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten",
+        null, true);
+    treePart.addColumn("Soll", "soll", formatter, true);
+    treePart.addColumn("Ist", "ist", formatter);
+
+    treePart.addChangeListener(((object, attribute, newValue) -> {
+      if (!(object instanceof WirtschaftsplanNode))
+      {
+        throw new ApplicationException("Fehler!");
+      }
+
+      WirtschaftsplanNode node = (WirtschaftsplanNode) object;
+
+      WirtschaftsplanItem item = node.getWirtschaftsplanItem();
+
+      try
+      {
+        switch (attribute)
+        {
+          case "buchungsartbezeichnung_posten":
+            item.setPosten(newValue);
+            break;
+          case "soll":
+            try
+            {
+              NumberFormat nf = NumberFormat.getInstance(Locale.getDefault());
+              item.setSoll(nf.parse(newValue).doubleValue());
+            }
+            catch (NumberFormatException | ParseException e)
+            {
+              GUI.getStatusBar().setErrorText(
+                  "Bitte gib eine gültige Zahl im deutschen Format ein!");
+              throw new ApplicationException("Keine Zahl eingegeben");
+            }
+            break;
+          default:
+            throw new ApplicationException("Fehler!");
+        }
+
+        node.setWirtschaftsplanItem(item);
+        node.setSoll(item.getSoll());
+
+        WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
+        reloadSoll(parent);
+
+        tableChanged = true;
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        throw new ApplicationException("Fehler!");
+      }
+    }));
+
+    treePart.addEditListener(((object, attribute) -> {
+
+      WirtschaftsplanNode node = (WirtschaftsplanNode) object;
+      return node.getType() == WirtschaftsplanNode.Type.POSTEN;
+    }));
+
+    return treePart;
+  }
+
+  public WirtschaftsplanUebersichtPart getUebersicht()
+  {
+    return uebersicht;
+  }
+
+  public void setUebersicht(WirtschaftsplanUebersichtPart uebersicht)
+  {
+    this.uebersicht = uebersicht;
+  }
+
+  public void reloadSoll(WirtschaftsplanNode parent)
+      throws RemoteException, ApplicationException
+  {
+    if (parent.getType() == WirtschaftsplanNode.Type.BUCHUNGSKLASSE)
+    {
+      @SuppressWarnings("rawtypes")
+      GenericIterator outerIterator = parent.getChildren();
+      double klasseSoll = 0;
+      while (outerIterator.hasNext())
+      {
+        WirtschaftsplanNode child = (WirtschaftsplanNode) outerIterator.next();
+        double artSoll = 0;
+        @SuppressWarnings("rawtypes")
+        GenericIterator innerIterator = child.getChildren();
+        while (innerIterator.hasNext())
+        {
+          WirtschaftsplanNode leaf = (WirtschaftsplanNode) innerIterator.next();
+          artSoll += leaf.getSoll();
+        }
+        child.setSoll(artSoll);
+        klasseSoll += artSoll;
+      }
+      parent.setSoll(klasseSoll);
+    }
+    else
+    {
+      while (parent != null)
+      {
+        @SuppressWarnings("rawtypes")
+        GenericIterator iterator = parent.getChildren();
+        double soll = 0;
+        while (iterator.hasNext())
+        {
+          WirtschaftsplanNode child = (WirtschaftsplanNode) iterator.next();
+          soll += child.getSoll();
+        }
+        parent.setSoll(soll);
+
+        parent = (WirtschaftsplanNode) parent.getParent();
+      }
+    }
+
+    uebersicht.updateSoll();
+  }
+
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
+
+    wirtschaftsplan
+        .setBezeichnung((String) uebersicht.getBezeichnung().getValue());
+    Date von = (Date) uebersicht.getVon().getValue();
+    Date bis = (Date) uebersicht.getBis().getValue();
+    wirtschaftsplan.setDatumBis(bis);
+    wirtschaftsplan.setDatumVon(von);
+
+    return wirtschaftsplan;
+  }
+
+  public void handleStore()
+  {
+    try
+    {
+      @SuppressWarnings("unchecked")
+      List<WirtschaftsplanNode> rootNodesEinnahmen = (List<WirtschaftsplanNode>) einnahmen
+          .getItems();
+      @SuppressWarnings("unchecked")
+      List<WirtschaftsplanNode> rootNodesAusgaben = (List<WirtschaftsplanNode>) ausgaben
+          .getItems();
+
+      DBService service = Einstellungen.getDBService();
+      Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) prepareStore();
+
+      DBTransaction.starten();
+
+      checkDate();
+
+      wirtschaftsplan.store();
+
+      if (!wirtschaftsplan.isNewObject())
+      {
+        DBIterator<WirtschaftsplanItem> iterator = service
+            .createList(WirtschaftsplanItem.class);
+        iterator.addFilter("wirtschaftsplan = ?", wirtschaftsplan.getID());
+        while (iterator.hasNext())
+        {
+          iterator.next().delete(); // Löschen alter Einträge, wird später neu
+                                    // angelegt
+        }
+      }
+
+      for (WirtschaftsplanNode rootNode : rootNodesEinnahmen)
+      {
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+      }
+      for (WirtschaftsplanNode rootNode : rootNodesAusgaben)
+      {
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+      }
+
+      DBTransaction.commit();
+
+      tableChanged = false;
+
+      view.reload();
+
+      GUI.getStatusBar().setSuccessText("Wirtschaftsplan gespeichert");
+    }
+    catch (ApplicationException e)
+    {
+      DBTransaction.rollback();
+
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+    catch (RemoteException e)
+    {
+      DBTransaction.rollback();
+
+      String fehler = "Fehler beim Speichern des Wirtschaftsplans";
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler);
+    }
+  }
+
+  @SuppressWarnings("rawtypes")
+  private void storeNodes(GenericIterator iterator, String id)
+      throws RemoteException, ApplicationException
+  {
+    while (iterator.hasNext())
+    {
+      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
+      if (currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
+      {
+        WirtschaftsplanItem item = Einstellungen.getDBService()
+            .createObject(WirtschaftsplanItem.class, null);
+        WirtschaftsplanItem oldItem = currentNode.getWirtschaftsplanItem();
+        item.setPosten(oldItem.getPosten());
+        item.setSoll(oldItem.getSoll());
+        item.setWirtschaftsplanId(id);
+        WirtschaftsplanNode parent = (WirtschaftsplanNode) currentNode
+            .getParent();
+        item.setBuchungsartId(parent.getBuchungsart().getID());
+        WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
+        item.setBuchungsklasseId(root.getBuchungsklasse().getID());
+        item.store();
+      }
+      else
+      {
+        storeNodes(currentNode.getChildren(), id);
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  public void starteAuswertung(String type) throws ApplicationException
+  {
+    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+    fd.setText("Ausgabedatei wählen.");
+    //
+    Settings settings = new Settings(this.getClass());
+    //
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
+    if (path != null && !path.isEmpty())
+    {
+      fd.setFilterPath(path);
+    }
+
+    fd.setFileName("wirtschaftsplan." + type);
+
+    final String s = fd.open();
+
+    if (s == null || s.isEmpty())
+    {
+      return;
+    }
+
+    final File file = new File(s);
+    settings.setAttribute("lastdir", file.getParent());
+
+    List<WirtschaftsplanNode> einnahmenList;
+    List<WirtschaftsplanNode> ausgabenList;
+
+    try
+    {
+      einnahmenList = (List<WirtschaftsplanNode>) einnahmen.getItems();
+      ausgabenList = (List<WirtschaftsplanNode>) ausgaben.getItems();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(String
+          .format("Fehler beim Erstellen der Reports: %s", e.getMessage()));
+    }
+
+    BackgroundTask task = new BackgroundTask()
+    {
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        switch (type)
+        {
+          case AUSWERTUNG_CSV:
+            new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
+            break;
+          case AUSWERTUNG_PDF:
+            try
+            {
+              new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
+                  getWirtschaftsplan());
+            }
+            catch (RemoteException e)
+            {
+              throw new ApplicationException(
+                  "Fehler beim Zugriff auf den Wirtschaftsplan");
+            }
+            break;
+          default:
+            GUI.getStatusBar().setErrorText(
+                "Report konnte nicht erzeugt werden! Das Format ist unbekannt!");
+        }
+      }
+
+      @Override
+      public void interrupt()
+      {
+
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
+      }
+    };
+    Application.getController().start(task);
+  }
+
+  public void checkDate() throws ApplicationException
+  {
+    Date von = (Date) uebersicht.getVon().getValue();
+    Date bis = (Date) uebersicht.getBis().getValue();
+    if (von == null)
+    {
+      throw new ApplicationException("Von-Datum darf nicht leer sein!");
+    }
+    if (bis == null)
+    {
+      throw new ApplicationException("Bis-Datum darf nicht leer sein!");
+    }
+    if (bis.before(von))
+    {
+      throw new ApplicationException("Bis-Datum muss nach Von-Datum liegen");
+    }
+  }
+
+  @Override
+  public boolean hasChanged() throws RemoteException
+  {
+    if (!(getCurrentObject() instanceof Wirtschaftsplan))
+    {
+      return false;
+    }
+    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+
+    if (wirtschaftsplan.isNewObject())
+    {
+      return true;
+    }
+
+    if (wirtschaftsplan.isChanged())
+    {
+      return true;
+    }
+
+    return tableChanged;
+  }
+
+  /**
+   * Setzt den Status des Controls auf "geändert". Wird z.B. von den Editoren
+   * aufgerufen, wenn sich etwas geändert hat.
+   */
+  public void setToChanged()
+  {
+    tableChanged = true;
+  }
+}

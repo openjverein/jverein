@@ -331,6 +331,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput freiebuchungsklasse;
 
+  private CheckboxInput wirtschaftsplanung;
+
   private CheckboxInput summenAnlagenkonto;
 
   private IntegerInput qrcodesize;
@@ -1008,6 +1010,17 @@ public class EinstellungControl extends AbstractControl
     freiebuchungsklasse = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG));
     return freiebuchungsklasse;
+  }
+
+  public CheckboxInput getWirtschaftsplanung() throws RemoteException
+  {
+    if (wirtschaftsplanung != null)
+    {
+      return wirtschaftsplanung;
+    }
+    wirtschaftsplanung = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN));
+    return wirtschaftsplanung;
   }
 
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
@@ -2599,6 +2612,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERDRUECKUNGLAENGE, ulength);
       Integer klength = (Integer) unterdrueckungkonten.getValue();
       Einstellungen.setEinstellung(Property.UNTERDRUECKUNGKONTEN, klength);
+      Einstellungen.setEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN,
+          wirtschaftsplanung.getValue());
 
       DBTransaction.commit();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
