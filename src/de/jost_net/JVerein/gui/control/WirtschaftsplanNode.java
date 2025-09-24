@@ -136,22 +136,6 @@ public class WirtschaftsplanNode implements GenericObjectNode
     istIt.leftJoin("konto", "buchung.konto = konto.id");
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
-    if (mitSteuer)
-    {
-      // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
-      // hinzurechnen
-      istIt.addColumn("COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
-          // Anlagenkonto immer Bruttobeträge.
-          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
-          // Netto zu berehnen.
-          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-          + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
-          + SUMME, Kontoart.ANLAGE.getKey());
-    }
-    else
-    {
-      istIt.addColumn("COALESCE(SUM(buchung.betrag),0) AS " + SUMME);
-    }
     istIt.addFilter("buchungsart.art = ?", art);
 
     if ((boolean) Einstellungen
@@ -166,18 +150,17 @@ public class WirtschaftsplanNode implements GenericObjectNode
 
     if (mitSteuer)
     {
-      if (steuerInBuchung)
-      {
-        istIt.leftJoin("steuer", "steuer.id = buchung.steuer");
-      }
-      else
-      {
-        istIt.leftJoin("steuer", "steuer.id = buchungsart.steuer");
-      }
-    }
-    // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
-    if (mitSteuer)
-    {
+      // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
+      // hinzurechnen
+      istIt.addColumn("COALESCE(SUM(CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer Bruttobeträge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
+          + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
+          + SUMME, Kontoart.ANLAGE.getKey());
+
+      // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
       String subselect = "(SELECT steuer.buchungsart, "
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
           + " FROM buchung"
@@ -202,6 +185,19 @@ public class WirtschaftsplanNode implements GenericObjectNode
       istIt.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
           Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
           wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+
+      if (steuerInBuchung)
+      {
+        istIt.leftJoin("steuer", "steuer.id = buchung.steuer");
+      }
+      else
+      {
+        istIt.leftJoin("steuer", "steuer.id = buchungsart.steuer");
+      }
+    }
+    else
+    {
+      istIt.addColumn("COALESCE(SUM(buchung.betrag),0) AS " + SUMME);
     }
 
     istIt.addGroupBy("buchungsart.id");

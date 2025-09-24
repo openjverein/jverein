@@ -217,6 +217,8 @@ public class WirtschaftsplanPDF
           reporter.addColumn(currentNode.getWirtschaftsplanItem().getPosten(),
               Element.ALIGN_LEFT);
           break;
+        default:
+          break;
       }
       if (einnahme)
       {
