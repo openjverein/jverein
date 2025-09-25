@@ -218,7 +218,6 @@ public class WirtschaftsplanPDF
               Element.ALIGN_LEFT);
           break;
         default:
-          break;
       }
       if (einnahme)
       {

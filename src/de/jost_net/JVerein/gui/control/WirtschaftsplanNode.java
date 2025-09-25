@@ -388,6 +388,11 @@ public class WirtschaftsplanNode
   {
     try
     {
+      if (type == Type.POSTEN)
+      {
+        return this.wirtschaftsplanItem.getPosten()
+            .compareTo(o.wirtschaftsplanItem.getPosten());
+      }
       switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
       {
         case BuchungsartSort.NACH_NUMMER:
