@@ -136,7 +136,7 @@ public class Update0479 extends AbstractDDLUpdate
           default:
             String fehler = "Kann Einstellung nicht lesen, Type "
                 + m.getColumnType(i) + " in Spalte " + col
-                + "nicht implementiert: ";
+                + " nicht implementiert: ";
             Logger.error(fehler);
             throw new ApplicationException(fehler);
         }
