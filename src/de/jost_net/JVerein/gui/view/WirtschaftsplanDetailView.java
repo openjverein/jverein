@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -61,13 +62,24 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
     EditTreePart treeEinnahmen = control.getEinnahmen();
     treeEinnahmen.setContextMenu(
         new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
+    ButtonArea einnahmenButtons = new ButtonArea();
+    einnahmenButtons.addButton(control.getCollapsEinnahmenButton());
+    einnahmenButtons.addButton(control.getExpandEinnahmenButton());
+    einnahmen.addButtonArea(einnahmenButtons);
     einnahmen.addPart(treeEinnahmen);
+
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben",
         true);
     EditTreePart treeAusgaben = control.getAusgaben();
     treeAusgaben.setContextMenu(
         new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
+    ButtonArea ausgabenButtons = new ButtonArea();
+    ausgabenButtons.addButton(control.getCollapsAusgabenButton());
+    ausgabenButtons.addButton(control.getExpandAusgabenButton());
+    ausgaben.addButtonArea(ausgabenButtons);
     ausgaben.addPart(treeAusgaben);
+
+    control.initTrees();
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
 
