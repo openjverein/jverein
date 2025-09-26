@@ -688,7 +688,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   {
     return new Button("", context -> {
       handleAusgaben(true);
-      settings.setAttribute("eausgaben_expand", "true");
+      settings.setAttribute("ausgaben_expand", "true");
     }, null, false, "folder-open.png");
   }
 
