@@ -92,6 +92,7 @@ public class Update0479 extends AbstractDDLUpdate
             break;
           case Types.CHAR:
           case Types.VARCHAR:
+          case Types.LONGVARCHAR:
             value = result.getString(i).replace("\n", "\\n").replace("\\",
                 "\\\\");
             break;
@@ -99,15 +100,43 @@ public class Update0479 extends AbstractDDLUpdate
           case Types.TINYINT:
           case Types.BIGINT:
           case Types.DOUBLE:
+          case Types.SMALLINT:
+          case Types.FLOAT:
+          case Types.NUMERIC:
+          case Types.DECIMAL:
             value = result.getObject(i).toString();
             break;
           case Types.BLOB:
           case Types.LONGVARBINARY:
+          case Types.BINARY:
+          case Types.VARBINARY:
+          case Types.NCHAR:
+          case Types.NVARCHAR:
             value = Base64.encode(result.getBytes(i));
             break;
+          // Alle restlichen Typen sind nicht implementiert
+          case Types.REAL:
+          case Types.TIME:
+          case Types.TIMESTAMP:
+          case Types.NULL:
+          case Types.OTHER:
+          case Types.JAVA_OBJECT:
+          case Types.DISTINCT:
+          case Types.STRUCT:
+          case Types.ARRAY:
+          case Types.CLOB:
+          case Types.REF:
+          case Types.DATALINK:
+          case Types.ROWID:
+          case Types.NCLOB:
+          case Types.SQLXML:
+          case Types.REF_CURSOR:
+          case Types.TIME_WITH_TIMEZONE:
+          case Types.TIMESTAMP_WITH_TIMEZONE:
           default:
-            String fehler = "Kann Einstellung nicht lesen, Type nicht implementiert: "
-                + m.getColumnType(i);
+            String fehler = "Kann Einstellung nicht lesen, Type "
+                + m.getColumnType(i) + " in Spalte " + col
+                + " nicht implementiert: ";
             Logger.error(fehler);
             throw new ApplicationException(fehler);
         }

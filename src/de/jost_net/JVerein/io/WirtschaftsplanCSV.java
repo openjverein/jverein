@@ -40,7 +40,6 @@ import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanCSV
 {
-  @SuppressWarnings("ThrowFromFinallyBlock")
   public WirtschaftsplanCSV(List<WirtschaftsplanNode> einnahmenList,
       List<WirtschaftsplanNode> ausgabenList, final File file)
       throws ApplicationException
