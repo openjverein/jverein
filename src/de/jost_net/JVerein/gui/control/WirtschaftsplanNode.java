@@ -402,7 +402,7 @@ public class WirtschaftsplanNode
                 - o.getBuchungsart().getNummer();
           }
           break;
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartSort.NACH_BEZEICHNUNG:
         default:
           if (type == Type.BUCHUNGSART)
           {
