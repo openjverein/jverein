@@ -43,6 +43,7 @@ import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -552,12 +553,12 @@ public class KontoControl extends FilterControl implements Savable
     buchungsart = new SelectInput(liste, b);
     buchungsart.setPleaseChoose("Bitte auswählen");
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NACH_NUMMER:
         buchungsart.setAttribute("nrbezeichnung");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
         buchungsart.setAttribute("bezeichnungnr");
         break;
       default:
@@ -1032,11 +1033,12 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NACH_NUMMER:
           return "nrbezeichnung";
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
           return "bezeichnungnr";
         default:
           return "bezeichnung";
@@ -1044,7 +1046,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException e)
     {
-      String fehler = "Keine Buchungssortierung hinterlegt.";
+      String fehler = "Keine Buchungsartanzeige hinterlegt.";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }

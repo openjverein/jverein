@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -230,11 +231,12 @@ public class BuchungsartControl extends FilterControl implements Savable
   {
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NACH_NUMMER:
           return "nrbezeichnung";
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
           return "bezeichnungnr";
         default:
           return "bezeichnung";

@@ -26,38 +26,32 @@ package de.jost_net.JVerein.keys;
 import java.util.ArrayList;
 
 /**
- * Schlüssel Sortierung der Buchungsart; Form der Anzeige
+ * Schlüssel Anzeige der Buchungsart; Form der Anzeige
  */
-public class BuchungsartSort
+public class BuchungsartAnzeige
 {
 
   public static final int NACH_BEZEICHNUNG = 1;
 
   public static final int NACH_NUMMER = 2;
 
-  private int buchungsartsort;
+  public static final int NACH_BEZEICHNUNG_NR = 3;
 
-  public BuchungsartSort(int key)
+  private int buchungsartanzeige;
+
+  public BuchungsartAnzeige(int key)
   {
-    // Wegen Migration alter Settings
-    if (key == 3)
-    {
-      this.buchungsartsort = 1;
-    }
-    else
-    {
-      this.buchungsartsort = key;
-    }
+    this.buchungsartanzeige = key;
   }
 
   public int getKey()
   {
-    return buchungsartsort;
+    return buchungsartanzeige;
   }
 
   public String getText()
   {
-    return get(buchungsartsort);
+    return get(buchungsartanzeige);
   }
 
   public static String get(int key)
@@ -65,28 +59,31 @@ public class BuchungsartSort
     switch (key)
     {
       case NACH_BEZEICHNUNG:
-        return "Nach Bezeichnung";
+        return "Bezeichnung";
       case NACH_NUMMER:
-        return "Nach Nummer";
+        return "Nummer-Bezeichnung";
+      case NACH_BEZEICHNUNG_NR:
+        return "Bezeichnung (Nummer)";
       default:
         return null;
     }
   }
 
-  public static ArrayList<BuchungsartSort> getArray()
+  public static ArrayList<BuchungsartAnzeige> getArray()
   {
-    ArrayList<BuchungsartSort> ret = new ArrayList<>();
-    ret.add(new BuchungsartSort(NACH_BEZEICHNUNG));
-    ret.add(new BuchungsartSort(NACH_NUMMER));
+    ArrayList<BuchungsartAnzeige> ret = new ArrayList<>();
+    ret.add(new BuchungsartAnzeige(NACH_BEZEICHNUNG));
+    ret.add(new BuchungsartAnzeige(NACH_NUMMER));
+    ret.add(new BuchungsartAnzeige(NACH_BEZEICHNUNG_NR));
     return ret;
   }
 
   @Override
   public boolean equals(Object obj)
   {
-    if (obj instanceof BuchungsartSort)
+    if (obj instanceof BuchungsartAnzeige)
     {
-      BuchungsartSort v = (BuchungsartSort) obj;
+      BuchungsartAnzeige v = (BuchungsartAnzeige) obj;
       return (getKey() == v.getKey());
     }
     return false;
@@ -95,12 +92,12 @@ public class BuchungsartSort
   @Override
   public int hashCode()
   {
-    return buchungsartsort;
+    return buchungsartanzeige;
   }
 
   @Override
   public String toString()
   {
-    return get(buchungsartsort);
+    return get(buchungsartanzeige);
   }
 }

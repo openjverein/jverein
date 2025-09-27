@@ -45,6 +45,7 @@ import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
@@ -318,6 +319,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput mitgliedAuswahl;
 
   private SelectInput buchungsartsort;
+
+  private SelectInput buchungsartanzeige;
 
   private CheckboxInput abrlabschliessen;
 
@@ -1924,6 +1927,18 @@ public class EinstellungControl extends AbstractControl
     return buchungsartsort;
   }
 
+  public SelectInput getBuchungsartAnzeige() throws RemoteException
+  {
+    if (buchungsartanzeige != null)
+    {
+      return buchungsartanzeige;
+    }
+    buchungsartanzeige = new SelectInput(BuchungsartAnzeige.getArray(),
+        new BuchungsartAnzeige((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGSARTANZEIGE)));
+    return buchungsartanzeige;
+  }
+
   public IntegerInput getQRCodeSizeInMm() throws RemoteException
   {
     if (null == qrcodesize)
@@ -2599,6 +2614,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.MITGLIEDAUSWAHL, mAuswahl.getKey());
       Einstellungen.setEinstellung(Property.BUCHUNGSARTSORT,
           ((BuchungsartSort) buchungsartsort.getValue()).getKey());
+      Einstellungen.setEinstellung(Property.BUCHUNGSARTANZEIGE,
+          ((BuchungsartAnzeige) buchungsartanzeige.getValue()).getKey());
       if (((AfaOrt) afaort.getValue()).getKey() == 0)
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, false);
       else
