@@ -555,10 +555,10 @@ public class KontoControl extends FilterControl implements Savable
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartAnzeige.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         buchungsart.setAttribute("nrbezeichnung");
         break;
-      case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         buchungsart.setAttribute("bezeichnungnr");
         break;
       default:
@@ -1036,9 +1036,9 @@ public class KontoControl extends FilterControl implements Savable
       switch ((Integer) Einstellungen
           .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartAnzeige.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           return "nrbezeichnung";
-        case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           return "bezeichnungnr";
         default:
           return "bezeichnung";

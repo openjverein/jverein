@@ -48,10 +48,10 @@ public class BuchungsklasseInput
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartAnzeige.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         buchungsklasse.setAttribute("nrbezeichnung");
         break;
-      case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         buchungsklasse.setAttribute("bezeichnungnr");
         break;
       default:

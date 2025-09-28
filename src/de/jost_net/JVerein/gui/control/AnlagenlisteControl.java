@@ -139,7 +139,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartAnzeige.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         it.addColumn(
             "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
                 + BUCHUNGSART);
@@ -149,7 +149,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         it.addColumn(
             "CONCAT(afaart.nummer,' - ',afaart.bezeichnung) as " + AFAART);
         break;
-      case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         it.addColumn(
             "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
                 + BUCHUNGSART);

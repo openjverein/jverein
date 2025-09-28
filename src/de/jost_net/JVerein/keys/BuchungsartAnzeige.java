@@ -31,11 +31,11 @@ import java.util.ArrayList;
 public class BuchungsartAnzeige
 {
 
-  public static final int NACH_BEZEICHNUNG = 1;
+  public static final int BEZEICHNUNG = 1;
 
-  public static final int NACH_NUMMER = 2;
+  public static final int NUMMER_BEZEICHNUNG = 2;
 
-  public static final int NACH_BEZEICHNUNG_NR = 3;
+  public static final int BEZEICHNUNG_NUMMER = 3;
 
   private int buchungsartanzeige;
 
@@ -58,11 +58,11 @@ public class BuchungsartAnzeige
   {
     switch (key)
     {
-      case NACH_BEZEICHNUNG:
+      case BEZEICHNUNG:
         return "Bezeichnung";
-      case NACH_NUMMER:
+      case NUMMER_BEZEICHNUNG:
         return "Nummer-Bezeichnung";
-      case NACH_BEZEICHNUNG_NR:
+      case BEZEICHNUNG_NUMMER:
         return "Bezeichnung (Nummer)";
       default:
         return null;
@@ -72,9 +72,9 @@ public class BuchungsartAnzeige
   public static ArrayList<BuchungsartAnzeige> getArray()
   {
     ArrayList<BuchungsartAnzeige> ret = new ArrayList<>();
-    ret.add(new BuchungsartAnzeige(NACH_BEZEICHNUNG));
-    ret.add(new BuchungsartAnzeige(NACH_NUMMER));
-    ret.add(new BuchungsartAnzeige(NACH_BEZEICHNUNG_NR));
+    ret.add(new BuchungsartAnzeige(BEZEICHNUNG));
+    ret.add(new BuchungsartAnzeige(NUMMER_BEZEICHNUNG));
+    ret.add(new BuchungsartAnzeige(BEZEICHNUNG_NUMMER));
     return ret;
   }
 

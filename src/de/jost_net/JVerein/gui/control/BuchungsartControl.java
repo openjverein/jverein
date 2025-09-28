@@ -234,9 +234,9 @@ public class BuchungsartControl extends FilterControl implements Savable
       switch ((Integer) Einstellungen
           .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartAnzeige.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           return "nrbezeichnung";
-        case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           return "bezeichnungnr";
         default:
           return "bezeichnung";

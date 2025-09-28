@@ -156,10 +156,10 @@ public class BuchungsartInput
         switch ((Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGSARTANZEIGE))
         {
-          case BuchungsartAnzeige.NACH_NUMMER:
+          case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
             ((SelectInput) buchungsart).setAttribute("nrbezeichnung");
             break;
-          case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+          case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
             ((SelectInput) buchungsart).setAttribute("bezeichnungnr");
             break;
           default:
@@ -175,11 +175,11 @@ public class BuchungsartInput
         switch ((Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGSARTANZEIGE))
         {
-          case BuchungsartAnzeige.NACH_NUMMER:
+          case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
             ((BuchungsartSearchInput) buchungsart)
                 .setAttribute("nrbezeichnung");
             break;
-          case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+          case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
             ((BuchungsartSearchInput) buchungsart)
                 .setAttribute("bezeichnungnr");
             break;

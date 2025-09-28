@@ -41,10 +41,10 @@ public class BuchungsklasseFormatter implements Formatter
       switch ((Integer) Einstellungen
           .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartAnzeige.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           bez = bk.getNummer() + " - " + bk.getBezeichnung();
           break;
-        case BuchungsartAnzeige.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           bez = bk.getBezeichnung() + " (" + bk.getNummer() + ")";
           break;
         default:
