@@ -26,7 +26,8 @@ class AbrechnungSEPATest
     z3.setBetrag(BigDecimal.valueOf(1.00));
     z3.setVerwendungszweck("Zweck 3");
     z1.add(z3);
-    assertEquals("ZWECK 1 1.0, ZWECK 2 1.0, ZWECK 3 1.0", z1.getVerwendungszweck());
+    assertEquals("ZWECK 1 1.0, ZWECK 2 1.0, ZWECK 3 1.0",
+        z1.getVerwendungszweck());
   }
 
 }

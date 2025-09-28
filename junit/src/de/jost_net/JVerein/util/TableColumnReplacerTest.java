@@ -18,7 +18,6 @@ package de.jost_net.JVerein.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -65,8 +64,7 @@ class TableColumnReplacerTest
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
     assertEquals(true, tcr.getNecessaryColumns().containsKey(testColumn));
     tcr.removeColumn(testColumn);
-    assertEquals(false, tcr.getNecessaryColumns()
-        .containsKey(testColumn));
+    assertEquals(false, tcr.getNecessaryColumns().containsKey(testColumn));
   }
 
   @Test

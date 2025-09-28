@@ -26,7 +26,6 @@ import org.junit.jupiter.api.Test;
 public class ShutdownTest
 {
 
-
   /**
    * Testet den Shutdown.
    *

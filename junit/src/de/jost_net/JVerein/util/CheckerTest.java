@@ -26,8 +26,7 @@ class CheckerTest
   @Test
   void test01()
   {
-    assertTrue(
-        EmailValidator.isValid("willi.wichtig@jverein.de"));
+    assertTrue(EmailValidator.isValid("willi.wichtig@jverein.de"));
   }
 
   @Test
@@ -69,7 +68,7 @@ class CheckerTest
   @Test
   void test10()
   {
-    assertTrue(EmailValidator.isValid("jupp.schmitz@köln.de"));
+    assertTrue(EmailValidator.isValid("jupp.schmitz@kÃ¶ln.de"));
   }
 
   @Test
@@ -81,19 +80,22 @@ class CheckerTest
   @Test
   void test12()
   {
-    assertTrue(EmailValidator.isValid("Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zwei.tld;"));
+    assertTrue(EmailValidator.isValid(
+        "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zwei.tld;"));
   }
 
   @Test
   void test13()
   {
-    assertFalse(EmailValidator.isValid("Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zweitld;"));
+    assertFalse(EmailValidator.isValid(
+        "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zweitld;"));
   }
 
   @Test
   void test14()
   {
-    assertFalse(EmailValidator.isValid("Gruppenname: erste.adresse@example-eins.tld, zweite.adresse;"));
+    assertFalse(EmailValidator.isValid(
+        "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse;"));
   }
 
   @Test

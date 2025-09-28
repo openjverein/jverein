@@ -43,7 +43,7 @@ public class TestMessageConsumer implements MessageConsumer
   {
     SystemMessage m = (SystemMessage) message;
     if (m.getStatusCode() == SystemMessage.SYSTEM_STARTED)
-      ;//Test.start();
+      ;// Test.start();
   }
 
   /**
