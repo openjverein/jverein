@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -190,9 +191,8 @@ public class FamilienbeitragNode implements GenericObjectNode
       JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
       return Adressaufbereitung.getNameVorname(mitglied)
           + (d != null ? ", Austritt: " + jvttmmjjjj.format(d) : "")
-          + (mitglied.getIban().length() > 0
-              ? ", " + mitglied.getBic() + ", " + mitglied.getIban()
-              : "");
+          + (mitglied.getIban().length() > 0 ? ", " + mitglied.getBic() + ", "
+              + new IBANFormatter().format(mitglied.getIban()) : "");
     }
     catch (RemoteException e)
     {

@@ -481,7 +481,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     if (ib == null)
       k.setIban(null);
     else
-      k.setIban(ib.toUpperCase().replace(" ", ""));
+      k.setIban(ib.replace(" ", ""));
     k.setBic((String) getBIC().getValue());
     k.setBetrag((Double) getBetrag().getValue());
     if (getGeburtsdatum() != null)

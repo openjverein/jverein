@@ -69,7 +69,7 @@ public class IBANListener implements Listener
     {
       return;
     }
-    String ib2 = ib.trim().toUpperCase().replace(" ", "");
+    String ib2 = ib.trim().replace(" ", "");
     iban.setValue(new IBANFormatter().format(ib2));
     if (ib2.length() == 0)
     {

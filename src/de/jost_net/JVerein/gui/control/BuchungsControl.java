@@ -331,7 +331,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     if (ib == null)
       b.setIban(null);
     else
-      b.setIban(ib.toUpperCase().replace(" ", ""));
+      b.setIban(ib.replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());

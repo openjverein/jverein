@@ -2371,7 +2371,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (ib == null)
       m.setIban("");
     else
-      m.setIban(ib.toUpperCase().replace(" ", ""));
+      m.setIban(ib.replace(" ", ""));
     // Abweichender Kontoinhaber
     m.setKtoiAdressierungszusatz(
         (String) getKtoiAdressierungszusatz().getValue());

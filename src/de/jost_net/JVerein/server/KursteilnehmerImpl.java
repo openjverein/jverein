@@ -127,7 +127,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     }
     catch (SEPAException e1)
     {
-      throw new ApplicationException(e1.getMessage());
+      throw new ApplicationException("Ungültige IBAN");
     }
     try
     {
