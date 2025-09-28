@@ -26,6 +26,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -162,7 +163,8 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
     map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
     map.put(RechnungVar.BIC.getName(), re.getBIC());
-    map.put(RechnungVar.IBAN.getName(), re.getIBAN());
+    map.put(RechnungVar.IBAN.getName(),
+        new IBANFormatter().format(re.getIBAN()));
     map.put(RechnungVar.IBANMASKIERT.getName(),
         VarTools.maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
@@ -176,7 +178,8 @@ public class RechnungMap extends AbstractMap
         zahlungsweg = (String) Einstellungen
             .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}", re.getBIC());
-        zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}", re.getIBAN());
+        zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
+            new IBANFormatter().format(re.getIBAN()));
         zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
             re.getMandatID());
         break;
@@ -196,7 +199,8 @@ public class RechnungMap extends AbstractMap
     }
     try
     {
-      zahlungsweg = VelocityTool.eval(map, zahlungsweg);
+      zahlungsweg = VelocityTool.eval(new AllgemeineMap().getMap(map),
+          zahlungsweg);
     }
     catch (IOException e)
     {
@@ -273,7 +277,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MANDATID.getName(), "12345");
     map.put(RechnungVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(RechnungVar.BIC.getName(), "XXXXXXXXXXX");
-    map.put(RechnungVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(RechnungVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(RechnungVar.EMPFAENGER.getName(),
         "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
@@ -33,7 +34,6 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 public class MitgliedSpaltenauswahl extends Spaltenauswahl
@@ -112,7 +112,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new ZahlungsterminFormatter(), Column.ALIGN_LEFT, true);
     add("Datum des Mandats", "mandatdatum", false, true);
     add("BIC", "bic", false, true);
-    add("IBAN", "iban", false, new IbanFormatter(), Column.ALIGN_LEFT, true);
+    add("IBAN", "iban", false, new IBANFormatter(), Column.ALIGN_LEFT, true);
     add("Kontoinhaber Anrede", "ktoianrede", false, true);
     add("Kontoinhaber Name", "ktoiname", false, true);
     add("Kontoinhaber Titel", "ktoititel", false, true);

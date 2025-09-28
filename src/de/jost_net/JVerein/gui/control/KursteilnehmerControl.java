@@ -32,6 +32,7 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -60,8 +61,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -333,7 +332,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       return iban;
     }
     iban = new IBANInput(
-        HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
+        new IBANFormatter().format(getKursteilnehmer().getIban()), getBIC());
     iban.setName("IBAN");
     iban.setMandatory(true);
     return iban;
@@ -403,7 +402,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     part.addColumn("Ort", "ort");
     part.addColumn("Verwendungszweck", "vzweck1");
     part.addColumn("BIC", "bic");
-    part.addColumn("IBAN", "iban", new IbanFormatter());
+    part.addColumn("IBAN", "iban", new IBANFormatter());
     part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     part.addColumn("Mandats-ID", "mandatid");

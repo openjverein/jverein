@@ -24,13 +24,13 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 
 /**
@@ -70,7 +70,7 @@ public class IBANListener implements Listener
       return;
     }
     String ib2 = ib.trim().toUpperCase().replace(" ", "");
-    iban.setValue(HBCIProperties.formatIban(ib2));
+    iban.setValue(new IBANFormatter().format(ib2));
     if (ib2.length() == 0)
     {
       iban.setComment("");
