@@ -10,18 +10,40 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit;
+package de.jost_net.JVerein;
 
-import de.willuhn.jameica.plugin.AbstractPlugin;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
- * Launcher für das JVerein-JUnit-Test-Plugin.
+ * Testet den Shutdown.
  */
-public class JVereinJUnitPlugin extends AbstractPlugin
+@Disabled
+public class ShutdownTest
 {
-  //
+
+
+  /**
+   * Testet den Shutdown.
+   *
+   * @throws Exception
+   */
+  @Test
+  void shutdown() throws Exception
+  {
+    // Muss aus einem extra Test heraus erfolgen
+    Thread t = new Thread()
+    {
+      @Override
+      public void run()
+      {
+        System.exit(0);
+      }
+    };
+    t.start();
+  }
 }

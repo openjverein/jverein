@@ -14,40 +14,30 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit;
+package de.jost_net.JVerein.io;
 
-import junit.framework.TestCase;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Testet den Shutdown.
- */
-public class ShutdownTest extends TestCase
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+import org.junit.jupiter.api.Test;
+import de.willuhn.util.ApplicationException;
+
+class BankarbeitstageTest
 {
-
-  /**
-   * Constructor for ShutdownTest.
-   */
-  public ShutdownTest(String arg0)
+  @Test
+  void test01() throws ApplicationException
   {
-    super(arg0);
-  }
-
-  /**
-   * Testet den Shutdown.
-   * 
-   * @throws Exception
-   */
-  public void testShutdown() throws Exception
-  {
-    // Muss aus einem extra Test heraus erfolgen
-    Thread t = new Thread()
-    {
-      @Override
-      public void run()
-      {
-        System.exit(0);
-      }
-    };
-    t.start();
+    Bankarbeitstage bat = new Bankarbeitstage();
+    Calendar cal = Calendar.getInstance();
+    cal.set(2013, Calendar.DECEMBER, 30);
+    cal = bat.getCalendar(cal, 1);
+    Calendar cal2 = Calendar.getInstance();
+    cal2.set(Calendar.YEAR, 2014);
+    cal2.set(Calendar.MONTH, Calendar.JANUARY);
+    cal2.set(Calendar.DAY_OF_MONTH, 2);
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+    assertEquals(sdf.format(cal2.getTime()), sdf.format(cal.getTime()));
   }
 }

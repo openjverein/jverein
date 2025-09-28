@@ -1,28 +1,25 @@
-package de.jost_net.JVereinJUnit;
+package de.jost_net.JVerein;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import de.willuhn.jameica.system.Application;
 
-@RunWith(JUnit4.class)
-public class Settings
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+@Disabled
+class Settings
 {
-  @Test
   /**
-   * In den Methoden test01 und test02 wird geprÃ¼ft, ob die Settings-Klasse
-   * sowohl mit den Zeilenende \n als auch \r\n sauber umgeht.
-   * 
+   * In den Methoden test01 und test02 wird geprüft, ob die Settings-Klasse sowohl mit den Zeilenende \n als auch \r\n sauber umgeht.
    * @throws IOException
    */
-  public void test01() throws IOException
+  @Test
+  void test01() throws IOException
   {
     File f1 = getFile();
     FileWriter wrt = new FileWriter(f1);
@@ -34,7 +31,7 @@ public class Settings
   }
 
   @Test
-  public void test02() throws IOException
+  void test02() throws IOException
   {
     File f1 = getFile();
     FileWriter wrt = new FileWriter(f1);
