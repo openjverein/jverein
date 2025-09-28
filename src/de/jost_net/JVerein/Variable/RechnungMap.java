@@ -118,11 +118,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.BETRAG.getName(), betrag.toArray());
     map.put(RechnungVar.MK_BETRAG.getName(), betrag.toArray());
 
-    Double ist = 0d;
-    if (re.getSollbuchung() != null)
-    {
-      ist = re.getSollbuchung().getIstSumme();
-    }
+    Double ist = re.getIstSumme();
     map.put(RechnungVar.SUMME.getName(), summe);
     map.put(RechnungVar.IST.getName(), ist);
     map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);
