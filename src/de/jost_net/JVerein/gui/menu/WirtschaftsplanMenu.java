@@ -28,6 +28,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
 
 public class WirtschaftsplanMenu extends ContextMenu
 {
@@ -49,12 +50,24 @@ public class WirtschaftsplanMenu extends ContextMenu
           new WirtschaftsplanAddBuchungsartAction(control, art),
           "list-add.png"));
     }
-    addItem(new BuchungsartItem("Posten hinzufügen",
-        new WirtschaftsplanAddPostenAction(control), "list-add.png"));
-    addItem(ContextMenuItem.SEPARATOR);
+    try
+    {
+      if ((Boolean) Einstellungen
+          .getEinstellung(Einstellungen.Property.WIRTSCHAFTSPLAN_MIT_POSTEN))
+      {
+        addItem(new BuchungsartItem("Posten hinzufügen",
+            new WirtschaftsplanAddPostenAction(control), "list-add.png"));
+        addItem(ContextMenuItem.SEPARATOR);
 
-    addItem(new CheckedContextMenuItem("Posten löschen",
-        new WirtschaftsplanDeletePostenAction(control), "user-trash-full.png"));
+        addItem(new CheckedContextMenuItem("Posten löschen",
+            new WirtschaftsplanDeletePostenAction(control),
+            "user-trash-full.png"));
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim erstel des Wirtschaftsplan Menüs", e);
+    }
   }
 
   private static class BuchungsklasseItem extends CheckedContextMenuItem

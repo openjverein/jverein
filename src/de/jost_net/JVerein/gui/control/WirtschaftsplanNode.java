@@ -249,7 +249,8 @@ public class WirtschaftsplanNode
     this.parent = parent;
     this.buchungsart = buchungsart;
     children = new ArrayList<>();
-
+    boolean mitPosten = (Boolean) Einstellungen
+        .getEinstellung(Property.WIRTSCHAFTSPLAN_MIT_POSTEN);
     DBService service = Einstellungen.getDBService();
 
     if (wirtschaftsplan.isNewObject())
@@ -260,8 +261,14 @@ public class WirtschaftsplanNode
       item.setBuchungsartId(buchungsart.getID());
       item.setPosten(buchungsart.getBezeichnung());
       item.setSoll(0);
-
-      children.add(new WirtschaftsplanNode(this, item));
+      if (mitPosten)
+      {
+        children.add(new WirtschaftsplanNode(this, item));
+      }
+      else
+      {
+        setWirtschaftsplanItem(item);
+      }
       return;
     }
 
@@ -280,8 +287,25 @@ public class WirtschaftsplanNode
     while (iterator.hasNext())
     {
       WirtschaftsplanItem item = iterator.next();
-      sollSumme += item.getSoll();
-      children.add(new WirtschaftsplanNode(this, item));
+      if (mitPosten)
+      {
+        sollSumme += item.getSoll();
+        children.add(new WirtschaftsplanNode(this, item));
+      }
+      else
+      {
+        this.setWirtschaftsplanItem(item);
+      }
+    }
+    if (!mitPosten && getWirtschaftsplanItem() == null)
+    {
+      WirtschaftsplanItem item = service.createObject(WirtschaftsplanItem.class,
+          null);
+      item.setBuchungsklasseId(parent.getBuchungsklasse().getID());
+      item.setBuchungsartId(buchungsart.getID());
+      item.setPosten(buchungsart.getBezeichnung());
+      item.setSoll(0);
+      setWirtschaftsplanItem(item);
     }
     setSoll(sollSumme);
   }

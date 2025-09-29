@@ -310,6 +310,7 @@ public class Einstellungen
     BUCHUNGSKLASSEINBUCHUNG("bkinbuchung", Boolean.class, "0"),
     SPLITPOSITIONZWECK("splitpositionzweck", Boolean.class, "0"),
     GEPRUEFTSYNCHRONISIEREN("geprueftsynchronisieren", Boolean.class, "0"),
+    WIRTSCHAFTSPLAN_MIT_POSTEN("wirtschaftsplan_posten", Boolean.class, "0"),
 
     // Rechnung
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
