@@ -22,16 +22,14 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
@@ -40,12 +38,11 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
 import de.jost_net.JVerein.io.WirtschaftsplanPDF;
+import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
-import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
@@ -69,10 +66,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public final static String AUSWERTUNG_PDF = "PDF";
 
   public final static String AUSWERTUNG_CSV = "CSV";
-
-  private final String ID = "id";
-
-  private final String SUMME = "summe";
 
   private EditTreePart einnahmen;
 
@@ -152,7 +145,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       return wirtschaftsplan;
     }
-    return (Wirtschaftsplan) getCurrentObject();
+    wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+    return wirtschaftsplan;
   }
 
   public EditTreePart getEinnahmen() throws RemoteException
@@ -189,20 +183,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return ausgaben;
   }
 
-  private double getBuchunsklassenSumme(PseudoDBObject obj)
-      throws RemoteException
-  {
-    DBIterator<Buchungsklasse> iterator = Einstellungen.getDBService()
-        .createList(Buchungsklasse.class);
-    iterator.addFilter("id = ?", obj.getAttribute(ID));
-    if (!iterator.hasNext())
-    {
-      return 0;
-    }
-
-    return obj.getDouble(SUMME);
-  }
-
   private EditTreePart generateTree(int art) throws RemoteException
   {
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
@@ -212,67 +192,30 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       return null;
     }
 
-    Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
+    ArrayList<WirtschaftsplanNode> nodes = new ArrayList<>();
 
     DBService service = Einstellungen.getDBService();
 
     DBIterator<Buchungsklasse> buchungsklasseIterator = service
         .createList(Buchungsklasse.class);
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      default:
+        buchungsklasseIterator
+            .setOrder("Order by bezeichnung is NULL, bezeichnung");
+        break;
+    }
     while (buchungsklasseIterator.hasNext())
     {
       Buchungsklasse klasse = buchungsklasseIterator.next();
-      nodes.put(klasse.getID(),
-          new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
+      nodes.add(new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
-        "wirtschaftsplanitem, buchungsart");
-    extendedDBIterator.addColumn("wirtschaftsplanitem.buchungsklasse as " + ID);
-    extendedDBIterator.addColumn("sum(soll) as " + SUMME);
-    extendedDBIterator.addFilter("wirtschaftsplan = ?",
-        wirtschaftsplan.getID());
-    extendedDBIterator
-        .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
-    extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsklasse");
-
-    while (extendedDBIterator.hasNext())
-    {
-      PseudoDBObject obj = extendedDBIterator.next();
-      double soll = getBuchunsklassenSumme(obj);
-      nodes.get(obj.getAttribute(ID).toString()).setSoll(soll);
-    }
-
-    extendedDBIterator = new ExtendedDBIterator<>("buchung, buchungsart");
-    extendedDBIterator.addColumn("sum(buchung.betrag) as " + SUMME);
-    extendedDBIterator.addFilter("buchung.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchung.datum >= ?",
-        wirtschaftsplan.getDatumVon());
-    extendedDBIterator.addFilter("buchung.datum <= ?",
-        wirtschaftsplan.getDatumBis());
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
-
-    if ((Boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      extendedDBIterator.addColumn("buchung.buchungsklasse as " + ID);
-      extendedDBIterator.addGroupBy("buchung.buchungsklasse");
-    }
-    else
-    {
-      extendedDBIterator.addColumn("buchungsart.buchungsklasse as " + ID);
-      extendedDBIterator.addGroupBy("buchungsart.buchungsklasse");
-    }
-
-    while (extendedDBIterator.hasNext())
-    {
-      PseudoDBObject obj = extendedDBIterator.next();
-      double ist = getBuchunsklassenSumme(obj);
-      nodes.get(obj.getAttribute(ID).toString()).setIst(ist);
-    }
-
-    EditTreePart treePart = new EditTreePart(new ArrayList<>(nodes.values()),
-        null);
+    EditTreePart treePart = new EditTreePart(nodes, null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -610,11 +553,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   @Override
   public boolean hasChanged() throws RemoteException
   {
-    if (!(getCurrentObject() instanceof Wirtschaftsplan))
+    if (!(getWirtschaftsplan() instanceof Wirtschaftsplan))
     {
       return false;
     }
-    Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
+    Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
 
     if (wirtschaftsplan.isNewObject())
     {

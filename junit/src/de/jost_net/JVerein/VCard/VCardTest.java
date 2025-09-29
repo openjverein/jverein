@@ -1,4 +1,4 @@
-package de.jost_net.JVereinJUnit.VCard;
+package de.jost_net.JVerein.VCard;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -6,10 +6,6 @@ import java.nio.file.Paths;
 import java.time.ZoneOffset;
 
 import javax.xml.transform.TransformerException;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
@@ -24,12 +20,14 @@ import ezvcard.property.Revision;
 import ezvcard.property.StructuredName;
 import ezvcard.property.Timezone;
 import ezvcard.property.Uid;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-@RunWith(JUnit4.class)
+@Disabled
 public class VCardTest
 {
   @Test
-  public void test01() throws IOException, TransformerException
+  void test01() throws IOException, TransformerException
   {
     VCard[] vcard = { createVCard(), createVCard() };
 

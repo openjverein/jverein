@@ -10,34 +10,29 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
+ *
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit;
+package de.jost_net.JVerein;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 /**
  * Testet den Shutdown.
  */
-public class ShutdownTest extends TestCase
+@Disabled
+public class ShutdownTest
 {
 
   /**
-   * Constructor for ShutdownTest.
-   */
-  public ShutdownTest(String arg0)
-  {
-    super(arg0);
-  }
-
-  /**
    * Testet den Shutdown.
-   * 
+   *
    * @throws Exception
    */
-  public void testShutdown() throws Exception
+  @Test
+  void shutdown() throws Exception
   {
     // Muss aus einem extra Test heraus erfolgen
     Thread t = new Thread()

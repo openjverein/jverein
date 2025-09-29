@@ -14,23 +14,18 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.io;
+package de.jost_net.JVerein.io;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-import de.jost_net.JVerein.io.AltersgruppenParser;
+import org.junit.jupiter.api.Test;
 import de.jost_net.JVerein.util.VonBis;
 import de.willuhn.util.ApplicationException;
 
-@RunWith(JUnit4.class)
-public class AltersgruppenParserTest
+class AltersgruppenParserTest
 {
   @Test
-  public void test01() throws ApplicationException
+  void test01() throws ApplicationException
   {
     AltersgruppenParser ap = new AltersgruppenParser(
         "0-5,6-10,11-16,17-25,25-100");
@@ -51,9 +46,8 @@ public class AltersgruppenParserTest
     assertEquals(100, vb.getBis());
   }
 
-  @SuppressWarnings("unused")
   @Test
-  public void test02() throws ApplicationException
+  void test02() throws ApplicationException
   {
     new AltersgruppenParser("0-5,4-10");
   }
