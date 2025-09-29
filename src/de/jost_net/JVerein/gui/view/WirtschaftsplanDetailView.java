@@ -64,7 +64,6 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
         new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
     ButtonArea einnahmenButtons = new ButtonArea();
     einnahmenButtons.addButton(control.getCollapsEinnahmenButton());
-    einnahmenButtons.addButton(control.getExpandEinnahmenButton());
     einnahmen.addButtonArea(einnahmenButtons);
     einnahmen.addPart(treeEinnahmen);
 
@@ -75,7 +74,6 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
         new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
     ButtonArea ausgabenButtons = new ButtonArea();
     ausgabenButtons.addButton(control.getCollapsAusgabenButton());
-    ausgabenButtons.addButton(control.getExpandAusgabenButton());
     ausgaben.addButtonArea(ausgabenButtons);
     ausgaben.addPart(treeAusgaben);
 

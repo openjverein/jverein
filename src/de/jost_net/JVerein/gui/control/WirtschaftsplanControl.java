@@ -583,18 +583,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   public Button getCollapsEinnahmenButton()
   {
-    return new Button("", context -> {
-      handleEinnahmen(false);
-      settings.setAttribute("einnahmen_expand", "false");
+    return new Button("Aufklappen/zuklappen", context -> {
+      Boolean soll = !settings.getBoolean("einnahmen_expand", true);
+      handleEinnahmen(soll);
+      settings.setAttribute("einnahmen_expand", soll.toString());
     }, null, false, "folder.png");
-  }
-
-  public Button getExpandEinnahmenButton()
-  {
-    return new Button("", context -> {
-      handleEinnahmen(true);
-      settings.setAttribute("einnahmen_expand", "true");
-    }, null, false, "folder-open.png");
   }
 
   @SuppressWarnings("unchecked")
@@ -621,18 +614,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   public Button getCollapsAusgabenButton()
   {
-    return new Button("", context -> {
-      handleAusgaben(false);
-      settings.setAttribute("ausgaben_expand", "false");
+    return new Button("Aufklappen/zuklappen", context -> {
+      Boolean soll = !settings.getBoolean("ausgaben_expand", true);
+      handleAusgaben(soll);
+      settings.setAttribute("ausgaben_expand", soll.toString());
     }, null, false, "folder.png");
-  }
-
-  public Button getExpandAusgabenButton()
-  {
-    return new Button("", context -> {
-      handleAusgaben(true);
-      settings.setAttribute("ausgaben_expand", "true");
-    }, null, false, "folder-open.png");
   }
 
   @SuppressWarnings("unchecked")
