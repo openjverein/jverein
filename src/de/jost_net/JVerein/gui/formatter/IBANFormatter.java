@@ -37,7 +37,7 @@ public class IBANFormatter implements Formatter
     String s = (String) o;
 
     // Wenn es falsche Zeien enthält, nicht formatieren
-    if (!s.trim().matches("^[a-zA-Z]{2}[0-9 ]+$"))
+    if (!s.trim().matches("^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{11,30}$"))
     {
       return s;
     }
