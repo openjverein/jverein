@@ -26,11 +26,11 @@ import java.util.List;
 import java.util.Locale;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode.Type;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -53,6 +53,9 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.parts.table.Feature;
+import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -76,8 +79,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   private boolean tableChanged = false;
 
-  private Boolean mitPosten;
-
   /**
    * Erzeugt einen neuen WirtschaftsplanControl fuer die angegebene View.
    *
@@ -91,8 +92,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
         this.getClass());
     settings.setStoreWhenRead(true);
-    mitPosten = (Boolean) Einstellungen
-        .getEinstellung(Property.WIRTSCHAFTSPLAN_MIT_POSTEN);
   }
 
   /**
@@ -162,7 +161,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       @SuppressWarnings("rawtypes")
       List items = einnahmen.getItems();
-      einnahmen.removeAll();
       einnahmen.setList(items);
     }
     return einnahmen;
@@ -178,12 +176,12 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       @SuppressWarnings("rawtypes")
       List items = ausgaben.getItems();
-      ausgaben.removeAll();
       ausgaben.setList(items);
     }
     return ausgaben;
   }
 
+  @SuppressWarnings("unchecked")
   private EditTreePart generateTree(int art) throws RemoteException
   {
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
@@ -216,7 +214,19 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       nodes.add(new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    EditTreePart treePart = new EditTreePart(nodes, null);
+    EditTreePart treePart = new EditTreePart(nodes, null)
+    {
+      @Override
+      protected Context createFeatureEventContext(Feature.Event e, Object data)
+      {
+        Context ctx = super.createFeatureEventContext(e, data);
+        if (e.equals(Feature.Event.PAINT))
+        {
+          autoExpand(this);
+        }
+        return ctx;
+      }
+    };
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
@@ -267,8 +277,22 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         node.setWirtschaftsplanItem(item);
         node.setSoll(item.getSoll());
 
-        WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
-        reloadSoll(parent);
+        GenericIterator<WirtschaftsplanNode> children = node.getChildren();
+        if (node.getType() == Type.BUCHUNGSART && children != null
+            && children.size() == 1)
+        {
+          WirtschaftsplanNode child = children.next();
+          child.setWirtschaftsplanItem(item);
+          child.setSoll(item.getSoll());
+          reloadSoll(node);
+        }
+        else
+        {
+          WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
+          reloadSoll(parent);
+        }
+        autoExpand(einnahmen);
+        autoExpand(ausgaben);
 
         tableChanged = true;
       }
@@ -281,19 +305,60 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     treePart.addEditListener(((object, attribute) -> {
       WirtschaftsplanNode node = (WirtschaftsplanNode) object;
-      if (mitPosten)
-      {
 
-        return node.getType() == WirtschaftsplanNode.Type.POSTEN;
-      }
-      else
+      switch (node.getType())
       {
-        return node.getType() == WirtschaftsplanNode.Type.BUCHUNGSART
-            && attribute.equals("soll");
+        case POSTEN:
+          return true;
+        case BUCHUNGSART:
+          try
+          {
+            // Wenn nur ein Posten existiert, kann direkt bei der Buchungsart
+            // der Betrag eingegeben werden.
+            return (node.getChildren() == null
+                || node.getChildren().size() == 1) && attribute.equals("soll");
+          }
+          catch (RemoteException e)
+          {
+            return false;
+          }
+        default:
+          return false;
       }
+
     }));
 
     return treePart;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void autoExpand(TreePart tree)
+  {
+    try
+    {
+      for (WirtschaftsplanNode klasseNode : (List<WirtschaftsplanNode>) tree
+          .getItems())
+      {
+        GenericIterator<WirtschaftsplanNode> children = klasseNode
+            .getChildren();
+        if (children == null)
+        {
+          continue;
+        }
+        while (children.hasNext())
+        {
+          WirtschaftsplanNode node = children.next();
+          if (node.getChildren() != null && node.getChildren().size() == 1)
+          {
+            tree.setExpanded(node, false);
+          }
+        }
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler beim AutoExpand", e1);
+    }
   }
 
   public WirtschaftsplanUebersichtPart getUebersicht()
@@ -317,24 +382,15 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       while (outerIterator.hasNext())
       {
         WirtschaftsplanNode child = (WirtschaftsplanNode) outerIterator.next();
-
         double artSoll = 0;
-        if (mitPosten)
+        @SuppressWarnings("rawtypes")
+        GenericIterator innerIterator = child.getChildren();
+        while (innerIterator.hasNext())
         {
-          @SuppressWarnings("rawtypes")
-          GenericIterator innerIterator = child.getChildren();
-          while (innerIterator.hasNext())
-          {
-            WirtschaftsplanNode leaf = (WirtschaftsplanNode) innerIterator
-                .next();
-            artSoll += leaf.getSoll();
-          }
-          child.setSoll(artSoll);
+          WirtschaftsplanNode leaf = (WirtschaftsplanNode) innerIterator.next();
+          artSoll += leaf.getSoll();
         }
-        else
-        {
-          artSoll = child.getSoll();
-        }
+        child.setSoll(artSoll);
         klasseSoll += artSoll;
       }
       parent.setSoll(klasseSoll);
@@ -456,30 +512,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         item.setPosten(oldItem.getPosten());
         item.setSoll(oldItem.getSoll());
         item.setWirtschaftsplanId(id);
-
         WirtschaftsplanNode parent = (WirtschaftsplanNode) currentNode
             .getParent();
         item.setBuchungsartId(parent.getBuchungsart().getID());
         WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
         item.setBuchungsklasseId(root.getBuchungsklasse().getID());
-
-        item.store();
-      }
-      // Wenn es keine Posten gibt, die Daten aus dem Buchungsart-Node nehmen
-      else if (currentNode.getType()
-          .equals(WirtschaftsplanNode.Type.BUCHUNGSART) && !mitPosten)
-      {
-        WirtschaftsplanItem item = Einstellungen.getDBService()
-            .createObject(WirtschaftsplanItem.class, null);
-        WirtschaftsplanItem oldItem = currentNode.getWirtschaftsplanItem();
-        item.setPosten(oldItem.getPosten());
-        item.setSoll(oldItem.getSoll());
-        item.setWirtschaftsplanId(id);
-        item.setBuchungsartId(currentNode.getBuchungsart().getID());
-        WirtschaftsplanNode root = (WirtschaftsplanNode) currentNode
-            .getParent();
-        item.setBuchungsklasseId(root.getBuchungsklasse().getID());
-
         item.store();
       }
       else

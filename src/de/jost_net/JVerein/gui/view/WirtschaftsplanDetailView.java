@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
@@ -60,26 +59,14 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
     LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen",
         true);
     EditTreePart treeEinnahmen = control.getEinnahmen();
-    if ((Boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG)
-        || (Boolean) Einstellungen
-            .getEinstellung(Einstellungen.Property.WIRTSCHAFTSPLAN_MIT_POSTEN))
-    {
-      treeEinnahmen.setContextMenu(
-          new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
-    }
+    treeEinnahmen.setContextMenu(
+        new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
     einnahmen.addPart(treeEinnahmen);
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben",
         true);
     EditTreePart treeAusgaben = control.getAusgaben();
-    if ((Boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG)
-        || (Boolean) Einstellungen
-            .getEinstellung(Einstellungen.Property.WIRTSCHAFTSPLAN_MIT_POSTEN))
-    {
-      treeAusgaben.setContextMenu(
-          new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
-    }
+    treeAusgaben.setContextMenu(
+        new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
     ausgaben.addPart(treeAusgaben);
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
