@@ -362,8 +362,6 @@ public class WirtschaftsplanNode
         {
           return new BuchungsklasseFormatter().format(buchungsklasse);
         }
-        return "";
-      case "buchungsartbezeichnung_posten":
         if (type == Type.BUCHUNGSART)
         {
           return new BuchungsartFormatter().format(buchungsart);

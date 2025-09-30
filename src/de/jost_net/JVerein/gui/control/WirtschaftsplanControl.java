@@ -230,9 +230,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
-    treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
-    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten",
-        null, true);
+    treePart.addColumn("Buchungsklasse / Buchungsart / Posten",
+        "buchungsklassebezeichnung", null, true);
     treePart.addColumn("Soll", "soll", formatter, true);
     treePart.addColumn("Ist", "ist", formatter);
 
