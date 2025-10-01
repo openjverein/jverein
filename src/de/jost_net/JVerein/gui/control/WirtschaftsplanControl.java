@@ -25,7 +25,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -224,6 +228,22 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         {
           autoExpand(this);
         }
+        if (e.equals(Feature.Event.REFRESH))
+        {
+          // Listener ausführen um das Icon zu aktualisieren
+          Tree tree = (Tree) ctx.control;
+          for (TreeItem klasseItem : tree.getItems())
+          {
+            for (TreeItem item : klasseItem.getItems())
+            {
+              Event event = new Event();
+              event.item = item;
+
+              tree.notifyListeners(
+                  item.getExpanded() ? SWT.Expand : SWT.Collapse, event);
+            }
+          }
+        }
         return ctx;
       }
     };
@@ -290,8 +310,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
           WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
           reloadSoll(parent);
         }
-        autoExpand(einnahmen);
-        autoExpand(ausgaben);
 
         tableChanged = true;
       }
@@ -347,12 +365,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         while (children.hasNext())
         {
           WirtschaftsplanNode node = children.next();
-          if (node.getChildren() != null && node.getChildren().size() == 1)
-          {
-            tree.setExpanded(node, false);
-          }
+          tree.setExpanded(node, node.getChildren().size() != 1);
         }
       }
+      tree.featureEvent(Feature.Event.REFRESH, null);
     }
     catch (RemoteException e1)
     {
@@ -411,8 +427,9 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         parent = (WirtschaftsplanNode) parent.getParent();
       }
     }
-
     uebersicht.updateSoll();
+    autoExpand(einnahmen);
+    autoExpand(ausgaben);
   }
 
   @Override
