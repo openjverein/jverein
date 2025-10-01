@@ -25,6 +25,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
@@ -109,8 +110,8 @@ public class AllgemeineMap
     map.put(AllgemeineVar.STAAT.getName(),
         Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT))
             .getText());
-    map.put(AllgemeineVar.IBAN.getName(),
-        (String) Einstellungen.getEinstellung(Property.IBAN));
+    map.put(AllgemeineVar.IBAN.getName(), new IBANFormatter()
+        .format((String) Einstellungen.getEinstellung(Property.IBAN)));
     map.put(AllgemeineVar.BIC.getName(),
         (String) Einstellungen.getEinstellung(Property.BIC));
     map.put(AllgemeineVar.GLAEUBIGER_ID.getName(),

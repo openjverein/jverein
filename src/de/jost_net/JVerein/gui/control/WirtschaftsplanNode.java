@@ -143,16 +143,6 @@ public class WirtschaftsplanNode
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
 
-    if ((boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      istIt.addFilter("buchung.buchungsklasse = ?", buchungsklasse.getID());
-    }
-    else
-    {
-      istIt.addFilter("buchungsart.buchungsklasse = ?", buchungsklasse.getID());
-    }
-
     if (mitSteuer)
     {
       // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
@@ -166,7 +156,7 @@ public class WirtschaftsplanNode
           + SUMME, Kontoart.ANLAGE.getKey());
 
       // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
-      String subselect = "(SELECT steuer.buchungsart, "
+      String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
           + " FROM buchung"
           // Keine Steuer bei Anlagekonten
@@ -186,7 +176,13 @@ public class WirtschaftsplanNode
       subselect += " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY steuer.buchungsart) AS st ";
+          + " GROUP BY steuer.buchungsart";
+      if ((boolean) Einstellungen
+          .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+      {
+        subselect += ",steuer.buchungsklasse";
+      }
+      subselect += ") AS st ";
       istIt.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
           Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
           wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
@@ -203,6 +199,20 @@ public class WirtschaftsplanNode
     else
     {
       istIt.addColumn("COALESCE(SUM(buchung.betrag),0) AS " + SUMME);
+    }
+
+    if ((boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      istIt.leftJoin("buchungsklasse",
+          "buchungsklasse.id = buchung.buchungsklasse"
+              + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse" : ""));
+      istIt.addGroupBy("buchungsklasse.id");
+      istIt.addFilter("buchungsklasse.id = ?", buchungsklasse.getID());
+    }
+    else
+    {
+      istIt.addFilter("buchungsart.buchungsklasse = ?", buchungsklasse.getID());
     }
 
     istIt.addGroupBy("buchungsart.id");

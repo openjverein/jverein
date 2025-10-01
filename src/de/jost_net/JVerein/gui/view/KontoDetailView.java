@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
+import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -57,31 +58,37 @@ public class KontoDetailView extends AbstractDetailView
     right.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     right.addLabelPair("Kommentar", control.getKommentar());
 
-    LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
-    ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
-
-    SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
-    left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
-    left1.addLabelPair("AfA Buchungsart", control.getAfaart());
-    left1.addLabelPair("Anlagenwert", control.getBetrag());
-    left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
-    if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
+    // Anlagenkonto Daten nur anzeigen wenn es in den Einstellungen aktiviert
+    // ist oder ein bereits bestehendes Anlagenkonto geöffnet wird
+    if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN)
+        || control.getKontoArt().getValue() == Kontoart.ANLAGE)
     {
-      left1.addLabelPair("Anlagenzweck", control.getAnlagenzweck());
-    }
-    ButtonArea anlagenbuttons = new ButtonArea();
-    anlagenbuttons.addButton(control.getAutobutton());
-    left1.addButtonArea(anlagenbuttons);
+      LabelGroup group1 = new LabelGroup(getParent(), "Anlagenkonto Daten");
+      ColumnLayout cl1 = new ColumnLayout(group1.getComposite(), 2);
 
-    SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
-    right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
-    right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
-    right1.addLabelPair("Afa Mode", control.getAfaMode());
-    right1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
-    right1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
-    ButtonArea afabuttons = new ButtonArea();
-    afabuttons.addButton(control.getAfabutton());
-    right1.addButtonArea(afabuttons);
+      SimpleContainer left1 = new SimpleContainer(cl1.getComposite());
+      left1.addLabelPair("Anlagen Buchungsart", control.getAnlagenart());
+      left1.addLabelPair("AfA Buchungsart", control.getAfaart());
+      left1.addLabelPair("Anlagenwert", control.getBetrag());
+      left1.addLabelPair("Anschaffungsdatum", control.getAnschaffung());
+      if ((Boolean) Einstellungen.getEinstellung(Property.MITTELVERWENDUNG))
+      {
+        left1.addLabelPair("Anlagenzweck", control.getAnlagenzweck());
+      }
+      ButtonArea anlagenbuttons = new ButtonArea();
+      anlagenbuttons.addButton(control.getAutobutton());
+      left1.addButtonArea(anlagenbuttons);
+
+      SimpleContainer right1 = new SimpleContainer(cl1.getComposite());
+      right1.addLabelPair("Nutzungsdauer", control.getNutzungsdauer());
+      right1.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
+      right1.addLabelPair("Afa Mode", control.getAfaMode());
+      right1.addLabelPair("AfA Erstes Jahr", control.getAfaStart());
+      right1.addLabelPair("AfA Folgejahre", control.getAfaDauer());
+      ButtonArea afabuttons = new ButtonArea();
+      afabuttons.addButton(control.getAfabutton());
+      right1.addButtonArea(afabuttons);
+    }
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),

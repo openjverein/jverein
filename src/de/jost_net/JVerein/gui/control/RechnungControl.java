@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -72,7 +73,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -682,7 +682,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       return iban;
     }
 
-    iban = new IBANInput(HBCIProperties.formatIban(getRechnung().getIBAN()),
+    iban = new IBANInput(new IBANFormatter().format(getRechnung().getIBAN()),
         getBic());
     iban.setName("IBAN");
     iban.disable();
