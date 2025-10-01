@@ -57,6 +57,11 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       value = Long.parseLong(((AbstractDBObject) value).getID());
     }
+    // Double Felder auf zwei Nachkommastellen runden.
+    if (value instanceof Double)
+    {
+      value = Math.round((Double) value * 100d) / 100d;
+    }
     return super.setAttribute(fieldName, value);
   }
 
@@ -75,7 +80,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
         return getID();
       }
     }
-    return super.getAttribute(fieldName);
+    Object o = super.getAttribute(fieldName);
+    // Double Felder auf zwei Nachkommastellen runden.
+    if (o instanceof Double)
+    {
+      o = Math.round((Double) o * 100d) / 100d;
+    }
+    return o;
   }
 
   @Override
