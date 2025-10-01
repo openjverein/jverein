@@ -35,4 +35,9 @@ public interface Steuer extends JVereinDBObject
   public void setAktiv(boolean aktiv) throws RemoteException;
 
   public boolean getAktiv() throws RemoteException;
+
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+
+  public void setBuchungsklasse(Buchungsklasse buchungsklasse)
+      throws RemoteException;
 }

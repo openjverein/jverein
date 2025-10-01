@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.logging.Logger;
@@ -83,6 +84,31 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   public void setBuchungsartId(Long buchungsart) throws RemoteException
   {
     setAttribute("buchungsart", buchungsart);
+  }
+
+  @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null;
+    }
+
+    if (l instanceof Buchungsklasse)
+    {
+      return (Buchungsklasse) l;
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public void setBuchungsklasse(Buchungsklasse buchungsklasse)
+      throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasse);
   }
 
   @Override
@@ -214,6 +240,8 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   {
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
+    else if ("buchungsklasse".equals(fieldName))
+      return getBuchungsklasse();
 
     return super.getAttribute(fieldName);
   }
