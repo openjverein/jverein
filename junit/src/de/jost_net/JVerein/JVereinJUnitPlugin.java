@@ -14,30 +14,14 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein;
 
-import java.rmi.RemoteException;
+import de.willuhn.jameica.plugin.AbstractPlugin;
 
-public interface Steuer extends JVereinDBObject
+/**
+ * Launcher für das JVerein-JUnit-Test-Plugin.
+ */
+public class JVereinJUnitPlugin extends AbstractPlugin
 {
-  public String getName() throws RemoteException;
-
-  public void setName(String name) throws RemoteException;
-
-  public Double getSatz() throws RemoteException;
-
-  public void setSatz(Double satz) throws RemoteException;
-
-  public Buchungsart getBuchungsart() throws RemoteException;
-
-  public void setBuchungsartId(Long buchungsart) throws RemoteException;
-
-  public void setAktiv(boolean aktiv) throws RemoteException;
-
-  public boolean getAktiv() throws RemoteException;
-
-  public Buchungsklasse getBuchungsklasse() throws RemoteException;
-
-  public void setBuchungsklasse(Buchungsklasse buchungsklasse)
-      throws RemoteException;
+  //
 }

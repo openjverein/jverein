@@ -14,15 +14,14 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.util;
+package de.jost_net.JVerein.util;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import de.jost_net.JVerein.util.TableColumnReplacer;
-import junit.framework.Assert;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-public class TableColumnReplacerTest
+class TableColumnReplacerTest
 {
 
   private TableColumnReplacer tcr;
@@ -31,8 +30,8 @@ public class TableColumnReplacerTest
 
   private String testReplaceColumn;
 
-  @Before
-  public void setUp()
+  @BeforeEach
+  void setUp()
   {
     tcr = new TableColumnReplacer();
     testColumn = "TestColumn1";
@@ -40,73 +39,69 @@ public class TableColumnReplacerTest
   }
 
   @Test
-  public void testAddColumnNecessary()
+  void addColumnNecessary()
   {
 
     tcr.addColumn(testColumn, true);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert.assertEquals(true,
-        tcr.getNecessaryColumns().containsKey(testColumn));
+    assertEquals(true, tcr.getNecessaryColumns().containsKey(testColumn));
   }
 
   @Test
-  public void testAddColumnOptional()
+  void addColumnOptional()
   {
 
     tcr.addColumn(testColumn, false);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert.assertEquals(true, tcr.getOptionalColumns().containsKey(testColumn));
+    assertEquals(true, tcr.getOptionalColumns().containsKey(testColumn));
   }
 
   @Test
-  public void testRemoveColumnNecessary()
+  void removeColumnNecessary()
   {
 
     tcr.addColumn(testColumn, true);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert.assertEquals(true,
-        tcr.getNecessaryColumns().containsKey(testColumn));
+    assertEquals(true, tcr.getNecessaryColumns().containsKey(testColumn));
     tcr.removeColumn(testColumn);
-    Assert.assertEquals(false,
-        tcr.getNecessaryColumns().containsKey(testColumn));
+    assertEquals(false, tcr.getNecessaryColumns().containsKey(testColumn));
   }
 
   @Test
-  public void testRemoveColumnOptional()
+  void removeColumnOptional()
   {
 
     tcr.addColumn(testColumn, false);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert.assertEquals(true, tcr.getOptionalColumns().containsKey(testColumn));
+    assertEquals(true, tcr.getOptionalColumns().containsKey(testColumn));
     tcr.removeColumn(testColumn);
-    Assert.assertEquals(false,
-        tcr.getOptionalColumns().containsKey(testColumn));
+    assertEquals(false, tcr.getOptionalColumns().containsKey(testColumn));
   }
 
   @Test
-  public void testAllNecessaryColumnsAvailableTrue()
+  void allNecessaryColumnsAvailableTrue()
   {
 
     tcr.addColumn(testColumn, true);
     tcr.setColumnReplacement(testColumn, testReplaceColumn);
-    Assert.assertEquals(true, tcr.allNecessaryColumnsAvailable());
+    assertEquals(true, tcr.allNecessaryColumnsAvailable());
   }
 
   @Test
-  public void testAllNecessaryColumnsAvailableTrueAfterRemove()
+  void allNecessaryColumnsAvailableTrueAfterRemove()
   {
 
     tcr.addColumn(testColumn, true);
     tcr.removeColumn(testColumn);
-    Assert.assertEquals(true, tcr.allNecessaryColumnsAvailable());
+    assertEquals(true, tcr.allNecessaryColumnsAvailable());
   }
 
   @Test
-  public void testAllNecessaryColumnsAvailableFalse()
+  void allNecessaryColumnsAvailableFalse()
   {
 
     tcr.addColumn(testColumn, true);
-    Assert.assertEquals(false, tcr.allNecessaryColumnsAvailable());
+    assertEquals(false, tcr.allNecessaryColumnsAvailable());
   }
 
 }

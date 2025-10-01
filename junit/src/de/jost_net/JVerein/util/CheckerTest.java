@@ -14,97 +14,92 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.util;
+package de.jost_net.JVerein.util;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import de.jost_net.JVerein.util.EmailValidator;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
-@RunWith(JUnit4.class)
-public class CheckerTest
+class CheckerTest
 {
   @Test
-  public void test01()
+  void test01()
   {
     assertTrue(EmailValidator.isValid("willi.wichtig@jverein.de"));
   }
 
   @Test
-  public void test02()
+  void test02()
   {
     assertFalse(EmailValidator.isValid(null));
   }
 
   @Test
-  public void test05()
+  void test05()
   {
     assertFalse(EmailValidator.isValid("willi wichtig@jverein.de"));
   }
 
   @Test
-  public void test06()
+  void test06()
   {
     assertFalse(EmailValidator.isValid("willi@wichtig@jverein.de"));
   }
 
   @Test
-  public void test07()
+  void test07()
   {
     assertFalse(EmailValidator.isValid("willi.wichtig.jverein.de"));
   }
 
   @Test
-  public void test08()
+  void test08()
   {
     assertFalse(EmailValidator.isValid("willi.wichtig@jvereinde"));
   }
 
   @Test
-  public void test09()
+  void test09()
   {
     assertFalse(EmailValidator.isValid("willi.wichtig.@jverein.de"));
   }
 
   @Test
-  public void test10()
+  void test10()
   {
     assertTrue(EmailValidator.isValid("jupp.schmitz@köln.de"));
   }
 
   @Test
-  public void test11()
+  void test11()
   {
     assertTrue(EmailValidator.isValid("name@internetsite.shop"));
   }
 
   @Test
-  public void test12()
+  void test12()
   {
     assertTrue(EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zwei.tld;"));
   }
 
   @Test
-  public void test13()
+  void test13()
   {
     assertFalse(EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zweitld;"));
   }
 
   @Test
-  public void test14()
+  void test14()
   {
     assertFalse(EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse;"));
   }
 
   @Test
-  public void test15()
+  void test15()
   {
     assertFalse(EmailValidator.isValid("willi.wichtig"));
   }

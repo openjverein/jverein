@@ -2,7 +2,7 @@
 <plugin xmlns="https://www.willuhn.de/schema/jameica-plugin"
         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.willuhn.de/schema/jameica-plugin http://www.willuhn.de/schema/jameica-plugin-1.0.xsd"
-        name="jverein.junit" version="1.0" class="de.jost_net.JVereinJUnit.JVereinJUnitPlugin">
+        name="jverein.junit" version="1.0" class="de.jost_net.JVerein.JVereinJUnitPlugin">
 
 
   <description>JUnit-Tests für JVerein</description>

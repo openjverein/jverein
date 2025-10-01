@@ -49,13 +49,13 @@ public class Update0487 extends AbstractDDLUpdate
     Column itemId = new Column("id", COLTYPE.BIGINT, 4, null, false, true);
     wirtschaftsplanItem.add(itemId);
     wirtschaftsplanItem.setPrimaryKey(itemId);
-    Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.INTEGER,
-        4, null, true, false);
+    Column wirtschaftsplanCol = new Column("wirtschaftsplan", COLTYPE.BIGINT, 4,
+        null, true, false);
     wirtschaftsplanItem.add(wirtschaftsplanCol);
-    Column buchungsart = new Column("buchungsart", COLTYPE.INTEGER, 4, null,
+    Column buchungsart = new Column("buchungsart", COLTYPE.BIGINT, 4, null,
         true, false);
     wirtschaftsplanItem.add(buchungsart);
-    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.INTEGER, 4,
+    Column buchungsklasse = new Column("buchungsklasse", COLTYPE.BIGINT, 4,
         null, true, false);
     wirtschaftsplanItem.add(buchungsklasse);
     wirtschaftsplanItem

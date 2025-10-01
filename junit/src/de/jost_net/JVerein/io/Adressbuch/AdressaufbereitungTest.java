@@ -14,26 +14,22 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVereinJUnit.io.Adressbuch;
+package de.jost_net.JVerein.io.Adressbuch;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.rmi.RemoteException;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+
+import org.junit.jupiter.api.Test;
 import de.jost_net.JVerein.io.IAdresse;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Staat;
 
-@RunWith(JUnit4.class)
-public class AdressaufbereitungTest
+class AdressaufbereitungTest
 {
   @Test
-  public void test01() throws RemoteException
+  void test01() throws RemoteException
   {
     IAdresse adr = getAdresse("n", "Herrn", "Dr.", "Willi", "Wichtig",
         "bei Lieschen Müller", "Bahnhofstr. 1", "12345", "Testenhausen",
@@ -49,7 +45,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test02() throws RemoteException
+  void test02() throws RemoteException
   {
     IAdresse adr = getAdresse("n", "Herrn", "Dr.", "Willi", "Wichtig", null,
         "Bahnhofstr. 1", "12345", "Testenhausen", null,
@@ -63,7 +59,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test03() throws RemoteException
+  void test03() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null,
         "Bahnhofstr. 1", "12345", "Testenhausen", null,
@@ -77,7 +73,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test04() throws RemoteException
+  void test04() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null, null,
         null, null, null, GeschlechtInput.MAENNLICH);
@@ -88,7 +84,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test05() throws RemoteException
+  void test05() throws RemoteException
   {
     IAdresse adr = getAdresse("n", "", "", "Willi", "Wichtig", "", "", "", "",
         "", GeschlechtInput.MAENNLICH);
@@ -99,7 +95,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test06() throws RemoteException
+  void test06() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null, null,
         null, null, null, GeschlechtInput.MAENNLICH);
@@ -109,7 +105,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test07() throws RemoteException
+  void test07() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Luise", "Lustig", null, null,
         null, null, null, GeschlechtInput.WEIBLICH);
@@ -119,7 +115,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test08() throws RemoteException
+  void test08() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Neutrum", "Neutral", null, null,
         null, null, null, GeschlechtInput.OHNEANGABE);
@@ -129,7 +125,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test09() throws RemoteException
+  void test09() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Willi", "Wichtig", null, null,
         null, null, null, GeschlechtInput.MAENNLICH);
@@ -139,7 +135,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test10() throws RemoteException
+  void test10() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Luise", "Lustig", null, null,
         null, null, null, GeschlechtInput.WEIBLICH);
@@ -149,7 +145,7 @@ public class AdressaufbereitungTest
   }
 
   @Test
-  public void test11() throws RemoteException
+  void test11() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Neutrum", "Neutral", null,
         null, null, null, null, GeschlechtInput.OHNEANGABE);

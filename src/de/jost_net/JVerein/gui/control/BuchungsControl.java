@@ -48,6 +48,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -112,8 +113,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -339,7 +338,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     if (ib == null)
       b.setIban(null);
     else
-      b.setIban(ib.toUpperCase().replace(" ", ""));
+      b.setIban(ib.replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());
@@ -1574,7 +1573,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList.addColumn("Name", "name");
       if (geldkonto)
         buchungsList.addColumn("IBAN oder Kontonummer", "iban",
-            new IbanFormatter());
+            new IBANFormatter());
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -1966,7 +1965,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -2010,7 +2008,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -2235,7 +2232,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()),
+    iban = new IBANInput(new IBANFormatter().format(getBuchung().getIban()),
         new TextInput(""));
     iban.setEnabled(editable);
     return iban;
