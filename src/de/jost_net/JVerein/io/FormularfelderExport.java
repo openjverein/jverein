@@ -61,12 +61,6 @@ public abstract class FormularfelderExport implements Exporter
     close();
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "formularfelder";
-  }
-
   protected abstract void add(Formularfeld ff) throws RemoteException;
 
   protected abstract void open()

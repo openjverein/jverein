@@ -36,8 +36,9 @@ public class JubilaeumsExportAction implements Action
   {
     try
     {
-      ExportDialog d = new ExportDialog(new Object[] { context },
-          Mitglied.class, DokumentationUtil.JUBILAEEN);
+      Object[] objects = new Object[] { context };
+      ExportDialog d = new ExportDialog(objects, Mitglied.class,
+          DokumentationUtil.JUBILAEEN, objects[0]);
       d.open();
     }
     catch (OperationCanceledException oce)

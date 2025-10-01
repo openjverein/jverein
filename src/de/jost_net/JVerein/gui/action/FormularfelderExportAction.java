@@ -69,7 +69,7 @@ public class FormularfelderExportAction implements Action
       }
 
       ExportDialog d = new ExportDialog((Object[]) fflist.toArray(),
-          Formularfeld.class, DokumentationUtil.FORMULARE);
+          Formularfeld.class, DokumentationUtil.FORMULARE, f);
       d.open();
     }
     catch (OperationCanceledException oce)

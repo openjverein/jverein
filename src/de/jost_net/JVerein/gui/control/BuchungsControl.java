@@ -70,6 +70,7 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -82,10 +83,10 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -881,7 +882,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return sammelueberweisungButton;
   }
 
-  public Input getSuchProjekt() throws RemoteException
+  public SelectInput getSuchProjekt() throws RemoteException
   {
     if (suchprojekt != null)
     {
@@ -1773,9 +1774,28 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      if (geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+      }
+      else if (geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+      }
+      else if (!geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_DATEINAME, this) + ".pdf");
+      }
+      else if (!geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_DATEINAME, this) + ".pdf");
+      }
 
       final String s = fd.open();
 
@@ -1811,9 +1831,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "CSV").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
+      else
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
 
       final String s = fd.open();
 
@@ -1888,9 +1917,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungsjournal", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_DATEINAME, this)
+                + ".pdf");
+      }
+      else
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_BUCHUNGSJOURNAL_DATEINAME, this) + ".pdf");
+      }
 
       final String s = fd.open();
 
@@ -2136,7 +2173,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Input getSuchMitgliedZugeordnet()
+  public SelectInput getSuchMitgliedZugeordnet()
   {
     if (hasmitglied != null)
     {

@@ -47,7 +47,7 @@ public class FormularMenu extends ContextMenu
         new FormularDuplizierenAction(control), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
-    addItem(new CheckedContextMenuItem("Exportieren",
+    addItem(new CheckedSingleContextMenuItem("Exportieren",
         new FormularExportAction(), "document-save.png"));
   }
 }

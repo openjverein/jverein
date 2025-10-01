@@ -21,9 +21,6 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.io.Exporter;
-import de.jost_net.JVerein.io.IORegistry;
-import de.jost_net.JVerein.io.SollbuchungExport;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -33,12 +30,6 @@ import de.willuhn.util.ApplicationException;
 
 public class SollbuchungExportAction implements Action
 {
-  private EXPORT_TYP exportTyp;
-
-  public SollbuchungExportAction(EXPORT_TYP exportTyp)
-  {
-    this.exportTyp = exportTyp;
-  }
 
   /**
    * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
@@ -48,9 +39,9 @@ public class SollbuchungExportAction implements Action
   {
     try
     {
-      initExporter();
       ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
-          Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT);
+          Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT,
+          context);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -70,23 +61,6 @@ public class SollbuchungExportAction implements Action
     }
   }
 
-  /**
-   * Der Exporter bekommt seine Instanz bereits ziemlich früh, deshalb suchen
-   * wir hier unseren um den Typ zu setzen.
-   */
-  private void initExporter()
-  {
-    Exporter[] exporters = IORegistry.getExporters();
-    for (Exporter export : exporters)
-    {
-      if (export instanceof SollbuchungExport)
-      {
-        SollbuchungExport sollbexport = (SollbuchungExport) export;
-        sollbexport.setExportTyp(exportTyp);
-      }
-    }
-  }
-
   private Object[] gibSuchGrenzen(Object context)
       throws ApplicationException, RemoteException
   {
@@ -99,27 +73,4 @@ public class SollbuchungExportAction implements Action
         "Dieser Export wurde aus dem falschen Context aufgerufen!");
   }
 
-  public enum EXPORT_TYP
-  {
-    MITGLIEDSKONTO("Sollbuchungen"),
-    MAHNUNGEN("Mahnungen"),
-    RECHNUNGEN("Rechnungen");
-
-    private final String titel;
-
-    private EXPORT_TYP(String name)
-    {
-      this.titel = name;
-    }
-
-    public String getDateiName()
-    {
-      return titel.toLowerCase();
-    }
-
-    public String getTitel()
-    {
-      return titel;
-    }
-  }
 }
