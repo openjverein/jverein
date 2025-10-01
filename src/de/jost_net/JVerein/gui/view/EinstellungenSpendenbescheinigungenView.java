@@ -53,6 +53,12 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getSpendenbescheinigungPrintBuchungsart());
     cont.addLabelPair("Unterschrift drucken", control.getUnterschriftdrucken());
     cont.addLabelPair("Unterschrift", control.getUnterschrift());
+    cont.addLabelPair("Formular für Einzelbestätigung",
+        control.getFormularEinzelbestaetigung());
+    cont.addLabelPair("Formular für Sammelbestätigung",
+        control.getFormularSammelbestaetigung());
+    cont.addLabelPair("Formular für Sachspenden",
+        control.getFormularSachspende());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
