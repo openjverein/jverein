@@ -1253,35 +1253,32 @@ public class MitgliedControl extends FilterControl implements Savable
       return sekundaerebeitragsgruppe;
     }
     listeSeB = new ArrayList<>();
-    if (!getMitglied().isNewObject())
+
+    DBIterator<Beitragsgruppe> bei = Einstellungen.getDBService()
+        .createList(Beitragsgruppe.class);
+    bei.addFilter("sekundaer=?", true);
+    bei.setOrder("ORDER BY bezeichnung");
+    while (bei.hasNext())
     {
-      DBIterator<Beitragsgruppe> bei = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      bei.addFilter("sekundaer=?", true);
-      bei.setOrder("ORDER BY bezeichnung");
-      while (bei.hasNext())
+      Beitragsgruppe b = bei.next();
+      DBIterator<SekundaereBeitragsgruppe> sebei = Einstellungen.getDBService()
+          .createList(SekundaereBeitragsgruppe.class);
+      sebei.addFilter("mitglied=?", getMitglied().getID());
+      sebei.addFilter("beitragsgruppe=?", b.getID());
+      if (sebei.hasNext())
       {
-        Beitragsgruppe b = bei.next();
-        DBIterator<SekundaereBeitragsgruppe> sebei = Einstellungen
-            .getDBService().createList(SekundaereBeitragsgruppe.class);
-        sebei.addFilter("mitglied=?", getMitglied().getID());
-        sebei.addFilter("beitragsgruppe=?", b.getID());
-        if (sebei.hasNext())
-        {
-          SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) sebei.next();
-          listeSeB.add(sb);
-        }
-        else
-        {
-          SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) Einstellungen
-              .getDBService()
-              .createObject(SekundaereBeitragsgruppe.class, null);
-          sb.setMitglied(Integer.parseInt(getMitglied().getID()));
-          sb.setBeitragsgruppe(Integer.parseInt(b.getID()));
-          listeSeB.add(sb);
-        }
+        SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) sebei.next();
+        listeSeB.add(sb);
+      }
+      else
+      {
+        SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) Einstellungen
+            .getDBService().createObject(SekundaereBeitragsgruppe.class, null);
+        sb.setBeitragsgruppe(Integer.parseInt(b.getID()));
+        listeSeB.add(sb);
       }
     }
+
     sekundaerebeitragsgruppe = new TreePart(listeSeB, null);
     sekundaerebeitragsgruppe.addColumn("Beitragsgruppe",
         "beitragsgruppebezeichnung");
@@ -2572,6 +2569,7 @@ public class MitgliedControl extends FilterControl implements Savable
           SekundaereBeitragsgruppe sb = (SekundaereBeitragsgruppe) o1;
           if (sb.isNewObject())
           {
+            sb.setMitglied(Integer.parseInt(m.getID()));
             sb.store();
           }
         }
