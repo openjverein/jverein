@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.layout.GridLayout;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
@@ -28,6 +30,7 @@ import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
@@ -58,16 +61,27 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
 
     LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen",
         true);
+    einnahmen.getComposite().setLayout(new GridLayout(1, false));
     EditTreePart treeEinnahmen = control.getEinnahmen();
     treeEinnahmen.setContextMenu(
         new WirtschaftsplanMenu(WirtschaftsplanImpl.EINNAHME, control));
+    ButtonArea einnahmenButtons = new ButtonArea();
+    einnahmenButtons.addButton(control.getCollapsEinnahmenButton());
+    einnahmenButtons.paint(einnahmen.getComposite());
     einnahmen.addPart(treeEinnahmen);
+
     LabelGroup ausgaben = new LabelGroup(group.getComposite(), "Ausgaben",
         true);
+    ausgaben.getComposite().setLayout(new GridLayout(1, false));
     EditTreePart treeAusgaben = control.getAusgaben();
     treeAusgaben.setContextMenu(
         new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
+    ButtonArea ausgabenButtons = new ButtonArea();
+    ausgabenButtons.addButton(control.getCollapsAusgabenButton());
+    ausgabenButtons.paint(ausgaben.getComposite());
     ausgaben.addPart(treeAusgaben);
+
+    control.initTrees();
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
 

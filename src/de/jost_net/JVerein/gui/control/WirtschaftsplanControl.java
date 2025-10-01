@@ -53,6 +53,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -76,6 +77,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   private boolean tableChanged = false;
 
+  protected Settings settings = null;
+
   /**
    * Erzeugt einen neuen WirtschaftsplanControl fuer die angegebene View.
    *
@@ -85,8 +88,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public WirtschaftsplanControl(AbstractView view)
   {
     super(view);
-    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
-        this.getClass());
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -152,6 +154,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     if (einnahmen == null)
     {
       einnahmen = generateTree(WirtschaftsplanImpl.EINNAHME);
+      einnahmen.setRememberColWidths(true);
     }
     else
     {
@@ -168,6 +171,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     if (ausgaben == null)
     {
       ausgaben = generateTree(WirtschaftsplanImpl.AUSGABE);
+      ausgaben.setRememberColWidths(true);
     }
     else
     {
@@ -575,5 +579,73 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public void setToChanged()
   {
     tableChanged = true;
+  }
+
+  public Button getCollapsEinnahmenButton()
+  {
+    return new Button("Aufklappen/zuklappen", context -> {
+      Boolean soll = !settings.getBoolean("einnahmen_expand", true);
+      handleEinnahmen(soll);
+      settings.setAttribute("einnahmen_expand", soll.toString());
+    }, null, false, "folder.png");
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleEinnahmen(boolean expand)
+  {
+    List<WirtschaftsplanNode> nodes;
+    try
+    {
+      nodes = (List<WirtschaftsplanNode>) einnahmen.getItems();
+      for (WirtschaftsplanNode node : nodes)
+      {
+        GenericIterator<WirtschaftsplanNode> it = node.getChildren();
+        while (it.hasNext())
+        {
+          einnahmen.setExpanded(it.next(), expand);
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
+  }
+
+  public Button getCollapsAusgabenButton()
+  {
+    return new Button("Aufklappen/zuklappen", context -> {
+      Boolean soll = !settings.getBoolean("ausgaben_expand", true);
+      handleAusgaben(soll);
+      settings.setAttribute("ausgaben_expand", soll.toString());
+    }, null, false, "folder.png");
+  }
+
+  @SuppressWarnings("unchecked")
+  private void handleAusgaben(boolean expand)
+  {
+    List<WirtschaftsplanNode> nodes;
+    try
+    {
+      nodes = (List<WirtschaftsplanNode>) ausgaben.getItems();
+      for (WirtschaftsplanNode node : nodes)
+      {
+        GenericIterator<WirtschaftsplanNode> it = node.getChildren();
+        while (it.hasNext())
+        {
+          ausgaben.setExpanded(it.next(), expand);
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      //
+    }
+  }
+
+  public void initTrees()
+  {
+    handleEinnahmen(settings.getBoolean("einnahmen_expand", true));
+    handleAusgaben(settings.getBoolean("ausgaben_expand", true));
   }
 }
