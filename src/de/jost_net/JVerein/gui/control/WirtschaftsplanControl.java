@@ -584,7 +584,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public Button getCollapsEinnahmenButton()
   {
     return new Button("Aufklappen/zuklappen", context -> {
-      Boolean soll = !settings.getBoolean("einnahmen_expand", false);
+      Boolean soll = !settings.getBoolean("einnahmen_expand", true);
       handleEinnahmen(soll);
       settings.setAttribute("einnahmen_expand", soll.toString());
     }, null, false, "folder.png");
@@ -615,7 +615,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public Button getCollapsAusgabenButton()
   {
     return new Button("Aufklappen/zuklappen", context -> {
-      Boolean soll = !settings.getBoolean("ausgaben_expand", false);
+      Boolean soll = !settings.getBoolean("ausgaben_expand", true);
       handleAusgaben(soll);
       settings.setAttribute("ausgaben_expand", soll.toString());
     }, null, false, "folder.png");
