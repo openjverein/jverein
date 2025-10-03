@@ -308,7 +308,7 @@ public class WirtschaftsplanNode
       children.sort(null);
       return PseudoIterator.fromArray(children.toArray(new GenericObject[0]));
     }
-    return null;
+    return PseudoIterator.fromArray(new GenericObject[0]);
   }
 
   @Override

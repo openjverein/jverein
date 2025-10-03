@@ -332,8 +332,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
           {
             // Wenn nur ein Posten existiert, kann direkt bei der Buchungsart
             // der Betrag eingegeben werden.
-            return (node.getChildren() == null
-                || node.getChildren().size() == 1) && attribute.equals("soll");
+            return node.getChildren().size() == 1 && attribute.equals("soll");
           }
           catch (RemoteException e)
           {
