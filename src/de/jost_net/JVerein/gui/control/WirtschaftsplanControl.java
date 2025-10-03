@@ -125,7 +125,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.setAction(
         new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
     VorZurueckControl.setObjektListe(null, null);
-
+    wirtschaftsplaene.setMulti(true);
     return wirtschaftsplaene;
   }
 
