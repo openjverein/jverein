@@ -246,6 +246,7 @@ public class Einstellungen
     BUCHUNGBUCHUNGSARTAUSWAHL("buchungbuchungsartauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     BUCHUNGSARTSORT("buchungsartsort", Integer.class, "1"),
+    BUCHUNGSARTANZEIGE("buchungsartanzeige", Integer.class, "1"),
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),

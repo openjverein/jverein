@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.logging.Logger;
@@ -38,12 +38,13 @@ public class BuchungsartFormatter implements Formatter
     String bez = null;
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           bez = ba.getNummer() + " - " + ba.getBezeichnung();
           break;
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           bez = ba.getBezeichnung() + " (" + ba.getNummer() + ")";
           break;
         default:
