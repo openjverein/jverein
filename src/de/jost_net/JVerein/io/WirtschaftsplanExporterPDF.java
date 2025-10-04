@@ -117,7 +117,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
 
     // Header erstellen
     // Leider kann der Header kein Colspan, daher erst Soll/Ist anzeigen
-    reporter.addHeaderColumn("Buchungsart/Posten", Element.ALIGN_CENTER, 90,
+    reporter.addHeaderColumn("Buchungsart/Posten", Element.ALIGN_CENTER, 150,
         BaseColor.LIGHT_GRAY);
     for (int i = 0; i < wirtschaftsplaene.length; i++)
     {
@@ -154,7 +154,6 @@ public class WirtschaftsplanExporterPDF implements Exporter
       case BuchungsartSort.NACH_NUMMER:
         buchungsklasseIterator.setOrder("Order by -nummer DESC");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
       default:
         buchungsklasseIterator
             .setOrder("Order by bezeichnung is NULL, bezeichnung");
@@ -275,6 +274,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
   {
     int n = 0;
     Double[][] summen = new Double[wirtschaftsplaene.length][2];
+    final Boolean ohneBuchungsartUnterdruecken = (Boolean) Einstellungen
+        .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
     // Daten in Map sammeln
     // Map in der Form <Buchungsart, <Node,[Plan Nummer][Soll = 0|Ist = 1]>>
@@ -318,7 +319,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
           WirtschaftsplanNode posten = postenChilds.next();
 
           String nodekey = (String) posten
-              .getAttribute("buchungsklassebezeichnung");
+              .getAttribute("buchungsartbezeichnung_posten");
           entry = entryMap.getOrDefault(nodekey,
               new Double[wirtschaftsplaene.length][2]);
           entry[n][0] = buchungsartNode.getSoll();
@@ -348,7 +349,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
         .forEach(buchungsartEntry -> {
           // Buchungsarten mit keinen Eintrag (außer Buchungsart) und Ist=0
           // überspringen
-          if (buchungsartEntry.getValue().size() == 1
+          if (ohneBuchungsartUnterdruecken
+              && buchungsartEntry.getValue().size() == 1
               && Math.abs(buchungsartEntry.getKey().getIst()) < 0.01d)
           {
             return;
@@ -363,7 +365,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
                   if ("-".equals(postenEntry.getKey()))
                   {
                     String text = (String) buchungsartEntry.getKey()
-                        .getAttribute("buchungsklassebezeichnung");
+                        .getAttribute("buchungsartbezeichnung_posten");
                     reporter.addColumn(text, Element.ALIGN_LEFT);
                   }
                   else
