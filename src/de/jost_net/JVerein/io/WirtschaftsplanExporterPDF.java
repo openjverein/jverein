@@ -161,8 +161,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
     }
 
     // Einnahmen
-    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, BaseColor.DARK_GRAY,
-        wirtschaftsplaene.length * 2 + 1);
+    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT,
+        new BaseColor(100, 100, 100), wirtschaftsplaene.length * 2 + 1);
     Double[][] summenEinnahmen = new Double[wirtschaftsplaene.length][2];
     while (buchungsklasseIterator.hasNext())
     {
@@ -204,8 +204,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
         wirtschaftsplaene.length * 2 + 1);
 
     // Ausgaben
-    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, BaseColor.DARK_GRAY,
-        wirtschaftsplaene.length * 2 + 1);
+    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT,
+        new BaseColor(100, 100, 100), wirtschaftsplaene.length * 2 + 1);
     buchungsklasseIterator.begin();
     Double[][] summenAusgaben = new Double[wirtschaftsplaene.length][2];
     while (buchungsklasseIterator.hasNext())
@@ -322,8 +322,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
               .getAttribute("buchungsartbezeichnung_posten");
           entry = entryMap.getOrDefault(nodekey,
               new Double[wirtschaftsplaene.length][2]);
-          entry[n][0] = buchungsartNode.getSoll();
-          entry[n][1] = buchungsartNode.getIst();
+          entry[n][0] = posten.getSoll();
+          entry[n][1] = posten.getIst();
 
           entryMap.put(nodekey, entry);
         }
