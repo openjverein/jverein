@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -123,10 +124,14 @@ public class WirtschaftsplanExporterPDF implements Exporter
     {
       reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 90,
           BaseColor.LIGHT_GRAY);
-      // Wenn es für diesen Paln noch keine Ist-Buchungen gab, spalte "Ist"
-      // ausblenden
-      if (Math
-          .abs((Double) wirtschaftsplaene[i].getAttribute("istSaldo")) >= 0.01d)
+      // Wenn es für diesen Plan noch keine Ist-Buchungen gab, spalte "Ist"
+      // ausblenden. Oder wenn Ende noch in der Zukkunft und in Einstellungen so
+      // festgelegt.
+      if (((Boolean) Einstellungen
+          .getEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN)
+          || wirtschaftsplaene[i].getDatumBis().before(new Date()))
+          && Math.abs(
+              (Double) wirtschaftsplaene[i].getAttribute("istSaldo")) >= 0.01d)
       {
         hatIst.add(wirtschaftsplaene[i]);
         reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 90,

@@ -393,6 +393,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput steuerInBuchung;
 
+  private CheckboxInput wirtschaftsplanistabgeschlossen;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -1001,6 +1003,18 @@ public class EinstellungControl extends AbstractControl
     geprueftsynchronisieren = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.GEPRUEFTSYNCHRONISIEREN));
     return geprueftsynchronisieren;
+  }
+
+  public CheckboxInput getWirtschaftsplanIstAbgeschlossen()
+      throws RemoteException
+  {
+    if (wirtschaftsplanistabgeschlossen != null)
+    {
+      return wirtschaftsplanistabgeschlossen;
+    }
+    wirtschaftsplanistabgeschlossen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN));
+    return wirtschaftsplanistabgeschlossen;
   }
 
   public CheckboxInput getFreieBuchungsklasse() throws RemoteException
@@ -2822,6 +2836,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getSplitPositionZweck().getValue());
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
+      Einstellungen.setEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN,
+          (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar()
