@@ -37,7 +37,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
-import de.jost_net.JVerein.io.WirtschaftsplanPDF;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -62,8 +61,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
-  public final static String AUSWERTUNG_PDF = "PDF";
-
   public final static String AUSWERTUNG_CSV = "CSV";
 
   private EditTreePart einnahmen;
@@ -494,18 +491,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         {
           case AUSWERTUNG_CSV:
             new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
-            break;
-          case AUSWERTUNG_PDF:
-            try
-            {
-              new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
-                  getWirtschaftsplan());
-            }
-            catch (RemoteException e)
-            {
-              throw new ApplicationException(
-                  "Fehler beim Zugriff auf den Wirtschaftsplan");
-            }
             break;
           default:
             GUI.getStatusBar().setErrorText(
