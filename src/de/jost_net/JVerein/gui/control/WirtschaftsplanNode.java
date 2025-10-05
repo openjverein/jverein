@@ -142,6 +142,11 @@ public class WirtschaftsplanNode
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
+    if (!((Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN)))
+    {
+      istIt.addFilter("konto.kontoart < " + Kontoart.LIMIT_RUECKLAGE.getKey());
+    }
 
     if (mitSteuer)
     {
