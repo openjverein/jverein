@@ -38,7 +38,7 @@ public class WirtschaftsplanListMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("PDF", new WirtschaftsplanExportAction(),
-        "file-pdf.png"));
+    addItem(new CheckedContextMenuItem("Export",
+        new WirtschaftsplanExportAction(), "file-pdf.png"));
   }
 }

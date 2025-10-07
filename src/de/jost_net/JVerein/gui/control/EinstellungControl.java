@@ -1013,7 +1013,7 @@ public class EinstellungControl extends AbstractControl
       return wirtschaftsplanistabgeschlossen;
     }
     wirtschaftsplanistabgeschlossen = new CheckboxInput((Boolean) Einstellungen
-        .getEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN));
+        .getEinstellung(Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN));
     return wirtschaftsplanistabgeschlossen;
   }
 
@@ -2836,7 +2836,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getSplitPositionZweck().getValue());
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
-      Einstellungen.setEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN,
+      Einstellungen.setEinstellung(
+          Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN,
           (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());
       DBTransaction.commit();
 

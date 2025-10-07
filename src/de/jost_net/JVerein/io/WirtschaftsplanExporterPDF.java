@@ -128,10 +128,13 @@ public class WirtschaftsplanExporterPDF implements Exporter
       // ausblenden. Oder wenn Ende noch in der Zukkunft und in Einstellungen so
       // festgelegt.
       if (((Boolean) Einstellungen
-          .getEinstellung(Property.WIRTSCHFTSPLAN_IST_ABGESCHLOSSEN)
+          .getEinstellung(Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN)
           || wirtschaftsplaene[i].getDatumBis().before(new Date()))
-          && Math.abs(
-              (Double) wirtschaftsplaene[i].getAttribute("istSaldo")) >= 0.01d)
+          && (Math
+              .abs((Double) wirtschaftsplaene[i]
+                  .getAttribute("istEinnahme")) >= 0.01d
+              || Math.abs((Double) wirtschaftsplaene[i]
+                  .getAttribute("istAusgabe")) >= 0.01d))
       {
         hatIst.add(wirtschaftsplaene[i]);
         reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 90,
