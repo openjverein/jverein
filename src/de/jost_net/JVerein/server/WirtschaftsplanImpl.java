@@ -19,8 +19,10 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
+import de.willuhn.util.ApplicationException;
 
 public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     implements Wirtschaftsplan
@@ -34,6 +36,26 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   private final static String BETRAG_ALIAS = "betrag";
 
   private final static String ID_ALIAS = "id";
+
+  private static final String BUCHUNGSART_ART = "buchungsart_art";
+
+  private static final String KONTOART_GRUPPE = "kontoart_gruppe";
+
+  private Double planEinnahme;
+
+  private Double planAusgabe;
+
+  private Double istEinnahme;
+
+  private Double istRuecklagenGebildet;
+
+  private Double istForderungen;
+
+  private Double istAusgabe;
+
+  private Double istRuecklagenAufgeloest;
+
+  private Double istVerbindlichkeiten;
 
   public WirtschaftsplanImpl() throws RemoteException
   {
@@ -95,134 +117,236 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     setAttribute("datum_bis", date);
   }
 
-  @Override
-  public Object getAttribute(String s) throws RemoteException
+  public double getPlanEinnahme() throws RemoteException
   {
+    if (planEinnahme == null)
+    {
+      loadSoll();
+    }
+    return planEinnahme == null ? 0d : planEinnahme;
+  }
+
+  public double getPlanAusgabe() throws RemoteException
+  {
+    if (planAusgabe == null)
+    {
+      loadSoll();
+    }
+    return planAusgabe == null ? 0d : planAusgabe;
+  }
+
+  private void loadSoll() throws RemoteException
+  {
+    planAusgabe = 0d;
+    planEinnahme = 0d;
+
     ExtendedDBIterator<PseudoDBObject> sollIterator = new ExtendedDBIterator<>(
         "wirtschaftsplan, wirtschaftsplanitem, buchungsart");
     sollIterator.addColumn("wirtschaftsplan.id as " + ID_ALIAS);
     sollIterator.addColumn("SUM(wirtschaftsplanitem.soll) as " + BETRAG_ALIAS);
+    sollIterator.addColumn("buchungsart.art " + BUCHUNGSART_ART);
     sollIterator
         .addFilter("wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan");
     sollIterator.addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
     sollIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
     sollIterator.addGroupBy("wirtschaftsplan.id");
+    sollIterator.addGroupBy("buchungsart.art");
+
+    while (sollIterator.hasNext())
+    {
+      PseudoDBObject o = sollIterator.next();
+      switch ((Integer) o.getAttribute(BUCHUNGSART_ART))
+      {
+        case ArtBuchungsart.AUSGABE:
+          planAusgabe = o.getDouble(BETRAG_ALIAS);
+          break;
+        case ArtBuchungsart.EINNAHME:
+          planEinnahme = o.getDouble(BETRAG_ALIAS);
+          break;
+        default:
+      }
+    }
+  }
+
+  public double getIstEinnahme() throws RemoteException
+  {
+    if (istEinnahme == null)
+    {
+      loadIst();
+    }
+    return istEinnahme == null ? 0d : istEinnahme;
+  }
+
+  public double getIstRuecklagenGebildet() throws RemoteException
+  {
+    if (istRuecklagenGebildet == null)
+    {
+      loadIst();
+    }
+    return istRuecklagenGebildet == null ? 0d : istRuecklagenGebildet;
+  }
+
+  public double getIstForderungen() throws RemoteException
+  {
+    if (istForderungen == null)
+    {
+      loadIst();
+    }
+    return istForderungen == null ? 0d : istForderungen;
+  }
+
+  public double getIstAusgabe() throws RemoteException
+  {
+    if (istAusgabe == null)
+    {
+      loadIst();
+    }
+    return istAusgabe == null ? 0d : istAusgabe;
+  }
+
+  public double getIstRuecklagenAufgeloest() throws RemoteException
+  {
+    if (istRuecklagenAufgeloest == null)
+    {
+      loadIst();
+    }
+    return istRuecklagenAufgeloest == null ? 0d : istRuecklagenAufgeloest;
+  }
+
+  public double getIstVerbindlichkeiten() throws RemoteException
+  {
+    if (istVerbindlichkeiten == null)
+    {
+      loadIst();
+    }
+    return istVerbindlichkeiten == null ? 0d : istVerbindlichkeiten;
+  }
+
+  private void loadIst() throws RemoteException
+  {
+    istEinnahme = 0d;
+    istRuecklagenGebildet = 0d;
+    istForderungen = 0d;
+    istAusgabe = 0d;
+    istRuecklagenAufgeloest = 0d;
+    istVerbindlichkeiten = 0d;
 
     ExtendedDBIterator<PseudoDBObject> istIterator = new ExtendedDBIterator<>(
         "wirtschaftsplan, buchungsart, buchung, konto");
     istIterator.addColumn("wirtschaftsplan.id as " + ID_ALIAS);
     istIterator.addColumn("SUM(buchung.betrag) as " + BETRAG_ALIAS);
+    istIterator.addColumn("buchungsart.art " + BUCHUNGSART_ART);
+    istIterator.addColumn(
+        "case when konto.kontoart < ? then 1 when konto.kontoart > ? then 3 else 2 end as "
+            + KONTOART_GRUPPE,
+        Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     istIterator.addFilter("buchung.buchungsart = buchungsart.id");
     istIterator.addFilter("buchung.konto = konto.id");
     istIterator.addFilter("buchung.datum >= wirtschaftsplan.datum_von");
     istIterator.addFilter("buchung.datum <= wirtschaftsplan.datum_bis");
     istIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
     istIterator.addGroupBy("wirtschaftsplan.id");
+    istIterator.addGroupBy("buchungsart.art");
+    istIterator.addGroupBy(KONTOART_GRUPPE);
 
+    while (istIterator.hasNext())
+    {
+      PseudoDBObject o = istIterator.next();
+      switch ((Integer) o.getAttribute(BUCHUNGSART_ART))
+      {
+        case ArtBuchungsart.EINNAHME:
+          switch ((Integer) o.getAttribute(KONTOART_GRUPPE))
+          {
+            // Unter LIMIT
+            case 1:
+              istEinnahme = o.getDouble(BETRAG_ALIAS);
+              break;
+            // Zwischen LIMIT und LIMIT_RUECKLAGE
+            case 2:
+              istRuecklagenGebildet = o.getDouble(BETRAG_ALIAS);
+              break;
+            // Über LIMIT_Rücklage
+            case 3:
+              istForderungen = o.getDouble(BETRAG_ALIAS);
+              break;
+            default:
+          }
+          break;
+        case ArtBuchungsart.AUSGABE:
+          switch ((Integer) o.getAttribute(KONTOART_GRUPPE))
+          {
+            // Unter LIMIT
+            case 1:
+              istAusgabe = o.getDouble(BETRAG_ALIAS);
+              break;
+            // Zwischen LIMIT und LIMIT_RUECKLAGE
+            case 2:
+              istRuecklagenAufgeloest = o.getDouble(BETRAG_ALIAS);
+              break;
+            // Über LIMIT_Rücklage
+            case 3:
+              istVerbindlichkeiten = o.getDouble(BETRAG_ALIAS);
+              break;
+            default:
+          }
+          break;
+        default:
+      }
+    }
+  }
+
+  @Override
+  public Object getAttribute(String s) throws RemoteException
+  {
     switch (s)
     {
       case "planEinnahme":
-        sollIterator.addFilter("buchungsart.art = ?", EINNAHME);
-        if (sollIterator.hasNext())
-        {
-          return sollIterator.next().getDouble(BETRAG_ALIAS);
-        }
-        else
-        {
-          return 0.;
-        }
+        return getPlanEinnahme();
       case "planAusgabe":
-        sollIterator.addFilter("buchungsart.art = ?", AUSGABE);
-        if (sollIterator.hasNext())
-        {
-          return sollIterator.next().getDouble(BETRAG_ALIAS);
-        }
-        else
-        {
-          return 0.;
-        }
+        return getPlanAusgabe();
       case "istEinnahme":
-        istIterator.addFilter("konto.kontoart > ?", 0);
-        istIterator.addFilter("konto.kontoart < ?", Kontoart.LIMIT.getKey());
-        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstEinnahme();
       case "istAusgabe":
-        istIterator.addFilter("konto.kontoart > ?", 0);
-        istIterator.addFilter("konto.kontoart < ?", Kontoart.LIMIT.getKey());
-        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstAusgabe();
       case "istRücklagenGebildet":
-        istIterator.addFilter("konto.kontoart >= ?", Kontoart.LIMIT.getKey());
-        istIterator.addFilter("konto.kontoart < ?",
-            Kontoart.LIMIT_RUECKLAGE.getKey());
-        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstRuecklagenGebildet();
       case "istRücklagenAufgelöst":
-        istIterator.addFilter("konto.kontoart >= ?", Kontoart.LIMIT.getKey());
-        istIterator.addFilter("konto.kontoart < ?",
-            Kontoart.LIMIT_RUECKLAGE.getKey());
-        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstRuecklagenAufgeloest();
       case "istForderungen":
-        istIterator.addFilter("konto.kontoart >= ?",
-            Kontoart.LIMIT_RUECKLAGE.getKey());
-        istIterator.addFilter("buchungsart.art = ?", EINNAHME);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstForderungen();
       case "istVerbindlichkeiten":
-        istIterator.addFilter("konto.kontoart >= ?",
-            Kontoart.LIMIT_RUECKLAGE.getKey());
-        istIterator.addFilter("buchungsart.art = ?", AUSGABE);
-        if (!istIterator.hasNext())
-        {
-          return 0.;
-        }
-
-        return istIterator.next().getDouble(BETRAG_ALIAS);
+        return getIstVerbindlichkeiten();
       case "istPlus":
-        return (Double) getAttribute("istEinnahme")
-            + (Double) getAttribute("istForderungen");
+        return getIstEinnahme() + getIstForderungen();
       case "istMinus":
-        return (Double) getAttribute("istAusgabe")
-            + (Double) getAttribute("istVerbindlichkeiten");
+        return getIstAusgabe() + getIstVerbindlichkeiten();
       case "planSaldo":
-        return (Double) getAttribute("planEinnahme")
-            + (Double) getAttribute("planAusgabe");
+        return getPlanEinnahme() + getPlanAusgabe();
       case "istSaldo":
-        return (Double) getAttribute("istEinnahme")
-            + (Double) getAttribute("istAusgabe")
-            + (Double) getAttribute("istForderungen")
-            + (Double) getAttribute("istVerbindlichkeiten");
+        return getIstEinnahme() + (getIstAusgabe() + getIstForderungen())
+            + getIstVerbindlichkeiten();
       case "differenz":
         return (Double) getAttribute("istSaldo")
             - (Double) getAttribute("planSaldo");
       default:
         return super.getAttribute(s);
     }
+  }
+
+  @Override
+  public void store() throws RemoteException, ApplicationException
+  {
+    super.store();
+
+    // Werte zurücksetzen, damit sie neu berechnet werden
+    planAusgabe = null;
+    planEinnahme = null;
+    istEinnahme = null;
+    istRuecklagenGebildet = null;
+    istForderungen = null;
+    istAusgabe = null;
+    istRuecklagenAufgeloest = null;
+    istVerbindlichkeiten = null;
   }
 
   @Override
