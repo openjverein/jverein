@@ -347,6 +347,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
+    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
     b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
@@ -629,6 +630,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public DialogInput getSollbuchung() throws RemoteException
   {
+    if (sollbuchung != null)
+    {
+      return sollbuchung;
+    }
     sollbuchung = new SollbuchungAuswahlInput(getBuchung())
         .getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
