@@ -194,6 +194,7 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   protected abstract String getAuswertungTitle();
 
   /**
+   * 
    * Holt den Titel für die Auswertungen
    * 
    * @return

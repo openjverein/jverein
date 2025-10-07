@@ -60,7 +60,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
       case BuchungsartSort.NACH_NUMMER:
         it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
         it.setOrder(
             "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
@@ -80,6 +80,12 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   protected String getAuswertungSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_DATEINAME, this);
   }
 
   @Override

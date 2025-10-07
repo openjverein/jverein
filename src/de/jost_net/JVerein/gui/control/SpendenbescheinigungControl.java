@@ -179,43 +179,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     spendenart = new SelectInput(Spendenart.getArray(),
         new Spendenart(getSpendenbescheinigung().getSpendenart()));
-    spendenart.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        enableSachspende();
-      }
-    });
     spendenart.setEnabled(false);
     return spendenart;
-  }
-
-  private void enableSachspende()
-  {
-    try
-    {
-      if (!getSpendenbescheinigung().isNewObject())
-      {
-        getBezeichnungSachzuwendung().setEnabled(false);
-        getHerkunftSpende().setEnabled(false);
-        getUnterlagenWertermittlung().setEnabled(false);
-      }
-      else
-      {
-        Spendenart spa = (Spendenart) getSpendenart().getValue();
-        getBezeichnungSachzuwendung()
-            .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
-        getHerkunftSpende().setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
-        getUnterlagenWertermittlung()
-            .setEnabled(spa.getKey() == Spendenart.SACHSPENDE);
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
   }
 
   public Input getMitglied() throws RemoteException
@@ -331,7 +296,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return spendedatum;
     }
     spendedatum = new DateInput(getSpendenbescheinigung().getSpendedatum());
-    spendedatum.setEnabled(editable);
+    spendedatum.setEnabled(false);
     return spendedatum;
   }
 
@@ -355,14 +320,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     betrag = new DecimalInput(getSpendenbescheinigung().getBetrag(),
         Einstellungen.DECIMALFORMAT);
-    if (getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
-    {
-      betrag.setEnabled(false);
-    }
-    else
-    {
-      betrag.setEnabled(editable);
-    }
+    betrag.setEnabled(false);
     return betrag;
   }
 
@@ -377,8 +335,23 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       def = getSpendenbescheinigung().getFormular().getID();
     }
-    if (getSpendenbescheinigung().getBuchungen() != null
-        && getSpendenbescheinigung().getBuchungen().size() > 1)
+    if (getSpendenbescheinigung().getSpendenart() == Spendenart.SACHSPENDE)
+    {
+      formular = new FormularInput(FormularArt.SACHSPENDENBESCHEINIGUNG, def);
+      // Wegen kompatibilität zu früher
+      if (def != null)
+      {
+        Formular f = getSpendenbescheinigung().getFormular();
+        @SuppressWarnings("unchecked")
+        List<Formular> list = formular.getList();
+        if (!list.contains(f))
+        {
+          list.add(f);
+          formular.setList(list);
+        }
+      }
+    }
+    else if (getSpendenbescheinigung().getBuchungen().size() > 1)
     {
       formular = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG, def);
     }
@@ -398,22 +371,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     List<Buchung> buchungen = getSpendenbescheinigung().getBuchungen();
     boolean check = false;
-    if (buchungen != null && buchungen.size() == 1)
+    if (buchungen != null && buchungen.size() == 1
+        && getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
     {
-      // Es ist keine Sachspende und keine Sammelspendenbescheinigung
-      if (getSpendenbescheinigung().getAutocreate())
-      {
-        // Verzicht aus Buchung lesen
-        check = buchungen.get(0).getVerzicht();
-      }
-      else
-      {
-        // Wegen Kompabilität zu früher
-        check = getSpendenbescheinigung().getErsatzAufwendungen();
-      }
+      // Verzicht aus Buchung lesen
+      check = buchungen.get(0).getVerzicht();
     }
     ersatzaufwendungen = new CheckboxInput(check);
-    if (buchungen != null && buchungen.size() > 1)
+    if (buchungen != null && buchungen.size() > 1
+        && getSpendenbescheinigung().getSpendenart() == Spendenart.GELDSPENDE)
     {
       // Sammelspendenbescheinigung
       ersatzaufwendungen.setName("*siehe Buchungsliste");
@@ -430,7 +396,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     bezeichnungsachzuwendung = new TextInput(
         getSpendenbescheinigung().getBezeichnungSachzuwendung(), 100);
-    enableSachspende();
+    bezeichnungsachzuwendung.disable();
     return bezeichnungsachzuwendung;
   }
 
@@ -442,7 +408,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     herkunftspende = new SelectInput(HerkunftSpende.getArray(),
         new HerkunftSpende(getSpendenbescheinigung().getHerkunftSpende()));
-    enableSachspende();
+    herkunftspende.disable();
     return herkunftspende;
   }
 
@@ -454,7 +420,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     unterlagenwertermittlung = new CheckboxInput(
         getSpendenbescheinigung().getUnterlagenWertermittlung());
-    enableSachspende();
+    unterlagenwertermittlung.disable();
     return unterlagenwertermittlung;
   }
 
@@ -481,7 +447,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setSpendedatum((Date) getSpendedatum().getValue());
     spb.setBescheinigungsdatum((Date) getBescheinigungsdatum().getValue());
     spb.setBetrag((Double) getBetrag().getValue());
-    spb.setErsatzAufwendungen((Boolean) getErsatzAufwendungen().getValue());
     spb.setBezeichnungSachzuwendung(
         (String) getBezeichnungSachzuwendung().getValue());
     spb.setFormular((Formular) getFormular().getValue());

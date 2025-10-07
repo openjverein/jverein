@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -138,9 +139,9 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         it.addColumn(
             "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
                 + BUCHUNGSART);
@@ -149,10 +150,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
                 + BUCHUNGSKLASSE);
         it.addColumn(
             "CONCAT(afaart.nummer,' - ',afaart.bezeichnung) as " + AFAART);
-        it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.anschaffung");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         it.addColumn(
             "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
                 + BUCHUNGSART);
@@ -161,14 +160,21 @@ public class AnlagenlisteControl extends AbstractSaldoControl
                 + BUCHUNGSKLASSE);
         it.addColumn(
             "CONCAT(afaart.bezeichnung,' (',afaart.nummer,')') as " + AFAART);
-        it.setOrder(
-            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
         break;
       default:
         it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
         it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
         it.addColumn("afaart.bezeichnung as " + AFAART);
+        break;
+    }
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.setOrder(
+            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.anschaffung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG:
+      default:
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
                 + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
@@ -372,6 +378,12 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   protected String getAuswertungSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
   }
 
   @Override
