@@ -1,0 +1,103 @@
+/**********************************************************************
+ * JVerein - Mitgliederverwaltung und einfache Buchhaltung für Vereine
+ * Copyright (c) by Heiner Jostkleigrewe
+ * Copyright (c) 2015 by Thomas Hooge
+ * Main Project: heiner@jverein.dem  http://www.jverein.de/
+ * Module Author: thomas@hoogi.de, http://www.hoogi.de/
+ *
+ * This file is part of JVerein.
+ *
+ * JVerein is free software: you can redistribute it and/or modify 
+ * it under the terms of the  GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * JVerein is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ **********************************************************************/
+package de.jost_net.JVerein.keys;
+
+import java.util.ArrayList;
+
+/**
+ * Schlüssel Anzeige der Buchungsart; Form der Anzeige
+ */
+public class BuchungsartAnzeige
+{
+
+  public static final int BEZEICHNUNG = 1;
+
+  public static final int NUMMER_BEZEICHNUNG = 2;
+
+  public static final int BEZEICHNUNG_NUMMER = 3;
+
+  private int buchungsartanzeige;
+
+  public BuchungsartAnzeige(int key)
+  {
+    this.buchungsartanzeige = key;
+  }
+
+  public int getKey()
+  {
+    return buchungsartanzeige;
+  }
+
+  public String getText()
+  {
+    return get(buchungsartanzeige);
+  }
+
+  public static String get(int key)
+  {
+    switch (key)
+    {
+      case BEZEICHNUNG:
+        return "Bezeichnung";
+      case NUMMER_BEZEICHNUNG:
+        return "Nummer-Bezeichnung";
+      case BEZEICHNUNG_NUMMER:
+        return "Bezeichnung (Nummer)";
+      default:
+        return null;
+    }
+  }
+
+  public static ArrayList<BuchungsartAnzeige> getArray()
+  {
+    ArrayList<BuchungsartAnzeige> ret = new ArrayList<>();
+    ret.add(new BuchungsartAnzeige(BEZEICHNUNG));
+    ret.add(new BuchungsartAnzeige(NUMMER_BEZEICHNUNG));
+    ret.add(new BuchungsartAnzeige(BEZEICHNUNG_NUMMER));
+    return ret;
+  }
+
+  @Override
+  public boolean equals(Object obj)
+  {
+    if (obj instanceof BuchungsartAnzeige)
+    {
+      BuchungsartAnzeige v = (BuchungsartAnzeige) obj;
+      return (getKey() == v.getKey());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode()
+  {
+    return buchungsartanzeige;
+  }
+
+  @Override
+  public String toString()
+  {
+    return get(buchungsartanzeige);
+  }
+}

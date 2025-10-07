@@ -130,7 +130,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException;
 
-  public Sollbuchung getSollbuchung() throws RemoteException;
+  public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException;
 
   public String getLeitwegID() throws RemoteException;
 

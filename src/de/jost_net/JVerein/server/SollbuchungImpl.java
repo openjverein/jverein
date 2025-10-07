@@ -107,7 +107,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       }
       if (getZweck1().length() == 0)
       {
-        throw new ApplicationException("Bitt Verwendungszweck eingeben!");
+        throw new ApplicationException("Bitte Verwendungszweck eingeben!");
       }
       if (getBetrag() == null)
       {
@@ -223,7 +223,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setMitglied(Mitglied mitglied) throws RemoteException
   {
-    setAttribute(MITGLIED, Integer.valueOf(mitglied.getID()));
+    setAttribute(MITGLIED, Long.valueOf(mitglied.getID()));
   }
 
   @Override

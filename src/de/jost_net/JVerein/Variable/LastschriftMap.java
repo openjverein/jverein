@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -94,7 +95,8 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATID.getName(), ls.getMandatID());
     map.put(LastschriftVar.MANDATDATUM.getName(), ls.getMandatDatum());
     map.put(LastschriftVar.BIC.getName(), ls.getBIC());
-    map.put(LastschriftVar.IBAN.getName(), ls.getIBAN());
+    map.put(LastschriftVar.IBAN.getName(),
+        new IBANFormatter().format(ls.getIBAN()));
     map.put(LastschriftVar.IBANMASKIERT.getName(),
         VarTools.maskieren(ls.getIBAN()));
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
@@ -146,7 +148,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATID.getName(), "12345");
     map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
-    map.put(LastschriftVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(LastschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
     map.put(LastschriftVar.BETRAG.getName(), "23,80");

@@ -18,10 +18,11 @@ package de.jost_net.JVerein.Variable;
 
 public enum SollbuchungVar
 {
-  ZAHLUNGSGRUND("sollbuchung_zahlungsgrund"), //
+  ZAHLUNGSGRUND("sollbuchung_zahlungsgrund"),
   BUCHUNGSDATUM("sollbuchung_buchungsdatum"),
-  BETRAG("sollbuchung_betrag"), //
-  IST("sollbuchung_ist"), //
+  BUCHUNGSDATUM_F("sollbuchung_buchungsdatum_f"),
+  BETRAG("sollbuchung_betrag"),
+  IST("sollbuchung_ist"),
   DIFFERENZ("sollbuchung_differenz");
 
   private String name;

@@ -25,11 +25,10 @@ import java.util.ArrayList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.VCardTool;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
@@ -75,9 +74,17 @@ public class MitgliedVCardDateiAction implements Action
         {
           fd.setFilterPath(path);
         }
-        fd.setFileName(new Dateiname("vCards", "",
-            (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-            "vcf").get());
+        if (mitgl.size() == 1)
+        {
+          fd.setFileName(
+              VorlageUtil.getName(VorlageTyp.VCARD_MITGLIED_DATEINAME, null,
+                  (Mitglied) mitgl.get(0)) + ".vcf");
+        }
+        else
+        {
+          fd.setFileName(
+              VorlageUtil.getName(VorlageTyp.VCARD_DATEINAME) + ".vcf");
+        }
         fd.setFilterExtensions(new String[] { "*.vcf" });
 
         String s = fd.open();

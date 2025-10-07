@@ -94,12 +94,6 @@ public abstract class AltersjubilaeumsExport implements Exporter
     close();
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "altersjubilare";
-  }
-
   protected abstract void startJahrgang(int jahr) throws DocumentException;
 
   protected abstract void endeJahrgang() throws DocumentException;

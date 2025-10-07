@@ -26,7 +26,6 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.action.SollbuchungExportAction.EXPORT_TYP;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -45,8 +44,6 @@ public abstract class SollbuchungExport implements Exporter
 
   @Override
   public abstract IOFormat[] getIOFormats(Class<?> objectType);
-
-  protected EXPORT_TYP exportTyp = EXPORT_TYP.MITGLIEDSKONTO;
 
   protected File file;
 
@@ -89,17 +86,6 @@ public abstract class SollbuchungExport implements Exporter
       endeMitglied();
     }
     close(monitor);
-  }
-
-  public void setExportTyp(EXPORT_TYP typ)
-  {
-    exportTyp = typ;
-  }
-
-  @Override
-  public String getDateiname()
-  {
-    return exportTyp.getDateiName();
   }
 
   protected abstract void startMitglied(Mitglied m) throws DocumentException;

@@ -40,6 +40,8 @@ public class BuchungDetailView extends AbstractDetailView
 {
   private BuchungsControl control;
 
+  private BuchungPart part;
+
   @Override
   public void bind() throws Exception
   {
@@ -57,7 +59,7 @@ public class BuchungDetailView extends AbstractDetailView
     final boolean editable = control.isBuchungEditable();
     final boolean speicherung = control.getBuchung().getSpeicherung();
 
-    BuchungPart part = new BuchungPart(control, this, !editable);
+    part = new BuchungPart(control, this, !editable);
     part.paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -131,6 +133,7 @@ public class BuchungDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
+    part.deregisterDocumentConsumer();
     // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
     // direkt gespeichert wird.
     try

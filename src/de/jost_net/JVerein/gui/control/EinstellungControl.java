@@ -31,8 +31,10 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
@@ -45,11 +47,14 @@ import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 
@@ -76,7 +81,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -180,8 +184,6 @@ public class EinstellungControl extends AbstractControl
   private SelectInput beitragsmodel;
 
   private SelectInput sepamandatidsourcemodel;
-
-  private TextInput dateinamenmuster;
 
   private DirectoryInput vorlagenCsvVerzeichnis;
 
@@ -319,6 +321,8 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput buchungsartsort;
 
+  private SelectInput buchungsartanzeige;
+
   private CheckboxInput abrlabschliessen;
 
   private CheckboxInput optiert;
@@ -332,6 +336,8 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput anhangspeichern;
 
   private CheckboxInput freiebuchungsklasse;
+
+  private CheckboxInput wirtschaftsplanung;
 
   private CheckboxInput summenAnlagenkonto;
 
@@ -390,6 +396,12 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput geprueftsynchronisieren;
 
   private CheckboxInput steuerInBuchung;
+
+  private FormularInput formularEinzel;
+
+  private FormularInput formularSammel;
+
+  private FormularInput formularSachspende;
 
   public EinstellungControl(AbstractView view)
   {
@@ -576,8 +588,8 @@ public class EinstellungControl extends AbstractControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties
-        .formatIban((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
+    iban = new IBANInput(new IBANFormatter()
+        .format((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
     return iban;
   }
 
@@ -895,7 +907,7 @@ public class EinstellungControl extends AbstractControl
     }
     rechnungtextabbuchung = new TextInput(
         (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG),
-        100);
+        500);
     return rechnungtextabbuchung;
   }
 
@@ -906,7 +918,7 @@ public class EinstellungControl extends AbstractControl
       return rechnungtextueberweisung;
     }
     rechnungtextueberweisung = new TextInput((String) Einstellungen
-        .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 100);
+        .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 500);
     return rechnungtextueberweisung;
   }
 
@@ -917,7 +929,7 @@ public class EinstellungControl extends AbstractControl
       return rechnungtextbar;
     }
     rechnungtextbar = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 100);
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 500);
     return rechnungtextbar;
   }
 
@@ -1012,6 +1024,17 @@ public class EinstellungControl extends AbstractControl
     return freiebuchungsklasse;
   }
 
+  public CheckboxInput getWirtschaftsplanung() throws RemoteException
+  {
+    if (wirtschaftsplanung != null)
+    {
+      return wirtschaftsplanung;
+    }
+    wirtschaftsplanung = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN));
+    return wirtschaftsplanung;
+  }
+
   public CheckboxInput getExterneMitgliedsnummer() throws RemoteException
   {
     if (externemitgliedsnummer != null)
@@ -1082,19 +1105,6 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
-  }
-
-  public TextInput getDateinamenmuster() throws RemoteException
-  {
-    if (dateinamenmuster != null)
-    {
-      return dateinamenmuster;
-    }
-    dateinamenmuster = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), 30);
-    dateinamenmuster
-        .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
-    return dateinamenmuster;
   }
 
   public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
@@ -1911,6 +1921,18 @@ public class EinstellungControl extends AbstractControl
     return buchungsartsort;
   }
 
+  public SelectInput getBuchungsartAnzeige() throws RemoteException
+  {
+    if (buchungsartanzeige != null)
+    {
+      return buchungsartanzeige;
+    }
+    buchungsartanzeige = new SelectInput(BuchungsartAnzeige.getArray(),
+        new BuchungsartAnzeige((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGSARTANZEIGE)));
+    return buchungsartanzeige;
+  }
+
   public IntegerInput getQRCodeSizeInMm() throws RemoteException
   {
     if (null == qrcodesize)
@@ -2476,6 +2498,42 @@ public class EinstellungControl extends AbstractControl
     return rechnungen;
   }
 
+  public SelectInput getFormularEinzelbestaetigung() throws RemoteException
+  {
+    if (formularEinzel != null)
+    {
+      return formularEinzel;
+    }
+    formularEinzel = new FormularInput(FormularArt.SPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE));
+    formularEinzel.setPleaseChoose("Standard");
+    return formularEinzel;
+  }
+
+  public SelectInput getFormularSammelbestaetigung() throws RemoteException
+  {
+    if (formularSammel != null)
+    {
+      return formularSammel;
+    }
+    formularSammel = new FormularInput(FormularArt.SAMMELSPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARSAMMELSPENDE));
+    formularSammel.setPleaseChoose("Standard");
+    return formularSammel;
+  }
+
+  public SelectInput getFormularSachspende() throws RemoteException
+  {
+    if (formularSachspende != null)
+    {
+      return formularSachspende;
+    }
+    formularSachspende = new FormularInput(FormularArt.SACHSPENDENBESCHEINIGUNG,
+        (String) Einstellungen.getEinstellung(Property.FORMULARSACHSPENDE));
+    formularSachspende.setPleaseChoose("Standard");
+    return formularSachspende;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2586,6 +2644,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.MITGLIEDAUSWAHL, mAuswahl.getKey());
       Einstellungen.setEinstellung(Property.BUCHUNGSARTSORT,
           ((BuchungsartSort) buchungsartsort.getValue()).getKey());
+      Einstellungen.setEinstellung(Property.BUCHUNGSARTANZEIGE,
+          ((BuchungsartAnzeige) buchungsartanzeige.getValue()).getKey());
       if (((AfaOrt) afaort.getValue()).getKey() == 0)
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, false);
       else
@@ -2614,6 +2674,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERDRUECKUNGLAENGE, ulength);
       Integer klength = (Integer) unterdrueckungkonten.getValue();
       Einstellungen.setEinstellung(Property.UNTERDRUECKUNGKONTEN, klength);
+      Einstellungen.setEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN,
+          wirtschaftsplanung.getValue());
 
       DBTransaction.commit();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
@@ -2680,14 +2742,12 @@ public class EinstellungControl extends AbstractControl
     }
   }
 
-  public void handleStoreDateinamen()
+  public void handleStoreVerzeichnisse()
   {
     try
     {
       DBTransaction.starten();
 
-      Einstellungen.setEinstellung(Property.DATEINAMENMUSTER,
-          (String) dateinamenmuster.getValue());
       Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
           (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();
@@ -2736,6 +2796,36 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERSCHRIFT,
           unterschrift.getValue() == null ? null
               : Base64.encode((byte[]) unterschrift.getValue()));
+      Formular formular = (Formular) formularEinzel.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARGELDSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARGELDSPENDE, "");
+      }
+      formular = (Formular) formularSammel.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSAMMELSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSAMMELSPENDE, "");
+      }
+      formular = (Formular) formularSachspende.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSACHSPENDE,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULARSACHSPENDE, "");
+      }
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.ibm.icu.util.Calendar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Paragraph;
@@ -625,8 +627,8 @@ public class FormularAufbereitung
   @SuppressWarnings("resource")
   public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
-    Sollbuchung sollb = re.getSollbuchung();
-    if (sollb == null)
+    ArrayList<Sollbuchung> sollbs = re.getSollbuchungList();
+    if (sollbs.isEmpty())
     {
       return;
     }
@@ -636,11 +638,22 @@ public class FormularAufbereitung
         .load(sourcePDF).setProducer("JVerein")
         .setCreator(System.getProperty("user.name"));
 
+    Calendar cal1 = Calendar.getInstance();
+    cal1.add(Calendar.YEAR, -100);
+    Calendar cal2 = Calendar.getInstance();
+    for (Sollbuchung sollb : sollbs)
+    {
+      cal2.setTime(sollb.getDatum());
+      if (cal2.after(cal1))
+      {
+        cal1.setTime(sollb.getDatum());
+      }
+    }
     Invoice invoice = new Invoice()
         // Fälligkeitsdatum
-        .setDueDate(sollb.getDatum())
+        .setDueDate(cal1.getTime())
         // Lieferdatum
-        .setDeliveryDate(sollb.getDatum())
+        .setDeliveryDate(cal1.getTime())
         // Rechnungsdatum
         .setIssueDate(re.getDatum())
         // Rechnungsnummer
@@ -681,8 +694,7 @@ public class FormularAufbereitung
     if (mahnung)
     {
       // Bereits gezahlt
-      invoice.setTotalPrepaidAmount(
-          new BigDecimal(re.getSollbuchung().getIstSumme()));
+      invoice.setTotalPrepaidAmount(new BigDecimal(re.getIstSumme()));
     }
 
     String id = re.getMitglied().getID();
@@ -715,8 +727,7 @@ public class FormularAufbereitung
     }
 
     // Sollbuchungspositionen
-    for (SollbuchungPosition sp : re.getSollbuchung()
-        .getSollbuchungPositionList())
+    for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
       BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
       invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =

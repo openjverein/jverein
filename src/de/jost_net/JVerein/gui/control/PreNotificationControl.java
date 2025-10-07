@@ -531,6 +531,12 @@ public class PreNotificationControl extends DruckMailControl
     Application.getController().start(t);
   }
 
+  @Override
+  protected void TabRefresh()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+  }
+
   ArrayList<Lastschrift> getLastschriften(Object currentObject, boolean mitMail)
       throws RemoteException, ApplicationException
   {

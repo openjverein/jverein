@@ -43,6 +43,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -58,8 +59,8 @@ import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
@@ -119,9 +120,15 @@ public class PersonalbogenAction implements Action
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("personalbogen", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    if (m.length == 1)
+    {
+      fd.setFileName(VorlageUtil
+          .getName(VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME, null, m[0]));
+    }
+    else
+    {
+      fd.setFileName(VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_DATEINAME));
+    }
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();

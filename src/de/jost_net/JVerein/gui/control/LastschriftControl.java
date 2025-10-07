@@ -21,6 +21,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -44,8 +45,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 public class LastschriftControl extends FilterControl
@@ -115,7 +114,7 @@ public class LastschriftControl extends FilterControl
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     lastschriftList.addColumn("Fälligkeit", "faelligkeit",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lastschriftList.addColumn("IBAN", "iban", new IbanFormatter());
+    lastschriftList.addColumn("IBAN", "iban", new IBANFormatter());
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -442,7 +441,7 @@ public class LastschriftControl extends FilterControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getLastschrift().getIBAN()),
+    iban = new IBANInput(new IBANFormatter().format(getLastschrift().getIBAN()),
         getBIC());
     iban.setName("IBAN");
     iban.setEnabled(false);

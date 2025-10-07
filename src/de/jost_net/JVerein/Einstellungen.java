@@ -229,6 +229,7 @@ public class Einstellungen
     SPENDENBESCHEINIGUNGENANZEIGEN("spendenbescheinigungenanzeigen",
         Boolean.class, "0"),
     RECHNUNGENANZEIGEN("rechnungenanzeigen", Boolean.class, "0"),
+    WIRTSCHAFTSPLANANZEIGEN("wirtschaftsplananzeigen", Boolean.class, "0"),
     // Anzeige 2.Spalte
     USELESEFELDER("uselesefelder", Boolean.class, "0"),
     USEZUSATZFELDER("usezusatzfelder", Boolean.class, "0"),
@@ -245,6 +246,7 @@ public class Einstellungen
     BUCHUNGBUCHUNGSARTAUSWAHL("buchungbuchungsartauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     BUCHUNGSARTSORT("buchungsartsort", Integer.class, "1"),
+    BUCHUNGSARTANZEIGE("buchungsartanzeige", Integer.class, "1"),
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),
@@ -272,8 +274,7 @@ public class Einstellungen
     KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
         Boolean.class, "0"),
 
-    // Dateinamen
-    DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
+    // Verzeichnisse
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung
@@ -293,6 +294,9 @@ public class Einstellungen
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
     UNTERSCHRIFT("unterschrift", String.class, ""),
+    FORMULARGELDSPENDE("formulargeldspende", String.class, ""),
+    FORMULARSAMMELSPENDE("formularsammelspende", String.class, ""),
+    FORMULARSACHSPENDE("formularsachspende", String.class, ""),
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),

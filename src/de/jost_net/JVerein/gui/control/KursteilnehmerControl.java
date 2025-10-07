@@ -32,6 +32,7 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -44,10 +45,11 @@ import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -60,8 +62,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -333,7 +333,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       return iban;
     }
     iban = new IBANInput(
-        HBCIProperties.formatIban(getKursteilnehmer().getIban()), getBIC());
+        new IBANFormatter().format(getKursteilnehmer().getIban()), getBIC());
     iban.setName("IBAN");
     iban.setMandatory(true);
     return iban;
@@ -403,7 +403,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     part.addColumn("Ort", "ort");
     part.addColumn("Verwendungszweck", "vzweck1");
     part.addColumn("BIC", "bic");
-    part.addColumn("IBAN", "iban", new IbanFormatter());
+    part.addColumn("IBAN", "iban", new IBANFormatter());
     part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     part.addColumn("Mandats-ID", "mandatid");
@@ -482,7 +482,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     if (ib == null)
       k.setIban(null);
     else
-      k.setIban(ib.toUpperCase().replace(" ", ""));
+      k.setIban(ib.replace(" ", ""));
     k.setBic((String) getBIC().getValue());
     k.setBetrag((Double) getBetrag().getValue());
     if (getGeburtsdatum() != null)
@@ -535,9 +535,8 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("kursteilnehmer", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      fd.setFileName(VorlageUtil.getName(
+          VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_DATEINAME, this) + ".pdf");
 
       final String s = fd.open();
 

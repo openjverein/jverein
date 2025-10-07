@@ -48,6 +48,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -68,7 +69,9 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -81,10 +84,10 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -111,8 +114,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -189,6 +190,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private SelectInput suchsteuer;
 
   private CheckboxInput verzicht;
+
+  private TextInput bezeichnungsachzuwendung;
+
+  private SelectInput herkunftspende;
+
+  private CheckboxInput unterlagenwertermittlung;
 
   private Buchung buchung;
 
@@ -332,7 +339,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     if (ib == null)
       b.setIban(null);
     else
-      b.setIban(ib.toUpperCase().replace(" ", ""));
+      b.setIban(ib.replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());
@@ -347,11 +354,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
+    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
     b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    b.setBezeichnungSachzuwendung(
+        (String) getBezeichnungSachzuwendung().getValue());
+    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+    b.setHerkunftSpende(hsp.getKey());
+    b.setUnterlagenWertermittlung(
+        (Boolean) getUnterlagenWertermittlung().getValue());
     return b;
   }
 
@@ -627,8 +641,48 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return verzicht;
   }
 
+  public TextInput getBezeichnungSachzuwendung() throws RemoteException
+  {
+    if (bezeichnungsachzuwendung != null)
+    {
+      return bezeichnungsachzuwendung;
+    }
+    bezeichnungsachzuwendung = new TextInput(
+        getBuchung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung.setEnabled(editable);
+    return bezeichnungsachzuwendung;
+  }
+
+  public SelectInput getHerkunftSpende() throws RemoteException
+  {
+    if (herkunftspende != null)
+    {
+      return herkunftspende;
+    }
+    herkunftspende = new SelectInput(HerkunftSpende.getArray(),
+        new HerkunftSpende(getBuchung().getHerkunftSpende()));
+    herkunftspende.setEnabled(editable);
+    return herkunftspende;
+  }
+
+  public CheckboxInput getUnterlagenWertermittlung() throws RemoteException
+  {
+    if (unterlagenwertermittlung != null)
+    {
+      return unterlagenwertermittlung;
+    }
+    unterlagenwertermittlung = new CheckboxInput(
+        getBuchung().getUnterlagenWertermittlung());
+    unterlagenwertermittlung.setEnabled(editable);
+    return unterlagenwertermittlung;
+  }
+
   public DialogInput getSollbuchung() throws RemoteException
   {
+    if (sollbuchung != null)
+    {
+      return sollbuchung;
+    }
     sollbuchung = new SollbuchungAuswahlInput(getBuchung())
         .getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
@@ -882,7 +936,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return sammelueberweisungButton;
   }
 
-  public Input getSuchProjekt() throws RemoteException
+  public SelectInput getSuchProjekt() throws RemoteException
   {
     if (suchprojekt != null)
     {
@@ -1525,7 +1579,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList.addColumn("Name", "name");
       if (geldkonto)
         buchungsList.addColumn("IBAN oder Kontonummer", "iban",
-            new IbanFormatter());
+            new IBANFormatter());
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -1585,6 +1639,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      {
+        buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
+      }
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
       buchungsList.setRememberColWidths(true);
@@ -1769,9 +1828,28 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      if (geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+      }
+      else if (geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+      }
+      else if (!geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_DATEINAME, this) + ".pdf");
+      }
+      else if (!geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_DATEINAME, this) + ".pdf");
+      }
 
       final String s = fd.open();
 
@@ -1807,9 +1885,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "CSV").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
+      else
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
 
       final String s = fd.open();
 
@@ -1884,9 +1971,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungsjournal", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_DATEINAME, this)
+                + ".pdf");
+      }
+      else
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_BUCHUNGSJOURNAL_DATEINAME, this) + ".pdf");
+      }
 
       final String s = fd.open();
 
@@ -1912,7 +2007,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -1956,7 +2050,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -2130,11 +2223,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     catch (ApplicationException e)
     {
       DBTransaction.rollback();
-      throw new ApplicationException(e);
+      throw new ApplicationException(e.getMessage());
     }
   }
 
-  public Input getSuchMitgliedZugeordnet()
+  public SelectInput getSuchMitgliedZugeordnet()
   {
     if (hasmitglied != null)
     {
@@ -2181,7 +2274,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()),
+    iban = new IBANInput(new IBANFormatter().format(getBuchung().getIban()),
         new TextInput(""));
     iban.setEnabled(editable);
     return iban;
