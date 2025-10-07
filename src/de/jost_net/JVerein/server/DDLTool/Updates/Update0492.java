@@ -1,0 +1,164 @@
+/**********************************************************************
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without 
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See 
+ * the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ **********************************************************************/
+package de.jost_net.JVerein.server.DDLTool.Updates;
+
+import java.sql.Connection;
+
+import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
+import de.jost_net.JVerein.server.DDLTool.Column;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
+
+public class Update0492 extends AbstractDDLUpdate
+{
+  public Update0492(String driver, ProgressMonitor monitor, Connection conn)
+  {
+    super(driver, monitor, conn);
+  }
+
+  @Override
+  public void run() throws ApplicationException
+  {
+    execute(addColumn("vorlage",
+        new Column("art", COLTYPE.INTEGER, 10, "0", false, false)));
+    execute("update vorlage set art = 1");
+
+    // Mitglieder
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-titel', 'Kontoauszug $mitglied_name $mitglied_vorname', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('personalbogen-titel', 'Personalbogen $mitglied_name $mitglied_vorname', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('personalbogen-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('spendenbescheinigungen-titel', 'Spendenbescheinigungen', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('spendenbescheinigungen-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('zusatzbetraege-titel', 'Zusatzbeträge', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('zusatzbetraege-subtitel', '', 2);\n");
+
+    // Buchführung
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('kontensaldo-titel', 'Kontensaldo', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('kontensaldo-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsjournal-titel', 'Buchungsjournal', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsjournal-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('einzelbuchungen-titel', 'Buchungsliste', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('einzelbuchungen-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('summenbuchungen-titel', 'Summenliste', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('summenbuchungen-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-buchungsjournal-titel', 'Buchungsjournal', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-buchungsjournal-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-einzelbuchungen-titel', 'Buchungsliste', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-einzelbuchungen-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-summenbuchungen-titel', 'Summenliste', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagen-summenbuchungen-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$filter_datum_bis_f))', 2);\n");
+
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsklassensaldo-titel', 'Buchungsklassensaldo', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsklassensaldo-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('umsatzsteuervoranmeldung-titel', 'Umsatzsteuer Voranmeldung', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('umsatzsteuervoranmeldung-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('projektsaldo-titel', 'Projektsaldo', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('projektsaldo-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagenverzeichnis-titel', 'Anlagenverzeichnis', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('anlagenverzeichnis-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendung-zufluss-titel', 'Mittelverwendung Zufluss', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendung-zufluss-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendung-saldo-titel', 'Mittelverwendung Saldo', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendung-saldo-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendungssaldo-titel', 'Mittelverwendungssaldo', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('mittelverwendungssaldo-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$zeitraum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-titel', 'Wirtschaftsplan', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-subtitel', '$udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$parameter_datum_von_f)) - $udateformat.format(\"DD.MM.YYYY\",$udateformat.parse(\"YYYYMMDD\",$parameter_datum_bis_f))', 2);\n");
+
+    // Abrechnung
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('abrechnungslaufliste-titel', 'Abrechnungslauf', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('abrechnungslaufliste-subtitel', 'Nr. $parameter_lauf zum $parameter_stichtag_f', 2);\n");
+
+    // Auswertungen
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-mitglied-titel', 'Mitglieder', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-nichtmitglied-titel', '$filter_mitgliedstyp', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-altersjubilare-titel', 'Altersjubilare $filter_jahr', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-altersjubilare-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-mitgliedsschaftsjubilare-titel', 'Mitgliedschaftsjubilare $filter_jahr', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-mitgliedsschaftsjubilare-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-kursteilnehmer-titel', 'Kursteilnehmer', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-kursteilnehmer-subtitel', '', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-mitgliederstatistik-titel', 'Mitgliederstatistik', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-mitgliederstatistik-subtitel', 'Stichtag: $filter_stichtag_f', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-jahrgangsstatistik-titel', 'Jahrgangsstatistik', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-jahrgangsstatistik-subtitel', 'Jahr: $filter_jahr', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-arbeitseinsaetze-titel', 'Arbeitseinsaetze $filter_jahr', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-arbeitseinsaetze-subtitel', '$filter_auswertung', 2);\n");
+
+    // Einstellung Mitglieder
+
+    // Einstellung Buchführung
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsarten-titel', 'Buchungsarten', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('buchungsarten-subtitel', '', 2);\n");
+  }
+}

@@ -111,8 +111,12 @@ public class VorlageUtil
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
+        case PERSONALBOGEN_TITEL:
+        case PERSONALBOGEN_SUBTITEL:
         case VCARD_MITGLIED_DATEINAME:
         case KONTOAUSZUG_MITGLIED_DATEINAME:
+        case KONTOAUSZUG_TITEL:
+        case KONTOAUSZUG_SUBTITEL:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -137,13 +141,29 @@ public class VorlageUtil
           // Nur die allgemeine Map
           break;
         case KONTENSALDO_DATEINAME:
+        case KONTENSALDO_TITEL:
+        case KONTENSALDO_SUBTITEL:
         case BUCHUNGSKLASSENSALDO_DATEINAME:
+        case BUCHUNGSKLASSENSALDO_TITEL:
+        case BUCHUNGSKLASSENSALDO_SUBTITEL:
         case UMSATZSTEUER_VORANMELDUNG_DATEINAME:
+        case UMSATZSTEUER_VORANMELDUNG_TITEL:
+        case UMSATZSTEUER_VORANMELDUNG_SUBTITEL:
         case PROJEKTSALDO_DATEINAME:
+        case PROJEKTSALDO_TITEL:
+        case PROJEKTSALDO_SUBTITEL:
         case ANLAGENVERZEICHNIS_DATEINAME:
+        case ANLAGENVERZEICHNIS_TITEL:
+        case ANLAGENVERZEICHNIS_SUBTITEL:
         case MITTELVERWENDUNGSREPORT_SALDO_DATEINAME:
+        case MITTELVERWENDUNGSREPORT_SALDO_TITEL:
+        case MITTELVERWENDUNGSREPORT_SALDO_SUBTITEL:
         case MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME:
+        case MITTELVERWENDUNGSREPORT_ZUFLUSS_TITEL:
+        case MITTELVERWENDUNGSREPORT_ZUFLUSS_SUBTITEL:
         case MITTELVERWENDUNGSSALDO_DATEINAME:
+        case MITTELVERWENDUNGSSALDO_TITEL:
+        case MITTELVERWENDUNGSSALDO_SUBTITEL:
           map = new SaldoFilterMap().getMap((AbstractSaldoControl) obj, map);
           break;
         case ABRECHNUNGSLAUF_SEPA_DATEINAME:
@@ -152,6 +172,8 @@ public class VorlageUtil
               .getMap((AbrechnungSEPAControl) obj, map);
           break;
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL:
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((AbrechnungslaufBuchungenControl) obj, map);
           break;
@@ -160,57 +182,91 @@ public class VorlageUtil
               map);
           break;
         case ZUSATZBETRAEGE_DATEINAME:
+        case ZUSATZBETRAEGE_TITEL:
+        case ZUSATZBETRAEGE_SUBTITEL:
           map = new ZusatzbetragListeFilterMap()
               .getMap((ZusatzbetragControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
+        case SPENDENBESCHEINIGUNGEN_TITEL:
+        case SPENDENBESCHEINIGUNGEN_SUBTITEL:
           map = new SpendenbescheinigungListeFilterMap()
               .getMap((FilterControl) obj, map);
           break;
         case BUCHUNGSJOURNAL_DATEINAME:
+        case BUCHUNGSJOURNAL_TITEL:
+        case BUCHUNGSJOURNAL_SUBTITEL:
         case EINZELBUCHUNGEN_DATEINAME:
+        case EINZELBUCHUNGEN_TITEL:
+        case EINZELBUCHUNGEN_SUBTITEL:
         case SUMMENBUCHUNGEN_DATEINAME:
+        case SUMMENBUCHUNGEN_TITEL:
+        case SUMMENBUCHUNGEN_SUBTITEL:
         case CSVBUCHUNGEN_DATEINAME:
           map = new BuchungListeFilterMap().getMap((BuchungsControl) obj, map);
           break;
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
+        case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
+        case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
         case ANLAGEN_EINZELBUCHUNGEN_DATEINAME:
+        case ANLAGEN_EINZELBUCHUNGEN_TITEL:
+        case ANLAGEN_EINZELBUCHUNGEN_SUBTITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_DATEINAME:
+        case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
+        case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = new AnlagenbuchungListeFilterMap().getMap((BuchungsControl) obj,
               map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
+        case AUSWERTUNG_MITGLIED_TITEL:
           map = new AuswertungMitgliedFilterMap().getMap((MitgliedControl) obj,
               map);
           break;
         case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
+        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
           map = new AuswertungNichtMitgliedFilterMap()
               .getMap((MitgliedControl) obj, map);
           break;
         case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
+        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
+        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
           map = new AuswertungKursteilnehmerFilterMap()
               .getMap((KursteilnehmerControl) obj, map);
           break;
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
           map = new AuswertungMitgliederstatistikFilterMap()
               .getMap((MitgliedControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
+        case AUSWERTUNG_ALTERSJUBILARE_TITEL:
+        case AUSWERTUNG_ALTERSJUBILARE_SUBTITEL:
         case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_TITEL:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_SUBTITEL:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
           map = new AuswertungJubilareFilterMap().getMap((MitgliedControl) obj,
               map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
+        case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
+        case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
           map = new AuswertungArbeitseinsatzFilterMap()
               .getMap((ArbeitseinsatzControl) obj, map);
           break;
         case BUCHUNGSARTEN_DATEINAME:
+        case BUCHUNGSARTEN_TITEL:
+        case BUCHUNGSARTEN_SUBTITEL:
           map = new BuchungsartListeFilterMap().getMap((BuchungsartControl) obj,
               map);
           break;
         case WIRTSCHAFTSPLAN_DATEINAME:
+        case WIRTSCHAFTSPLAN_TITEL:
+        case WIRTSCHAFTSPLAN_SUBTITEL:
           map = new WirtschaftsplanParameterMap()
               .getMap((WirtschaftsplanControl) obj, map);
           break;
@@ -274,8 +330,12 @@ public class VorlageUtil
           map = MitgliedMap.getDummyMap(map);
           break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
+        case PERSONALBOGEN_TITEL:
+        case PERSONALBOGEN_SUBTITEL:
         case VCARD_MITGLIED_DATEINAME:
         case KONTOAUSZUG_MITGLIED_DATEINAME:
+        case KONTOAUSZUG_TITEL:
+        case KONTOAUSZUG_SUBTITEL:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -304,13 +364,29 @@ public class VorlageUtil
           // Nur die allgemeine Map
           break;
         case KONTENSALDO_DATEINAME:
+        case KONTENSALDO_TITEL:
+        case KONTENSALDO_SUBTITEL:
         case BUCHUNGSKLASSENSALDO_DATEINAME:
+        case BUCHUNGSKLASSENSALDO_TITEL:
+        case BUCHUNGSKLASSENSALDO_SUBTITEL:
         case UMSATZSTEUER_VORANMELDUNG_DATEINAME:
+        case UMSATZSTEUER_VORANMELDUNG_TITEL:
+        case UMSATZSTEUER_VORANMELDUNG_SUBTITEL:
         case PROJEKTSALDO_DATEINAME:
+        case PROJEKTSALDO_TITEL:
+        case PROJEKTSALDO_SUBTITEL:
         case ANLAGENVERZEICHNIS_DATEINAME:
+        case ANLAGENVERZEICHNIS_TITEL:
+        case ANLAGENVERZEICHNIS_SUBTITEL:
         case MITTELVERWENDUNGSREPORT_SALDO_DATEINAME:
+        case MITTELVERWENDUNGSREPORT_SALDO_TITEL:
+        case MITTELVERWENDUNGSREPORT_SALDO_SUBTITEL:
         case MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME:
+        case MITTELVERWENDUNGSREPORT_ZUFLUSS_TITEL:
+        case MITTELVERWENDUNGSREPORT_ZUFLUSS_SUBTITEL:
         case MITTELVERWENDUNGSSALDO_DATEINAME:
+        case MITTELVERWENDUNGSSALDO_TITEL:
+        case MITTELVERWENDUNGSSALDO_SUBTITEL:
           map = SaldoFilterMap.getDummyMap(map);
           break;
         case ABRECHNUNGSLAUF_SEPA_DATEINAME:
@@ -318,53 +394,89 @@ public class VorlageUtil
           map = AbrechnungslaufParameterMap.getDummyMap(map);
           break;
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL:
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
           map = SollbuchungListeFilterMap.getDummyMap(map);
           break;
         case ZUSATZBETRAEGE_DATEINAME:
+        case ZUSATZBETRAEGE_TITEL:
+        case ZUSATZBETRAEGE_SUBTITEL:
           map = ZusatzbetragListeFilterMap.getDummyMap(map);
           break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
+        case SPENDENBESCHEINIGUNGEN_TITEL:
+        case SPENDENBESCHEINIGUNGEN_SUBTITEL:
           map = SpendenbescheinigungListeFilterMap.getDummyMap(map);
           break;
         case BUCHUNGSJOURNAL_DATEINAME:
+        case BUCHUNGSJOURNAL_TITEL:
+        case BUCHUNGSJOURNAL_SUBTITEL:
         case EINZELBUCHUNGEN_DATEINAME:
+        case EINZELBUCHUNGEN_TITEL:
+        case EINZELBUCHUNGEN_SUBTITEL:
         case SUMMENBUCHUNGEN_DATEINAME:
+        case SUMMENBUCHUNGEN_TITEL:
+        case SUMMENBUCHUNGEN_SUBTITEL:
         case CSVBUCHUNGEN_DATEINAME:
           map = BuchungListeFilterMap.getDummyMap(map);
           break;
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
+        case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
+        case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
         case ANLAGEN_EINZELBUCHUNGEN_DATEINAME:
+        case ANLAGEN_EINZELBUCHUNGEN_TITEL:
+        case ANLAGEN_EINZELBUCHUNGEN_SUBTITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_DATEINAME:
+        case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
+        case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = AnlagenbuchungListeFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
+        case AUSWERTUNG_MITGLIED_TITEL:
           map = AuswertungMitgliedFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
+        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
           map = AuswertungNichtMitgliedFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
+        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
+        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
           map = AuswertungKursteilnehmerFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
           map = AuswertungMitgliederstatistikFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
+        case AUSWERTUNG_ALTERSJUBILARE_TITEL:
+        case AUSWERTUNG_ALTERSJUBILARE_SUBTITEL:
         case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_TITEL:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_SUBTITEL:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
           map = AuswertungJubilareFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
+        case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
+        case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
           map = AuswertungArbeitseinsatzFilterMap.getDummyMap(map);
           break;
         case BUCHUNGSARTEN_DATEINAME:
+        case BUCHUNGSARTEN_TITEL:
+        case BUCHUNGSARTEN_SUBTITEL:
           map = BuchungsartListeFilterMap.getDummyMap(map);
           break;
         case WIRTSCHAFTSPLAN_DATEINAME:
+        case WIRTSCHAFTSPLAN_TITEL:
+        case WIRTSCHAFTSPLAN_SUBTITEL:
           map = WirtschaftsplanParameterMap.getDummyMap(map);
           break;
         default:
