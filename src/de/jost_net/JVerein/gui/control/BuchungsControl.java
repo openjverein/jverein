@@ -69,6 +69,7 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -189,6 +190,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private SelectInput suchsteuer;
 
   private CheckboxInput verzicht;
+
+  private TextInput bezeichnungsachzuwendung;
+
+  private SelectInput herkunftspende;
+
+  private CheckboxInput unterlagenwertermittlung;
 
   private Buchung buchung;
 
@@ -353,6 +360,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    b.setBezeichnungSachzuwendung(
+        (String) getBezeichnungSachzuwendung().getValue());
+    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+    b.setHerkunftSpende(hsp.getKey());
+    b.setUnterlagenWertermittlung(
+        (Boolean) getUnterlagenWertermittlung().getValue());
     return b;
   }
 
@@ -626,6 +639,42 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     verzicht = new CheckboxInput(vz);
     verzicht.setEnabled(editable);
     return verzicht;
+  }
+
+  public TextInput getBezeichnungSachzuwendung() throws RemoteException
+  {
+    if (bezeichnungsachzuwendung != null)
+    {
+      return bezeichnungsachzuwendung;
+    }
+    bezeichnungsachzuwendung = new TextInput(
+        getBuchung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung.setEnabled(editable);
+    return bezeichnungsachzuwendung;
+  }
+
+  public SelectInput getHerkunftSpende() throws RemoteException
+  {
+    if (herkunftspende != null)
+    {
+      return herkunftspende;
+    }
+    herkunftspende = new SelectInput(HerkunftSpende.getArray(),
+        new HerkunftSpende(getBuchung().getHerkunftSpende()));
+    herkunftspende.setEnabled(editable);
+    return herkunftspende;
+  }
+
+  public CheckboxInput getUnterlagenWertermittlung() throws RemoteException
+  {
+    if (unterlagenwertermittlung != null)
+    {
+      return unterlagenwertermittlung;
+    }
+    unterlagenwertermittlung = new CheckboxInput(
+        getBuchung().getUnterlagenWertermittlung());
+    unterlagenwertermittlung.setEnabled(editable);
+    return unterlagenwertermittlung;
   }
 
   public DialogInput getSollbuchung() throws RemoteException
@@ -2174,7 +2223,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     catch (ApplicationException e)
     {
       DBTransaction.rollback();
-      throw new ApplicationException(e);
+      throw new ApplicationException(e.getMessage());
     }
   }
 

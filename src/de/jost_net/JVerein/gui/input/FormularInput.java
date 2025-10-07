@@ -62,7 +62,7 @@ public class FormularInput extends SelectInput
     return it;
   }
 
-  private static Object initdefault(String id)
+  public static Object initdefault(String id)
   {
     if (id == null || id.isEmpty())
     {

@@ -38,7 +38,6 @@ import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -96,9 +95,8 @@ public class BuchungMenu extends ContextMenu
         if ((Boolean) Einstellungen
             .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
         {
-          addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-              new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
-              "file-invoice.png"));
+          addItem(new SpendenbescheinigungMenuItem("Spendenbescheinigung",
+              new SpendenbescheinigungNeuAction(), "file-invoice.png"));
         }
       }
       catch (RemoteException e)

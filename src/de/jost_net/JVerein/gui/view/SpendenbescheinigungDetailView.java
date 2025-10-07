@@ -21,7 +21,6 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -87,14 +86,9 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     right.addLabelPair("Unterlagen Wertermittlung",
         control.getUnterlagenWertermittlung());
 
-    if (control.getSpendenbescheinigung()
-        .getSpendenart() == Spendenart.GELDSPENDE)
-    {
-      // Buchnungen nur für Geldspenden
-      LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
-          "Buchungen");
-      grBuchungen.addPart(control.getBuchungListPart());
-    }
+    LabelGroup grBuchungen = new LabelGroup(scrolled.getComposite(),
+        "Buchungen");
+    grBuchungen.addPart(control.getBuchungListPart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),

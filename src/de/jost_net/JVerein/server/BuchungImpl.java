@@ -29,6 +29,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -231,6 +232,16 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
     }
+
+    if (getVerzicht() && (getUnterlagenWertermittlung()
+        || getHerkunftSpende() != HerkunftSpende.KEINEANGABEN
+        || (getBezeichnungSachzuwendung() != null
+            && !getBezeichnungSachzuwendung().isEmpty())))
+    {
+      throw new ApplicationException(
+          "Geldspende und Sachspende ist nicht gleichzeitig möglich.");
+    }
+
     // Diese Felder dürfen wegen dem Change Test nicht null sein, daher leer
     // belegen
     if (getName() == null)
@@ -1013,6 +1024,49 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
           .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
     }
     super.delete();
+  }
+
+  public String getBezeichnungSachzuwendung() throws RemoteException
+  {
+    return (String) getAttribute("bezeichnungsachzuwendung");
+  }
+
+  @Override
+  public void setBezeichnungSachzuwendung(String bezeichnungsachzuwendung)
+      throws RemoteException
+  {
+    setAttribute("bezeichnungsachzuwendung", bezeichnungsachzuwendung);
+  }
+
+  @Override
+  public int getHerkunftSpende() throws RemoteException
+  {
+    Integer ret = (Integer) getAttribute("herkunftspende");
+    if (ret == null)
+    {
+      ret = HerkunftSpende.KEINEANGABEN;
+    }
+    return ret;
+  }
+
+  @Override
+  public void setHerkunftSpende(int herkunftspende) throws RemoteException
+  {
+    setAttribute("herkunftspende", herkunftspende);
+  }
+
+  @Override
+  public Boolean getUnterlagenWertermittlung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("unterlagenwertermittlung"));
+  }
+
+  @Override
+  public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
+      throws RemoteException
+  {
+    setAttribute("unterlagenwertermittlung",
+        Boolean.valueOf(unterlagenwertermittlung));
   }
 
   @Override
