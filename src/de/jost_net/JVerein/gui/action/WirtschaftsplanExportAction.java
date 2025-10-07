@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
@@ -28,6 +29,13 @@ import de.willuhn.util.ApplicationException;
 public class WirtschaftsplanExportAction implements Action
 {
 
+  private WirtschaftsplanControl control;
+
+  public WirtschaftsplanExportAction(WirtschaftsplanControl control)
+  {
+    this.control = control;
+  }
+
   /**
    * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
    */
@@ -37,7 +45,7 @@ public class WirtschaftsplanExportAction implements Action
     try
     {
       ExportDialog d = new ExportDialog(new Object[] { context },
-          Wirtschaftsplan.class, DokumentationUtil.WIRTSCHAFTSPLANUNG, context);
+          Wirtschaftsplan.class, DokumentationUtil.WIRTSCHAFTSPLANUNG, control);
       d.open();
     }
     catch (OperationCanceledException oce)

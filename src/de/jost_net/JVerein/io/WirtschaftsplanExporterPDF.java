@@ -90,15 +90,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
   @Override
   public String getDateiname(Object object)
   {
-    try
-    {
-      return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME,
-          ((Wirtschaftsplan) object).getBezeichung()) + ".pdf";
-    }
-    catch (RemoteException e)
-    {
-      return "Formular.xml";
-    }
+    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, object)
+        + ".pdf";
   }
 
   @Override

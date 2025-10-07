@@ -128,7 +128,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
 
     wirtschaftsplaene
-        .setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
+        .setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene, this));
     wirtschaftsplaene.setAction(
         new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
     VorZurueckControl.setObjektListe(null, null);

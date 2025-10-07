@@ -83,7 +83,7 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
         context -> control
             .starteAuswertung(WirtschaftsplanControl.AUSWERTUNG_CSV),
         null, false, "xsd.png");
-    buttons.addButton("Export", new WirtschaftsplanExportAction(),
+    buttons.addButton("Export", new WirtschaftsplanExportAction(control),
         getCurrentObject(), false, "file-pdf.png");
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));

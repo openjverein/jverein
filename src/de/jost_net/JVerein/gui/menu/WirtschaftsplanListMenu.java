@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDuplizierenAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -28,7 +29,8 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 public class WirtschaftsplanListMenu extends ContextMenu
 {
-  public WirtschaftsplanListMenu(JVereinTablePart part)
+  public WirtschaftsplanListMenu(JVereinTablePart part,
+      WirtschaftsplanControl control)
   {
     addItem(new CheckedContextMenuItem("Bearbeiten",
         new EditAction(WirtschaftsplanDetailView.class, part),
@@ -39,6 +41,6 @@ public class WirtschaftsplanListMenu extends ContextMenu
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Export",
-        new WirtschaftsplanExportAction(), "file-pdf.png"));
+        new WirtschaftsplanExportAction(control), "file-pdf.png"));
   }
 }
