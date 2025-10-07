@@ -181,8 +181,6 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput sepamandatidsourcemodel;
 
-  private TextInput dateinamenmuster;
-
   private DirectoryInput vorlagenCsvVerzeichnis;
 
   private DecimalInput spendenbescheinigungminbetrag;
@@ -1095,19 +1093,6 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
-  }
-
-  public TextInput getDateinamenmuster() throws RemoteException
-  {
-    if (dateinamenmuster != null)
-    {
-      return dateinamenmuster;
-    }
-    dateinamenmuster = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), 30);
-    dateinamenmuster
-        .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
-    return dateinamenmuster;
   }
 
   public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
@@ -2695,14 +2680,12 @@ public class EinstellungControl extends AbstractControl
     }
   }
 
-  public void handleStoreDateinamen()
+  public void handleStoreVerzeichnisse()
   {
     try
     {
       DBTransaction.starten();
 
-      Einstellungen.setEinstellung(Property.DATEINAMENMUSTER,
-          (String) dateinamenmuster.getValue());
       Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
           (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();

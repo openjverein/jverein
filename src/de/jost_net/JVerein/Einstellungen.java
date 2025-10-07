@@ -273,8 +273,7 @@ public class Einstellungen
     KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
         Boolean.class, "0"),
 
-    // Dateinamen
-    DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
+    // Verzeichnisse
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung

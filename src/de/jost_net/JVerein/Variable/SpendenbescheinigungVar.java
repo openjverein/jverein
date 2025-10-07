@@ -23,9 +23,11 @@ public enum SpendenbescheinigungVar
   BETRAG("spendenbescheinigung_betrag"), //
   BETRAGINWORTEN("spendenbescheinigung_betraginworten"), //
   BESCHEINIGUNGDATUM("spendenbescheinigung_datum"), //
+  BESCHEINIGUNGDATUM_F("spendenbescheinigung_datum_f"), //
   SPENDEART("spendenbescheinigung_spendenart"), //
   SPENDEDATUM("spendenbescheinigung_spendedatum"), //
   SPENDEDATUM_ERSTES("spendenbescheinigung_spendedatum_erstes"), //
+  SPENDEDATUM_ERSTES_F("spendenbescheinigung_spendedatum_erstes_f"), //
   SPENDENZEITRAUM("spendenbescheinigung_spendenzeitraum"), //
   ERSATZAUFWENDUNGEN("spendenbescheinigung_ersatzaufwendungen"), //
   ERSATZAUFWENDUNGEN_JA("spendenbescheinigung_ersatzaufwendungen_ja"), //
@@ -41,6 +43,7 @@ public enum SpendenbescheinigungVar
   FINANZAMT("spendenbescheinigung_finanzamt"), //
   STEUER_NR("spendenbescheinigung_steuer_nummmer"), //
   DATUM_BESCHEID("spendenbescheinigung_datum_bescheid"), //
+  DATUM_BESCHEID_F("spendenbescheinigung_datum_bescheid_f"), //
   VERANLAGUNGSZEITRAUM("spendenbescheinigung_veranlagungszeitraum"), //
   ZWECK("spendenbescheinigung_beguenstigter_zweck"), //
   UNTERSCHRIFT("spendenbescheinigung_unterschrift"), //

@@ -25,6 +25,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +36,10 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.jost_net.JVerein.util.VorlageUtil;
 
 public class FormularfelderExportCSV extends FormularfelderExport
 {
@@ -81,9 +85,17 @@ public class FormularfelderExportCSV extends FormularfelderExport
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "formularfelder";
+    try
+    {
+      return VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
+          ((Formular) object).getBezeichnung()) + ".csv";
+    }
+    catch (RemoteException e)
+    {
+      return "Formularfelder.csv";
+    }
   }
 
   @Override

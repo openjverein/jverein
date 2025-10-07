@@ -24,21 +24,26 @@ public enum MitgliedVar
   ANREDE_DU("mitglied_anrede_du"), //
   ANREDE_FOERMLICH("mitglied_anrede_foermlich"), //
   AUSTRITT("mitglied_austritt"), //
+  AUSTRITT_F("mitglied_austritt_f"), //
   BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG("mitglied_arbeitseinsatz_betrag"), //
   BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN("mitglied_arbeitseinsatz_stunden"), //
   BEITRAGSGRUPPE_BEZEICHNUNG("mitglied_beitragsgruppe_bezeichnung"), //
   BEITRAGSGRUPPE_BETRAG("mitglied_beitragsgruppe_betrag"), //
   BEITRAGSGRUPPE_ID("mitglied_beitragsgruppe_id"), //
   MANDATDATUM("mitglied_mandatdatum"), //
+  MANDATDATUM_F("mitglied_mandatdatum_f"), //
   MANDATID("mitglied_mandatid"), //
   BIC("mitglied_bic"), //
   BLZ("mitglied_blz"), //
   EINTRITT("mitglied_eintritt"), //
+  EINTRITT_F("mitglied_eintritt_f"), //
   EINGABEDATUM("mitglied_eingabedatum"), //
+  EINGABEDATUM_F("mitglied_eingabedatum_f"), //
   EMPFAENGER("mitglied_empfaenger"), //
   EMAIL("mitglied_email"), //
   EXTERNE_MITGLIEDSNUMMER("mitglied_externe_mitgliedsnummer"), //
   GEBURTSDATUM("mitglied_geburtsdatum"), //
+  GEBURTSDATUM_F("mitglied_geburtsdatum_f"), //
   GESCHLECHT("mitglied_geschlecht"), //
   HANDY("mitglied_handy"), //
   IBAN("mitglied_iban"), //

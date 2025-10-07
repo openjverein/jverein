@@ -27,10 +27,12 @@ import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -367,6 +369,12 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
+  }
+
+  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)
@@ -379,4 +387,5 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }
