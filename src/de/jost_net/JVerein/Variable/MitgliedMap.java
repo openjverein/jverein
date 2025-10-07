@@ -25,6 +25,7 @@ import java.util.Objects;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.BeitragsUtil;
 import de.jost_net.JVerein.io.VelocityTool;
@@ -62,6 +63,7 @@ public class MitgliedMap extends AbstractMap
     return getMap(m, inma, false);
   }
 
+  @SuppressWarnings("deprecation")
   public Map<String, Object> getMap(Mitglied mitglied,
       Map<String, Object> initMap, boolean ohneLesefelder)
       throws RemoteException
@@ -147,7 +149,8 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.HANDY.getName(), mitglied.getHandy());
     map.put(MitgliedVar.IBANMASKIERT.getName(),
         VarTools.maskieren(mitglied.getIban()));
-    map.put(MitgliedVar.IBAN.getName(), mitglied.getIban());
+    map.put(MitgliedVar.IBAN.getName(),
+        new IBANFormatter().format(mitglied.getIban()));
     map.put(MitgliedVar.ID.getName(), mitglied.getID());
     if (mitglied.getIndividuellerBeitrag() != null)
     {
@@ -367,6 +370,7 @@ public class MitgliedMap extends AbstractMap
     return null;
   }
 
+  @SuppressWarnings("deprecation")
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
       throws RemoteException
   {
@@ -410,7 +414,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.GEBURTSDATUM_F.getName(), "19800302");
     map.put(MitgliedVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
     map.put(MitgliedVar.HANDY.getName(), "0152778899");
-    map.put(MitgliedVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(MitgliedVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(MitgliedVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(MitgliedVar.ID.getName(), "15");
     map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");

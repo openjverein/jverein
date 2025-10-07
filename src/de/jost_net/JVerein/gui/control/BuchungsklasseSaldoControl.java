@@ -432,18 +432,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         it.leftJoin("steuer", "steuer.id = buchungsart.steuer");
       }
     }
-    if (klasseInBuchung)
-    {
-      it.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchung.buchungsklasse");
-      it.addGroupBy("buchung.buchungsklasse");
-    }
-    else
-    {
-      it.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchungsart.buchungsklasse ");
-      it.addGroupBy("buchungsart.buchungsklasse");
-    }
     it.addGroupBy("buchungsart.id");
     it.addGroupBy("buchungsklasse.bezeichnung");
     it.addGroupBy("buchungsklasse.nummer");
@@ -466,7 +454,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
-      String subselect = "(SELECT steuer.buchungsart, "
+      String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
           + "buchung.projekt " + " FROM buchung"
           // Keine Steuer bei Anlagekonten
@@ -486,11 +474,29 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       subselect += " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY steuer.buchungsart, buchung.projekt) AS st ";
+          + " GROUP BY steuer.buchungsart, buchung.projekt";
+      if (klasseInBuchung)
+      {
+        subselect += ",steuer.buchungsklasse";
+      }
+      subselect += ") AS st ";
       it.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
           Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
           getDatumvon().getDate(), getDatumbis().getDate());
     }
+    if (klasseInBuchung)
+    {
+      it.leftJoin("buchungsklasse", "buchungsklasse.id = buchung.buchungsklasse"
+          + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse" : ""));
+      it.addGroupBy("buchung.buchungsklasse");
+    }
+    else
+    {
+      it.leftJoin("buchungsklasse",
+          "buchungsklasse.id = buchungsart.buchungsklasse ");
+      it.addGroupBy("buchungsart.buchungsklasse");
+    }
+
     return it;
   }
 

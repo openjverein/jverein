@@ -312,16 +312,17 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Sollbuchung getSollbuchung() throws RemoteException
+  public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException
   {
+    ArrayList<Sollbuchung> sbs = new ArrayList<>();
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
     sollbIt.addFilter(Sollbuchung.RECHNUNG + " = ?", getID());
-    if (sollbIt.hasNext())
+    while (sollbIt.hasNext())
     {
-      return sollbIt.next();
+      sbs.add((Sollbuchung) sollbIt.next());
     }
-    return null;
+    return sbs;
   }
 
   @Override

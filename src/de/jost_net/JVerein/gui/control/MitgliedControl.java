@@ -44,6 +44,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -145,7 +146,6 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
@@ -902,7 +902,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getMitglied().getIban()),
+    iban = new IBANInput(new IBANFormatter().format(getMitglied().getIban()),
         getBic());
     if (((Zahlungsweg) getZahlungsweg().getValue())
         .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
@@ -2372,7 +2372,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (ib == null)
       m.setIban("");
     else
-      m.setIban(ib.toUpperCase().replace(" ", ""));
+      m.setIban(ib.replace(" ", ""));
     // Abweichender Kontoinhaber
     m.setKtoiAdressierungszusatz(
         (String) getKtoiAdressierungszusatz().getValue());

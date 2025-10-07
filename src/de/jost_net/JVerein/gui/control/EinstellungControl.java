@@ -31,6 +31,7 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -76,7 +77,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -576,8 +576,8 @@ public class EinstellungControl extends AbstractControl
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties
-        .formatIban((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
+    iban = new IBANInput(new IBANFormatter()
+        .format((String) Einstellungen.getEinstellung(Property.IBAN)), bic);
     return iban;
   }
 
@@ -895,7 +895,7 @@ public class EinstellungControl extends AbstractControl
     }
     rechnungtextabbuchung = new TextInput(
         (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTABBUCHUNG),
-        100);
+        500);
     return rechnungtextabbuchung;
   }
 
@@ -906,7 +906,7 @@ public class EinstellungControl extends AbstractControl
       return rechnungtextueberweisung;
     }
     rechnungtextueberweisung = new TextInput((String) Einstellungen
-        .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 100);
+        .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG), 500);
     return rechnungtextueberweisung;
   }
 
@@ -917,7 +917,7 @@ public class EinstellungControl extends AbstractControl
       return rechnungtextbar;
     }
     rechnungtextbar = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 100);
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 500);
     return rechnungtextbar;
   }
 
