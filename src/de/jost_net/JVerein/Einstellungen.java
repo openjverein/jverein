@@ -246,6 +246,7 @@ public class Einstellungen
     BUCHUNGBUCHUNGSARTAUSWAHL("buchungbuchungsartauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     BUCHUNGSARTSORT("buchungsartsort", Integer.class, "1"),
+    BUCHUNGSARTANZEIGE("buchungsartanzeige", Integer.class, "1"),
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),
@@ -273,8 +274,7 @@ public class Einstellungen
     KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
         Boolean.class, "0"),
 
-    // Dateinamen
-    DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
+    // Verzeichnisse
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung

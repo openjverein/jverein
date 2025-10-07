@@ -142,6 +142,16 @@ public class WirtschaftsplanNode
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    {
+      istIt.addFilter("konto.kontoart < " + Kontoart.LIMIT.getKey()
+          + " OR konto.kontoart > " + Kontoart.LIMIT_RUECKLAGE.getKey());
+    }
+    else
+    {
+      istIt.addFilter("konto.kontoart < " + Kontoart.LIMIT.getKey());
+    }
 
     if (mitSteuer)
     {
@@ -272,6 +282,8 @@ public class WirtschaftsplanNode
       item.setSoll(0);
 
       children.add(new WirtschaftsplanNode(this, item));
+
+      setWirtschaftsplanItem(item);
       return;
     }
 
@@ -292,6 +304,7 @@ public class WirtschaftsplanNode
       WirtschaftsplanItem item = iterator.next();
       sollSumme += item.getSoll();
       children.add(new WirtschaftsplanNode(this, item));
+      setWirtschaftsplanItem(item);
     }
     setSoll(sollSumme);
   }
@@ -315,7 +328,7 @@ public class WirtschaftsplanNode
       children.sort(null);
       return PseudoIterator.fromArray(children.toArray(new GenericObject[0]));
     }
-    return null;
+    return PseudoIterator.fromArray(new GenericObject[0]);
   }
 
   @Override
@@ -369,8 +382,6 @@ public class WirtschaftsplanNode
         {
           return new BuchungsklasseFormatter().format(buchungsklasse);
         }
-        return "";
-      case "buchungsartbezeichnung_posten":
         if (type == Type.BUCHUNGSART)
         {
           return new BuchungsartFormatter().format(buchungsart);
@@ -412,7 +423,7 @@ public class WirtschaftsplanNode
                 - o.getBuchungsart().getNummer();
           }
           break;
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartSort.NACH_BEZEICHNUNG:
         default:
           if (type == Type.BUCHUNGSART)
           {

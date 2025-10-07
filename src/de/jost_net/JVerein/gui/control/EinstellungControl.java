@@ -47,6 +47,7 @@ import de.jost_net.JVerein.keys.AfaOrt;
 import de.jost_net.JVerein.keys.Altermodel;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
@@ -184,8 +185,6 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput sepamandatidsourcemodel;
 
-  private TextInput dateinamenmuster;
-
   private DirectoryInput vorlagenCsvVerzeichnis;
 
   private DecimalInput spendenbescheinigungminbetrag;
@@ -321,6 +320,8 @@ public class EinstellungControl extends AbstractControl
   private SelectInput mitgliedAuswahl;
 
   private SelectInput buchungsartsort;
+
+  private SelectInput buchungsartanzeige;
 
   private CheckboxInput abrlabschliessen;
 
@@ -1104,19 +1105,6 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
-  }
-
-  public TextInput getDateinamenmuster() throws RemoteException
-  {
-    if (dateinamenmuster != null)
-    {
-      return dateinamenmuster;
-    }
-    dateinamenmuster = new TextInput(
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), 30);
-    dateinamenmuster
-        .setComment("a$ = Aufgabe, d$ = Datum, s$ = Sortierung, z$ = Zeit");
-    return dateinamenmuster;
   }
 
   public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
@@ -1933,6 +1921,18 @@ public class EinstellungControl extends AbstractControl
     return buchungsartsort;
   }
 
+  public SelectInput getBuchungsartAnzeige() throws RemoteException
+  {
+    if (buchungsartanzeige != null)
+    {
+      return buchungsartanzeige;
+    }
+    buchungsartanzeige = new SelectInput(BuchungsartAnzeige.getArray(),
+        new BuchungsartAnzeige((Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGSARTANZEIGE)));
+    return buchungsartanzeige;
+  }
+
   public IntegerInput getQRCodeSizeInMm() throws RemoteException
   {
     if (null == qrcodesize)
@@ -2644,6 +2644,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.MITGLIEDAUSWAHL, mAuswahl.getKey());
       Einstellungen.setEinstellung(Property.BUCHUNGSARTSORT,
           ((BuchungsartSort) buchungsartsort.getValue()).getKey());
+      Einstellungen.setEinstellung(Property.BUCHUNGSARTANZEIGE,
+          ((BuchungsartAnzeige) buchungsartanzeige.getValue()).getKey());
       if (((AfaOrt) afaort.getValue()).getKey() == 0)
         Einstellungen.setEinstellung(Property.AFAINJAHRESABSCHLUSS, false);
       else
@@ -2740,14 +2742,12 @@ public class EinstellungControl extends AbstractControl
     }
   }
 
-  public void handleStoreDateinamen()
+  public void handleStoreVerzeichnisse()
   {
     try
     {
       DBTransaction.starten();
 
-      Einstellungen.setEinstellung(Property.DATEINAMENMUSTER,
-          (String) dateinamenmuster.getValue());
       Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
           (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();

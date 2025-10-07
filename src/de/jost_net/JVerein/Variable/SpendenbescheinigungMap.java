@@ -121,6 +121,8 @@ public class SpendenbescheinigungMap extends AbstractMap
         .format(spb.getBescheinigungsdatum());
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
         bescheinigungsdatum);
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(),
+        fromDate((Date) spb.getBescheinigungsdatum()));
     switch (spb.getSpendenart())
     {
       case Spendenart.GELDSPENDE:
@@ -368,6 +370,8 @@ public class SpendenbescheinigungMap extends AbstractMap
       map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
     }
     map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), spendedatum);
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(),
+        fromDate((Date) spb.getSpendedatum()));
 
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(),
         (String) Einstellungen.getEinstellung(Property.FINANZAMT));
@@ -376,6 +380,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     String bescheiddatum = new JVDateFormatTTMMJJJJ()
         .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), bescheiddatum);
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(),
+        fromDate((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM)));
     Calendar cal = Calendar.getInstance();
     cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
     String start = "" + cal.get(Calendar.YEAR);
@@ -438,9 +444,11 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(), "20251001");
     map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
     map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
     map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), "01.01.2025");
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(), "20250101");
     map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
         "01.01.2025 bis 01.03.2025");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "Nein");
@@ -459,6 +467,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(), "20250601");
     map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
         "2022 bis 2024");
     map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");

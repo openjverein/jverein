@@ -26,8 +26,11 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 
 public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
 {
@@ -71,9 +74,11 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "statistikjahrgaenge";
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME,
+        (MitgliedControl) object) + ".pdf";
   }
 
   @Override

@@ -37,10 +37,8 @@ import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class VorlageControl extends VorZurueckControl implements Savable
+public class VorlageControl extends FilterControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
 
   private JVereinTablePart namenList;
 
@@ -141,34 +139,60 @@ public class VorlageControl extends VorZurueckControl implements Savable
 
   public Part getDateinamenList() throws RemoteException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Vorlage> namen = service.createList(Vorlage.class);
-    namen.setOrder("ORDER BY " + Vorlage.MUSTER);
+    if (namenList != null)
+    {
+      return namenList;
+    }
+    namenList = new JVereinTablePart(getVorlagenIt(), null);
+    namenList.addColumn("Vorlage Art", "art");
+    namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
+    namenList.setContextMenu(new VorlageMenu(namenList));
+    namenList.setRememberColWidths(true);
+    namenList.setRememberOrder(true);
+    namenList.setRememberState(true);
+    namenList.removeFeature(FeatureSummary.class);
+    namenList.setAction(
+        new EditAction(EinstellungenVorlageDetailView.class, namenList));
+    VorZurueckControl.setObjektListe(null, null);
 
-    if (namenList == null)
-    {
-      namenList = new JVereinTablePart(namen, null);
-      namenList.addColumn("Vorlage Art", "art");
-      namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
-      namenList.setContextMenu(new VorlageMenu(namenList));
-      namenList.setRememberColWidths(true);
-      namenList.setRememberOrder(true);
-      namenList.setRememberState(true);
-      namenList.removeFeature(FeatureSummary.class);
-      namenList.setAction(
-          new EditAction(EinstellungenVorlageDetailView.class, namenList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      namenList.removeAll();
-      while (namen.hasNext())
-      {
-        namenList.addItem(namen.next());
-      }
-      namenList.sort();
-    }
     return namenList;
   }
 
+  @Override
+  protected void TabRefresh()
+  {
+    try
+    {
+      if (namenList == null)
+      {
+        return;
+      }
+      namenList.removeAll();
+      DBIterator<Vorlage> getVorlagenIt = getVorlagenIt();
+      while (getVorlagenIt.hasNext())
+      {
+        namenList.addItem(getVorlagenIt.next());
+      }
+      namenList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Vorlage> getVorlagenIt() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Vorlage> vorlagenIt = service.createList(Vorlage.class);
+    vorlagenIt.setOrder("ORDER BY " + Vorlage.MUSTER);
+    String tmpSuchtext = (String) getSuchtext().getValue();
+    if (tmpSuchtext.length() > 0)
+    {
+      String suchText = "%" + tmpSuchtext.toLowerCase() + "%";
+      vorlagenIt.addFilter("(lower(" + Vorlage.KEY + ") like ? OR lower("
+          + Vorlage.MUSTER + ") like ?)", new Object[] { suchText, suchText });
+    }
+    return vorlagenIt;
+  }
 }

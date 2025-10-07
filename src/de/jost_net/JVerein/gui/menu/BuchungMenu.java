@@ -121,7 +121,7 @@ public class BuchungMenu extends ContextMenu
     if (geldkonto)
     {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
-          new BuchungSollbuchungZuordnungAction(), "view-refresh.png"));
+          new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
     }
     try
     {

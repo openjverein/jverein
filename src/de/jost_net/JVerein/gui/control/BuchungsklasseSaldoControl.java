@@ -27,11 +27,14 @@ import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -361,32 +364,37 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         it.addColumn(
             "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
                 + BUCHUNGSART);
         it.addColumn(
             "CONCAT(buchungsklasse.nummer,' - ',buchungsklasse.bezeichnung) as "
                 + BUCHUNGSKLASSE);
-        it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         it.addColumn(
             "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
                 + BUCHUNGSART);
         it.addColumn(
             "CONCAT(buchungsklasse.bezeichnung,' (',buchungsklasse.nummer,')') as "
                 + BUCHUNGSKLASSE);
-        it.setOrder(
-            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
         break;
       default:
         it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
         it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
+        break;
+    }
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.setOrder(
+            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG:
+      default:
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
                 + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
@@ -505,6 +513,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
+  }
+
+  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)
@@ -517,4 +531,5 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

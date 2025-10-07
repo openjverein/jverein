@@ -241,6 +241,33 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       throw new ApplicationException(
           "Geldspende und Sachspende ist nicht gleichzeitig möglich.");
     }
+
+    // Diese Felder dürfen wegen dem Change Test nicht null sein, daher leer
+    // belegen
+    if (getName() == null)
+    {
+      setName("");
+    }
+    if (getZweck() == null)
+    {
+      setZweck("");
+    }
+    if (getArt() == null)
+    {
+      setArt("");
+    }
+    if (getVerzicht() == null)
+    {
+      setVerzicht(false);
+    }
+    if (getKommentar() == null)
+    {
+      setKommentar("");
+    }
+    if (getGeprueft() == null)
+    {
+      setGeprueft(false);
+    }
   }
 
   @Override
