@@ -390,10 +390,10 @@ public class VorlageUtil
       context.put("decimalformat", Einstellungen.DECIMALFORMAT);
       VarTools.add(context, map);
       StringWriter wdateiname = new StringWriter();
-      String in = inString.replaceAll("-\\$", " \\$");
+      String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
       Velocity.evaluate(context, wdateiname, "LOG", in);
       String str = wdateiname.toString();
-      str = str.replaceAll(" ", "-");
+      str = str.replaceAll("\\'\\#\\'", "-");
       return str;
     }
     catch (Exception e)
