@@ -25,18 +25,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.control.WirtschaftsplanNode.Type;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -44,6 +49,7 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -52,6 +58,9 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.parts.table.Feature;
+import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -61,7 +70,7 @@ import de.willuhn.util.ProgressMonitor;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
-  public final static String AUSWERTUNG_CSV = "CSV";
+  public final static String AUSWERTUNG_CSV = ".csv";
 
   private EditTreePart einnahmen;
 
@@ -78,8 +87,9 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
    *
    * @param view
    *          die View, fuer die dieser WirtschaftsplanControl zustaendig ist.
+   * @throws RemoteException
    */
-  public WirtschaftsplanControl(AbstractView view)
+  public WirtschaftsplanControl(AbstractView view) throws RemoteException
   {
     super(view);
     de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
@@ -131,10 +141,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
    *
    * @return der aktuelle Wirtschaftsplan oder null, wenn kein Wirtschaftsplan
    *         geladen ist.
-   * @throws RemoteException
-   *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
    */
-  public Wirtschaftsplan getWirtschaftsplan() throws RemoteException
+  public Wirtschaftsplan getWirtschaftsplan()
   {
     if (wirtschaftsplan != null)
     {
@@ -154,7 +162,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       @SuppressWarnings("rawtypes")
       List items = einnahmen.getItems();
-      einnahmen.removeAll();
       einnahmen.setList(items);
     }
     return einnahmen;
@@ -170,12 +177,12 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       @SuppressWarnings("rawtypes")
       List items = ausgaben.getItems();
-      ausgaben.removeAll();
       ausgaben.setList(items);
     }
     return ausgaben;
   }
 
+  @SuppressWarnings("unchecked")
   private EditTreePart generateTree(int art) throws RemoteException
   {
     Wirtschaftsplan wirtschaftsplan = getWirtschaftsplan();
@@ -196,7 +203,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       case BuchungsartSort.NACH_NUMMER:
         buchungsklasseIterator.setOrder("Order by -nummer DESC");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
         buchungsklasseIterator
             .setOrder("Order by bezeichnung is NULL, bezeichnung");
@@ -208,13 +215,40 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       nodes.add(new WirtschaftsplanNode(klasse, art, wirtschaftsplan));
     }
 
-    EditTreePart treePart = new EditTreePart(nodes, null);
+    EditTreePart treePart = new EditTreePart(nodes, null)
+    {
+      @Override
+      protected Context createFeatureEventContext(Feature.Event e, Object data)
+      {
+        Context ctx = super.createFeatureEventContext(e, data);
+        if (e.equals(Feature.Event.PAINT))
+        {
+          autoExpand(this);
+        }
+        if (e.equals(Feature.Event.REFRESH))
+        {
+          // Listener ausführen um das Icon zu aktualisieren
+          Tree tree = (Tree) ctx.control;
+          for (TreeItem klasseItem : tree.getItems())
+          {
+            for (TreeItem item : klasseItem.getItems())
+            {
+              Event event = new Event();
+              event.item = item;
+
+              tree.notifyListeners(
+                  item.getExpanded() ? SWT.Expand : SWT.Collapse, event);
+            }
+          }
+        }
+        return ctx;
+      }
+    };
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
         Einstellungen.DECIMALFORMAT);
-    treePart.addColumn("Buchungsklasse", "buchungsklassebezeichnung");
-    treePart.addColumn("Buchungsart / Posten", "buchungsartbezeichnung_posten",
-        null, true);
+    treePart.addColumn("Buchungsklasse / Buchungsart / Posten",
+        "buchungsklassebezeichnung", null, true);
     treePart.addColumn("Soll", "soll", formatter, true);
     treePart.addColumn("Ist", "ist", formatter);
 
@@ -228,6 +262,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
       WirtschaftsplanItem item = node.getWirtschaftsplanItem();
 
+      if (item == null)
+      {
+        throw new ApplicationException("Fehler beim Bearbeiten!");
+      }
       try
       {
         switch (attribute)
@@ -255,8 +293,20 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         node.setWirtschaftsplanItem(item);
         node.setSoll(item.getSoll());
 
-        WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
-        reloadSoll(parent);
+        GenericIterator<WirtschaftsplanNode> children = node.getChildren();
+        if (node.getType() == Type.BUCHUNGSART && children != null
+            && children.size() == 1)
+        {
+          WirtschaftsplanNode child = children.next();
+          child.setWirtschaftsplanItem(item);
+          child.setSoll(item.getSoll());
+          reloadSoll(node);
+        }
+        else
+        {
+          WirtschaftsplanNode parent = (WirtschaftsplanNode) node.getParent();
+          reloadSoll(parent);
+        }
 
         tableChanged = true;
       }
@@ -268,12 +318,58 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     }));
 
     treePart.addEditListener(((object, attribute) -> {
-
       WirtschaftsplanNode node = (WirtschaftsplanNode) object;
-      return node.getType() == WirtschaftsplanNode.Type.POSTEN;
+
+      switch (node.getType())
+      {
+        case POSTEN:
+          return true;
+        case BUCHUNGSART:
+          try
+          {
+            // Wenn nur ein Posten existiert, kann direkt bei der Buchungsart
+            // der Betrag eingegeben werden.
+            return node.getChildren().size() == 1 && attribute.equals("soll");
+          }
+          catch (RemoteException e)
+          {
+            return false;
+          }
+        default:
+          return false;
+      }
+
     }));
 
     return treePart;
+  }
+
+  @SuppressWarnings("unchecked")
+  private void autoExpand(TreePart tree)
+  {
+    try
+    {
+      for (WirtschaftsplanNode klasseNode : (List<WirtschaftsplanNode>) tree
+          .getItems())
+      {
+        GenericIterator<WirtschaftsplanNode> children = klasseNode
+            .getChildren();
+        if (children == null)
+        {
+          continue;
+        }
+        while (children.hasNext())
+        {
+          WirtschaftsplanNode node = children.next();
+          tree.setExpanded(node, node.getChildren().size() != 1);
+        }
+      }
+      tree.featureEvent(Feature.Event.REFRESH, null);
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler beim AutoExpand", e1);
+    }
   }
 
   public WirtschaftsplanUebersichtPart getUebersicht()
@@ -327,8 +423,9 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         parent = (WirtschaftsplanNode) parent.getParent();
       }
     }
-
     uebersicht.updateSoll();
+    autoExpand(einnahmen);
+    autoExpand(ausgaben);
   }
 
   @Override
@@ -456,7 +553,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       fd.setFilterPath(path);
     }
 
-    fd.setFileName("wirtschaftsplan." + type);
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, this) + type);
 
     final String s = fd.open();
 

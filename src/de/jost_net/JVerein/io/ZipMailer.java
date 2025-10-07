@@ -225,8 +225,8 @@ public class ZipMailer
                       VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
                   break;
                 case "mahnung":
-                  finaldateiname = VorlageUtil
-                      .getName(VorlageTyp.MAHNUNG_MITGLIED, re, m) + ".pdf";
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
                   break;
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(

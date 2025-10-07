@@ -37,7 +37,7 @@ public class WirtschaftsplanExportAction implements Action
     try
     {
       ExportDialog d = new ExportDialog(new Object[] { context },
-          Wirtschaftsplan.class, DokumentationUtil.WIRTSCHAFTSPLANUNG);
+          Wirtschaftsplan.class, DokumentationUtil.WIRTSCHAFTSPLANUNG, context);
       d.open();
     }
     catch (OperationCanceledException oce)

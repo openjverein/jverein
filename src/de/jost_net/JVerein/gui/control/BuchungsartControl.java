@@ -37,13 +37,15 @@ import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -230,11 +232,12 @@ public class BuchungsartControl extends FilterControl implements Savable
   {
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           return "nrbezeichnung";
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           return "bezeichnungnr";
         default:
           return "bezeichnung";
@@ -527,9 +530,8 @@ public class BuchungsartControl extends FilterControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("buchungsarten", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();

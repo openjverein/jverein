@@ -17,12 +17,13 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.rmi.Sollbuchung;
 
-public class SollbuchungMap
+public class SollbuchungMap extends AbstractMap
 {
 
   public SollbuchungMap()
@@ -42,6 +43,8 @@ public class SollbuchungMap
       map = inma;
     }
     map.put(SollbuchungVar.BUCHUNGSDATUM.getName(), sollb.getDatum());
+    map.put(SollbuchungVar.BUCHUNGSDATUM_F.getName(),
+        fromDate((Date) sollb.getDatum()));
     map.put(SollbuchungVar.ZAHLUNGSGRUND.getName(), sollb.getZweck1());
     map.put(SollbuchungVar.BETRAG.getName(), sollb.getBetrag());
     map.put(SollbuchungVar.IST.getName(), sollb.getIstSumme());

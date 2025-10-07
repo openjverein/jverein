@@ -35,13 +35,19 @@ public class BuchungsartSort
 
   public static final int NACH_NUMMER = 2;
 
-  public static final int NACH_BEZEICHNUNG_NR = 3;
-
   private int buchungsartsort;
 
   public BuchungsartSort(int key)
   {
-    this.buchungsartsort = key;
+    // Wegen Migration alter Settings
+    if (key == 3)
+    {
+      this.buchungsartsort = 1;
+    }
+    else
+    {
+      this.buchungsartsort = key;
+    }
   }
 
   public int getKey()
@@ -62,8 +68,6 @@ public class BuchungsartSort
         return "Nach Bezeichnung";
       case NACH_NUMMER:
         return "Nach Nummer";
-      case NACH_BEZEICHNUNG_NR:
-        return "Nach Bezeichnung mit Nummer";
       default:
         return null;
     }
@@ -74,7 +78,6 @@ public class BuchungsartSort
     ArrayList<BuchungsartSort> ret = new ArrayList<>();
     ret.add(new BuchungsartSort(NACH_BEZEICHNUNG));
     ret.add(new BuchungsartSort(NACH_NUMMER));
-    ret.add(new BuchungsartSort(NACH_BEZEICHNUNG_NR));
     return ret;
   }
 

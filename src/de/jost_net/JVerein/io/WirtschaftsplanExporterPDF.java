@@ -36,10 +36,12 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -86,9 +88,17 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "wirtschaftsplan";
+    try
+    {
+      return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME,
+          ((Wirtschaftsplan) object).getBezeichung()) + ".pdf";
+    }
+    catch (RemoteException e)
+    {
+      return "Formular.xml";
+    }
   }
 
   @Override

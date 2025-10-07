@@ -27,9 +27,11 @@ import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -355,7 +357,13 @@ public class KontensaldoControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Kontensaldo";
+    return "Konten-Saldo";
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_DATEINAME, this);
   }
 
   @Override
@@ -371,4 +379,5 @@ public class KontensaldoControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

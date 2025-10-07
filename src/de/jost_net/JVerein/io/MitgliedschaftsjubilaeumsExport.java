@@ -138,12 +138,6 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
         + " StartAlter= " + Integer.toString(jubilarStartAlter));
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "mitgliedschaftsjubilare";
-  }
-
   protected abstract void startJahrgang(int jahr) throws DocumentException;
 
   protected abstract void endeJahrgang() throws DocumentException;

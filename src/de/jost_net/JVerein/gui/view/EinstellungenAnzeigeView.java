@@ -103,14 +103,17 @@ public class EinstellungenAnzeigeView extends AbstractView
     links.addLabelPair("Basis für Berechnung des Alters",
         control.getAltersModel());
     links.addLabelPair("Ort der Abschreibung", control.getAfaOrt());
+    links.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
 
     SimpleContainer rechts = new SimpleContainer(cols2.getComposite());
     rechts.addLabelPair("Ungenutzte Auto Buchungsarten unterdrücken (Monate)",
         control.getUnterdrueckungLaenge());
     rechts.addLabelPair("Buchungsart Auswahl",
         control.getBuchungBuchungsartAuswahl());
-    rechts.addLabelPair("Buchungsart Sortierung", control.getBuchungsartSort());
-    rechts.addLabelPair("Mitglied Auswahl", control.getMitgliedAuswahl());
+    rechts.addLabelPair("Buchungsart/-klasse Sortierung",
+        control.getBuchungsartSort());
+    rechts.addLabelPair("Buchungsart/-klasse Anzeige",
+        control.getBuchungsartAnzeige());
 
     cont.addSeparator();
     cont.addHeadline("* " + "Änderung erfordert Neustart");
