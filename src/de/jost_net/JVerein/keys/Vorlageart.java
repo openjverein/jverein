@@ -14,19 +14,49 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.io;
+package de.jost_net.JVerein.keys;
 
-import java.io.File;
-import java.util.ArrayList;
-
-import de.jost_net.JVerein.server.PseudoDBObject;
-import de.willuhn.util.ApplicationException;
-
-/**
- * Interface für den Export der Salden
- */
-public interface ISaldoExport
+public enum Vorlageart
 {
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
-      String subtitle) throws ApplicationException;
+
+  DATEINAME(1, "Dateiname"),
+  TITEL(2, "Titel");
+
+  private final String text;
+
+  private final int key;
+
+  Vorlageart(int key, String text)
+  {
+    this.key = key;
+    this.text = text;
+  }
+
+  public int getKey()
+  {
+    return key;
+  }
+
+  public String getText()
+  {
+    return text;
+  }
+
+  public static Vorlageart getByKey(int key)
+  {
+    for (Vorlageart art : Vorlageart.values())
+    {
+      if (art.getKey() == key)
+      {
+        return art;
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public String toString()
+  {
+    return getText();
+  }
 }

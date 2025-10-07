@@ -271,7 +271,15 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Umsatzsteuer Voranmeldung";
+    return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_TITEL,
+        this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_SUBTITEL,
+        this);
   }
 
   @Override
@@ -289,7 +297,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new UmsatzsteuerSaldoCSV();
       case AuswertungPDF:
-        return new UmsatzsteuerSaldoPDF(getAuswertungTitle());
+        return new UmsatzsteuerSaldoPDF();
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }

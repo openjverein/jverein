@@ -365,7 +365,13 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Anlagenverzeichnis";
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
   }
 
   @Override

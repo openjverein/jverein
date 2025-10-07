@@ -35,6 +35,7 @@ public class EinstellungenVorlageListeView extends AbstractView
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addLabelPair("Enthaltener Text", control.getSuchtext());
+    group.addLabelPair("Vorlagenart", control.getVorlagenart());
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

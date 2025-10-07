@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
+import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -171,6 +172,8 @@ public abstract class FilterControl extends VorZurueckControl
   protected DecimalInput doubleauswahl = null;
 
   protected CheckboxInput checkboxauswahl = null;
+
+  protected SelectInput vorlagenart = null;
 
   private Calendar calendar = Calendar.getInstance();
 
@@ -1300,6 +1303,30 @@ public abstract class FilterControl extends VorZurueckControl
     return suchkontoart != null;
   }
 
+  public SelectInput getVorlagenart()
+  {
+    if (vorlagenart != null)
+    {
+      return vorlagenart;
+    }
+    Vorlageart art = null;
+    String key = settings.getString(settingsprefix + "vorlagenart.key", "");
+    if (key.length() > 0)
+    {
+      art = Vorlageart.getByKey(Integer.parseInt(key));
+    }
+    vorlagenart = new SelectInput(Vorlageart.values(), art);
+    vorlagenart.setName("Vorlagenart");
+    vorlagenart.setPleaseChoose(ALLE);
+    vorlagenart.addListener(new FilterListener());
+    return vorlagenart;
+  }
+
+  public boolean isVorlagenartAktiv()
+  {
+    return vorlagenart != null;
+  }
+
   /**
    * Buttons
    */
@@ -1433,6 +1460,8 @@ public abstract class FilterControl extends VorZurueckControl
           doubleauswahl.setValue(null);
         if (checkboxauswahl != null)
           checkboxauswahl.setValue(Boolean.FALSE);
+        if (vorlagenart != null)
+          vorlagenart.setValue(Vorlageart.DATEINAME);
         refresh();
       }
     }, null, false, "eraser.png");
@@ -1936,6 +1965,19 @@ public abstract class FilterControl extends VorZurueckControl
       else
       {
         settings.setAttribute(settingsprefix + "checkboxauswahl", "false");
+      }
+    }
+
+    if (vorlagenart != null)
+    {
+      Vorlageart art = (Vorlageart) vorlagenart.getValue();
+      if (art != null)
+      {
+        settings.setAttribute(settingsprefix + "vorlagenart.key", art.getKey());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "vorlagenart.key", "");
       }
     }
   }

@@ -19,14 +19,12 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.gui.control.KontensaldoControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -40,15 +38,12 @@ public class KontenSaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      final Date datumvon, final Date datumbis) throws ApplicationException
+      String title, String subtitle) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, "Kontensaldo", subtitle,
-          zeile.size());
+      Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
 
       reporter.addHeaderColumn("Konto-\nnummer", Element.ALIGN_CENTER, 50,
           BaseColor.LIGHT_GRAY);
