@@ -270,7 +270,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       {
         switch (attribute)
         {
-          case "buchungsartbezeichnung_posten":
+          case "buchungsklassebezeichnung":
             item.setPosten(newValue);
             break;
           case "soll":

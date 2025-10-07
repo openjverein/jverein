@@ -328,7 +328,7 @@ public class WirtschaftsplanNode
       children.sort(null);
       return PseudoIterator.fromArray(children.toArray(new GenericObject[0]));
     }
-    return PseudoIterator.fromArray(new GenericObject[0]);
+    return null;
   }
 
   @Override
@@ -442,8 +442,7 @@ public class WirtschaftsplanNode
   @Override
   public String[] getAttributeNames() throws RemoteException
   {
-    return new String[] { "buchungsklassebezeichnung",
-        "buchungsartbezeichnung_posten", "soll", "ist" };
+    return new String[] { "buchungsklassebezeichnung", "soll", "ist" };
   }
 
   @Override
