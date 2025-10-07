@@ -330,7 +330,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
           WirtschaftsplanNode posten = postenChilds.next();
 
           String nodekey = (String) posten
-              .getAttribute("buchungsartbezeichnung_posten");
+              .getAttribute("buchungsklassebezeichnung");
           entry = entryMap.getOrDefault(nodekey,
               new Double[wirtschaftsplaene.length][2]);
           entry[n][0] = posten.getSoll();
@@ -376,7 +376,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
                   if ("-".equals(postenEntry.getKey()))
                   {
                     String text = (String) buchungsartEntry.getKey()
-                        .getAttribute("buchungsartbezeichnung_posten");
+                        .getAttribute("buchungsklassebezeichnung");
                     reporter.addColumn(text, Element.ALIGN_LEFT);
                   }
                   else

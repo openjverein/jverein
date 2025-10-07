@@ -41,6 +41,6 @@ public class WirtschaftsplanListMenu extends ContextMenu
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Export",
-        new WirtschaftsplanExportAction(control), "file-pdf.png"));
+        new WirtschaftsplanExportAction(control), "document-save.png"));
   }
 }
