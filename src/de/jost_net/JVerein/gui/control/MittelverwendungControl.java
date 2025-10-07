@@ -1138,21 +1138,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getDateiname()
-  {
-    if (selectedTab == 0)
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME, this);
-    }
-    else
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_DATEINAME, this);
-    }
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)
