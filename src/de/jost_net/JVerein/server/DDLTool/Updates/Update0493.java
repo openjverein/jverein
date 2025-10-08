@@ -20,9 +20,9 @@ import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0492 extends AbstractDDLUpdate
+public class Update0493 extends AbstractDDLUpdate
 {
-  public Update0492(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0493(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -116,6 +116,10 @@ public class Update0492 extends AbstractDDLUpdate
         "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-titel', 'Wirtschaftsplan', 2);\n");
     execute(
         "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-subtitel', '$udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_von_f)) - $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_bis_f))', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-mehrere-titel', 'Wirtschaftsplan', 2);\n");
+    execute(
+        "INSERT into vorlage (name, muster, art) VALUES ('wirtschaftsplan-mehrere-subtitel', '', 2);\n");
 
     // Abrechnung
     execute(
