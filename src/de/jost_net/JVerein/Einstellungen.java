@@ -313,6 +313,8 @@ public class Einstellungen
     BUCHUNGSKLASSEINBUCHUNG("bkinbuchung", Boolean.class, "0"),
     SPLITPOSITIONZWECK("splitpositionzweck", Boolean.class, "0"),
     GEPRUEFTSYNCHRONISIEREN("geprueftsynchronisieren", Boolean.class, "0"),
+    WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
+        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1"),
 
     // Rechnung
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,

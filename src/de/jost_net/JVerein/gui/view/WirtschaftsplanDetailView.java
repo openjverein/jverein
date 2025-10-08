@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanMenu;
@@ -82,10 +83,8 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
         context -> control
             .starteAuswertung(WirtschaftsplanControl.AUSWERTUNG_CSV),
         null, false, "xsd.png");
-    buttons.addButton("PDF",
-        context -> control
-            .starteAuswertung(WirtschaftsplanControl.AUSWERTUNG_PDF),
-        null, false, "file-pdf.png");
+    buttons.addButton("Export", new WirtschaftsplanExportAction(control),
+        getCurrentObject(), false, "document-save.png");
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
