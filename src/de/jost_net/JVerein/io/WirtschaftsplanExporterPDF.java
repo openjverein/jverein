@@ -90,7 +90,9 @@ public class WirtschaftsplanExporterPDF implements Exporter
   @Override
   public String getDateiname(Object object)
   {
-    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, object)
+    return VorlageUtil
+        .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_DATEINAME
+            : VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, object)
         + ".pdf";
   }
 
