@@ -31,4 +31,20 @@ public interface Wirtschaftsplan extends JVereinDBObject
   Date getDatumBis() throws RemoteException;
 
   void setDatumBis(Date date) throws RemoteException;
+
+  double getIstVerbindlichkeiten() throws RemoteException;
+
+  double getIstRuecklagenAufgeloest() throws RemoteException;
+
+  double getIstAusgabe() throws RemoteException;
+
+  double getIstForderungen() throws RemoteException;
+
+  double getIstRuecklagenGebildet() throws RemoteException;
+
+  double getIstEinnahme() throws RemoteException;
+
+  double getPlanAusgabe() throws RemoteException;
+
+  double getPlanEinnahme() throws RemoteException;
 }

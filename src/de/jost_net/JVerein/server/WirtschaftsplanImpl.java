@@ -117,6 +117,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     setAttribute("datum_bis", date);
   }
 
+  @Override
   public double getPlanEinnahme() throws RemoteException
   {
     if (planEinnahme == null)
@@ -126,6 +127,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return planEinnahme == null ? 0d : planEinnahme;
   }
 
+  @Override
   public double getPlanAusgabe() throws RemoteException
   {
     if (planAusgabe == null)
@@ -168,6 +170,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     }
   }
 
+  @Override
   public double getIstEinnahme() throws RemoteException
   {
     if (istEinnahme == null)
@@ -177,6 +180,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return istEinnahme == null ? 0d : istEinnahme;
   }
 
+  @Override
   public double getIstRuecklagenGebildet() throws RemoteException
   {
     if (istRuecklagenGebildet == null)
@@ -186,6 +190,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return istRuecklagenGebildet == null ? 0d : istRuecklagenGebildet;
   }
 
+  @Override
   public double getIstForderungen() throws RemoteException
   {
     if (istForderungen == null)
@@ -195,6 +200,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return istForderungen == null ? 0d : istForderungen;
   }
 
+  @Override
   public double getIstAusgabe() throws RemoteException
   {
     if (istAusgabe == null)
@@ -204,6 +210,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return istAusgabe == null ? 0d : istAusgabe;
   }
 
+  @Override
   public double getIstRuecklagenAufgeloest() throws RemoteException
   {
     if (istRuecklagenAufgeloest == null)
@@ -213,6 +220,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return istRuecklagenAufgeloest == null ? 0d : istRuecklagenAufgeloest;
   }
 
+  @Override
   public double getIstVerbindlichkeiten() throws RemoteException
   {
     if (istVerbindlichkeiten == null)

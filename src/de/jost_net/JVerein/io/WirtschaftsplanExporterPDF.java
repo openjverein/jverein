@@ -135,11 +135,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
       if (((Boolean) Einstellungen
           .getEinstellung(Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN)
           || wirtschaftsplaene[i].getDatumBis().before(new Date()))
-          && (Math
-              .abs((Double) wirtschaftsplaene[i]
-                  .getAttribute("istEinnahme")) >= 0.01d
-              || Math.abs((Double) wirtschaftsplaene[i]
-                  .getAttribute("istAusgabe")) >= 0.01d))
+          && (Math.abs(wirtschaftsplaene[i].getIstEinnahme()) >= 0.01d
+              || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
       {
         hatIst.add(wirtschaftsplaene[i]);
         reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 90,
