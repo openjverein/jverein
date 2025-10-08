@@ -1461,7 +1461,7 @@ public abstract class FilterControl extends VorZurueckControl
         if (checkboxauswahl != null)
           checkboxauswahl.setValue(Boolean.FALSE);
         if (vorlagenart != null)
-          vorlagenart.setValue(Vorlageart.DATEINAME);
+          vorlagenart.setValue(null);
         refresh();
       }
     }, null, false, "eraser.png");
