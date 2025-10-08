@@ -1828,27 +1828,43 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
+      String title = "";
+      String subtitle = "";
       if (geldkonto && einzelbuchungen)
       {
         fd.setFileName(
             VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_DATEINAME, this)
                 + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, this);
+        subtitle = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL,
+            this);
       }
       else if (geldkonto && !einzelbuchungen)
       {
         fd.setFileName(
             VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_DATEINAME, this)
                 + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_TITEL, this);
+        subtitle = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_SUBTITEL,
+            this);
       }
       else if (!geldkonto && einzelbuchungen)
       {
         fd.setFileName(VorlageUtil.getName(
             VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_DATEINAME, this) + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_TITEL,
+            this);
+        subtitle = VorlageUtil
+            .getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_SUBTITEL, this);
       }
       else if (!geldkonto && !einzelbuchungen)
       {
         fd.setFileName(VorlageUtil.getName(
             VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_DATEINAME, this) + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_TITEL,
+            this);
+        subtitle = VorlageUtil
+            .getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL, this);
       }
 
       final String s = fd.open();
@@ -1861,7 +1877,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungBuchungPDF(buchungsarten, file, einzelbuchungen);
+      auswertungBuchungPDF(buchungsarten, file, einzelbuchungen, title,
+          subtitle);
     }
     catch (RemoteException e)
     {
@@ -1992,8 +2009,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
+      final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_TITEL,
+          this);
+      final String subtitle = VorlageUtil
+          .getName(VorlageTyp.BUCHUNGSJOURNAL_SUBTITEL, this);
 
-      auswertungBuchungsjournalPDF(query, file, params);
+      auswertungBuchungsjournalPDF(query, file, params, title, subtitle);
     }
     catch (Exception e)
     {
@@ -2002,7 +2023,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   private void auswertungBuchungPDF(final ArrayList<Buchungsart> buchungsarten,
-      final File file, final boolean einzelbuchungen)
+      final File file, final boolean einzelbuchungen, String title,
+      String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -2014,7 +2036,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         {
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
           new BuchungAuswertungPDF(buchungsarten, file, query, einzelbuchungen,
-              params);
+              params, title, subtitle);
         }
         catch (ApplicationException ae)
         {
@@ -2045,7 +2067,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   private void auswertungBuchungsjournalPDF(final BuchungQuery query,
-      final File file, final TreeMap<String, String> params)
+      final File file, final TreeMap<String, String> params, String title,
+      String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -2055,7 +2078,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         try
         {
-          new BuchungsjournalPDF(query, file, params);
+          new BuchungsjournalPDF(query, file, params, title, subtitle);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)

@@ -30,15 +30,20 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class StatistikJahrgaengeExport implements Exporter
 {
+  protected String title;
+
+  protected String subtitle;
 
   @Override
   public abstract String getName();
@@ -167,6 +172,20 @@ public abstract class StatistikJahrgaengeExport implements Exporter
       throws DocumentException, FileNotFoundException;
 
   protected abstract void close() throws IOException, DocumentException;
+
+  @Override
+  public void calculateTitle(Object object)
+  {
+    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
+        object);
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
+  }
 
   public class StatistikJahrgang
   {

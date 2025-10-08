@@ -69,7 +69,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public void beforeGo() throws RemoteException
+  public void beforeGo(String title) throws RemoteException
   {
     // read and check vorlagedateicsv
     headerKeys = null;

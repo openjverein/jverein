@@ -43,8 +43,8 @@ import de.willuhn.util.ApplicationException;
 public class MitgliederStatistik
 {
 
-  public MitgliederStatistik(final File file, Date stichtag)
-      throws ApplicationException
+  public MitgliederStatistik(final File file, Date stichtag, String title,
+      String subtitle) throws ApplicationException
   {
     try
     {
@@ -53,12 +53,7 @@ public class MitgliederStatistik
         throw new ApplicationException("Stichtag ist leer");
       }
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = "";
-      if (stichtag != null)
-      {
-        subtitle = "Stichtag: " + new JVDateFormatTTMMJJJJ().format(stichtag);
-      }
-      Reporter reporter = new Reporter(fos, "Mitgliederstatistik", subtitle, 3);
+      Reporter reporter = new Reporter(fos, title, subtitle, 3);
 
       Paragraph pAltersgruppen = new Paragraph("\n" + "Altersgruppen",
           Reporter.getFreeSans(11));

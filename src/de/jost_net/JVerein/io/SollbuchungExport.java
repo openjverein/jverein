@@ -88,6 +88,18 @@ public abstract class SollbuchungExport implements Exporter
     close(monitor);
   }
 
+  @Override
+  public void calculateTitle(Object object)
+  {
+    // Kein Titel bei csv
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Kein Subtitel bei csv
+  }
+
   protected abstract void startMitglied(Mitglied m) throws DocumentException;
 
   protected abstract void endeMitglied() throws DocumentException;

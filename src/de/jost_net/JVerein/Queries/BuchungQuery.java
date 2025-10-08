@@ -326,7 +326,7 @@ public class BuchungQuery
       }
       catch (Exception e)
       {
-        
+
       }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
@@ -357,24 +357,6 @@ public class BuchungQuery
 
     this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
     return ergebnis;
-  }
-
-  public String getSubtitle() throws RemoteException
-  {
-    String subtitle = String.format("vom %s bis %s",
-        new JVDateFormatTTMMJJJJ().format(getDatumvon()),
-        new JVDateFormatTTMMJJJJ().format(getDatumbis()));
-    if (getKonto() != null)
-    {
-      subtitle += " " + String.format("für Konto %s - %s",
-          getKonto().getNummer(), getKonto().getBezeichnung());
-    }
-    if (getProjekt() != null)
-    {
-      subtitle += ", "
-          + String.format("Projekt %s", getProjekt().getBezeichnung());
-    }
-    return subtitle;
   }
 
   public int getSize()

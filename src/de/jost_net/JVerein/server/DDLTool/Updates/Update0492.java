@@ -36,9 +36,9 @@ public class Update0492 extends AbstractDDLUpdate
 
     // Mitglieder
     execute(
-        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-titel', 'Kontoauszug $mitglied_name $mitglied_vorname', 2);\n");
+        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-titel', '$verein_name', 2);\n");
     execute(
-        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-subtitel', '', 2);\n");
+        "INSERT into vorlage (name, muster, art) VALUES ('kontoauszug-subtitel', 'Kontoauszug $mitglied_vornamename, Stand: $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$aktuellesdatum))', 2);\n");
     execute(
         "INSERT into vorlage (name, muster, art) VALUES ('personalbogen-titel', 'Personalbogen $mitglied_name $mitglied_vorname', 2);\n");
     execute(
@@ -149,7 +149,7 @@ public class Update0492 extends AbstractDDLUpdate
     execute(
         "INSERT into vorlage (name, muster, art) VALUES ('auswertung-jahrgangsstatistik-subtitel', 'Jahr: $filter_jahr', 2);\n");
     execute(
-        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-arbeitseinsaetze-titel', 'Arbeitseinsaetze $filter_jahr', 2);\n");
+        "INSERT into vorlage (name, muster, art) VALUES ('auswertung-arbeitseinsaetze-titel', 'Arbeitseinsätze $filter_jahr', 2);\n");
     execute(
         "INSERT into vorlage (name, muster, art) VALUES ('auswertung-arbeitseinsaetze-subtitel', '$filter_auswertung', 2);\n");
 

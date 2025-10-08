@@ -40,13 +40,13 @@ public class BuchungsjournalPDF
 {
 
   public BuchungsjournalPDF(BuchungQuery query, final File file,
-      final TreeMap<String, String> params) throws ApplicationException
+      final TreeMap<String, String> params, String title, String subtitle)
+      throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, "Buchungsjournal",
-          query.getSubtitle(), 1);
+      Reporter reporter = new Reporter(fos, title, subtitle, 1);
 
       double einnahmen = 0;
       double ausgaben = 0;

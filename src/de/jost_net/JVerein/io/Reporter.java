@@ -158,7 +158,7 @@ public class Reporter
       fuss.append(subtitle + " | ");
     }
     fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
-        + "     Seite: ");
+        + " | Seite: ");
     HeaderFooter hf = new HeaderFooter();
     hf.setFooter(fuss.toString());
     writer.setPageEvent(hf);
