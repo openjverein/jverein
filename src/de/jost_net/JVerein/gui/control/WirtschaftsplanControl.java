@@ -41,7 +41,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.io.WirtschaftsplanCSV;
-import de.jost_net.JVerein.io.WirtschaftsplanPDF;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -71,8 +70,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
-  public final static String AUSWERTUNG_PDF = ".pdf";
-
   public final static String AUSWERTUNG_CSV = ".csv";
 
   private EditTreePart einnahmen;
@@ -135,7 +132,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.setAction(
         new EditAction(WirtschaftsplanDetailView.class, wirtschaftsplaene));
     VorZurueckControl.setObjektListe(null, null);
-
+    wirtschaftsplaene.setMulti(true);
     return wirtschaftsplaene;
   }
 
@@ -273,7 +270,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       {
         switch (attribute)
         {
-          case "buchungsartbezeichnung_posten":
+          case "buchungsklassebezeichnung":
             item.setPosten(newValue);
             break;
           case "soll":
@@ -592,10 +589,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         {
           case AUSWERTUNG_CSV:
             new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
-            break;
-          case AUSWERTUNG_PDF:
-            new WirtschaftsplanPDF(einnahmenList, ausgabenList, file,
-                getWirtschaftsplan());
             break;
           default:
             GUI.getStatusBar().setErrorText(

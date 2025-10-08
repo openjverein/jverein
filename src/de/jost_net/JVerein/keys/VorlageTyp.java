@@ -89,6 +89,8 @@ public enum VorlageTyp
       "Mittelverwendungssaldo Dateiname"),
   WIRTSCHAFTSPLAN_DATEINAME("wirtschaftsplan-dateiname",
       "Wirtschaftsplan Dateiname"),
+  WIRTSCHAFTSPLAN_MEHRERE_DATEINAME("wirtschaftsplan-mehrere-dateiname",
+      "Wirtschaftsplan Dateiname (Mehrere Pläne)"),
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME(
       "abrechnungslauf-lastschriften-dateiname",
