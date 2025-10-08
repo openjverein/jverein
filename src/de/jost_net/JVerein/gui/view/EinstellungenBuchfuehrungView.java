@@ -61,6 +61,9 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         "Bei automatischem Splitten den "
             + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
         control.getSplitPositionZweck());
+    cont.addLabelPair(
+        "Wirtschaftsplan Export Ist-Beträge von laufendem Zeitraum anzeigen",
+        control.getWirtschaftsplanIstAbgeschlossen());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

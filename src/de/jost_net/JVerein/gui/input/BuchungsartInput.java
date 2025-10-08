@@ -26,6 +26,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -153,12 +154,12 @@ public class BuchungsartInput
         }
 
         switch ((Integer) Einstellungen
-            .getEinstellung(Property.BUCHUNGSARTSORT))
+            .getEinstellung(Property.BUCHUNGSARTANZEIGE))
         {
-          case BuchungsartSort.NACH_NUMMER:
+          case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
             ((SelectInput) buchungsart).setAttribute("nrbezeichnung");
             break;
-          case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+          case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
             ((SelectInput) buchungsart).setAttribute("bezeichnungnr");
             break;
           default:
@@ -172,13 +173,13 @@ public class BuchungsartInput
         // Settings immer gesetzt sein, aber man weiss ja nie.
         buchungsart = new BuchungsartSearchInput(art);
         switch ((Integer) Einstellungen
-            .getEinstellung(Property.BUCHUNGSARTSORT))
+            .getEinstellung(Property.BUCHUNGSARTANZEIGE))
         {
-          case BuchungsartSort.NACH_NUMMER:
+          case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
             ((BuchungsartSearchInput) buchungsart)
                 .setAttribute("nrbezeichnung");
             break;
-          case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+          case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
             ((BuchungsartSearchInput) buchungsart)
                 .setAttribute("bezeichnungnr");
             break;

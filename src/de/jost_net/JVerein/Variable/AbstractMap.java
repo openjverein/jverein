@@ -16,12 +16,30 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import de.jost_net.JVerein.util.JVDateFormatJJJJ;
+import de.jost_net.JVerein.util.JVDateFormatMM;
+import de.jost_net.JVerein.util.JVDateFormatMMJJJJ;
+import de.jost_net.JVerein.util.JVDateFormatTT;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 
 public abstract class AbstractMap
 {
+
+  protected JVDateFormatJJJJMMTT jjjjmmtt = new JVDateFormatJJJJMMTT();
+
+  protected JVDateFormatTTMMJJJJ ttmmjjjj = new JVDateFormatTTMMJJJJ();
+
+  protected JVDateFormatMMJJJJ mmjjjj = new JVDateFormatMMJJJJ();
+
+  protected JVDateFormatTT tt = new JVDateFormatTT();
+
+  protected JVDateFormatMM mm = new JVDateFormatMM();
+
+  protected JVDateFormatJJJJ jjjj = new JVDateFormatJJJJ();
 
   public AbstractMap()
   {
@@ -35,6 +53,20 @@ public abstract class AbstractMap
     try
     {
       d = new JVDateFormatTTMMJJJJ().parse(datum);
+    }
+    catch (Exception ignored)
+    {
+    }
+    return d;
+  }
+
+  protected static String fromDate(Date date)
+  {
+    String d = "";
+
+    try
+    {
+      d = new SimpleDateFormat("yyyyMMdd").format(date);
     }
     catch (Exception ignored)
     {

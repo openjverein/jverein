@@ -246,6 +246,7 @@ public class Einstellungen
     BUCHUNGBUCHUNGSARTAUSWAHL("buchungbuchungsartauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     BUCHUNGSARTSORT("buchungsartsort", Integer.class, "1"),
+    BUCHUNGSARTANZEIGE("buchungsartanzeige", Integer.class, "1"),
     MITGLIEDAUSWAHL("mitgliedauswahl", Integer.class,
         ((Integer) AbstractInputAuswahl.SearchInput).toString()),
     AFAINJAHRESABSCHLUSS("afainjahresabschluss", Boolean.class, "1"),
@@ -273,8 +274,7 @@ public class Einstellungen
     KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
         Boolean.class, "0"),
 
-    // Dateinamen
-    DATEINAMENMUSTER("dateinamenmuster", String.class, "a$s$-d$-z$"),
+    // Verzeichnisse
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
 
     // Spendenbescheinigung
@@ -294,6 +294,9 @@ public class Einstellungen
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
     UNTERSCHRIFT("unterschrift", String.class, ""),
+    FORMULARGELDSPENDE("formulargeldspende", String.class, ""),
+    FORMULARSAMMELSPENDE("formularsammelspende", String.class, ""),
+    FORMULARSACHSPENDE("formularsachspende", String.class, ""),
 
     // Buchführung
     BEGINNGESCHAEFTSJAHR("beginngeschaeftsjahr", String.class, "01.01."),
@@ -310,6 +313,8 @@ public class Einstellungen
     BUCHUNGSKLASSEINBUCHUNG("bkinbuchung", Boolean.class, "0"),
     SPLITPOSITIONZWECK("splitpositionzweck", Boolean.class, "0"),
     GEPRUEFTSYNCHRONISIEREN("geprueftsynchronisieren", Boolean.class, "0"),
+    WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
+        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1"),
 
     // Rechnung
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,

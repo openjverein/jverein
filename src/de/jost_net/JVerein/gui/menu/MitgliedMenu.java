@@ -42,7 +42,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
@@ -215,12 +214,8 @@ public class MitgliedMenu extends ContextMenu
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
-      addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
-          "file-invoice.png"));
-      addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-          new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
-          "file-invoice.png"));
+      addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
+          new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));

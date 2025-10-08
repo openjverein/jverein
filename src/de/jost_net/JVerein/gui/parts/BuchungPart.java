@@ -84,6 +84,7 @@ public class BuchungPart implements Part
     if (!control.getBuchung().getSpeicherung())
       date.setEnabled(false);
     grKontoauszug.addLabelPair("Art", control.getArt());
+    grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grBuchungsinfos = new SimpleContainer(cols1.getComposite());
 
@@ -106,12 +107,17 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Auszugsnummer", control.getAuszugsnummer());
     grBuchungsinfos.addLabelPair("Blattnummer", control.getBlattnummer());
     grBuchungsinfos.addLabelPair("Sollbuchung", control.getSollbuchung());
-    grBuchungsinfos.addLabelPair("Kommentar", control.getKommentar());
     grBuchungsinfos.addLabelPair("Geprüft", control.getGeprueft());
 
     SimpleContainer grSpendeninfos = grBuchungsinfos;
-    grSpendeninfos.addHeadline("Spendendetails");
+    grSpendeninfos.addHeadline("Geldspende");
     grSpendeninfos.addLabelPair("Erstattungsverzicht", control.getVerzicht());
+    grSpendeninfos.addHeadline("Sachspende");
+    grSpendeninfos.addLabelPair("Bezeichnung Sachzuwendung",
+        control.getBezeichnungSachzuwendung());
+    grSpendeninfos.addLabelPair("Herkunft", control.getHerkunftSpende());
+    grSpendeninfos.addLabelPair("Unterlagen Wertermittlung",
+        control.getUnterlagenWertermittlung());
 
     if (JVereinPlugin.isArchiveServiceActive())
     {
