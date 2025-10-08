@@ -195,6 +195,10 @@ public enum VorlageTyp
   WIRTSCHAFTSPLAN_TITEL("wirtschaftsplan-titel", "Wirtschaftsplan Titel"),
   WIRTSCHAFTSPLAN_SUBTITEL("wirtschaftsplan-subtitel",
       "Wirtschaftsplan Subtitel"),
+  WIRTSCHAFTSPLAN_MEHRERE_TITEL("wirtschaftsplan-mehrere-titel",
+      "Wirtschaftsplan Titel (Mehrere Pläne)"),
+  WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL("wirtschaftsplan-mehrere-subtitel",
+      "Wirtschaftsplan Subtitel (Mehrere Pläne)"),
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL("abrechnungslaufliste-titel",
       "Abrechnungslauf Sollbuchungen Titel"),

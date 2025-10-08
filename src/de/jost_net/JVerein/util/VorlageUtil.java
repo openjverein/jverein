@@ -138,6 +138,8 @@ public class VorlageUtil
         case KONTENRAHMEN_DATEINAME_V2:
         case VCARD_DATEINAME:
         case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
+        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -361,6 +363,9 @@ public class VorlageUtil
         case KONTENRAHMEN_DATEINAME_V1:
         case KONTENRAHMEN_DATEINAME_V2:
         case VCARD_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
+        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
