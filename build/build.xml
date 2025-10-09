@@ -137,9 +137,16 @@
       <fileset dir="${lib.dir}" />
     </copy>
 
+    <loadresource property="minor">
+           <propertyresource name="plugin.version" />
+           <filterchain>
+                   <replaceregex pattern="\.[0-9]+$" />
+           </filterchain>
+    </loadresource>
+
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
-      <replacefilter token="[PLUGIN_ZIP]" value="${project.zipfilename}" />
+      <replacefilter token="[PLUGIN_ZIP]" value="${minor}/${project.zipfilename}" />
     </replace>
 
     <!-- Jetzt muessen wir noch das ZIP-File erzeugen -->
@@ -206,6 +213,7 @@
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />
+    <echo message="SELECTED_PLUGIN_PATH=${project.release}/jverein/plugin.xml" />
   </target>
 
   <target name="fast" depends="jar,src" description="Build a development release">
