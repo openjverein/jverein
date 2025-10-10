@@ -91,6 +91,6 @@ public enum Ausrichtung implements GenericObject
   @Override
   public Object getAttribute(String name) throws RemoteException
   {
-    return null;
+    return text;
   }
 }
