@@ -241,33 +241,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       throw new ApplicationException(
           "Geldspende und Sachspende ist nicht gleichzeitig möglich.");
     }
-
-    // Diese Felder dürfen wegen dem Change Test nicht null sein, daher leer
-    // belegen
-    if (getName() == null)
-    {
-      setName("");
-    }
-    if (getZweck() == null)
-    {
-      setZweck("");
-    }
-    if (getArt() == null)
-    {
-      setArt("");
-    }
-    if (getVerzicht() == null)
-    {
-      setVerzicht(false);
-    }
-    if (getKommentar() == null)
-    {
-      setKommentar("");
-    }
-    if (getGeprueft() == null)
-    {
-      setGeprueft(false);
-    }
   }
 
   @Override
@@ -425,8 +398,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public boolean isBetragNull() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    return d == null;
+    return (Double) getAttribute("betrag") == null;
   }
 
   @Override
@@ -902,6 +874,29 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "name":
+      case "zweck":
+      case "art":
+      case "kommentar":
+      case "iban":
+      case "bezeichnungsachzuwendung":
+        return "";
+      case "verzicht":
+      case "geprueft":
+      case "unterlagenwertermittlung":
+        return false;
+      case "herkunftspende":
+        return HerkunftSpende.KEINEANGABEN;
+      default:
+        return null;
+    }
+  }
+
   private Date toDate(String datum)
   {
     Date d = null;
@@ -971,12 +966,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Boolean getGeprueft() throws RemoteException
   {
-    Boolean geprueft = (Boolean) getAttribute("geprueft");
-    if (geprueft == null)
-    {
-      return false;
-    }
-    return geprueft;
+    return (Boolean) getAttribute("geprueft");
   }
 
   @Override
@@ -1041,12 +1031,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public int getHerkunftSpende() throws RemoteException
   {
-    Integer ret = (Integer) getAttribute("herkunftspende");
-    if (ret == null)
-    {
-      ret = HerkunftSpende.KEINEANGABEN;
-    }
-    return ret;
+    return (Integer) getAttribute("herkunftspende");
   }
 
   @Override

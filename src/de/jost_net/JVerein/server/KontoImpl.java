@@ -623,21 +623,31 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Anlagenzweck getAnlagenzweck() throws RemoteException
   {
-    Integer tmp = (Integer) super.getAttribute("zweck");
-    if (tmp == null)
-    {
-      return Anlagenzweck.NUTZUNGSGEBUNDEN;
-    }
-    else
-    {
-      return Anlagenzweck.getByKey((int) super.getAttribute("zweck"));
-    }
+    return Anlagenzweck.getByKey((int) super.getAttribute("zweck"));
   }
 
   @Override
   public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException
   {
     setAttribute("zweck", zweck.getKey());
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "kommentar":
+        return "";
+      case "zweck":
+        return Anlagenzweck.NUTZUNGSGEBUNDEN;
+      case "hibiscusid":
+        return -1;
+      case "kontoart":
+        return Kontoart.GELD;
+      default:
+        return null;
+    }
   }
 
   @Override
