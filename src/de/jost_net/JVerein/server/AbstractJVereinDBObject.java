@@ -69,6 +69,13 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     return super.setAttribute(fieldName, value);
   }
 
+  /**
+   * Gibt den default-Wert eines Attributs zurück, wenn es beim lesen oder
+   * schreiben 'null' ist.
+   * 
+   * @param fieldName
+   * @return
+   */
   protected Object getAttributeDefault(String fieldName)
   {
     return null;
