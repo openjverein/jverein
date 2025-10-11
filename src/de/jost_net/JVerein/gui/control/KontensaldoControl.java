@@ -357,7 +357,13 @@ public class KontensaldoControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Konten-Saldo";
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_SUBTITEL, this);
   }
 
   @Override

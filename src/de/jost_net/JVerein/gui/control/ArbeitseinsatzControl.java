@@ -294,8 +294,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
     final File file = new File(s);
     final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    final int jahr = (Integer) getSuchJahr().getValue();
-    final String sub = getAuswertungSchluessel().getText();
+    final String title = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_TITEL, this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL, this);
     settings.setAttribute("lastdir", file.getParent());
     BackgroundTask t = new BackgroundTask()
     {
@@ -306,8 +308,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos,
-              String.format("Arbeitseinsätze %d", jahr), sub, it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Sollstunden", Element.ALIGN_RIGHT, 30,

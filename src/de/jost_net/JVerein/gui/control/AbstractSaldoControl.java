@@ -194,6 +194,14 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   protected abstract String getAuswertungTitle();
 
   /**
+   * 
+   * Holt den Titel für die Auswertungen
+   * 
+   * @return
+   */
+  protected abstract String getAuswertungSubtitle();
+
+  /**
    * Holt den Dateinamen für die Auswertungen
    * 
    * @return
@@ -247,15 +255,16 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
+      final String title = getAuswertungTitle();
+      final String subtitle = getAuswertungSubtitle();
+
       BackgroundTask t = new BackgroundTask()
       {
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
           ISaldoExport export = getAuswertung(type);
-          export.export(zeile, file, getDatumvon().getDate(),
-              getDatumbis().getDate());
-
+          export.export(zeile, file, title, subtitle);
         }
 
         @Override

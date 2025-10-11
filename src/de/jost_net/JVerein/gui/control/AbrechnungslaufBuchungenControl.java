@@ -229,8 +229,12 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
+      final String title = VorlageUtil
+          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL, this);
+      final String subtitle = VorlageUtil
+          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL, this);
 
-      auswertungPDF(sollbIt, file, abrl);
+      auswertungPDF(sollbIt, file, title, subtitle);
     }
     catch (RemoteException e)
     {
@@ -239,7 +243,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
   }
 
   private void auswertungPDF(final DBIterator<Sollbuchung> it, final File file,
-      final Abrechnungslauf lauf)
+      String title, String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -250,7 +254,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
         try
         {
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          new AbrechnungslaufPDF(it, file, lauf);
+          new AbrechnungslaufPDF(it, file, title, subtitle);
         }
         catch (ApplicationException ae)
         {

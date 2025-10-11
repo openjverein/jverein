@@ -33,7 +33,6 @@ import org.supercsv.prefs.CsvPreference;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -62,8 +61,8 @@ public class AnlagenverzeichnisCSV implements ISaldoExport
   }
 
   @Override
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date datumvon,
-      Date datumbis) throws ApplicationException
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, String titel,
+      String subtitle) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -78,8 +77,6 @@ public class AnlagenverzeichnisCSV implements ISaldoExport
           "Zugang", "Abschreibung", "Abgang", "Buchwert Ende GJ" };
       writer.writeHeader(header);
 
-      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 

@@ -71,6 +71,18 @@ public abstract class KontenrahmenExport implements Exporter
     close();
   }
 
+  @Override
+  public void calculateTitle(Object object)
+  {
+    // Kein Titel bei xml
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Kein Subitel bei xml
+  }
+
   protected abstract void open() throws IOException;
 
   protected abstract void addKlasse(Buchungsklasse klasse)

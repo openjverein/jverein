@@ -523,7 +523,6 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     try
     {
       saveFilterSettings();
-      String subtitle = "";
       final DBIterator<Kursteilnehmer> list = getIterator();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -548,7 +547,10 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      final String subtitle2 = subtitle;
+      final String title = VorlageUtil
+          .getName(VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_TITEL, this);
+      final String subtitle = VorlageUtil
+          .getName(VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_SUBTITEL, this);
 
       BackgroundTask t = new BackgroundTask()
       {
@@ -558,8 +560,8 @@ public class KursteilnehmerControl extends FilterControl implements Savable
         {
           try
           {
-            Reporter rpt = new Reporter(new FileOutputStream(file),
-                "Kursteilnehmer", subtitle2, list.size());
+            Reporter rpt = new Reporter(new FileOutputStream(file), title,
+                subtitle, list.size());
 
             GUI.getCurrentView().reload();
 

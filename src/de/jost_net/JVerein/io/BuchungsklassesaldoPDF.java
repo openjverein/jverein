@@ -19,7 +19,6 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -28,7 +27,6 @@ import com.itextpdf.text.Element;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -38,23 +36,18 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
 
   private boolean umbuchung;
 
-  private String title;
-
-  public BuchungsklassesaldoPDF(boolean umbuchung, String title)
+  public BuchungsklassesaldoPDF(boolean umbuchung)
   {
     this.umbuchung = umbuchung;
-    this.title = title;
   }
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      Date datumvon, Date datumbis) throws ApplicationException
+      String title, String subtitle) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
       makeHeader(reporter, umbuchung);
 
