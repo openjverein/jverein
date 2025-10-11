@@ -23,6 +23,7 @@ import java.util.regex.PatternSyntaxException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -279,12 +280,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public int getStatus() throws RemoteException
   {
-    Integer i = (Integer) getAttribute("status");
-    if (i == null)
-    {
-      return 0;
-    }
-    return i.intValue();
+    return (Integer) getAttribute("status");
   }
 
   @Override
@@ -333,12 +329,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public String getSuchbegriff() throws RemoteException
   {
-    String s = (String) getAttribute("suchbegriff");
-    if (s == null)
-    {
-      return "";
-    }
-    return s;
+    return (String) getAttribute("suchbegriff");
   }
 
   @Override
@@ -350,12 +341,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public boolean getRegexp() throws RemoteException
   {
-    Boolean b = (Boolean) getAttribute("regularexp");
-    if (b == null)
-    {
-      return false;
-    }
-    return b;
+    return (Boolean) getAttribute("regularexp");
   }
 
   @Override
@@ -459,20 +445,20 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public boolean equals(Object bart)
+  public Object getAttributeDefault(String fieldName)
   {
-    try
+    switch (fieldName)
     {
-      if (this.getID().equalsIgnoreCase(((Buchungsart) bart).getID()))
-        return true;
-      else
+      case "status":
+        return StatusBuchungsart.ACTIVE;
+      case "suchbegriff":
+        return "";
+      case "regularexp":
+      case "spende":
+      case "abschreibung":
         return false;
-    }
-    catch (RemoteException e)
-    {
-      // Auto-generated catch block
-      e.printStackTrace();
-      return false;
+      default:
+        return null;
     }
   }
 
