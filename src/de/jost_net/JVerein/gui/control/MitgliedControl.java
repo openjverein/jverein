@@ -2349,11 +2349,6 @@ public class MitgliedControl extends FilterControl implements Savable
       Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
       m.setZahlungsrhythmus(zr.getKey());
     }
-    else
-    {
-      m.setZahlungsrhythmus(
-          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS));
-    }
     if (zahlungstermin != null)
     {
       Zahlungstermin zt = (Zahlungstermin) getZahlungstermin().getValue();
