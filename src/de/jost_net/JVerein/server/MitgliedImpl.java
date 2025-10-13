@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
@@ -270,10 +271,28 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
           throw new ApplicationException("Ungültige BIC");
         }
       }
-      if (getZahlungsrhythmus() == null)
+      if (getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
-        throw new ApplicationException(
-            "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
+        switch (Beitragsmodel.getByKey(
+            (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
+        {
+          case GLEICHERTERMINFUERALLE:
+            break;
+          case MONATLICH12631:
+            if (getZahlungsrhythmus() == null)
+            {
+              throw new ApplicationException(
+                  "Ungültiger Zahlungsrhytmus: " + getZahlungsrhythmus());
+            }
+            break;
+          case FLEXIBEL:
+            if (getZahlungstermin() == null)
+            {
+              throw new ApplicationException(
+                  "Ungültiger Zahlungsweg: " + getZahlungstermin());
+            }
+            break;
+        }
       }
       if (getSterbetag() != null && getAustritt() == null)
       {
