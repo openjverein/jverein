@@ -828,8 +828,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     controlSollb.deregisterMitgliedskontoConsumer();
     try
     {
-      if (JVereinPlugin.isArchiveServiceActive()
-          && !control.getMitglied().isNewObject())
+      if (JVereinPlugin.isArchiveServiceActive() && dcontrol != null)
       {
         dcontrol.deregisterDocumentConsumer();
       }
