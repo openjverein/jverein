@@ -640,11 +640,11 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       case "kommentar":
         return "";
       case "zweck":
-        return Anlagenzweck.NUTZUNGSGEBUNDEN;
+        return Anlagenzweck.NUTZUNGSGEBUNDEN.getKey();
       case "hibiscusid":
         return -1;
       case "kontoart":
-        return Kontoart.GELD;
+        return Kontoart.GELD.getKey();
       default:
         return null;
     }

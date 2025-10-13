@@ -415,12 +415,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   @Override
   public double getArbeitseinsatzStunden() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzstunden");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("arbeitseinsatzstunden");
   }
 
   @Override
@@ -434,12 +429,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   @Override
   public double getArbeitseinsatzBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzbetrag");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("arbeitseinsatzbetrag");
   }
 
   @Override
@@ -567,16 +557,16 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   {
     switch (fieldName)
     {
-      case "notitz":
+      case "notiz":
         return "";
       case "sekundaer":
       case "altersstaffel":
         return false;
       case "arbeitseinsatzstunden":
       case "arbeitseinsatzbetrag":
-        return 0;
+        return 0d;
       case "beitragsart":
-        return ArtBeitragsart.NORMAL;
+        return ArtBeitragsart.NORMAL.getKey();
       default:
         return null;
     }

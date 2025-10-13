@@ -1611,7 +1611,6 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       case "ort":
       case "iban":
       case "bic":
-      case "ktoipersonenart":
       case "telefonprivat":
       case "telefondienstlich":
       case "handy":
@@ -1635,6 +1634,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       case "vermerk2":
       case "vorname":
         return "";
+      case "ktoipersonenart":
+        return "N";
       case "mandatversion":
         return 0;
       default:
