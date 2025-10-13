@@ -143,7 +143,7 @@ public class BuchungPart implements Part
   {
     try
     {
-      if (JVereinPlugin.isArchiveServiceActive() && !bu.isNewObject())
+      if (JVereinPlugin.isArchiveServiceActive() && dcontrol != null)
       {
         dcontrol.deregisterDocumentConsumer();
       }
