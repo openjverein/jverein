@@ -60,7 +60,11 @@ public class Adressaufbereitung
     String ret = "";
     if (!adr.getName().isBlank())
     {
-      ret = adr.getName() + ", ";
+      ret = adr.getName();
+      if (!adr.getVorname().isBlank() || !adr.getTitel().isBlank())
+      {
+        ret += ", ";
+      }
     }
     if (adr.getTitel() != null && adr.getTitel().length() > 0)
     {
