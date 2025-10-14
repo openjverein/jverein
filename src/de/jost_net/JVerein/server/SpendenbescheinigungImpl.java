@@ -133,8 +133,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile1() throws RemoteException
   {
-    return getAttribute("zeile1") == null ? ""
-        : (String) getAttribute("zeile1");
+    return (String) getAttribute("zeile1");
   }
 
   @Override
@@ -146,8 +145,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile2() throws RemoteException
   {
-    return getAttribute("zeile2") == null ? ""
-        : (String) getAttribute("zeile2");
+    return (String) getAttribute("zeile2");
   }
 
   @Override
@@ -159,8 +157,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile3() throws RemoteException
   {
-    return getAttribute("zeile3") == null ? ""
-        : (String) getAttribute("zeile3");
+    return (String) getAttribute("zeile3");
   }
 
   @Override
@@ -172,8 +169,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile4() throws RemoteException
   {
-    return getAttribute("zeile4") == null ? ""
-        : (String) getAttribute("zeile4");
+    return (String) getAttribute("zeile4");
   }
 
   @Override
@@ -185,8 +181,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile5() throws RemoteException
   {
-    return getAttribute("zeile5") == null ? ""
-        : (String) getAttribute("zeile5");
+    return (String) getAttribute("zeile5");
   }
 
   @Override
@@ -198,8 +193,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile6() throws RemoteException
   {
-    return getAttribute("zeile6") == null ? ""
-        : (String) getAttribute("zeile6");
+    return (String) getAttribute("zeile6");
   }
 
   @Override
@@ -211,8 +205,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile7() throws RemoteException
   {
-    return getAttribute("zeile7") == null ? ""
-        : (String) getAttribute("zeile7");
+    return (String) getAttribute("zeile7");
   }
 
   @Override
@@ -313,12 +306,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public int getHerkunftSpende() throws RemoteException
   {
-    Integer ret = (Integer) getAttribute("herkunftspende");
-    if (ret == null)
-    {
-      ret = HerkunftSpende.KEINEANGABEN;
-    }
-    return ret;
+    return (Integer) getAttribute("herkunftspende");
   }
 
   @Override
@@ -516,6 +504,29 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   {
     setAttribute("unterlagenwertermittlung",
         Boolean.valueOf(unterlagenwertermittlung));
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "zeile1":
+      case "zeile2":
+      case "zeile3":
+      case "zeile4":
+      case "zeile5":
+      case "zeile6":
+      case "zeile7":
+      case "bezeichnungsachzuwendung":
+        return "";
+      case "unterlagenwertermittlung":
+        return false;
+      case "herkunftspende":
+        return HerkunftSpende.KEINEANGABEN;
+      default:
+        return null;
+    }
   }
 
   @Override

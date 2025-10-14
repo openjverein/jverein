@@ -174,6 +174,19 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "ergebnis":
+      case "veranstalter":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Lehrgang";
