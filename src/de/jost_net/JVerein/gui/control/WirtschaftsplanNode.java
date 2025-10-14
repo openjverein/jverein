@@ -138,20 +138,22 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    istIt.leftJoin("konto", "buchung.konto = konto.id");
-    istIt.addColumn("buchungsart.id as " + ID);
-    istIt.addColumn("COUNT(buchung.id) as anzahl");
-    istIt.addFilter("buchungsart.art = ?", art);
     if ((Boolean) Einstellungen
         .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
     {
-      istIt.addFilter("konto.kontoart < " + Kontoart.LIMIT.getKey()
-          + " OR konto.kontoart > " + Kontoart.LIMIT_RUECKLAGE.getKey());
+      istIt.leftJoin("konto",
+          "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
+          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
     else
     {
-      istIt.addFilter("konto.kontoart < " + Kontoart.LIMIT.getKey());
+      istIt.leftJoin("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+          Kontoart.LIMIT.getKey());
     }
+
+    istIt.addColumn("buchungsart.id as " + ID);
+    istIt.addColumn("COUNT(buchung.id) as anzahl");
+    istIt.addFilter("buchungsart.art = ?", art);
 
     if (mitSteuer)
     {
