@@ -7,9 +7,9 @@ import de.willuhn.datasource.rmi.DBObject;
 public interface Altersstaffel extends DBObject
 {
 
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
 
   public Beitragsgruppe getBeitragsgruppe() throws RemoteException;
 
