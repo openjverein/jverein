@@ -758,6 +758,12 @@ public class MitgliedControl extends FilterControl implements Savable
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus(getMitglied().getZahlungsrhythmus().getKey()));
     }
+    else if (getMitglied().isNewObject())
+    {
+      zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
+          new Zahlungsrhythmus((Integer) Einstellungen
+              .getEinstellung(Property.ZAHLUNGSRHYTMUS)));
+    }
     else
     {
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
