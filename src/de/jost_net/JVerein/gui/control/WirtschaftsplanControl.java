@@ -341,6 +341,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
     }));
 
+    treePart.setRememberColWidths(true);
     return treePart;
   }
 
