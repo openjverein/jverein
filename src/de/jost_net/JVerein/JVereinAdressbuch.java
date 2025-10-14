@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedAddress;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -43,8 +42,9 @@ public class JVereinAdressbuch implements Addressbook
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     String su = "%" + text.toLowerCase() + "%";
-    it.addFilter("(lower(name) like ? or lower(vorname) like ?)",
-        new Object[] { su, su });
+    it.addFilter(
+        "(lower(name) like ? or lower(vorname) like ? or lower(ktoivorname) like ? or lower(ktoiname) like ?)",
+        su, su, su, su);
     it.addFilter("(iban is not null and length(iban)>0)");
     ArrayList<MitgliedAddress> list = new ArrayList<>();
     while (it.hasNext())
@@ -56,8 +56,8 @@ public class JVereinAdressbuch implements Addressbook
         kategorie = m.getBeitragsgruppe().getBezeichnung();
       }
       MitgliedAddress ma = new MitgliedAddress(
-          Adressaufbereitung.getNameVorname(m), "", m.getBic(), m.getIban(),
-          kategorie);
+          m.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME), "", m.getBic(),
+          m.getIban(), kategorie);
       list.add(ma);
     }
     return list;
