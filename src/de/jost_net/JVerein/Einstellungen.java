@@ -313,8 +313,6 @@ public class Einstellungen
     BUCHUNGSKLASSEINBUCHUNG("bkinbuchung", Boolean.class, "0"),
     SPLITPOSITIONZWECK("splitpositionzweck", Boolean.class, "0"),
     GEPRUEFTSYNCHRONISIEREN("geprueftsynchronisieren", Boolean.class, "0"),
-    WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
-        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1"),
 
     // Rechnung
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
@@ -363,7 +361,13 @@ public class Einstellungen
     JUBILARSTARTALTER("jubilarstartalter", Integer.class, "0"),
     JUBILAEEN("jubilaeen", String.class, "10,25,40,50"),
     ALTERSJUBILAEEN("altersjubilaeen", String.class,
-        "50,60,65,70,75,80,85,90,95,100");
+        "50,60,65,70,75,80,85,90,95,100"),
+
+    // Reports
+    FORMULAR_HINTERGRUND("formular_hintergrund", String.class, ""),
+    FORMULAR_VORDERGRUND("formular_vordergrund", String.class, ""),
+    WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
+        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1");
 
     private final String key;
 

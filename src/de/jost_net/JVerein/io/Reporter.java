@@ -38,12 +38,18 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.HyphenationAuto;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.plugin.AbstractPlugin;
@@ -105,14 +111,14 @@ public class Reporter
   }
 
   public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords) throws DocumentException
+      int maxRecords) throws DocumentException, IOException
   {
     this(out, title, subtitle, maxRecords, 80, 30, 20, 20);
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
       float obererRand, float untererRand, boolean encrypt)
-      throws DocumentException
+      throws DocumentException, IOException
   {
     this.out = out;
     rpt = new Document();
@@ -133,11 +139,32 @@ public class Reporter
     rpt.open();
     headers = new ArrayList<>();
     widths = new ArrayList<>();
+
+    // Hintergrund und Vordergrund initialisieren
+    Formular formular = (Formular) FormularInput.initdefault(
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_HINTERGRUND));
+    if (formular != null)
+    {
+      PdfReader reader = new PdfReader(formular.getInhalt());
+      PdfImportedPage hintergrund = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportHintergrund(hintergrund));
+      // Hintergrund für erste Seite hier setzen da kein neuPage Event
+      PdfContentByte contentByte = writer.getDirectContentUnder();
+      contentByte.addTemplate(hintergrund, 0, 0);
+    }
+    formular = (Formular) FormularInput.initdefault(
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
+    if (formular != null)
+    {
+      PdfReader reader = new PdfReader(formular.getInhalt());
+      PdfImportedPage vordergrund = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportVordergrund(vordergrund));
+    }
   }
 
   public Reporter(OutputStream out, String title, String subtitle,
       int maxRecords, float linkerRand, float rechterRand, float obererRand,
-      float untererRand) throws DocumentException
+      float untererRand) throws DocumentException, IOException
   {
     this(out, linkerRand, rechterRand, obererRand, untererRand, false);
 
@@ -303,7 +330,7 @@ public class Reporter
    */
   public void addColumn(boolean value)
   {
-    addColumn(value ? "X" : "", Element.ALIGN_CENTER, BaseColor.WHITE, true);
+    addColumn(value ? "X" : "", Element.ALIGN_CENTER, null, true);
   }
 
   /**
@@ -311,7 +338,7 @@ public class Reporter
    */
   public void addColumn(String text, int align)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, true));
+    addColumn(getDetailCell(text, align, null, true));
   }
 
   /**
@@ -319,12 +346,12 @@ public class Reporter
    */
   public void addColumn(String text, int align, boolean silbentrennung)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, silbentrennung));
+    addColumn(getDetailCell(text, align, null, silbentrennung));
   }
 
   public void addColumn(String text, int align, int colspan)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, colspan));
+    addColumn(getDetailCell(text, align, null, colspan));
   }
 
   public void addColumn(String text, int align, BaseColor backgroundcolor,
@@ -506,7 +533,7 @@ public class Reporter
    */
   private PdfPCell getDetailCell(String text, int align, boolean silbentrennung)
   {
-    return getDetailCell(text, align, BaseColor.WHITE, silbentrennung);
+    return getDetailCell(text, align, null, silbentrennung);
   }
 
   /**

@@ -24,55 +24,36 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenBuchfuehrungView extends AbstractView
+public class EinstellungenReportsView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Buchführung");
+    GUI.getView().setTitle("Einstellungen Reports");
 
     final EinstellungControl control = new EinstellungControl(this);
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Beginn Geschäftsjahr (TT.MM.)",
-        control.getBeginnGeschaeftsjahr());
-    cont.addLabelPair("Anlagen Restwert", control.getAfaRestwert());
-    cont.addLabelPair("Automatische Buchungsübernahme aus Hibiscus",
-        control.getAutoBuchunguebernahme());
     cont.addLabelPair(
-        "Automatische Korrektur der Verwendungszwecke aus Hibiscus Buchungen",
-        control.getAutomatischeBuchungskorrekturHibiscus());
-    cont.addLabelPair("Geprüft Markierung mit Hibiscus synchronisieren",
-        control.getGeprueftSynchronisieren());
-    cont.addLabelPair(
-        "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
-        control.getKontonummerInBuchungsliste());
-    cont.addLabelPair("Umsatzsteuer Support (Neustart erforderlich)",
-        control.getOptiert());
-    cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
-    cont.addLabelPair("Steuer individuell pro Buchung setzen",
-        control.getSteuerInBuchung());
-    cont.addLabelPair(
-        "Keine feste Zuordnung von Buchungsklasse zu Buchungsart z.B. SKR 42",
-        control.getFreieBuchungsklasse());
-    cont.addLabelPair(
-        "Bei automatischem Splitten den "
-            + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
-        control.getSplitPositionZweck());
+        "Wirtschaftsplan Ist-Beträge von laufendem Zeitraum ausgeben",
+        control.getWirtschaftsplanIstAbgeschlossen());
+    cont.addLabelPair("Hintergrund bei Reports",
+        control.getFormularHintergrund());
+    cont.addLabelPair("Vordergrund bei Reports",
+        control.getFormularVordergrund());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false,
-        "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_REPORTS, false, "question-circle.png");
     buttons.addButton("Speichern", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        control.handleStoreBuchfuehrung();
+        control.handleStoreReports();
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());

@@ -54,6 +54,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenMailView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliedAnsichtView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliederSpaltenView;
 import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
+import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
@@ -371,6 +372,9 @@ public class MyExtension implements Extension
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Statistik",
           new StartViewAction(EinstellungenStatistikView.class), "wrench.png"));
+      administrationEinstellungen.addChild(new MyItem(
+          administrationEinstellungen, "Reports",
+          new StartViewAction(EinstellungenReportsView.class), "wrench.png"));
       administration.addChild(administrationEinstellungen);
 
       NavigationItem einstellungenmitglieder = null;
