@@ -156,9 +156,15 @@ public class PersonalbogenAction implements Action
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
           GUI.getCurrentView().reload();
 
+          boolean first = true;
+
           for (Mitglied m : mitglied)
           {
-            rpt.newPage();
+            if (!first)
+            {
+              rpt.newPage();
+            }
+            first = false;
 
             String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL,
                 null, m);
