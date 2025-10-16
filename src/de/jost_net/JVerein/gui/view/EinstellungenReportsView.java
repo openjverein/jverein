@@ -43,6 +43,10 @@ public class EinstellungenReportsView extends AbstractView
         control.getFormularHintergrund());
     cont.addLabelPair("Vordergrund bei Reports",
         control.getFormularVordergrund());
+    cont.addLabelPair("Tabellen Header transparent",
+        control.getHeaderTransparent());
+    cont.addLabelPair("Tabellen Zellen transparent",
+        control.getZellenTransparent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

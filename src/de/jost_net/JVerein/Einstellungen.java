@@ -366,6 +366,8 @@ public class Einstellungen
     // Reports
     FORMULAR_HINTERGRUND("formular_hintergrund", String.class, ""),
     FORMULAR_VORDERGRUND("formular_vordergrund", String.class, ""),
+    TABELLEN_HEADER_TRANSPARENT("header_transparent", Boolean.class, "0"),
+    TABELLEN_ZELLEN_TRANSPARENT("zellen_transparent", Boolean.class, "0"),
     WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
         "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1");
 

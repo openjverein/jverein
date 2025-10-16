@@ -409,6 +409,10 @@ public class EinstellungControl extends AbstractControl
 
   private FormularInput formularVordergrund;
 
+  private CheckboxInput headerTransparent;
+
+  private CheckboxInput zellenTransparent;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -2576,6 +2580,28 @@ public class EinstellungControl extends AbstractControl
     return formularVordergrund;
   }
 
+  public CheckboxInput getHeaderTransparent() throws RemoteException
+  {
+    if (headerTransparent != null)
+    {
+      return headerTransparent;
+    }
+    headerTransparent = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT));
+    return headerTransparent;
+  }
+
+  public CheckboxInput getZellenTransparent() throws RemoteException
+  {
+    if (zellenTransparent != null)
+    {
+      return zellenTransparent;
+    }
+    zellenTransparent = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT));
+    return zellenTransparent;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -3195,6 +3221,10 @@ public class EinstellungControl extends AbstractControl
       {
         Einstellungen.setEinstellung(Property.FORMULAR_VORDERGRUND, "");
       }
+      Einstellungen.setEinstellung(Property.TABELLEN_HEADER_TRANSPARENT,
+          (Boolean) headerTransparent.getValue());
+      Einstellungen.setEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT,
+          (Boolean) zellenTransparent.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
