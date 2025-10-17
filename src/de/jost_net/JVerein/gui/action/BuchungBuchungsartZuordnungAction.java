@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsartZuordnungDialog;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -71,40 +72,68 @@ public class BuchungBuchungsartZuordnungAction implements Action
       baz.open();
       if (!baz.getAbort())
       {
-        Buchungsart ba = baz.getBuchungsart();
-        Buchungsklasse bk = baz.getBuchungsklasse();
         int counter = 0;
-        if (ba == null)
+        if (baz.getDelete())
         {
           for (Buchung buchung : b)
           {
             buchung.setBuchungsartId(null);
             buchung.setBuchungsklasseId(null);
+            buchung.setSteuer(null);
             buchung.store();
           }
         }
         else
         {
+          Buchungsart ba = baz.getBuchungsart();
+          Buchungsklasse bk = baz.getBuchungsklasse();
+          Steuer st = baz.getSteuer();
           for (Buchung buchung : b)
           {
-            boolean protect = buchung.getBuchungsart() != null
-                && !baz.getOverride();
-            if (protect)
+            boolean store = false;
+            if (ba != null)
             {
-              counter++;
-            }
-            else
-            {
-              buchung.setBuchungsartId(Long.valueOf(ba.getID()));
-              if (bk != null)
-                buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
+              if (buchung.getBuchungsart() != null && !baz.getOverride())
+              {
+                counter++;
+              }
               else
-                buchung.setBuchungsklasseId(null);
+              {
+                buchung.setBuchungsartId(Long.valueOf(ba.getID()));
+                store = true;
+              }
+            }
+            if (bk != null)
+            {
+              if (buchung.getBuchungsklasse() != null && !baz.getOverride())
+              {
+                counter++;
+              }
+              else
+              {
+                buchung.setBuchungsklasseId(Long.valueOf(bk.getID()));
+                store = true;
+              }
+            }
+            if (st != null)
+            {
+              if (buchung.getSteuer() != null && !baz.getOverride())
+              {
+                counter++;
+              }
+              else
+              {
+                buchung.setSteuerId(Long.valueOf(st.getID()));
+                store = true;
+              }
+            }
+            if (store)
+            {
               buchung.store();
             }
           }
         }
-        if (ba == null)
+        if (baz.getDelete())
         {
           GUI.getStatusBar().setSuccessText("Buchungsarten gelöscht");
         }
@@ -114,7 +143,7 @@ public class BuchungBuchungsartZuordnungAction implements Action
           if (counter > 0)
           {
             protecttext = String
-                .format(", %d Buchungen wurden nicht überschrieben. ", counter);
+                .format(", %d Attribute wurden nicht überschrieben. ", counter);
           }
           GUI.getStatusBar()
               .setSuccessText("Buchungsarten zugeordnet" + protecttext);
