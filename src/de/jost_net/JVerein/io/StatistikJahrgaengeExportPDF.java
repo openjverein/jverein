@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.io;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -82,7 +81,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   }
 
   @Override
-  protected void open() throws DocumentException, FileNotFoundException
+  protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
     reporter = new Reporter(fos, "Statistik Jahrgänge, Stichtag: "

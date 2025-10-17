@@ -199,6 +199,8 @@ public class DokumentationUtil
   public static final String EINSTELLUNGEN_STATISTIK = ADMEINSTELLUNG
       + "statistik";
 
+  public static final String EINSTELLUNGEN_REPORTS = ADMEINSTELLUNG + "reports";
+
   // Einstellungen Mitglieder
   public static final String BEITRAGSGRUPPEN = ADMMITGLIEDER
       + "beitragsgruppen";

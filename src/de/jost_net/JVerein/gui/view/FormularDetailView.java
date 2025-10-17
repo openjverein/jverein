@@ -23,9 +23,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
-import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
-import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
-import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
@@ -63,12 +60,9 @@ public class FormularDetailView extends AbstractDetailView
     LabelGroup cont = new LabelGroup(getParent(), "Formularfelder", true);
 
     ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
-    buttons1.addButton("Export", new FormularfelderExportAction(),
-        getCurrentObject(), false, "document-save.png");
-    buttons1.addButton("Import", new FormularfelderImportAction(control),
-        getCurrentObject(), false, "file-import.png");
-    buttons1.addButton("Neu", new FormularfeldNeuAction(), getCurrentObject(),
-        false, "document-new.png");
+    buttons1.addButton(control.getExportButton());
+    buttons1.addButton(control.getImportButton());
+    buttons1.addButton(control.getNeuButton());
 
     // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
     GridLayout layout = new GridLayout();
