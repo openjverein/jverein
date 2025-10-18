@@ -18,27 +18,26 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Variable.AllgemeineVar;
-import de.jost_net.JVerein.Variable.LastschriftVar;
-import de.jost_net.JVerein.Variable.MitgliedVar;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.jost_net.JVerein.rmi.Lesefeld;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -47,7 +46,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
 
   private de.willuhn.jameica.system.Settings settings;
 
-  private SelectInput name;
+  private TextAreaInput name;
 
   private IntegerInput seite;
 
@@ -61,35 +60,13 @@ public class FormularfeldControl extends FormularPartControl implements Savable
 
   private Formularfeld formularfeld;
 
-  private TextInput formularTyp;
-
-  private TextInput formularName;
+  private SelectInput ausrichtung;
 
   public FormularfeldControl(AbstractView view, Formular formular)
   {
     super(view, formular);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-  }
-
-  public Input getFormularTyp() throws RemoteException
-  {
-    if (null == formularTyp)
-    {
-      formularTyp = new TextInput(getFormularArtName());
-      formularTyp.disable();
-    }
-    return formularTyp;
-  }
-
-  public Input getFormularName() throws RemoteException
-  {
-    if (null == formularName)
-    {
-      formularName = new TextInput(formular.getBezeichnung());
-      formularName.disable();
-    }
-    return formularName;
   }
 
   public Formularfeld getFormularfeld()
@@ -107,111 +84,16 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     return formular;
   }
 
-  public SelectInput getName()
+  public TextAreaInput getName()
       throws RemoteException, NoSuchFieldException, SecurityException
   {
     if (name != null)
     {
       return name;
     }
-    ArrayList<String> namen = new ArrayList<>();
-    if (formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG)
-    {
-      for (AllgemeineVar av : AllgemeineVar.values())
-      {
-        namen.add(av.getName());
-      }
-      for (SpendenbescheinigungVar spv : SpendenbescheinigungVar.values())
-      {
-        namen.add(spv.getName());
-      }
-      for (MitgliedVar mv : MitgliedVar.values())
-      {
-        namen.add(mv.getName());
-      }
-    }
-    if (formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
-    {
-      for (AllgemeineVar av : AllgemeineVar.values())
-      {
-        namen.add(av.getName());
-      }
-      for (SpendenbescheinigungVar spv : SpendenbescheinigungVar.values())
-      {
-        namen.add(spv.getName());
-      }
-      for (MitgliedVar mv : MitgliedVar.values())
-      {
-        namen.add(mv.getName());
-      }
-    }
-    if (formular.getArt() == FormularArt.FREIESFORMULAR)
-    {
-      for (AllgemeineVar av : AllgemeineVar.values())
-      {
-        namen.add(av.getName());
-      }
-      for (MitgliedVar mv : MitgliedVar.values())
-      {
-        namen.add(mv.getName());
-      }
-    }
-    if (formular.getArt() == FormularArt.SEPA_PRENOTIFICATION)
-    {
-      for (AllgemeineVar av : AllgemeineVar.values())
-      {
-        namen.add(av.getName());
-      }
-      for (LastschriftVar lsv : LastschriftVar.values())
-      {
-        namen.add(lsv.getName());
-      }
-    }
-    if (formular.getArt() == FormularArt.RECHNUNG
-        || formular.getArt() == FormularArt.MAHNUNG)
-    {
-      for (AllgemeineVar av : AllgemeineVar.values())
-      {
-        namen.add(av.getName());
-      }
-      for (MitgliedVar mv : MitgliedVar.values())
-      {
-        namen.add(mv.getName());
-      }
-      for (RechnungVar mkv : RechnungVar.values())
-      {
-        if (!RechnungVar.class.getField(mkv.name())
-            .isAnnotationPresent(Deprecated.class))
-        {
-          namen.add(mkv.getName());
-        }
-      }
 
-    }
-    if (formular.getArt() == FormularArt.FREIESFORMULAR
-        || formular.getArt() == FormularArt.RECHNUNG
-        || formular.getArt() == FormularArt.MAHNUNG
-        || formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG
-        || formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
-    {
-      DBIterator<Lesefeld> itlesefelder = Einstellungen.getDBService()
-          .createList(Lesefeld.class);
-      while (itlesefelder.hasNext())
-      {
-        Lesefeld lesefeld = itlesefelder.next();
-        namen.add(Einstellungen.LESEFELD_PRE + lesefeld.getBezeichnung());
-      }
-
-      DBIterator<Felddefinition> zusatzfelder = Einstellungen.getDBService()
-          .createList(Felddefinition.class);
-      while (zusatzfelder.hasNext())
-      {
-        Felddefinition zusatzfeld = (Felddefinition) zusatzfelder.next();
-        namen.add(Einstellungen.ZUSATZFELD_PRE + zusatzfeld.getName());
-      }
-    }
-    Collections.sort(namen);
-    name = new SelectInput(namen, getFormularfeld().getName());
+    name = new TextAreaInput(getFormularfeld().getName(), 1000);
+    name.setHeight(200);
     return name;
   }
 
@@ -289,6 +171,17 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     return fontsize;
   }
 
+  public SelectInput getAusrichtung() throws RemoteException
+  {
+    if (ausrichtung != null)
+    {
+      return ausrichtung;
+    }
+    ausrichtung = new SelectInput(Ausrichtung.values(),
+        getFormularfeld().getAusrichtung());
+    return ausrichtung;
+  }
+
   @Override
   public JVereinDBObject prepareStore()
       throws RemoteException, ApplicationException
@@ -303,6 +196,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
       f.setY((Double) getY().getValue());
       f.setFont((String) getFont().getValue());
       f.setFontsize((Integer) getFontsize().getValue());
+      f.setAusrichtung((Ausrichtung) getAusrichtung().getValue());
     }
     catch (RemoteException e)
     {
@@ -333,9 +227,37 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     }
   }
 
-  private String getFormularArtName() throws RemoteException
+  public Map<String, Object> getMap() throws RemoteException
   {
-    return formular.getArt().getText();
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    if (formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG
+        || formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
+    {
+      map = SpendenbescheinigungMap.getDummyMap(map);
+      map = MitgliedMap.getDummyMap(map);
+      // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier extra
+      // hinzugefügt und ist nicht in der DummyMap.
+      map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(),
+          "$" + SpendenbescheinigungVar.UNTERSCHRIFT.getName());
+    }
+    if (formular.getArt() == FormularArt.FREIESFORMULAR)
+    {
+      map = MitgliedMap.getDummyMap(map);
+    }
+    if (formular.getArt() == FormularArt.SEPA_PRENOTIFICATION)
+    {
+      map = LastschriftMap.getDummyMap(map);
+    }
+    if (formular.getArt() == FormularArt.RECHNUNG
+        || formular.getArt() == FormularArt.MAHNUNG)
+    {
+      map = MitgliedMap.getDummyMap(map);
+      map = RechnungMap.getDummyMap(map);
+      // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier extra
+      // hinzugefügt und ist nicht in der DummyMap.
+      map.put(RechnungVar.QRCODE_SUMME.getName(),
+          "$" + RechnungVar.QRCODE_SUMME.getName());
+    }
+    return map;
   }
-
 }
