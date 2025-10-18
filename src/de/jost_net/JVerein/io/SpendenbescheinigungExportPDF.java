@@ -32,8 +32,8 @@ public class SpendenbescheinigungExportPDF
 {
 
   public SpendenbescheinigungExportPDF(final File file,
-      final ArrayList<Spendenbescheinigung> spbList, int columns)
-      throws ApplicationException
+      final ArrayList<Spendenbescheinigung> spbList, int columns, String title,
+      String subtitle) throws ApplicationException
   {
     int breite = Math.min(columns, 7);
     int breiteZeile = 10;
@@ -44,8 +44,7 @@ public class SpendenbescheinigungExportPDF
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, "Spendenbescheinigungen", "",
-          spbList.size());
+      Reporter reporter = new Reporter(fos, title, subtitle, spbList.size());
       reporter.addHeaderColumn("Bescheinigungsdatum", Element.ALIGN_LEFT,
           breiteDatum, BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Spendedatum", Element.ALIGN_LEFT, breiteDatum,

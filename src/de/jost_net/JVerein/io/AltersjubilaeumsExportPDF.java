@@ -87,8 +87,7 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   {
     fos = new FileOutputStream(file);
     Logger.debug(String.format("Altersjubilare, Jahr=%d", jahr));
-    reporter = new Reporter(fos, String.format("Altersjubilare %d", jahr), "",
-        3);
+    reporter = new Reporter(fos, title, subtitle, 3);
   }
 
   @Override

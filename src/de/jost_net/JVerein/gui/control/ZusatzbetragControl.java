@@ -449,6 +449,11 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     final File file = new File(s);
     final DBIterator<Zusatzbetrag> it = getIterator();
     settings.setAttribute("lastdir", file.getParent());
+    final String title = VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL,
+        this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this);
+
     BackgroundTask t = new BackgroundTask()
     {
 
@@ -458,7 +463,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Zusatzbeträge", "", it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,

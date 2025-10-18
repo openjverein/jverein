@@ -69,9 +69,9 @@ public class AbrechnungslaufSollbuchungListeView extends AbstractView
     control.getSollbuchungsList().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getStartListeButton());
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
+    buttons.addButton(control.getStartListeButton());
     buttons.paint(this.getParent());
   }
 
