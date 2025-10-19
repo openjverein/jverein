@@ -733,6 +733,7 @@ public class MitgliedControl extends FilterControl implements Savable
       getLetzteLastschrift().setValue(null);
       getBic().setValue(null);
       getIban().setValue(null);
+      getKontoinhaber().setValue(null);
     }
     catch (Exception e)
     {
@@ -1838,7 +1839,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getKontoDatenLoeschenButton()
   {
-    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    Button b = new Button("Daten löschen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
