@@ -112,15 +112,14 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       }
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (getMitglied().getAltKontoinhaberID() != null)
         {
-          Mitglied m = Einstellungen.getDBService().createObject(
-              MitgliedImpl.class, getMitglied().getVollZahlerID().toString());
+          Mitglied m = getMitglied().getAltKontoinhaber();
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
             throw new ApplicationException(
-                "Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+                "Beim alternativen Kontoinhaber ist keine IBAN oder Mandatdatum hinterlegt.");
           }
         }
         else if (getMitglied().getIban().length() == 0

@@ -50,7 +50,7 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
-import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
@@ -194,8 +194,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private LabelGroup bankverbindungLabelGroup;
 
-  private LabelGroup abweichenderKontoinhaberLabelGroup;
-
   private SelectNoScrollInput zahlungsrhytmus;
 
   private SelectNoScrollInput zahlungstermin;
@@ -212,29 +210,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private TextInput iban;
 
-  private PersonenartInput ktoipersonenart;
-
-  private TextInput ktoianrede;
-
-  private TextInput ktoititel;
-
-  private TextInput ktoiname;
-
-  private TextInput ktoivorname;
-
-  private TextInput ktoistrasse;
-
-  private TextInput ktoiadressierungszusatz;
-
-  private TextInput ktoiplz;
-
-  private TextInput ktoiort;
-
-  private StaatSearchInput ktoistaat;
-
-  private EmailInput ktoiemail;
-
-  private GeschlechtInput ktoigeschlecht;
+  private TextInput kontoinhaber;
 
   private Input telefonprivat;
 
@@ -261,6 +237,8 @@ public class MitgliedControl extends FilterControl implements Savable
   private TreePart familienbeitragtree;
 
   private AbstractInput zahler;
+
+  private AbstractInput altKontoinhaberInput;
 
   private DateInput austritt = null;
 
@@ -697,6 +675,51 @@ public class MitgliedControl extends FilterControl implements Savable
     zahlungsweg.setList(weg);
   }
 
+  public Input getAltKontoinhaber() throws RemoteException
+  {
+    if (altKontoinhaberInput != null)
+    {
+      return altKontoinhaberInput;
+    }
+    altKontoinhaberInput = new MitgliedInput().getMitgliedInput(
+        altKontoinhaberInput, getMitglied().getAltKontoinhaber(),
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+    if (altKontoinhaberInput instanceof SelectInput)
+    {
+      ((SelectInput) altKontoinhaberInput)
+          .setPleaseChoose("Optional auswählen");
+      if (getMitglied().getAltKontoinhaber() == null)
+      {
+        ((SelectInput) altKontoinhaberInput).setPreselected(null);
+      }
+    }
+    altKontoinhaberInput.setName("Alternativer Kontoinhaber");
+    return altKontoinhaberInput;
+  }
+
+  private Long getSelectedAltKontoinhaberId() throws ApplicationException
+  {
+    try
+    {
+      if (altKontoinhaberInput == null)
+      {
+        return null;
+      }
+      Mitglied derAltKtoi = (Mitglied) getAltKontoinhaber().getValue();
+      if (null == derAltKtoi)
+      {
+        return null;
+      }
+      return Long.valueOf(derAltKtoi.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter alternative Kontoinhaber kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+
   // Lösche alle Daten aus der Bankverbindungsmaske
   private void deleteBankverbindung()
   {
@@ -710,17 +733,6 @@ public class MitgliedControl extends FilterControl implements Savable
       getLetzteLastschrift().setValue(null);
       getBic().setValue(null);
       getIban().setValue(null);
-      getKtoiPersonenart().setValue(null);
-      getKtoiAnrede().setValue(null);
-      getKtoiTitel().setValue(null);
-      getKtoiName().setValue(null);
-      getKtoiVorname().setValue(null);
-      getKtoiStrasse().setValue(null);
-      getKtoiAdressierungszusatz().setValue(null);
-      getKtoiPlz().setValue(null);
-      getKtoiOrt().setValue(null);
-      getKtoiStaat().setValue(null);
-      getKtoiEmail().setValue(null);
     }
     catch (Exception e)
     {
@@ -735,16 +747,6 @@ public class MitgliedControl extends FilterControl implements Savable
       bankverbindungLabelGroup = new LabelGroup(parent, "Bankverbindung");
     }
     return bankverbindungLabelGroup;
-  }
-
-  public LabelGroup getAbweichenderKontoinhaberLabelGroup(Composite parent)
-  {
-    if (abweichenderKontoinhaberLabelGroup == null)
-    {
-      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent,
-          "Abweichender Kontoinhaber");
-    }
-    return abweichenderKontoinhaberLabelGroup;
   }
 
   public SelectInput getZahlungsrhythmus() throws RemoteException
@@ -788,6 +790,17 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     bic = new BICInput(getMitglied().getBic());
     return bic;
+  }
+
+  public TextInput getKontoinhaber() throws RemoteException
+  {
+    if (kontoinhaber != null)
+    {
+      return kontoinhaber;
+    }
+    kontoinhaber = new TextInput(getMitglied().getKontoinhaber(), 70);
+    kontoinhaber.setName("Kontoinhaber");
+    return kontoinhaber;
   }
 
   public TextInput getMandatID() throws RemoteException
@@ -914,172 +927,6 @@ public class MitgliedControl extends FilterControl implements Savable
       iban.setMandatory(true);
     }
     return iban;
-  }
-
-  public SelectInput getKtoiPersonenart() throws RemoteException
-  {
-    if (ktoipersonenart != null)
-    {
-      return ktoipersonenart;
-    }
-    ktoipersonenart = new PersonenartInput(getMitglied().getKtoiPersonenart());
-    ktoipersonenart.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        String pa = (String) ktoipersonenart.getValue();
-        if (pa.toLowerCase().startsWith("n"))
-        {
-          ktoiname.setName("Name");
-          ktoivorname.setName("Vorname");
-        }
-        else
-        {
-          ktoiname.setName("Zeile 1");
-          ktoivorname.setName("Zeile 2");
-        }
-      }
-
-    });
-
-    ktoipersonenart.setName("Personenart");
-    return ktoipersonenart;
-  }
-
-  public TextInput getKtoiAnrede() throws RemoteException
-  {
-    if (ktoianrede != null)
-    {
-      return ktoianrede;
-    }
-    ktoianrede = new TextInput(getMitglied().getKtoiAnrede(), 40);
-    ktoianrede.setName("Anrede");
-    return ktoianrede;
-  }
-
-  public TextInput getKtoiTitel() throws RemoteException
-  {
-    if (ktoititel != null)
-    {
-      return ktoititel;
-    }
-    ktoititel = new TextInput(getMitglied().getKtoiTitel(), 40);
-    ktoititel.setName("Titel");
-    return ktoititel;
-  }
-
-  public TextInput getKtoiName() throws RemoteException
-  {
-    if (ktoiname != null)
-    {
-      return ktoiname;
-    }
-    ktoiname = new TextInput(getMitglied().getKtoiName(), 40);
-    ktoiname.setName("Name");
-    return ktoiname;
-  }
-
-  public TextInput getKtoiVorname() throws RemoteException
-  {
-    if (ktoivorname != null)
-    {
-      return ktoivorname;
-    }
-    ktoivorname = new TextInput(getMitglied().getKtoiVorname(), 40);
-    ktoivorname.setName("Vorname");
-    return ktoivorname;
-  }
-
-  public TextInput getKtoiStrasse() throws RemoteException
-  {
-    if (ktoistrasse != null)
-    {
-      return ktoistrasse;
-    }
-    ktoistrasse = new TextInput(getMitglied().getKtoiStrasse(), 40);
-    ktoistrasse.setName("Straße");
-    return ktoistrasse;
-  }
-
-  public TextInput getKtoiAdressierungszusatz() throws RemoteException
-  {
-    if (ktoiadressierungszusatz != null)
-    {
-      return ktoiadressierungszusatz;
-    }
-    ktoiadressierungszusatz = new TextInput(
-        getMitglied().getKtoiAdressierungszusatz(), 40);
-    ktoiadressierungszusatz.setName("Adressierungszusatz");
-    return ktoiadressierungszusatz;
-  }
-
-  public TextInput getKtoiPlz() throws RemoteException
-  {
-    if (ktoiplz != null)
-    {
-      return ktoiplz;
-    }
-    ktoiplz = new TextInput(getMitglied().getKtoiPlz(), 10);
-    ktoiplz.setName("Plz");
-    return ktoiplz;
-  }
-
-  public TextInput getKtoiOrt() throws RemoteException
-  {
-    if (ktoiort != null)
-    {
-      return ktoiort;
-    }
-    ktoiort = new TextInput(getMitglied().getKtoiOrt(), 40);
-    ktoiort.setName("Ort");
-    return ktoiort;
-  }
-
-  public StaatSearchInput getKtoiStaat() throws RemoteException
-  {
-    if (ktoistaat != null)
-    {
-      return ktoistaat;
-    }
-    if (getMitglied().getKtoiStaat() != null
-        && getMitglied().getKtoiStaat().length() > 0
-        && Staat.getByKey(getMitglied().getKtoiStaatCode()) == null)
-    {
-      GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
-          + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
-    }
-    ktoistaat = new StaatSearchInput();
-    ktoistaat.setSearchString("Zum Suchen tippen");
-    ktoistaat.setValue(Staat.getByKey(getMitglied().getKtoiStaatCode()));
-    ktoistaat.setName("Staat");
-    return ktoistaat;
-  }
-
-  public EmailInput getKtoiEmail() throws RemoteException
-  {
-    if (ktoiemail != null)
-    {
-      return ktoiemail;
-    }
-    ktoiemail = new EmailInput(getMitglied().getKtoiEmail());
-    return ktoiemail;
-  }
-
-  public GeschlechtInput getKtoiGeschlecht() throws RemoteException
-  {
-    if (ktoigeschlecht != null)
-    {
-      return ktoigeschlecht;
-    }
-    ktoigeschlecht = new GeschlechtInput(getMitglied().getKtoiGeschlecht());
-    ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setPleaseChoose("Bitte auswählen");
-    ktoigeschlecht.setMandatory(true);
-    ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setMandatory(false);
-    return ktoigeschlecht;
   }
 
   public Input getTelefonprivat() throws RemoteException
@@ -1989,40 +1836,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return b;
   }
 
-  public Button getMitglied2KontoinhaberEintragenButton()
-  {
-    Button b = new Button("Mitglied-Daten eintragen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          getKtoiName().setValue(getName(false).getValue());
-          getKtoiStrasse().setValue(getStrasse().getValue());
-          getKtoiAdressierungszusatz()
-              .setValue(getAdressierungszusatz().getValue());
-          getKtoiPlz().setValue(getPlz().getValue());
-          getKtoiOrt().setValue(getOrt().getValue());
-          getKtoiEmail().setValue(getEmail().getValue());
-          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
-          {
-            getKtoiStaat().setValue(getStaat().getValue());
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der Mitgliederauswertung");
-        }
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
   public Button getKontoDatenLoeschenButton()
   {
     Button b = new Button("Bankverbindung-Daten löschen", new Action()
@@ -2365,22 +2178,9 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    // Abweichender Kontoinhaber
-    m.setKtoiAdressierungszusatz(
-        (String) getKtoiAdressierungszusatz().getValue());
-    m.setKtoiAnrede((String) getKtoiAnrede().getValue());
-    m.setKtoiEmail((String) getKtoiEmail().getValue());
-    m.setKtoiName((String) getKtoiName().getValue());
-    m.setKtoiOrt((String) getKtoiOrt().getValue());
-    String persa = (String) getKtoiPersonenart().getValue();
-    m.setKtoiPersonenart(persa.substring(0, 1));
-    m.setKtoiPlz((String) getKtoiPlz().getValue());
-    m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
-        : ((Staat) getKtoiStaat().getValue()).getKey());
-    m.setKtoiStrasse((String) getKtoiStrasse().getValue());
-    m.setKtoiTitel((String) getKtoiTitel().getValue());
-    m.setKtoiVorname((String) getKtoiVorname().getValue());
-    m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
+    m.setAltKontoinhaberID(getSelectedAltKontoinhaberId());
+    m.setKontoinhaber((String) getKontoinhaber().getValue());
+
     // Vermerke
     m.setVermerk1((String) getVermerk1().getValue());
     m.setVermerk2((String) getVermerk2().getValue());

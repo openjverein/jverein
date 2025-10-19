@@ -563,6 +563,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           zahlungsweg.addInput(control.getZahlungstermin());
           break;
       }
+      zahlungsweg.addInput(control.getAltKontoinhaber());
     }
 
     LabelGroup bankverbindung = control
@@ -577,34 +578,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols.addInput(control.getLetzteLastschrift());
     cols.addInput(control.getIban());
     cols.addInput(control.getBic());
+    cols.addInput(control.getKontoinhaber());
     cols.arrangeVertically();
-
-    LabelGroup abweichenderKontoInhaber = control
-        .getAbweichenderKontoinhaberLabelGroup(container.getComposite());
-    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
-        abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
-
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
-    addButtonArea(buttons2, cols2.getComposite());
-    cols2.addInput(control.getKtoiPersonenart());
-    cols2.addInput(control.getKtoiAnrede());
-    cols2.addInput(control.getKtoiTitel());
-    cols2.addInput(control.getKtoiName());
-    cols2.addInput(control.getKtoiVorname());
-    cols2.addInput(control.getKtoiStrasse());
-    cols2.addInput(control.getKtoiAdressierungszusatz());
-    cols2.addInput(control.getKtoiPlz());
-    cols2.addInput(control.getKtoiOrt());
-    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
-    {
-      cols2.addInput(control.getKtoiStaat());
-    }
-    cols2.addInput(control.getKtoiEmail());
-    cols2.addInput(control.getKtoiGeschlecht());
-    // cols.addInput(control.getBlz());
-    // cols.addInput(control.getKonto());
-    cols2.arrangeVertically();
   }
 
   /**

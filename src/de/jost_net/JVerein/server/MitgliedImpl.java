@@ -905,202 +905,38 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public String getKtoiPersonenart() throws RemoteException
-  {
-    String ret = (String) getAttribute("ktoipersonenart");
-    if (ret == null)
-    {
-      ret = "n";
-    }
-    return ret;
-  }
-
-  @Override
-  public void setKtoiPersonenart(String ktoipersonenart) throws RemoteException
-  {
-    setAttribute("ktoipersonenart", ktoipersonenart);
-  }
-
-  @Override
-  public String getKtoiAnrede() throws RemoteException
-  {
-    return (String) getAttribute("ktoianrede");
-  }
-
-  @Override
-  public void setKtoiAnrede(String ktoianrede) throws RemoteException
-  {
-    setAttribute("ktoianrede", ktoianrede);
-  }
-
-  @Override
-  public String getKtoiTitel() throws RemoteException
-  {
-    return (String) getAttribute("ktoititel");
-  }
-
-  @Override
-  public void setKtoiTitel(String ktoititel) throws RemoteException
-  {
-    setAttribute("ktoititel", ktoititel);
-  }
-
-  @Override
-  public String getKtoiName() throws RemoteException
-  {
-    return (String) getAttribute("ktoiname");
-  }
-
-  @Override
-  public void setKtoiName(String ktoiname) throws RemoteException
-  {
-    setAttribute("ktoiname", ktoiname);
-  }
-
-  @Override
-  public String getKtoiVorname() throws RemoteException
-  {
-    return (String) getAttribute("ktoivorname");
-  }
-
-  @Override
-  public void setKtoiVorname(String ktoivorname) throws RemoteException
-  {
-    setAttribute("ktoivorname", ktoivorname);
-  }
-
-  @Override
-  public String getKtoiStrasse() throws RemoteException
-  {
-    return (String) getAttribute("ktoistrasse");
-  }
-
-  @Override
-  public void setKtoiStrasse(String ktoistrasse) throws RemoteException
-  {
-    setAttribute("ktoistrasse", ktoistrasse);
-  }
-
-  @Override
-  public String getKtoiAdressierungszusatz() throws RemoteException
-  {
-    return (String) getAttribute("ktoiadressierungszusatz");
-  }
-
-  @Override
-  public void setKtoiAdressierungszusatz(String ktoiadressierungszusatz)
-      throws RemoteException
-  {
-    setAttribute("ktoiadressierungszusatz", ktoiadressierungszusatz);
-  }
-
-  @Override
-  public String getKtoiPlz() throws RemoteException
-  {
-    return (String) getAttribute("ktoiplz");
-  }
-
-  @Override
-  public void setKtoiPlz(String ktoiplz) throws RemoteException
-  {
-    setAttribute("ktoiplz", ktoiplz);
-  }
-
-  @Override
-  public String getKtoiOrt() throws RemoteException
-  {
-    return (String) getAttribute("ktoiort");
-  }
-
-  @Override
-  public void setKtoiOrt(String ktoiort) throws RemoteException
-  {
-    setAttribute("ktoiort", ktoiort);
-  }
-
-  @Override
-  public String getKtoiStaat() throws RemoteException
-  {
-    return Staat.getStaat(getKtoiStaatCode());
-  }
-
-  @Override
-  public String getKtoiStaatCode() throws RemoteException
-  {
-    String code = (String) getAttribute("ktoistaat");
-    return Staat.getStaatCode(code);
-  }
-
-  @Override
-  public void setKtoiStaat(String ktoistaat) throws RemoteException
-  {
-    setAttribute("ktoistaat", ktoistaat);
-  }
-
-  @Override
-  public String getKtoiEmail() throws RemoteException
-  {
-    return (String) getAttribute("ktoiemail");
-  }
-
-  @Override
-  public void setKtoiEmail(String ktoiemail) throws RemoteException
-  {
-    setAttribute("ktoiemail", ktoiemail);
-  }
-
-  @Override
-  public String getKtoiGeschlecht() throws RemoteException
-  {
-    return (String) getAttribute("ktoigeschlecht");
-  }
-
-  @Override
-  public void setKtoiGeschlecht(String ktoigeschlecht) throws RemoteException
-  {
-    setAttribute("ktoigeschlecht", ktoigeschlecht);
-  }
-
-  @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
-    boolean aktoi = false;
-    Mitglied m2 = (Mitglied) Einstellungen.getDBService()
-        .createObject(Mitglied.class, getID());
-    if (m2.getKtoiVorname() != null && m2.getKtoiVorname().length() > 0)
+    String ktoi = getKontoinhaber();
+    if (ktoi != null && !ktoi.isEmpty())
     {
-      m2.setVorname(getKtoiVorname());
-      m2.setPersonenart(getKtoiPersonenart());
-      aktoi = true;
+      return ktoi;
     }
-    if (m2.getKtoiName() != null && m2.getKtoiName().length() > 0)
+    else
     {
-      m2.setName(getKtoiName());
-      m2.setPersonenart(getKtoiPersonenart());
-      aktoi = true;
+      switch (art)
+      {
+        case NAME_VORNAME:
+          return Adressaufbereitung.getNameVorname(this);
+        case VORNAME_NAME:
+          return Adressaufbereitung.getVornameName(this);
+        case ADRESSE:
+          return Adressaufbereitung.getAdressfeld(this);
+      }
+      return null;
     }
-    if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
-    {
-      m2.setAnrede(getKtoiAnrede());
-    }
-    if (m2.getKtoiTitel() != null && m2.getKtoiTitel().length() > 0)
-    {
-      m2.setTitel(getKtoiTitel());
-    }
-    else if (aktoi)
-    {
-      m2.setTitel(null);
-    }
-    switch (art)
-    {
-      case NAME_VORNAME:
-        return Adressaufbereitung.getNameVorname(m2);
-      case VORNAME_NAME:
-        return Adressaufbereitung.getVornameName(m2);
-      case ADRESSE:
-        return Adressaufbereitung.getAdressfeld(m2);
-    }
-    return null;
+  }
+
+  @Override
+  public void setKontoinhaber(String kontoinhaber) throws RemoteException
+  {
+    setAttribute("kontoinhaber", kontoinhaber);
+  }
+
+  @Override
+  public String getKontoinhaber() throws RemoteException
+  {
+    return (String) getAttribute("kontoinhaber");
   }
 
   @Override
@@ -1321,11 +1157,37 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
+  public Mitglied getAltKontoinhaber() throws RemoteException
+  {
+    Object o = (Object) super.getAttribute("altkontoinhaber");
+    if (o == null)
+      return null;
+
+    if (o instanceof Mitglied)
+      return (Mitglied) o;
+
+    Cache cache = Cache.get(Mitglied.class, true);
+    return (Mitglied) cache.get(o);
+  }
+
+  @Override
+  public Long getAltKontoinhaberID() throws RemoteException
+  {
+    return (Long) getAttribute("altkontoinhaber");
+  }
+
+  @Override
+  public void setAltKontoinhaberID(Long id) throws RemoteException
+  {
+    setAttribute("altkontoinhaber", id);
+  }
+
+  @Override
   public Mitglied getZahler() throws RemoteException
   {
-    if (getZahlungsweg() == Zahlungsweg.VOLLZAHLER && getVollZahlerID() != null)
+    if (getAltKontoinhaberID() != null)
     {
-      return getVollZahler();
+      return getAltKontoinhaber();
     }
     return this;
   }
@@ -1333,9 +1195,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Long getZahlerID() throws RemoteException
   {
-    if (getZahlungsweg() == Zahlungsweg.VOLLZAHLER && getVollZahlerID() != null)
+    if (getAltKontoinhaberID() != null)
     {
-      return (Long) getAttribute("zahlerid");
+      return getAltKontoinhaberID();
     }
     return Long.valueOf(getID());
   }

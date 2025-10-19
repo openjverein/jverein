@@ -522,18 +522,7 @@ public class AbrechnungSEPA
   {
     Double betr = 0d;
     JVereinZahler zahler = null;
-    Mitglied mZahler = m;
-    if (m.getZahlungsweg() != null
-        && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-    {
-      if (m.getVollZahlerID() == null)
-      {
-        throw new ApplicationException("Kein Vollzahler vorhanden: "
-            + Adressaufbereitung.getNameVorname(m));
-      }
-      mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
-          m.getVollZahlerID().toString());
-    }
+    Mitglied mZahler = m.getZahler();
     if (((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
         && (mZahler.getZahlungstermin() != null && !mZahler.getZahlungstermin()
@@ -667,13 +656,7 @@ public class AbrechnungSEPA
       if (z.isAktiv(param.stichtag))
       {
         Mitglied m = z.getMitglied();
-        Mitglied mZahler = m;
-        if (m.getZahlungsweg() != null
-            && m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
-        {
-          mZahler = Einstellungen.getDBService().createObject(Mitglied.class,
-              m.getVollZahlerID().toString());
-        }
+        Mitglied mZahler = m.getZahler();
         Integer zahlungsweg;
         if (z.getZahlungsweg() != null
             && z.getZahlungsweg().getKey() != Zahlungsweg.STANDARD)
@@ -1103,36 +1086,19 @@ public class AbrechnungSEPA
         ls.setMitglied(Integer.parseInt(zahler.getPersonId()));
         Mitglied m = (Mitglied) Einstellungen.getDBService()
             .createObject(Mitglied.class, zahler.getPersonId());
-        if (m.getKtoiName() == null || m.getKtoiName().length() == 0)
-        {
-          ls.setPersonenart(m.getPersonenart());
-          ls.setAnrede(m.getAnrede());
-          ls.setTitel(m.getTitel());
-          ls.setName(m.getName());
-          ls.setVorname(m.getVorname());
-          ls.setStrasse(m.getStrasse());
-          ls.setAdressierungszusatz(m.getAdressierungszusatz());
-          ls.setPlz(m.getPlz());
-          ls.setOrt(m.getOrt());
-          ls.setStaat(m.getStaatCode());
-          ls.setEmail(m.getEmail());
-          ls.setGeschlecht(m.getGeschlecht());
-        }
-        else
-        {
-          ls.setPersonenart(m.getKtoiPersonenart());
-          ls.setAnrede(m.getKtoiAnrede());
-          ls.setTitel(m.getKtoiTitel());
-          ls.setName(m.getKtoiName());
-          ls.setVorname(m.getKtoiVorname());
-          ls.setStrasse(m.getKtoiStrasse());
-          ls.setAdressierungszusatz(m.getKtoiAdressierungszusatz());
-          ls.setPlz(m.getKtoiPlz());
-          ls.setOrt(m.getKtoiOrt());
-          ls.setStaat(m.getKtoiStaatCode());
-          ls.setEmail(m.getKtoiEmail());
-          ls.setGeschlecht(m.getKtoiGeschlecht());
-        }
+        ls.setPersonenart(m.getPersonenart());
+        ls.setAnrede(m.getAnrede());
+        ls.setTitel(m.getTitel());
+        ls.setName(m.getName());
+        ls.setVorname(m.getVorname());
+        ls.setStrasse(m.getStrasse());
+        ls.setAdressierungszusatz(m.getAdressierungszusatz());
+        ls.setPlz(m.getPlz());
+        ls.setOrt(m.getOrt());
+        ls.setStaat(m.getStaatCode());
+        ls.setEmail(m.getEmail());
+        ls.setGeschlecht(m.getGeschlecht());
+
         // Bei nicht kompakter Abbuchung Daten des Mitglieds und nicht die des
         // Zahlers verwenden.
         Mitglied mZweck = m;

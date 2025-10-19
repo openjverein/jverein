@@ -24,7 +24,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -52,17 +51,15 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER
-          && m.getVollZahlerID() != null)
+      if (m.getAltKontoinhaberID() != null)
       {
-        // Mitglied ist Familienangehoeriger, hat also anderen Zahler
-        mZ = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, m.getVollZahlerID() + "");
+        // Mitglied hat alternativen Kontoinhaber hat also anderen Zahler
+        mZ = m.getAltKontoinhaber();
 
-        if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
-            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
-                + "Als Konto wird das Konto des Zahlers belastet:\n"
-                + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
+        if (!AbrechnungSEPAControl.confirmDialog("Alternativer Kontoinhaber",
+            "Dieses Mitglied hat einen alternativen Kontoinhaber.\n\n"
+                + "Als Konto wird das Konto des alternativen Kontoinhaber belastet:\n"
+                + "Zahler: " + mZ.getName() + ", " + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
                 + mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)))
         {
