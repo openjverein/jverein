@@ -687,7 +687,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (altKontoinhaberInput instanceof SelectInput)
     {
       ((SelectInput) altKontoinhaberInput)
-          .setPleaseChoose("Optional auswählen");
+          .setPleaseChoose("Kein alternativer Kontoinhaber gesetzt");
       if (getMitglied().getAltKontoinhaber() == null)
       {
         ((SelectInput) altKontoinhaberInput).setPreselected(null);

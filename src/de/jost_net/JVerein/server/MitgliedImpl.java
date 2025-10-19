@@ -112,14 +112,25 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     try
     {
-      // Falls das Mitglied für andere zahlt kann man nicht löschen
+      // Falls das Mitglied Vollzahler in einem Familienverband ist, kann man
+      // nicht löschen
       DBIterator<Mitglied> famang = Einstellungen.getDBService()
           .createList(Mitglied.class);
       famang.addFilter("zahlerid = " + getID());
       if (famang.hasNext())
       {
         throw new ApplicationException(
-            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst Beitragsart der Angehörigen ändern!");
+            "Dieses Mitglied ist Vollzahler in einem Familienverband. Zunächst Beitragsart der Angehörigen ändern!");
+      }
+
+      // Falls das Mitglied für andere zahlt kann man nicht löschen
+      DBIterator<Mitglied> altKtoi = Einstellungen.getDBService()
+          .createList(Mitglied.class);
+      altKtoi.addFilter("altkontoinhaber = " + getID());
+      if (altKtoi.hasNext())
+      {
+        throw new ApplicationException(
+            "Dieses Mitglied zahlt noch für andere Mitglieder. Zunächst einen anderen Zahler wählen!");
       }
     }
     catch (RemoteException e)
