@@ -155,7 +155,8 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void setVollZahlerID(Long id) throws RemoteException;
 
   /**
-   * Zahlt das Mitglied nicht selbst ist es der alternative Beitragszahler.
+   * Zahlt das Mitglied nicht selbst ist hier der alternative Beitragszahler
+   * konfiguriert.
    */
   public Mitglied getAltZahler() throws RemoteException;
 
@@ -166,7 +167,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   /**
    * Liefert das Mitglied/Nicht-Mitglied welches den Beitrag für das Mitglied
    * bezahlt. Es ist normalerweise das Mitglied selbst. Ist ein alternativer
-   * Kontoinhaber konfiguriert, wird dieser zurückgeliefert.
+   * Beitragszahler konfiguriert, wird dieser zurückgeliefert.
    */
   public Mitglied getZahler() throws RemoteException;
 
