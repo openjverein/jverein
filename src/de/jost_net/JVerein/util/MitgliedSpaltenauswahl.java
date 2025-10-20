@@ -113,19 +113,8 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Datum des Mandats", "mandatdatum", false, true);
     add("BIC", "bic", false, true);
     add("IBAN", "iban", false, new IBANFormatter(), Column.ALIGN_LEFT, true);
-    add("Kontoinhaber Anrede", "ktoianrede", false, true);
-    add("Kontoinhaber Name", "ktoiname", false, true);
-    add("Kontoinhaber Titel", "ktoititel", false, true);
-    add("Kontoinhaber Vorname", "ktoivorname", false, true);
-    add("Kontoinhaber Straße", "ktoistrasse", false, true);
-    add("Kontoinhaber Adressierungszusatz", "ktoiadressierungszsatz", false,
-        true);
-    add("Kontoinhaber PLZ", "ktoiplz", false, true);
-    add("Kontoinhaber Ort", "ktoiort", false, true);
-    add("Kontoinhaber Staat", "ktoistaat", false, new StaatFormatter(),
-        Column.ALIGN_LEFT, true);
-    add("Kontoinhaber Email", "ktoiemail", false, true);
-    add("Kontoinhaber Geschlecht", "ktoigeschlecht", false, true);
+    add("Kontoinhaber", "kontoinhaber", false, true);
+    add("Alternativer Zahler", "altzahlerstring", false, true);
     add("Mandat Version", "mandatversion", false, true);
     add("Geburtsdatum", "geburtsdatum", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);

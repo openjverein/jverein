@@ -692,7 +692,15 @@ public class MitgliedControl extends FilterControl implements Savable
         ((SelectInput) altZahlerInput).setPreselected(null);
       }
     }
-    altZahlerInput.setName("Alternativer Zahler für Beiträge");
+    if (isMitglied)
+    {
+      altZahlerInput
+          .setName("Alternativer Zahler für Beiträge und Zusatzbeträge");
+    }
+    else
+    {
+      altZahlerInput.setName("Alternativer Zahler für Zusatzbeträge");
+    }
     return altZahlerInput;
   }
 

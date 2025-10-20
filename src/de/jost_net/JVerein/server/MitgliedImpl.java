@@ -1347,6 +1347,17 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       return Adressaufbereitung.getAdressfeld(this);
     }
+    else if (fieldName.equals("altzahlerstring"))
+    {
+      if (this.getAltZahler() != null)
+      {
+        return Adressaufbereitung.getNameVorname(this.getAltZahler());
+      }
+      else
+      {
+        return "";
+      }
+    }
     else if (fieldName.startsWith("zusatzfelder_"))
     {
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
