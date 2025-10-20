@@ -44,5 +44,20 @@ public class Update0493 extends AbstractDDLUpdate
 
     execute(createForeignKey("fk_mitglied_altzahler", "mitglied", "altzahler",
         "mitglied", "id", "RESTRICT", "CASCADE"));
+
+    // Wenn das Feature fertig ist kann man die Attribute löschen
+    // Es gibt ja keinen Weg zurück mehr
+    // execute(dropColumn("mitglied", "ktoipersonenart"));
+    // execute(dropColumn("mitglied", "ktoianrede"));
+    // execute(dropColumn("mitglied", "ktoititel"));
+    // execute(dropColumn("mitglied", "ktoiname"));
+    // execute(dropColumn("mitglied", "ktoivorname"));
+    // execute(dropColumn("mitglied", "ktoistrasse"));
+    // execute(dropColumn("mitglied", "ktoiadressierungszusatz"));
+    // execute(dropColumn("mitglied", "ktoiplz"));
+    // execute(dropColumn("mitglied", "ktoiort"));
+    // execute(dropColumn("mitglied", "ktoistaat"));
+    // execute(dropColumn("mitglied", "ktoiEmail"));
+    // execute(dropColumn("mitglied", "ktoigeschlecht"));
   }
 }
