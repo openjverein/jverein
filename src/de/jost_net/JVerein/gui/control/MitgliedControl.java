@@ -696,7 +696,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return altZahlerInput;
   }
 
-  private Long getSelectedAltKontoinhaberId() throws ApplicationException
+  private Long getSelectedAltZahlerId() throws ApplicationException
   {
     try
     {
@@ -704,16 +704,16 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         return null;
       }
-      Mitglied derAltKtoi = (Mitglied) getAltZahler().getValue();
-      if (null == derAltKtoi)
+      Mitglied derAltZahler = (Mitglied) getAltZahler().getValue();
+      if (null == derAltZahler)
       {
         return null;
       }
-      return Long.valueOf(derAltKtoi.getID());
+      return Long.valueOf(derAltZahler.getID());
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählter alternative Kontoinhaber kann nicht ermittelt werden";
+      final String meldung = "Gewählter alternative Zahler kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -2178,7 +2178,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    m.setAltZahlerID(getSelectedAltKontoinhaberId());
+    m.setAltZahlerID(getSelectedAltZahlerId());
     m.setKontoinhaber((String) getKontoinhaber().getValue());
 
     // Vermerke
