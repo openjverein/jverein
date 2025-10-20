@@ -163,27 +163,31 @@ public class MitgliedMap extends AbstractMap
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
     }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
-    map.put(MitgliedVar.KONTOINHABER.getName(), mitglied.getKontoinhaber());
-    if (mitglied.getAltZahlerID() == null)
-    {
-      map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-          mitglied.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
-      map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-          mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
-      map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
-          mitglied.getKontoinhaber(Mitglied.namenformat.ADRESSE));
-    }
-    else
-    {
-      map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-          mitglied.getAltZahler()
-              .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
-      map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-          mitglied.getAltZahler()
-              .getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
-      map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(), mitglied
-          .getAltZahler().getKontoinhaber(Mitglied.namenformat.ADRESSE));
-    }
+    map.put(MitgliedVar.KONTO_KONTOINHABER.getName(),
+        mitglied.getKontoinhaber());
+    map.put(MitgliedVar.KONTOINHABER.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
+    map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
+    map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
+        mitglied.getKontoinhaber(Mitglied.namenformat.ADRESSE));
+    map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
+        mitglied.getAdressierungszusatz());
+    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), mitglied.getAnrede());
+    map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(), mitglied.getEmail());
+    map.put(MitgliedVar.KONTOINHABER_NAME.getName(), mitglied.getName());
+    map.put(MitgliedVar.KONTOINHABER_ORT.getName(), mitglied.getOrt());
+    map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(),
+        mitglied.getPersonenart());
+    map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), mitglied.getPlz());
+    map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), mitglied.getStaat());
+    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), mitglied.getStrasse());
+    map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), mitglied.getTitel());
+    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), mitglied.getVorname());
+    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
+        mitglied.getGeschlecht());
     map.put(MitgliedVar.KUENDIGUNG.getName(),
         Datum.formatDate(mitglied.getKuendigung()));
     map.put(MitgliedVar.LETZTEAENDERUNG.getName(),
@@ -383,7 +387,7 @@ public class MitgliedMap extends AbstractMap
 
     map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
     map.put(MitgliedVar.MITGLIEDSTYP.getName(), "1");
-    map.put(MitgliedVar.ANREDE.getName(), "Herrn");
+    map.put(MitgliedVar.ANREDE.getName(), "Herr");
     map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
     map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
@@ -417,13 +421,31 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");
     map.put(MitgliedVar.KONTO.getName(), "");
     map.put(MitgliedVar.BANKNAME.getName(), "XY Bank");
+    map.put(MitgliedVar.KONTO_KONTOINHABER.getName(),
+        "Gemeinschaftskonto Willi und Else Müller");
     map.put(MitgliedVar.KONTOINHABER.getName(),
-        "Kontoinhaber Name wenn gesetzt");
+        "Gemeinschaftskonto Willi und Else Müller");
     map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-        "Maier, Dr. Werner");
-    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(), "Dr. Werner Maier");
+        "Wichtig, Dr. Dr. Willi");
+    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
+        "Dr. Dr. Willi Wichtig");
     map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
-        "Herr\nDr. Werner Maier\nAdresszusatz\nKirchenstrasse 5\n5678 Essen\nDeutschland");
+        "Herr\\nDr. Dr. Willi Wichtig\\nHinterhof bei Müller\\nBahnhofstr. 22\\n12345 Testenhausen\\nDeutschland");
+    map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(), "n");
+    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), "Herr");
+    map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), "Dr. Dr.");
+    map.put(MitgliedVar.KONTOINHABER_NAME.getName(), "Wichtig");
+    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), "Willi");
+    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), "Bahnhofstr. 22");
+    map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
+        "Hinterhof bei Müller");
+    map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), "12345");
+    map.put(MitgliedVar.KONTOINHABER_ORT.getName(), "Testenhausen");
+    map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), "Deutschland");
+    map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(),
+        "willi.wichtig@jverein.de");
+    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
+        GeschlechtInput.MAENNLICH);
     map.put(MitgliedVar.KUENDIGUNG.getName(), "01.11.2024");
     map.put(MitgliedVar.LETZTEAENDERUNG.getName(), "01.11.2024");
     map.put(MitgliedVar.NAME.getName(), "Wichtig");
