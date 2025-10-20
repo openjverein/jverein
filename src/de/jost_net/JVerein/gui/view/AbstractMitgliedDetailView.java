@@ -559,7 +559,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           zahlungsweg.addInput(control.getZahlungstermin());
           break;
       }
-      zahlungsweg.addInput(control.getAltKontoinhaber());
+      zahlungsweg.addInput(control.getAltZahler());
     }
 
     LabelGroup bankverbindung = control

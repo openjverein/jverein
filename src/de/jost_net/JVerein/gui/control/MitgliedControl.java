@@ -238,7 +238,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private AbstractInput zahler;
 
-  private AbstractInput altKontoinhaberInput;
+  private AbstractInput altZahlerInput;
 
   private DateInput austritt = null;
 
@@ -675,37 +675,36 @@ public class MitgliedControl extends FilterControl implements Savable
     zahlungsweg.setList(weg);
   }
 
-  public Input getAltKontoinhaber() throws RemoteException
+  public Input getAltZahler() throws RemoteException
   {
-    if (altKontoinhaberInput != null)
+    if (altZahlerInput != null)
     {
-      return altKontoinhaberInput;
+      return altZahlerInput;
     }
-    altKontoinhaberInput = new MitgliedInput().getMitgliedInput(
-        altKontoinhaberInput, getMitglied().getAltKontoinhaber(),
+    altZahlerInput = new MitgliedInput().getMitgliedInput(altZahlerInput,
+        getMitglied().getAltZahler(),
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-    if (altKontoinhaberInput instanceof SelectInput)
+    if (altZahlerInput instanceof SelectInput)
     {
-      ((SelectInput) altKontoinhaberInput)
-          .setPleaseChoose("Kein alternativer Kontoinhaber gesetzt");
-      if (getMitglied().getAltKontoinhaber() == null)
+      ((SelectInput) altZahlerInput).setPleaseChoose("Mitglied zahlt selbst");
+      if (getMitglied().getAltZahler() == null)
       {
-        ((SelectInput) altKontoinhaberInput).setPreselected(null);
+        ((SelectInput) altZahlerInput).setPreselected(null);
       }
     }
-    altKontoinhaberInput.setName("Alternativer Kontoinhaber");
-    return altKontoinhaberInput;
+    altZahlerInput.setName("Alternativer Zahler für Beiträge");
+    return altZahlerInput;
   }
 
   private Long getSelectedAltKontoinhaberId() throws ApplicationException
   {
     try
     {
-      if (altKontoinhaberInput == null)
+      if (altZahlerInput == null)
       {
         return null;
       }
-      Mitglied derAltKtoi = (Mitglied) getAltKontoinhaber().getValue();
+      Mitglied derAltKtoi = (Mitglied) getAltZahler().getValue();
       if (null == derAltKtoi)
       {
         return null;
@@ -2179,7 +2178,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    m.setAltKontoinhaberID(getSelectedAltKontoinhaberId());
+    m.setAltZahlerID(getSelectedAltKontoinhaberId());
     m.setKontoinhaber((String) getKontoinhaber().getValue());
 
     // Vermerke

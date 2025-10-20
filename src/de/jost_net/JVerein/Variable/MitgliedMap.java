@@ -164,7 +164,7 @@ public class MitgliedMap extends AbstractMap
     }
     map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
     map.put(MitgliedVar.KONTOINHABER.getName(), mitglied.getKontoinhaber());
-    if (mitglied.getAltKontoinhaberID() == null)
+    if (mitglied.getAltZahlerID() == null)
     {
       map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
           mitglied.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
@@ -176,13 +176,13 @@ public class MitgliedMap extends AbstractMap
     else
     {
       map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-          mitglied.getAltKontoinhaber()
+          mitglied.getAltZahler()
               .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
       map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-          mitglied.getAltKontoinhaber()
+          mitglied.getAltZahler()
               .getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
       map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(), mitglied
-          .getAltKontoinhaber().getKontoinhaber(Mitglied.namenformat.ADRESSE));
+          .getAltZahler().getKontoinhaber(Mitglied.namenformat.ADRESSE));
     }
     map.put(MitgliedVar.KUENDIGUNG.getName(),
         Datum.formatDate(mitglied.getKuendigung()));

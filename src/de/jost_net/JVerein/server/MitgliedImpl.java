@@ -1168,9 +1168,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Mitglied getAltKontoinhaber() throws RemoteException
+  public Mitglied getAltZahler() throws RemoteException
   {
-    Object o = (Object) super.getAttribute("altkontoinhaber");
+    Object o = (Object) super.getAttribute("altzahler");
     if (o == null)
       return null;
 
@@ -1182,23 +1182,23 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Long getAltKontoinhaberID() throws RemoteException
+  public Long getAltZahlerID() throws RemoteException
   {
-    return (Long) getAttribute("altkontoinhaber");
+    return (Long) getAttribute("altzahler");
   }
 
   @Override
-  public void setAltKontoinhaberID(Long id) throws RemoteException
+  public void setAltZahlerID(Long id) throws RemoteException
   {
-    setAttribute("altkontoinhaber", id);
+    setAttribute("altzahler", id);
   }
 
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-    if (getAltKontoinhaberID() != null)
+    if (getAltZahlerID() != null)
     {
-      return getAltKontoinhaber();
+      return getAltZahler();
     }
     return this;
   }
@@ -1206,9 +1206,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Long getZahlerID() throws RemoteException
   {
-    if (getAltKontoinhaberID() != null)
+    if (getAltZahlerID() != null)
     {
-      return getAltKontoinhaberID();
+      return getAltZahlerID();
     }
     return Long.valueOf(getID());
   }

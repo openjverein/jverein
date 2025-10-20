@@ -34,15 +34,15 @@ public class Update0493 extends AbstractDDLUpdate
     execute(addColumn("mitglied",
         new Column("kontoinhaber", COLTYPE.VARCHAR, 70, null, false, false)));
 
-    Column altKontoinhaber = new Column("altkontoinhaber", COLTYPE.BIGINT, 4,
-        null, false, false);
-    execute(addColumn("mitglied", altKontoinhaber));
+    Column altZahler = new Column("altzahler", COLTYPE.BIGINT, 4, null, false,
+        false);
+    execute(addColumn("mitglied", altZahler));
 
-    Index idx = new Index("ix_mitglied_altkontoinhaber", false);
-    idx.add(altKontoinhaber);
+    Index idx = new Index("ix_mitglied_altzahler", false);
+    idx.add(altZahler);
     execute(idx.getCreateIndex("mitglied"));
 
-    execute(createForeignKey("fk_mitglied_altkontoinhaber", "mitglied",
-        "altkontoinhaber", "mitglied", "id", "RESTRICT", "CASCADE"));
+    execute(createForeignKey("fk_mitglied_altzahler", "mitglied", "altzahler",
+        "mitglied", "id", "RESTRICT", "CASCADE"));
   }
 }
