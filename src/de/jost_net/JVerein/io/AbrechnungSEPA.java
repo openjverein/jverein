@@ -621,7 +621,7 @@ public class AbrechnungSEPA
         zahler.setVerwendungszweck(bg.getBezeichnung());
       }
       zahler
-          .setName(mZahler.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+          .setName(mZahler.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         zahler.setSteuer(bg.getSteuer());
@@ -707,7 +707,7 @@ public class AbrechnungSEPA
           }
           zahler.setFaelligkeit(param.faelligkeit);
           zahler.setName(
-              mZahler.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+              mZahler.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
           zahler.setVerwendungszweck(vzweck);
           zahler.setZahlungsweg(new Zahlungsweg(zahlungsweg));
           if (z.getBuchungsart() != null)

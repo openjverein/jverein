@@ -58,12 +58,13 @@ public class MitgliedLastschriftAction implements Action
 
         if (!AbrechnungSEPAControl.confirmDialog("Alternativer Kontoinhaber",
             "Dieses Mitglied hat einen alternativen Kontoinhaber.\n\n"
-                + "Als Konto wird das Konto des alternativen Kontoinhaber belastet:\n"
+                + "Soll das Konto des alternativen Kontoinhaber belastet werden?\n"
                 + "Zahler: " + mZ.getName() + ", " + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
-                + mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)))
+                + mZ.getKontoinhaber(Mitglied.namenformat.KONTOINHABER)))
         {
-          return;
+          // Dann zahlt das Mitglied
+          mZ = m;
         }
 
       }
@@ -85,7 +86,7 @@ public class MitgliedLastschriftAction implements Action
 
         // Kontodaten: Name, BIC, IBAN
         sl.setGegenkontoName(
-            mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+            mZ.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
         sl.setGegenkontoBLZ(mZ.getBic());
         sl.setGegenkontoNummer(mZ.getIban());
 

@@ -30,6 +30,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 {
   public enum namenformat
   {
+    KONTOINHABER,
     NAME_VORNAME,
     VORNAME_NAME,
     ADRESSE

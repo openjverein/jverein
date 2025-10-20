@@ -918,24 +918,26 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
-    String ktoi = getKontoinhaber();
-    if (ktoi != null && !ktoi.isEmpty())
+    switch (art)
     {
-      return ktoi;
-    }
-    else
-    {
-      switch (art)
-      {
-        case NAME_VORNAME:
+      case KONTOINHABER:
+        String ktoi = getKontoinhaber();
+        if (ktoi != null && !ktoi.isEmpty())
+        {
+          return ktoi;
+        }
+        else
+        {
           return Adressaufbereitung.getNameVorname(this);
-        case VORNAME_NAME:
-          return Adressaufbereitung.getVornameName(this);
-        case ADRESSE:
-          return Adressaufbereitung.getAdressfeld(this);
-      }
-      return null;
+        }
+      case NAME_VORNAME:
+        return Adressaufbereitung.getNameVorname(this);
+      case VORNAME_NAME:
+        return Adressaufbereitung.getVornameName(this);
+      case ADRESSE:
+        return Adressaufbereitung.getAdressfeld(this);
     }
+    return null;
   }
 
   @Override
