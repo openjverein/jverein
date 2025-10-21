@@ -686,7 +686,8 @@ public class MitgliedControl extends FilterControl implements Savable
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     if (altZahlerInput instanceof SelectInput)
     {
-      ((SelectInput) altZahlerInput).setPleaseChoose("Mitglied zahlt selbst");
+      ((SelectInput) altZahlerInput)
+          .setPleaseChoose("Bankverbindung des Mitglied verwenden");
       if (getMitglied().getAltZahler() == null)
       {
         ((SelectInput) altZahlerInput).setPreselected(null);
