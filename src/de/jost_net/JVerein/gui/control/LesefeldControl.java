@@ -547,19 +547,23 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   public void updateLesefeldMitgliedList(Mitglied m, boolean force)
       throws RemoteException
   {
-    // Bei neuem Mitglied noch nichts anzeigen
-    if (m != null && m.getID() != null)
+    // Wenn Lesefelder nicht aktiviert sind gibt es die Liste nicht
+    if (lesefeldMitgliedList != null)
     {
-      // Force wird aus dem MitgliedDetailView verwendet wenn ein Mitglied
-      // gespeichert wird. Dann muss ein Update gemacht werden weil sich die
-      // Mitgliedsdaten geändert haben können.
-      if (ersterTabAufruf || force)
+      // Bei neuem Mitglied noch nichts anzeigen
+      if (m != null && m.getID() != null)
       {
-        initLesefeldMitgliedList(m);
-        lesefeldMitgliedList.removeAll();
-        for (Lesefeld lesefeld : lesefeldAuswerter.getLesefelder())
+        // Force wird aus dem MitgliedDetailView verwendet wenn ein Mitglied
+        // gespeichert wird. Dann muss ein Update gemacht werden weil sich die
+        // Mitgliedsdaten geändert haben können.
+        if (ersterTabAufruf || force)
         {
-          lesefeldMitgliedList.addItem(lesefeld);
+          initLesefeldMitgliedList(m);
+          lesefeldMitgliedList.removeAll();
+          for (Lesefeld lesefeld : lesefeldAuswerter.getLesefelder())
+          {
+            lesefeldMitgliedList.addItem(lesefeld);
+          }
         }
       }
     }
