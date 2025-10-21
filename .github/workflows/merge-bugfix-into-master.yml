@@ -1,9 +1,9 @@
-name: Merge master branch bugfixes into feature branches
+name: Merge bugfix branch into master branche
 
 on:
   push:
     branches:
-      - 'master'
+      - '[0-9]+.[0-9]+'
     paths-ignore:
       - plugin.xml
 jobs:
@@ -22,11 +22,11 @@ jobs:
           git config --local user.email "actions@github.com"
           git config --local user.name "Github Actions"
 
-      - name: Check for merge conflicts for master into feature-3.2.0
+      - name: Check for merge conflicts for ${{ github.ref_name }} into master
         run: |
-          git checkout feature-3.2.0
+          git checkout master
           git pull
-          git merge master --no-ff --no-commit
+          git merge ${{ github.ref_name }} --no-ff --no-commit
 
       - name: Abort previous merge check
         if: always()
@@ -34,9 +34,9 @@ jobs:
           git merge --abort
           git reset --hard HEAD
       
-      - name: Merge master into feature-3.2.0
+      - name: Merge ${{ github.ref_name }} into master
         if: always()
         run: |
-          # Merge master branch into feature with feature as king (ours)
-          git merge -X ours master -m "Auto-merge master into feature-3.2.0" --stat
+          # Merge bugfix branch into master with master as king (ours)
+          git merge -X ours ${{ github.ref_name }} -m "Auto-merge ${{ github.ref_name }} into master" --stat
           git push origin
