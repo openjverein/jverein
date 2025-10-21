@@ -414,6 +414,6 @@ public class VorlageUtil
     {
       return vorlagen.next().getMuster();
     }
-    return "";
+    return typ.getDefault();
   }
 }
