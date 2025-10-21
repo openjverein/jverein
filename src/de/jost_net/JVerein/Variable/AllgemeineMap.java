@@ -27,6 +27,8 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.keys.Staat;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class AllgemeineMap extends AbstractMap
 {
@@ -97,8 +99,24 @@ public class AllgemeineMap extends AbstractMap
             .getText());
     map.put(AllgemeineVar.IBAN.getName(), new IBANFormatter()
         .format((String) Einstellungen.getEinstellung(Property.IBAN)));
-    map.put(AllgemeineVar.BIC.getName(),
-        (String) Einstellungen.getEinstellung(Property.BIC));
+    String bic = (String) Einstellungen.getEinstellung(Property.BIC);
+    map.put(AllgemeineVar.BIC.getName(), bic);
+    if (!bic.isEmpty())
+    {
+      Bank b = Banken.getBankByBIC(bic.toUpperCase());
+      if (b != null)
+      {
+        map.put(AllgemeineVar.BANK_NAME.getName(), b.getBezeichnung());
+      }
+      else
+      {
+        map.put(AllgemeineVar.BANK_NAME.getName(), "");
+      }
+    }
+    else
+    {
+      map.put(AllgemeineVar.BANK_NAME.getName(), "");
+    }
     map.put(AllgemeineVar.GLAEUBIGER_ID.getName(),
         (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
     map.put(AllgemeineVar.UST_ID.getName(),

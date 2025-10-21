@@ -31,38 +31,38 @@ public interface Beitragsgruppe extends JVereinDBObject
 
   public void setSekundaer(Boolean sekundaer) throws RemoteException;
 
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
 
-  public double getBetragMonatlich() throws RemoteException;
+  public Double getBetragMonatlich() throws RemoteException;
 
-  public void setBetragMonatlich(double betrag) throws RemoteException;
+  public void setBetragMonatlich(Double betrag) throws RemoteException;
 
-  public double getBetragVierteljaehrlich() throws RemoteException;
+  public Double getBetragVierteljaehrlich() throws RemoteException;
 
-  public void setBetragVierteljaehrlich(double betrag) throws RemoteException;
+  public void setBetragVierteljaehrlich(Double betrag) throws RemoteException;
 
-  public double getBetragHalbjaehrlich() throws RemoteException;
+  public Double getBetragHalbjaehrlich() throws RemoteException;
 
-  public void setBetragHalbjaehrlich(double betrag) throws RemoteException;
+  public void setBetragHalbjaehrlich(Double betrag) throws RemoteException;
 
-  public double getBetragJaehrlich() throws RemoteException;
+  public Double getBetragJaehrlich() throws RemoteException;
 
-  public void setBetragJaehrlich(double betrag) throws RemoteException;
+  public void setBetragJaehrlich(Double betrag) throws RemoteException;
 
   public ArtBeitragsart getBeitragsArt() throws RemoteException;
 
   public void setBeitragsArt(int art) throws RemoteException;
 
-  public double getArbeitseinsatzStunden() throws RemoteException;
+  public Double getArbeitseinsatzStunden() throws RemoteException;
 
-  public void setArbeitseinsatzStunden(double arbeitseinsatzStunden)
+  public void setArbeitseinsatzStunden(Double arbeitseinsatzStunden)
       throws RemoteException;
 
-  public double getArbeitseinsatzBetrag() throws RemoteException;
+  public Double getArbeitseinsatzBetrag() throws RemoteException;
 
-  public void setArbeitseinsatzBetrag(double arbeitseinsatzBetrag)
+  public void setArbeitseinsatzBetrag(Double arbeitseinsatzBetrag)
       throws RemoteException;
 
   public Buchungsart getBuchungsart() throws RemoteException;

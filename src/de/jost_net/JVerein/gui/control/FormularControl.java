@@ -120,6 +120,10 @@ public class FormularControl extends FormularPartControl implements Savable
       {
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
+      if (aktuelleFormularArt != FormularArt.SACHSPENDENBESCHEINIGUNG)
+      {
+        list.remove(FormularArt.SACHSPENDENBESCHEINIGUNG);
+      }
     }
     if (!(Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
