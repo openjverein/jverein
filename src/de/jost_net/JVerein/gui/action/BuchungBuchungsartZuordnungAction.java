@@ -117,13 +117,23 @@ public class BuchungBuchungsartZuordnungAction implements Action
             }
             if (st != null)
             {
-              if (buchung.getSteuer() != null && !baz.getOverride())
+              boolean istLöschen = st.getName()
+                  .equalsIgnoreCase("Steuer löschen");
+              if (buchung.getSteuer() != null && !istLöschen
+                  && !baz.getOverride())
               {
                 counter++;
               }
               else
               {
-                buchung.setSteuerId(Long.valueOf(st.getID()));
+                if (istLöschen)
+                {
+                  buchung.setSteuer(null);
+                }
+                else
+                {
+                  buchung.setSteuerId(Long.valueOf(st.getID()));
+                }
                 store = true;
               }
             }

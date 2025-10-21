@@ -17,6 +17,8 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -29,7 +31,6 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -162,7 +163,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         close();
       }
     }, null, true, "ok.png");
-    buttons.addButton("Entfernen", new Action()
+    buttons.addButton("Alle Entfernen", new Action()
     {
 
       @Override
@@ -297,11 +298,19 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return steuerInput;
     }
+    List<Steuer> liste = new ArrayList<>();
+    Steuer löschen = (Steuer) Einstellungen.getDBService()
+        .createObject(Steuer.class, null);
+    löschen.setName("Steuer löschen");
+    liste.add(löschen);
     DBIterator<Steuer> it = Einstellungen.getDBService()
         .createList(Steuer.class);
     it.addFilter("aktiv = true");
-
-    steuerInput = new SelectInput(PseudoIterator.asList(it), null);
+    while (it.hasNext())
+    {
+      liste.add(it.next());
+    }
+    steuerInput = new SelectInput(liste, null);
     steuerInput.setAttribute("name");
     steuerInput.setPleaseChoose("Steuer nicht ändern");
     steuerInput.addListener(event -> {
