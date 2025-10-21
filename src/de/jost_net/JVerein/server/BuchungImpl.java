@@ -896,7 +896,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (list.size() > 0)
         return list.size();
       else
-        return "";
+        return null;
     }
 
     return super.getAttribute(fieldName);
