@@ -69,6 +69,7 @@ jobs:
         path: website
         ref: 'main'
         token: ${{ secrets.WEBSITE_DEPLOY_KEY }}
+        target_commitish: ${{ github.ref_name }}
 
     - name: Upload Files to Website repository
       run: |
