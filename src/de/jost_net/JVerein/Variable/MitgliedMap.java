@@ -103,8 +103,7 @@ public class MitgliedMap extends AbstractMap
               ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                   Beitragsmodel.getByKey((Integer) Einstellungen
                       .getEinstellung(Property.BEITRAGSMODEL)),
-                  mitglied.getZahlungstermin(),
-                  mitglied.getZahlungsrhythmus().getKey(),
+                  mitglied.getZahlungstermin(), mitglied.getZahlungsrhythmus(),
                   mitglied.getBeitragsgruppe(), new Date(), mitglied))
               : "");
     }

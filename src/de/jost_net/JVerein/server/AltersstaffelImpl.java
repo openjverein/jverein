@@ -17,20 +17,15 @@ public class AltersstaffelImpl extends AbstractDBObject implements Altersstaffel
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double betrag) throws RemoteException
+  public void setBetrag(Double betrag) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(betrag));
+    setAttribute("betrag", betrag);
   }
 
   @Override

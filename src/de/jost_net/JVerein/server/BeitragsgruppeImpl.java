@@ -132,13 +132,35 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
       {
         case GLEICHERTERMINFUERALLE:
         case MONATLICH12631:
-          if (getBetrag() < 0)
+          if (!getHasAltersstaffel() && getBetrag() == null)
           {
-            throw new ApplicationException("Betrag nicht gültig");
+            throw new ApplicationException("Bitte Betrag eingeben!");
+          }
+          if (!getHasAltersstaffel() && getBetrag() < 0)
+          {
+            throw new ApplicationException("Betrag nicht gültig!");
           }
 
           break;
         case FLEXIBEL:
+          if (getBetragMonatlich() == null)
+          {
+            throw new ApplicationException("Bitte Betrag monatlich eingeben!");
+          }
+          if (getBetragVierteljaehrlich() == null)
+          {
+            throw new ApplicationException(
+                "Bitte Betrag vierteljährlich eingeben!");
+          }
+          if (getBetragHalbjaehrlich() == null)
+          {
+            throw new ApplicationException(
+                "Bitte Betrag halbjährlich eingeben!");
+          }
+          if (getBetragJaehrlich() == null)
+          {
+            throw new ApplicationException("Bitte Betrag jährlich eingeben!");
+          }
           if (getBetragMonatlich() < 0 || getBetragVierteljaehrlich() < 0
               || getBetragHalbjaehrlich() < 0 || getBetragJaehrlich() < 0)
           {
@@ -219,6 +241,19 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
               "Sekundäre Beitragsgrupe kann nicht Beitragsart Angehöriger haben!");
         }
       }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
+      {
+        if (getArbeitseinsatzStunden() == null)
+        {
+          throw new ApplicationException(
+              "Bitte Arbeitseinsatz Stunden eingeben!");
+        }
+        if (getArbeitseinsatzBetrag() == null)
+        {
+          throw new ApplicationException(
+              "Bitte Arbeitseinsatz Betrag eingeben!");
+        }
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
         if (getSteuer() != null && getBuchungsart() != null && getSteuer()
@@ -286,88 +321,63 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betrag");
   }
 
   @Override
-  public void setBetrag(double d) throws RemoteException
+  public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", Double.valueOf(d));
+    setAttribute("betrag", d);
   }
 
   @Override
-  public double getBetragMonatlich() throws RemoteException
+  public Double getBetragMonatlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragmonatlich");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betragmonatlich");
   }
 
   @Override
-  public void setBetragMonatlich(double d) throws RemoteException
+  public void setBetragMonatlich(Double d) throws RemoteException
   {
-    setAttribute("betragmonatlich", Double.valueOf(d));
+    setAttribute("betragmonatlich", d);
   }
 
   @Override
-  public double getBetragVierteljaehrlich() throws RemoteException
+  public Double getBetragVierteljaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragvierteljaehrlich");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betragvierteljaehrlich");
   }
 
   @Override
-  public void setBetragVierteljaehrlich(double d) throws RemoteException
+  public void setBetragVierteljaehrlich(Double d) throws RemoteException
   {
-    setAttribute("betragvierteljaehrlich", Double.valueOf(d));
+    setAttribute("betragvierteljaehrlich", d);
   }
 
   @Override
-  public double getBetragHalbjaehrlich() throws RemoteException
+  public Double getBetragHalbjaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betraghalbjaehrlich");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betraghalbjaehrlich");
   }
 
   @Override
-  public void setBetragHalbjaehrlich(double d) throws RemoteException
+  public void setBetragHalbjaehrlich(Double d) throws RemoteException
   {
-    setAttribute("betraghalbjaehrlich", Double.valueOf(d));
+    setAttribute("betraghalbjaehrlich", d);
   }
 
   @Override
-  public double getBetragJaehrlich() throws RemoteException
+  public Double getBetragJaehrlich() throws RemoteException
   {
-    Double d = (Double) getAttribute("betragjaehrlich");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("betragjaehrlich");
   }
 
   @Override
-  public void setBetragJaehrlich(double d) throws RemoteException
+  public void setBetragJaehrlich(Double d) throws RemoteException
   {
-    setAttribute("betragjaehrlich", Double.valueOf(d));
+    setAttribute("betragjaehrlich", d);
   }
 
   @Override
@@ -413,33 +423,22 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getArbeitseinsatzStunden() throws RemoteException
+  public Double getArbeitseinsatzStunden() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzstunden");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("arbeitseinsatzstunden");
   }
 
   @Override
-  public void setArbeitseinsatzStunden(double arbeitseinsatzStunden)
+  public void setArbeitseinsatzStunden(Double arbeitseinsatzStunden)
       throws RemoteException
   {
-    setAttribute("arbeitseinsatzstunden",
-        Double.valueOf(arbeitseinsatzStunden));
+    setAttribute("arbeitseinsatzstunden", arbeitseinsatzStunden);
   }
 
   @Override
-  public double getArbeitseinsatzBetrag() throws RemoteException
+  public Double getArbeitseinsatzBetrag() throws RemoteException
   {
-    Double d = (Double) getAttribute("arbeitseinsatzbetrag");
-    if (d == null)
-    {
-      return 0;
-    }
-    return d.doubleValue();
+    return (Double) getAttribute("arbeitseinsatzbetrag");
   }
 
   @Override
@@ -468,10 +467,10 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setArbeitseinsatzBetrag(double arbeitseinsatzBetrag)
+  public void setArbeitseinsatzBetrag(Double arbeitseinsatzBetrag)
       throws RemoteException
   {
-    setAttribute("arbeitseinsatzbetrag", Double.valueOf(arbeitseinsatzBetrag));
+    setAttribute("arbeitseinsatzbetrag", arbeitseinsatzBetrag);
   }
 
   @Override
