@@ -23,7 +23,9 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -32,11 +34,11 @@ import de.willuhn.util.ApplicationException;
 
 public class BeitragsUtil
 {
-  public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt, int zr,
-      Beitragsgruppe bg, Date stichtag, Mitglied m)
+  public static double getBeitrag(Beitragsmodel bm, Zahlungstermin zt,
+      Zahlungsrhythmus zr, Beitragsgruppe bg, Date stichtag, Mitglied m)
       throws RemoteException, ApplicationException
   {
-    double betr = 0;
+    Double betr = Double.valueOf(0);
     if (m.getEintritt() != null && m.getEintritt().after(stichtag))
     {
       return 0;
@@ -96,6 +98,11 @@ public class BeitragsUtil
         }
         break;
       case MONATLICH12631:
+        if (zr == null)
+        {
+          throw new ApplicationException("Zahlungsrhythmus bei "
+              + Adressaufbereitung.getNameVorname(m) + " nicht konfiguriert!");
+        }
         if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT)
             && bg.getHasAltersstaffel())
         {
@@ -144,11 +151,16 @@ public class BeitragsUtil
         }
         BigDecimal bbetr = BigDecimal.valueOf(betr);
         bbetr = bbetr.setScale(2, RoundingMode.HALF_UP);
-        BigDecimal bmonate = BigDecimal.valueOf(zr);
+        BigDecimal bmonate = BigDecimal.valueOf(zr.getKey());
         bbetr = bbetr.multiply(bmonate);
         betr = bbetr.doubleValue();
         break;
       case FLEXIBEL:
+        if (zt == null)
+        {
+          throw new ApplicationException("Zahlungstermin bei "
+              + Adressaufbereitung.getNameVorname(m) + " nicht konfiguriert!");
+        }
         switch (zt)
         {
           case MONATLICH:
@@ -184,6 +196,14 @@ public class BeitragsUtil
         }
         break;
     }
-    return betr;
+    if (betr != null)
+    {
+      return betr;
+    }
+    else
+    {
+      throw new ApplicationException("Beitrag in Beitragsgruppe von "
+          + Adressaufbereitung.getNameVorname(m) + " nicht konfiguriert!");
+    }
   }
 }

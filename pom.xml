@@ -177,7 +177,7 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
-      <version>3.0.5</version>
+      <version>3.0.6</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -212,7 +212,7 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>pdfbox</artifactId>
-      <version>3.0.5</version>
+      <version>3.0.6</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

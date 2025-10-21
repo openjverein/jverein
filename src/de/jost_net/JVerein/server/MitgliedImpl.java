@@ -1064,32 +1064,22 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
-    boolean aktoi = false;
     Mitglied m2 = (Mitglied) Einstellungen.getDBService()
         .createObject(Mitglied.class, getID());
-    if (m2.getKtoiVorname() != null && m2.getKtoiVorname().length() > 0)
+    if (m2.getKtoiName() != null && m2.getKtoiName().length() > 0)
     {
       m2.setVorname(getKtoiVorname());
       m2.setPersonenart(getKtoiPersonenart());
-      aktoi = true;
-    }
-    if (m2.getKtoiName() != null && m2.getKtoiName().length() > 0)
-    {
       m2.setName(getKtoiName());
-      m2.setPersonenart(getKtoiPersonenart());
-      aktoi = true;
-    }
-    if (m2.getKtoiAnrede() != null && m2.getKtoiAnrede().length() > 0)
-    {
       m2.setAnrede(getKtoiAnrede());
-    }
-    if (m2.getKtoiTitel() != null && m2.getKtoiTitel().length() > 0)
-    {
       m2.setTitel(getKtoiTitel());
-    }
-    else if (aktoi)
-    {
-      m2.setTitel(null);
+      m2.setStrasse(getKtoiStrasse());
+      m2.setAdressierungszusatz(getKtoiAdressierungszusatz());
+      m2.setPlz(getKtoiPlz());
+      m2.setOrt(getKtoiOrt());
+      m2.setStaat(getKtoiStaatCode());
+      m2.setEmail(getKtoiEmail());
+      m2.setGeschlecht(getKtoiGeschlecht());
     }
     switch (art)
     {

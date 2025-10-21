@@ -103,8 +103,7 @@ public class MitgliedMap extends AbstractMap
               ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
                   Beitragsmodel.getByKey((Integer) Einstellungen
                       .getEinstellung(Property.BEITRAGSMODEL)),
-                  mitglied.getZahlungstermin(),
-                  mitglied.getZahlungsrhythmus().getKey(),
+                  mitglied.getZahlungstermin(), mitglied.getZahlungsrhythmus(),
                   mitglied.getBeitragsgruppe(), new Date(), mitglied))
               : "");
     }
@@ -128,7 +127,24 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.MANDATDATUM_F.getName(),
         fromDate(mitglied.getMandatDatum()));
     map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
-    map.put(MitgliedVar.BIC.getName(), mitglied.getBic());
+    String bic = mitglied.getBic();
+    map.put(MitgliedVar.BIC.getName(), bic);
+    if (!bic.isEmpty())
+    {
+      Bank b = Banken.getBankByBIC(bic.toUpperCase());
+      if (b != null)
+      {
+        map.put(MitgliedVar.BANK_NAME.getName(), b.getBezeichnung());
+      }
+      else
+      {
+        map.put(MitgliedVar.BANK_NAME.getName(), "");
+      }
+    }
+    else
+    {
+      map.put(MitgliedVar.BANK_NAME.getName(), "");
+    }
     map.put(MitgliedVar.EINGABEDATUM.getName(),
         Datum.formatDate(mitglied.getEingabedatum()));
     map.put(MitgliedVar.EINGABEDATUM_F.getName(),
@@ -416,6 +432,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.HANDY.getName(), "0152778899");
     map.put(MitgliedVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(MitgliedVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
+    map.put(MitgliedVar.BANK_NAME.getName(), "Commerzbank");
     map.put(MitgliedVar.ID.getName(), "15");
     map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");
     map.put(MitgliedVar.KONTO.getName(), "");
