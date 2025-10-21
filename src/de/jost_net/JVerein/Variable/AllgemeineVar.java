@@ -41,6 +41,7 @@ public enum AllgemeineVar
   ABSENDER("verein_absender"), //
   IBAN("verein_iban"), //
   BIC("verein_bic"), //
+  BANK_NAME("verein_bank_name"),
   GLAEUBIGER_ID("verein_glaeubiger_id"), //
   UST_ID("verein_ust_id"), //
   STEUER_NR("verein_steuer_nr"); //
