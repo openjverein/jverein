@@ -33,10 +33,12 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.rmi.Version;
+import de.jost_net.JVerein.rmi.Vorlage;
 import de.jost_net.JVerein.util.JVDateFormatJJJJMMTT;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObject;
@@ -67,7 +69,8 @@ public class BackupRestoreAction implements Action
   {
     try
     {
-      if (Einstellungen.getDBService().createList(Einstellung.class).size() > 0)
+      if (Einstellungen.getDBService().createList(Beitragsgruppe.class)
+          .size() > 0)
       {
         String text = "Die JVerein-Datenbank enthält bereits Daten.\n"
             + "Das Backup kann nur in eine neue JVerein-Installation importiert werden.";
@@ -86,6 +89,19 @@ public class BackupRestoreAction implements Action
         gr.delete();
       }
 
+      DBIterator<Vorlage> itvorlage = Einstellungen.getDBService()
+          .createList(Vorlage.class);
+      while (itvorlage.hasNext())
+      {
+        itvorlage.next().delete();
+      }
+
+      DBIterator<Einstellung> iteinstellung = Einstellungen.getDBService()
+          .createList(Einstellung.class);
+      while (iteinstellung.hasNext())
+      {
+        iteinstellung.next().delete();
+      }
     }
     catch (Exception e1)
     {
@@ -254,7 +270,7 @@ public class BackupRestoreAction implements Action
                 String.format("%s importiert", o.getClass().getSimpleName()));
 
           DBTransaction.commit();
-          
+
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
           monitor.setStatusText("Backup importiert");
           monitor.setPercentComplete(100);
