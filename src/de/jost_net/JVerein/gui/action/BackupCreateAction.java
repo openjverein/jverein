@@ -71,6 +71,8 @@ import de.jost_net.JVerein.server.SteuerImpl;
 import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanItemImpl;
 import de.jost_net.JVerein.server.ZusatzbetragAbrechnungslaufImpl;
 import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.server.ZusatzbetragVorlageImpl;
@@ -276,7 +278,7 @@ public class BackupCreateAction implements Action
           backup(RechnungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Mitgliedskonten");
+          monitor.setStatusText("Speichere Sollbuchungen");
           backup(SollbuchungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -352,6 +354,14 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText("Speichere Vorlagen");
           backup(VorlageImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Wirtschaftspläne");
+          backup(WirtschaftsplanImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Wirtschaftsplan-positionen");
+          backup(WirtschaftsplanItemImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);
