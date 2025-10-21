@@ -45,6 +45,18 @@ public class Update0493 extends AbstractDDLUpdate
     execute(createForeignKey("fk_mitglied_altzahler", "mitglied", "altzahler",
         "mitglied", "id", "RESTRICT", "CASCADE"));
 
+    execute("UPDATE mitglied SET altzahler = zahlerid WHERE zahlungsweg = 4");
+
+    execute("UPDATE mitglied SET zahlungsweg = 2 WHERE zahlungsweg = 4");
+
+    execute(
+        "UPDATE mitglied SET kontoinhaber = SUBSTR(CONCAT(ktoiname,', ',ktoivorname),1,70)");
+
+    // Wenn kein ktoiname oder ktoivorname gesetzt ist, dann muss das Feld leer
+    // sein
+    execute(
+        "UPDATE mitglied SET kontoinhaber = (CASE WHEN kontoinhaber = ', ' THEN '' ELSE kontoinhaber END)");
+
     // Wenn das Feature fertig ist kann man die Attribute löschen
     // Es gibt ja keinen Weg zurück mehr
     // execute(dropColumn("mitglied", "ktoipersonenart"));
