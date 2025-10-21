@@ -413,8 +413,7 @@ public class PersonalbogenAction implements Action
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
-            m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(), bg,
-            new Date(), m))
+            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, new Date(), m))
         + " EUR";
     rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT);
   }
