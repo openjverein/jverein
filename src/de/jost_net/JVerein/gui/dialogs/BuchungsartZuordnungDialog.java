@@ -17,11 +17,11 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -30,6 +30,8 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Steuer;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -48,9 +50,11 @@ import de.willuhn.logging.Logger;
 public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 {
 
-  private AbstractInput buchungsarten = null;
+  private AbstractInput buchungsartInput = null;
 
-  private SelectInput buchungsklassen = null;
+  private SelectInput buchungsklasseInput = null;
+
+  private SelectInput steuerInput = null;
 
   private CheckboxInput ueberschreiben = null;
 
@@ -60,9 +64,21 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 
   private Buchungsklasse buchungsklasse = null;
 
+  private Steuer steuer = null;
+
   private boolean ueberschr;
 
+  private boolean loeschen = false;
+
   private boolean abort = true;
+
+  private boolean klasseInBuchung;
+
+  private boolean steuerInBuchung;
+
+  private List<Steuer> stliste = new ArrayList<>();
+
+  public final static String KEINE_STEUER = "Keine Steuer";
 
   /**
    * @param position
@@ -77,14 +93,23 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
   @Override
   protected void paint(Composite parent) throws Exception
   {
+
+    klasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
+    steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
+
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if (klasseInBuchung)
     {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseAuswahl());
     }
-    group.addLabelPair("Buchungsarten überschreiben", getUeberschreiben());
+    if (steuerInBuchung)
+    {
+      group.addLabelPair("Steuer", getSteuerAuswahl());
+    }
+    group.addLabelPair("Überschreiben", getUeberschreiben());
     group.addLabelPair("", getStatus());
 
     ButtonArea buttons = new ButtonArea();
@@ -93,50 +118,53 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
-        if (buchungsarten.getValue() == null)
+
+        boolean buchungsartNull = buchungsartInput.getValue() == null;
+        boolean buchungsklasseNull = !klasseInBuchung
+            || buchungsklasseInput.getValue() == null;
+        boolean steuerNull = !steuerInBuchung || steuerInput.getValue() == null;
+
+        if (!klasseInBuchung && !steuerInBuchung)
         {
-          status.setValue("Bitte Buchungsart auswählen");
-          status.setColor(Color.ERROR);
-          return;
-        }
-        if (buchungsarten.getValue() instanceof Buchungsart)
-        {
-          buchungsart = (Buchungsart) buchungsarten.getValue();
-        }
-        try
-        {
-          if ((Boolean) Einstellungen
-              .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+          if (buchungsartNull)
           {
-            if (buchungsklassen.getValue() == null)
-            {
-              status.setValue("Bitte Buchungsklasse auswählen");
-              status.setColor(Color.ERROR);
-              return;
-            }
-            if (buchungsklassen.getValue() instanceof Buchungsklasse)
-            {
-              buchungsklasse = (Buchungsklasse) buchungsklassen.getValue();
-            }
+            status.setValue("Bitte Buchungsart auswählen");
+            status.setColor(Color.ERROR);
+            return;
           }
         }
-        catch (RemoteException e)
+        else
         {
-          Logger.error("Fehler", e);
+          if (buchungsartNull && buchungsklasseNull && steuerNull)
+          {
+            status.setValue("Bitte mindestens einen Eintrag auswählen");
+            status.setColor(Color.ERROR);
+            return;
+          }
+        }
+
+        buchungsart = (Buchungsart) buchungsartInput.getValue();
+        if (klasseInBuchung)
+        {
+          buchungsklasse = (Buchungsklasse) buchungsklasseInput.getValue();
+        }
+        if (steuerInBuchung)
+        {
+          steuer = (Steuer) steuerInput.getValue();
         }
         ueberschr = (Boolean) getUeberschreiben().getValue();
+        loeschen = false;
         abort = false;
         close();
       }
     }, null, true, "ok.png");
-    buttons.addButton("Entfernen", new Action()
+    buttons.addButton("Alle Entfernen", new Action()
     {
 
       @Override
       public void handleAction(Object context)
       {
-        buchungsart = null;
-        buchungsklasse = null;
+        loeschen = true;
         abort = false;
         close();
       }
@@ -146,6 +174,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
+        abort = true;
         close();
       }
     }, null, false, "process-stop.png");
@@ -173,6 +202,11 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     return buchungsklasse;
   }
 
+  public Steuer getSteuer()
+  {
+    return steuer;
+  }
+
   public boolean getOverride()
   {
     return ueberschr;
@@ -183,53 +217,110 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     return abort;
   }
 
+  public boolean getDelete()
+  {
+    return loeschen;
+  }
+
   private Input getBuchungsartAuswahl() throws RemoteException
   {
-    if (buchungsarten != null)
+    if (buchungsartInput != null)
     {
-      return buchungsarten;
+      return buchungsartInput;
     }
-    buchungsarten = new BuchungsartInput().getBuchungsartInput(buchungsarten,
-        null, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsartInput = new BuchungsartInput().getBuchungsartInput(
+        buchungsartInput, null, buchungsarttyp.BUCHUNGSART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    buchungsarten.addListener(new Listener()
+    if (buchungsartInput instanceof SelectInput)
     {
-      @Override
-      public void handleEvent(Event event)
+      if (klasseInBuchung || steuerInBuchung)
       {
-        try
+        ((SelectInput) buchungsartInput)
+            .setPleaseChoose("Buchungsart nicht ändern");
+      }
+      else
+      {
+        ((SelectInput) buchungsartInput).setPleaseChoose("Bitte auswählen");
+      }
+    }
+    buchungsartInput.addListener(event -> {
+      try
+      {
+        status.setValue("");
+        if (buchungsartInput.getValue() != null)
         {
-          status.setValue("");
-          if (buchungsklassen != null && buchungsklassen.getValue() == null)
-            buchungsklassen.setValue(
-                ((Buchungsart) buchungsarten.getValue()).getBuchungsklasse());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
+          if (buchungsklasseInput != null)
+          {
+            buchungsklasseInput
+                .setValue(((Buchungsart) buchungsartInput.getValue())
+                    .getBuchungsklasse());
+          }
+          if (steuerInput != null)
+          {
+            Steuer st = ((Buchungsart) buchungsartInput.getValue()).getSteuer();
+            if (st == null)
+            {
+              steuerInput.setValue(stliste.get(0));
+            }
+            else
+            {
+              steuerInput.setValue(st);
+            }
+          }
         }
       }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
     });
-    return buchungsarten;
+    return buchungsartInput;
   }
 
   private SelectInput getBuchungsklasseAuswahl() throws RemoteException
   {
-    if (buchungsklassen != null)
+    if (buchungsklasseInput != null)
     {
-      return buchungsklassen;
+      return buchungsklasseInput;
     }
-    buchungsklassen = new BuchungsklasseInput()
-        .getBuchungsklasseInput(buchungsklassen, null);
-    buchungsklassen.addListener(new Listener()
+    buchungsklasseInput = new BuchungsklasseInput()
+        .getBuchungsklasseInput(buchungsklasseInput, null);
+    if (buchungsklasseInput instanceof SelectInput)
     {
-      @Override
-      public void handleEvent(Event event)
-      {
-        status.setValue("");
-      }
+      ((SelectInput) buchungsklasseInput)
+          .setPleaseChoose("Buchungsklasse nicht ändern");
+    }
+    buchungsklasseInput.addListener(event -> {
+      status.setValue("");
     });
-    return buchungsklassen;
+    return buchungsklasseInput;
+  }
+
+  private SelectInput getSteuerAuswahl() throws RemoteException
+  {
+    if (steuerInput != null)
+    {
+      return steuerInput;
+    }
+    Steuer stloeschen = (Steuer) Einstellungen.getDBService()
+        .createObject(Steuer.class, null);
+    stloeschen.setName(KEINE_STEUER);
+    stliste.add(stloeschen);
+    DBIterator<Steuer> it = Einstellungen.getDBService()
+        .createList(Steuer.class);
+    it.addFilter("aktiv = true");
+    while (it.hasNext())
+    {
+      stliste.add(it.next());
+    }
+    steuerInput = new SelectInput(stliste, null);
+    steuerInput.setAttribute("name");
+    steuerInput.setPleaseChoose("Steuer nicht ändern");
+    steuerInput.addListener(event -> {
+      status.setValue("");
+    });
+    return steuerInput;
   }
 
   private LabelInput getStatus()
