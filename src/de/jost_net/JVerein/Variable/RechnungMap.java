@@ -33,6 +33,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 
 public class RechnungMap extends AbstractMap
@@ -57,12 +58,12 @@ public class RechnungMap extends AbstractMap
       map = inMap;
     }
 
-    ArrayList<Date> buchungDatum = new ArrayList<>();
+    ArrayList<String> buchungDatum = new ArrayList<>();
     ArrayList<String> zweck = new ArrayList<>();
-    ArrayList<Double> nettobetrag = new ArrayList<>();
+    ArrayList<String> nettobetrag = new ArrayList<>();
     ArrayList<String> steuersatz = new ArrayList<>();
-    ArrayList<Double> steuerbetrag = new ArrayList<>();
-    ArrayList<Double> betrag = new ArrayList<>();
+    ArrayList<String> steuerbetrag = new ArrayList<>();
+    ArrayList<String> betrag = new ArrayList<>();
     HashMap<Double, Double> steuerMap = new HashMap<>();
     HashMap<Double, Double> steuerBetragMap = new HashMap<>();
 
@@ -70,12 +71,13 @@ public class RechnungMap extends AbstractMap
     double summe = 0;
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
-      buchungDatum.add(sp.getDatum());
+      buchungDatum.add(new JVDateFormatTTMMJJJJ().format(sp.getDatum()));
       zweck.add(sp.getZweck());
-      nettobetrag.add(sp.getNettobetrag());
+      nettobetrag.add(Einstellungen.DECIMALFORMAT.format(sp.getNettobetrag()));
       steuersatz.add("(" + format.format(sp.getSteuersatz()) + "%)");
-      steuerbetrag.add(sp.getSteuerbetrag());
-      betrag.add(sp.getBetrag());
+      steuerbetrag
+          .add(Einstellungen.DECIMALFORMAT.format(sp.getSteuerbetrag()));
+      betrag.add(Einstellungen.DECIMALFORMAT.format(sp.getBetrag()));
       summe += sp.getBetrag();
       if (sp.getSteuersatz() > 0)
       {
@@ -88,36 +90,41 @@ public class RechnungMap extends AbstractMap
     if (buchungDatum.size() > 1 || steuerMap.size() > 0)
     {
       zweck.add("");
-      betrag.add(null);
+      betrag.add("");
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       for (Double satz : steuerMap.keySet())
       {
-        zweck.add("inkl. " + satz + "% USt.  von "
+        zweck.add("inkl. " + satz + "% USt. von "
             + Einstellungen.DECIMALFORMAT.format(steuerBetragMap.get(satz)));
-        betrag.add(+steuerMap.get(satz));
+        betrag.add(Einstellungen.DECIMALFORMAT.format(steuerMap.get(satz)));
       }
     }
     if (buchungDatum.size() > 1)
     {
       zweck.add("Summe");
-      betrag.add(summe);
+      betrag.add(Einstellungen.DECIMALFORMAT.format(summe));
     }
-    map.put(RechnungVar.BUCHUNGSDATUM.getName(), buchungDatum.toArray());
-    map.put(RechnungVar.MK_BUCHUNGSDATUM.getName(), buchungDatum.toArray());
-    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), zweck.toArray());
-    map.put(RechnungVar.MK_ZAHLUNGSGRUND.getName(), zweck.toArray());
-    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), zweck.toArray());
+    map.put(RechnungVar.BUCHUNGSDATUM.getName(),
+        String.join("\n", buchungDatum));
+    map.put(RechnungVar.MK_BUCHUNGSDATUM.getName(),
+        String.join("\n", buchungDatum));
+    map.put(RechnungVar.ZAHLUNGSGRUND.getName(), String.join("\n", zweck));
+    map.put(RechnungVar.MK_ZAHLUNGSGRUND.getName(), String.join("\n", zweck));
+    map.put(RechnungVar.ZAHLUNGSGRUND1.getName(), String.join("\n", zweck));
     map.put(RechnungVar.ZAHLUNGSGRUND2.getName(), "");
-    map.put(RechnungVar.NETTOBETRAG.getName(), nettobetrag.toArray());
-    map.put(RechnungVar.MK_NETTOBETRAG.getName(), nettobetrag.toArray());
-    map.put(RechnungVar.STEUERSATZ.getName(), steuersatz.toArray());
-    map.put(RechnungVar.MK_STEUERSATZ.getName(), steuersatz.toArray());
-    map.put(RechnungVar.STEUERBETRAG.getName(), steuerbetrag.toArray());
-    map.put(RechnungVar.MK_STEUERBETRAG.getName(), steuerbetrag.toArray());
-    map.put(RechnungVar.BETRAG.getName(), betrag.toArray());
-    map.put(RechnungVar.MK_BETRAG.getName(), betrag.toArray());
+    map.put(RechnungVar.NETTOBETRAG.getName(), String.join("\n", nettobetrag));
+    map.put(RechnungVar.MK_NETTOBETRAG.getName(),
+        String.join("\n", nettobetrag));
+    map.put(RechnungVar.STEUERSATZ.getName(), String.join("\n", steuersatz));
+    map.put(RechnungVar.MK_STEUERSATZ.getName(), String.join("\n", steuersatz));
+    map.put(RechnungVar.STEUERBETRAG.getName(),
+        String.join("\n", steuerbetrag));
+    map.put(RechnungVar.MK_STEUERBETRAG.getName(),
+        String.join("\n", steuerbetrag));
+    map.put(RechnungVar.BETRAG.getName(), String.join("\n", betrag));
+    map.put(RechnungVar.MK_BETRAG.getName(), String.join("\n", betrag));
 
     Double ist = re.getIstSumme();
     map.put(RechnungVar.SUMME.getName(), summe);
@@ -224,29 +231,25 @@ public class RechnungMap extends AbstractMap
     }
 
     map.put(RechnungVar.BUCHUNGSDATUM.getName(),
-        new Date[] { new Date(), new Date() });
+        new JVDateFormatTTMMJJJJ().format(new Date()) + "\n"
+            + new JVDateFormatTTMMJJJJ().format(new Date()));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERTPFLICHT))
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
-          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "",
-              "inkl. 19% USt. von 10.00", "Summe" });
-      map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 8.4d, 13.8d });
-      map.put(RechnungVar.STEUERSATZ.getName(),
-          new String[] { "(19%)", "(0%)" });
-      map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 1.6d, 0d });
-      map.put(RechnungVar.BETRAG.getName(),
-          new Double[] { 10d, 13.8d, null, 1.6d, 23.8d });
+          "Mitgliedsbeitrag\nZusatzbetrag\n\ninkl. 19% USt. von 10,00\nSumme");
+      map.put(RechnungVar.NETTOBETRAG.getName(), "8,40\n13,80");
+      map.put(RechnungVar.STEUERSATZ.getName(), "(19%)\n(0%)");
+      map.put(RechnungVar.STEUERBETRAG.getName(), "1,60\n0,00");
+      map.put(RechnungVar.BETRAG.getName(), "10,00\n13,80\n\n1,60\n23,80");
     }
     else
     {
       map.put(RechnungVar.ZAHLUNGSGRUND.getName(),
-          new String[] { "Mitgliedsbeitrag", "Zusatzbetrag", "", "Summe" });
-      map.put(RechnungVar.NETTOBETRAG.getName(), new Double[] { 10d, 13.8d });
-      map.put(RechnungVar.STEUERSATZ.getName(),
-          new String[] { "(0%)", "(0%)" });
-      map.put(RechnungVar.STEUERBETRAG.getName(), new Double[] { 0d, 0d });
-      map.put(RechnungVar.BETRAG.getName(),
-          new Double[] { 10d, 13.8d, null, 23.8d });
+          "Mitgliedsbeitrag\nZusatzbetrag\n\nSumme");
+      map.put(RechnungVar.NETTOBETRAG.getName(), "10,00\n13,80");
+      map.put(RechnungVar.STEUERSATZ.getName(), "(0%)\n(0%)");
+      map.put(RechnungVar.STEUERBETRAG.getName(), "0,00\n0,00");
+      map.put(RechnungVar.BETRAG.getName(), "10,00\n13,80\n\n23,80");
     }
 
     map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
