@@ -154,18 +154,10 @@ public class FormularControl extends FormularPartControl implements Savable
       {
         return;
       }
-      if (art.getValue() == FormularArt.HINTERGRUND)
-      {
-        importButton.setEnabled(false);
-        exportButton.setEnabled(false);
-        neuButton.setEnabled(false);
-      }
-      else
-      {
-        importButton.setEnabled(true);
-        exportButton.setEnabled(true);
-        neuButton.setEnabled(true);
-      }
+      boolean enabled = art.getValue() != FormularArt.HINTERGRUND;
+      importButton.setEnabled(enabled);
+      exportButton.setEnabled(enabled);
+      neuButton.setEnabled(enabled);
     });
     return art;
   }
