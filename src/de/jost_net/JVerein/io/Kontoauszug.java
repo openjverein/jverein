@@ -57,6 +57,8 @@ public class Kontoauszug
 
   private Reporter rpt;
 
+  private boolean first = true;
+
   private Kontoauszug() throws IOException, DocumentException
   {
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -163,7 +165,11 @@ public class Kontoauszug
         (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
 
-    rpt.newPage();
+    if (!first)
+    {
+      rpt.newPage();
+    }
+    first = false;
     rpt.add((String) Einstellungen.getEinstellung(Property.NAME), 20);
     rpt.add(
         String.format("Kontoauszug %s", Adressaufbereitung.getVornameName(m)),
