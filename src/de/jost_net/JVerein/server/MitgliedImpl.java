@@ -126,7 +126,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       // Falls das Mitglied für andere zahlt kann man nicht löschen
       DBIterator<Mitglied> altKtoi = Einstellungen.getDBService()
           .createList(Mitglied.class);
-      altKtoi.addFilter("altkontoinhaber = " + getID());
+      altKtoi.addFilter("altzahler = " + getID());
       if (altKtoi.hasNext())
       {
         throw new ApplicationException(

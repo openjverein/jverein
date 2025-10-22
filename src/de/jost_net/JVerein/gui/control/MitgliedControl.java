@@ -1883,6 +1883,41 @@ public class MitgliedControl extends FilterControl implements Savable
     return b;
   }
 
+  public Button getNichtMitgliedErzeugenButton()
+  {
+    Button b = new Button("Neues Nicht-Mitglied", new Action()
+    {
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        try
+        {
+          Mitglied m = getMitglied();
+          Mitglied nm = Einstellungen.getDBService()
+              .createObject(Mitglied.class, null);
+          nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+          nm.setPersonenart("n");
+          nm.setAnrede(m.getAnrede());
+          nm.setName(m.getName());
+          nm.setVorname(m.getVorname());
+          nm.setAdressierungszusatz(m.getAdressierungszusatz());
+          nm.setStrasse(m.getStrasse());
+          nm.setPlz(m.getPlz());
+          nm.setOrt(m.getOrt());
+
+          GUI.startView(new NichtMitgliedDetailView(), nm);
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException(
+              "Fehler beim Erzeugen eines Nicht-Mitgliedes", e);
+        }
+      }
+    }, null, false, "document-new.png");
+    // button
+    return b;
+  }
+
   public Button getProfileButton()
   {
     Button b = new Button("Such-Profile", new Action()

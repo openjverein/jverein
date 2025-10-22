@@ -543,8 +543,15 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
+    zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getNichtMitgliedErzeugenButton());
+    buttons1.paint(zahlungsweg.getComposite());
 
-    zahlungsweg.addInput(control.getZahlungsweg());
+    SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
+        zahlungsweg.getComposite(), false, 1);
+
+    cols1.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
       switch (Beitragsmodel.getByKey(
@@ -553,33 +560,34 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         case GLEICHERTERMINFUERALLE:
           break;
         case MONATLICH12631:
-          zahlungsweg.addInput(control.getZahlungsrhythmus());
+          cols1.addInput(control.getZahlungsrhythmus());
           break;
         case FLEXIBEL:
-          zahlungsweg.addInput(control.getZahlungstermin());
+          cols1.addInput(control.getZahlungstermin());
           break;
       }
     }
-    zahlungsweg.addInput(control.getAltZahler());
+    cols1.addInput(control.getAltZahler());
+    cols1.arrangeVertically();
 
     LabelGroup bankverbindung = control
         .getBankverbindungLabelGroup(container.getComposite());
     bankverbindung.getComposite().setLayout(new GridLayout(1, false));
-    ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getKontoDatenLoeschenButton());
-    buttons1.paint(bankverbindung.getComposite());
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getKontoDatenLoeschenButton());
+    buttons2.paint(bankverbindung.getComposite());
 
-    SimpleVerticalContainer cols = new SimpleVerticalContainer(
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         bankverbindung.getComposite(), false, spaltenanzahl);
 
-    cols.addInput(control.getMandatID());
-    cols.addInput(control.getMandatDatum());
-    cols.addInput(control.getMandatVersion());
-    cols.addInput(control.getLetzteLastschrift());
-    cols.addInput(control.getIban());
-    cols.addInput(control.getBic());
-    cols.addInput(control.getKontoinhaber());
-    cols.arrangeVertically();
+    cols2.addInput(control.getMandatID());
+    cols2.addInput(control.getMandatDatum());
+    cols2.addInput(control.getMandatVersion());
+    cols2.addInput(control.getLetzteLastschrift());
+    cols2.addInput(control.getIban());
+    cols2.addInput(control.getBic());
+    cols2.addInput(control.getKontoinhaber());
+    cols2.arrangeVertically();
   }
 
   /**
