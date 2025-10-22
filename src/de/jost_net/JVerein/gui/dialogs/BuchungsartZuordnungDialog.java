@@ -68,13 +68,17 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 
   private boolean ueberschr;
 
-  private boolean löschen = false;
+  private boolean loeschen = false;
 
   private boolean abort = true;
 
   private boolean klasseInBuchung;
 
   private boolean steuerInBuchung;
+
+  private List<Steuer> stliste = new ArrayList<>();
+
+  public final static String KEINE_STEUER = "Keine Steuer";
 
   /**
    * @param position
@@ -114,21 +118,12 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
-        boolean buchungsartNull = true;
-        if (buchungsartInput.getValue() != null)
-        {
-          buchungsartNull = false;
-        }
-        boolean buchungsklasseNull = true;
-        if (klasseInBuchung && buchungsklasseInput.getValue() != null)
-        {
-          buchungsklasseNull = false;
-        }
-        boolean steuerNull = true;
-        if (steuerInBuchung && steuerInput.getValue() != null)
-        {
-          steuerNull = false;
-        }
+
+        boolean buchungsartNull = buchungsartInput.getValue() == null;
+        boolean buchungsklasseNull = !klasseInBuchung
+            || buchungsklasseInput.getValue() == null;
+        boolean steuerNull = !steuerInBuchung || steuerInput.getValue() == null;
+
         if (!klasseInBuchung && !steuerInBuchung)
         {
           if (buchungsartNull)
@@ -158,7 +153,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
           steuer = (Steuer) steuerInput.getValue();
         }
         ueberschr = (Boolean) getUeberschreiben().getValue();
-        löschen = false;
+        loeschen = false;
         abort = false;
         close();
       }
@@ -169,7 +164,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       @Override
       public void handleAction(Object context)
       {
-        löschen = true;
+        loeschen = true;
         abort = false;
         close();
       }
@@ -224,7 +219,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 
   public boolean getDelete()
   {
-    return löschen;
+    return loeschen;
   }
 
   private Input getBuchungsartAuswahl() throws RemoteException
@@ -255,14 +250,24 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         status.setValue("");
         if (buchungsartInput.getValue() != null)
         {
-          if (buchungsklasseInput != null
-              && buchungsklasseInput.getValue() == null)
+          if (buchungsklasseInput != null)
+          {
             buchungsklasseInput
                 .setValue(((Buchungsart) buchungsartInput.getValue())
                     .getBuchungsklasse());
-          if (steuerInput != null && steuerInput.getValue() == null)
-            steuerInput.setValue(
-                ((Buchungsart) buchungsartInput.getValue()).getSteuer());
+          }
+          if (steuerInput != null)
+          {
+            Steuer st = ((Buchungsart) buchungsartInput.getValue()).getSteuer();
+            if (st == null)
+            {
+              steuerInput.setValue(stliste.get(0));
+            }
+            else
+            {
+              steuerInput.setValue(st);
+            }
+          }
         }
       }
       catch (RemoteException e)
@@ -298,19 +303,18 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
     {
       return steuerInput;
     }
-    List<Steuer> liste = new ArrayList<>();
-    Steuer löschen = (Steuer) Einstellungen.getDBService()
+    Steuer stloeschen = (Steuer) Einstellungen.getDBService()
         .createObject(Steuer.class, null);
-    löschen.setName("Steuer löschen");
-    liste.add(löschen);
+    stloeschen.setName(KEINE_STEUER);
+    stliste.add(stloeschen);
     DBIterator<Steuer> it = Einstellungen.getDBService()
         .createList(Steuer.class);
     it.addFilter("aktiv = true");
     while (it.hasNext())
     {
-      liste.add(it.next());
+      stliste.add(it.next());
     }
-    steuerInput = new SelectInput(liste, null);
+    steuerInput = new SelectInput(stliste, null);
     steuerInput.setAttribute("name");
     steuerInput.setPleaseChoose("Steuer nicht ändern");
     steuerInput.addListener(event -> {

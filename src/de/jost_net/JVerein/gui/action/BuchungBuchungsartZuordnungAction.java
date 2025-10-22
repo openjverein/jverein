@@ -117,16 +117,16 @@ public class BuchungBuchungsartZuordnungAction implements Action
             }
             if (st != null)
             {
-              boolean istLöschen = st.getName()
-                  .equalsIgnoreCase("Steuer löschen");
-              if (buchung.getSteuer() != null && !istLöschen
+              boolean istLoeschen = st.getName()
+                  .equalsIgnoreCase(BuchungsartZuordnungDialog.KEINE_STEUER);
+              if (buchung.getSteuer() != null && !istLoeschen
                   && !baz.getOverride())
               {
                 counter++;
               }
               else
               {
-                if (istLöschen)
+                if (istLoeschen)
                 {
                   buchung.setSteuer(null);
                 }
