@@ -1892,18 +1892,24 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         try
         {
-          Mitglied m = getMitglied();
           Mitglied nm = Einstellungen.getDBService()
               .createObject(Mitglied.class, null);
           nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
           nm.setPersonenart("n");
-          nm.setAnrede(m.getAnrede());
-          nm.setName(m.getName());
-          nm.setVorname(m.getVorname());
-          nm.setAdressierungszusatz(m.getAdressierungszusatz());
-          nm.setStrasse(m.getStrasse());
-          nm.setPlz(m.getPlz());
-          nm.setOrt(m.getOrt());
+          nm.setAnrede("");
+          nm.setName((String) getName(false).getValue());
+          nm.setVorname("");
+          nm.setAdressierungszusatz(
+              (String) getAdressierungszusatz().getValue());
+          nm.setStrasse((String) getStrasse().getValue());
+          nm.setPlz((String) getPlz().getValue());
+          nm.setOrt((String) getOrt().getValue());
+          nm.setEmail((String) getEmail().getValue());
+          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+          {
+            nm.setStaat(getStaat().getValue() == null ? ""
+                : ((Staat) getStaat().getValue()).getKey());
+          }
 
           GUI.startView(new NichtMitgliedDetailView(), nm);
         }
