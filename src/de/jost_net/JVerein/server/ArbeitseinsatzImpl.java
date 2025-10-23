@@ -156,6 +156,18 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "bemerkung":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Arbeitseinsatz";

@@ -510,6 +510,20 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "zahlungsweg":
+        return Zahlungsweg.STANDARD;
+      case "intervall":
+        return IntervallZusatzzahlung.KEIN;
+      default:
+        return null;
+    }
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Zusatzbetrag";
