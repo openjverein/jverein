@@ -18,6 +18,8 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -61,6 +63,17 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     if (value instanceof Double)
     {
       value = Math.round((Double) value * 100d) / 100d;
+    }
+    if (value instanceof Clob)
+    {
+      try
+      {
+        value = ((Clob) value).getSubString(1, (int) ((Clob) value).length());
+      }
+      catch (SQLException e)
+      {
+        throw new RemoteException("Fehler beim parsen eines CLOB wertes", e);
+      }
     }
     if (value == null)
     {

@@ -758,13 +758,20 @@ public class MitgliedControl extends FilterControl implements Savable
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus(getMitglied().getZahlungsrhythmus().getKey()));
     }
-    else
+    else if (getMitglied().isNewObject())
     {
       zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
           new Zahlungsrhythmus((Integer) Einstellungen
               .getEinstellung(Property.ZAHLUNGSRHYTMUS)));
     }
+    else
+    {
+      zahlungsrhytmus = new SelectNoScrollInput(Zahlungsrhythmus.getArray(),
+          null);
+    }
     zahlungsrhytmus.setName("Zahlungsrhytmus");
+    zahlungsrhytmus.setPleaseChoose("Bitte wählen");
+    zahlungsrhytmus.setMandatory(true);
     return zahlungsrhytmus;
   }
 
@@ -777,6 +784,8 @@ public class MitgliedControl extends FilterControl implements Savable
     zahlungstermin = new SelectNoScrollInput(Zahlungstermin.values(),
         getMitglied().getZahlungstermin());
     zahlungstermin.setName("Zahlungstermin");
+    zahlungstermin.setPleaseChoose("Bitte wählen");
+    zahlungstermin.setMandatory(true);
     return zahlungstermin;
   }
 
@@ -2347,12 +2356,10 @@ public class MitgliedControl extends FilterControl implements Savable
     if (zahlungsrhytmus != null)
     {
       Zahlungsrhythmus zr = (Zahlungsrhythmus) getZahlungsrhythmus().getValue();
-      m.setZahlungsrhythmus(zr.getKey());
-    }
-    else
-    {
-      m.setZahlungsrhythmus(
-          (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSRHYTMUS));
+      if (zr != null)
+      {
+        m.setZahlungsrhythmus(zr.getKey());
+      }
     }
     if (zahlungstermin != null)
     {
