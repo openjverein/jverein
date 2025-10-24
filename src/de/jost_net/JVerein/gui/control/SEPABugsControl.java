@@ -23,8 +23,10 @@ import java.util.Date;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ILastschrift;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -100,12 +102,44 @@ public class SEPABugsControl extends AbstractControl
     while (it.hasNext())
     {
       Mitglied m = (Mitglied) it.next();
-      if ((m.getBeitragsgruppe().getBetrag() > 0
-          || m.getBeitragsgruppe().getBetragMonatlich() > 0
-          || m.getBeitragsgruppe().getBetragVierteljaehrlich() > 0
-          || m.getBeitragsgruppe().getBetragHalbjaehrlich() > 0
-          || m.getBeitragsgruppe().getBetragJaehrlich() > 0)
-          && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+      boolean checkPlausi = false;
+      switch (Beitragsmodel.getByKey(
+          (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
+      {
+        case GLEICHERTERMINFUERALLE:
+        case MONATLICH12631:
+          Double betrag = m.getBeitragsgruppe().getBetrag();
+          if (betrag == null)
+          {
+            bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
+                Bug.HINT));
+          }
+          else if (betrag > 0
+              && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+          {
+            checkPlausi = true;
+          }
+          break;
+        case FLEXIBEL:
+          if (m.getBeitragsgruppe().getBetragMonatlich() == null
+              || m.getBeitragsgruppe().getBetragVierteljaehrlich() == null
+              || m.getBeitragsgruppe().getBetragHalbjaehrlich() == null
+              || m.getBeitragsgruppe().getBetragJaehrlich() == null)
+          {
+            bugs.add(new Bug(m, "Beträge in Beitragsgruppe sind nicht gesetzt!",
+                Bug.HINT));
+          }
+          else if ((m.getBeitragsgruppe().getBetragMonatlich() > 0
+              || m.getBeitragsgruppe().getBetragVierteljaehrlich() > 0
+              || m.getBeitragsgruppe().getBetragHalbjaehrlich() > 0
+              || m.getBeitragsgruppe().getBetragJaehrlich() > 0)
+              && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+          {
+            checkPlausi = true;
+          }
+          break;
+      }
+      if (checkPlausi)
       {
         plausi(bugs, m);
       }
