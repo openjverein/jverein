@@ -687,7 +687,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (altZahlerInput instanceof SelectInput)
     {
       ((SelectInput) altZahlerInput)
-          .setPleaseChoose("Bankverbindung des Mitglieds verwenden");
+          .setPleaseChoose("Kein alternativer Zahler");
       if (getMitglied().getAlternativerZahler() == null)
       {
         ((SelectInput) altZahlerInput).setPreselected(null);
