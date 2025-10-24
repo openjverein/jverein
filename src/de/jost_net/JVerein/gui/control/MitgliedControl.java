@@ -682,13 +682,13 @@ public class MitgliedControl extends FilterControl implements Savable
       return altZahlerInput;
     }
     altZahlerInput = new MitgliedInput().getMitgliedInput(altZahlerInput,
-        getMitglied().getAltZahler(),
+        getMitglied().getAlternativerZahler(),
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
     if (altZahlerInput instanceof SelectInput)
     {
       ((SelectInput) altZahlerInput)
-          .setPleaseChoose("Bankverbindung des Mitglied verwenden");
-      if (getMitglied().getAltZahler() == null)
+          .setPleaseChoose("Bankverbindung des Mitglieds verwenden");
+      if (getMitglied().getAlternativerZahler() == null)
       {
         ((SelectInput) altZahlerInput).setPreselected(null);
       }
@@ -2240,7 +2240,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    m.setAltZahlerID(getSelectedAltZahlerId());
+    m.setAlternativerZahlerID(getSelectedAltZahlerId());
     m.setKontoinhaber((String) getKontoinhaber().getValue());
 
     // Vermerke

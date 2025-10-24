@@ -1170,7 +1170,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Mitglied getAltZahler() throws RemoteException
+  public Mitglied getAlternativerZahler() throws RemoteException
   {
     Object o = (Object) super.getAttribute("altzahler");
     if (o == null)
@@ -1184,13 +1184,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Long getAltZahlerID() throws RemoteException
+  public Long getAlternativerZahlerID() throws RemoteException
   {
     return (Long) getAttribute("altzahler");
   }
 
   @Override
-  public void setAltZahlerID(Long id) throws RemoteException
+  public void setAlternativerZahlerID(Long id) throws RemoteException
   {
     setAttribute("altzahler", id);
   }
@@ -1198,9 +1198,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-    if (getAltZahlerID() != null)
+    if (getAlternativerZahlerID() != null)
     {
-      return getAltZahler();
+      return getAlternativerZahler();
     }
     return this;
   }
@@ -1208,9 +1208,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Long getZahlerID() throws RemoteException
   {
-    if (getAltZahlerID() != null)
+    if (getAlternativerZahlerID() != null)
     {
-      return getAltZahlerID();
+      return getAlternativerZahlerID();
     }
     return Long.valueOf(getID());
   }
@@ -1349,9 +1349,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
     else if (fieldName.equals("altzahlerstring"))
     {
-      if (this.getAltZahler() != null)
+      if (this.getAlternativerZahler() != null)
       {
-        return Adressaufbereitung.getNameVorname(this.getAltZahler());
+        return Adressaufbereitung.getNameVorname(this.getAlternativerZahler());
       }
       else
       {
