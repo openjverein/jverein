@@ -225,6 +225,8 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         z.setMitglied(null);
       }
     }
+    z.setMitgliedzahltSelbst(
+        (Boolean) getZusatzbetragPart().getMitgliedzahltSelbst().getValue());
     return z;
   }
 
@@ -256,6 +258,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         {
           zv.setSteuer(z.getSteuer());
         }
+        zv.setMitgliedzahltSelbst(z.getMitgliedzahltSelbst());
         zv.store();
       }
     }
@@ -322,6 +325,27 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
           return "";
         }, false, Column.ALIGN_RIGHT);
       }
+      zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+          new Formatter()
+          {
+
+            @Override
+            public String format(Object o)
+            {
+              if (o == null)
+              {
+                return "nein";
+              }
+              if (o instanceof Boolean)
+              {
+                if ((Boolean) o)
+                {
+                  return "ja";
+                }
+              }
+              return "nein";
+            }
+          }, false, Column.ALIGN_LEFT);
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);

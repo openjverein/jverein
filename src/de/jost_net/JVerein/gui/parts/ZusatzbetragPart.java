@@ -39,6 +39,7 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -78,6 +79,8 @@ public class ZusatzbetragPart implements Part
 
   private SelectInput steuer = null;
 
+  private CheckboxInput mitgliedZahltSelbst;
+
   public ZusatzbetragPart(Zusatzbetrag zusatzbetrag, boolean mitMitglied)
   {
     this.zusatzbetrag = zusatzbetrag;
@@ -107,6 +110,7 @@ public class ZusatzbetragPart implements Part
       group.addLabelPair("Steuer", getSteuer());
     }
     group.addLabelPair("Zahlungsweg", getZahlungsweg());
+    group.addLabelPair("Mitglied zahlt selbst", getMitgliedzahltSelbst());
   }
 
   public DateInput getFaelligkeit() throws RemoteException
@@ -404,4 +408,14 @@ public class ZusatzbetragPart implements Part
     return mitglied;
   }
 
+  public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
+  {
+    if (mitgliedZahltSelbst != null)
+    {
+      return mitgliedZahltSelbst;
+    }
+    mitgliedZahltSelbst = new CheckboxInput(
+        zusatzbetrag.getMitgliedzahltSelbst());
+    return mitgliedZahltSelbst;
+  }
 }

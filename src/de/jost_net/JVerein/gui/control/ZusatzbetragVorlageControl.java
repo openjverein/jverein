@@ -49,6 +49,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -90,6 +91,8 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
   private SelectInput zahlungsweg;
 
   private SteuerInput steuer = null;
+
+  private CheckboxInput mitgliedZahltSelbst;
 
   public ZusatzbetragVorlageControl(AbstractView view)
   {
@@ -364,6 +367,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     {
       z.setSteuer((Steuer) steuer.getValue());
     }
+    z.setMitgliedzahltSelbst((Boolean) getMitgliedzahltSelbst().getValue());
     return z;
   }
 
@@ -438,7 +442,27 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
           return "";
         }, false, Column.ALIGN_RIGHT);
       }
+      zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+          new Formatter()
+          {
 
+            @Override
+            public String format(Object o)
+            {
+              if (o == null)
+              {
+                return "nein";
+              }
+              if (o instanceof Boolean)
+              {
+                if ((Boolean) o)
+                {
+                  return "ja";
+                }
+              }
+              return "nein";
+            }
+          }, false, Column.ALIGN_LEFT);
       zusatzbetragVorlageList
           .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
       zusatzbetragVorlageList.setRememberColWidths(true);
@@ -459,5 +483,16 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
       zusatzbetragVorlageList.sort();
     }
     return zusatzbetragVorlageList;
+  }
+
+  public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
+  {
+    if (mitgliedZahltSelbst != null)
+    {
+      return mitgliedZahltSelbst;
+    }
+    mitgliedZahltSelbst = new CheckboxInput(
+        getZusatzbetragVorlage().getMitgliedzahltSelbst());
+    return mitgliedZahltSelbst;
   }
 }

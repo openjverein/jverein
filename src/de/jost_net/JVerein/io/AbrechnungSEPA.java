@@ -656,7 +656,15 @@ public class AbrechnungSEPA
       if (z.isAktiv(param.stichtag))
       {
         Mitglied m = z.getMitglied();
-        Mitglied mZahler = m.getZahler();
+        Mitglied mZahler;
+        if (z.getMitgliedzahltSelbst())
+        {
+          mZahler = m;
+        }
+        else
+        {
+          mZahler = m.getZahler();
+        }
         Integer zahlungsweg;
         if (z.getZahlungsweg() != null
             && z.getZahlungsweg().getKey() != Zahlungsweg.STANDARD)

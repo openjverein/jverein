@@ -57,6 +57,12 @@ public class Update0493 extends AbstractDDLUpdate
     execute(
         "UPDATE mitglied SET kontoinhaber = (CASE WHEN kontoinhaber = ', ' THEN '' ELSE kontoinhaber END)");
 
+    execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
+        COLTYPE.BOOLEAN, 1, "0", true, false)));
+
+    execute(addColumn("zusatzbetragvorlage", new Column("mitgliedzahltselbst",
+        COLTYPE.BOOLEAN, 1, "0", true, false)));
+
     // Wenn das Feature fertig ist kann man die Attribute löschen
     // Es gibt ja keinen Weg zurück mehr
     // execute(dropColumn("mitglied", "ktoipersonenart"));
