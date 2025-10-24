@@ -41,6 +41,8 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
 
   protected Mitgliedstyp mitgliedstyp;
 
+  protected String title = "";
+
   protected String subtitle = "";
 
   protected TreeMap<String, String> params;
@@ -69,7 +71,7 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
   }
 
   @Override
-  public void beforeGo() throws RemoteException
+  public void beforeGo(String title) throws RemoteException
   {
     if (control.isSuchMitgliedstypActive())
     {
@@ -90,6 +92,7 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
     {
       subtitle = ueberschrift;
     }
+    this.title = title;
   }
 
   @Override

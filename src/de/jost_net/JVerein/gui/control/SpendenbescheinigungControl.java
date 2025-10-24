@@ -949,6 +949,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private void ausgabe(final String type, final File file,
       final ArrayList<Spendenbescheinigung> spbList)
   {
+    final String title = VorlageUtil
+        .getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL, this);
     BackgroundTask t = new BackgroundTask()
     {
       @Override
@@ -962,7 +966,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
               new SpendenbescheinigungExportCSV(file, spbList);
               break;
             case ExportPDF:
-              new SpendenbescheinigungExportPDF(file, spbList, 4);
+              new SpendenbescheinigungExportPDF(file, spbList, 4, title,
+                  subtitle);
               break;
           }
           GUI.getCurrentView().reload();

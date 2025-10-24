@@ -104,7 +104,14 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Mittelverwendungs-Saldo";
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_SUBTITEL,
+        this);
   }
 
   @Override

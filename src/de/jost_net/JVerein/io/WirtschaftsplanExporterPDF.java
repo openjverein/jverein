@@ -53,6 +53,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
   // Liste der Pläne die Ist-Beträge haben
   private Set<Wirtschaftsplan> hatIst = new HashSet<>();
 
+  protected String title;
+
+  protected String subtitle;
+
   @Override
   public String getName()
   {
@@ -118,8 +122,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
 
     FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fileOutputStream, "Wirtschaftsplan", "", 1,
-        40, 20, 20, 20);
+    Reporter reporter = new Reporter(fileOutputStream, title, subtitle, 1, 40,
+        20, 20, 20);
 
     // Header erstellen
     // Leider kann der Header kein Colspan, daher erst Soll/Ist anzeigen
@@ -436,5 +440,21 @@ public class WirtschaftsplanExporterPDF implements Exporter
       }
     }
     return summen;
+  }
+
+  @Override
+  public void calculateTitle(Object object)
+  {
+    title = VorlageUtil
+        .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_TITEL
+            : VorlageTyp.WIRTSCHAFTSPLAN_TITEL, object);
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    subtitle = VorlageUtil
+        .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL
+            : VorlageTyp.WIRTSCHAFTSPLAN_SUBTITEL, object);
   }
 }

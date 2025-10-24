@@ -19,7 +19,6 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +34,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -79,7 +77,7 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      Date datumvon, Date datumbis) throws ApplicationException
+      String title, String subtitle) throws ApplicationException
   {
     ICsvMapWriter writer = null;
     try
@@ -100,8 +98,6 @@ public class BuchungsklassesaldoCSV implements ISaldoExport
       }
       writer.writeHeader(header);
 
-      String subtitle = new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
       csvzeile.put(header[0], subtitle);
       writer.write(csvzeile, header, processors);
 

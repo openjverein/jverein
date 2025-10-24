@@ -27,7 +27,6 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -39,14 +38,12 @@ public class AbrechnungslaufPDF
 {
 
   public AbrechnungslaufPDF(DBIterator<Sollbuchung> it, final File file,
-      final Abrechnungslauf lauf) throws ApplicationException
+      String title, String subtitle) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String title = "Abrechnungslauf";
-      String subtitle = "Nr. " + lauf.getNr() + " vom "
-          + new JVDateFormatTTMMJJJJ().format(lauf.getDatum());
+
       Reporter reporter = new Reporter(fos, title, subtitle, it.size());
 
       reporter.addHeaderColumn("Fälligkeit", Element.ALIGN_CENTER, 80,
