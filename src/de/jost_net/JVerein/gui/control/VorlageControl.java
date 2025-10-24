@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.menu.VorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Vorlage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -193,11 +192,6 @@ public class VorlageControl extends FilterControl implements Savable
       String suchText = "%" + tmpSuchtext.toLowerCase() + "%";
       vorlagenIt.addFilter("(lower(" + Vorlage.KEY + ") like ? OR lower("
           + Vorlage.MUSTER + ") like ?)", new Object[] { suchText, suchText });
-    }
-    if (vorlagenart != null && vorlagenart.getValue() != null)
-    {
-      vorlagenIt.addFilter("art = ?",
-          ((Vorlageart) vorlagenart.getValue()).getKey());
     }
     return vorlagenIt;
   }
