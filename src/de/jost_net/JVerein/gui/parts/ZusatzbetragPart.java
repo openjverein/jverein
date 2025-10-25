@@ -361,7 +361,7 @@ public class ZusatzbetragPart implements Part
     {
       return zahlungsweg;
     }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false),
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(),
         zusatzbetrag.getZahlungsweg());
     zahlungsweg.setPleaseChoose("Standard");
     return zahlungsweg;

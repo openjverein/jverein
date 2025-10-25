@@ -604,15 +604,7 @@ public class MitgliedControl extends FilterControl implements Savable
       return zahlungsweg;
     }
 
-    boolean mitVollzahler = false;
-    if (beitragsgruppe != null)
-    {
-      Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-      if (bg != null
-          && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-        mitVollzahler = true;
-    }
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
 
     if (getMitglied().getZahlungsweg() != null)
     {
@@ -664,14 +656,9 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private void refreshZahlungsweg() throws RemoteException
   {
-    if (beitragsgruppe == null || zahlungsweg == null)
+    if (zahlungsweg == null)
       return;
-    boolean mitVollzahler = false;
-    Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-    if (bg != null
-        && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      mitVollzahler = true;
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
     zahlungsweg.setList(weg);
   }
 

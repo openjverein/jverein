@@ -66,7 +66,7 @@ public class Zahlungsweg
     }
   }
 
-  public static ArrayList<Zahlungsweg> getArray(boolean mitVollzahler)
+  public static ArrayList<Zahlungsweg> getArray()
   {
     ArrayList<Zahlungsweg> ret = new ArrayList<>();
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
