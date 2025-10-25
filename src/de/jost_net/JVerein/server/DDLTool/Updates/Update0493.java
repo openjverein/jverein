@@ -55,7 +55,7 @@ public class Update0493 extends AbstractDDLUpdate
     // Wenn kein ktoiname oder ktoivorname gesetzt ist, dann muss das Feld leer
     // sein
     execute(
-        "UPDATE mitglied SET kontoinhaber = (CASE WHEN kontoinhaber = ', ' THEN '' ELSE kontoinhaber END)");
+        "UPDATE mitglied SET kontoinhaber = '' WHERE kontoinhaber = ', '");
 
     execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
         COLTYPE.BOOLEAN, 1, "0", true, false)));
