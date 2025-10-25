@@ -102,7 +102,6 @@ public class SEPABugsControl extends AbstractControl
     while (it.hasNext())
     {
       Mitglied m = (Mitglied) it.next();
-      boolean checkPlausi = false;
       switch (Beitragsmodel.getByKey(
           (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)))
       {
@@ -117,7 +116,7 @@ public class SEPABugsControl extends AbstractControl
           else if (betrag > 0
               && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           {
-            checkPlausi = true;
+            plausi(bugs, m);
           }
           break;
         case FLEXIBEL:
@@ -135,13 +134,9 @@ public class SEPABugsControl extends AbstractControl
               || m.getBeitragsgruppe().getBetragJaehrlich() > 0)
               && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           {
-            checkPlausi = true;
+            plausi(bugs, m);
           }
           break;
-      }
-      if (checkPlausi)
-      {
-        plausi(bugs, m);
       }
     }
     return bugs;
