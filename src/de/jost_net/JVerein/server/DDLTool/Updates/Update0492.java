@@ -29,7 +29,6 @@ public class Update0492 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(
-        "INSERT into vorlage (name, muster) VALUES ('wirtschaftsplan-mehrere-dateiname', 'Wirtschaftsplan-$aktuellesdatum-$aktuellezeit');\n");
+    // Hier waren Inserts für Vorlagen, nicht mehr benötigt
   }
 }
