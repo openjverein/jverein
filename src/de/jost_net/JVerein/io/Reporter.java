@@ -348,6 +348,24 @@ public class Reporter
     }
   }
 
+  public void addColumn(double value, BaseColor backgroundcolor)
+  {
+    Font f = null;
+    if (value >= 0)
+    {
+      f = getFreeSans(8, BaseColor.BLACK);
+    }
+    else
+    {
+      f = getFreeSans(8, BaseColor.RED);
+    }
+    PdfPCell cell = new PdfPCell(
+        new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
+    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    cell.setBackgroundColor(backgroundcolor);
+    addColumn(cell);
+  }
+
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.
    */
