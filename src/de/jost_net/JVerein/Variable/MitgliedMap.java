@@ -89,13 +89,17 @@ public class MitgliedMap extends AbstractMap
         Datum.formatDate(mitglied.getAustritt()));
     map.put(MitgliedVar.AUSTRITT_F.getName(), fromDate(mitglied.getAustritt()));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
-        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
-            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
-            : "");
+        mitglied.getBeitragsgruppe() != null
+            && mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag() != null
+                ? Einstellungen.DECIMALFORMAT.format(
+                    mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
+                : "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(),
-        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
-            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
-            : "");
+        mitglied.getBeitragsgruppe() != null
+            && mitglied.getBeitragsgruppe().getArbeitseinsatzStunden() != null
+                ? Einstellungen.DECIMALFORMAT.format(
+                    mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
+                : "");
     try
     {
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
