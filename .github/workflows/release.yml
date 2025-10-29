@@ -61,6 +61,7 @@ jobs:
         name: Release ${{ steps.openjverein.outputs.selected_version }}
         files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
         generate_release_notes: true
+        target_commitish: ${{ github.ref_name }}
 
     - name: Checkout website repository
       uses: actions/checkout@v5
@@ -69,7 +70,7 @@ jobs:
         path: website
         ref: 'main'
         token: ${{ secrets.WEBSITE_DEPLOY_KEY }}
-        target_commitish: ${{ github.ref_name }}
+
 
     - name: Upload Files to Website repository
       run: |
