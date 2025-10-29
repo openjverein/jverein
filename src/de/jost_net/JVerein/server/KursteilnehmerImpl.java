@@ -497,6 +497,28 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "anrede":
+      case "titel":
+      case "vorname":
+      case "adressierungszusatz":
+      case "strasse":
+      case "plz":
+      case "ort":
+      case "iban":
+      case "bic":
+      case "staat":
+      case "email":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Kursteilnehmer";

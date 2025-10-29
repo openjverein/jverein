@@ -29,6 +29,5 @@ public class Update0486 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute("update buchung set geprueft = false where geprueft is null");
   }
 }
