@@ -263,7 +263,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       z = getSollbuchung().getZahlungsweg();
     }
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(false);
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
 
     zahlungsweg = new SelectInput(weg,
         z == null

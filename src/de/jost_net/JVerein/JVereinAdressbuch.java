@@ -43,8 +43,8 @@ public class JVereinAdressbuch implements Addressbook
         .createList(Mitglied.class);
     String su = "%" + text.toLowerCase() + "%";
     it.addFilter(
-        "(lower(name) like ? or lower(vorname) like ? or lower(ktoivorname) like ? or lower(ktoiname) like ?)",
-        su, su, su, su);
+        "(lower(name) like ? or lower(vorname) like ? or lower(kontoinhaber) like ?)",
+        su, su, su);
     it.addFilter("(iban is not null and length(iban)>0)");
     ArrayList<MitgliedAddress> list = new ArrayList<>();
     while (it.hasNext())
@@ -56,7 +56,7 @@ public class JVereinAdressbuch implements Addressbook
         kategorie = m.getBeitragsgruppe().getBezeichnung();
       }
       MitgliedAddress ma = new MitgliedAddress(
-          m.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME), "", m.getBic(),
+          m.getKontoinhaber(Mitglied.namenformat.KONTOINHABER), "", m.getBic(),
           m.getIban(), kategorie);
       list.add(ma);
     }

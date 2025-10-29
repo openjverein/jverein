@@ -122,7 +122,7 @@ public class Ct1Ueberweisung
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
             StringUtils.trimToEmpty(ls.getMitglied()
-                .getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)
+                .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
                 .toUpperCase()));
       }
       else if (ls.getKursteilnehmer() != null)

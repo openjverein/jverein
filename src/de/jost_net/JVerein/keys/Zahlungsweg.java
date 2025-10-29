@@ -32,8 +32,6 @@ public class Zahlungsweg
 
   public static final int BARZAHLUNG = 3;
 
-  public static final int VOLLZAHLER = 4;
-
   private int zahlungsweg;
 
   public Zahlungsweg(int key)
@@ -63,21 +61,17 @@ public class Zahlungsweg
         return "Überweisung";
       case BARZAHLUNG:
         return "Barzahlung";
-      case VOLLZAHLER:
-        return "Durch Vollzahler";
       default:
         return null;
     }
   }
 
-  public static ArrayList<Zahlungsweg> getArray(boolean mitVollzahler)
+  public static ArrayList<Zahlungsweg> getArray()
   {
     ArrayList<Zahlungsweg> ret = new ArrayList<>();
     ret.add(new Zahlungsweg(BASISLASTSCHRIFT));
     ret.add(new Zahlungsweg(ÜBERWEISUNG));
     ret.add(new Zahlungsweg(BARZAHLUNG));
-    if (mitVollzahler)
-      ret.add(new Zahlungsweg(VOLLZAHLER));
     return ret;
   }
 

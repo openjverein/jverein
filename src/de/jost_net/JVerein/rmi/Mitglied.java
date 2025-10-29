@@ -30,6 +30,7 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 {
   public enum namenformat
   {
+    KONTOINHABER,
     NAME_VORNAME,
     VORNAME_NAME,
     ADRESSE
@@ -89,56 +90,11 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void setMandatVersion(Integer mandatversion) throws RemoteException;
 
-  public String getKtoiPersonenart() throws RemoteException;
-
-  public void setKtoiPersonenart(String ktoipersonenart) throws RemoteException;
-
-  public String getKtoiAnrede() throws RemoteException;
-
-  public void setKtoiAnrede(String ktoianrede) throws RemoteException;
-
-  public String getKtoiTitel() throws RemoteException;
-
-  public void setKtoiTitel(String ktoititel) throws RemoteException;
-
-  public String getKtoiName() throws RemoteException;
-
-  public void setKtoiName(String ktoiname) throws RemoteException;
-
-  public String getKtoiVorname() throws RemoteException;
-
-  public void setKtoiVorname(String ktoivorname) throws RemoteException;
-
-  public String getKtoiStrasse() throws RemoteException;
-
-  public void setKtoiStrasse(String ktoiStrasse) throws RemoteException;
-
-  public String getKtoiAdressierungszusatz() throws RemoteException;
-
-  public void setKtoiAdressierungszusatz(String ktoiAdressierungszusatz)
-      throws RemoteException;
-
-  public String getKtoiPlz() throws RemoteException;
-
-  public void setKtoiPlz(String ktoiPlz) throws RemoteException;
-
-  public String getKtoiOrt() throws RemoteException;
-
-  public void setKtoiOrt(String ktoiOrt) throws RemoteException;
-
-  public String getKtoiStaat() throws RemoteException;
-
-  public void setKtoiStaat(String ktoiStaat) throws RemoteException;
-
-  public String getKtoiEmail() throws RemoteException;
-
-  public void setKtoiEmail(String ktoiEmail) throws RemoteException;
-
-  public String getKtoiGeschlecht() throws RemoteException;
-
-  public void setKtoiGeschlecht(String ktoigeschlecht) throws RemoteException;
-
   public String getKontoinhaber(namenformat art) throws RemoteException;
+
+  public String getKontoinhaber() throws RemoteException;
+
+  public void setKontoinhaber(String kontoinhaber) throws RemoteException;
 
   public Date getGeburtsdatum() throws RemoteException;
 
@@ -199,10 +155,19 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void setVollZahlerID(Long id) throws RemoteException;
 
   /**
-   * Liefert das Mitglied welches den Beitrag für das Mitglied bezahlt. Es ist
-   * normalerweise das Mitglied selbst. Ist das Mitglied Teil in einem
-   * Familienverband und als Zahlungsweg "Vollzahler" konfiguriert, wird das
-   * voll zahlende Mitglied zurückgeliefert.
+   * Zahlt das Mitglied nicht selbst ist hier der alternative Beitragszahler
+   * konfiguriert.
+   */
+  public Mitglied getAlternativerZahler() throws RemoteException;
+
+  public Long getAlternativerZahlerID() throws RemoteException;
+
+  public void setAlternativerZahlerID(Long id) throws RemoteException;
+
+  /**
+   * Liefert das Mitglied/Nicht-Mitglied welches den Beitrag für das Mitglied
+   * bezahlt. Es ist normalerweise das Mitglied selbst. Ist ein alternativer
+   * Beitragszahler konfiguriert, wird dieser zurückgeliefert.
    */
   public Mitglied getZahler() throws RemoteException;
 
@@ -253,8 +218,6 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void addVariable(String name, String wert) throws RemoteException;
 
   public Map<String, String> getVariablen() throws RemoteException;
-
-  public String getKtoiStaatCode() throws RemoteException;
 
   public String getLeitwegID() throws RemoteException;
 
