@@ -562,6 +562,26 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "notiz":
+        return "";
+      case "sekundaer":
+      case "altersstaffel":
+        return false;
+      case "arbeitseinsatzstunden":
+      case "arbeitseinsatzbetrag":
+        return 0d;
+      case "beitragsart":
+        return ArtBeitragsart.NORMAL.getKey();
+      default:
+        return null;
+    }
+  }
+
+  @Override
   public String getObjektName()
   {
     return "Beitragsgruppe";

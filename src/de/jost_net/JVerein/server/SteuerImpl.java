@@ -120,13 +120,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   @Override
   public boolean getAktiv() throws RemoteException
   {
-    Object o = getAttribute("aktiv");
-    // Default aktiv
-    if (o == null)
-    {
-      return true;
-    }
-    return Util.getBoolean(o);
+    return Util.getBoolean(getAttribute("aktiv"));
   }
 
   @Override
@@ -256,6 +250,18 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   public String getPrimaryAttribute() throws RemoteException
   {
     return "name";
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "aktiv":
+        return true;
+      default:
+        return null;
+    }
   }
 
   @Override
