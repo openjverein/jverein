@@ -2698,31 +2698,7 @@ public class EinstellungControl extends AbstractControl
 
       DBTransaction.commit();
 
-      try
-      {
-
-        Method reload = Navigation.class.getMethod("reload",
-            NavigationItem.class);
-        MyItem item = new MyItem(null, "", null)
-        {
-          @Override
-          public String getID()
-          {
-            return "jverein.main";
-          }
-        };
-        ExtensionRegistry.extend(item);
-
-        reload.invoke(GUI.getNavigation(), item);
-      }
-      catch (NoSuchMethodException ignore)
-      {
-        // In Jameica < 2.12.0 gibt es die Methode reload() noch nicht
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim neuladen der Navigation", e);
-      }
+      reloadNavigation();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
     catch (RemoteException | ApplicationException e)
@@ -2730,6 +2706,34 @@ public class EinstellungControl extends AbstractControl
       DBTransaction.rollback();
       Logger.error("Speichern felgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+  }
+
+  private void reloadNavigation()
+  {
+    try
+    {
+      Method reload = Navigation.class.getMethod("reload",
+          NavigationItem.class);
+      MyItem item = new MyItem(null, "", null)
+      {
+        @Override
+        public String getID()
+        {
+          return "jverein.main";
+        }
+      };
+      ExtensionRegistry.extend(item);
+
+      reload.invoke(GUI.getNavigation(), item);
+    }
+    catch (NoSuchMethodException ignore)
+    {
+      // In Jameica < 2.12.0 gibt es die Methode reload() noch nicht
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim neuladen der Navigation", e);
     }
   }
 
@@ -2946,6 +2950,8 @@ public class EinstellungControl extends AbstractControl
           Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN,
           (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());
       DBTransaction.commit();
+
+      reloadNavigation();
 
       GUI.getStatusBar()
           .setSuccessText(successText + "Einstellungen gespeichert");

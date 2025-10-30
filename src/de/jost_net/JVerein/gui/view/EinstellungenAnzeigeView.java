@@ -116,7 +116,8 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getBuchungsartAnzeige());
 
     cont.addSeparator();
-    cont.addHeadline("* " + "Änderung erfordert Neustart");
+    cont.addHeadline(
+        "* " + "Änderung erfordert Neustart (Bei Jameica < 2.12.0)");
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");
