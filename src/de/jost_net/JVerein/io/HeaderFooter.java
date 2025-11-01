@@ -46,7 +46,7 @@ class HeaderFooter extends PdfPageEventHelper
    * 
    */
   @Override
-  public void onEndPage(PdfWriter writer, Document document)
+  public void onStartPage(PdfWriter writer, Document document)
   {
     Rectangle rect = document.getPageSize();
 

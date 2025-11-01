@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -163,8 +162,7 @@ public abstract class StatistikJahrgaengeExport implements Exporter
     close();
   }
 
-  protected abstract void open()
-      throws DocumentException, FileNotFoundException;
+  protected abstract void open() throws DocumentException, IOException;
 
   protected abstract void close() throws IOException, DocumentException;
 
