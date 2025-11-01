@@ -18,6 +18,8 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.keys.Ausrichtung;
+
 public interface Formularfeld extends JVereinDBObject
 {
   public void setID(String id) throws RemoteException;
@@ -53,4 +55,8 @@ public interface Formularfeld extends JVereinDBObject
   public Integer getFontstyle() throws RemoteException;
 
   public void setFontstyle(Integer fontstyle) throws RemoteException;
+
+  public Ausrichtung getAusrichtung() throws RemoteException;
+
+  public void setAusrichtung(Ausrichtung ausrichtung) throws RemoteException;
 }

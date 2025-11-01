@@ -471,7 +471,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
         "2022 bis 2024");
     map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
-    map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(), "Unterschrift");
+
     map.put(SpendenbescheinigungVar.ZEILE1.getName(), "Herr");
     map.put(SpendenbescheinigungVar.ZEILE2.getName(), "Willi Wichtig");
     map.put(SpendenbescheinigungVar.ZEILE3.getName(), "Bahnhofstr. 22");
