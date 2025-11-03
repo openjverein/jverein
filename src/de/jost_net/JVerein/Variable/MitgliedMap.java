@@ -274,33 +274,32 @@ public class MitgliedMap extends AbstractMap
         z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
+      String name = Einstellungen.ZUSATZFELD_PRE
+          + fd.getName().replaceAll("[^a-zA-Z0-9_]", "_");
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              Datum.formatDate(z.getFeldDatum()));
+          map.put(name, Datum.formatDate(z.getFeldDatum()));
           break;
         case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              z.getFeldJaNein() ? "X" : " ");
+          map.put(name, z.getFeldJaNein() ? "X" : " ");
           break;
         case Datentyp.GANZZAHL:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              z.getFeldGanzzahl() + "");
+          map.put(name, z.getFeldGanzzahl() + "");
           break;
         case Datentyp.WAEHRUNG:
           if (z.getFeldWaehrung() != null)
           {
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+            map.put(name,
                 Einstellungen.DECIMALFORMAT.format(z.getFeldWaehrung()));
           }
           else
           {
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "");
+            map.put(name, "");
           }
           break;
         case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
+          map.put(name, z.getFeld());
           break;
       }
     }
@@ -319,7 +318,8 @@ public class MitgliedMap extends AbstractMap
       {
         val = "X";
       }
-      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), val);
+      map.put("mitglied_eigenschaft_"
+          + eig.getBezeichnung().replaceAll("[^a-zA-Z0-9_]", "_"), val);
     }
 
     DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
@@ -329,7 +329,8 @@ public class MitgliedMap extends AbstractMap
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
       String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + key, mitglied.getAttribute(key));
+      map.put("mitglied_" + key.replaceAll("[^a-zA-Z0-9_]", "_"),
+          mitglied.getAttribute(key));
     }
 
     for (String varname : mitglied.getVariablen().keySet())
