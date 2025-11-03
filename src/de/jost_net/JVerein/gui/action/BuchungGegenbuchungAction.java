@@ -138,7 +138,7 @@ public class BuchungGegenbuchungAction implements Action
     catch (Exception e)
     {
       GUI.getStatusBar().setErrorText(
-          "Fehler beim erstellen der Gegenbuchung: " + e.getMessage());
+          "Fehler beim Erstellen der Gegenbuchung: " + e.getMessage());
     }
   }
 }
