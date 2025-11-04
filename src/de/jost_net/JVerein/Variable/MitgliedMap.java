@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -274,8 +276,7 @@ public class MitgliedMap extends AbstractMap
         z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
-      String name = Einstellungen.ZUSATZFELD_PRE
-          + fd.getName().replaceAll("[^a-zA-Z0-9_]", "_");
+      String name = Einstellungen.ZUSATZFELD_PRE + formatKey(fd.getName());
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
@@ -318,8 +319,7 @@ public class MitgliedMap extends AbstractMap
       {
         val = "X";
       }
-      map.put("mitglied_eigenschaft_"
-          + eig.getBezeichnung().replaceAll("[^a-zA-Z0-9_]", "_"), val);
+      map.put("mitglied_eigenschaft_" + formatKey(eig.getBezeichnung()), val);
     }
 
     DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
@@ -329,8 +329,7 @@ public class MitgliedMap extends AbstractMap
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
       String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + key.replaceAll("[^a-zA-Z0-9_]", "_"),
-          mitglied.getAttribute(key));
+      map.put("mitglied_" + formatKey(key), mitglied.getAttribute(key));
     }
 
     for (String varname : mitglied.getVariablen().keySet())
@@ -348,6 +347,12 @@ public class MitgliedMap extends AbstractMap
     }
 
     return map;
+  }
+
+  private String formatKey(String key)
+  {
+    key = key.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("__", "_");
+    return StringUtils.strip(key, "_");
   }
 
   private Object getBankname(Mitglied m) throws RemoteException
