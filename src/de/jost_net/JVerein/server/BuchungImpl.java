@@ -141,6 +141,20 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     {
       throw new ApplicationException("Bitte Betrag eingeben");
     }
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der Jahresabschluss gespeichert werden damit die Referenz in der
+    // Buchung gespeichert werden kann. Dann muss man die Buchung auch bei
+    // bestehendem Jahresabschluss speichern können. In diesem Fall wird mit
+    // updateForced() gespeichert.
+    if (!forcedUpdate)
+    {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+      }
+    }
     Calendar cal1 = Calendar.getInstance();
     cal1.setTime(getDatum());
     Calendar cal2 = Calendar.getInstance();
@@ -246,31 +260,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit updateForced() gespeichert.
-    if (!forcedUpdate)
-    {
-      try
-      {
-        Jahresabschluss ja = getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(
-              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-        }
-      }
-      catch (RemoteException e)
-      {
-        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
-        Logger.error(fehler, e);
-        throw new ApplicationException(fehler);
-      }
-    }
     insertCheck();
   }
 
