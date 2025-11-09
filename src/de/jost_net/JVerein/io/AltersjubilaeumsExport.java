@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
@@ -98,8 +97,7 @@ public abstract class AltersjubilaeumsExport implements Exporter
 
   protected abstract void endeJahrgang() throws DocumentException;
 
-  protected abstract void open()
-      throws DocumentException, FileNotFoundException;
+  protected abstract void open() throws DocumentException, IOException;
 
   protected abstract void add(Mitglied m) throws RemoteException;
 

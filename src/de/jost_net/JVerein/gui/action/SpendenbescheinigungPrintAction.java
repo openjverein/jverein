@@ -329,7 +329,7 @@ public class SpendenbescheinigungPrintAction implements Action
     rpt.addColumn(
         "Aussteller (Bezeichnung und Anschrift der steuerbegünstigten Einrichtung)"
             + "\n\n" + getAussteller() + "\n ",
-        Element.ALIGN_LEFT);
+        Element.ALIGN_LEFT, (BaseColor) null);
     rpt.closeTable();
 
     rpt.add(new Paragraph(" ", Reporter.getFreeSans(4)));
@@ -355,7 +355,7 @@ public class SpendenbescheinigungPrintAction implements Action
     rpt.addColumn(
         "Name und Anschrift des Zuwendenden\n\n"
             + (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),
-        Element.ALIGN_LEFT);
+        Element.ALIGN_LEFT, (BaseColor) null);
     rpt.closeTable();
 
     // Betrag und Tag der Zuwendeung, kein Header
@@ -377,7 +377,7 @@ public class SpendenbescheinigungPrintAction implements Action
               + Einstellungen.DECIMALFORMAT.format(
                   map.get(SpendenbescheinigungVar.BETRAG.getName()))
               + "-",
-          Element.ALIGN_CENTER);
+          Element.ALIGN_CENTER, (BaseColor) null);
     }
     else
     {
@@ -386,23 +386,23 @@ public class SpendenbescheinigungPrintAction implements Action
               + Einstellungen.DECIMALFORMAT.format(
                   map.get(SpendenbescheinigungVar.BETRAG.getName()))
               + "-",
-          Element.ALIGN_CENTER);
+          Element.ALIGN_CENTER, (BaseColor) null);
     }
     rpt.addColumn("-in Buchstaben-\n"
         + (String) map.get(SpendenbescheinigungVar.BETRAGINWORTEN.getName()),
-        Element.ALIGN_CENTER);
+        Element.ALIGN_CENTER, (BaseColor) null);
     if (!isSammelbestaetigung)
     {
       rpt.addColumn(
           "Tag der Zuwendung\n"
               + (String) map.get(SpendenbescheinigungVar.SPENDEDATUM.getName()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, (BaseColor) null);
     }
     else
     {
       rpt.addColumn("Zeitraum der Sammelbestätigung\n"
           + (String) map.get(SpendenbescheinigungVar.SPENDENZEITRAUM.getName()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, (BaseColor) null);
     }
     rpt.closeTable();
 
