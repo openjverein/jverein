@@ -54,6 +54,8 @@ public class Kontoauszug
 
   private Reporter rpt;
 
+  private boolean first = true;
+
   private Kontoauszug() throws IOException, DocumentException
   {
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -160,7 +162,11 @@ public class Kontoauszug
         (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
 
-    rpt.newPage();
+    if (!first)
+    {
+      rpt.newPage();
+    }
+    first = false;
     String title = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_TITEL, null, m);
     String subtitle = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_SUBTITEL, null,
         m);

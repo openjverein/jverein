@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.commons.lang.StringUtils;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -89,13 +91,17 @@ public class MitgliedMap extends AbstractMap
         Datum.formatDate(mitglied.getAustritt()));
     map.put(MitgliedVar.AUSTRITT_F.getName(), fromDate(mitglied.getAustritt()));
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
-        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
-            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
-            : "");
+        mitglied.getBeitragsgruppe() != null
+            && mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag() != null
+                ? Einstellungen.DECIMALFORMAT.format(
+                    mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
+                : "");
     map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(),
-        mitglied.getBeitragsgruppe() != null ? Einstellungen.DECIMALFORMAT
-            .format(mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
-            : "");
+        mitglied.getBeitragsgruppe() != null
+            && mitglied.getBeitragsgruppe().getArbeitseinsatzStunden() != null
+                ? Einstellungen.DECIMALFORMAT.format(
+                    mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
+                : "");
     try
     {
       map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
@@ -287,33 +293,31 @@ public class MitgliedMap extends AbstractMap
         z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
+      String name = Einstellungen.ZUSATZFELD_PRE + formatKey(fd.getName());
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              Datum.formatDate(z.getFeldDatum()));
+          map.put(name, Datum.formatDate(z.getFeldDatum()));
           break;
         case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              z.getFeldJaNein() ? "X" : " ");
+          map.put(name, z.getFeldJaNein() ? "X" : " ");
           break;
         case Datentyp.GANZZAHL:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
-              z.getFeldGanzzahl() + "");
+          map.put(name, z.getFeldGanzzahl() + "");
           break;
         case Datentyp.WAEHRUNG:
           if (z.getFeldWaehrung() != null)
           {
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(),
+            map.put(name,
                 Einstellungen.DECIMALFORMAT.format(z.getFeldWaehrung()));
           }
           else
           {
-            map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "");
+            map.put(name, "");
           }
           break;
         case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), z.getFeld());
+          map.put(name, z.getFeld());
           break;
       }
     }
@@ -332,7 +336,7 @@ public class MitgliedMap extends AbstractMap
       {
         val = "X";
       }
-      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), val);
+      map.put("mitglied_eigenschaft_" + formatKey(eig.getBezeichnung()), val);
     }
 
     DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
@@ -342,7 +346,7 @@ public class MitgliedMap extends AbstractMap
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
       String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + key, mitglied.getAttribute(key));
+      map.put("mitglied_" + formatKey(key), mitglied.getAttribute(key));
     }
 
     for (String varname : mitglied.getVariablen().keySet())
@@ -360,6 +364,12 @@ public class MitgliedMap extends AbstractMap
     }
 
     return map;
+  }
+
+  private String formatKey(String key)
+  {
+    key = key.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("__", "_");
+    return StringUtils.strip(key, "_");
   }
 
   private Object getBankname(Mitglied m) throws RemoteException

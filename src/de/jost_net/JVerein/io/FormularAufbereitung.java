@@ -100,10 +100,7 @@ public class FormularAufbereitung
 
   private File f;
 
-  private static final int links = 1;
-
-  private static final int rechts = 2;
-
+  // Constanten für QR-Code
   private static final String EPC_STRING = "BCD";
 
   private static final String EPC_VERSION = "002";
@@ -115,8 +112,6 @@ public class FormularAufbereitung
   private static final String EPC_ID = "SCT";
 
   private static final String EPC_EUR = "EUR";
-
-  private int buendig = links;
 
   /**
    * Öffnet die Datei und startet die PDF-Generierung
@@ -201,8 +196,7 @@ public class FormularAufbereitung
 
         DBIterator<Formularfeld> it = Einstellungen.getDBService()
             .createList(Formularfeld.class);
-        it.addFilter("formular = ? and seite = ?",
-            new Object[] { formular.getID(), i });
+        it.addFilter("formular = ? and seite = ?", formular.getID(), i);
 
         Boolean increased = false;
 
@@ -212,9 +206,10 @@ public class FormularAufbereitung
 
           // Increase counter if form field is zaehler or qrcode (counter is
           // needed in QR code, so it needs to be incremented)
-          if ((f.getName().equals(AllgemeineVar.ZAEHLER.getName())
-              || f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
-              && !increased)
+          if (!increased && (f.getName().toLowerCase()
+              .contains(AllgemeineVar.ZAEHLER.getName().toLowerCase())
+              || f.getName().toLowerCase()
+                  .contains(RechnungVar.QRCODE_SUMME.getName().toLowerCase())))
           {
             zaehler++;
             // Prevent multiple increases by next page
@@ -225,14 +220,7 @@ public class FormularAufbereitung
                 StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
           }
 
-          // create QR code for invoice sum if form field is QRCODE_SUM
-          if (f.getName().equals(RechnungVar.QRCODE_SUMME.getName()))
-          {
-            map.put(RechnungVar.QRCODE_SUMME.getName(), getPaymentQRCode(map));
-            // Update QR code
-          }
-
-          goFormularfeld(contentByte, f, map.get(f.getName()));
+          goFormularfeld(contentByte, f, map);
         }
       }
 
@@ -249,8 +237,8 @@ public class FormularAufbereitung
     }
   }
 
-  @SuppressWarnings({ "unchecked", "rawtypes" })
-  private Image getPaymentQRCode(Map fieldsMap) throws RemoteException
+  private Image getPaymentQRCode(Map<String, Object> fieldsMap)
+      throws RemoteException
   {
     boolean festerText = (Boolean) Einstellungen
         .getEinstellung(Property.QRCODEFESTERTEXT);
@@ -267,13 +255,11 @@ public class FormularAufbereitung
 
     StringBuilder sb = new StringBuilder();
     String verwendungszweck;
-    String infoToMitglied;
 
     if (festerText)
     {
-      String zahlungsgruende_raw = getString(
-          fieldsMap.get(RechnungVar.ZAHLUNGSGRUND.getName()));
-      String[] zahlungsgruende = zahlungsgruende_raw.split("\n");
+      String[] zahlungsgruende = ((String) fieldsMap
+          .get(RechnungVar.ZAHLUNGSGRUND.getName())).split("\n");
       if (zahlungsgruende.length == 1
           && (Boolean) Einstellungen.getEinstellung(Property.QRCODESNGLLINE))
       {
@@ -350,7 +336,7 @@ public class FormularAufbereitung
 
     verwendungszweck = sb.toString();
 
-    infoToMitglied = (String) Einstellungen
+    String infoToMitglied = (String) Einstellungen
         .getEinstellung(Property.QRCODEINFOM);
     if (null == infoToMitglied)
     {
@@ -384,17 +370,14 @@ public class FormularAufbereitung
         infoToMitglied.substring(0, Math.min(infoToMitglied.length(), 70)));
     // trim to 70 chars max.
     String charset = EPC_CHARSET;
-    Map hintMap = new HashMap();
+    Map<EncodeHintType, ErrorCorrectionLevel> hintMap = new HashMap<>();
     hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M);
     try
     {
-
       BitMatrix matrix = new MultiFormatWriter().encode(
           new String(sbEpc.toString().getBytes(charset), charset),
           BarcodeFormat.QR_CODE, (int) sz, (int) sz, hintMap);
-
       return MatrixToImageWriter.toBufferedImage(matrix);
-
     }
     catch (UnsupportedEncodingException e1)
     {
@@ -447,53 +430,114 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Object val) throws DocumentException, IOException
+      Map<String, Object> map) throws DocumentException, IOException
   {
     String filename = String.format("/fonts/%s.ttf", feld.getFont());
-    BaseFont bf = BaseFont.createFont(filename, BaseFont.IDENTITY_H, true);
+    BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
+        true);
 
     float x = mm2point(feld.getX().floatValue());
     float y = mm2point(feld.getY().floatValue());
-    if (val == null)
+
+    Object val;
+    String inhalt = feld.getName();
+    // (Alte) Felder mit nur einer Variable direkt aus der Map holen
+    if (inhalt.matches("^\\$?[a-zA-Z0-9_]+$"))
     {
-      return;
-    }
-    else if (val instanceof Image)
-    {
-      com.itextpdf.text.Image i = com.itextpdf.text.Image
-          .getInstance((Image) val, Color.BLACK);
-      float sz = mm2point(
-          (Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM));
-      contentByte.addImage(i, sz, 0, 0, sz, x, y);
-    }
-    else if (val instanceof com.itextpdf.text.Image)
-    {
-      com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
-      float sh = i.getScaledHeight();
-      float sw = i.getScaledWidth();
-      contentByte.addImage(i, sw, 0, 0, sh, x, y);
+      val = map.get(inhalt.replace("$", ""));
+      if (val == null)
+      {
+        val = inhalt;
+      }
     }
     else
     {
-      buendig = links;
-      String stringVal = getString(val);
-      stringVal = stringVal.replace("\\n", "\n");
-      stringVal = stringVal.replaceAll("\r\n", "\n");
-      String[] ss = stringVal.split("\n");
-      for (String s : ss)
+      // Felder mit Text und Variablen
+      VelocityContext context = new VelocityContext();
+      context.put("dateformat", new JVDateFormatTTMMJJJJ());
+      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+      VarTools.add(context, map);
+
+      StringWriter wtext = new StringWriter();
+      Velocity.evaluate(context, wtext, "LOG", inhalt);
+      val = wtext.toString();
+    }
+
+    String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
+        "\n");
+    for (String s : stringVal.split("\n"))
+    {
+      Object o = null;
+      // Unterschrift und QR-Code durch Bild ersetzen
+      if (s.matches("^\\$?[a-zA-Z0-9_]+$"))
       {
-        contentByte.setFontAndSize(bf, feld.getFontsize().floatValue());
-        contentByte.beginText();
-        float offset = 0;
-        if (buendig == rechts)
+        if (s.replace("$", "")
+            .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
         {
-          offset = contentByte.getEffectiveStringWidth(s, true);
+          com.itextpdf.text.Image i = com.itextpdf.text.Image
+              .getInstance(getPaymentQRCode(map), Color.BLACK);
+          float sz = mm2point(
+              (Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM));
+          float offset = 0;
+          switch (feld.getAusrichtung())
+          {
+            case RECHTS:
+              offset = sz;
+              break;
+            case MITTE:
+              offset = sz / 2;
+            default:
+              break;
+          }
+          contentByte.addImage(i, sz, 0, 0, sz, x - offset, y - sz);
+          y -= sz + 3;
+          continue;
         }
-        contentByte.moveText(x - offset, y);
-        contentByte.showText(s);
-        contentByte.endText();
-        y -= feld.getFontsize().floatValue() + 3;
+
+        // Unterschrift
+        o = map.get(s.replace("$", ""));
+        if (o instanceof com.itextpdf.text.Image)
+        {
+          com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
+          float sh = i.getScaledHeight();
+          float sw = i.getScaledWidth();
+          float offset = 0;
+          switch (feld.getAusrichtung())
+          {
+            case RECHTS:
+              offset = sw;
+              break;
+            case MITTE:
+              offset = sw / 2;
+            default:
+              break;
+          }
+          contentByte.addImage(i, sw, 0, 0, sh, x - offset, y);
+          y -= sh + 3;
+          continue;
+        }
+        else if (o instanceof String)
+        {
+          s = (String) o;
+        }
       }
+      contentByte.setFontAndSize(baseFont, feld.getFontsize().floatValue());
+      contentByte.beginText();
+      float offset = 0;
+      switch (feld.getAusrichtung())
+      {
+        case RECHTS:
+          offset = contentByte.getEffectiveStringWidth(s, true);
+          break;
+        case MITTE:
+          offset = contentByte.getEffectiveStringWidth(s, true) / 2;
+        default:
+          break;
+      }
+      contentByte.moveText(x - offset, y);
+      contentByte.showText(s);
+      contentByte.endText();
+      y -= feld.getFontsize().floatValue() + 3;
     }
   }
 
@@ -504,79 +548,15 @@ public class FormularAufbereitung
 
   private String getString(Object val)
   {
-    StringBuilder stringVal = new StringBuilder();
-    if (val instanceof Object[])
-    {
-      Object[] o = (Object[]) val;
-      if (o.length == 0)
-      {
-        return "";
-      }
-      if (o[0] instanceof String)
-      {
-        for (Object ostr : o)
-        {
-          stringVal.append((String) ostr);
-          stringVal.append("\n");
-        }
-
-        // Format Strings with percent numbers and closing bracket e.g. taxes
-        if (((String) o[0]).contains("%)"))
-        {
-          buendig = rechts;
-        }
-      }
-      if (o[0] instanceof Date)
-      {
-        for (Object od : o)
-        {
-          if (od != null)
-          {
-            stringVal.append(new JVDateFormatTTMMJJJJ().format((Date) od));
-          }
-          stringVal.append("\n");
-        }
-      }
-      if (o[0] instanceof Double)
-      {
-        for (Object od : o)
-        {
-          if (od != null)
-          {
-            stringVal.append(Einstellungen.DECIMALFORMAT.format(od));
-          }
-          stringVal.append("\n");
-        }
-        buendig = rechts;
-      }
-
-    }
-    if (val instanceof String)
-    {
-      stringVal = new StringBuilder((String) val);
-
-      // Format Strings with percent numbers and closing bracket e.g. taxes
-      if (((String) val).contains("%)"))
-      {
-        buendig = rechts;
-      }
-    }
     if (val instanceof Double)
     {
-      stringVal = new StringBuilder(Einstellungen.DECIMALFORMAT.format(val));
-      buendig = rechts;
-    }
-    if (val instanceof Integer)
-    {
-      stringVal = new StringBuilder(val.toString());
-      buendig = rechts;
+      return Einstellungen.DECIMALFORMAT.format(val);
     }
     if (val instanceof Date)
     {
-      stringVal = new StringBuilder(
-          new JVDateFormatTTMMJJJJ().format((Date) val));
+      return new JVDateFormatTTMMJJJJ().format((Date) val);
     }
-    return stringVal.toString();
+    return val.toString();
   }
 
   public void printNeueSeite()

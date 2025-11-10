@@ -38,12 +38,18 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.HyphenationAuto;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.plugin.AbstractPlugin;
@@ -70,6 +76,14 @@ public class Reporter
   private PdfPTable table;
 
   private HyphenationAuto hyph;
+
+  private BaseColor zellenColor = BaseColor.WHITE;
+
+  private boolean headerTransparent = (Boolean) Einstellungen
+      .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT);
+
+  private boolean zellenTransparent = (Boolean) Einstellungen
+      .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT);
 
   public static Font getFreeSans(float size, BaseColor color)
   {
@@ -105,14 +119,14 @@ public class Reporter
   }
 
   public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords) throws DocumentException
+      int maxRecords) throws DocumentException, IOException
   {
     this(out, title, subtitle, maxRecords, 80, 30, 20, 20);
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
       float obererRand, float untererRand, boolean encrypt)
-      throws DocumentException
+      throws DocumentException, IOException
   {
     this.out = out;
     rpt = new Document();
@@ -133,11 +147,36 @@ public class Reporter
     rpt.open();
     headers = new ArrayList<>();
     widths = new ArrayList<>();
+
+    // Hintergrund und Vordergrund initialisieren
+    Formular formular = (Formular) FormularInput.initdefault(
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_HINTERGRUND));
+    if (formular != null)
+    {
+      PdfReader reader = new PdfReader(formular.getInhalt());
+      PdfImportedPage hintergrund = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportHintergrund(hintergrund));
+      // Hintergrund für erste Seite hier setzen da kein neuPage Event
+      PdfContentByte contentByte = writer.getDirectContentUnder();
+      contentByte.addTemplate(hintergrund, 0, 0);
+    }
+    formular = (Formular) FormularInput.initdefault(
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
+    if (formular != null)
+    {
+      PdfReader reader = new PdfReader(formular.getInhalt());
+      PdfImportedPage vordergrund = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportVordergrund(vordergrund));
+    }
+    if (zellenTransparent)
+    {
+      zellenColor = null;
+    }
   }
 
   public Reporter(OutputStream out, String title, String subtitle,
       int maxRecords, float linkerRand, float rechterRand, float obererRand,
-      float untererRand) throws DocumentException
+      float untererRand) throws DocumentException, IOException
   {
     this(out, linkerRand, rechterRand, obererRand, untererRand, false);
 
@@ -162,6 +201,10 @@ public class Reporter
     HeaderFooter hf = new HeaderFooter();
     hf.setFooter(fuss.toString());
     writer.setPageEvent(hf);
+    // Fusszeile wird onStartPage gesetzt damit später bei EndPage der
+    // Vordergrund darüber gelegt werden kann
+    // Fusszeile für erste Seite hier setzen da kein neuPage Event
+    hf.onStartPage(writer, rpt);
   }
 
   /**
@@ -207,7 +250,8 @@ public class Reporter
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color)
   {
-    headers.add(getDetailCell(text, align, color, true));
+    BaseColor bcolor = headerTransparent ? null : color;
+    headers.add(getDetailCell(text, align, bcolor, true));
     widths.add(Integer.valueOf(width));
   }
 
@@ -222,7 +266,8 @@ public class Reporter
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color, boolean silbentrennung)
   {
-    headers.add(getDetailCell(text, align, color, silbentrennung));
+    BaseColor bcolor = headerTransparent ? null : color;
+    headers.add(getDetailCell(text, align, bcolor, silbentrennung));
     widths.add(Integer.valueOf(width));
   }
 
@@ -286,7 +331,8 @@ public class Reporter
    */
   public void addColumn(String text, int align, BaseColor backgroundcolor)
   {
-    addColumn(getDetailCell(text, align, backgroundcolor, true));
+    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
+    addColumn(getDetailCell(text, align, bcolor, true));
   }
 
   /**
@@ -295,7 +341,8 @@ public class Reporter
   public void addColumn(String text, int align, BaseColor backgroundcolor,
       boolean silbentrennung)
   {
-    addColumn(getDetailCell(text, align, backgroundcolor, silbentrennung));
+    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
+    addColumn(getDetailCell(text, align, bcolor, silbentrennung));
   }
 
   /**
@@ -303,7 +350,15 @@ public class Reporter
    */
   public void addColumn(boolean value)
   {
-    addColumn(value ? "X" : "", Element.ALIGN_CENTER, BaseColor.WHITE, true);
+    addColumn(value ? "X" : "", Element.ALIGN_CENTER, zellenColor, true);
+  }
+
+  /**
+   * Fuegt eine neue Zelle zur Tabelle hinzu.
+   */
+  public void addColumn(String text, int align, Font font)
+  {
+    addColumn(getDetailCell(text, align, zellenColor, true, font));
   }
 
   /**
@@ -311,7 +366,7 @@ public class Reporter
    */
   public void addColumn(String text, int align)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, true));
+    addColumn(getDetailCell(text, align, zellenColor, true));
   }
 
   /**
@@ -319,18 +374,19 @@ public class Reporter
    */
   public void addColumn(String text, int align, boolean silbentrennung)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, silbentrennung));
+    addColumn(getDetailCell(text, align, zellenColor, silbentrennung));
   }
 
   public void addColumn(String text, int align, int colspan)
   {
-    addColumn(getDetailCell(text, align, BaseColor.WHITE, colspan));
+    addColumn(getDetailCell(text, align, zellenColor, colspan));
   }
 
   public void addColumn(String text, int align, BaseColor backgroundcolor,
       int colspan)
   {
-    addColumn(getDetailCell(text, align, backgroundcolor, colspan));
+    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
+    addColumn(getDetailCell(text, align, bcolor, colspan));
   }
 
   /**
@@ -340,11 +396,11 @@ public class Reporter
   {
     if (value != null)
     {
-      addColumn(getDetailCell(value.doubleValue()));
+      addColumn(getDetailCell(value.doubleValue(), zellenColor));
     }
     else
     {
-      addColumn(getDetailCell("", Element.ALIGN_LEFT, false));
+      addColumn(getDetailCell("", Element.ALIGN_LEFT, zellenColor, false));
     }
   }
 
@@ -353,7 +409,7 @@ public class Reporter
    */
   public void addColumn(double value)
   {
-    addColumn(getDetailCell(value));
+    addColumn(getDetailCell(value, zellenColor));
   }
 
   /**
@@ -363,7 +419,7 @@ public class Reporter
   {
     if (value != null)
     {
-      addColumn(getDetailCell(value, align));
+      addColumn(getDetailCell(value, align, zellenColor));
     }
     else
     {
@@ -485,6 +541,24 @@ public class Reporter
   }
 
   private PdfPCell getDetailCell(String text, int align,
+      BaseColor backgroundcolor, boolean silbentrennung, Font font)
+  {
+    PdfPCell cell = null;
+    if (silbentrennung)
+    {
+      cell = new PdfPCell(
+          new Phrase(new Chunk(notNull(text), font).setHyphenation(hyph)));
+    }
+    else
+    {
+      cell = new PdfPCell(new Phrase(new Chunk(notNull(text), font)));
+    }
+    cell.setHorizontalAlignment(align);
+    cell.setBackgroundColor(backgroundcolor);
+    return cell;
+  }
+
+  private PdfPCell getDetailCell(String text, int align,
       BaseColor backgroundcolor, int colspan)
   {
     PdfPCell cell = new PdfPCell(new Phrase(
@@ -496,27 +570,13 @@ public class Reporter
   }
 
   /**
-   * Erzeugt eine Zelle der Tabelle.
-   * 
-   * @param text
-   *          der anzuzeigende Text.
-   * @param align
-   *          die Ausrichtung.
-   * @return die erzeugte Zelle.
-   */
-  private PdfPCell getDetailCell(String text, int align, boolean silbentrennung)
-  {
-    return getDetailCell(text, align, BaseColor.WHITE, silbentrennung);
-  }
-
-  /**
    * Erzeugt eine Zelle fuer die uebergebene Zahl.
    * 
    * @param value
    *          die Zahl.
    * @return die erzeugte Zelle.
    */
-  private PdfPCell getDetailCell(double value)
+  private PdfPCell getDetailCell(double value, BaseColor backgroundcolor)
   {
     Font f = null;
     if (value >= 0)
@@ -530,6 +590,7 @@ public class Reporter
     PdfPCell cell = new PdfPCell(
         new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
     cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+    cell.setBackgroundColor(backgroundcolor);
     return cell;
   }
 
@@ -540,14 +601,15 @@ public class Reporter
    *          das Datum.
    * @return die erzeugte Zelle.
    */
-  private PdfPCell getDetailCell(Date value, int align)
+  private PdfPCell getDetailCell(Date value, int align,
+      BaseColor backgroundcolor)
   {
     if (value.equals(Einstellungen.NODATE))
     {
-      return getDetailCell("", Element.ALIGN_LEFT, false);
+      return getDetailCell("", Element.ALIGN_LEFT, backgroundcolor, false);
     }
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-    return getDetailCell(sdf.format(value), align, false);
+    return getDetailCell(sdf.format(value), align, backgroundcolor, false);
   }
 
   /**
@@ -568,10 +630,9 @@ public class Reporter
     if (!params.keySet().isEmpty())
     {
       add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
-
-      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
-          BaseColor.LIGHT_GRAY);
-      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, BaseColor.LIGHT_GRAY);
+      BaseColor bcolor = headerTransparent ? null : BaseColor.LIGHT_GRAY;
+      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100, bcolor);
+      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, bcolor);
       createHeader(75f, Element.ALIGN_LEFT);
       for (String key : params.keySet())
       {

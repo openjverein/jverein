@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.io;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -86,7 +85,7 @@ public class MitgliedschaftsjubilaeumExportPDF
   }
 
   @Override
-  protected void open() throws DocumentException, FileNotFoundException
+  protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
     reporter = new Reporter(fos, title, subtitle, 3);

@@ -20,6 +20,9 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.SWT;
 
+import de.jost_net.JVerein.Variable.RechnungVar;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.logging.Logger;
@@ -61,7 +64,25 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
     {
       if (getName() == null || getName().length() == 0)
       {
-        throw new ApplicationException("Bitte Namen eingeben");
+        throw new ApplicationException("Bitte Inhalt eingeben");
+      }
+      for (String zeile : getName().split("\n"))
+      {
+        if (zeile.contains(RechnungVar.QRCODE_SUMME.getName())
+            && !zeile.replace("$", "")
+                .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
+        {
+          throw new ApplicationException(RechnungVar.QRCODE_SUMME.getName()
+              + " Muss alleine in der Zeile Stehen!");
+        }
+        if (zeile.contains(SpendenbescheinigungVar.UNTERSCHRIFT.getName())
+            && !zeile.replace("$", "").equalsIgnoreCase(
+                SpendenbescheinigungVar.UNTERSCHRIFT.getName()))
+        {
+          throw new ApplicationException(
+              SpendenbescheinigungVar.UNTERSCHRIFT.getName()
+                  + " Muss alleine in der Zeile Stehen!");
+        }
       }
     }
     catch (RemoteException e)
@@ -213,6 +234,10 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("ausrichtung".equals(fieldName))
+    {
+      return this.getAusrichtung();
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -226,5 +251,22 @@ public class FormularfeldImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Formularfelder";
+  }
+
+  @Override
+  public Ausrichtung getAusrichtung() throws RemoteException
+  {
+    Object o = super.getAttribute("ausrichtung");
+    if (o == null)
+    {
+      return Ausrichtung.LINKS;
+    }
+    return Ausrichtung.getByKey((int) o);
+  }
+
+  @Override
+  public void setAusrichtung(Ausrichtung ausrichtung) throws RemoteException
+  {
+    setAttribute("ausrichtung", ausrichtung.getKey());
   }
 }

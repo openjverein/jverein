@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.action.BuchungGeprueftAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSteuerZuordnenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
@@ -104,20 +103,21 @@ public class BuchungMenu extends ContextMenu
         // Dann nicht anzeigen
       }
     }
-    addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
-        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
+    String text = "Buchungsart zuordnen";
     try
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
-        addItem(new CheckedContextMenuItem("Steuer zuordnen",
-            new BuchungSteuerZuordnenAction(), "view-refresh.png"));
+        text = "Buchungsart/Steuer zuordnen";
       }
     }
     catch (RemoteException e)
     {
-      // Dann nicht anzeigen
+      // Dann nicht
     }
+    addItem(new CheckedContextMenuItem(text,
+        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
+
     if (geldkonto)
     {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",

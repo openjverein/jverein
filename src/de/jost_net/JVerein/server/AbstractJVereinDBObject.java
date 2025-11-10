@@ -18,6 +18,8 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.sql.Clob;
+import java.sql.SQLException;
 
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
@@ -62,7 +64,34 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       value = Math.round((Double) value * 100d) / 100d;
     }
+    if (value instanceof Clob)
+    {
+      try
+      {
+        value = ((Clob) value).getSubString(1, (int) ((Clob) value).length());
+      }
+      catch (SQLException e)
+      {
+        throw new RemoteException("Fehler beim parsen eines CLOB wertes", e);
+      }
+    }
+    if (value == null)
+    {
+      value = getAttributeDefault(fieldName);
+    }
     return super.setAttribute(fieldName, value);
+  }
+
+  /**
+   * Gibt den default-Wert eines Attributs zurück, wenn es beim lesen oder
+   * schreiben 'null' ist.
+   * 
+   * @param fieldName
+   * @return
+   */
+  protected Object getAttributeDefault(String fieldName)
+  {
+    return null;
   }
 
   @Override
@@ -85,6 +114,10 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     if (o instanceof Double)
     {
       o = Math.round((Double) o * 100d) / 100d;
+    }
+    if (o == null)
+    {
+      o = getAttributeDefault(fieldName);
     }
     return o;
   }
