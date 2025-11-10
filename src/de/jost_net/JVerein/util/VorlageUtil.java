@@ -395,6 +395,7 @@ public class VorlageUtil
       Velocity.evaluate(context, wdateiname, "LOG", in);
       String str = wdateiname.toString();
       str = str.replaceAll("\\'\\#\\'", "-");
+      str = str.replaceAll("/", "_");
       return str;
     }
     catch (Exception e)
@@ -414,6 +415,6 @@ public class VorlageUtil
     {
       return vorlagen.next().getMuster();
     }
-    return "";
+    return typ.getDefault();
   }
 }

@@ -465,11 +465,31 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public String getKommentar() throws RemoteException
   {
-    if (getAttribute("kommentar") == null)
-    {
-      return "";
-    }
     return (String) getAttribute("kommentar");
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "kommentar":
+      case "titel":
+      case "vorname":
+      case "adressierungszusatz":
+      case "strasse":
+      case "plz":
+      case "ort":
+      case "iban":
+      case "bic":
+      case "leitwegid":
+      case "mandatid":
+      case "staat":
+      case "anrede":
+        return "";
+      default:
+        return null;
+    }
   }
 
   @Override

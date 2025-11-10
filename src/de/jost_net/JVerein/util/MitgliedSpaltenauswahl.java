@@ -116,6 +116,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Kontoinhaber", "kontoinhaber", false, true);
     add("Alternativer Zahler", "altzahlerstring", false, true);
     add("Mandat Version", "mandatversion", false, true);
+    add("Mandat ID", "mandatid", false, true);
     add("Geburtsdatum", "geburtsdatum", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     add("Alter", "alter", false, true);

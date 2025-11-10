@@ -47,22 +47,6 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   }
 
   @Override
-  protected Class<?> getForeignObject(String field) throws RemoteException
-  {
-    switch (field)
-    {
-      case "wirtschaftsplan":
-        return Wirtschaftsplan.class;
-      case "buchungsart":
-        return Buchungsart.class;
-      case "buchungsklasse":
-        return Buchungsklasse.class;
-      default:
-        return null;
-    }
-  }
-
-  @Override
   public void setId(String id) throws RemoteException
   {
     setAttribute("id", id);

@@ -600,12 +600,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getTitel() throws RemoteException
   {
-    String t = (String) getAttribute("titel");
-    if (t == null)
-    {
-      t = "";
-    }
-    return t;
+    return (String) getAttribute("titel");
   }
 
   @Override
@@ -641,14 +636,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getAdressierungszusatz() throws RemoteException
   {
-    if (getAttribute("adressierungszusatz") != null)
-    {
-      return (String) getAttribute("adressierungszusatz");
-    }
-    else
-    {
-      return "";
-    }
+    return (String) getAttribute("adressierungszusatz");
   }
 
   @Override
@@ -661,14 +649,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getStrasse() throws RemoteException
   {
-    if (getAttribute("strasse") != null)
-    {
-      return (String) getAttribute("strasse");
-    }
-    else
-    {
-      return "";
-    }
+    return (String) getAttribute("strasse");
   }
 
   @Override
@@ -680,15 +661,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getPlz() throws RemoteException
   {
-    if (getAttribute("plz") != null)
-    {
-
-      return (String) getAttribute("plz");
-    }
-    else
-    {
-      return "";
-    }
+    return (String) getAttribute("plz");
   }
 
   @Override
@@ -700,14 +673,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getOrt() throws RemoteException
   {
-    if (getAttribute("ort") != null)
-    {
-      return (String) getAttribute("ort");
-    }
-    else
-    {
-      return "";
-    }
+    return (String) getAttribute("ort");
   }
 
   @Override
@@ -816,12 +782,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Integer getMandatVersion() throws RemoteException
   {
-    Integer vers = (Integer) getAttribute("mandatversion");
-    if (vers == null)
-    {
-      vers = Integer.valueOf(0);
-    }
-    return vers;
+    return (Integer) getAttribute("mandatversion");
   }
 
   @Override
@@ -884,12 +845,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getBic() throws RemoteException
   {
-    String ret = (String) getAttribute("bic");
-    if (ret == null)
-    {
-      return "";
-    }
-    return ret;
+    return (String) getAttribute("bic");
   }
 
   @Override
@@ -901,12 +857,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getIban() throws RemoteException
   {
-    String ret = (String) getAttribute("iban");
-    if (ret == null)
-    {
-      return "";
-    }
-    return ret;
+    return (String) getAttribute("iban");
   }
 
   @Override
@@ -915,7 +866,6 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     setAttribute("iban", iban);
   }
 
-  @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
     switch (art)
@@ -999,12 +949,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getTelefonprivat() throws RemoteException
   {
-    String telefon = (String) getAttribute("telefonprivat");
-    if (telefon == null)
-    {
-      telefon = "";
-    }
-    return telefon;
+    return (String) getAttribute("telefonprivat");
   }
 
   @Override
@@ -1016,12 +961,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getTelefondienstlich() throws RemoteException
   {
-    String telefon = (String) getAttribute("telefondienstlich");
-    if (telefon == null)
-    {
-      telefon = "";
-    }
-    return telefon;
+    return (String) getAttribute("telefondienstlich");
   }
 
   @Override
@@ -1034,12 +974,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getHandy() throws RemoteException
   {
-    String telefon = (String) getAttribute("handy");
-    if (telefon == null)
-    {
-      telefon = "";
-    }
-    return telefon;
+    return (String) getAttribute("handy");
   }
 
   @Override
@@ -1051,12 +986,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public String getEmail() throws RemoteException
   {
-    String email = (String) getAttribute("email");
-    if (email == null)
-    {
-      email = "";
-    }
-    return email;
+    return (String) getAttribute("email");
   }
 
   @Override
@@ -1576,6 +1506,50 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
     }
     return true;
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "titel":
+      case "adressierungszusatz":
+      case "strasse":
+      case "plz":
+      case "ort":
+      case "iban":
+      case "bic":
+      case "telefonprivat":
+      case "telefondienstlich":
+      case "handy":
+      case "email":
+      case "leitwegid":
+      case "mandatid":
+      case "staat":
+      case "anrede":
+      case "ktoiadressierungszusatz":
+      case "ktoianrede":
+      case "ktoiemail":
+      case "ktoiname":
+      case "ktoiort":
+      case "ktoiplz":
+      case "ktoistaat":
+      case "ktoistrasse":
+      case "ktoititel":
+      case "ktoivorname":
+      case "ktoigeschlecht":
+      case "vermerk1":
+      case "vermerk2":
+      case "vorname":
+        return "";
+      case "ktoipersonenart":
+        return "N";
+      case "mandatversion":
+        return 0;
+      default:
+        return null;
+    }
   }
 
   @Override

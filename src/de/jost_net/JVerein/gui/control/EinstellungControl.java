@@ -405,6 +405,14 @@ public class EinstellungControl extends AbstractControl
 
   private FormularInput formularSachspende;
 
+  private FormularInput formularHintergrund;
+
+  private FormularInput formularVordergrund;
+
+  private CheckboxInput headerTransparent;
+
+  private CheckboxInput zellenTransparent;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -2548,6 +2556,52 @@ public class EinstellungControl extends AbstractControl
     return formularSachspende;
   }
 
+  public FormularInput getFormularHintergrund() throws RemoteException
+  {
+    if (formularHintergrund != null)
+    {
+      return formularHintergrund;
+    }
+    formularHintergrund = new FormularInput(FormularArt.HINTERGRUND,
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_HINTERGRUND));
+    formularHintergrund.setPleaseChoose("Kein Hintergrund");
+    return formularHintergrund;
+  }
+
+  public FormularInput getFormularVordergrund() throws RemoteException
+  {
+    if (formularVordergrund != null)
+    {
+      return formularVordergrund;
+    }
+    formularVordergrund = new FormularInput(FormularArt.HINTERGRUND,
+        (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
+    formularVordergrund.setPleaseChoose("Kein Vordergrund");
+    return formularVordergrund;
+  }
+
+  public CheckboxInput getHeaderTransparent() throws RemoteException
+  {
+    if (headerTransparent != null)
+    {
+      return headerTransparent;
+    }
+    headerTransparent = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT));
+    return headerTransparent;
+  }
+
+  public CheckboxInput getZellenTransparent() throws RemoteException
+  {
+    if (zellenTransparent != null)
+    {
+      return zellenTransparent;
+    }
+    zellenTransparent = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT));
+    return zellenTransparent;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2599,7 +2653,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2697,7 +2751,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2751,7 +2805,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2771,7 +2825,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2847,7 +2901,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2911,9 +2965,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getSplitPositionZweck().getValue());
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
-      Einstellungen.setEinstellung(
-          Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN,
-          (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar()
@@ -2922,7 +2973,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2969,7 +3020,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -2984,7 +3035,7 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -3059,7 +3110,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -3086,7 +3137,7 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern felgeschlagen", e);
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
@@ -3138,6 +3189,50 @@ public class EinstellungControl extends AbstractControl
     }
     catch (RemoteException e)
     {
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+  }
+
+  public void handleStoreReports()
+  {
+    try
+    {
+      DBTransaction.starten();
+      Einstellungen.setEinstellung(
+          Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN,
+          (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());
+      Formular formular = (Formular) formularHintergrund.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULAR_HINTERGRUND,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULAR_HINTERGRUND, "");
+      }
+      formular = (Formular) formularVordergrund.getValue();
+      if (formular != null)
+      {
+        Einstellungen.setEinstellung(Property.FORMULAR_VORDERGRUND,
+            formular.getID());
+      }
+      else
+      {
+        Einstellungen.setEinstellung(Property.FORMULAR_VORDERGRUND, "");
+      }
+      Einstellungen.setEinstellung(Property.TABELLEN_HEADER_TRANSPARENT,
+          (Boolean) headerTransparent.getValue());
+      Einstellungen.setEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT,
+          (Boolean) zellenTransparent.getValue());
+      DBTransaction.commit();
+
+      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
+    }
+    catch (IOException | ApplicationException e)
+    {
+      DBTransaction.rollback();
+      Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
   }
