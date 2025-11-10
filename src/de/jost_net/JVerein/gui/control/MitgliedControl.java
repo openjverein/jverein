@@ -617,7 +617,7 @@ public class MitgliedControl extends FilterControl implements Savable
           (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     }
 
-    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setName("Zahlungsweg des Mitglieds");
     zahlungsweg.addListener(new Listener()
     {
 
@@ -1877,25 +1877,55 @@ public class MitgliedControl extends FilterControl implements Savable
       @Override
       public void handleAction(Object context) throws ApplicationException
       {
+
         try
         {
+          Mitglied m = getMitglied();
           Mitglied nm = Einstellungen.getDBService()
               .createObject(Mitglied.class, null);
-          nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
-          nm.setPersonenart("n");
-          nm.setAnrede("");
-          nm.setName((String) getName(false).getValue());
-          nm.setVorname("");
-          nm.setAdressierungszusatz(
-              (String) getAdressierungszusatz().getValue());
-          nm.setStrasse((String) getStrasse().getValue());
-          nm.setPlz((String) getPlz().getValue());
-          nm.setOrt((String) getOrt().getValue());
-          nm.setEmail((String) getEmail().getValue());
-          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
+          if (m.getKtoiName() != null && m.getKtoiName().length() > 0)
           {
-            nm.setStaat(getStaat().getValue() == null ? ""
-                : ((Staat) getStaat().getValue()).getKey());
+            // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert war
+            // übernehmen wir diese Daten
+            nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+            nm.setPersonenart(m.getKtoiPersonenart());
+            nm.setAnrede(m.getKtoiAnrede());
+            nm.setTitel(m.getKtoiTitel());
+            nm.setName(m.getKtoiName());
+            nm.setVorname(m.getKtoiVorname());
+            nm.setAdressierungszusatz(m.getKtoiAdressierungszusatz());
+            nm.setStrasse(m.getKtoiStrasse());
+            nm.setPlz(m.getKtoiPlz());
+            nm.setOrt(m.getKtoiOrt());
+            nm.setStaat(m.getKtoiStaatCode());
+            nm.setEmail(m.getKtoiEmail());
+            nm.setGeschlecht(m.getKtoiGeschlecht());
+            nm.setZahlungsweg(m.getZahlungsweg());
+            nm.setMandatID(m.getMandatID());
+            nm.setMandatDatum(m.getMandatDatum());
+            nm.setMandatVersion(m.getMandatVersion());
+            nm.setIban(m.getIban());
+            nm.setBic(m.getBic());
+          }
+          else
+          {
+            nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+            nm.setPersonenart("n");
+            nm.setAnrede("");
+            nm.setName((String) getName(false).getValue());
+            nm.setVorname("");
+            nm.setAdressierungszusatz(
+                (String) getAdressierungszusatz().getValue());
+            nm.setStrasse((String) getStrasse().getValue());
+            nm.setPlz((String) getPlz().getValue());
+            nm.setOrt((String) getOrt().getValue());
+            nm.setEmail((String) getEmail().getValue());
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.AUSLANDSADRESSEN))
+            {
+              nm.setStaat(getStaat().getValue() == null ? ""
+                  : ((Staat) getStaat().getValue()).getKey());
+            }
           }
 
           GUI.startView(new NichtMitgliedDetailView(), nm);

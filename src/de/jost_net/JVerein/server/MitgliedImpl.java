@@ -1578,4 +1578,89 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
   }
 
+  // Nur für die Migration aus Versionen vor 4.0.0
+  @Override
+  public String getKtoiPersonenart() throws RemoteException
+  {
+    String ret = (String) getAttribute("ktoipersonenart");
+    if (ret == null)
+    {
+      ret = "n";
+    }
+    return ret;
+  }
+
+  @Override
+  public String getKtoiAnrede() throws RemoteException
+  {
+    return (String) getAttribute("ktoianrede");
+  }
+
+  @Override
+  public String getKtoiTitel() throws RemoteException
+  {
+    return (String) getAttribute("ktoititel");
+  }
+
+  @Override
+  public String getKtoiName() throws RemoteException
+  {
+    return (String) getAttribute("ktoiname");
+  }
+
+  @Override
+  public String getKtoiVorname() throws RemoteException
+  {
+    return (String) getAttribute("ktoivorname");
+  }
+
+  @Override
+  public String getKtoiStrasse() throws RemoteException
+  {
+    return (String) getAttribute("ktoistrasse");
+  }
+
+  @Override
+  public String getKtoiAdressierungszusatz() throws RemoteException
+  {
+    return (String) getAttribute("ktoiadressierungszusatz");
+  }
+
+  @Override
+  public String getKtoiPlz() throws RemoteException
+  {
+    return (String) getAttribute("ktoiplz");
+  }
+
+  @Override
+  public String getKtoiOrt() throws RemoteException
+  {
+    return (String) getAttribute("ktoiort");
+  }
+
+  @Override
+  public String getKtoiStaat() throws RemoteException
+  {
+    return Staat.getStaat(getKtoiStaatCode());
+  }
+
+  @Override
+  public String getKtoiStaatCode() throws RemoteException
+  {
+    String code = (String) getAttribute("ktoistaat");
+    return Staat.getStaatCode(code);
+  }
+
+  @Override
+  public String getKtoiEmail() throws RemoteException
+  {
+    return (String) getAttribute("ktoiemail");
+  }
+
+  @Override
+  public String getKtoiGeschlecht() throws RemoteException
+  {
+    return (String) getAttribute("ktoigeschlecht");
+  }
+
 }
