@@ -54,28 +54,12 @@ public class Update0494 extends AbstractDDLUpdate
 
     // Wenn kein ktoiname oder ktoivorname gesetzt ist, dann muss das Feld leer
     // sein
-    execute(
-        "UPDATE mitglied SET kontoinhaber = '' WHERE kontoinhaber = ', '");
+    execute("UPDATE mitglied SET kontoinhaber = '' WHERE kontoinhaber = ', '");
 
     execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
         COLTYPE.BOOLEAN, 1, "0", true, false)));
 
     execute(addColumn("zusatzbetragvorlage", new Column("mitgliedzahltselbst",
         COLTYPE.BOOLEAN, 1, "0", true, false)));
-
-    // Wenn das Feature fertig ist kann man die Attribute löschen
-    // Es gibt ja keinen Weg zurück mehr
-    // execute(dropColumn("mitglied", "ktoipersonenart"));
-    // execute(dropColumn("mitglied", "ktoianrede"));
-    // execute(dropColumn("mitglied", "ktoititel"));
-    // execute(dropColumn("mitglied", "ktoiname"));
-    // execute(dropColumn("mitglied", "ktoivorname"));
-    // execute(dropColumn("mitglied", "ktoistrasse"));
-    // execute(dropColumn("mitglied", "ktoiadressierungszusatz"));
-    // execute(dropColumn("mitglied", "ktoiplz"));
-    // execute(dropColumn("mitglied", "ktoiort"));
-    // execute(dropColumn("mitglied", "ktoistaat"));
-    // execute(dropColumn("mitglied", "ktoiEmail"));
-    // execute(dropColumn("mitglied", "ktoigeschlecht"));
   }
 }
