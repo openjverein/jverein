@@ -49,7 +49,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addLabelPair(
         "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
         control.getKontonummerInBuchungsliste());
-    cont.addLabelPair("Umsatzsteuer Support (Neustart erforderlich)",
+    cont.addLabelPair(
+        "Umsatzsteuer Support (Neustart erforderlich bei jameica < 2.12.0)",
         control.getOptiert());
     cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
     cont.addLabelPair("Steuer individuell pro Buchung setzen",
