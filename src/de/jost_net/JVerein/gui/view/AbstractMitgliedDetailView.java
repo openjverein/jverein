@@ -269,6 +269,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         {
           control.handleStore();
           GUI.getStatusBar().setSuccessText("Gespeichert");
+          funktion = 'B';
+          control.getMitgliedsnummer()
+              .setValue(((Mitglied) getCurrentObject()).getID());
           zeichneUeberschrift();
           lesefeldControl.updateLesefeldMitgliedList(control.getMitglied(),
               true);
