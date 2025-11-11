@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -40,6 +41,7 @@ import de.jost_net.JVerein.gui.input.KontoauswahlInput;
 import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
+import de.jost_net.JVerein.gui.navigation.MyItem;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -66,7 +68,10 @@ import de.jost_net.OBanToo.SEPA.Land.SEPALand;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.Navigation;
+import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -2746,6 +2751,8 @@ public class EinstellungControl extends AbstractControl
           wirtschaftsplanung.getValue());
 
       DBTransaction.commit();
+
+      reloadNavigation();
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
     catch (RemoteException | ApplicationException e)
@@ -2753,6 +2760,34 @@ public class EinstellungControl extends AbstractControl
       DBTransaction.rollback();
       Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
+    }
+  }
+
+  private void reloadNavigation()
+  {
+    try
+    {
+      Method reload = Navigation.class.getMethod("reload",
+          NavigationItem.class);
+      MyItem item = new MyItem(null, "", null)
+      {
+        @Override
+        public String getID()
+        {
+          return "jverein.main";
+        }
+      };
+      ExtensionRegistry.extend(item);
+
+      reload.invoke(GUI.getNavigation(), item);
+    }
+    catch (NoSuchMethodException ignore)
+    {
+      // In Jameica < 2.12.0 gibt es die Methode reload() noch nicht
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim neuladen der Navigation", e);
     }
   }
 
@@ -2966,6 +3001,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.GEPRUEFTSYNCHRONISIEREN,
           (Boolean) getGeprueftSynchronisieren().getValue());
       DBTransaction.commit();
+
+      reloadNavigation();
 
       GUI.getStatusBar()
           .setSuccessText(successText + "Einstellungen gespeichert");
