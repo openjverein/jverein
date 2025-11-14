@@ -19,7 +19,6 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -29,7 +28,6 @@ import com.itextpdf.text.Font;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MittelverwendungControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -46,24 +44,11 @@ public class MittelverwendungExportPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      Date datumvon, Date datumbis) throws ApplicationException
+      String title, String subtitle) throws ApplicationException
   {
     try
     {
-      String title = "";
-      switch (tab)
-      {
-        case MittelverwendungControl.FLOW_REPORT:
-          title = "Mittelverwendungsrechnung (Zufluss-basiert)";
-          break;
-        case MittelverwendungControl.SALDO_REPORT:
-          title = "Mittelverwendungsrechnung (Saldo-basiert)";
-          break;
-      }
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = "Geschäftsjahr: "
-          + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
       Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
       makeHeader(reporter, tab);
 

@@ -28,7 +28,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 
 public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
@@ -84,8 +83,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, "Statistik Jahrgänge, Stichtag: "
-        + new JVDateFormatTTMMJJJJ().format(stichtag) + "", "", 3);
+    reporter = new Reporter(fos, title, subtitle, 3);
     reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,

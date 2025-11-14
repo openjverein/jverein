@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.menu.VorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Vorlage;
 import de.jost_net.JVerein.server.VorlageImpl;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -142,7 +143,7 @@ public class VorlageControl extends FilterControl implements Savable
     }
   }
 
-  public Part getDateinamenList() throws RemoteException
+  public Part getDateinamenList() throws RemoteException, ApplicationException
   {
     if (namenList != null)
     {
@@ -179,15 +180,17 @@ public class VorlageControl extends FilterControl implements Savable
       }
       namenList.sort();
     }
-    catch (RemoteException e1)
+    catch (RemoteException | ApplicationException e1)
     {
       Logger.error("Fehler", e1);
     }
   }
 
-  private List<Vorlage> getVorlagenList() throws RemoteException
+  private List<Vorlage> getVorlagenList()
+      throws RemoteException, ApplicationException
   {
     String tmpSuchtext = ((String) getSuchtext().getValue()).toLowerCase();
+    Vorlageart art = (Vorlageart) getVorlagenart().getValue();
 
     // Vorhandene Vorlagen aus DB laden
     Map<String, DBObject> vorlagen = new HashMap<>();
@@ -210,8 +213,13 @@ public class VorlageControl extends FilterControl implements Savable
             null);
         vorlage.setAttribute(Vorlage.KEY, typ.getKey());
         vorlage.setMuster(typ.getDefault());
+        vorlage.store();
       }
       // ggf. Filtern
+      if (art != null && art.getKey() != typ.getArtkey())
+      {
+        continue;
+      }
       if (tmpSuchtext.length() == 0
           || vorlage.getMuster().toLowerCase().contains(tmpSuchtext)
           || vorlage.getKey().toLowerCase().contains(tmpSuchtext))

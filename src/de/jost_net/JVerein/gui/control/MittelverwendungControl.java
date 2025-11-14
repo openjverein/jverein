@@ -1095,7 +1095,31 @@ public class MittelverwendungControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Mittelverwendungsrechnung";
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_TITEL, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_TITEL,
+          this);
+    }
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_SUBTITEL, this);
+    }
+    else
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_SUBTITEL, this);
+    }
   }
 
   @Override

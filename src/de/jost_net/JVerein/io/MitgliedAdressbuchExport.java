@@ -35,7 +35,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
   }
 
   @Override
-  public void beforeGo()
+  public void beforeGo(String title)
   {
     // Nothing to do
   }
