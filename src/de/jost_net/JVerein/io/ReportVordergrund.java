@@ -1,3 +1,5 @@
+package de.jost_net.JVerein.io;
+
 /**********************************************************************
  * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
@@ -14,54 +16,35 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.keys;
 
-public enum FormularArt
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfImportedPage;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfWriter;
+
+/**
+ * Setzen eines Hintergrundes bei Reports.
+ */
+class ReportVordergrund extends PdfPageEventHelper
 {
-  SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
-  RECHNUNG(2, "Rechnung"),
-  MAHNUNG(3, "Mahnung"),
-  FREIESFORMULAR(4, "Freies Formular"),
-  SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
-  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification"),
-  SACHSPENDENBESCHEINIGUNG(7, "Sachspendenbescheinigung"),
-  HINTERGRUND(8, "Hintergrund/Vordergrund");
 
-  private final String text;
+  private PdfImportedPage importedPage;
 
-  private final int key;
-
-  FormularArt(int key, String text)
+  public ReportVordergrund(PdfImportedPage importedPage)
   {
-    this.key = key;
-    this.text = text;
-  }
-
-  public int getKey()
-  {
-    return key;
-  }
-
-  public String getText()
-  {
-    return text;
-  }
-
-  public static FormularArt getByKey(int key)
-  {
-    for (FormularArt form : FormularArt.values())
-    {
-      if (form.getKey() == key)
-      {
-        return form;
-      }
-    }
-    return null;
+    this.importedPage = importedPage;
   }
 
   @Override
-  public String toString()
+  public void onEndPage(PdfWriter writer, Document document)
   {
-    return getText();
+    if (importedPage != null)
+    {
+      PdfContentByte contentByte = writer.getDirectContent();
+      contentByte.saveState();
+      contentByte.addTemplate(importedPage, 0, 0);
+      contentByte.restoreState();
+    }
   }
 }

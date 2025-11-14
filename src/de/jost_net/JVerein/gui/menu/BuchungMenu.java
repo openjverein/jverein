@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.action.BuchungGeprueftAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSteuerZuordnenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
@@ -90,34 +89,35 @@ public class BuchungMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
           new AnlagenkontoNeuAction(), "document-new.png"));
-      try
-      {
-        if ((Boolean) Einstellungen
-            .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-        {
-          addItem(new SpendenbescheinigungMenuItem("Spendenbescheinigung",
-              new SpendenbescheinigungNeuAction(), "file-invoice.png"));
-        }
-      }
-      catch (RemoteException e)
-      {
-        // Dann nicht anzeigen
-      }
     }
-    addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
-        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        addItem(new CheckedContextMenuItem("Steuer zuordnen",
-            new BuchungSteuerZuordnenAction(), "view-refresh.png"));
+        addItem(new SpendenbescheinigungMenuItem("Spendenbescheinigung",
+            new SpendenbescheinigungNeuAction(), "file-invoice.png"));
       }
     }
     catch (RemoteException e)
     {
-      // Dann nicht anzeigen
+      // Dann nicht
     }
+    String text = "Buchungsart zuordnen";
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        text = "Buchungsart/Steuer zuordnen";
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht
+    }
+    addItem(new CheckedContextMenuItem(text,
+        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
+
     if (geldkonto)
     {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",

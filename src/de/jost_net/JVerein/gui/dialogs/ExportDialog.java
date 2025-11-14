@@ -207,6 +207,8 @@ public class ExportDialog extends AbstractDialog<Object>
 
     final Exporter exporter = exp.exporter;
     final IOFormat format = exp.format;
+    exp.exporter.calculateTitle(dateinameObject);
+    exp.exporter.calculateSubitle(dateinameObject);
 
     BackgroundTask t = new BackgroundTask()
     {

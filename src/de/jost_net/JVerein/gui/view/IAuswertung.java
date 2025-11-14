@@ -49,7 +49,7 @@ public interface IAuswertung
   /**
    * Vorbereitende Arbeiten
    */
-  public void beforeGo() throws RemoteException;
+  public void beforeGo(String title) throws RemoteException;
 
   /**
    * Startet die Auswertung

@@ -48,8 +48,8 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, mitgliedstyp.getBezeichnungPlural(),
-          subtitle, list.size(), 20, 20, 20, 25);
+      Reporter report = new Reporter(fos, title, subtitle, list.size(), 20, 20,
+          20, 25);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 60,
           BaseColor.LIGHT_GRAY);

@@ -141,6 +141,20 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     {
       throw new ApplicationException("Bitte Betrag eingeben");
     }
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der Jahresabschluss gespeichert werden damit die Referenz in der
+    // Buchung gespeichert werden kann. Dann muss man die Buchung auch bei
+    // bestehendem Jahresabschluss speichern können. In diesem Fall wird mit
+    // updateForced() gespeichert.
+    if (!forcedUpdate)
+    {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+      }
+    }
     Calendar cal1 = Calendar.getInstance();
     cal1.setTime(getDatum());
     Calendar cal2 = Calendar.getInstance();
@@ -241,63 +255,11 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       throw new ApplicationException(
           "Geldspende und Sachspende ist nicht gleichzeitig möglich.");
     }
-
-    // Diese Felder dürfen wegen dem Change Test nicht null sein, daher leer
-    // belegen
-    if (getName() == null)
-    {
-      setName("");
-    }
-    if (getZweck() == null)
-    {
-      setZweck("");
-    }
-    if (getArt() == null)
-    {
-      setArt("");
-    }
-    if (getVerzicht() == null)
-    {
-      setVerzicht(false);
-    }
-    if (getKommentar() == null)
-    {
-      setKommentar("");
-    }
-    if (getGeprueft() == null)
-    {
-      setGeprueft(false);
-    }
   }
 
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit updateForced() gespeichert.
-    if (!forcedUpdate)
-    {
-      try
-      {
-        Jahresabschluss ja = getJahresabschluss();
-        if (ja != null)
-        {
-          throw new ApplicationException(
-              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-        }
-      }
-      catch (RemoteException e)
-      {
-        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
-        Logger.error(fehler, e);
-        throw new ApplicationException(fehler);
-      }
-    }
     insertCheck();
   }
 
@@ -425,8 +387,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public boolean isBetragNull() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    return d == null;
+    return (Double) getAttribute("betrag") == null;
   }
 
   @Override
@@ -902,6 +863,29 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     return super.getAttribute(fieldName);
   }
 
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "name":
+      case "zweck":
+      case "art":
+      case "kommentar":
+      case "iban":
+      case "bezeichnungsachzuwendung":
+        return "";
+      case "verzicht":
+      case "geprueft":
+      case "unterlagenwertermittlung":
+        return false;
+      case "herkunftspende":
+        return HerkunftSpende.KEINEANGABEN;
+      default:
+        return null;
+    }
+  }
+
   private Date toDate(String datum)
   {
     Date d = null;
@@ -971,12 +955,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Boolean getGeprueft() throws RemoteException
   {
-    Boolean geprueft = (Boolean) getAttribute("geprueft");
-    if (geprueft == null)
-    {
-      return false;
-    }
-    return geprueft;
+    return (Boolean) getAttribute("geprueft");
   }
 
   @Override
@@ -1041,12 +1020,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public int getHerkunftSpende() throws RemoteException
   {
-    Integer ret = (Integer) getAttribute("herkunftspende");
-    if (ret == null)
-    {
-      ret = HerkunftSpende.KEINEANGABEN;
-    }
-    return ret;
+    return (Integer) getAttribute("herkunftspende");
   }
 
   @Override

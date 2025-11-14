@@ -49,7 +49,8 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addLabelPair(
         "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
         control.getKontonummerInBuchungsliste());
-    cont.addLabelPair("Umsatzsteuer Support (Neustart erforderlich)",
+    cont.addLabelPair(
+        "Umsatzsteuer Support (Neustart erforderlich bei jameica < 2.12.0)",
         control.getOptiert());
     cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
     cont.addLabelPair("Steuer individuell pro Buchung setzen",
@@ -61,9 +62,6 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         "Bei automatischem Splitten den "
             + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
         control.getSplitPositionZweck());
-    cont.addLabelPair(
-        "Wirtschaftsplan Export Ist-Beträge von laufendem Zeitraum anzeigen",
-        control.getWirtschaftsplanIstAbgeschlossen());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

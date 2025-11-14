@@ -17,36 +17,42 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
 
-public class EinstellungenVorlageListeView extends AbstractView
+public class EinstellungenReportsView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Einstellungen Vorlagen");
+    GUI.getView().setTitle("Einstellungen Reports");
 
-    VorlageControl control = new VorlageControl(this);
+    final EinstellungControl control = new EinstellungControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Enthaltener Text", control.getSuchtext());
-    group.addLabelPair("Vorlagenart", control.getVorlagenart());
+    ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    ButtonArea fbuttons = new ButtonArea();
-    fbuttons.addButton(control.getResetButton());
-    fbuttons.addButton(control.getSuchenButton());
-    group.addButtonArea(fbuttons);
-
-    control.getDateinamenList().paint(this.getParent());
+    cont.addLabelPair(
+        "Wirtschaftsplan Ist-Beträge von laufendem Zeitraum ausgeben",
+        control.getWirtschaftsplanIstAbgeschlossen());
+    cont.addLabelPair("Hintergrund bei Reports",
+        control.getFormularHintergrund());
+    cont.addLabelPair("Vordergrund bei Reports",
+        control.getFormularVordergrund());
+    cont.addLabelPair("Tabellen Header transparent",
+        control.getHeaderTransparent());
+    cont.addLabelPair("Tabellen Zellen transparent",
+        control.getZellenTransparent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_VORLAGEN, false, "question-circle.png");
+        DokumentationUtil.EINSTELLUNGEN_REPORTS, false, "question-circle.png");
+    buttons.addButton("Speichern", c -> {
+      control.handleStoreReports();
+    }, null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

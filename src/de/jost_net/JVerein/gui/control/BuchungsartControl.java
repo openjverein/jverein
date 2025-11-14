@@ -546,6 +546,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     final File file = new File(s);
     final DBIterator<Buchungsart> it = getBuchungsarten();
     settings.setAttribute("lastdir", file.getParent());
+    final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL,
+        this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this);
     BackgroundTask t = new BackgroundTask()
     {
       @Override
@@ -554,7 +558,7 @@ public class BuchungsartControl extends FilterControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Buchungsarten", "", it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Nummer", Element.ALIGN_LEFT, 20,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_LEFT, 80,

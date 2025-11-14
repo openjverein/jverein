@@ -16,22 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum FormularArt
+public enum Vorlageart
 {
-  SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
-  RECHNUNG(2, "Rechnung"),
-  MAHNUNG(3, "Mahnung"),
-  FREIESFORMULAR(4, "Freies Formular"),
-  SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
-  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification"),
-  SACHSPENDENBESCHEINIGUNG(7, "Sachspendenbescheinigung"),
-  HINTERGRUND(8, "Hintergrund/Vordergrund");
+
+  DATEINAME(1, "Dateiname"),
+  TITEL(2, "Titel");
 
   private final String text;
 
   private final int key;
 
-  FormularArt(int key, String text)
+  Vorlageart(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -47,13 +42,13 @@ public enum FormularArt
     return text;
   }
 
-  public static FormularArt getByKey(int key)
+  public static Vorlageart getByKey(int key)
   {
-    for (FormularArt form : FormularArt.values())
+    for (Vorlageart art : Vorlageart.values())
     {
-      if (form.getKey() == key)
+      if (art.getKey() == key)
       {
-        return form;
+        return art;
       }
     }
     return null;

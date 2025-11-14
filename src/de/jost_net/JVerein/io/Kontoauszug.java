@@ -32,17 +32,14 @@ import org.eclipse.swt.widgets.FileDialog;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Paragraph;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
@@ -56,6 +53,8 @@ public class Kontoauszug
   private File file;
 
   private Reporter rpt;
+
+  private boolean first = true;
 
   private Kontoauszug() throws IOException, DocumentException
   {
@@ -163,13 +162,20 @@ public class Kontoauszug
         (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
 
-    rpt.newPage();
-    rpt.add((String) Einstellungen.getEinstellung(Property.NAME), 20);
-    rpt.add(
-        String.format("Kontoauszug %s", Adressaufbereitung.getVornameName(m)),
-        18);
-    JVDateFormatTTMMJJJJ jv = new JVDateFormatTTMMJJJJ();
-    rpt.add(String.format("Stand: %s", jv.format(new Date())), 16);
+    if (!first)
+    {
+      rpt.newPage();
+    }
+    first = false;
+    String title = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_TITEL, null, m);
+    String subtitle = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_SUBTITEL, null,
+        m);
+    Paragraph pTitle = new Paragraph(title, Reporter.getFreeSansBold(13));
+    pTitle.setAlignment(Element.ALIGN_CENTER);
+    rpt.add(pTitle);
+    Paragraph psubTitle = new Paragraph(subtitle, Reporter.getFreeSansBold(10));
+    psubTitle.setAlignment(Element.ALIGN_CENTER);
+    rpt.add(psubTitle);
 
     rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 20, BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Datum", Element.ALIGN_CENTER, 20,

@@ -262,6 +262,27 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         klasse = "Nicht zugeordnet";
       }
+
+      // Vor neuer Klasse Saldo der letzten anzeigen.
+      if (!klasse.equals(klasseAlt) && klasseAlt != null)
+      {
+        PseudoDBObject saldo = new PseudoDBObject();
+        saldo.setAttribute(ART, ART_SALDOFOOTER);
+        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+        saldo.setAttribute(EINNAHMEN, summeStartwert);
+        saldo.setAttribute(AUSGABEN, summeZugang);
+        saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
+        saldo.setAttribute(ABGANG, summeAbgang);
+        saldo.setAttribute(ENDWERT, summeEndwert);
+        zeilen.add(saldo);
+
+        summeStartwert = 0d;
+        summeAbschreibung = 0d;
+        summeZugang = 0d;
+        summeAbgang = 0d;
+        summeEndwert = 0d;
+      }
+
       String buchungsart = (String) o.getAttribute(BUCHUNGSART);
       Integer konto = o.getInteger(KONTO_ID);
 
@@ -292,26 +313,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         summeEndwert += endwert;
         gesamtEndwert += endwert;
-      }
-
-      // Vor neuer Klasse Saldo der letzten anzeigen.
-      if (!klasse.equals(klasseAlt) && klasseAlt != null)
-      {
-        PseudoDBObject saldo = new PseudoDBObject();
-        saldo.setAttribute(ART, ART_SALDOFOOTER);
-        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-        saldo.setAttribute(EINNAHMEN, summeStartwert);
-        saldo.setAttribute(AUSGABEN, summeZugang);
-        saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
-        saldo.setAttribute(ABGANG, summeAbgang);
-        saldo.setAttribute(ENDWERT, summeEndwert);
-        zeilen.add(saldo);
-
-        summeStartwert = 0d;
-        summeAbschreibung = 0d;
-        summeZugang = 0d;
-        summeAbgang = 0d;
-        summeEndwert = 0d;
       }
 
       // Bei neuer Klasse Kopfzeile anzeigen.
@@ -371,7 +372,13 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Anlagenverzeichnis";
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
   }
 
   @Override

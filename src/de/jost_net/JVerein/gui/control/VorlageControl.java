@@ -17,6 +17,10 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -24,11 +28,13 @@ import de.jost_net.JVerein.gui.menu.VorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Vorlage;
+import de.jost_net.JVerein.server.VorlageImpl;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
@@ -137,13 +143,13 @@ public class VorlageControl extends FilterControl implements Savable
     }
   }
 
-  public Part getDateinamenList() throws RemoteException
+  public Part getDateinamenList() throws RemoteException, ApplicationException
   {
     if (namenList != null)
     {
       return namenList;
     }
-    namenList = new JVereinTablePart(getVorlagenIt(), null);
+    namenList = new JVereinTablePart(getVorlagenList(), null);
     namenList.addColumn("Vorlage Art", "art");
     namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
     namenList.setContextMenu(new VorlageMenu(namenList));
@@ -168,31 +174,59 @@ public class VorlageControl extends FilterControl implements Savable
         return;
       }
       namenList.removeAll();
-      DBIterator<Vorlage> getVorlagenIt = getVorlagenIt();
-      while (getVorlagenIt.hasNext())
+      for (Vorlage v : getVorlagenList())
       {
-        namenList.addItem(getVorlagenIt.next());
+        namenList.addItem(v);
       }
       namenList.sort();
     }
-    catch (RemoteException e1)
+    catch (RemoteException | ApplicationException e1)
     {
       Logger.error("Fehler", e1);
     }
   }
 
-  private DBIterator<Vorlage> getVorlagenIt() throws RemoteException
+  private List<Vorlage> getVorlagenList()
+      throws RemoteException, ApplicationException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Vorlage> vorlagenIt = service.createList(Vorlage.class);
-    vorlagenIt.setOrder("ORDER BY " + Vorlage.MUSTER);
-    String tmpSuchtext = (String) getSuchtext().getValue();
-    if (tmpSuchtext.length() > 0)
+    String tmpSuchtext = ((String) getSuchtext().getValue()).toLowerCase();
+    Vorlageart art = (Vorlageart) getVorlagenart().getValue();
+
+    // Vorhandene Vorlagen aus DB laden
+    Map<String, DBObject> vorlagen = new HashMap<>();
+    DBIterator<?> it = Einstellungen.getDBService().createList(Vorlage.class);
+    while (it.hasNext())
     {
-      String suchText = "%" + tmpSuchtext.toLowerCase() + "%";
-      vorlagenIt.addFilter("(lower(" + Vorlage.KEY + ") like ? OR lower("
-          + Vorlage.MUSTER + ") like ?)", new Object[] { suchText, suchText });
+      Vorlage v = (Vorlage) it.next();
+      vorlagen.put(v.getKey(), v);
     }
-    return vorlagenIt;
+
+    // Alle möglichen Typen durchlaufen
+    ArrayList<Vorlage> list = new ArrayList<>();
+    for (VorlageTyp typ : VorlageTyp.values())
+    {
+      VorlageImpl vorlage = (VorlageImpl) vorlagen.get(typ.getKey());
+      // Wenn es nicht in der DB steht, neu erstellen
+      if (vorlage == null)
+      {
+        vorlage = Einstellungen.getDBService().createObject(Vorlage.class,
+            null);
+        vorlage.setAttribute(Vorlage.KEY, typ.getKey());
+        vorlage.setMuster(typ.getDefault());
+        vorlage.store();
+      }
+      // ggf. Filtern
+      if (art != null && art.getKey() != typ.getArtkey())
+      {
+        continue;
+      }
+      if (tmpSuchtext.length() == 0
+          || vorlage.getMuster().toLowerCase().contains(tmpSuchtext)
+          || vorlage.getKey().toLowerCase().contains(tmpSuchtext))
+      {
+        list.add(vorlage);
+      }
+    }
+    return list;
   }
 }

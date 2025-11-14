@@ -16,25 +16,29 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum FormularArt
-{
-  SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
-  RECHNUNG(2, "Rechnung"),
-  MAHNUNG(3, "Mahnung"),
-  FREIESFORMULAR(4, "Freies Formular"),
-  SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
-  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification"),
-  SACHSPENDENBESCHEINIGUNG(7, "Sachspendenbescheinigung"),
-  HINTERGRUND(8, "Hintergrund/Vordergrund");
+import java.rmi.RemoteException;
 
-  private final String text;
+import de.willuhn.datasource.GenericObject;
+
+/**
+ * Ausrichtung von Formularfeldern GenericObject damit beim XML Export der Key
+ * und nicht der Text gespeichert wird.
+ */
+public enum Ausrichtung implements GenericObject
+{
+
+  LINKS("Links", 0),
+  RECHTS("Rechts", 1),
+  MITTE("Mitte", 2);
 
   private final int key;
 
-  FormularArt(int key, String text)
+  private String text;
+
+  Ausrichtung(String text, int key)
   {
-    this.key = key;
     this.text = text;
+    this.key = key;
   }
 
   public int getKey()
@@ -42,18 +46,13 @@ public enum FormularArt
     return key;
   }
 
-  public String getText()
+  public static Ausrichtung getByKey(int key)
   {
-    return text;
-  }
-
-  public static FormularArt getByKey(int key)
-  {
-    for (FormularArt form : FormularArt.values())
+    for (Ausrichtung a : Ausrichtung.values())
     {
-      if (form.getKey() == key)
+      if (a.getKey() == key)
       {
-        return form;
+        return a;
       }
     }
     return null;
@@ -62,6 +61,36 @@ public enum FormularArt
   @Override
   public String toString()
   {
-    return getText();
+    return text;
+  }
+
+  @Override
+  public String[] getAttributeNames() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public String getID() throws RemoteException
+  {
+    return "" + key;
+  }
+
+  @Override
+  public String getPrimaryAttribute() throws RemoteException
+  {
+    return "key";
+  }
+
+  @Override
+  public boolean equals(GenericObject other) throws RemoteException
+  {
+    return false;
+  }
+
+  @Override
+  public Object getAttribute(String name) throws RemoteException
+  {
+    return text;
   }
 }
