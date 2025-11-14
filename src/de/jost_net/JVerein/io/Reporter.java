@@ -418,7 +418,7 @@ public class Reporter
     PdfPCell cell = new PdfPCell(
         new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
     cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-    cell.setBackgroundColor(backgroundcolor);
+    cell.setBackgroundColor(zellenTransparent ? null : backgroundcolor);
     addColumn(cell);
   }
 
