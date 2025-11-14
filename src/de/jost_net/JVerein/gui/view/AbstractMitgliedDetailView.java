@@ -334,7 +334,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
 
-      cont.addPart(dcontrol.getDokumenteList(mido));
+      dcontrol.getDokumenteList(mido).paint(cont.getComposite());
       dcontrol.setDragDrop(cont.getComposite(), MitgliedDokument.class);
     }
   }

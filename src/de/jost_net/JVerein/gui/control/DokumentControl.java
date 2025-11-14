@@ -197,7 +197,8 @@ public class DokumentControl extends AbstractControl
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
       // Satz in die DB schreiben
-      doc.setBemerkung(bemerkung);
+      doc.setBemerkung(
+          bemerkung.length() > 50 ? bemerkung.substring(0, 50) : bemerkung);
       String uuid = qm.getData().toString();
       doc.setUUID(uuid);
       doc.setDatum(datum);
