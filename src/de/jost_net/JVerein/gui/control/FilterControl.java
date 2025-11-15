@@ -1275,10 +1275,33 @@ public abstract class FilterControl extends VorZurueckControl
     {
       return suchkontoart;
     }
-    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>();
+    ArrayList<Kontoart> arten = new ArrayList<Kontoart>(
         Arrays.asList(Kontoart.values()));
-    values.remove(Kontoart.LIMIT);
-    values.remove(Kontoart.LIMIT_RUECKLAGE);
+    for (Kontoart ka : arten)
+    {
+      if (ka.getKey() < Kontoart.LIMIT.getKey() && ka != Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN)
+          && ka == Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN)
+          && ka.getKey() > Kontoart.LIMIT.getKey()
+          && ka.getKey() < Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN)
+          && ka.getKey() > Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+    }
     String key = settings.getString(settingsprefix + "suchkontoart.key", null);
     if (key != null && !key.isEmpty())
     {
