@@ -278,7 +278,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
           WirtschaftsplanImpl.AUSGABE })
       {
         WirtschaftsplanNode buchungsklasseNode = new WirtschaftsplanNode(klasse,
-            art, plan);
+            art, plan, false);
 
         GenericIterator<WirtschaftsplanNode> children = buchungsklasseNode
             .getChildren();

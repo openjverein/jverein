@@ -77,6 +77,14 @@ public class WirtschaftsplanNode
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
       Wirtschaftsplan wirtschaftsplan) throws RemoteException
   {
+    this(buchungsklasse, art, wirtschaftsplan, (Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN));
+  }
+
+  public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
+      Wirtschaftsplan wirtschaftsplan, boolean mitRuecklagen)
+      throws RemoteException
+  {
     type = Type.BUCHUNGSKLASSE;
     this.buchungsklasse = buchungsklasse;
 
@@ -159,8 +167,7 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    if (mitRuecklagen)
     {
       istIt.leftJoin("konto",
           "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
