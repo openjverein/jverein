@@ -99,6 +99,10 @@ public class BuchungMenu extends ContextMenu
             new SpendenbescheinigungNeuAction(), "file-invoice.png"));
       }
     }
+    catch (RemoteException e)
+    {
+      // Dann nicht
+    }
     String text = "Buchungsart zuordnen";
     try
     {
