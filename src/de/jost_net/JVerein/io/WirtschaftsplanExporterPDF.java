@@ -57,6 +57,14 @@ public class WirtschaftsplanExporterPDF implements Exporter
 
   protected String subtitle;
 
+  private final int SOLL_EINNAHME = 0;
+
+  private final int SOLL_AUSGABE = 1;
+
+  private final int IST_EINNAHME = 2;
+
+  private final int IST_AUSGABE = 3;
+
   @Override
   public String getName()
   {
@@ -174,7 +182,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
         break;
     }
 
-    Double[][] summen = new Double[wirtschaftsplaene.length][2];
+    Double[][] summen = new Double[wirtschaftsplaene.length][4];
     while (buchungsklasseIterator.hasNext())
     {
       Double[][] s = addColumns(wirtschaftsplaene,
@@ -186,25 +194,58 @@ public class WirtschaftsplanExporterPDF implements Exporter
       }
       for (int i = 0; i < wirtschaftsplaene.length; i++)
       {
-        summen[i][0] = (summen[i][0] == null ? 0 : summen[i][0]) + s[i][0];
+        summen[i][SOLL_EINNAHME] = (summen[i][SOLL_EINNAHME] == null ? 0
+            : summen[i][SOLL_EINNAHME]) + s[i][SOLL_EINNAHME];
+        summen[i][SOLL_AUSGABE] = (summen[i][SOLL_AUSGABE] == null ? 0
+            : summen[i][SOLL_AUSGABE]) + s[i][SOLL_AUSGABE];
         if (hatIst.contains(wirtschaftsplaene[i]))
         {
-          summen[i][1] = (summen[i][1] == null ? 0 : summen[i][1]) + s[i][1];
+          summen[i][IST_EINNAHME] = (summen[i][IST_EINNAHME] == null ? 0
+              : summen[i][IST_EINNAHME]) + s[i][IST_EINNAHME];
+          summen[i][IST_AUSGABE] = (summen[i][IST_AUSGABE] == null ? 0
+              : summen[i][IST_AUSGABE]) + s[i][IST_AUSGABE];
         }
       }
     }
     // Saldo
     reporter.addColumn(" ", Element.ALIGN_LEFT,
         wirtschaftsplaene.length * 2 + 1);
-    reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+
+    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
     int j = -1;
     for (Double[] sollist : summen)
     {
       j++;
-      reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
+      reporter.addColumn(sollist[SOLL_EINNAHME], BaseColor.LIGHT_GRAY);
       if (hatIst.contains(wirtschaftsplaene[j]))
       {
-        reporter.addColumn(sollist[1], BaseColor.LIGHT_GRAY);
+        reporter.addColumn(sollist[IST_EINNAHME], BaseColor.LIGHT_GRAY);
+      }
+    }
+
+    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    j = -1;
+    for (Double[] sollist : summen)
+    {
+      j++;
+      reporter.addColumn(sollist[SOLL_AUSGABE], BaseColor.LIGHT_GRAY);
+      if (hatIst.contains(wirtschaftsplaene[j]))
+      {
+        reporter.addColumn(sollist[IST_AUSGABE], BaseColor.LIGHT_GRAY);
+      }
+    }
+
+    reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    j = -1;
+    for (Double[] sollist : summen)
+    {
+      j++;
+      reporter.addColumn(sollist[SOLL_EINNAHME] + sollist[SOLL_AUSGABE],
+          BaseColor.LIGHT_GRAY);
+      if (hatIst.contains(wirtschaftsplaene[j]))
+      {
+        reporter.addColumn(sollist[IST_EINNAHME] + sollist[IST_AUSGABE],
+            BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -218,7 +259,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
       Buchungsklasse klasse, Reporter reporter) throws RemoteException
   {
     int n = 0;
-    Double[][] summen = new Double[wirtschaftsplaene.length][2];
+    Double[][] summen = new Double[wirtschaftsplaene.length][4];
     final Boolean ohneBuchungsartUnterdruecken = (Boolean) Einstellungen
         .getEinstellung(Property.UNTERDRUECKUNGOHNEBUCHUNG);
 
@@ -228,8 +269,11 @@ public class WirtschaftsplanExporterPDF implements Exporter
 
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      summen[n][0] = 0d;
-      summen[n][1] = 0d;
+      summen[n][SOLL_EINNAHME] = 0d;
+      summen[n][SOLL_AUSGABE] = 0d;
+      summen[n][IST_EINNAHME] = 0d;
+      summen[n][IST_AUSGABE] = 0d;
+
       for (int art : new int[] { WirtschaftsplanImpl.EINNAHME,
           WirtschaftsplanImpl.AUSGABE })
       {
@@ -242,7 +286,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
         {
           WirtschaftsplanNode buchungsartNode = children.next();
 
-          // Bestehenden eintrag für den BuchungsartNode in der Map finden
+          // Bestehenden Eintrag für den BuchungsartNode in der Map finden
           WirtschaftsplanNode key = buchungsartNode;
           for (WirtschaftsplanNode k : map.keySet())
           {
@@ -279,8 +323,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
           }
           map.put(key, entryMap);
         }
-        summen[n][0] += buchungsklasseNode.getSoll();
-        summen[n][1] += buchungsklasseNode.getIst();
+        summen[n][SOLL_EINNAHME] += buchungsklasseNode.getSollEinnahmen();
+        summen[n][SOLL_AUSGABE] += buchungsklasseNode.getSollAusgaben();
+        summen[n][IST_EINNAHME] += buchungsklasseNode.getIstEinnahmen();
+        summen[n][IST_AUSGABE] += buchungsklasseNode.getIstAusgaben();
       }
       n++;
     }
