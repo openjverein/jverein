@@ -112,15 +112,15 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       }
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (!getMitgliedzahltSelbst()
+            && getMitglied().getAlternativerZahlerID() != null)
         {
-          Mitglied m = Einstellungen.getDBService().createObject(
-              MitgliedImpl.class, getMitglied().getVollZahlerID().toString());
+          Mitglied m = getMitglied().getAlternativerZahler();
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
             throw new ApplicationException(
-                "Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+                "Beim alternativen Zahler ist keine IBAN oder Mandatdatum hinterlegt.");
           }
         }
         else if (getMitglied().getIban().length() == 0
@@ -533,5 +533,18 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Zusatzbeträge";
+  }
+
+  @Override
+  public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
+      throws RemoteException
+  {
+    setAttribute("mitgliedzahltselbst", mitgliedzahltselbst);
+  }
+
+  @Override
+  public boolean getMitgliedzahltSelbst() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("mitgliedzahltselbst"));
   }
 }

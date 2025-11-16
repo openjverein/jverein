@@ -75,6 +75,7 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
         }
         part.getStartdatum(false).setValue(zbv.getStartdatum());
       }
+      part.getMitgliedzahltSelbst().setValue(zbv.getMitgliedzahltSelbst());
     }
     catch (OperationCanceledException oce)
     {

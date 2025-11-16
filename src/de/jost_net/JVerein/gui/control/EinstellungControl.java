@@ -1552,7 +1552,7 @@ public class EinstellungControl extends AbstractControl
     {
       return zahlungsweg;
     }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(false), new Zahlungsweg(
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(), new Zahlungsweg(
         (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     zahlungsweg.setName("Standard-Zahlungsweg f. neue Mitglieder");
     return zahlungsweg;

@@ -741,23 +741,13 @@ public class Migration
       m.setMandatDatum(Datum.toDate(formatDate(m_d)));
     }
     m.setZahlungsweg(zahlweg);
-    m.setKtoiPersonenart(
-        getResultFrom(results, InternalColumns.KTOIPERSONENART));
-    m.setKtoiAnrede(getResultFrom(results, InternalColumns.KTOIANREDE));
-    m.setKtoiTitel(getResultFrom(results, InternalColumns.KTOITITEL));
-    m.setKtoiName(getResultFrom(results, InternalColumns.KTOINAME));
-    m.setKtoiVorname(getResultFrom(results, InternalColumns.KTOIVORNAME));
-    m.setKtoiStrasse(getResultFrom(results, InternalColumns.KTOISTRASSE));
-    m.setKtoiAdressierungszusatz(
-        getResultFrom(results, InternalColumns.KTOIADRESSIERUNGSZUSATZ));
-    m.setKtoiPlz(getResultFrom(results, InternalColumns.KTOIPLZ));
-    m.setKtoiOrt(getResultFrom(results, InternalColumns.KTOIORT));
-    String staat = getResultFrom(results, InternalColumns.KTOISTAAT);
+    m.setKontoinhaber(getResultFrom(results, InternalColumns.KONTOINHABER));
+    String staat = getResultFrom(results, InternalColumns.STAAT);
     if (staat != null && staat.length() != 0)
     {
       m.setStaat(getStaat(staat));
     }
-    m.setKtoiEmail(getResultFrom(results, InternalColumns.KTOIEMAIL));
+
     Integer bg = beitragsGruppen
         .get(getResultFrom(results, InternalColumns.BEITRAGSART));
     m.setBeitragsgruppeId(bg);

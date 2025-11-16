@@ -54,6 +54,8 @@ public class ZusatzbetragVorlageDetailView extends AbstractDetailView
       group.addLabelPair("Steuer", control.getSteuer());
     }
     group.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+    group.addLabelPair("Mitglied zahlt selbst",
+        control.getMitgliedzahltSelbst());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
