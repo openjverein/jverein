@@ -206,12 +206,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
     for (Double[] sollist : summenEinnahmen)
     {
       j++;
-      reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[0]),
-          Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+      reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
       if (hatIst.contains(wirtschaftsplaene[j]))
       {
-        reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[1]),
-            Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+        reporter.addColumn(sollist[1], BaseColor.LIGHT_GRAY);
       }
     }
     reporter.addColumn(" ", Element.ALIGN_LEFT,
@@ -249,12 +247,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
     for (Double[] sollist : summenAusgaben)
     {
       k++;
-      reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[0]),
-          Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+      reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
       if (hatIst.contains(wirtschaftsplaene[k]))
       {
-        reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[1]),
-            Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+        reporter.addColumn(sollist[1], BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -264,16 +260,12 @@ public class WirtschaftsplanExporterPDF implements Exporter
     reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
     for (int i = 0; i < summenAusgaben.length; i++)
     {
-      reporter.addColumn(
-          Einstellungen.DECIMALFORMAT
-              .format(summenEinnahmen[i][0] + summenAusgaben[i][0]),
-          Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+      reporter.addColumn(summenEinnahmen[i][0] + summenAusgaben[i][0],
+          BaseColor.LIGHT_GRAY);
       if (hatIst.contains(wirtschaftsplaene[i]))
       {
-        reporter.addColumn(
-            Einstellungen.DECIMALFORMAT
-                .format(summenEinnahmen[i][1] + summenAusgaben[i][1]),
-            Element.ALIGN_RIGHT, BaseColor.LIGHT_GRAY);
+        reporter.addColumn(summenEinnahmen[i][1] + summenAusgaben[i][1],
+            BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -398,22 +390,17 @@ public class WirtschaftsplanExporterPDF implements Exporter
                   for (Double[] betrag : values)
                   {
                     i++;
-                    reporter.addColumn(
-                        Einstellungen.DECIMALFORMAT
-                            .format(betrag[0] == null ? 0 : betrag[0]),
-                        Element.ALIGN_RIGHT, new BaseColor(230, 230, 230));
+                    reporter.addColumn(betrag[0], new BaseColor(230, 230, 230));
 
                     if (hatIst.contains(wirtschaftsplaene[i]))
                     {
-                      String text = "";
+                      double wert = 0d;
                       // Ist nur bei Buchungsart
                       if ("-".equals(postenEntry.getKey()))
                       {
-                        text = Einstellungen.DECIMALFORMAT
-                            .format(betrag[1] == null ? 0 : betrag[1]);
-
+                        wert = betrag[1] == null ? 0 : betrag[1];
                       }
-                      reporter.addColumn(text, Element.ALIGN_RIGHT);
+                      reporter.addColumn(wert);
                     }
                   }
                 }
@@ -431,12 +418,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
     for (Double[] sollist : summen)
     {
       j++;
-      reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[0]),
-          Element.ALIGN_RIGHT, new BaseColor(230, 230, 230));
+      reporter.addColumn(sollist[0], new BaseColor(230, 230, 230));
       if (hatIst.contains(wirtschaftsplaene[j]))
       {
-        reporter.addColumn(Einstellungen.DECIMALFORMAT.format(sollist[1]),
-            Element.ALIGN_RIGHT, new BaseColor(230, 230, 230));
+        reporter.addColumn(sollist[1], new BaseColor(230, 230, 230));
       }
     }
     return summen;
