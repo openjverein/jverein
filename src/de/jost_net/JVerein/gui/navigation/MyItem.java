@@ -165,8 +165,9 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getChildren()
    */
+  @SuppressWarnings("unchecked")
   @Override
-  public GenericIterator<?> getChildren() throws RemoteException
+  public GenericIterator<NavigationItem> getChildren() throws RemoteException
   {
     return PseudoIterator
         .fromArray(children.toArray(new MyItem[children.size()]));
