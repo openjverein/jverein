@@ -165,7 +165,6 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getChildren()
    */
-  @SuppressWarnings({ "rawtypes" })
   @Override
   public GenericIterator<?> getChildren() throws RemoteException
   {
@@ -187,7 +186,7 @@ public class MyItem implements NavigationItem
    */
   @SuppressWarnings({ "unchecked" })
   @Override
-  public GenericIterator<?> getPath() throws RemoteException
+  public GenericIterator<NavigationItem> getPath() throws RemoteException
   {
     List<NavigationItem> list = new ArrayList<>();
     if (this.parent != null)
@@ -210,7 +209,6 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getPossibleParents()
    */
-  @SuppressWarnings("rawtypes")
   @Override
   public GenericIterator<?> getPossibleParents() throws RemoteException
   {
