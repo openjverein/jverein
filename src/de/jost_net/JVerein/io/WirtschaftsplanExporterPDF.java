@@ -174,37 +174,43 @@ public class WirtschaftsplanExporterPDF implements Exporter
         break;
     }
 
-    Double[][] summen = new Double[wirtschaftsplaene.length][2];
     while (buchungsklasseIterator.hasNext())
     {
-      Double[][] s = addColumns(wirtschaftsplaene,
-          buchungsklasseIterator.next(), reporter);
-      // Gesamtsumme addieren
-      if (s == null)
-      {
-        continue;
-      }
-      for (int i = 0; i < wirtschaftsplaene.length; i++)
-      {
-        summen[i][0] = (summen[i][0] == null ? 0 : summen[i][0]) + s[i][0];
-        if (hatIst.contains(wirtschaftsplaene[i]))
-        {
-          summen[i][1] = (summen[i][1] == null ? 0 : summen[i][1]) + s[i][1];
-        }
-      }
+      addColumns(wirtschaftsplaene, buchungsklasseIterator.next(), reporter);
     }
-    // Saldo
+
+    // Summen
     reporter.addColumn(" ", Element.ALIGN_LEFT,
         wirtschaftsplaene.length * 2 + 1);
-    reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
-    int j = -1;
-    for (Double[] sollist : summen)
+    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      j++;
-      reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
-      if (hatIst.contains(wirtschaftsplaene[j]))
+      reporter.addColumn(plan.getPlanEinnahme(), BaseColor.LIGHT_GRAY);
+      if (hatIst.contains(plan))
       {
-        reporter.addColumn(sollist[1], BaseColor.LIGHT_GRAY);
+        reporter.addColumn(plan.getIstEinnahme(), BaseColor.LIGHT_GRAY);
+      }
+    }
+
+    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    for (Wirtschaftsplan plan : wirtschaftsplaene)
+    {
+      reporter.addColumn(plan.getPlanAusgabe(), BaseColor.LIGHT_GRAY);
+      if (hatIst.contains(plan))
+      {
+        reporter.addColumn(plan.getIstAusgabe(), BaseColor.LIGHT_GRAY);
+      }
+    }
+
+    reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    for (Wirtschaftsplan plan : wirtschaftsplaene)
+    {
+      reporter.addColumn(plan.getPlanEinnahme() + plan.getPlanAusgabe(),
+          BaseColor.LIGHT_GRAY);
+      if (hatIst.contains(plan))
+      {
+        reporter.addColumn(plan.getIstEinnahme() + plan.getIstAusgabe(),
+            BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -214,7 +220,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @SuppressWarnings("unchecked")
-  private Double[][] addColumns(Wirtschaftsplan[] wirtschaftsplaene,
+  private void addColumns(Wirtschaftsplan[] wirtschaftsplaene,
       Buchungsklasse klasse, Reporter reporter) throws RemoteException
   {
     int n = 0;
@@ -286,7 +292,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
     }
     if (map.size() == 0)
     {
-      return null;
+      return;
     }
 
     reporter.addColumn(new BuchungsklasseFormatter().format(klasse),
@@ -371,7 +377,6 @@ public class WirtschaftsplanExporterPDF implements Exporter
         reporter.addColumn(sollist[1], new BaseColor(230, 230, 230));
       }
     }
-    return summen;
   }
 
   @Override
