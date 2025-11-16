@@ -34,7 +34,6 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
@@ -65,14 +64,6 @@ public class WirtschaftsplanNode
   private WirtschaftsplanNode parent;
 
   private List<WirtschaftsplanNode> children;
-
-  private double istEinnahmen;
-
-  private double istAusgaben;
-
-  private double sollAusgaben;
-
-  private double sollEinnahmen;
 
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
       Wirtschaftsplan wirtschaftsplan) throws RemoteException
@@ -125,8 +116,6 @@ public class WirtschaftsplanNode
     extendedDBIterator.addGroupBy("wirtschaftsplanitem.buchungsart");
 
     double sollSumme = 0d;
-    double sollSummeAusgaben = 0d;
-    double sollSummeEinnahmen = 0d;
     while (extendedDBIterator.hasNext())
     {
       PseudoDBObject obj = extendedDBIterator.next();
@@ -148,19 +137,9 @@ public class WirtschaftsplanNode
             new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
       }
       nodes.get(id).setSoll(soll);
-      if (art == WirtschaftsplanImpl.EINNAHME)
-      {
-        sollSummeEinnahmen += soll;
-      }
-      else if (art == WirtschaftsplanImpl.AUSGABE)
-      {
-        sollSummeAusgaben += soll;
-      }
       sollSumme += soll;
     }
     setSoll(sollSumme);
-    setSollEinnahmen(sollSummeEinnahmen);
-    setSollAusgaben(sollSummeAusgaben);
 
     ExtendedDBIterator<PseudoDBObject> istIt = new ExtendedDBIterator<>(
         "buchungsart");
@@ -259,8 +238,6 @@ public class WirtschaftsplanNode
     istIt.addHaving("anzahl > 0 OR abs(" + SUMME + ") >= 0.01");
 
     double istSumme = 0d;
-    double istSummeEinnamen = 0d;
-    double istSummeAusgaben = 0d;
     while (istIt.hasNext())
     {
       PseudoDBObject obj = istIt.next();
@@ -286,21 +263,11 @@ public class WirtschaftsplanNode
             new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
       }
       nodes.get(key).setIst(ist);
-      if (art == WirtschaftsplanImpl.EINNAHME)
-      {
-        istSummeEinnamen += ist;
-      }
-      else if (art == WirtschaftsplanImpl.AUSGABE)
-      {
-        istSummeAusgaben += ist;
-      }
       istSumme += ist;
     }
 
     children = new ArrayList<>(nodes.values());
     setIst(istSumme);
-    setIstEinnahmen(istSummeEinnamen);
-    setIstAusgaben(istSummeAusgaben);
   }
 
   public WirtschaftsplanNode(WirtschaftsplanNode parent,
@@ -535,26 +502,6 @@ public class WirtschaftsplanNode
     this.buchungsart = buchungsart;
   }
 
-  public double getSollEinnahmen()
-  {
-    return sollEinnahmen;
-  }
-
-  public void setSollEinnahmen(double soll)
-  {
-    this.sollEinnahmen = soll;
-  }
-
-  public double getSollAusgaben()
-  {
-    return sollAusgaben;
-  }
-
-  public void setSollAusgaben(double soll)
-  {
-    this.sollAusgaben = soll;
-  }
-
   public double getSoll()
   {
     return soll;
@@ -563,26 +510,6 @@ public class WirtschaftsplanNode
   public void setSoll(double soll)
   {
     this.soll = soll;
-  }
-
-  public double getIstEinnahmen()
-  {
-    return istEinnahmen;
-  }
-
-  public void setIstEinnahmen(double ist)
-  {
-    this.istEinnahmen = ist;
-  }
-
-  public double getIstAusgaben()
-  {
-    return istAusgaben;
-  }
-
-  public void setIstAusgaben(double ist)
-  {
-    this.istAusgaben = ist;
   }
 
   public double getIst()
