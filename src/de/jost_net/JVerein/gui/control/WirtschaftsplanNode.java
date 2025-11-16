@@ -161,6 +161,10 @@ public class WirtschaftsplanNode
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
+    // Wenn Kontoarten ausgefiltert werden, ist konto.id=null, diese müssen wir
+    // raussortieren. Allerdings nur, wenn buchung.konto nicht null ist, sonst
+    // handelt es sich nämlich um berechnete Steuerbuchungen
+    istIt.addFilter("!(buchung.konto is NULL xor konto.id is NULL)");
 
     if (mitSteuer)
     {
