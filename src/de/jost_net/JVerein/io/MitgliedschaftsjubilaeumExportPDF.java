@@ -88,8 +88,7 @@ public class MitgliedschaftsjubilaeumExportPDF
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos,
-        String.format("Mitgliedschaftsjubilare %d", jahr), "", 3);
+    reporter = new Reporter(fos, title, subtitle, 3);
   }
 
   @Override

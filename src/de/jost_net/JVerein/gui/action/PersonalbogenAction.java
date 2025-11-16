@@ -150,8 +150,8 @@ public class PersonalbogenAction implements Action
       {
         try
         {
-          Reporter rpt = new Reporter(new FileOutputStream(file), "",
-              "Personalbogen", mitglied.length);
+          Reporter rpt = new Reporter(new FileOutputStream(file), "", "",
+              mitglied.length);
 
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
           GUI.getCurrentView().reload();
@@ -166,9 +166,18 @@ public class PersonalbogenAction implements Action
             }
             first = false;
 
-            rpt.add(
-                "Personalbogen" + " " + Adressaufbereitung.getVornameName(m),
-                14);
+            String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL,
+                null, m);
+            String subtitle = VorlageUtil
+                .getName(VorlageTyp.PERSONALBOGEN_SUBTITEL, null, m);
+            Paragraph pTitle = new Paragraph(title,
+                Reporter.getFreeSansBold(13));
+            pTitle.setAlignment(Element.ALIGN_CENTER);
+            rpt.add(pTitle);
+            Paragraph psubTitle = new Paragraph(subtitle,
+                Reporter.getFreeSansBold(10));
+            psubTitle.setAlignment(Element.ALIGN_CENTER);
+            rpt.add(psubTitle);
 
             generiereMitglied(rpt, m);
 

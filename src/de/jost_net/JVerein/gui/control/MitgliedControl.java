@@ -2553,7 +2553,9 @@ public class MitgliedControl extends FilterControl implements Savable
       settings.setAttribute("lastdir", file.getParent());
 
       final ArrayList<Mitglied> flist = list;
-      ausw.beforeGo();
+      ausw.beforeGo(
+          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, this));
+
       BackgroundTask t = new BackgroundTask()
       {
 
@@ -2652,7 +2654,9 @@ public class MitgliedControl extends FilterControl implements Savable
       settings.setAttribute("lastdir", file.getParent());
 
       final ArrayList<Mitglied> flist = list;
-      ausw.beforeGo();
+      ausw.beforeGo(VorlageUtil
+          .getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL, this));
+
       BackgroundTask t = new BackgroundTask()
       {
         @Override
@@ -2724,6 +2728,10 @@ public class MitgliedControl extends FilterControl implements Savable
     settings.setAttribute("lastdir", file.getParent());
 
     final Date sticht = (Date) stichtag.getValue();
+    String title = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL, this);
+    String subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL, this);
 
     BackgroundTask t = new BackgroundTask()
     {
@@ -2731,7 +2739,7 @@ public class MitgliedControl extends FilterControl implements Savable
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        new MitgliederStatistik(file, sticht);
+        new MitgliederStatistik(file, sticht, title, subtitle);
       }
 
       @Override

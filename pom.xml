@@ -12,8 +12,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>11</maven.compiler.release>
     <maven.test.skip>true</maven.test.skip>
-    <jameica.version>V_2_10_5_BUILD_488</jameica.version>
-    <hibiscus.version>V_2_10_24_BUILD_388</hibiscus.version>
+    <jameica.version>2.12.0</jameica.version>
+    <hibiscus.version>2.12.0</hibiscus.version>
     <!-- See https://github.com/willuhn/jameica/commit/1a8a8005e04c6201972a63bd403b161f9e3802e7 -->
     <swt.version>4.33</swt.version>
   </properties>
@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.google.zxing</groupId>
       <artifactId>core</artifactId>
-      <version>3.5.3</version>
+      <version>3.5.4</version>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.csvjdbc</groupId>
@@ -79,7 +79,7 @@
     <dependency>
       <groupId>com.google.zxing</groupId>
       <artifactId>javase</artifactId>
-      <version>3.5.3</version>
+      <version>3.5.4</version>
       <exclusions>
         <exclusion>
           <groupId>com.beust</groupId>
@@ -128,7 +128,7 @@
       <exclusions>
         <exclusion>
           <groupId>org.apache.xmlgraphics</groupId>
-          <artifactId>fop</artifactId>
+          <artifactId>fop-core</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.eclipse.angus</groupId>
