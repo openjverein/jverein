@@ -82,7 +82,7 @@ public class WirtschaftsplanNode
   }
 
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
-      Wirtschaftsplan wirtschaftsplan, boolean mitRuecklagen)
+      Wirtschaftsplan wirtschaftsplan, boolean mitVerbindlichkeitenForderungen)
       throws RemoteException
   {
     type = Type.BUCHUNGSKLASSE;
@@ -167,7 +167,7 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if (mitRuecklagen)
+    if (mitVerbindlichkeitenForderungen)
     {
       istIt.leftJoin("konto",
           "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
