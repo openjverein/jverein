@@ -38,7 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungImpl extends AbstractJVereinDBObject
-    implements Sollbuchung
+    implements Sollbuchung, UnreadCounter
 {
 
   private static final long serialVersionUID = -1234L;
@@ -409,5 +409,29 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Sollbuchungen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+
+    it.join("(SELECT " + Sollbuchung.TABLE_NAME_ID
+        + ", sum(buchung.betrag) AS betrag FROM " + Sollbuchung.TABLE_NAME
+        + " LEFT JOIN buchung ON buchung.mitgliedskonto="
+        + Sollbuchung.TABLE_NAME_ID + " GROUP BY " + Sollbuchung.TABLE_NAME
+        + ".id) AS ist", "ist.id = " + Sollbuchung.TABLE_NAME + ".id");
+    it.addFilter(
+        "abs(COALESCE(ist.betrag,0) - " + getTableName() + ".betrag) >= 0.01");
+    it.addFilter(getTableName() + ".datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Sollbuchungen";
   }
 }

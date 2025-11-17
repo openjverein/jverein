@@ -34,7 +34,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragImpl extends AbstractJVereinDBObject
-    implements Zusatzbetrag, IMitglied
+    implements Zusatzbetrag, IMitglied, UnreadCounter
 {
 
   private static final long serialVersionUID = 1L;
@@ -533,5 +533,32 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Zusatzbeträge";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
+    {
+      it.join("mitglied", "mitglied.id = " + getTableName() + ".mitglied");
+      it.addFilter("mitglied.eintritt <= " + getTableName() + ".stichtag");
+      it.addFilter("mitglied.austritt is null or mitglied.austritt <= "
+          + getTableName() + ".stichtag");
+    }
+    it.addFilter(
+        "(intervall = 0 and (ausfuehrung is null or faelligkeit >= ?)) "
+            + "or (intervall != 0 and faelligkeit <= ? and (endedatum is null or endedatum > faelligkeit))",
+        new Date(), new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Zusatzbeträge";
   }
 }
