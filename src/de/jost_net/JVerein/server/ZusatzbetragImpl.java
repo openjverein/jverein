@@ -464,12 +464,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Zahlungsweg getZahlungsweg() throws RemoteException
   {
-    Object o = getAttribute("zahlungsweg");
-    if (o == null)
-    {
-      return new Zahlungsweg(Zahlungsweg.STANDARD);
-    }
-    return new Zahlungsweg((Integer) o);
+    return new Zahlungsweg((Integer) getAttribute("zahlungsweg"));
   }
 
   @Override
@@ -518,6 +513,8 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         return Zahlungsweg.STANDARD;
       case "intervall":
         return IntervallZusatzzahlung.KEIN;
+      case "mitgliedzahltselbst":
+        return false;
       default:
         return null;
     }

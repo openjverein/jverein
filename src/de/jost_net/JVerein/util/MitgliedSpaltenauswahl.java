@@ -114,7 +114,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("BIC", "bic", false, true);
     add("IBAN", "iban", false, new IBANFormatter(), Column.ALIGN_LEFT, true);
     add("Kontoinhaber", "kontoinhaber", false, true);
-    add("Alternativer Zahler", "altzahlerstring", false, true);
+    add("Abweichender Zahler", "altzahlerstring", false, true);
     add("Mandat Version", "mandatversion", false, true);
     add("Mandat ID", "mandatid", false, true);
     add("Geburtsdatum", "geburtsdatum", true,

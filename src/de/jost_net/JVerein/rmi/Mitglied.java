@@ -237,31 +237,4 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void checkEigenschaften(TreePart eigenschaftenTree)
       throws RemoteException, ApplicationException;
-
-  // Nur für die Migration aus Versionen vor 4.0.0
-  public String getKtoiPersonenart() throws RemoteException;
-
-  public String getKtoiAnrede() throws RemoteException;
-
-  public String getKtoiTitel() throws RemoteException;
-
-  public String getKtoiName() throws RemoteException;
-
-  public String getKtoiVorname() throws RemoteException;
-
-  public String getKtoiStrasse() throws RemoteException;
-
-  public String getKtoiAdressierungszusatz() throws RemoteException;
-
-  public String getKtoiPlz() throws RemoteException;
-
-  public String getKtoiOrt() throws RemoteException;
-
-  public String getKtoiStaat() throws RemoteException;
-
-  public String getKtoiStaatCode() throws RemoteException;
-
-  public String getKtoiEmail() throws RemoteException;
-
-  public String getKtoiGeschlecht() throws RemoteException;
 }

@@ -40,6 +40,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -326,26 +327,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         }, false, Column.ALIGN_RIGHT);
       }
       zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
-          new Formatter()
-          {
-
-            @Override
-            public String format(Object o)
-            {
-              if (o == null)
-              {
-                return "nein";
-              }
-              if (o instanceof Boolean)
-              {
-                if ((Boolean) o)
-                {
-                  return "ja";
-                }
-              }
-              return "nein";
-            }
-          }, false, Column.ALIGN_LEFT);
+          new JaNeinFormatter(), false, Column.ALIGN_LEFT);
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);

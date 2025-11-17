@@ -270,12 +270,7 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
   @Override
   public Zahlungsweg getZahlungsweg() throws RemoteException
   {
-    Object o = getAttribute("zahlungsweg");
-    if (o == null)
-    {
-      return new Zahlungsweg(Zahlungsweg.STANDARD);
-    }
-    return new Zahlungsweg((Integer) o);
+    return new Zahlungsweg((Integer) getAttribute("zahlungsweg"));
   }
 
   @Override
@@ -313,6 +308,22 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
   public void setSteuer(Steuer steuer) throws RemoteException
   {
     setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "zahlungsweg":
+        return Zahlungsweg.STANDARD;
+      case "intervall":
+        return IntervallZusatzzahlung.KEIN;
+      case "mitgliedzahltselbst":
+        return false;
+      default:
+        return null;
+    }
   }
 
   @Override

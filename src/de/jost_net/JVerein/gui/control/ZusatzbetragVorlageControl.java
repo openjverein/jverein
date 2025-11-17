@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -443,26 +444,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
         }, false, Column.ALIGN_RIGHT);
       }
       zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
-          new Formatter()
-          {
-
-            @Override
-            public String format(Object o)
-            {
-              if (o == null)
-              {
-                return "nein";
-              }
-              if (o instanceof Boolean)
-              {
-                if ((Boolean) o)
-                {
-                  return "ja";
-                }
-              }
-              return "nein";
-            }
-          }, false, Column.ALIGN_LEFT);
+          new JaNeinFormatter(), false, Column.ALIGN_LEFT);
       zusatzbetragVorlageList
           .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
       zusatzbetragVorlageList.setRememberColWidths(true);
@@ -493,6 +475,8 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     }
     mitgliedZahltSelbst = new CheckboxInput(
         getZusatzbetragVorlage().getMitgliedzahltSelbst());
+    mitgliedZahltSelbst.setName(
+        " *Für den Fall, dass ein abweichender Zahler konfiguriert ist.");
     return mitgliedZahltSelbst;
   }
 }

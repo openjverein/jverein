@@ -56,8 +56,6 @@ public enum MitgliedVar
   KONTO_KONTOINHABER("mitglied_konto_kontoinhaber"), //
   KONTOINHABER("mitglied_kontoinhaber"), //
   @Deprecated
-  KONTOINHABER_NAMEVORNAME("mitglied_kontoinhaber_namevorname"), //
-  @Deprecated
   KONTOINHABER_VORNAMENAME("mitglied_kontoinhaber_vornamename"), //
   @Deprecated
   KONTOINHABER_EMPFAENGER("mitglied_kontoinhaber_empfaenger"), //

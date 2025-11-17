@@ -50,11 +50,7 @@ public class Update0494 extends AbstractDDLUpdate
     execute("UPDATE mitglied SET zahlungsweg = 2 WHERE zahlungsweg = 4");
 
     execute(
-        "UPDATE mitglied SET kontoinhaber = SUBSTR(CONCAT(ktoiname,', ',ktoivorname),1,70)");
-
-    // Wenn kein ktoiname oder ktoivorname gesetzt ist, dann muss das Feld leer
-    // sein
-    execute("UPDATE mitglied SET kontoinhaber = '' WHERE kontoinhaber = ', '");
+        "UPDATE mitglied SET kontoinhaber = SUBSTR(CONCAT(ktoiname,' ',ktoivorname),1,70) WHERE ktoiname <> '' OR ktoivorname <> ''");
 
     execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
         COLTYPE.BOOLEAN, 1, "0", true, false)));

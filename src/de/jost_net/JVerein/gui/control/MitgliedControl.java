@@ -124,6 +124,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -654,14 +655,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return zahlungsweg;
   }
 
-  private void refreshZahlungsweg() throws RemoteException
-  {
-    if (zahlungsweg == null)
-      return;
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
-    zahlungsweg.setList(weg);
-  }
-
   public Input getAltZahler() throws RemoteException
   {
     if (altZahlerInput != null)
@@ -674,7 +667,7 @@ public class MitgliedControl extends FilterControl implements Savable
     if (altZahlerInput instanceof SelectInput)
     {
       ((SelectInput) altZahlerInput)
-          .setPleaseChoose("Kein alternativer Zahler");
+          .setPleaseChoose("Kein abweichender Zahler");
       if (getMitglied().getAlternativerZahler() == null)
       {
         ((SelectInput) altZahlerInput).setPreselected(null);
@@ -683,11 +676,11 @@ public class MitgliedControl extends FilterControl implements Savable
     if (isMitglied)
     {
       altZahlerInput
-          .setName("Alternativer Zahler für Beiträge und Zusatzbeträge");
+          .setName("Abweichender Zahler für Beiträge und Zusatzbeträge");
     }
     else
     {
-      altZahlerInput.setName("Alternativer Zahler für Zusatzbeträge");
+      altZahlerInput.setName("Abweichender Zahler für Zusatzbeträge");
     }
     return altZahlerInput;
   }
@@ -709,7 +702,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     catch (RemoteException ex)
     {
-      final String meldung = "Gewählter alternative Zahler kann nicht ermittelt werden";
+      final String meldung = "Gewählter abweichender Zahler kann nicht ermittelt werden";
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
@@ -804,7 +797,7 @@ public class MitgliedControl extends FilterControl implements Savable
       return kontoinhaber;
     }
     kontoinhaber = new TextInput(getMitglied().getKontoinhaber(), 70);
-    kontoinhaber.setName("Kontoinhaber");
+    kontoinhaber.setName("Kontoinhaber\n*optional");
     return kontoinhaber;
   }
 
@@ -1063,8 +1056,6 @@ public class MitgliedControl extends FilterControl implements Savable
             }
           }
           refreshFamilienangehoerigeTable();
-          refreshZahlungsweg();
-
         }
         catch (RemoteException e)
         {
@@ -1237,6 +1228,25 @@ public class MitgliedControl extends FilterControl implements Savable
           if (m != null && m.getID() != null)
           {
             getMitglied().setVollZahlerID(Long.valueOf(m.getID()));
+
+            // Nachfrage, ob der neue Vollzahler auch als abweichender Zahler
+            // gesetzt werden soll
+            YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
+            ynd.setText(
+                "Soll der Vollzahler auch als abweichender Zahler gesetzt werden?");
+            ynd.setTitle("Vollzahler auch als abweichenden Zahler setzen");
+            Boolean choice;
+            try
+            {
+              choice = (Boolean) ynd.open();
+              if (choice.booleanValue())
+                getAltZahler().setValue(m);
+            }
+            catch (Exception e)
+            {
+              Logger.error("Fehler", e);
+            }
+
           }
           else
           {
@@ -1872,71 +1882,76 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getNichtMitgliedErzeugenButton()
   {
-    Button b = new Button("Neues Nicht-Mitglied", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-
-        try
+    Button b = new Button("Abweichenden Zahler anlegen (Nicht-Mitglied)",
+        new Action()
         {
-          Mitglied m = getMitglied();
-          Mitglied nm = Einstellungen.getDBService()
-              .createObject(Mitglied.class, null);
-          if (m.getKtoiName() != null && m.getKtoiName().length() > 0)
+          @Override
+          public void handleAction(Object context) throws ApplicationException
           {
-            // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert war
-            // übernehmen wir diese Daten
-            nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
-            nm.setPersonenart(m.getKtoiPersonenart());
-            nm.setAnrede(m.getKtoiAnrede());
-            nm.setTitel(m.getKtoiTitel());
-            nm.setName(m.getKtoiName());
-            nm.setVorname(m.getKtoiVorname());
-            nm.setAdressierungszusatz(m.getKtoiAdressierungszusatz());
-            nm.setStrasse(m.getKtoiStrasse());
-            nm.setPlz(m.getKtoiPlz());
-            nm.setOrt(m.getKtoiOrt());
-            nm.setStaat(m.getKtoiStaatCode());
-            nm.setEmail(m.getKtoiEmail());
-            nm.setGeschlecht(m.getKtoiGeschlecht());
-            nm.setZahlungsweg(m.getZahlungsweg());
-            nm.setMandatID(m.getMandatID());
-            nm.setMandatDatum(m.getMandatDatum());
-            nm.setMandatVersion(m.getMandatVersion());
-            nm.setIban(m.getIban());
-            nm.setBic(m.getBic());
-          }
-          else
-          {
-            nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
-            nm.setPersonenart("n");
-            nm.setAnrede("");
-            nm.setName((String) getName(false).getValue());
-            nm.setVorname("");
-            nm.setAdressierungszusatz(
-                (String) getAdressierungszusatz().getValue());
-            nm.setStrasse((String) getStrasse().getValue());
-            nm.setPlz((String) getPlz().getValue());
-            nm.setOrt((String) getOrt().getValue());
-            nm.setEmail((String) getEmail().getValue());
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.AUSLANDSADRESSEN))
+
+            try
             {
-              nm.setStaat(getStaat().getValue() == null ? ""
-                  : ((Staat) getStaat().getValue()).getKey());
+              Mitglied m = getMitglied();
+              Mitglied nm = Einstellungen.getDBService()
+                  .createObject(Mitglied.class, null);
+              if (m.getAttribute("ktoiname") != null
+                  && ((String) m.getAttribute("ktoiname")).length() > 0)
+              {
+                // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
+                // war
+                // übernehmen wir diese Daten
+                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
+                nm.setAnrede((String) m.getAttribute("ktoianrede"));
+                nm.setTitel((String) m.getAttribute("ktoititel"));
+                nm.setName((String) m.getAttribute("ktoiname"));
+                nm.setVorname((String) m.getAttribute("ktoivorname"));
+                nm.setAdressierungszusatz(
+                    (String) m.getAttribute("ktoiadressierungszusatz"));
+                nm.setStrasse((String) m.getAttribute("ktoistrasse"));
+                nm.setPlz((String) m.getAttribute("ktoiplz"));
+                nm.setOrt((String) m.getAttribute("ktoiort"));
+                nm.setStaat(
+                    Staat.getStaatCode((String) m.getAttribute("ktoistaat")));
+                nm.setEmail((String) m.getAttribute("ktoiemail"));
+                nm.setGeschlecht((String) m.getAttribute("ktoigeschlecht"));
+                nm.setZahlungsweg(m.getZahlungsweg());
+                nm.setMandatID(m.getMandatID());
+                nm.setMandatDatum(m.getMandatDatum());
+                nm.setMandatVersion(m.getMandatVersion());
+                nm.setIban(m.getIban());
+                nm.setBic(m.getBic());
+              }
+              else
+              {
+                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setPersonenart("n");
+                nm.setAnrede("");
+                nm.setName((String) getName(false).getValue());
+                nm.setVorname("");
+                nm.setAdressierungszusatz(
+                    (String) getAdressierungszusatz().getValue());
+                nm.setStrasse((String) getStrasse().getValue());
+                nm.setPlz((String) getPlz().getValue());
+                nm.setOrt((String) getOrt().getValue());
+                nm.setEmail((String) getEmail().getValue());
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.AUSLANDSADRESSEN))
+                {
+                  nm.setStaat(getStaat().getValue() == null ? ""
+                      : ((Staat) getStaat().getValue()).getKey());
+                }
+              }
+
+              GUI.startView(new NichtMitgliedDetailView(), nm);
+            }
+            catch (Exception e)
+            {
+              throw new ApplicationException(
+                  "Fehler beim Erzeugen eines Nicht-Mitgliedes", e);
             }
           }
-
-          GUI.startView(new NichtMitgliedDetailView(), nm);
-        }
-        catch (Exception e)
-        {
-          throw new ApplicationException(
-              "Fehler beim Erzeugen eines Nicht-Mitgliedes", e);
-        }
-      }
-    }, null, false, "document-new.png");
+        }, null, false, "document-new.png");
     // button
     return b;
   }

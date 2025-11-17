@@ -189,8 +189,6 @@ public class MitgliedMap extends AbstractMap
         mitglied.getKontoinhaber());
     map.put(MitgliedVar.KONTOINHABER.getName(),
         mitglied.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
-    map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-        mitglied.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
     map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
         mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
     map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
@@ -452,8 +450,6 @@ public class MitgliedMap extends AbstractMap
         "Gemeinschaftskonto Willi und Else Müller");
     map.put(MitgliedVar.KONTOINHABER.getName(),
         "Gemeinschaftskonto Willi und Else Müller");
-    map.put(MitgliedVar.KONTOINHABER_NAMEVORNAME.getName(),
-        "Wichtig, Dr. Dr. Willi");
     map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
         "Dr. Dr. Willi Wichtig");
     map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
