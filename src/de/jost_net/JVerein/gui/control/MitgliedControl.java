@@ -42,6 +42,8 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
+import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
+import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -151,6 +153,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -239,7 +242,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private AbstractInput zahler;
 
-  private AbstractInput altZahlerInput;
+  private AbstractInput abweichenderZahlerInput;
 
   private DateInput austritt = null;
 
@@ -560,7 +563,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
-    if (((AbstractMitgliedDetailView) view).isMitgliedDetail())
+    if (isMitglied)
     {
       this.geburtsdatum.setMandatory(
           (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
@@ -655,45 +658,45 @@ public class MitgliedControl extends FilterControl implements Savable
     return zahlungsweg;
   }
 
-  public Input getAltZahler() throws RemoteException
+  public Input getAbweichenderZahler() throws RemoteException
   {
-    if (altZahlerInput != null)
+    if (abweichenderZahlerInput != null)
     {
-      return altZahlerInput;
+      return abweichenderZahlerInput;
     }
-    altZahlerInput = new MitgliedInput().getMitgliedInput(altZahlerInput,
-        getMitglied().getAlternativerZahler(),
+    abweichenderZahlerInput = new MitgliedInput().getMitgliedInput(
+        abweichenderZahlerInput, getMitglied().getAbweichenderZahler(),
         (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
-    if (altZahlerInput instanceof SelectInput)
+    if (abweichenderZahlerInput instanceof SelectInput)
     {
-      ((SelectInput) altZahlerInput)
+      ((SelectInput) abweichenderZahlerInput)
           .setPleaseChoose("Kein abweichender Zahler");
-      if (getMitglied().getAlternativerZahler() == null)
+      if (getMitglied().getAbweichenderZahler() == null)
       {
-        ((SelectInput) altZahlerInput).setPreselected(null);
+        ((SelectInput) abweichenderZahlerInput).setPreselected(null);
       }
     }
     if (isMitglied)
     {
-      altZahlerInput
+      abweichenderZahlerInput
           .setName("Abweichender Zahler für Beiträge und Zusatzbeträge");
     }
     else
     {
-      altZahlerInput.setName("Abweichender Zahler für Zusatzbeträge");
+      abweichenderZahlerInput.setName("Abweichender Zahler für Zusatzbeträge");
     }
-    return altZahlerInput;
+    return abweichenderZahlerInput;
   }
 
-  private Long getSelectedAltZahlerId() throws ApplicationException
+  private Long getSelectedAbweichenderZahlerId() throws ApplicationException
   {
     try
     {
-      if (altZahlerInput == null)
+      if (abweichenderZahlerInput == null)
       {
         return null;
       }
-      Mitglied derAltZahler = (Mitglied) getAltZahler().getValue();
+      Mitglied derAltZahler = (Mitglied) getAbweichenderZahler().getValue();
       if (null == derAltZahler)
       {
         return null;
@@ -1240,7 +1243,7 @@ public class MitgliedControl extends FilterControl implements Savable
             {
               choice = (Boolean) ynd.open();
               if (choice.booleanValue())
-                getAltZahler().setValue(m);
+                getAbweichenderZahler().setValue(m);
             }
             catch (Exception e)
             {
@@ -1880,17 +1883,19 @@ public class MitgliedControl extends FilterControl implements Savable
     return b;
   }
 
-  public Button getNichtMitgliedErzeugenButton()
+  public Button getAbweichenderZahlerErzeugenButton()
   {
     Button b = new Button("Abweichenden Zahler anlegen (Nicht-Mitglied)",
         new Action()
         {
+          @SuppressWarnings("unchecked")
           @Override
           public void handleAction(Object context) throws ApplicationException
           {
 
             try
             {
+              boolean ktoi = false;
               Mitglied m = getMitglied();
               Mitglied nm = Einstellungen.getDBService()
                   .createObject(Mitglied.class, null);
@@ -1898,8 +1903,8 @@ public class MitgliedControl extends FilterControl implements Savable
                   && ((String) m.getAttribute("ktoiname")).length() > 0)
               {
                 // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
-                // war
-                // übernehmen wir diese Daten
+                // war übernehmen wir diese Daten
+                ktoi = true;
                 nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
                 nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
                 nm.setAnrede((String) m.getAttribute("ktoianrede"));
@@ -1924,8 +1929,23 @@ public class MitgliedControl extends FilterControl implements Savable
               }
               else
               {
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.JURISTISCHEPERSONEN))
+                {
+                  PersonenartDialog pad = new PersonenartDialog(
+                      PersonenartDialog.POSITION_CENTER);
+                  String pa = pad.open();
+                  if (pa == null)
+                  {
+                    return;
+                  }
+                  nm.setPersonenart(pa);
+                }
+                else
+                {
+                  nm.setPersonenart("n");
+                }
                 nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
-                nm.setPersonenart("n");
                 nm.setAnrede("");
                 nm.setName((String) getName(false).getValue());
                 nm.setVorname("");
@@ -1943,7 +1963,43 @@ public class MitgliedControl extends FilterControl implements Savable
                 }
               }
 
-              GUI.startView(new NichtMitgliedDetailView(), nm);
+              AbweichenderZahlerNeuDialog dialog = new AbweichenderZahlerNeuDialog(
+                  AbweichenderZahlerNeuDialog.POSITION_CENTER, nm);
+              if (!dialog.open())
+              {
+                if (dialog.getStatus() != null)
+                {
+                  throw new Exception(dialog.getStatus());
+                }
+                else
+                {
+                  // Den neuen abweichenden Zahler setzen
+                  // Beim SelectInput muss das neue Mitglied erst hinzugefügt
+                  // werden. Sonst kann man es nicht zur Anzeige bringen
+                  if (getAbweichenderZahler() instanceof SelectInput)
+                  {
+                    SelectInput input = (SelectInput) getAbweichenderZahler();
+                    List<Mitglied> list = new ArrayList<>();
+                    list.addAll(input.getList());
+                    list.add(nm);
+                    input.setList(list);
+                  }
+                  getAbweichenderZahler().setValue(nm);
+                  // Wenn alte ktoi Daten verwendet wurden, dann diese löschen
+                  if (ktoi)
+                  {
+                    getZahlungsweg()
+                        .setValue(new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG));
+                    deleteBankverbindung();
+                    m.clearKtoi();
+                  }
+                }
+              }
+
+            }
+            catch (OperationCanceledException oce)
+            {
+              throw oce;
             }
             catch (Exception e)
             {
@@ -2272,7 +2328,7 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    m.setAlternativerZahlerID(getSelectedAltZahlerId());
+    m.setAbweichenderZahlerID(getSelectedAbweichenderZahlerId());
     m.setKontoinhaber((String) getKontoinhaber().getValue());
 
     // Vermerke

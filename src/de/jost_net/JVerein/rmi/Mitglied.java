@@ -155,14 +155,14 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void setVollZahlerID(Long id) throws RemoteException;
 
   /**
-   * Zahlt das Mitglied nicht selbst ist hier der alternative Beitragszahler
+   * Zahlt das Mitglied nicht selbst ist hier der abweichende Beitragszahler
    * konfiguriert.
    */
-  public Mitglied getAlternativerZahler() throws RemoteException;
+  public Mitglied getAbweichenderZahler() throws RemoteException;
 
-  public Long getAlternativerZahlerID() throws RemoteException;
+  public Long getAbweichenderZahlerID() throws RemoteException;
 
-  public void setAlternativerZahlerID(Long id) throws RemoteException;
+  public void setAbweichenderZahlerID(Long id) throws RemoteException;
 
   /**
    * Liefert das Mitglied/Nicht-Mitglied welches den Beitrag für das Mitglied
@@ -237,4 +237,6 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public void checkEigenschaften(TreePart eigenschaftenTree)
       throws RemoteException, ApplicationException;
+
+  public void clearKtoi() throws RemoteException;
 }

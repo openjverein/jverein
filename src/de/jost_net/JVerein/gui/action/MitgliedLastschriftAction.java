@@ -51,10 +51,10 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getAlternativerZahlerID() != null)
+      if (m.getAbweichenderZahlerID() != null)
       {
         // Mitglied hat alternativen Zahler
-        mZ = m.getAlternativerZahler();
+        mZ = m.getAbweichenderZahler();
 
         if (!AbrechnungSEPAControl.confirmDialog("Alternativer Kontoinhaber",
             "Dieses Mitglied hat einen alternativen Kontoinhaber.\n\n"

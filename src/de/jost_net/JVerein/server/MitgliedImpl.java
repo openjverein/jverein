@@ -1100,7 +1100,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Mitglied getAlternativerZahler() throws RemoteException
+  public Mitglied getAbweichenderZahler() throws RemoteException
   {
     Object o = (Object) super.getAttribute("altzahler");
     if (o == null)
@@ -1114,13 +1114,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public Long getAlternativerZahlerID() throws RemoteException
+  public Long getAbweichenderZahlerID() throws RemoteException
   {
     return (Long) getAttribute("altzahler");
   }
 
   @Override
-  public void setAlternativerZahlerID(Long id) throws RemoteException
+  public void setAbweichenderZahlerID(Long id) throws RemoteException
   {
     setAttribute("altzahler", id);
   }
@@ -1128,9 +1128,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-    if (getAlternativerZahlerID() != null)
+    if (getAbweichenderZahlerID() != null)
     {
-      return getAlternativerZahler();
+      return getAbweichenderZahler();
     }
     return this;
   }
@@ -1138,9 +1138,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Long getZahlerID() throws RemoteException
   {
-    if (getAlternativerZahlerID() != null)
+    if (getAbweichenderZahlerID() != null)
     {
-      return getAlternativerZahlerID();
+      return getAbweichenderZahlerID();
     }
     return Long.valueOf(getID());
   }
@@ -1279,9 +1279,9 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
     else if (fieldName.equals("altzahlerstring"))
     {
-      if (this.getAlternativerZahler() != null)
+      if (this.getAbweichenderZahler() != null)
       {
-        return Adressaufbereitung.getNameVorname(this.getAlternativerZahler());
+        return Adressaufbereitung.getNameVorname(this.getAbweichenderZahler());
       }
       else
       {
@@ -1576,5 +1576,10 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       return "Nicht-Mitglieder";
     }
+  }
+
+  public void clearKtoi() throws RemoteException
+  {
+    setAttribute("ktoiname", "");
   }
 }

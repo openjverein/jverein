@@ -113,9 +113,9 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
         if (!getMitgliedzahltSelbst()
-            && getMitglied().getAlternativerZahlerID() != null)
+            && getMitglied().getAbweichenderZahlerID() != null)
         {
-          Mitglied m = getMitglied().getAlternativerZahler();
+          Mitglied m = getMitglied().getAbweichenderZahler();
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
