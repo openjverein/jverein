@@ -164,7 +164,8 @@ public class WirtschaftsplanNode
     // Wenn Kontoarten ausgefiltert werden, ist konto.id=null, diese müssen wir
     // raussortieren. Allerdings nur, wenn buchung.konto nicht null ist, sonst
     // handelt es sich nämlich um berechnete Steuerbuchungen
-    istIt.addFilter("!(buchung.konto is NULL xor konto.id is NULL)");
+    istIt.addFilter("(buchung.konto is NULL and konto.id is NULL) "
+        + "or (buchung.konto is not NULL and konto.id is not NULL)");
 
     if (mitSteuer)
     {
