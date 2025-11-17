@@ -1243,13 +1243,14 @@ public class MitgliedControl extends FilterControl implements Savable
             {
               choice = (Boolean) ynd.open();
               if (choice.booleanValue())
+              {
                 getAbweichenderZahler().setValue(m);
+              }
             }
             catch (Exception e)
             {
               Logger.error("Fehler", e);
             }
-
           }
           else
           {

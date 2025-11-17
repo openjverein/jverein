@@ -56,9 +56,9 @@ public class MitgliedLastschriftAction implements Action
         // Mitglied hat alternativen Zahler
         mZ = m.getAbweichenderZahler();
 
-        if (!AbrechnungSEPAControl.confirmDialog("Alternativer Kontoinhaber",
-            "Dieses Mitglied hat einen alternativen Kontoinhaber.\n\n"
-                + "Soll das Konto des alternativen Kontoinhaber belastet werden?\n"
+        if (!AbrechnungSEPAControl.confirmDialog("Abweichender Zahler",
+            "Dieses Mitglied hat einen abweichenden Zahler.\n\n"
+                + "Soll das Konto des abweichenden Zahler belastet werden?\n"
                 + "Zahler: " + mZ.getName() + ", " + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
                 + mZ.getKontoinhaber(Mitglied.namenformat.KONTOINHABER)))
