@@ -91,6 +91,7 @@ public class Ct1Ueberweisung
     return -1;
   }
 
+  @SuppressWarnings("unchecked")
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file,
       Date faell, Ct1Ausgabe ct1ausgabe, String verwendungszweck)
       throws Exception
@@ -147,8 +148,8 @@ public class Ct1Ueberweisung
     }
     final OutputStream os = Files.newOutputStream(file.toPath());
     System.setProperty("sepa.pain.formatted", "true");
-    ISEPAGenerator sepagenerator = SEPAGeneratorFactory.get("UebSEPA",
-        sepaVersion);
+    ISEPAGenerator<Properties> sepagenerator = SEPAGeneratorFactory
+        .get("UebSEPA", sepaVersion);
     sepagenerator.generate(ls_properties, os, true);
     os.close();
     return counter;

@@ -20,8 +20,8 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
+import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
@@ -49,7 +49,7 @@ public class AbrechnungsParameterMap
       map = inma;
     }
     map.put(AbrechnungsParameterVar.ABBUCHUNGSMODUS.getName(),
-        new AbbuchungsmodusInput(param.abbuchungsmodus));
+        Abrechnungsmodi.get(param.abbuchungsmodus));
     map.put(AbrechnungsParameterVar.ABRECHNUNGSMONAT.getName(),
         Monat.getByKey(param.abrechnungsmonat));
     map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(),

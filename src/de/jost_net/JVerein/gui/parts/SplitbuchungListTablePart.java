@@ -26,6 +26,9 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.Feature;
+import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.gui.parts.table.Feature.Context;
 
 public class SplitbuchungListTablePart extends TablePart
 {
@@ -46,26 +49,27 @@ public class SplitbuchungListTablePart extends TablePart
     super(list, action);
   }
 
-  /**
-   * Liefert den anzuzeigenden Summen-Text. Kann von abgeleiteten Klassen
-   * ueberschrieben werde, um etwas anderes anzuzeigen.
-   * 
-   * @return anzuzeigender Text oder null, wenn nichts angezeigt werden soll.
-   */
+  @SuppressWarnings("unchecked")
   @Override
-  protected String getSummary()
+  protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
-    String summary = super.getSummary();
-    try
+    Context ctx = super.createFeatureEventContext(e, data);
+    if (this.hasEvent(FeatureSummary.class, e))
     {
-      summary += " / Differenz:" + " " + SplitbuchungsContainer.getDifference()
-          + " " + Einstellungen.CURRENCY;
+      String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
+      try
+      {
+        summary += " / Differenz:" + " "
+            + SplitbuchungsContainer.getDifference() + " "
+            + Einstellungen.CURRENCY;
+      }
+      catch (RemoteException re)
+      {
+        // nichts tun
+      }
+      ctx.addon.put(FeatureSummary.CTX_KEY_TEXT, summary);
     }
-    catch (RemoteException re)
-    {
-      // nichts tun
-    }
-    return summary;
+    return ctx;
   }
 
 }

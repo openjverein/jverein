@@ -32,7 +32,6 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;

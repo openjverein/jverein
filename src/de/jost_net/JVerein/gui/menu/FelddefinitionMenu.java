@@ -31,7 +31,7 @@ public class FelddefinitionMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Beitragsgruppen.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Felddefinitionen.
    */
   public FelddefinitionMenu(JVereinTablePart part)
   {
