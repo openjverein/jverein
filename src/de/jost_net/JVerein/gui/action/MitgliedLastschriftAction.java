@@ -53,7 +53,7 @@ public class MitgliedLastschriftAction implements Action
       // pruefe wer der Zahler ist
       if (m.getAbweichenderZahlerID() != null)
       {
-        // Mitglied hat alternativen Zahler
+        // Mitglied hat abweichenden Zahler
         mZ = m.getAbweichenderZahler();
 
         if (!AbrechnungSEPAControl.confirmDialog("Abweichender Zahler",

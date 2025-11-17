@@ -120,7 +120,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
             throw new ApplicationException(
-                "Beim alternativen Zahler ist keine IBAN oder Mandatdatum hinterlegt.");
+                "Beim abweichenden Zahler ist keine IBAN oder Mandatdatum hinterlegt.");
           }
         }
         else if (getMitglied().getIban().length() == 0
