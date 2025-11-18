@@ -2005,7 +2005,8 @@ public class MitgliedControl extends FilterControl implements Savable
             catch (Exception e)
             {
               throw new ApplicationException(
-                  "Fehler beim Erzeugen eines Nicht-Mitgliedes", e);
+                  "Fehler beim Erzeugen eines Nicht-Mitgliedes: "
+                      + e.getMessage());
             }
           }
         }, null, false, "document-new.png");
