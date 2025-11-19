@@ -800,7 +800,8 @@ public class MitgliedControl extends FilterControl implements Savable
       return kontoinhaber;
     }
     kontoinhaber = new TextInput(getMitglied().getKontoinhaber(), 70);
-    kontoinhaber.setName("Kontoinhaber\n*optional");
+    kontoinhaber.setName("Kontoinhaber");
+    kontoinhaber.setHint("Optional");
     return kontoinhaber;
   }
 
