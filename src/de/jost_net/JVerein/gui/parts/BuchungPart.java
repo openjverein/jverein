@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -134,17 +135,18 @@ public class BuchungPart implements Part
         budo.setReferenz(Long.valueOf(bu.getID()));
         dcontrol = new DokumentControl(view, "buchungen",
             !buchungabgeschlossen);
-        grDokument.addPart(dcontrol.getDokumenteList(budo));
 
+        grDokument.getComposite().setLayout(new GridLayout(1, false));
+        ButtonArea butts = new ButtonArea();
+        butts.addButton(dcontrol.getNeuButton(budo));
+        butts.paint(grDokument.getComposite());
+
+        grDokument.addPart(dcontrol.getDokumenteList(budo));
         dcontrol.setDragDrop(grDokument.getComposite(), BuchungDokument.class);
 
         GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 120;
+        gridData.heightHint = 150;
         grDokument.getComposite().setLayoutData(gridData);
-
-        ButtonArea butts = new ButtonArea();
-        butts.addButton(dcontrol.getNeuButton(budo));
-        butts.paint(scrolled.getComposite());
       }
     }
   }
