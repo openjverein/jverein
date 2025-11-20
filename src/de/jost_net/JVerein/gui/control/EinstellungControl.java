@@ -142,6 +142,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput sekundaerebeitragsgruppen;
 
+  private CheckboxInput zukuenftigebeitragsgruppen;
+
   private CheckboxInput zusatzbetrag;
 
   private CheckboxInput vermerke;
@@ -738,6 +740,17 @@ public class EinstellungControl extends AbstractControl
     sekundaerebeitragsgruppen = new CheckboxInput((Boolean) Einstellungen
         .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN));
     return sekundaerebeitragsgruppen;
+  }
+
+  public CheckboxInput getZukuenftigeBeitragsgruppen() throws RemoteException
+  {
+    if (zukuenftigebeitragsgruppen != null)
+    {
+      return zukuenftigebeitragsgruppen;
+    }
+    zukuenftigebeitragsgruppen = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.ZUKUENFTIGEBEITRAGSGRUPPEN));
+    return zukuenftigebeitragsgruppen;
   }
 
   public CheckboxInput getZusatzbetrag() throws RemoteException
@@ -2430,6 +2443,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) kommunikationsdaten.getValue());
       Einstellungen.setEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN,
           (Boolean) sekundaerebeitragsgruppen.getValue());
+      Einstellungen.setEinstellung(Property.ZUKUENFTIGEBEITRAGSGRUPPEN,
+          (Boolean) zukuenftigebeitragsgruppen.getValue());
       Einstellungen.setEinstellung(Property.ZUSATZBETRAG,
           (Boolean) zusatzbetrag.getValue());
       Einstellungen.setEinstellung(Property.VERMERKE,
