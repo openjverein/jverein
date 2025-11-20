@@ -213,7 +213,7 @@ public class Einstellungen
     KOMMUNIKATIONSDATEN("kommunikationsdaten", Boolean.class, "1"),
     SEKUNDAEREBEITRAGSGRUPPEN("sekundaerebeitragsgruppen", Boolean.class, "0"),
     ZUKUENFTIGEBEITRAGSGRUPPEN("zukuenftigebeitragsgruppen", Boolean.class,
-        "0"),
+        "1"),
     ZUSATZBETRAG("zusatzabbuchung", Boolean.class, "0"),
     VERMERKE("vermerke", Boolean.class, "1"),
     WIEDERVORLAGE("wiedervorlage", Boolean.class, "0"),
