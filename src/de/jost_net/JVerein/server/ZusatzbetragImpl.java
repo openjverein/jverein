@@ -544,12 +544,13 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
     {
       it.join("mitglied", "mitglied.id = " + getTableName() + ".mitglied");
-      it.addFilter("mitglied.eintritt <= " + getTableName() + ".stichtag");
-      it.addFilter("mitglied.austritt is null or mitglied.austritt <= "
+      it.addFilter("mitglied.eintritt is null or mitglied.eintritt <= "
+          + getTableName() + ".stichtag");
+      it.addFilter("mitglied.austritt is null or mitglied.austritt > "
           + getTableName() + ".stichtag");
     }
     it.addFilter(
-        "(intervall = 0 and (ausfuehrung is null or faelligkeit >= ?)) "
+        "(intervall = 0 and (ausfuehrung is null or faelligkeit <= ?)) "
             + "or (intervall != 0 and faelligkeit <= ? and (endedatum is null or endedatum > faelligkeit))",
         new Date(), new Date());
     it.addColumn("count(*) as sum");

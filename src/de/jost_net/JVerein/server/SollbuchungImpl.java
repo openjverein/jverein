@@ -419,7 +419,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
 
     it.join("(SELECT " + Sollbuchung.TABLE_NAME_ID
         + ", sum(buchung.betrag) AS betrag FROM " + Sollbuchung.TABLE_NAME
-        + " LEFT JOIN buchung ON buchung.mitgliedskonto="
+        + " LEFT JOIN buchung ON " + Buchung.T_SOLLBUCHUNG + "="
         + Sollbuchung.TABLE_NAME_ID + " GROUP BY " + Sollbuchung.TABLE_NAME
         + ".id) AS ist", "ist.id = " + Sollbuchung.TABLE_NAME + ".id");
     it.addFilter(

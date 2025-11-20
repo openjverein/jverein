@@ -527,12 +527,13 @@ public class RechnungImpl extends AbstractJVereinDBObject
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         getTableName());
 
-    it.join("(SELECT " + Sollbuchung.TABLE_NAME
-        + ".rechnung AS re,sum(buchung.betrag) AS betrag FROM "
-        + Sollbuchung.TABLE_NAME
-        + " LEFT JOIN buchung ON buchung.mitgliedskonto="
-        + Sollbuchung.TABLE_NAME_ID + " GROUP BY " + Sollbuchung.TABLE_NAME
-        + ".rechnung) AS ist", "ist.re = rechnung.id");
+    it.join(
+        "(SELECT " + Sollbuchung.TABLE_NAME
+            + ".rechnung AS re,sum(buchung.betrag) AS betrag FROM "
+            + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung ON "
+            + Buchung.T_SOLLBUCHUNG + "=" + Sollbuchung.TABLE_NAME_ID
+            + " GROUP BY " + Sollbuchung.TABLE_NAME + ".rechnung) AS ist",
+        "ist.re = rechnung.id");
     it.addFilter(
         "abs(COALESCE(ist.betrag,0) - " + getTableName() + ".betrag) >= 0.01");
     it.addFilter(getTableName() + ".datum <= ?", new Date());
