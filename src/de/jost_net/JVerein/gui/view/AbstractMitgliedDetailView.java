@@ -662,7 +662,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
 
-      container.addPart(control.getZukuenftigeBeitraegeView());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.ZUKUENFTIGEBEITRAGSGRUPPEN))
+      {
+        container.addPart(control.getZukuenftigeBeitraegeView());
+      }
 
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {

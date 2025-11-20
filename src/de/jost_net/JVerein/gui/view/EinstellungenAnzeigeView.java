@@ -85,6 +85,8 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont3.addLabelPair("Mitgliedsfoto", control.getMitgliedfoto());
     cont3.addLabelPair("Sekundäre Beitragsgruppen",
         control.getSekundaereBeitragsgruppen());
+    cont3.addLabelPair("Zukünftige Beitragsgruppen",
+        control.getZukuenftigeBeitragsgruppen());
     cont3.addLabelPair("Sterbedatum", control.getSterbedatum());
     cont3.addLabelPair("Vermerke", control.getVermerke());
 
