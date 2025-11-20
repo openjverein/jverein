@@ -1053,11 +1053,6 @@ public class MitgliedControl extends FilterControl implements Savable
           {
             getMitglied().setVollZahlerID(null);
             disableZahler();
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
-            if (getMitglied().getID() != null)
-            {
-              getZukuenftigeBeitraegeView().setVisible(true);
-            }
           }
           refreshFamilienangehoerigeTable();
         }
