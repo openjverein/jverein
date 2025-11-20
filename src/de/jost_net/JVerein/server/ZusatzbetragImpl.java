@@ -112,15 +112,15 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
       }
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (!getMitgliedzahltSelbst()
+            && getMitglied().getAbweichenderZahlerID() != null)
         {
-          Mitglied m = Einstellungen.getDBService().createObject(
-              MitgliedImpl.class, getMitglied().getVollZahlerID().toString());
+          Mitglied m = getMitglied().getAbweichenderZahler();
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
             throw new ApplicationException(
-                "Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+                "Beim abweichenden Zahler ist keine IBAN oder Mandatdatum hinterlegt.");
           }
         }
         else if (getMitglied().getIban().length() == 0
@@ -464,12 +464,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Zahlungsweg getZahlungsweg() throws RemoteException
   {
-    Object o = getAttribute("zahlungsweg");
-    if (o == null)
-    {
-      return new Zahlungsweg(Zahlungsweg.STANDARD);
-    }
-    return new Zahlungsweg((Integer) o);
+    return new Zahlungsweg((Integer) getAttribute("zahlungsweg"));
   }
 
   @Override
@@ -518,6 +513,8 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
         return Zahlungsweg.STANDARD;
       case "intervall":
         return IntervallZusatzzahlung.KEIN;
+      case "mitgliedzahltselbst":
+        return false;
       default:
         return null;
     }
@@ -533,5 +530,18 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Zusatzbeträge";
+  }
+
+  @Override
+  public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
+      throws RemoteException
+  {
+    setAttribute("mitgliedzahltselbst", mitgliedzahltselbst);
+  }
+
+  @Override
+  public boolean getMitgliedzahltSelbst() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("mitgliedzahltselbst"));
   }
 }

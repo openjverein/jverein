@@ -24,7 +24,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -52,21 +51,20 @@ public class MitgliedLastschriftAction implements Action
       m = (Mitglied) context;
 
       // pruefe wer der Zahler ist
-      if (m.getZahlungsweg() == Zahlungsweg.VOLLZAHLER
-          && m.getVollZahlerID() != null)
+      if (m.getAbweichenderZahlerID() != null)
       {
-        // Mitglied ist Familienangehoeriger, hat also anderen Zahler
-        mZ = (Mitglied) Einstellungen.getDBService()
-            .createObject(Mitglied.class, m.getVollZahlerID() + "");
+        // Mitglied hat abweichenden Zahler
+        mZ = m.getAbweichenderZahler();
 
-        if (!AbrechnungSEPAControl.confirmDialog("Familienangehöriger",
-            "Dieses Mitglied ist ein Familienangehöriger.\n\n"
-                + "Als Konto wird das Konto des Zahlers belastet:\n"
-                + "Zahler: " + mZ.getName() + "," + mZ.getVorname() + "\n"
+        if (!AbrechnungSEPAControl.confirmDialog("Abweichender Zahler",
+            "Dieses Mitglied hat einen abweichenden Zahler.\n\n"
+                + "Soll das Konto des abweichenden Zahler belastet werden?\n"
+                + "Zahler: " + mZ.getName() + ", " + mZ.getVorname() + "\n"
                 + "Kontoinhaber des Zahlers: "
-                + mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME)))
+                + mZ.getKontoinhaber(Mitglied.namenformat.KONTOINHABER)))
         {
-          return;
+          // Dann zahlt das Mitglied
+          mZ = m;
         }
 
       }
@@ -88,7 +86,7 @@ public class MitgliedLastschriftAction implements Action
 
         // Kontodaten: Name, BIC, IBAN
         sl.setGegenkontoName(
-            mZ.getKontoinhaber(Mitglied.namenformat.NAME_VORNAME));
+            mZ.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
         sl.setGegenkontoBLZ(mZ.getBic());
         sl.setGegenkontoNummer(mZ.getIban());
 
