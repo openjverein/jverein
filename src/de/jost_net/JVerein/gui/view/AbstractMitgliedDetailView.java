@@ -545,14 +545,17 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     GridLayout layout = new GridLayout(1, false);
     container.getComposite().setLayout(layout);
 
-    ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getKontoDatenLoeschenButton());
-    buttons1.paint(container.getComposite());
-
     LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
         "Zahlungsweg");
+    zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons1 = new ButtonArea();
+    buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
+    buttons1.paint(zahlungsweg.getComposite());
 
-    zahlungsweg.addInput(control.getZahlungsweg());
+    SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
+        zahlungsweg.getComposite(), false, 1);
+
+    cols1.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
     {
       switch (Beitragsmodel.getByKey(
@@ -561,53 +564,33 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         case GLEICHERTERMINFUERALLE:
           break;
         case MONATLICH12631:
-          zahlungsweg.addInput(control.getZahlungsrhythmus());
+          cols1.addInput(control.getZahlungsrhythmus());
           break;
         case FLEXIBEL:
-          zahlungsweg.addInput(control.getZahlungstermin());
+          cols1.addInput(control.getZahlungstermin());
           break;
       }
     }
+    cols1.addInput(control.getAbweichenderZahler());
+    cols1.arrangeVertically();
 
     LabelGroup bankverbindung = control
         .getBankverbindungLabelGroup(container.getComposite());
+    bankverbindung.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea buttons2 = new ButtonArea();
+    buttons2.addButton(control.getKontoDatenLoeschenButton());
+    buttons2.paint(bankverbindung.getComposite());
 
-    SimpleVerticalContainer cols = new SimpleVerticalContainer(
+    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         bankverbindung.getComposite(), false, spaltenanzahl);
 
-    cols.addInput(control.getMandatID());
-    cols.addInput(control.getMandatDatum());
-    cols.addInput(control.getMandatVersion());
-    cols.addInput(control.getLetzteLastschrift());
-    cols.addInput(control.getIban());
-    cols.addInput(control.getBic());
-    cols.arrangeVertically();
-
-    LabelGroup abweichenderKontoInhaber = control
-        .getAbweichenderKontoinhaberLabelGroup(container.getComposite());
-    SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
-        abweichenderKontoInhaber.getComposite(), false, spaltenanzahl);
-
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton(control.getMitglied2KontoinhaberEintragenButton());
-    addButtonArea(buttons2, cols2.getComposite());
-    cols2.addInput(control.getKtoiPersonenart());
-    cols2.addInput(control.getKtoiAnrede());
-    cols2.addInput(control.getKtoiTitel());
-    cols2.addInput(control.getKtoiName());
-    cols2.addInput(control.getKtoiVorname());
-    cols2.addInput(control.getKtoiStrasse());
-    cols2.addInput(control.getKtoiAdressierungszusatz());
-    cols2.addInput(control.getKtoiPlz());
-    cols2.addInput(control.getKtoiOrt());
-    if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
-    {
-      cols2.addInput(control.getKtoiStaat());
-    }
-    cols2.addInput(control.getKtoiEmail());
-    cols2.addInput(control.getKtoiGeschlecht());
-    // cols.addInput(control.getBlz());
-    // cols.addInput(control.getKonto());
+    cols2.addInput(control.getMandatID());
+    cols2.addInput(control.getMandatDatum());
+    cols2.addInput(control.getMandatVersion());
+    cols2.addInput(control.getLetzteLastschrift());
+    cols2.addInput(control.getIban());
+    cols2.addInput(control.getBic());
+    cols2.addInput(control.getKontoinhaber());
     cols2.arrangeVertically();
   }
 

@@ -25,13 +25,13 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Buchungsarten.
+ * Kontext-Menu zu den Projekten.
  */
 public class ProjektMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Buchungsarten.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Projekte.
    */
   public ProjektMenu(JVereinTablePart part)
   {

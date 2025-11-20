@@ -16,15 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.rmi.RemoteException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.QIFMitgliedZuordnenControl;
-import de.jost_net.JVerein.rmi.QIFImportPos;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -35,13 +32,10 @@ import de.willuhn.jameica.gui.util.TabGroup;
 
 public class QIFMitgliederZuordnenView extends AbstractView
 {
-  QIFImportPos importPos;
-
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Mitglieder zuordnen");
-    init();
 
     QIFMitgliedZuordnenControl detailControl = new QIFMitgliedZuordnenControl(
         this);
@@ -87,10 +81,5 @@ public class QIFMitgliederZuordnenView extends AbstractView
       tabBeispiel.addPart(detailControl.getBeispielPositionsListe());
     }
 
-  }
-
-  private void init() throws RemoteException
-  {
-    importPos = (QIFImportPos) getCurrentObject();
   }
 }

@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zum Abrechnungslaufdetailmen?
+ * Kontext-Menu zum Abrechnungslaufdetailmenue
  */
 public class AbrechnungslaufBuchungenMenu extends ContextMenu
 {

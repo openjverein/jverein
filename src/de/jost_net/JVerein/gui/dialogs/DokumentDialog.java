@@ -29,6 +29,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 
 /**
  * Ein Dialog, zur Bearbeitung von Dokument-Infos
@@ -66,8 +67,7 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
         }
         catch (RemoteException e)
         {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          Logger.error("Fehler beim Speichern des Dokuments", e);
         }
         close();
       }

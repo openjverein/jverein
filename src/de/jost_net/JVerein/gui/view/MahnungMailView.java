@@ -83,7 +83,6 @@ public class MahnungMailView extends AbstractView
 
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
-    // cont.addInput(control.getAusgabesortierung());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -106,11 +105,6 @@ public class MahnungMailView extends AbstractView
     buttons.addButton(
         new Button("Als Vorlage übernehmen", new MailVorlageUebernehmenAction(),
             control, false, "document-new.png"));
-    /*
-     * buttons.addButton(new Button("Export", new MitgliedskontoExportAction(
-     * EXPORT_TYP.MAHNUNGEN, getCurrentObject()), control, false,
-     * "document-save.png"));
-     */
     buttons.addButton(control.getDruckMailMitgliederButton(
         this.getCurrentObject(), TYP.MAHNUNG.toString()));
     buttons.addButton(control.getStartMahnungButton(this.getCurrentObject()));

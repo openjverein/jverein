@@ -121,16 +121,6 @@ public class LesefeldAuswerter
             + e.getMessage() + "\".", e);
       }
     }
-
-    // DEBUG: Zeige alle gesetzten Variablen.
-    /*
-     * String[] vars = bsh.getNameSpace().getVariableNames(); try { for (int i =
-     * 0; i < vars.length; i++) { if (vars[i].compareTo("bsh") == 0) continue;
-     * String s2 = "\"" + vars[i] + ":\" + " + vars[i] + ";"; Object o =
-     * bsh.eval(s2); Logger.debug("Skript-Variable: " + o); } } catch (EvalError
-     * e) { e.printStackTrace(); }
-     */
-    // END DEBUG.
   }
 
   /**

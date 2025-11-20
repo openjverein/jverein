@@ -134,12 +134,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     return bm;
   }
 
-  public void handleStore()
-  {
-    //
-  }
-
-  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf)
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);

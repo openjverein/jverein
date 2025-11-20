@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout OpenJVerein
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: ${{ github.ref_name }}
         path: jverein
@@ -64,7 +64,7 @@ jobs:
         target_commitish: ${{ github.ref_name }}
 
     - name: Checkout website repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         repository: openjverein/openjverein.github.io
         path: website

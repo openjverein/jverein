@@ -31,32 +31,17 @@ public class SpbAdressaufbereitung
   {
     spb.setMitglied(m);
     ArrayList<String> adresse = new ArrayList<>();
-    if (m.getKtoiName() == null || m.getKtoiName().length() == 0)
+    adresse.add(m.getAnrede());
+    adresse.add(Adressaufbereitung.getVornameName(m));
+    if (m.getAdressierungszusatz() != null
+        && m.getAdressierungszusatz().length() > 0)
     {
-      adresse.add(m.getAnrede());
-      adresse.add(Adressaufbereitung.getVornameName(m));
-      if (m.getAdressierungszusatz() != null
-          && m.getAdressierungszusatz().length() > 0)
-      {
-        adresse.add(m.getAdressierungszusatz());
-      }
-      adresse.add(m.getStrasse());
-      adresse.add(m.getPlz() + " " + m.getOrt());
-      adresse.add(m.getStaat());
+      adresse.add(m.getAdressierungszusatz());
     }
-    else
-    {
-      adresse.add(m.getKtoiAnrede());
-      adresse.add(getKtoiVornameName(m));
-      if (m.getKtoiAdressierungszusatz() != null
-          && m.getKtoiAdressierungszusatz().length() > 0)
-      {
-        adresse.add(m.getKtoiAdressierungszusatz());
-      }
-      adresse.add(m.getKtoiStrasse());
-      adresse.add(m.getKtoiPlz() + " " + m.getKtoiOrt());
-      adresse.add(m.getKtoiStaat());
-    }
+    adresse.add(m.getStrasse());
+    adresse.add(m.getPlz() + " " + m.getOrt());
+    adresse.add(m.getStaat());
+
     // Alle Zeilen erstmal leer füllen, dait nicht null in der DB steht
     spb.setZeile1("");
     spb.setZeile2("");
@@ -85,29 +70,4 @@ public class SpbAdressaufbereitung
 
   }
 
-  private static String getKtoiVornameName(Mitglied mitglied)
-      throws RemoteException
-  {
-    String ret = "";
-    if (mitglied.getKtoiPersonenart().equalsIgnoreCase("n"))
-    {
-      ret = mitglied.getKtoiTitel();
-      if (ret == null)
-      {
-        ret = "";
-      }
-      if (ret.length() > 0)
-      {
-        ret += " ";
-      }
-      ret += mitglied.getKtoiVorname() + " " + mitglied.getKtoiName();
-    }
-    else
-    {
-      ret = mitglied.getKtoiName() + (mitglied.getKtoiVorname().length() > 0
-          ? ("\n" + mitglied.getKtoiVorname())
-          : "");
-    }
-    return ret;
-  }
 }

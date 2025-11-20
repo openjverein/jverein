@@ -34,17 +34,7 @@ public enum InternalColumns
   GEBDATUM("Geburtsdatum", true), //
   GESCHLECHT("Geschlecht", true), //
   IBAN("IBAN", true), //
-  KTOIPERSONENART("KtoiPersonenart", false), //
-  KTOIANREDE("KtoiAnrede", false), //
-  KTOITITEL("KtoiTitel", false), //
-  KTOINAME("KtoiName", false), //
-  KTOIVORNAME("KtoiVorname", false), //
-  KTOISTRASSE("KtoiStrasse", false), //
-  KTOIADRESSIERUNGSZUSATZ("KtoiAdressierungszusatz", false), //
-  KTOIPLZ("KtoiPlz", false), //
-  KTOIORT("KtoiOrt", false), //
-  KTOISTAAT("KtoiStaat", false), //
-  KTOIEMAIL("KtoiEMail", false), //
+  KONTOINHABER("Kontoinhaber", false), //
   KUENDIGUNGSDATUM("Kuendigung", true), //
   MANDATDATUM("Mandat_Datum", true), //
   MITGLIEDSNR("Mitglieds_Nr", true), //
