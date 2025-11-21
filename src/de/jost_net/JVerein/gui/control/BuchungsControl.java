@@ -1023,19 +1023,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     ArrayList<Buchungsart> liste = new ArrayList<>();
     Buchungsart b2 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
-    b2.setNummer(-1);
+    b2.setNummer("");
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
     for (Buchungsart ba : suchliste)
       liste.add(ba);
 
-    int bwert = settings.getInt(settingsprefix + BUCHUNGSART, -2);
+    String bwert = settings.getString(settingsprefix + BUCHUNGSART, "");
     Buchungsart b = null;
     int size = liste.size();
     for (int i = 0; i < size; i++)
     {
-      if (liste.get(i).getNummer() == bwert)
+      if (liste.get(i).getNummer().equals(bwert))
       {
         b = liste.get(i);
         break;
@@ -1429,7 +1429,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       b = (Buchungsart) getSuchBuchungsart().getValue();
     }
-    if (b != null && b.getNummer() != 0)
+    if (b != null && b.getNummer().length() > 0)
     {
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
           b.getNummer());

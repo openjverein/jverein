@@ -57,7 +57,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -73,7 +72,7 @@ public class BuchungsartControl extends FilterControl implements Savable
 {
   private JVereinTablePart buchungsartList;
 
-  private IntegerInput nummer;
+  private TextInput nummer;
 
   private Input bezeichnung;
 
@@ -112,13 +111,13 @@ public class BuchungsartControl extends FilterControl implements Savable
     return buchungsart;
   }
 
-  public IntegerInput getNummer(boolean withFocus) throws RemoteException
+  public TextInput getNummer(boolean withFocus) throws RemoteException
   {
     if (nummer != null)
     {
       return nummer;
     }
-    nummer = new IntegerInput(getBuchungsart().getNummer());
+    nummer = new TextInput(getBuchungsart().getNummer());
     if (withFocus)
     {
       nummer.focus();
@@ -300,11 +299,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     Buchungsart b = getBuchungsart();
     if (getNummer(false).getValue() != null)
     {
-      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
-    }
-    else
-    {
-      b.setNummer(-1);
+      b.setNummer((String) getNummer(false).getValue());
     }
 
     b.setBezeichnung((String) getBezeichnung().getValue());

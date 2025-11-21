@@ -422,7 +422,7 @@ public class WirtschaftsplanNode
           if (type == Type.BUCHUNGSART)
           {
             return this.getBuchungsart().getNummer()
-                - o.getBuchungsart().getNummer();
+                .compareTo(o.getBuchungsart().getNummer());
           }
           break;
         case BuchungsartSort.NACH_BEZEICHNUNG:
