@@ -542,13 +542,12 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       it.join("mitglied", "mitglied.id = " + getTableName() + ".mitglied");
       it.addFilter("mitglied.eintritt is null or mitglied.eintritt <= "
-          + getTableName() + ".stichtag");
+          + getTableName() + ".faelligkeit");
       it.addFilter("mitglied.austritt is null or mitglied.austritt > "
-          + getTableName() + ".stichtag");
+          + getTableName() + ".faelligkeit");
     }
-    it.addFilter(
-        "(intervall = 0 and (ausfuehrung is null or faelligkeit <= ?)) "
-            + "or (intervall != 0 and faelligkeit <= ? and (endedatum is null or endedatum > faelligkeit))",
+    it.addFilter("(intervall = 0 and ausfuehrung is null and faelligkeit <= ?) "
+        + "or (intervall != 0 and faelligkeit <= ? and (endedatum is null or endedatum > faelligkeit))",
         new Date(), new Date());
     it.addColumn("count(*) as sum");
     return it.next().getInteger("sum");
