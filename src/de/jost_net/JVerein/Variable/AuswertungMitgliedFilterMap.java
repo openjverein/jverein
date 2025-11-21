@@ -112,8 +112,12 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
         control.getSortierung().getText());
     map.put(AuswertungMitgliedFilterVar.UEBERSCHRIFT.getName(),
         control.getAuswertungUeberschrift().getValue().toString());
-    map.put(AuswertungMitgliedFilterVar.AUSGABE.getName(),
-        control.getAusgabe().getText());
+    String ausgabe = control.getAusgabe().getText();
+    if (ausgabe.startsWith("Vorlage CSV:"))
+    {
+      ausgabe = ausgabe.substring(13);
+    }
+    map.put(AuswertungMitgliedFilterVar.AUSGABE.getName(), ausgabe);
 
     return map;
   }
