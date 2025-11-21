@@ -68,6 +68,14 @@ public class WirtschaftsplanNode
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
       Wirtschaftsplan wirtschaftsplan) throws RemoteException
   {
+    this(buchungsklasse, art, wirtschaftsplan, (Boolean) Einstellungen
+        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN));
+  }
+
+  public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
+      Wirtschaftsplan wirtschaftsplan, boolean mitVerbindlichkeitenForderungen)
+      throws RemoteException
+  {
     type = Type.BUCHUNGSKLASSE;
     this.buchungsklasse = buchungsklasse;
 
@@ -138,8 +146,7 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    if (mitVerbindlichkeitenForderungen)
     {
       istIt.leftJoin("konto",
           "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
@@ -154,6 +161,11 @@ public class WirtschaftsplanNode
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
     istIt.addFilter("buchungsart.art = ?", art);
+    // Wenn Kontoarten ausgefiltert werden, ist konto.id=null, diese müssen wir
+    // raussortieren. Allerdings nur, wenn buchung.konto nicht null ist, sonst
+    // handelt es sich nämlich um berechnete Steuerbuchungen
+    istIt.addFilter("(buchung.konto is NULL and konto.id is NULL) "
+        + "or (buchung.konto is not NULL and konto.id is not NULL)");
 
     if (mitSteuer)
     {
