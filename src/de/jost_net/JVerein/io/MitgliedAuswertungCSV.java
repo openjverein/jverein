@@ -206,7 +206,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
   @Override
   public String getDateiendung()
   {
-    return "CSV";
+    return "csv";
   }
 
   @Override
