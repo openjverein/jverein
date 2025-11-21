@@ -77,8 +77,12 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
         control.getSortierung().getText());
     map.put(AuswertungNichtMitgliedFilterVar.UEBERSCHRIFT.getName(),
         control.getAuswertungUeberschrift().getValue().toString());
-    map.put(AuswertungNichtMitgliedFilterVar.AUSGABE.getName(),
-        control.getAusgabe().getText());
+    String ausgabe = control.getAusgabe().getText();
+    if (ausgabe.startsWith("Vorlage CSV:"))
+    {
+      ausgabe = ausgabe.substring(13);
+    }
+    map.put(AuswertungNichtMitgliedFilterVar.AUSGABE.getName(), ausgabe);
 
     return map;
   }
