@@ -25,7 +25,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageImpl extends AbstractJVereinDBObject
-    implements Wiedervorlage, IMitglied
+    implements Wiedervorlage, IMitglied, UnreadCounter
 {
 
   private static final long serialVersionUID = 1L;
@@ -153,5 +153,22 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Wiedervorlagen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+    it.addFilter("erledigung is null");
+    it.addFilter("datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Wiedervorlagen";
   }
 }

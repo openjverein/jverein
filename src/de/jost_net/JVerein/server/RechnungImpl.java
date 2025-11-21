@@ -38,7 +38,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
-    implements Rechnung, IAdresse
+    implements Rechnung, IAdresse, UnreadCounter
 {
 
   /**
@@ -502,5 +502,31 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Rechnungen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+
+    it.join(
+        "(SELECT " + Sollbuchung.TABLE_NAME
+            + ".rechnung AS re,sum(buchung.betrag) AS betrag FROM "
+            + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung ON "
+            + Buchung.T_SOLLBUCHUNG + "=" + Sollbuchung.TABLE_NAME_ID
+            + " GROUP BY " + Sollbuchung.TABLE_NAME + ".rechnung) AS ist",
+        "ist.re = rechnung.id");
+    it.addFilter(
+        "abs(COALESCE(ist.betrag,0) - " + getTableName() + ".betrag) >= 0.01");
+    it.addFilter(getTableName() + ".datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Rechnungen";
   }
 }
