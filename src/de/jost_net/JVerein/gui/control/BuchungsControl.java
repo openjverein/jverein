@@ -1437,7 +1437,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     else
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, "");
     }
     Projekt p = null;
     if (isSuchProjektAktiv())
