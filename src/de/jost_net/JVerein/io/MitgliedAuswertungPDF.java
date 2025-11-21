@@ -193,7 +193,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
   @Override
   public String getDateiendung()
   {
-    return "PDF";
+    return "pdf";
   }
 
   @Override

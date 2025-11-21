@@ -218,7 +218,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        buchungsklasseIterator.setOrder("Order by nummer is null, nummer");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:

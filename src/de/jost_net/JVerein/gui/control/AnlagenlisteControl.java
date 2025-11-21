@@ -171,7 +171,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     {
       case BuchungsartSort.NACH_NUMMER:
         it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.anschaffung");
+            "Order by buchungsklasse.nummer is null,buchungsklasse.nummer,"
+                + " buchungsart.nummer is null, buchungsart.nummer, konto.anschaffung");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:

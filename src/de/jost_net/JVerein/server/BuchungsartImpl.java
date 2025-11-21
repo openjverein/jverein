@@ -100,7 +100,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
-      if (getNummer() < 0)
+      if (getNummer().length() == 0)
       {
         throw new ApplicationException("Bitte Nummer eingeben!");
       }
@@ -246,18 +246,18 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public int getNummer() throws RemoteException
+  public String getNummer() throws RemoteException
   {
-    Integer i = (Integer) getAttribute("nummer");
-    if (i == null)
-      return 0;
-    return i.intValue();
+    String nummer = (String) getAttribute("nummer");
+    if (nummer == null)
+      return "";
+    return nummer;
   }
 
   @Override
-  public void setNummer(int i) throws RemoteException
+  public void setNummer(String i) throws RemoteException
   {
-    setAttribute("nummer", Integer.valueOf(i));
+    setAttribute("nummer", i);
   }
 
   @Override
@@ -379,27 +379,11 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     if (fieldName.equals("nrbezeichnung"))
     {
-      int nr = getNummer();
-      if (nr >= 0)
-      {
-        return nr + " - " + getBezeichnung();
-      }
-      else
-      {
-        return getBezeichnung();
-      }
+      return getNummer() + " - " + getBezeichnung();
     }
     else if (fieldName.equals("bezeichnungnr"))
     {
-      int nr = getNummer();
-      if (nr >= 0)
-      {
-        return getBezeichnung() + " (" + nr + ")";
-      }
-      else
-      {
-        return getBezeichnung();
-      }
+      return getBezeichnung() + " (" + getNummer() + ")";
     }
     else if (fieldName.equals("klasse-art-bez"))
     {

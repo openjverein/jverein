@@ -212,11 +212,11 @@ public class BuchungQuery
 
     if (buchungart != null)
     {
-      if (buchungart.getNummer() == -1)
+      if (buchungart.getNummer() == "")
       {
         it.addFilter("buchung.buchungsart is null ");
       }
-      else if (buchungart.getNummer() >= 0)
+      else
       {
         it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
       }

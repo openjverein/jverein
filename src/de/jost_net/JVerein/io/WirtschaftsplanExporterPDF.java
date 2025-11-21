@@ -166,7 +166,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        buchungsklasseIterator.setOrder("Order by nummer is null, nummer");
         break;
       default:
         buchungsklasseIterator

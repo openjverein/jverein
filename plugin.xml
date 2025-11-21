@@ -35,6 +35,8 @@
 
   <messaging>
     <consumer queue="hibiscus.umsatz.markchecked" class="de.jost_net.JVerein.Messaging.HibscusUmsatzMessageConsumer" />
+    <consumer queue="jverein.dbobject.delete" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
+    <consumer queue="jverein.dbobject.store" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
   </messaging>
   
   <requires jameica="2.8+">

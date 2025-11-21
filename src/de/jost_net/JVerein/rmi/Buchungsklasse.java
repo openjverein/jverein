@@ -20,9 +20,9 @@ import java.rmi.RemoteException;
 
 public interface Buchungsklasse extends JVereinDBObject
 {
-  public int getNummer() throws RemoteException;
+  public String getNummer() throws RemoteException;
 
-  public void setNummer(int nummer) throws RemoteException;
+  public void setNummer(String nummer) throws RemoteException;
 
   public String getBezeichnung() throws RemoteException;
 

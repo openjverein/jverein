@@ -92,7 +92,7 @@ public class KontenrahmenImportXML implements Importer
         Buchungsklasse bukl = (Buchungsklasse) Einstellungen.getDBService()
             .createObject(Buchungsklasse.class, null);
         bukl.setBezeichnung(element.getAttribute("bezeichnung", ""));
-        bukl.setNummer(element.getAttribute("nummer", 0));
+        bukl.setNummer(element.getAttribute("nummer", ""));
         bukl.store();
         IXMLElement buchungsarten = element.getFirstChildNamed("buchungsarten");
         @SuppressWarnings("rawtypes")
@@ -107,7 +107,7 @@ public class KontenrahmenImportXML implements Importer
           buchungsart
               .setBezeichnung(buaelement.getAttribute("bezeichnung", ""));
           buchungsart.setBuchungsklasseId(Long.valueOf(bukl.getID()));
-          buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
+          buchungsart.setNummer(buaelement.getAttribute("nummer", ""));
           String spende = buaelement.getAttribute("spende", "false");
           if (spende.equalsIgnoreCase("true"))
             buchungsart.setSpende(true);

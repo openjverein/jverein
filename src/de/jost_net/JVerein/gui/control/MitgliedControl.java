@@ -2574,9 +2574,9 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         return;
       }
-      if (!s.endsWith(ausw.getDateiendung()))
+      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
       {
-        s = s + "." + ausw.getDateiendung();
+        s = s + "." + ausw.getDateiendung().toLowerCase();
       }
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
@@ -2675,9 +2675,9 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         return;
       }
-      if (!s.endsWith(ausw.getDateiendung()))
+      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
       {
-        s = s + "." + ausw.getDateiendung();
+        s = s + "." + ausw.getDateiendung().toLowerCase();
       }
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());

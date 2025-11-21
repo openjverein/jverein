@@ -94,7 +94,7 @@ public class KontenrahmenImportXMLv2 implements Importer
         Buchungsklasse bukl = (Buchungsklasse) Einstellungen.getDBService()
             .createObject(Buchungsklasse.class, null);
         bukl.setBezeichnung(element.getAttribute("bezeichnung", ""));
-        bukl.setNummer(element.getAttribute("nummer", 0));
+        bukl.setNummer(element.getAttribute("nummer", ""));
         bukl.store();
       }
       HashMap<Double, HashMap<String, Integer>> steuerMap = new HashMap<>();
@@ -110,7 +110,7 @@ public class KontenrahmenImportXMLv2 implements Importer
             .createObject(Buchungsart.class, null);
         buchungsart.setArt(buaelement.getAttribute("art", 0));
         buchungsart.setBezeichnung(buaelement.getAttribute("bezeichnung", ""));
-        buchungsart.setNummer(buaelement.getAttribute("nummer", 0));
+        buchungsart.setNummer(buaelement.getAttribute("nummer", ""));
         String spende = buaelement.getAttribute("spende", "false");
         if (spende.equalsIgnoreCase("true"))
           buchungsart.setSpende(true);
