@@ -31,6 +31,8 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
 
   public final static int AUSGABE = 1;
 
+  public final static int RUECKLAGE = 2;
+
   private static final long serialVersionUID = 1L;
 
   private final static String BETRAG_ALIAS = "betrag";

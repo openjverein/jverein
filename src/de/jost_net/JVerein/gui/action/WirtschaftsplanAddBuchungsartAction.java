@@ -71,7 +71,17 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
       List<Buchungsart> buchungsarten = new ArrayList<>();
 
       iterator = Einstellungen.getDBService().createList(Buchungsart.class);
-      iterator.addFilter("art = ?", art);
+      switch (art)
+      {
+        case WirtschaftsplanImpl.EINNAHME:
+        case WirtschaftsplanImpl.AUSGABE:
+          iterator.addFilter("buchungsart.art = ?", art);
+          iterator.addFilter("buchungsart.ruecklage = FALSE");
+          break;
+        case WirtschaftsplanImpl.RUECKLAGE:
+          iterator.addFilter("buchungsart.ruecklage = TRUE");
+          break;
+      }
       if (!(boolean) Einstellungen
           .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
       {

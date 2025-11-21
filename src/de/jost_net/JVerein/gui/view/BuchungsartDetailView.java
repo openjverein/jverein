@@ -45,6 +45,12 @@ public class BuchungsartDetailView extends AbstractDetailView
     group.addLabelPair("Buchungsklasse", control.getBuchungsklasse());
     group.addLabelPair("Spende", control.getSpende());
     group.addLabelPair("Abschreibung", control.getAbschreibung());
+    if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN)
+        && (Boolean) Einstellungen
+            .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
+    {
+      group.addLabelPair("Rücklage", control.getRuecklage());
+    }
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
       group.addLabelPair("Steuer", control.getSteuer());
