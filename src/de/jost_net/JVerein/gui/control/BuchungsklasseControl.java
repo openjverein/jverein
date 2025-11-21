@@ -70,7 +70,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     {
       return nummer;
     }
-    nummer = new TextInput(getBuchungsklasse().getNummer());
+    nummer = new TextInput(getBuchungsklasse().getNummer(), 50);
     if (withFocus)
     {
       nummer.focus();

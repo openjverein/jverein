@@ -117,7 +117,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     {
       return nummer;
     }
-    nummer = new TextInput(getBuchungsart().getNummer());
+    nummer = new TextInput(getBuchungsart().getNummer(), 50);
     if (withFocus)
     {
       nummer.focus();
