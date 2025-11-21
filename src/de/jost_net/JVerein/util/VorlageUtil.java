@@ -23,8 +23,8 @@ import java.util.Map;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
@@ -395,7 +395,7 @@ public class VorlageUtil
       Velocity.evaluate(context, wdateiname, "LOG", in);
       String str = wdateiname.toString();
       str = str.replaceAll("\\'\\#\\'", "-");
-      str = str.replaceAll("/", "_");
+      str = str.replaceAll("[^a-zA-Z0-9_-. ]", "_");
       return str;
     }
     catch (Exception e)
