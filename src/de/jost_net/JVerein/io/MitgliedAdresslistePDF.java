@@ -128,7 +128,7 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
   @Override
   public String getDateiendung()
   {
-    return "PDF";
+    return "pdf";
   }
 
   @Override

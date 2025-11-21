@@ -70,7 +70,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
   @Override
   public String getDateiendung()
   {
-    return "CSV";
+    return "csv";
   }
 
   @Override
