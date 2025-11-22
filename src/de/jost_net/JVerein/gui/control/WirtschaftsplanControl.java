@@ -472,9 +472,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       @SuppressWarnings("unchecked")
       List<WirtschaftsplanNode> rootNodesAusgaben = (List<WirtschaftsplanNode>) ausgaben
           .getItems();
-      @SuppressWarnings("unchecked")
-      List<WirtschaftsplanNode> rootNodesRuecklagen = (List<WirtschaftsplanNode>) ruecklagen
-          .getItems();
 
       DBService service = Einstellungen.getDBService();
       Wirtschaftsplan wirtschaftsplan = (Wirtschaftsplan) prepareStore();
@@ -505,9 +502,15 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       {
         storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
       }
-      for (WirtschaftsplanNode rootNode : rootNodesRuecklagen)
+      if (ruecklagen != null)
       {
-        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        @SuppressWarnings("unchecked")
+        List<WirtschaftsplanNode> rootNodesRuecklagen = (List<WirtschaftsplanNode>) ruecklagen
+            .getItems();
+        for (WirtschaftsplanNode rootNode : rootNodesRuecklagen)
+        {
+          storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        }
       }
 
       DBTransaction.commit();
