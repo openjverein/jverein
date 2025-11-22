@@ -444,6 +444,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     uebersicht.updateSoll();
     autoExpand(einnahmen);
     autoExpand(ausgaben);
+    if (ruecklagen != null)
+    {
+      getRuecklagen();
+      autoExpand(ruecklagen);
+    }
   }
 
   @Override

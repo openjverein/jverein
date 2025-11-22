@@ -160,17 +160,26 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
-      istIt.join("konto",
-          "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
-          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+      {
+        istIt.join("konto",
+            "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
+            Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      }
+      else
+      {
+        istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+            Kontoart.LIMIT.getKey());
+      }
     }
     else
     {
-      istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
-          Kontoart.LIMIT.getKey());
+      istIt.join("konto",
+          "buchung.konto = konto.id AND (konto.kontoart > ?  AND konto.kontoart < ?)",
+          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
 
     istIt.addColumn("buchungsart.id as " + ID);
