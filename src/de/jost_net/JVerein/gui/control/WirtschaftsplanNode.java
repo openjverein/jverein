@@ -163,13 +163,13 @@ public class WirtschaftsplanNode
     if ((Boolean) Einstellungen
         .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
     {
-      istIt.leftJoin("konto",
+      istIt.join("konto",
           "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
           Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
     else
     {
-      istIt.leftJoin("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+      istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
           Kontoart.LIMIT.getKey());
     }
 
