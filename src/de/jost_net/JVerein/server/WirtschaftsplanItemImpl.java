@@ -22,9 +22,8 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
-import de.willuhn.datasource.db.AbstractDBObject;
 
-public class WirtschaftsplanItemImpl extends AbstractDBObject
+public class WirtschaftsplanItemImpl extends AbstractJVereinDBObject
     implements WirtschaftsplanItem
 {
   private static final long serialVersionUID = 1L;
@@ -127,12 +126,7 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
   @Override
   public double getSoll() throws RemoteException
   {
-    Double d = (Double) getAttribute("soll");
-    if (d == null)
-    {
-      return 0.;
-    }
-    return d;
+    return (double) getAttribute("soll");
   }
 
   @Override
@@ -155,5 +149,43 @@ public class WirtschaftsplanItemImpl extends AbstractDBObject
       default:
         return super.getAttribute(fieldName);
     }
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "soll":
+        return 0d;
+      case "art":
+        return 1;
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public int getArt() throws RemoteException
+  {
+    return (int) getAttribute("art");
+  }
+
+  @Override
+  public void setArt(int art) throws RemoteException
+  {
+    setAttribute("art", art);
+  }
+
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Wirtschaftsplan Item";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Wirtschaftsplan Item";
   }
 }

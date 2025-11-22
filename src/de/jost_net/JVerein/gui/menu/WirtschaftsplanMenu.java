@@ -16,11 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddPostenAction;
+import de.jost_net.JVerein.gui.action.WirtschaftsplanDeleteBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDeletePostenAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
@@ -33,26 +31,14 @@ public class WirtschaftsplanMenu extends ContextMenu
 {
   public WirtschaftsplanMenu(int art, WirtschaftsplanControl control)
   {
-    try
-    {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
-      {
-        addItem(new BuchungsklasseItem("Buchungsart hinzufügen",
-            new WirtschaftsplanAddBuchungsartAction(control, art),
-            "list-add.png"));
-      }
-    }
-    catch (RemoteException e)
-    {
-      addItem(new BuchungsklasseItem("Buchungsart hinzufügen",
-          new WirtschaftsplanAddBuchungsartAction(control, art),
-          "list-add.png"));
-    }
+    addItem(new BuchungsklasseItem("Buchungsart hinzufügen",
+        new WirtschaftsplanAddBuchungsartAction(control, art), "list-add.png"));
     addItem(new BuchungsartItem("Posten hinzufügen",
         new WirtschaftsplanAddPostenAction(control), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
-
+    addItem(new BuchungsartItem("Buchungsart löschen",
+        new WirtschaftsplanDeleteBuchungsartAction(control),
+        "user-trash-full.png"));
     addItem(new CheckedContextMenuItem("Posten löschen",
         new WirtschaftsplanDeletePostenAction(control), "user-trash-full.png"));
   }

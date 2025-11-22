@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
@@ -80,18 +81,22 @@ public class WirtschaftsplanNode
     Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
     DBService service = Einstellungen.getDBService();
 
-    DBIterator<Buchungsart> buchungsartIterator = service
-        .createList(Buchungsart.class);
-    buchungsartIterator.addFilter("status != 1"); // Ignoriert inaktive
-                                                  // Buchungsarten
-    buchungsartIterator.addFilter("buchungsklasse = ?", buchungsklasse.getID());
-    buchungsartIterator.addFilter("art = ?", art);
-
-    while (buchungsartIterator.hasNext())
+    if (art != WirtschaftsplanImpl.RUECKLAGE && wirtschaftsplan.isNewObject())
     {
-      Buchungsart buchungsart = buchungsartIterator.next();
-      nodes.put(buchungsart.getID(),
-          new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
+      DBIterator<Buchungsart> buchungsartIterator = service
+          .createList(Buchungsart.class);
+      buchungsartIterator.addFilter("status != 1"); // Ignoriert inaktive
+                                                    // Buchungsarten
+      buchungsartIterator.addFilter("buchungsklasse = ?",
+          buchungsklasse.getID());
+      buchungsartIterator.addFilter("art = ?", art);
+
+      while (buchungsartIterator.hasNext())
+      {
+        Buchungsart buchungsart = buchungsartIterator.next();
+        nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
+            buchungsart, art, wirtschaftsplan, true));
+      }
     }
 
     ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
@@ -100,7 +105,7 @@ public class WirtschaftsplanNode
     extendedDBIterator.addColumn("sum(wirtschaftsplanitem.soll) as " + SUMME);
     extendedDBIterator
         .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
+    extendedDBIterator.addFilter("wirtschaftsplanitem.art = ?", art);
     extendedDBIterator.addFilter("wirtschaftsplanitem.buchungsklasse = ?",
         buchungsklasse.getID());
     extendedDBIterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
@@ -125,8 +130,8 @@ public class WirtschaftsplanNode
       if (!nodes.containsKey(id))
       {
         Buchungsart buchungsart = service.createObject(Buchungsart.class, id);
-        nodes.put(buchungsart.getID(),
-            new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
+        nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
+            buchungsart, art, wirtschaftsplan, false));
       }
       nodes.get(id).setSoll(soll);
       sollSumme += soll;
@@ -138,24 +143,38 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+
+    if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
-      istIt.leftJoin("konto",
-          "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
-          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+      {
+        istIt.join("konto",
+            "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
+            Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      }
+      else
+      {
+        istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+            Kontoart.LIMIT.getKey());
+      }
     }
     else
     {
-      istIt.leftJoin("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
-          Kontoart.LIMIT.getKey());
+      istIt.join("konto",
+          "buchung.konto = konto.id AND (konto.kontoart > ?  AND konto.kontoart < ?)",
+          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
 
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
-    istIt.addFilter("buchungsart.art = ?", art);
+    if (art != WirtschaftsplanImpl.RUECKLAGE)
+    {
+      istIt.addFilter("buchungsart.art = ?", art);
+    }
 
-    if (mitSteuer)
+    // Rücklagen haben keine Steuer
+    if (mitSteuer && art != WirtschaftsplanImpl.RUECKLAGE)
     {
       // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
       // hinzurechnen
@@ -252,8 +271,8 @@ public class WirtschaftsplanNode
       if (!nodes.containsKey(key))
       {
         Buchungsart buchungsart = service.createObject(Buchungsart.class, key);
-        nodes.put(buchungsart.getID(),
-            new WirtschaftsplanNode(this, buchungsart, art, wirtschaftsplan));
+        nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
+            buchungsart, art, wirtschaftsplan, true));
       }
       nodes.get(key).setIst(ist);
       istSumme += ist;
@@ -264,8 +283,8 @@ public class WirtschaftsplanNode
   }
 
   public WirtschaftsplanNode(WirtschaftsplanNode parent,
-      Buchungsart buchungsart, int art, Wirtschaftsplan wirtschaftsplan)
-      throws RemoteException
+      Buchungsart buchungsart, int art, Wirtschaftsplan wirtschaftsplan,
+      boolean neu) throws RemoteException
   {
     type = Type.BUCHUNGSART;
     this.parent = parent;
@@ -274,7 +293,7 @@ public class WirtschaftsplanNode
 
     DBService service = Einstellungen.getDBService();
 
-    if (wirtschaftsplan.isNewObject())
+    if (wirtschaftsplan.isNewObject() || neu)
     {
       WirtschaftsplanItem item = service.createObject(WirtschaftsplanItem.class,
           null);
@@ -297,7 +316,7 @@ public class WirtschaftsplanNode
         buchungsart.getID());
     iterator.addFilter("wirtschaftsplanitem.buchungsklasse = ?",
         parent.getBuchungsklasse().getID());
-    iterator.addFilter("buchungsart.art = ?", art);
+    iterator.addFilter("wirtschaftsplanitem.art = ?", art);
     iterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
         wirtschaftsplan.getID());
     double sollSumme = 0d;

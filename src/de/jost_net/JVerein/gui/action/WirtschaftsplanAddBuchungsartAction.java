@@ -71,7 +71,10 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
       List<Buchungsart> buchungsarten = new ArrayList<>();
 
       iterator = Einstellungen.getDBService().createList(Buchungsart.class);
-      iterator.addFilter("art = ?", art);
+      if (art != WirtschaftsplanImpl.RUECKLAGE)
+      {
+        iterator.addFilter("art = ?", art);
+      }
       if (!(boolean) Einstellungen
           .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
       {
@@ -107,15 +110,19 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
       }
 
       node.addChild(new WirtschaftsplanNode(node, buchungsart, art,
-          control.getWirtschaftsplan()));
+          control.getWirtschaftsplan(), true));
 
       if (art == WirtschaftsplanImpl.EINNAHME)
       {
         control.getEinnahmen();
       }
-      else
+      else if (art == WirtschaftsplanImpl.AUSGABE)
       {
         control.getAusgaben();
+      }
+      else
+      {
+        control.getRuecklagen();
       }
     }
     catch (OperationCanceledException ignored)
