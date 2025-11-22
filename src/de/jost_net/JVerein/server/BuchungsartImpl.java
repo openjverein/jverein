@@ -363,6 +363,18 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Boolean getRuecklage() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("ruecklage"));
+  }
+
+  @Override
+  public void setRuecklage(Boolean ruecklage) throws RemoteException
+  {
+    setAttribute("ruecklage", ruecklage);
+  }
+
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if (fieldName.equals("nrbezeichnung"))
@@ -440,6 +452,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
       case "regularexp":
       case "spende":
       case "abschreibung":
+      case "ruecklage":
         return false;
       default:
         return null;

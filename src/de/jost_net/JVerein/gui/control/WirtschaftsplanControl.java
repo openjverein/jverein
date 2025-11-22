@@ -76,6 +76,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   private EditTreePart ausgaben;
 
+  private EditTreePart ruecklagen;
+
   private WirtschaftsplanUebersichtPart uebersicht;
 
   private Wirtschaftsplan wirtschaftsplan;
@@ -180,6 +182,21 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       ausgaben.setList(items);
     }
     return ausgaben;
+  }
+
+  public EditTreePart getRuecklagen() throws RemoteException
+  {
+    if (ruecklagen == null)
+    {
+      ruecklagen = generateTree(WirtschaftsplanImpl.RUECKLAGE);
+    }
+    else
+    {
+      @SuppressWarnings("rawtypes")
+      List items = ruecklagen.getItems();
+      ruecklagen.setList(items);
+    }
+    return ruecklagen;
   }
 
   @SuppressWarnings("unchecked")
@@ -427,6 +444,11 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     uebersicht.updateSoll();
     autoExpand(einnahmen);
     autoExpand(ausgaben);
+    if (ruecklagen != null)
+    {
+      getRuecklagen();
+      autoExpand(ruecklagen);
+    }
   }
 
   @Override
@@ -484,6 +506,16 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       for (WirtschaftsplanNode rootNode : rootNodesAusgaben)
       {
         storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+      }
+      if (ruecklagen != null)
+      {
+        @SuppressWarnings("unchecked")
+        List<WirtschaftsplanNode> rootNodesRuecklagen = (List<WirtschaftsplanNode>) ruecklagen
+            .getItems();
+        for (WirtschaftsplanNode rootNode : rootNodesRuecklagen)
+        {
+          storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        }
       }
 
       DBTransaction.commit();

@@ -80,9 +80,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         new JVDateFormatTTMMJJJJ());
     bisContainer.addLabelPair("Bis", bis);
 
-    ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(),
-        verbindlichkeiten ? 4 : 2); // Falls keine Verbindlichkeiten, entfallen
-                                    // die Spalten
+    ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 5);
 
     SimpleContainer einnahmen = new SimpleContainer(finanzData.getComposite());
     sollEinnahme = new DecimalInput(
@@ -95,15 +93,6 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istEinnahme.disable();
     einnahmen.addLabelPair("Einnahmen Ist", istEinnahme);
-    if (ruecklagen)
-    {
-      DecimalInput istRuecklagenGebildet = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
-              .getAttribute("istRücklagenGebildet"),
-          Einstellungen.DECIMALFORMAT);
-      istRuecklagenGebildet.disable();
-      einnahmen.addLabelPair("Rücklagen gebildet Ist", istRuecklagenGebildet);
-    }
 
     if (verbindlichkeiten)
     {
@@ -132,15 +121,6 @@ public class WirtschaftsplanUebersichtPart implements Part
         Einstellungen.DECIMALFORMAT);
     istAusgaben.disable();
     ausgaben.addLabelPair("Ausgaben Ist", istAusgaben);
-    if (ruecklagen)
-    {
-      DecimalInput istRuecklagenAufgeloest = new DecimalInput(
-          (Double) control.getWirtschaftsplan()
-              .getAttribute("istRücklagenAufgelöst"),
-          Einstellungen.DECIMALFORMAT);
-      istRuecklagenAufgeloest.disable();
-      ausgaben.addLabelPair("Rücklagen aufgelöst Ist", istRuecklagenAufgeloest);
-    }
 
     if (verbindlichkeiten)
     {
@@ -159,6 +139,27 @@ public class WirtschaftsplanUebersichtPart implements Part
       istNegativ.disable();
       verbindlichkeitenContainer
           .addLabelPair("Ausgaben inkl. Verbindlichkeiten Ist", istNegativ);
+    }
+
+    if (ruecklagen)
+    {
+      SimpleContainer ruecklagenContainer = new SimpleContainer(
+          finanzData.getComposite());
+      DecimalInput istRuecklagenGebildet = new DecimalInput(
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("istRücklagenGebildet"),
+          Einstellungen.DECIMALFORMAT);
+      istRuecklagenGebildet.disable();
+      ruecklagenContainer.addLabelPair("Rücklagen gebildet Ist",
+          istRuecklagenGebildet);
+
+      DecimalInput istRuecklagenAufgeloest = new DecimalInput(
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("istRücklagenAufgelöst"),
+          Einstellungen.DECIMALFORMAT);
+      istRuecklagenAufgeloest.disable();
+      ruecklagenContainer.addLabelPair("Rücklagen aufgelöst Ist",
+          istRuecklagenAufgeloest);
     }
   }
 

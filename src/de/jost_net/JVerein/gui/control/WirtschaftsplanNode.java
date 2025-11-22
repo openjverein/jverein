@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
@@ -85,7 +86,18 @@ public class WirtschaftsplanNode
     buchungsartIterator.addFilter("status != 1"); // Ignoriert inaktive
                                                   // Buchungsarten
     buchungsartIterator.addFilter("buchungsklasse = ?", buchungsklasse.getID());
-    buchungsartIterator.addFilter("art = ?", art);
+
+    switch (art)
+    {
+      case WirtschaftsplanImpl.EINNAHME:
+      case WirtschaftsplanImpl.AUSGABE:
+        buchungsartIterator.addFilter("art = ?", art);
+        buchungsartIterator.addFilter("ruecklage = FALSE");
+        break;
+      case WirtschaftsplanImpl.RUECKLAGE:
+        buchungsartIterator.addFilter("ruecklage = TRUE");
+        break;
+    }
 
     while (buchungsartIterator.hasNext())
     {
@@ -100,7 +112,17 @@ public class WirtschaftsplanNode
     extendedDBIterator.addColumn("sum(wirtschaftsplanitem.soll) as " + SUMME);
     extendedDBIterator
         .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
-    extendedDBIterator.addFilter("buchungsart.art = ?", art);
+    switch (art)
+    {
+      case WirtschaftsplanImpl.EINNAHME:
+      case WirtschaftsplanImpl.AUSGABE:
+        extendedDBIterator.addFilter("buchungsart.art = ?", art);
+        extendedDBIterator.addFilter("buchungsart.ruecklage = FALSE");
+        break;
+      case WirtschaftsplanImpl.RUECKLAGE:
+        extendedDBIterator.addFilter("buchungsart.ruecklage = TRUE");
+        break;
+    }
     extendedDBIterator.addFilter("wirtschaftsplanitem.buchungsklasse = ?",
         buchungsklasse.getID());
     extendedDBIterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
@@ -138,22 +160,41 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+    if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
-      istIt.leftJoin("konto",
-          "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
-          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
+      {
+        istIt.join("konto",
+            "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
+            Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
+      }
+      else
+      {
+        istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+            Kontoart.LIMIT.getKey());
+      }
     }
     else
     {
-      istIt.leftJoin("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
-          Kontoart.LIMIT.getKey());
+      istIt.join("konto",
+          "buchung.konto = konto.id AND (konto.kontoart > ?  AND konto.kontoart < ?)",
+          Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
 
     istIt.addColumn("buchungsart.id as " + ID);
     istIt.addColumn("COUNT(buchung.id) as anzahl");
-    istIt.addFilter("buchungsart.art = ?", art);
+    switch (art)
+    {
+      case WirtschaftsplanImpl.EINNAHME:
+      case WirtschaftsplanImpl.AUSGABE:
+        istIt.addFilter("buchungsart.art = ?", art);
+        istIt.addFilter("buchungsart.ruecklage = FALSE");
+        break;
+      case WirtschaftsplanImpl.RUECKLAGE:
+        istIt.addFilter("buchungsart.ruecklage = TRUE");
+        break;
+    }
 
     if (mitSteuer)
     {
@@ -297,7 +338,18 @@ public class WirtschaftsplanNode
         buchungsart.getID());
     iterator.addFilter("wirtschaftsplanitem.buchungsklasse = ?",
         parent.getBuchungsklasse().getID());
-    iterator.addFilter("buchungsart.art = ?", art);
+    switch (art)
+    {
+      case WirtschaftsplanImpl.EINNAHME:
+      case WirtschaftsplanImpl.AUSGABE:
+        iterator.addFilter("buchungsart.art = ?", art);
+        iterator.addFilter("buchungsart.ruecklage = FALSE");
+        break;
+      case WirtschaftsplanImpl.RUECKLAGE:
+        iterator.addFilter("buchungsart.ruecklage = TRUE");
+        break;
+    }
+
     iterator.addFilter("wirtschaftsplanitem.wirtschaftsplan = ?",
         wirtschaftsplan.getID());
     double sollSumme = 0d;

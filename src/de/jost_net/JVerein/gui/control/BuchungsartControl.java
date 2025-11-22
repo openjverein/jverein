@@ -94,6 +94,8 @@ public class BuchungsartControl extends FilterControl implements Savable
 
   private CheckboxInput regexp;
 
+  private CheckboxInput ruecklage;
+
   public BuchungsartControl(AbstractView view)
   {
     super(view);
@@ -205,6 +207,16 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     abschreibung = new CheckboxInput(getBuchungsart().getAbschreibung());
     return abschreibung;
+  }
+
+  public CheckboxInput getRuecklage() throws RemoteException
+  {
+    if (ruecklage != null)
+    {
+      return ruecklage;
+    }
+    ruecklage = new CheckboxInput(getBuchungsart().getRuecklage());
+    return ruecklage;
   }
 
   public SelectInput getSteuer() throws RemoteException
@@ -330,6 +342,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     if (steuer != null)
     {
       b.setSteuer((Steuer) steuer.getValue());
+    }
+    if (ruecklage != null)
+    {
+      b.setRuecklage((Boolean) ruecklage.getValue());
     }
     return b;
   }
