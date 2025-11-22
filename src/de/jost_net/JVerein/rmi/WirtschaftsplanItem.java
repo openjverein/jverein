@@ -15,9 +15,7 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 
-import de.willuhn.datasource.rmi.DBObject;
-
-public interface WirtschaftsplanItem extends DBObject
+public interface WirtschaftsplanItem extends JVereinDBObject
 {
   void setId(String id) throws RemoteException;
 
@@ -40,4 +38,8 @@ public interface WirtschaftsplanItem extends DBObject
   double getSoll() throws RemoteException;
 
   void setSoll(double soll) throws RemoteException;
+
+  int getArt() throws RemoteException;
+
+  void setArt(int art) throws RemoteException;
 }

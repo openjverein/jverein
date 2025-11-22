@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanExportAction;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -55,7 +56,7 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
     uebersicht.paint(this.getParent());
     control.setUebersicht(uebersicht);
 
-    SimpleContainer group = new SimpleContainer(this.getParent(), true, 2);
+    SimpleContainer group = new SimpleContainer(this.getParent(), true, 3);
 
     LabelGroup einnahmen = new LabelGroup(group.getComposite(), "Einnahmen",
         true);
@@ -69,6 +70,17 @@ public class WirtschaftsplanDetailView extends AbstractDetailView
     treeAusgaben.setContextMenu(
         new WirtschaftsplanMenu(WirtschaftsplanImpl.AUSGABE, control));
     ausgaben.addPart(treeAusgaben);
+
+    if ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN))
+    {
+      LabelGroup ruecklagen = new LabelGroup(group.getComposite(), "Rücklagen",
+          true);
+      EditTreePart treeRuecklagen = control.getRuecklagen();
+      treeRuecklagen.setContextMenu(
+          new WirtschaftsplanMenu(WirtschaftsplanImpl.RUECKLAGE, control));
+      ruecklagen.addPart(treeRuecklagen);
+    }
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
 
