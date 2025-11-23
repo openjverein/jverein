@@ -518,7 +518,7 @@ public class VorlageUtil
       str = str.replaceAll("\\'\\#\\'", "-");
       if (dateiname)
       {
-        str = str.replaceAll("[^a-zA-Z0-9_-. ]", "_");
+        str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
       }
       return str;
     }
