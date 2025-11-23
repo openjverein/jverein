@@ -81,6 +81,11 @@ public class WirtschaftsplanNode
     Map<String, WirtschaftsplanNode> nodes = new HashMap<>();
     DBService service = Einstellungen.getDBService();
 
+    // Bei einem neuen Wirtschaftsplan die Buchungsarten bei Einnahmen und
+    // Ausgaben aufbauen. Bei Rücklagen geht das nicht, weil nicht bekannt ist,
+    // welche Buchungsarten für Rücklagen verwendet werden.
+    // Da Buchungsarten im Baum gelöscht werden können wird das hier nur bei
+    // einem neuen Wirtschaftsplan gemacht.
     if (art != WirtschaftsplanImpl.RUECKLAGE && wirtschaftsplan.isNewObject())
     {
       DBIterator<Buchungsart> buchungsartIterator = service
@@ -94,11 +99,19 @@ public class WirtschaftsplanNode
       while (buchungsartIterator.hasNext())
       {
         Buchungsart buchungsart = buchungsartIterator.next();
+        // Der Node ist neu und hat noch keine Items, also einen Default Eintrag
+        // erzeugen lassen
         nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
             buchungsart, art, wirtschaftsplan, true));
       }
     }
 
+    // Jetzt werden die Items gelesen und die Soll Werte eingetragen.
+    // Bei bereits gespeicherten Wirtschaftsplänen werden hier die Buchungsarten
+    // erzeugt. Damit entstehen nur solche bei denen auch Items existieren.
+    // Gelöschte Buchungsarten werden nicht mehr angezeigt.
+    // Die art im Item definiert ob es zu den Einnahmen, Ausgaben oder Rücklagen
+    // gehört.
     ExtendedDBIterator<PseudoDBObject> extendedDBIterator = new ExtendedDBIterator<>(
         "wirtschaftsplanitem, buchungsart");
     extendedDBIterator.addColumn("wirtschaftsplanitem.buchungsart as " + ID);
@@ -130,6 +143,7 @@ public class WirtschaftsplanNode
       if (!nodes.containsKey(id))
       {
         Buchungsart buchungsart = service.createObject(Buchungsart.class, id);
+        // Der Node hat Items, also keinen Default Eintrag erzeugen lassen
         nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
             buchungsart, art, wirtschaftsplan, false));
       }
@@ -138,6 +152,11 @@ public class WirtschaftsplanNode
     }
     setSoll(sollSumme);
 
+    // Jetzt werden die Buchungen gelesen und die Ist Werte berechnet.
+    // Werden Buchungen für Buchungsarten gefunden die noch nicht im Baum sind,
+    // dann werden diese jetzt erzeugt. Das ist z.B. der Fall bei
+    // Rücklagenbuchungen. Hier ist erst jetzt bekannt, dass es eine Buchungsart
+    // für Rücklagen gibt.
     ExtendedDBIterator<PseudoDBObject> istIt = new ExtendedDBIterator<>(
         "buchungsart");
     istIt.leftJoin("buchung",
@@ -149,18 +168,22 @@ public class WirtschaftsplanNode
       if ((Boolean) Einstellungen
           .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN))
       {
+        // Buchungen bei Standard Konten und Verbindlichkeiten und Forderungen
+        // suchen
         istIt.join("konto",
             "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
             Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
       }
       else
       {
+        // Nur Buchungen bei Standard Konten
         istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
             Kontoart.LIMIT.getKey());
       }
     }
     else
     {
+      // Nur Buchungen bei Rücklagen Konten
       istIt.join("konto",
           "buchung.konto = konto.id AND (konto.kontoart > ?  AND konto.kontoart < ?)",
           Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
@@ -271,6 +294,8 @@ public class WirtschaftsplanNode
       if (!nodes.containsKey(key))
       {
         Buchungsart buchungsart = service.createObject(Buchungsart.class, key);
+        // Der Node ist neu und hat noch keine Items, also einen Default Eintrag
+        // erzeugen lassen
         nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
             buchungsart, art, wirtschaftsplan, true));
       }
@@ -284,7 +309,7 @@ public class WirtschaftsplanNode
 
   public WirtschaftsplanNode(WirtschaftsplanNode parent,
       Buchungsart buchungsart, int art, Wirtschaftsplan wirtschaftsplan,
-      boolean neu) throws RemoteException
+      boolean erzeugeDefault) throws RemoteException
   {
     type = Type.BUCHUNGSART;
     this.parent = parent;
@@ -293,7 +318,9 @@ public class WirtschaftsplanNode
 
     DBService service = Einstellungen.getDBService();
 
-    if (wirtschaftsplan.isNewObject() || neu)
+    // Die Buchungsart hat noch keine Items, dann wird eine default Eintrag
+    // erzeugt.
+    if (erzeugeDefault)
     {
       WirtschaftsplanItem item = service.createObject(WirtschaftsplanItem.class,
           null);
