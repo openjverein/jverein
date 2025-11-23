@@ -1030,7 +1030,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     for (Buchungsart ba : suchliste)
       liste.add(ba);
 
-    String bwert = settings.getString(settingsprefix + BUCHUNGSART, "");
+    String bwert = settings.getString(settingsprefix + BUCHUNGSART, "-99");
     Buchungsart b = null;
     int size = liste.size();
     for (int i = 0; i < size; i++)
@@ -1429,7 +1429,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       b = (Buchungsart) getSuchBuchungsart().getValue();
     }
-    if (b != null && b.getNummer().length() > 0)
+    if (b != null)
     {
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
           b.getNummer());
@@ -1437,7 +1437,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     else
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, "");
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
+          "-99");
     }
     Projekt p = null;
     if (isSuchProjektAktiv())
