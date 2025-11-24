@@ -512,7 +512,7 @@ public class VorlageUtil
       Velocity.evaluate(context, wdateiname, "LOG", in);
       String str = wdateiname.toString();
       str = str.replaceAll("\\'\\#\\'", "-");
-      str = str.replaceAll("[^a-zA-Z0-9_-. ]", "_");
+      str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
       return str;
     }
     catch (Exception e)
