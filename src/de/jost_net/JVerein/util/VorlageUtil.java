@@ -59,6 +59,7 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -283,7 +284,8 @@ public class VorlageUtil
       Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
       return "";
     }
-    return translate(map, muster);
+    return translate(map, muster,
+        typ.getArtkey() == Vorlageart.DATEINAME.getKey());
   }
 
   // Dummy Namen Generierung aus Vorlagen Muster
@@ -305,7 +307,8 @@ public class VorlageUtil
   // Dummy Namen Generierung aus Vorlagen Muster
   public static String getDummyName(VorlageTyp typ, String muster)
   {
-    return translate(getDummyMap(typ), muster);
+    return translate(getDummyMap(typ), muster,
+        typ.getArtkey() == Vorlageart.DATEINAME.getKey());
   }
 
   public static Map<String, Object> getDummyMap(VorlageTyp typ)
@@ -497,7 +500,8 @@ public class VorlageUtil
     return map;
   }
 
-  public static String translate(Map<String, Object> map, String inString)
+  public static String translate(Map<String, Object> map, String inString,
+      boolean dateiname)
   {
     try
     {
@@ -512,7 +516,10 @@ public class VorlageUtil
       Velocity.evaluate(context, wdateiname, "LOG", in);
       String str = wdateiname.toString();
       str = str.replaceAll("\\'\\#\\'", "-");
-      str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
+      if (dateiname)
+      {
+        str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
+      }
       return str;
     }
     catch (Exception e)
