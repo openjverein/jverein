@@ -446,7 +446,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     autoExpand(ausgaben);
     if (ruecklagen != null)
     {
-      getRuecklagen();
       autoExpand(ruecklagen);
     }
   }

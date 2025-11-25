@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
@@ -25,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -47,6 +49,10 @@ public class WirtschaftsplanUebersichtPart implements Part
   private DecimalInput sollEinnahme;
 
   private DecimalInput sollAusgaben;
+
+  private DecimalInput sollRuecklagenGebildet;
+
+  private DecimalInput sollRuecklagenAufgeloest;
 
   public WirtschaftsplanUebersichtPart(WirtschaftsplanControl control)
   {
@@ -80,7 +86,7 @@ public class WirtschaftsplanUebersichtPart implements Part
         new JVDateFormatTTMMJJJJ());
     bisContainer.addLabelPair("Bis", bis);
 
-    ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 5);
+    ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 6);
 
     SimpleContainer einnahmen = new SimpleContainer(finanzData.getComposite());
     sollEinnahme = new DecimalInput(
@@ -107,7 +113,7 @@ public class WirtschaftsplanUebersichtPart implements Part
           (Double) control.getWirtschaftsplan().getAttribute("istPlus"),
           Einstellungen.DECIMALFORMAT);
       istPositiv.disable();
-      forderungen.addLabelPair("Einnahmen inkl. Forderungen Ist", istPositiv);
+      forderungen.addLabelPair("Einnahmen inkl. Ford. Ist", istPositiv);
     }
 
     SimpleContainer ausgaben = new SimpleContainer(finanzData.getComposite());
@@ -137,28 +143,44 @@ public class WirtschaftsplanUebersichtPart implements Part
           (Double) control.getWirtschaftsplan().getAttribute("istMinus"),
           Einstellungen.DECIMALFORMAT);
       istNegativ.disable();
-      verbindlichkeitenContainer
-          .addLabelPair("Ausgaben inkl. Verbindlichkeiten Ist", istNegativ);
+      verbindlichkeitenContainer.addLabelPair("Ausgaben inkl. Verb. Ist",
+          istNegativ);
     }
 
     if (ruecklagen)
     {
-      SimpleContainer ruecklagenContainer = new SimpleContainer(
+      SimpleContainer ruecklagenGebildetContainer = new SimpleContainer(
           finanzData.getComposite());
+      sollRuecklagenGebildet = new DecimalInput(
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("planRuecklagenGebildet"),
+          Einstellungen.DECIMALFORMAT);
+      sollRuecklagenGebildet.disable();
+      ruecklagenGebildetContainer.addLabelPair("Rücklagen gebildet Soll",
+          sollRuecklagenGebildet);
       DecimalInput istRuecklagenGebildet = new DecimalInput(
           (Double) control.getWirtschaftsplan()
               .getAttribute("istRücklagenGebildet"),
           Einstellungen.DECIMALFORMAT);
       istRuecklagenGebildet.disable();
-      ruecklagenContainer.addLabelPair("Rücklagen gebildet Ist",
+      ruecklagenGebildetContainer.addLabelPair("Rücklagen gebildet Ist",
           istRuecklagenGebildet);
 
+      SimpleContainer ruecklagenAufgeloestContainer = new SimpleContainer(
+          finanzData.getComposite());
+      sollRuecklagenAufgeloest = new DecimalInput(
+          (Double) control.getWirtschaftsplan()
+              .getAttribute("planRuecklagenAufgeloest"),
+          Einstellungen.DECIMALFORMAT);
+      sollRuecklagenAufgeloest.disable();
+      ruecklagenAufgeloestContainer.addLabelPair("Rücklagen aufgelöst Soll",
+          sollRuecklagenAufgeloest);
       DecimalInput istRuecklagenAufgeloest = new DecimalInput(
           (Double) control.getWirtschaftsplan()
               .getAttribute("istRücklagenAufgelöst"),
           Einstellungen.DECIMALFORMAT);
       istRuecklagenAufgeloest.disable();
-      ruecklagenContainer.addLabelPair("Rücklagen aufgelöst Ist",
+      ruecklagenAufgeloestContainer.addLabelPair("Rücklagen aufgelöst Ist",
           istRuecklagenAufgeloest);
     }
   }
@@ -201,6 +223,40 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     this.sollEinnahme.setValue(sollEinnahmen);
     this.sollAusgaben.setValue(sollAusgaben);
+
+    if (sollRuecklagenGebildet != null && sollRuecklagenAufgeloest != null)
+    {
+      List<WirtschaftsplanNode> ruecklagenArten;
+      List<WirtschaftsplanNode> ruecklagenItems = new ArrayList<>();
+
+      try
+      {
+        ruecklagenArten = (List<WirtschaftsplanNode>) control.getRuecklagen()
+            .getItems();
+        for (WirtschaftsplanNode node : ruecklagenArten)
+        {
+          GenericIterator<WirtschaftsplanNode> it = node.getChildren();
+          while (it.hasNext())
+          {
+            ruecklagenItems.add(it.next());
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(
+            "Fehler beim Aktualisieren der Übersicht!");
+      }
+
+      double sollRuecklagenGebildet = ruecklagenItems.stream()
+          .mapToDouble(WirtschaftsplanNode::getSollEinnahmen).sum();
+
+      double sollRuecklagenAufgeloest = ruecklagenItems.stream()
+          .mapToDouble(WirtschaftsplanNode::getSollAusgaben).sum();
+
+      this.sollRuecklagenGebildet.setValue(sollRuecklagenGebildet);
+      this.sollRuecklagenAufgeloest.setValue(sollRuecklagenAufgeloest);
+    }
   }
 
   public TextInput getBezeichnung()

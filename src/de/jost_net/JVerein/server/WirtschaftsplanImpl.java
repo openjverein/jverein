@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
@@ -46,6 +47,10 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   private Double planEinnahme;
 
   private Double planAusgabe;
+
+  private Double planRuecklageGebildet;
+
+  private Double planRuecklageAufgeloest;
 
   private Double istEinnahme;
 
@@ -139,10 +144,32 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     return planAusgabe == null ? 0d : planAusgabe;
   }
 
+  @Override
+  public double getPlanRuecklagenGebildet() throws RemoteException
+  {
+    if (planRuecklageGebildet == null)
+    {
+      loadSoll();
+    }
+    return planRuecklageGebildet == null ? 0d : planRuecklageGebildet;
+  }
+
+  @Override
+  public double getPlanRuecklagenAufgeloest() throws RemoteException
+  {
+    if (planRuecklageAufgeloest == null)
+    {
+      loadSoll();
+    }
+    return planRuecklageAufgeloest == null ? 0d : planRuecklageAufgeloest;
+  }
+
   private void loadSoll() throws RemoteException
   {
     planAusgabe = 0d;
     planEinnahme = 0d;
+    planRuecklageGebildet = 0d;
+    planRuecklageAufgeloest = 0d;
 
     ExtendedDBIterator<PseudoDBObject> sollIterator = new ExtendedDBIterator<>(
         "wirtschaftsplan, wirtschaftsplanitem, buchungsart");
@@ -152,6 +179,7 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     sollIterator
         .addFilter("wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan");
     sollIterator.addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+    sollIterator.addFilter("wirtschaftsplanitem.art != " + RUECKLAGE);
     sollIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
     sollIterator.addGroupBy("wirtschaftsplan.id");
     sollIterator.addGroupBy("buchungsart.art");
@@ -168,6 +196,39 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
           planEinnahme = o.getDouble(BETRAG_ALIAS);
           break;
         default:
+      }
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN))
+    {
+      sollIterator = new ExtendedDBIterator<>(
+          "wirtschaftsplan, wirtschaftsplanitem, buchungsart");
+      sollIterator.addColumn("wirtschaftsplan.id as " + ID_ALIAS);
+      sollIterator
+          .addColumn("SUM(wirtschaftsplanitem.soll) as " + BETRAG_ALIAS);
+      sollIterator.addColumn("buchungsart.art " + BUCHUNGSART_ART);
+      sollIterator.addFilter(
+          "wirtschaftsplan.id = wirtschaftsplanitem.wirtschaftsplan");
+      sollIterator
+          .addFilter("wirtschaftsplanitem.buchungsart = buchungsart.id");
+      sollIterator.addFilter("wirtschaftsplanitem.art = " + RUECKLAGE);
+      sollIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
+      sollIterator.addGroupBy("wirtschaftsplan.id");
+      sollIterator.addGroupBy("buchungsart.art");
+
+      while (sollIterator.hasNext())
+      {
+        PseudoDBObject o = sollIterator.next();
+        switch ((Integer) o.getAttribute(BUCHUNGSART_ART))
+        {
+          case ArtBuchungsart.AUSGABE:
+            planRuecklageAufgeloest = o.getDouble(BETRAG_ALIAS);
+            break;
+          case ArtBuchungsart.EINNAHME:
+            planRuecklageGebildet = o.getDouble(BETRAG_ALIAS);
+            break;
+          default:
+        }
       }
     }
   }
@@ -314,6 +375,10 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
         return getPlanEinnahme();
       case "planAusgabe":
         return getPlanAusgabe();
+      case "planRuecklagenGebildet":
+        return getPlanRuecklagenGebildet();
+      case "planRuecklagenAufgeloest":
+        return getPlanRuecklagenAufgeloest();
       case "istEinnahme":
         return getIstEinnahme();
       case "istAusgabe":

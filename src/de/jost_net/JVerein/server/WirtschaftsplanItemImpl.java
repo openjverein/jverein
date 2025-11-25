@@ -159,7 +159,7 @@ public class WirtschaftsplanItemImpl extends AbstractJVereinDBObject
       case "soll":
         return 0d;
       case "art":
-        return 1;
+        return WirtschaftsplanImpl.EINNAHME;
       default:
         return null;
     }

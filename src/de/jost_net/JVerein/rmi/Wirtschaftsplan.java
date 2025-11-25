@@ -47,4 +47,8 @@ public interface Wirtschaftsplan extends JVereinDBObject
   double getPlanAusgabe() throws RemoteException;
 
   double getPlanEinnahme() throws RemoteException;
+
+  double getPlanRuecklagenGebildet() throws RemoteException;
+
+  double getPlanRuecklagenAufgeloest() throws RemoteException;
 }

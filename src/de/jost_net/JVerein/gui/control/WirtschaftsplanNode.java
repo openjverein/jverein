@@ -170,21 +170,22 @@ public class WirtschaftsplanNode
       {
         // Buchungen bei Standard Konten und Verbindlichkeiten und Forderungen
         // suchen
-        istIt.join("konto",
+        istIt.leftJoin("konto",
             "buchung.konto = konto.id AND (konto.kontoart < ?  OR konto.kontoart > ?)",
             Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
       }
       else
       {
         // Nur Buchungen bei Standard Konten
-        istIt.join("konto", "buchung.konto = konto.id AND konto.kontoart < ?",
+        istIt.leftJoin("konto",
+            "buchung.konto = konto.id AND konto.kontoart < ?",
             Kontoart.LIMIT.getKey());
       }
     }
     else
     {
       // Nur Buchungen bei Rücklagen Konten
-      istIt.join("konto",
+      istIt.leftJoin("konto",
           "buchung.konto = konto.id AND (konto.kontoart > ?  AND konto.kontoart < ?)",
           Kontoart.LIMIT.getKey(), Kontoart.LIMIT_RUECKLAGE.getKey());
     }
@@ -195,6 +196,11 @@ public class WirtschaftsplanNode
     {
       istIt.addFilter("buchungsart.art = ?", art);
     }
+    // Wenn Kontoarten ausgefiltert werden, ist konto.id=null, diese müssen wir
+    // raussortieren. Allerdings nur, wenn buchung.konto nicht null ist, sonst
+    // handelt es sich nämlich um berechnete Steuerbuchungen
+    istIt.addFilter("(buchung.konto is NULL and konto.id is NULL) "
+        + "or (buchung.konto is not NULL and konto.id is not NULL)");
 
     // Rücklagen haben keine Steuer
     if (mitSteuer && art != WirtschaftsplanImpl.RUECKLAGE)
@@ -544,6 +550,30 @@ public class WirtschaftsplanNode
   public double getSoll()
   {
     return soll;
+  }
+
+  public double getSollEinnahmen()
+  {
+    if (soll > 0.005)
+    {
+      return soll;
+    }
+    else
+    {
+      return 0;
+    }
+  }
+
+  public double getSollAusgaben()
+  {
+    if (soll < -0.005)
+    {
+      return soll;
+    }
+    else
+    {
+      return 0;
+    }
   }
 
   public void setSoll(double soll)
