@@ -41,6 +41,7 @@ import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.GUI;
 
 public class WirtschaftsplanNode
     implements GenericObjectNode, Comparable<WirtschaftsplanNode>
@@ -304,6 +305,8 @@ public class WirtschaftsplanNode
         // erzeugen lassen
         nodes.put(buchungsart.getID(), new WirtschaftsplanNode(this,
             buchungsart, art, wirtschaftsplan, true));
+        GUI.getStatusBar().setSuccessText(
+            "Neue Buchungsart erzeugt: " + buchungsart.getBezeichnung());
       }
       nodes.get(key).setIst(ist);
       istSumme += ist;

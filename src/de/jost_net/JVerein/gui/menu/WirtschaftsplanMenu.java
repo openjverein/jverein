@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddBuchungsartAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanAddPostenAction;
 import de.jost_net.JVerein.gui.action.WirtschaftsplanDeleteBuchungsartAction;
@@ -36,7 +38,7 @@ public class WirtschaftsplanMenu extends ContextMenu
     addItem(new BuchungsartItem("Posten hinzufügen",
         new WirtschaftsplanAddPostenAction(control), "list-add.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new BuchungsartItem("Buchungsart löschen",
+    addItem(new BuchungsartOhneBuchungItem("Buchungsart löschen",
         new WirtschaftsplanDeleteBuchungsartAction(control),
         "user-trash-full.png"));
     addItem(new CheckedContextMenuItem("Posten löschen",
@@ -76,6 +78,39 @@ public class WirtschaftsplanMenu extends ContextMenu
       {
         WirtschaftsplanNode node = (WirtschaftsplanNode) o;
         return node.getType().equals(WirtschaftsplanNode.Type.BUCHUNGSART);
+      }
+      return false;
+    }
+  }
+
+  private static class BuchungsartOhneBuchungItem extends CheckedContextMenuItem
+  {
+    private BuchungsartOhneBuchungItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof WirtschaftsplanNode)
+      {
+        WirtschaftsplanNode node = (WirtschaftsplanNode) o;
+        if (!node.getType().equals(WirtschaftsplanNode.Type.BUCHUNGSART))
+        {
+          return false;
+        }
+        else
+        {
+          try
+          {
+            return Math.abs((double) node.getAttribute("ist")) < 0.005;
+          }
+          catch (RemoteException e)
+          {
+            return false;
+          }
+        }
       }
       return false;
     }
