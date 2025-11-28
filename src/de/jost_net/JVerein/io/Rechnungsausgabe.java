@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -59,10 +60,17 @@ public class Rechnungsausgabe
   RechnungControl.TYP typ;
 
   public Rechnungsausgabe(Rechnung[] rechnungen, RechnungControl control,
-      RechnungControl.TYP typ) throws IOException, ApplicationException
+      RechnungControl.TYP typ, String pdfMode)
+      throws IOException, ApplicationException
   {
     this.control = control;
     this.typ = typ;
+
+    boolean einzelnePdfs = false;
+    if (pdfMode.equals(DruckMailControl.EINZELN))
+    {
+      einzelnePdfs = true;
+    }
 
     Formular formular = null;
     // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
@@ -87,7 +95,10 @@ public class Rechnungsausgabe
         {
           return;
         }
-        formularaufbereitung = new FormularAufbereitung(file, true, false);
+        if (!einzelnePdfs)
+        {
+          formularaufbereitung = new FormularAufbereitung(file, true, false);
+        }
         break;
       case MAIL:
         file = getDateiAuswahl("zip", rechnungen);
@@ -98,18 +109,33 @@ public class Rechnungsausgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    aufbereitung(formular, rechnungen);
+    aufbereitung(formular, rechnungen, einzelnePdfs);
   }
 
-  public void aufbereitung(Formular formular, Rechnung[] rechnungen)
-      throws IOException, ApplicationException
+  public void aufbereitung(Formular formular, Rechnung[] rechnungen,
+      boolean einzelnePdfs) throws IOException, ApplicationException
   {
     for (Rechnung re : rechnungen)
     {
       switch ((Ausgabeart) control.getAusgabeart().getValue())
       {
         case DRUCK:
+          if (einzelnePdfs)
+          {
+            VorlageTyp vtyp = VorlageTyp.RECHNUNG_MITGLIED_DATEINAME;
+            if (typ == TYP.MAHNUNG)
+            {
+              vtyp = VorlageTyp.MAHNUNG_MITGLIED_DATEINAME;
+            }
+            final File fx = new File(file.getParent() + File.separator
+                + VorlageUtil.getName(vtyp, re, re.getMitglied()) + ".pdf");
+            formularaufbereitung = new FormularAufbereitung(fx, true, false);
+          }
           aufbereitenFormular(re, formularaufbereitung, formular);
+          if (einzelnePdfs)
+          {
+            formularaufbereitung.closeFormular();
+          }
           break;
         case MAIL:
           File f = File.createTempFile(getDateiname(re), ".pdf");
@@ -133,7 +159,17 @@ public class Rechnungsausgabe
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        formularaufbereitung.showFormular();
+        if (!einzelnePdfs || rechnungen.length == 1)
+        {
+          formularaufbereitung.showFormular();
+        }
+        else
+        {
+          formularaufbereitung.closeFormular();
+          GUI.getStatusBar()
+              .setSuccessText("Die Dokumente wurden erstellt und unter: "
+                  + file.getParent() + " gespeichert.");
+        }
         if (rechnungen.length == 1)
         {
           formularaufbereitung.addZUGFeRD(rechnungen[0], typ == TYP.MAHNUNG);

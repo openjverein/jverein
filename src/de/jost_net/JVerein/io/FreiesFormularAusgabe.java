@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -37,9 +38,16 @@ public class FreiesFormularAusgabe
   ZipOutputStream zos = null;
 
   public FreiesFormularAusgabe(ArrayList<Mitglied> mitglieder,
-      FreieFormulareControl control) throws IOException, ApplicationException
+      FreieFormulareControl control, String pdfMode)
+      throws IOException, ApplicationException
   {
     this.control = control;
+    boolean einzelnePdfs = false;
+    if (pdfMode.equals(DruckMailControl.EINZELN))
+    {
+      einzelnePdfs = true;
+    }
+
     Formular formular = (Formular) control
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
     if (formular == null)
@@ -56,7 +64,10 @@ public class FreiesFormularAusgabe
         {
           return;
         }
-        formularaufbereitung = new FormularAufbereitung(file, false, false);
+        if (!einzelnePdfs)
+        {
+          formularaufbereitung = new FormularAufbereitung(file, false, false);
+        }
         break;
       case MAIL:
         file = getDateiAuswahl("zip", formular.getBezeichnung(), mitglieder);
@@ -67,18 +78,31 @@ public class FreiesFormularAusgabe
         zos = new ZipOutputStream(new FileOutputStream(file));
         break;
     }
-    aufbereitung(formular, mitglieder);
+    aufbereitung(formular, mitglieder, einzelnePdfs);
   }
 
-  public void aufbereitung(Formular formular, ArrayList<Mitglied> mitglieder)
-      throws IOException, ApplicationException
+  public void aufbereitung(Formular formular, ArrayList<Mitglied> mitglieder,
+      boolean einzelnePdfs) throws IOException, ApplicationException
   {
     for (Mitglied m : mitglieder)
     {
       switch ((Ausgabeart) control.getAusgabeart().getValue())
       {
         case DRUCK:
+          if (einzelnePdfs)
+          {
+            final File fx = new File(file.getParent() + File.separator
+                + VorlageUtil.getName(
+                    VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                    formular.getBezeichnung(), m)
+                + ".pdf");
+            formularaufbereitung = new FormularAufbereitung(fx, true, false);
+          }
           aufbereitenFormular(m, formularaufbereitung, formular);
+          if (einzelnePdfs)
+          {
+            formularaufbereitung.closeFormular();
+          }
           break;
         case MAIL:
           if (m.getEmail() == null || m.getEmail().isEmpty())
@@ -105,7 +129,17 @@ public class FreiesFormularAusgabe
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        formularaufbereitung.showFormular();
+        if (!einzelnePdfs || mitglieder.size() == 1)
+        {
+          formularaufbereitung.showFormular();
+        }
+        else
+        {
+          formularaufbereitung.closeFormular();
+          GUI.getStatusBar()
+              .setSuccessText("Die freien Formulare wurden erstellt und unter: "
+                  + file.getParent() + " gespeichert.");
+        }
         break;
       case MAIL:
         zos.close();

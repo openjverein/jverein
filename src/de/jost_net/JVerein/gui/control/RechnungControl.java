@@ -193,8 +193,9 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
+          String pdfMode = (String) getPdfModus().getValue();
           new Rechnungsausgabe(getRechnungen(currentObject), control,
-              TYP.RECHNUNG);
+              TYP.RECHNUNG, pdfMode);
         }
         catch (ApplicationException ae)
         {
@@ -222,8 +223,9 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
+          String pdfMode = (String) getPdfModus().getValue();
           new Rechnungsausgabe(getRechnungen(currentObject), control,
-              TYP.MAHNUNG);
+              TYP.MAHNUNG, pdfMode);
         }
         catch (ApplicationException ae)
         {

@@ -35,6 +35,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -62,10 +63,15 @@ public class Kontoauszug
     settings.setStoreWhenRead(true);
   }
 
-  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control)
-      throws Exception
+  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control,
+      String pdfMode) throws Exception
   {
     this();
+    boolean einzelnePdfs = false;
+    if (pdfMode.equals(DruckMailControl.EINZELN))
+    {
+      einzelnePdfs = true;
+    }
 
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
@@ -75,13 +81,40 @@ public class Kontoauszug
         {
           return;
         }
-        rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
-        for (Mitglied mg : mitglieder)
+        if (!einzelnePdfs)
         {
-          generiereMitglied(mg, control);
+          rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
+          for (Mitglied mg : mitglieder)
+          {
+            generiereMitglied(mg, control);
+          }
+          rpt.close();
+          zeigeDokument();
         }
-        rpt.close();
-        zeigeDokument();
+        else
+        {
+          for (Mitglied mg : mitglieder)
+          {
+            final File fl = new File(
+                file.getParent() + File.separator
+                    + VorlageUtil.getName(
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, mg)
+                    + ".pdf");
+            rpt = new Reporter(new FileOutputStream(fl), 40, 20, 20, 40, false);
+            generiereMitglied(mg, control);
+            rpt.close();
+          }
+          if (mitglieder.size() == 1)
+          {
+            zeigeDokument();
+          }
+          else
+          {
+            GUI.getStatusBar()
+                .setSuccessText("Die Kontoauszüge wurden erstellt und unter: "
+                    + file.getParent() + " gespeichert.");
+          }
+        }
         break;
       case MAIL:
         init("zip", mitglieder);
