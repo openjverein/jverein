@@ -30,7 +30,7 @@ public interface Buchung extends JVereinDBObject
 
   public static final String PRIMARY_ATTRIBUTE = "id";
 
-  public static final String SOLLBUCHUNG = "mitgliedskonto";
+  public static final String SOLLBUCHUNG = "sollbuchung";
 
   public static final String T_SOLLBUCHUNG = TABLE_NAME + "." + SOLLBUCHUNG;
 

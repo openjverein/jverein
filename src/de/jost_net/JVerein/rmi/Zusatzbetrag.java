@@ -23,6 +23,19 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 
 public interface Zusatzbetrag extends JVereinDBObject
 {
+
+  public static final String TABLE_NAME = "zusatzbetrag";
+
+  public static final String TABLE_NAME_ID = "zusatzbetrag.id";
+
+  public static final String MITGLIED = "mitglied";
+
+  public static final String T_MITGLIED = TABLE_NAME + "." + MITGLIED;
+
+  public static final String BUCHUNGSART = "buchungsart";
+
+  public static final String T_BUCHUNGSART = TABLE_NAME + "." + BUCHUNGSART;
+
   public Mitglied getMitglied() throws RemoteException;
 
   public void setMitglied(Integer mitglied) throws RemoteException;
