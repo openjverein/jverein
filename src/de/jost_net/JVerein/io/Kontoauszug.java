@@ -95,12 +95,13 @@ public class Kontoauszug
         {
           for (Mitglied mg : mitglieder)
           {
-            final File fl = new File(
+            file = new File(
                 file.getParent() + File.separator
                     + VorlageUtil.getName(
                         VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, mg)
                     + ".pdf");
-            rpt = new Reporter(new FileOutputStream(fl), 40, 20, 20, 40, false);
+            rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40,
+                false);
             generiereMitglied(mg, control);
             rpt.close();
           }
