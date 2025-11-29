@@ -65,12 +65,7 @@ public class Rechnungsausgabe
   {
     this.control = control;
     this.typ = typ;
-
-    boolean einzelnePdfs = false;
-    if (pdfMode.equals(DruckMailControl.EINZELN))
-    {
-      einzelnePdfs = true;
-    }
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN);
 
     Formular formular = null;
     // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der

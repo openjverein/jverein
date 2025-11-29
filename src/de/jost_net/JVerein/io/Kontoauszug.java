@@ -67,11 +67,7 @@ public class Kontoauszug
       String pdfMode) throws Exception
   {
     this();
-    boolean einzelnePdfs = false;
-    if (pdfMode.equals(DruckMailControl.EINZELN))
-    {
-      einzelnePdfs = true;
-    }
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN);
 
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {

@@ -42,11 +42,7 @@ public class FreiesFormularAusgabe
       throws IOException, ApplicationException
   {
     this.control = control;
-    boolean einzelnePdfs = false;
-    if (pdfMode.equals(DruckMailControl.EINZELN))
-    {
-      einzelnePdfs = true;
-    }
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN);
 
     Formular formular = (Formular) control
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
