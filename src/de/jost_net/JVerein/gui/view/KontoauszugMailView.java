@@ -86,6 +86,7 @@ public class KontoauszugMailView extends AbstractView
     cont.addHeadline("Parameter");
 
     cont.addInput(control.getAusgabeart());
+    cont.addInput(control.getPdfModus());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());

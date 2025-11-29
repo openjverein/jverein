@@ -54,7 +54,8 @@ public class FreieFormulareControl extends DruckMailControl
     try
     {
       saveDruckMailSettings();
-      new FreiesFormularAusgabe(getMitglieder(currentObject), this);
+      String pdfMode = (String) getPdfModus().getValue();
+      new FreiesFormularAusgabe(getMitglieder(currentObject), this, pdfMode);
     }
     catch (ApplicationException ae)
     {

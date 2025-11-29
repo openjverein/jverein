@@ -66,6 +66,7 @@ public class FreiesFormularMailView extends AbstractView
     cont.addLabelPair("Formular",
         control.getFormular(FormularArt.FREIESFORMULAR));
     cont.addInput(control.getAusgabeart());
+    cont.addInput(control.getPdfModus());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());

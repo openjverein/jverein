@@ -685,7 +685,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         try
         {
           saveDruckMailSettings();
-          new Kontoauszug(getMitglieder(currentObject), control);
+          String pdfMode = (String) getPdfModus().getValue();
+          new Kontoauszug(getMitglieder(currentObject), control, pdfMode);
         }
         catch (ApplicationException ae)
         {
