@@ -70,14 +70,6 @@ public class WirtschaftsplanNode
   public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
       Wirtschaftsplan wirtschaftsplan) throws RemoteException
   {
-    this(buchungsklasse, art, wirtschaftsplan, (Boolean) Einstellungen
-        .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN));
-  }
-
-  public WirtschaftsplanNode(Buchungsklasse buchungsklasse, int art,
-      Wirtschaftsplan wirtschaftsplan, boolean mitVerbindlichkeitenForderungen)
-      throws RemoteException
-  {
     type = Type.BUCHUNGSKLASSE;
     this.buchungsklasse = buchungsklasse;
 
