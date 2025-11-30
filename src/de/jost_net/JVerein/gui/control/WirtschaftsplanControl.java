@@ -76,6 +76,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
   private EditTreePart ausgaben;
 
+  private EditTreePart ruecklagen;
+
   private WirtschaftsplanUebersichtPart uebersicht;
 
   private Wirtschaftsplan wirtschaftsplan;
@@ -182,6 +184,21 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return ausgaben;
   }
 
+  public EditTreePart getRuecklagen() throws RemoteException
+  {
+    if (ruecklagen == null)
+    {
+      ruecklagen = generateTree(WirtschaftsplanImpl.RUECKLAGE);
+    }
+    else
+    {
+      @SuppressWarnings("rawtypes")
+      List items = ruecklagen.getItems();
+      ruecklagen.setList(items);
+    }
+    return ruecklagen;
+  }
+
   @SuppressWarnings("unchecked")
   private EditTreePart generateTree(int art) throws RemoteException
   {
@@ -201,7 +218,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        buchungsklasseIterator.setOrder("Order by nummer is null, nummer");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
@@ -427,6 +444,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     uebersicht.updateSoll();
     autoExpand(einnahmen);
     autoExpand(ausgaben);
+    if (ruecklagen != null)
+    {
+      autoExpand(ruecklagen);
+    }
   }
 
   @Override
@@ -479,11 +500,24 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
       for (WirtschaftsplanNode rootNode : rootNodesEinnahmen)
       {
-        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID(),
+            WirtschaftsplanImpl.EINNAHME);
       }
       for (WirtschaftsplanNode rootNode : rootNodesAusgaben)
       {
-        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID());
+        storeNodes(rootNode.getChildren(), wirtschaftsplan.getID(),
+            WirtschaftsplanImpl.AUSGABE);
+      }
+      if (ruecklagen != null)
+      {
+        @SuppressWarnings("unchecked")
+        List<WirtschaftsplanNode> rootNodesRuecklagen = (List<WirtschaftsplanNode>) ruecklagen
+            .getItems();
+        for (WirtschaftsplanNode rootNode : rootNodesRuecklagen)
+        {
+          storeNodes(rootNode.getChildren(), wirtschaftsplan.getID(),
+              WirtschaftsplanImpl.RUECKLAGE);
+        }
       }
 
       DBTransaction.commit();
@@ -511,7 +545,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   }
 
   @SuppressWarnings("rawtypes")
-  private void storeNodes(GenericIterator iterator, String id)
+  private void storeNodes(GenericIterator iterator, String id, int art)
       throws RemoteException, ApplicationException
   {
     while (iterator.hasNext())
@@ -530,11 +564,12 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         item.setBuchungsartId(parent.getBuchungsart().getID());
         WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
         item.setBuchungsklasseId(root.getBuchungsklasse().getID());
+        item.setArt(art);
         item.store();
       }
       else
       {
-        storeNodes(currentNode.getChildren(), id);
+        storeNodes(currentNode.getChildren(), id, art);
       }
     }
   }

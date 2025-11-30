@@ -391,7 +391,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       case BuchungsartSort.NACH_NUMMER:
         it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
+            "Order by buchungsklasse.nummer is null,buchungsklasse.nummer,"
+                + " buchungsart.nummer is null, buchungsart.nummer");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:

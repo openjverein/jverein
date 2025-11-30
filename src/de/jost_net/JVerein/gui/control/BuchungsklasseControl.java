@@ -30,7 +30,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
@@ -42,7 +41,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
 
   private JVereinTablePart buchungsklassenList;
 
-  private IntegerInput nummer;
+  private TextInput nummer;
 
   private Input bezeichnung;
 
@@ -65,13 +64,13 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     return buchungsklasse;
   }
 
-  public IntegerInput getNummer(boolean withFocus) throws RemoteException
+  public TextInput getNummer(boolean withFocus) throws RemoteException
   {
     if (nummer != null)
     {
       return nummer;
     }
-    nummer = new IntegerInput(getBuchungsklasse().getNummer());
+    nummer = new TextInput(getBuchungsklasse().getNummer(), 50);
     if (withFocus)
     {
       nummer.focus();
@@ -97,11 +96,7 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     Buchungsklasse b = getBuchungsklasse();
     if (getNummer(false).getValue() != null)
     {
-      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
-    }
-    else
-    {
-      b.setNummer(-1);
+      b.setNummer((String) getNummer(false).getValue());
     }
     b.setBezeichnung((String) getBezeichnung().getValue());
     return b;

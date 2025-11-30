@@ -24,13 +24,13 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Formularen.
+ * Kontext-Menu zu den Sollbuchungs-Positionen.
  */
 public class SollbuchungPositionMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Formulare.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Sollbuchungs-Positionen.
    */
   public SollbuchungPositionMenu()
   {

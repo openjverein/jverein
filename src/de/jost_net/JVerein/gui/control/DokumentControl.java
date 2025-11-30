@@ -25,6 +25,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -35,6 +42,7 @@ import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -134,24 +142,11 @@ public class DokumentControl extends AbstractControl
 
   public Button getSpeichernButton(final String verzeichnis)
   {
-    speichernButton = new Button("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        speichern(verzeichnis);
-      }
-    }, null, true, "document-save.png");
+    speichernButton = new Button("Speichern", context -> speichern(verzeichnis),
+        null, true, "document-save.png");
     return speichernButton;
   }
 
-  /**
-   * Speichern des Dokuments
-   * 
-   * @throws RemoteException
-   * @throws ApplicationException
-   */
   private void speichern(String verzeichnis) throws ApplicationException
   {
     try
@@ -166,24 +161,47 @@ public class DokumentControl extends AbstractControl
       {
         throw new ApplicationException("Datei existiert nicht");
       }
-      FileInputStream fis = new FileInputStream(file);
+
+      settings.setAttribute("buchung.dokument", file.getParent());
+
+      dokumentSpeichern(verzeichnis, file,
+          (String) dopa.getBemerkung().getValue(),
+          (Date) dopa.getDatum().getValue(), doc);
+      speichernButton.setEnabled(false);
+      GUI.getStatusBar().setSuccessText("Dokument gespeichert");
+    }
+    catch (IOException e)
+    {
+      throw new ApplicationException("Allgemeiner Ein-/Ausgabe-Fehler");
+    }
+  }
+
+  /**
+   * Speichert des Dokuments
+   * 
+   * @throws ApplicationException
+   */
+  private void dokumentSpeichern(String verzeichnis, File file,
+      String bemerkung, Date datum, AbstractDokument doc)
+      throws ApplicationException
+  {
+    try (FileInputStream fis = new FileInputStream(file);)
+    {
       if (fis.available() <= 0)
       {
-        fis.close();
         throw new ApplicationException("Datei ist leer");
       }
-      settings.setAttribute("buchung.dokument", // (String) datei.getValue());
-          new File((String) datei.getValue()).getParent());
       // Dokument speichern
       String locverz = verzeichnis + doc.getReferenz();
       QueryMessage qm = new QueryMessage(locverz, fis);
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
       // Satz in die DB schreiben
-      doc.setBemerkung((String) dopa.getBemerkung().getValue());
+      doc.setBemerkung(
+          bemerkung.length() > 50 ? bemerkung.substring(0, 50) : bemerkung);
       String uuid = qm.getData().toString();
       doc.setUUID(uuid);
-      doc.setDatum((Date) dopa.getDatum().getValue());
+      doc.setDatum(datum);
       doc.store();
       // Zusätzliche Eigenschaft speichern
       Map<String, String> map = new HashMap<>();
@@ -191,8 +209,6 @@ public class DokumentControl extends AbstractControl
       qm = new QueryMessage(uuid, map);
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
-      speichernButton.setEnabled(false);
-      GUI.getStatusBar().setSuccessText("Dokument gespeichert");
     }
     catch (FileNotFoundException e)
     {
@@ -224,6 +240,92 @@ public class DokumentControl extends AbstractControl
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
 
     return docsList;
+  }
+
+  public void setDragDrop(Composite composit,
+      Class<? extends AbstractDokument> dokumentClass)
+  {
+    DropTarget target = new DropTarget(composit,
+        DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_DEFAULT);
+    final FileTransfer fileTransfer = FileTransfer.getInstance();
+    Transfer[] types = new Transfer[] { fileTransfer };
+    target.setTransfer(types);
+
+    target.addDropListener(new DropTargetListener()
+    {
+
+      public void dragEnter(DropTargetEvent event)
+      {
+        if (event.detail == DND.DROP_DEFAULT)
+        {
+          if ((event.operations & DND.DROP_COPY) != 0)
+            event.detail = DND.DROP_COPY;
+          else
+            event.detail = DND.DROP_NONE;
+        }
+        for (int i = 0; i < event.dataTypes.length; i++)
+        {
+          if (fileTransfer.isSupportedType(event.dataTypes[i]))
+          {
+            event.currentDataType = event.dataTypes[i];
+            // files should only be copied
+            if (event.detail != DND.DROP_COPY)
+              event.detail = DND.DROP_NONE;
+            break;
+          }
+        }
+      }
+
+      public void drop(DropTargetEvent event)
+      {
+        if (event.data == null)
+        {
+          event.detail = DND.DROP_NONE;
+          GUI.getStatusBar()
+              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+          return;
+        }
+        try
+        {
+          for (String filename : (String[]) event.data)
+          {
+            doc = Einstellungen.getDBService().createObject(dokumentClass,
+                null);
+            doc.setReferenz(
+                Long.valueOf(((GenericObject) getCurrentObject()).getID()));
+            File file = new File(filename);
+            dokumentSpeichern(verzeichnis + ".", file, file.getName(),
+                new Date(), doc);
+          }
+          refreshTable();
+        }
+        catch (ApplicationException | RemoteException e)
+        {
+          GUI.getStatusBar()
+              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+        }
+      }
+
+      @Override
+      public void dragLeave(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dragOperationChanged(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dragOver(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dropAccept(DropTargetEvent event)
+      {
+      }
+    });
   }
 
   public void refreshTable() throws RemoteException

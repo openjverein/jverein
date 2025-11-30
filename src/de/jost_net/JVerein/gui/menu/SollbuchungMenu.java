@@ -38,13 +38,13 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Mitgliedskonten.
+ * Kontext-Menu zu den Sollbuchungen.
  */
 public class SollbuchungMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer Mitgliedskonten.
+   * Erzeugt ein Kontext-Menu fuer Sollbuchungen.
    */
   public SollbuchungMenu(JVereinTablePart part)
   {

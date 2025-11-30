@@ -42,6 +42,8 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
+import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
+import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -50,7 +52,7 @@ import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
-import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.input.SelectNoScrollInput;
 import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
@@ -124,6 +126,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -150,6 +153,7 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -194,8 +198,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private LabelGroup bankverbindungLabelGroup;
 
-  private LabelGroup abweichenderKontoinhaberLabelGroup;
-
   private SelectNoScrollInput zahlungsrhytmus;
 
   private SelectNoScrollInput zahlungstermin;
@@ -212,29 +214,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private TextInput iban;
 
-  private PersonenartInput ktoipersonenart;
-
-  private TextInput ktoianrede;
-
-  private TextInput ktoititel;
-
-  private TextInput ktoiname;
-
-  private TextInput ktoivorname;
-
-  private TextInput ktoistrasse;
-
-  private TextInput ktoiadressierungszusatz;
-
-  private TextInput ktoiplz;
-
-  private TextInput ktoiort;
-
-  private StaatSearchInput ktoistaat;
-
-  private EmailInput ktoiemail;
-
-  private GeschlechtInput ktoigeschlecht;
+  private TextInput kontoinhaber;
 
   private Input telefonprivat;
 
@@ -261,6 +241,8 @@ public class MitgliedControl extends FilterControl implements Savable
   private TreePart familienbeitragtree;
 
   private AbstractInput zahler;
+
+  private AbstractInput abweichenderZahlerInput;
 
   private DateInput austritt = null;
 
@@ -581,7 +563,7 @@ public class MitgliedControl extends FilterControl implements Savable
     this.geburtsdatum.setTitle("Geburtsdatum");
     this.geburtsdatum.setText("Bitte Geburtsdatum wählen");
     zeigeAlter(d);
-    if (((AbstractMitgliedDetailView) view).isMitgliedDetail())
+    if (isMitglied)
     {
       this.geburtsdatum.setMandatory(
           (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT));
@@ -626,15 +608,7 @@ public class MitgliedControl extends FilterControl implements Savable
       return zahlungsweg;
     }
 
-    boolean mitVollzahler = false;
-    if (beitragsgruppe != null)
-    {
-      Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-      if (bg != null
-          && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-        mitVollzahler = true;
-    }
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
 
     if (getMitglied().getZahlungsweg() != null)
     {
@@ -647,7 +621,7 @@ public class MitgliedControl extends FilterControl implements Savable
           (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG)));
     }
 
-    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setName("Zahlungsweg des Mitglieds");
     zahlungsweg.addListener(new Listener()
     {
 
@@ -684,17 +658,57 @@ public class MitgliedControl extends FilterControl implements Savable
     return zahlungsweg;
   }
 
-  private void refreshZahlungsweg() throws RemoteException
+  public Input getAbweichenderZahler() throws RemoteException
   {
-    if (beitragsgruppe == null || zahlungsweg == null)
-      return;
-    boolean mitVollzahler = false;
-    Beitragsgruppe bg = (Beitragsgruppe) beitragsgruppe.getValue();
-    if (bg != null
-        && bg.getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-      mitVollzahler = true;
-    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray(mitVollzahler);
-    zahlungsweg.setList(weg);
+    if (abweichenderZahlerInput != null)
+    {
+      return abweichenderZahlerInput;
+    }
+    abweichenderZahlerInput = new MitgliedInput().getMitgliedInput(
+        abweichenderZahlerInput, getMitglied().getAbweichenderZahler(),
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+    if (abweichenderZahlerInput instanceof SelectInput)
+    {
+      ((SelectInput) abweichenderZahlerInput)
+          .setPleaseChoose("Kein abweichender Zahler");
+      if (getMitglied().getAbweichenderZahler() == null)
+      {
+        ((SelectInput) abweichenderZahlerInput).setPreselected(null);
+      }
+    }
+    if (isMitglied)
+    {
+      abweichenderZahlerInput
+          .setName("Abweichender Zahler für Beiträge und Zusatzbeträge");
+    }
+    else
+    {
+      abweichenderZahlerInput.setName("Abweichender Zahler für Zusatzbeträge");
+    }
+    return abweichenderZahlerInput;
+  }
+
+  private Long getSelectedAbweichenderZahlerId() throws ApplicationException
+  {
+    try
+    {
+      if (abweichenderZahlerInput == null)
+      {
+        return null;
+      }
+      Mitglied derAltZahler = (Mitglied) getAbweichenderZahler().getValue();
+      if (null == derAltZahler)
+      {
+        return null;
+      }
+      return Long.valueOf(derAltZahler.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter abweichender Zahler kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
   }
 
   // Lösche alle Daten aus der Bankverbindungsmaske
@@ -710,17 +724,7 @@ public class MitgliedControl extends FilterControl implements Savable
       getLetzteLastschrift().setValue(null);
       getBic().setValue(null);
       getIban().setValue(null);
-      getKtoiPersonenart().setValue(null);
-      getKtoiAnrede().setValue(null);
-      getKtoiTitel().setValue(null);
-      getKtoiName().setValue(null);
-      getKtoiVorname().setValue(null);
-      getKtoiStrasse().setValue(null);
-      getKtoiAdressierungszusatz().setValue(null);
-      getKtoiPlz().setValue(null);
-      getKtoiOrt().setValue(null);
-      getKtoiStaat().setValue(null);
-      getKtoiEmail().setValue(null);
+      getKontoinhaber().setValue(null);
     }
     catch (Exception e)
     {
@@ -735,16 +739,6 @@ public class MitgliedControl extends FilterControl implements Savable
       bankverbindungLabelGroup = new LabelGroup(parent, "Bankverbindung");
     }
     return bankverbindungLabelGroup;
-  }
-
-  public LabelGroup getAbweichenderKontoinhaberLabelGroup(Composite parent)
-  {
-    if (abweichenderKontoinhaberLabelGroup == null)
-    {
-      abweichenderKontoinhaberLabelGroup = new LabelGroup(parent,
-          "Abweichender Kontoinhaber");
-    }
-    return abweichenderKontoinhaberLabelGroup;
   }
 
   public SelectInput getZahlungsrhythmus() throws RemoteException
@@ -797,6 +791,18 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     bic = new BICInput(getMitglied().getBic());
     return bic;
+  }
+
+  public TextInput getKontoinhaber() throws RemoteException
+  {
+    if (kontoinhaber != null)
+    {
+      return kontoinhaber;
+    }
+    kontoinhaber = new TextInput(getMitglied().getKontoinhaber(), 70);
+    kontoinhaber.setName("Kontoinhaber");
+    kontoinhaber.setHint("Optional");
+    return kontoinhaber;
   }
 
   public TextInput getMandatID() throws RemoteException
@@ -925,172 +931,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return iban;
   }
 
-  public SelectInput getKtoiPersonenart() throws RemoteException
-  {
-    if (ktoipersonenart != null)
-    {
-      return ktoipersonenart;
-    }
-    ktoipersonenart = new PersonenartInput(getMitglied().getKtoiPersonenart());
-    ktoipersonenart.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        String pa = (String) ktoipersonenart.getValue();
-        if (pa.toLowerCase().startsWith("n"))
-        {
-          ktoiname.setName("Name");
-          ktoivorname.setName("Vorname");
-        }
-        else
-        {
-          ktoiname.setName("Zeile 1");
-          ktoivorname.setName("Zeile 2");
-        }
-      }
-
-    });
-
-    ktoipersonenart.setName("Personenart");
-    return ktoipersonenart;
-  }
-
-  public TextInput getKtoiAnrede() throws RemoteException
-  {
-    if (ktoianrede != null)
-    {
-      return ktoianrede;
-    }
-    ktoianrede = new TextInput(getMitglied().getKtoiAnrede(), 40);
-    ktoianrede.setName("Anrede");
-    return ktoianrede;
-  }
-
-  public TextInput getKtoiTitel() throws RemoteException
-  {
-    if (ktoititel != null)
-    {
-      return ktoititel;
-    }
-    ktoititel = new TextInput(getMitglied().getKtoiTitel(), 40);
-    ktoititel.setName("Titel");
-    return ktoititel;
-  }
-
-  public TextInput getKtoiName() throws RemoteException
-  {
-    if (ktoiname != null)
-    {
-      return ktoiname;
-    }
-    ktoiname = new TextInput(getMitglied().getKtoiName(), 40);
-    ktoiname.setName("Name");
-    return ktoiname;
-  }
-
-  public TextInput getKtoiVorname() throws RemoteException
-  {
-    if (ktoivorname != null)
-    {
-      return ktoivorname;
-    }
-    ktoivorname = new TextInput(getMitglied().getKtoiVorname(), 40);
-    ktoivorname.setName("Vorname");
-    return ktoivorname;
-  }
-
-  public TextInput getKtoiStrasse() throws RemoteException
-  {
-    if (ktoistrasse != null)
-    {
-      return ktoistrasse;
-    }
-    ktoistrasse = new TextInput(getMitglied().getKtoiStrasse(), 40);
-    ktoistrasse.setName("Straße");
-    return ktoistrasse;
-  }
-
-  public TextInput getKtoiAdressierungszusatz() throws RemoteException
-  {
-    if (ktoiadressierungszusatz != null)
-    {
-      return ktoiadressierungszusatz;
-    }
-    ktoiadressierungszusatz = new TextInput(
-        getMitglied().getKtoiAdressierungszusatz(), 40);
-    ktoiadressierungszusatz.setName("Adressierungszusatz");
-    return ktoiadressierungszusatz;
-  }
-
-  public TextInput getKtoiPlz() throws RemoteException
-  {
-    if (ktoiplz != null)
-    {
-      return ktoiplz;
-    }
-    ktoiplz = new TextInput(getMitglied().getKtoiPlz(), 10);
-    ktoiplz.setName("Plz");
-    return ktoiplz;
-  }
-
-  public TextInput getKtoiOrt() throws RemoteException
-  {
-    if (ktoiort != null)
-    {
-      return ktoiort;
-    }
-    ktoiort = new TextInput(getMitglied().getKtoiOrt(), 40);
-    ktoiort.setName("Ort");
-    return ktoiort;
-  }
-
-  public StaatSearchInput getKtoiStaat() throws RemoteException
-  {
-    if (ktoistaat != null)
-    {
-      return ktoistaat;
-    }
-    if (getMitglied().getKtoiStaat() != null
-        && getMitglied().getKtoiStaat().length() > 0
-        && Staat.getByKey(getMitglied().getKtoiStaatCode()) == null)
-    {
-      GUI.getStatusBar().setErrorText("Konnte Kontoinhaber Staat \""
-          + getMitglied().getKtoiStaat() + "\" nicht finden, bitte anpassen.");
-    }
-    ktoistaat = new StaatSearchInput();
-    ktoistaat.setSearchString("Zum Suchen tippen");
-    ktoistaat.setValue(Staat.getByKey(getMitglied().getKtoiStaatCode()));
-    ktoistaat.setName("Staat");
-    return ktoistaat;
-  }
-
-  public EmailInput getKtoiEmail() throws RemoteException
-  {
-    if (ktoiemail != null)
-    {
-      return ktoiemail;
-    }
-    ktoiemail = new EmailInput(getMitglied().getKtoiEmail());
-    return ktoiemail;
-  }
-
-  public GeschlechtInput getKtoiGeschlecht() throws RemoteException
-  {
-    if (ktoigeschlecht != null)
-    {
-      return ktoigeschlecht;
-    }
-    ktoigeschlecht = new GeschlechtInput(getMitglied().getKtoiGeschlecht());
-    ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setPleaseChoose("Bitte auswählen");
-    ktoigeschlecht.setMandatory(true);
-    ktoigeschlecht.setName("Geschlecht");
-    ktoigeschlecht.setMandatory(false);
-    return ktoigeschlecht;
-  }
-
   public Input getTelefonprivat() throws RemoteException
   {
     if (telefonprivat != null)
@@ -1213,15 +1053,8 @@ public class MitgliedControl extends FilterControl implements Savable
           {
             getMitglied().setVollZahlerID(null);
             disableZahler();
-            // Zukünftige Beiträge nur bei bereits gespeicherten Mitgliedern
-            if (getMitglied().getID() != null)
-            {
-              getZukuenftigeBeitraegeView().setVisible(true);
-            }
           }
           refreshFamilienangehoerigeTable();
-          refreshZahlungsweg();
-
         }
         catch (RemoteException e)
         {
@@ -1394,6 +1227,26 @@ public class MitgliedControl extends FilterControl implements Savable
           if (m != null && m.getID() != null)
           {
             getMitglied().setVollZahlerID(Long.valueOf(m.getID()));
+
+            // Nachfrage, ob der neue Vollzahler auch als abweichender Zahler
+            // gesetzt werden soll
+            YesNoDialog ynd = new YesNoDialog(AbstractDialog.POSITION_CENTER);
+            ynd.setText(
+                "Soll der Vollzahler auch als abweichender Zahler gesetzt werden?");
+            ynd.setTitle("Vollzahler auch als abweichenden Zahler setzen");
+            Boolean choice;
+            try
+            {
+              choice = (Boolean) ynd.open();
+              if (choice.booleanValue())
+              {
+                getAbweichenderZahler().setValue(m);
+              }
+            }
+            catch (Exception e)
+            {
+              Logger.error("Fehler", e);
+            }
           }
           else
           {
@@ -1435,19 +1288,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.austritt.setTitle("Austrittsdatum");
     this.austritt.setName("Austrittsdatum");
     this.austritt.setText("Bitte Austrittsdatum wählen");
-    this.austritt.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) austritt.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return austritt;
   }
 
@@ -1463,19 +1303,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.kuendigung.setName("Kündigungsdatum");
     this.kuendigung.setTitle("Kündigungsdatum");
     this.kuendigung.setText("Bitte Kündigungsdatum wählen");
-    this.kuendigung.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) kuendigung.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return kuendigung;
   }
 
@@ -1491,19 +1318,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.sterbetag.setName("Sterbetag");
     this.sterbetag.setTitle("Sterbetag");
     this.sterbetag.setText("Bitte Sterbetag wählen");
-    this.sterbetag.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) sterbetag.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return sterbetag;
   }
 
@@ -1681,8 +1495,7 @@ public class MitgliedControl extends FilterControl implements Savable
         // Alle Familienmitglieder, die eine Zahler-ID eingetragen haben, sind
         // nicht selbst das vollzahlende Mitglied.
         // Der Eintrag ohne zahlerid ist also das vollzahlende Mitglied.
-        Long m = (Long) o;
-        if (m == null)
+        if (o == null)
           return "";
         else
           return "Familienmitglied";
@@ -1998,43 +1811,9 @@ public class MitgliedControl extends FilterControl implements Savable
     return b;
   }
 
-  public Button getMitglied2KontoinhaberEintragenButton()
-  {
-    Button b = new Button("Mitglied-Daten eintragen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          getKtoiName().setValue(getName(false).getValue());
-          getKtoiStrasse().setValue(getStrasse().getValue());
-          getKtoiAdressierungszusatz()
-              .setValue(getAdressierungszusatz().getValue());
-          getKtoiPlz().setValue(getPlz().getValue());
-          getKtoiOrt().setValue(getOrt().getValue());
-          getKtoiEmail().setValue(getEmail().getValue());
-          if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
-          {
-            getKtoiStaat().setValue(getStaat().getValue());
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der Mitgliederauswertung");
-        }
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
   public Button getKontoDatenLoeschenButton()
   {
-    Button b = new Button("Bankverbindung-Daten löschen", new Action()
+    Button b = new Button("Daten löschen", new Action()
     {
       @Override
       public void handleAction(Object context) throws ApplicationException
@@ -2057,6 +1836,136 @@ public class MitgliedControl extends FilterControl implements Savable
         }
       }
     }, null, false, "user-trash-full.png");
+    // button
+    return b;
+  }
+
+  public Button getAbweichenderZahlerErzeugenButton()
+  {
+    Button b = new Button("Abweichenden Zahler anlegen (Nicht-Mitglied)",
+        new Action()
+        {
+          @SuppressWarnings("unchecked")
+          @Override
+          public void handleAction(Object context) throws ApplicationException
+          {
+
+            try
+            {
+              boolean ktoi = false;
+              Mitglied m = getMitglied();
+              Mitglied nm = Einstellungen.getDBService()
+                  .createObject(Mitglied.class, null);
+              if (m.getAttribute("ktoiname") != null
+                  && ((String) m.getAttribute("ktoiname")).length() > 0)
+              {
+                // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
+                // war übernehmen wir diese Daten
+                ktoi = true;
+                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
+                nm.setAnrede((String) m.getAttribute("ktoianrede"));
+                nm.setTitel((String) m.getAttribute("ktoititel"));
+                nm.setName((String) m.getAttribute("ktoiname"));
+                nm.setVorname((String) m.getAttribute("ktoivorname"));
+                nm.setAdressierungszusatz(
+                    (String) m.getAttribute("ktoiadressierungszusatz"));
+                nm.setStrasse((String) m.getAttribute("ktoistrasse"));
+                nm.setPlz((String) m.getAttribute("ktoiplz"));
+                nm.setOrt((String) m.getAttribute("ktoiort"));
+                nm.setStaat(
+                    Staat.getStaatCode((String) m.getAttribute("ktoistaat")));
+                nm.setEmail((String) m.getAttribute("ktoiemail"));
+                nm.setGeschlecht((String) m.getAttribute("ktoigeschlecht"));
+                nm.setZahlungsweg(m.getZahlungsweg());
+                nm.setMandatID(m.getMandatID());
+                nm.setMandatDatum(m.getMandatDatum());
+                nm.setMandatVersion(m.getMandatVersion());
+                nm.setIban(m.getIban());
+                nm.setBic(m.getBic());
+              }
+              else
+              {
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.JURISTISCHEPERSONEN))
+                {
+                  PersonenartDialog pad = new PersonenartDialog(
+                      PersonenartDialog.POSITION_CENTER);
+                  String pa = pad.open();
+                  if (pa == null)
+                  {
+                    return;
+                  }
+                  nm.setPersonenart(pa);
+                }
+                else
+                {
+                  nm.setPersonenart("n");
+                }
+                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setAnrede("");
+                nm.setName((String) getName(false).getValue());
+                nm.setVorname("");
+                nm.setAdressierungszusatz(
+                    (String) getAdressierungszusatz().getValue());
+                nm.setStrasse((String) getStrasse().getValue());
+                nm.setPlz((String) getPlz().getValue());
+                nm.setOrt((String) getOrt().getValue());
+                nm.setEmail((String) getEmail().getValue());
+                if ((Boolean) Einstellungen
+                    .getEinstellung(Property.AUSLANDSADRESSEN))
+                {
+                  nm.setStaat(getStaat().getValue() == null ? ""
+                      : ((Staat) getStaat().getValue()).getKey());
+                }
+              }
+
+              AbweichenderZahlerNeuDialog dialog = new AbweichenderZahlerNeuDialog(
+                  AbweichenderZahlerNeuDialog.POSITION_CENTER, nm);
+              if (!dialog.open())
+              {
+                if (dialog.getStatus() != null)
+                {
+                  throw new Exception(dialog.getStatus());
+                }
+                else
+                {
+                  // Den neuen abweichenden Zahler setzen
+                  // Beim SelectInput muss das neue Mitglied erst hinzugefügt
+                  // werden. Sonst kann man es nicht zur Anzeige bringen
+                  if (getAbweichenderZahler() instanceof SelectInput)
+                  {
+                    SelectInput input = (SelectInput) getAbweichenderZahler();
+                    List<Mitglied> list = new ArrayList<>();
+                    list.addAll(input.getList());
+                    list.add(nm);
+                    input.setList(list);
+                  }
+                  getAbweichenderZahler().setValue(nm);
+                  // Wenn alte ktoi Daten verwendet wurden, dann diese löschen
+                  if (ktoi)
+                  {
+                    getZahlungsweg()
+                        .setValue(new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG));
+                    deleteBankverbindung();
+                    m.clearKtoi();
+                  }
+                }
+              }
+
+            }
+            catch (OperationCanceledException oce)
+            {
+              throw oce;
+            }
+            catch (Exception e)
+            {
+              throw new ApplicationException(
+                  "Fehler beim Erzeugen eines Nicht-Mitgliedes: "
+                      + e.getMessage());
+            }
+          }
+        }, null, false, "document-new.png");
     // button
     return b;
   }
@@ -2377,22 +2286,9 @@ public class MitgliedControl extends FilterControl implements Savable
       m.setIban("");
     else
       m.setIban(ib.replace(" ", ""));
-    // Abweichender Kontoinhaber
-    m.setKtoiAdressierungszusatz(
-        (String) getKtoiAdressierungszusatz().getValue());
-    m.setKtoiAnrede((String) getKtoiAnrede().getValue());
-    m.setKtoiEmail((String) getKtoiEmail().getValue());
-    m.setKtoiName((String) getKtoiName().getValue());
-    m.setKtoiOrt((String) getKtoiOrt().getValue());
-    String persa = (String) getKtoiPersonenart().getValue();
-    m.setKtoiPersonenart(persa.substring(0, 1));
-    m.setKtoiPlz((String) getKtoiPlz().getValue());
-    m.setKtoiStaat(getKtoiStaat().getValue() == null ? ""
-        : ((Staat) getKtoiStaat().getValue()).getKey());
-    m.setKtoiStrasse((String) getKtoiStrasse().getValue());
-    m.setKtoiTitel((String) getKtoiTitel().getValue());
-    m.setKtoiVorname((String) getKtoiVorname().getValue());
-    m.setKtoiGeschlecht((String) getKtoiGeschlecht().getValue());
+    m.setAbweichenderZahlerID(getSelectedAbweichenderZahlerId());
+    m.setKontoinhaber((String) getKontoinhaber().getValue());
+
     // Vermerke
     m.setVermerk1((String) getVermerk1().getValue());
     m.setVermerk2((String) getVermerk2().getValue());
@@ -2678,9 +2574,9 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         return;
       }
-      if (!s.endsWith(ausw.getDateiendung()))
+      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
       {
-        s = s + "." + ausw.getDateiendung();
+        s = s + "." + ausw.getDateiendung().toLowerCase();
       }
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
@@ -2779,9 +2675,9 @@ public class MitgliedControl extends FilterControl implements Savable
       {
         return;
       }
-      if (!s.endsWith(ausw.getDateiendung()))
+      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
       {
-        s = s + "." + ausw.getDateiendung();
+        s = s + "." + ausw.getDateiendung().toLowerCase();
       }
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());

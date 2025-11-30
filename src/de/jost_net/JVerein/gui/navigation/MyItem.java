@@ -165,9 +165,9 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getChildren()
    */
-  @SuppressWarnings({ "rawtypes" })
+  @SuppressWarnings("unchecked")
   @Override
-  public GenericIterator getChildren() throws RemoteException
+  public GenericIterator<NavigationItem> getChildren() throws RemoteException
   {
     return PseudoIterator
         .fromArray(children.toArray(new MyItem[children.size()]));
@@ -210,9 +210,8 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getPossibleParents()
    */
-  @SuppressWarnings("rawtypes")
   @Override
-  public GenericIterator getPossibleParents() throws RemoteException
+  public GenericIterator<?> getPossibleParents() throws RemoteException
   {
     throw new RemoteException("not implemented");
   }

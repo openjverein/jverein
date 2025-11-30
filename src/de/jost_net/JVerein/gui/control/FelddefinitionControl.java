@@ -419,7 +419,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     {
       case 1:
         throw new RemoteException(
-            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: }"
+            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: "
                 + wert);
       case 2:
         throw new RemoteException(

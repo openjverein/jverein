@@ -18,79 +18,35 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.util.GuiRepainter;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.util.Container;
-import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.gui.util.TabGroup;
-import de.willuhn.logging.Logger;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
-/**
- * @author Rlf Mamat
- */
 public class MitgliedNextBGruppePart implements Part
 {
-  private TabFolder tab;
-
   private MitgliedControl control;
-
-  private Container cont;
-
-  private Composite parent;
-
-  private boolean isVisible;
 
   public MitgliedNextBGruppePart(MitgliedControl control)
   {
     this.control = control;
-    this.isVisible = true;
   }
 
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    if (this.parent == null)
-      this.parent = parent;
-
-    cont = new SimpleContainer(parent, true, 5);
-    final GridData grid = new GridData(GridData.FILL_HORIZONTAL);
-    grid.grabExcessHorizontalSpace = true;
-    cont.getComposite().setLayoutData(grid);
-    if (!this.isVisible)
-      return;
-
-    tab = new TabFolder(cont.getComposite(), SWT.NONE);
-    tab.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    TabGroup tg1 = new TabGroup(tab, "Zukünftige Beitragsgruppen");
-
-    control.getMitgliedBeitraegeTabelle().paint(tg1.getComposite());
-  }
-
-  public void setVisible(boolean visible)
-  {
-    if (this.isVisible == visible)
-      return;
-    this.isVisible = visible;
-    if (null == cont)
-      return;
-    cont.getComposite().dispose();
-    cont = null;
-
-    try
-    {
-      paint(parent);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-    GuiRepainter.repaint(parent);
-
+    LabelGroup cont = new LabelGroup(parent, "Zukünftige Beitragsgruppen");
+    cont.getComposite().setLayout(new GridLayout(1, false));
+    ButtonArea butts = new ButtonArea();
+    butts.addButton(new Button("Beitragsgruppe hinzufügen",
+        new MitgliedNextBGruppeNeuAction(control), null, false,
+        "document-new.png"));
+    butts.paint(cont.getComposite());
+    control.getMitgliedBeitraegeTabelle().paint(cont.getComposite());
   }
 }

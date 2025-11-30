@@ -24,7 +24,7 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Formularen.
+ * Kontext-Menu zu den Formularfeldern.
  */
 public class FormularfeldMenu extends ContextMenu
 {

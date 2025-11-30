@@ -20,9 +20,10 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.Clob;
 import java.sql.SQLException;
-
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -144,6 +145,22 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       super.store();
     }
+    // Store-Message schicken
+    Application.getMessagingFactory()
+        .getMessagingQueue("jverein.dbobject.store")
+        .sendSyncMessage(new QueryMessage(this));
+  }
+
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    // Delete-Message schicken
+    Application.getMessagingFactory()
+        .getMessagingQueue("jverein.dbobject.delete")
+        .sendSyncMessage(new QueryMessage(this));
+
+    super.delete();
+
   }
 
   // Löschen ohne Delete Check oder eingeschränktem Check
