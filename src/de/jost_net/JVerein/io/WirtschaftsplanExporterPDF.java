@@ -269,6 +269,52 @@ public class WirtschaftsplanExporterPDF implements Exporter
       }
     }
 
+    if ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN))
+    {
+      // Ruecklagen
+      reporter.addColumn(" ", Element.ALIGN_LEFT,
+          wirtschaftsplaene.length * 2 + 1);
+      reporter.addColumn("Rücklagen", Element.ALIGN_LEFT,
+          new BaseColor(100, 100, 100), wirtschaftsplaene.length * 2 + 1);
+      buchungsklasseIterator.begin();
+      Double[][] summenRuecklagen = new Double[wirtschaftsplaene.length][2];
+      while (buchungsklasseIterator.hasNext())
+      {
+        Double[][] s = addColumns(wirtschaftsplaene,
+            buchungsklasseIterator.next(), reporter,
+            WirtschaftsplanImpl.RUECKLAGE);
+        // Gesamtsumme addieren
+        if (s == null)
+        {
+          continue;
+        }
+        for (int i = 0; i < wirtschaftsplaene.length; i++)
+        {
+          summenRuecklagen[i][0] = (summenRuecklagen[i][0] == null ? 0
+              : summenRuecklagen[i][0]) + s[i][0];
+          if (hatIst.contains(wirtschaftsplaene[i]))
+          {
+            summenRuecklagen[i][1] = (summenRuecklagen[i][1] == null ? 0
+                : summenRuecklagen[i][1]) + s[i][1];
+          }
+        }
+      }
+      // Summenzeile Ruecklagen
+      reporter.addColumn("Summe Rücklagen", Element.ALIGN_LEFT,
+          BaseColor.LIGHT_GRAY);
+      int l = -1;
+      for (Double[] sollist : summenRuecklagen)
+      {
+        l++;
+        reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
+        if (hatIst.contains(wirtschaftsplaene[l]))
+        {
+          reporter.addColumn(sollist[1], BaseColor.LIGHT_GRAY);
+        }
+      }
+    }
+
     reporter.closeTable();
     reporter.close();
     fileOutputStream.close();

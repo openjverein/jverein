@@ -176,7 +176,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
 
     while (buchungsklasseIterator.hasNext())
     {
-      addColumns(wirtschaftsplaene, buchungsklasseIterator.next(), reporter);
+      addColumns(wirtschaftsplaene, buchungsklasseIterator.next(), reporter,
+          new int[] { WirtschaftsplanImpl.EINNAHME,
+              WirtschaftsplanImpl.AUSGABE });
     }
 
     // Summen
@@ -214,6 +216,50 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       }
     }
 
+    if ((Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN))
+    {
+      reporter.addColumn(" ", Element.ALIGN_LEFT,
+          wirtschaftsplaene.length * 2 + 1);
+      reporter.addColumn("Rücklagen", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY,
+          wirtschaftsplaene.length * 2 + 1);
+      buchungsklasseIterator.begin();
+      while (buchungsklasseIterator.hasNext())
+      {
+        addColumns(wirtschaftsplaene, buchungsklasseIterator.next(), reporter,
+            new int[] { WirtschaftsplanImpl.RUECKLAGE });
+      }
+
+      // Summen
+      reporter.addColumn(" ", Element.ALIGN_LEFT,
+          wirtschaftsplaene.length * 2 + 1);
+      reporter.addColumn("Rücklagen gebildet", Element.ALIGN_LEFT,
+          BaseColor.LIGHT_GRAY);
+      for (Wirtschaftsplan plan : wirtschaftsplaene)
+      {
+        reporter.addColumn(plan.getPlanRuecklagenGebildet(),
+            BaseColor.LIGHT_GRAY);
+        if (hatIst.contains(plan))
+        {
+          reporter.addColumn(plan.getIstRuecklagenGebildet(),
+              BaseColor.LIGHT_GRAY);
+        }
+      }
+
+      reporter.addColumn("Rücklagen Aufgelöst", Element.ALIGN_LEFT,
+          BaseColor.LIGHT_GRAY);
+      for (Wirtschaftsplan plan : wirtschaftsplaene)
+      {
+        reporter.addColumn(plan.getPlanRuecklagenAufgeloest(),
+            BaseColor.LIGHT_GRAY);
+        if (hatIst.contains(plan))
+        {
+          reporter.addColumn(plan.getIstRuecklagenAufgeloest(),
+              BaseColor.LIGHT_GRAY);
+        }
+      }
+    }
+
     reporter.closeTable();
     reporter.close();
     fileOutputStream.close();
@@ -221,7 +267,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
 
   @SuppressWarnings("unchecked")
   private void addColumns(Wirtschaftsplan[] wirtschaftsplaene,
-      Buchungsklasse klasse, Reporter reporter) throws RemoteException
+      Buchungsklasse klasse, Reporter reporter, int[] arten)
+      throws RemoteException
   {
     int n = 0;
     Double[][] summen = new Double[wirtschaftsplaene.length][2];
@@ -236,8 +283,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     {
       summen[n][0] = 0d;
       summen[n][1] = 0d;
-      for (int art : new int[] { WirtschaftsplanImpl.EINNAHME,
-          WirtschaftsplanImpl.AUSGABE })
+      for (int art : arten)
       {
         WirtschaftsplanNode buchungsklasseNode = new WirtschaftsplanNode(klasse,
             art, plan);
