@@ -181,6 +181,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
               WirtschaftsplanImpl.AUSGABE });
     }
 
+    boolean verbindlichkeitenForderungen = (Boolean) Einstellungen
+        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN);
+
     // Summen
     reporter.addColumn(" ", Element.ALIGN_LEFT,
         wirtschaftsplaene.length * 2 + 1);
@@ -190,7 +193,10 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       reporter.addColumn(plan.getPlanEinnahme(), BaseColor.LIGHT_GRAY);
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(plan.getIstEinnahme(), BaseColor.LIGHT_GRAY);
+        reporter.addColumn(
+            plan.getIstEinnahme()
+                + (verbindlichkeitenForderungen ? plan.getIstForderungen() : 0),
+            BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -200,7 +206,10 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       reporter.addColumn(plan.getPlanAusgabe(), BaseColor.LIGHT_GRAY);
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(plan.getIstAusgabe(), BaseColor.LIGHT_GRAY);
+        reporter.addColumn(plan.getIstAusgabe()
+            + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten()
+                : 0),
+            BaseColor.LIGHT_GRAY);
       }
     }
 
@@ -211,7 +220,10 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
           BaseColor.LIGHT_GRAY);
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(plan.getIstEinnahme() + plan.getIstAusgabe(),
+        reporter.addColumn(plan.getIstEinnahme() + plan.getIstAusgabe()
+            + (verbindlichkeitenForderungen
+                ? plan.getIstForderungen() + plan.getIstVerbindlichkeiten()
+                : 0),
             BaseColor.LIGHT_GRAY);
       }
     }
@@ -230,9 +242,6 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             new int[] { WirtschaftsplanImpl.RUECKLAGE });
       }
 
-      boolean verbindlichkeitenForderungen = (Boolean) Einstellungen
-          .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN);
-
       // Summen
       reporter.addColumn(" ", Element.ALIGN_LEFT,
           wirtschaftsplaene.length * 2 + 1);
@@ -244,9 +253,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             BaseColor.LIGHT_GRAY);
         if (hatIst.contains(plan))
         {
-          reporter.addColumn(
-              plan.getIstRuecklagenGebildet()
-                  + (verbindlichkeitenForderungen ? plan.getIstForderungen() : 0),
+          reporter.addColumn(plan.getIstRuecklagenGebildet(),
               BaseColor.LIGHT_GRAY);
         }
       }
@@ -259,9 +266,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             BaseColor.LIGHT_GRAY);
         if (hatIst.contains(plan))
         {
-          reporter.addColumn(
-              plan.getIstRuecklagenAufgeloest()
-                  + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten() : 0),
+          reporter.addColumn(plan.getIstRuecklagenAufgeloest(),
               BaseColor.LIGHT_GRAY);
         }
       }
