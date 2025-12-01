@@ -166,7 +166,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        buchungsklasseIterator.setOrder("Order by -nummer DESC");
+        buchungsklasseIterator.setOrder("Order by nummer is null, nummer");
         break;
       default:
         buchungsklasseIterator
@@ -230,6 +230,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             new int[] { WirtschaftsplanImpl.RUECKLAGE });
       }
 
+      boolean verbindlichkeitenForderungen = (Boolean) Einstellungen
+          .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN);
+
       // Summen
       reporter.addColumn(" ", Element.ALIGN_LEFT,
           wirtschaftsplaene.length * 2 + 1);
@@ -241,7 +244,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             BaseColor.LIGHT_GRAY);
         if (hatIst.contains(plan))
         {
-          reporter.addColumn(plan.getIstRuecklagenGebildet(),
+          reporter.addColumn(
+              plan.getIstRuecklagenGebildet()
+                  + (verbindlichkeitenForderungen ? plan.getIstForderungen() : 0),
               BaseColor.LIGHT_GRAY);
         }
       }
@@ -254,7 +259,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
             BaseColor.LIGHT_GRAY);
         if (hatIst.contains(plan))
         {
-          reporter.addColumn(plan.getIstRuecklagenAufgeloest(),
+          reporter.addColumn(
+              plan.getIstRuecklagenAufgeloest()
+                  + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten() : 0),
               BaseColor.LIGHT_GRAY);
         }
       }
