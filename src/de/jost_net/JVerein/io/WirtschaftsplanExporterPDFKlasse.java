@@ -182,7 +182,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     }
 
     boolean verbindlichkeitenForderungen = (Boolean) Einstellungen
-        .getEinstellung(Einstellungen.Property.RUECKLAGENKONTEN);
+        .getEinstellung(Einstellungen.Property.VERBINDLICHKEITEN_FORDERUNGEN);
 
     // Summen
     reporter.addColumn(" ", Element.ALIGN_LEFT,
