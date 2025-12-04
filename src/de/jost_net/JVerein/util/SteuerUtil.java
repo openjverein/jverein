@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 
 public class SteuerUtil
 {
@@ -56,11 +57,11 @@ public class SteuerUtil
         .executeUpdate(sql, null);
 
     // Zusatzbeträge
-    sql = "update zusatzabbuchung "
-        + "set steuer = (select buchungsart.steuer from buchungsart "
-        + "where zusatzabbuchung.buchungsart = buchungsart.id) "
-        + "where exists (select id from buchungsart where buchungsart.id = zusatzabbuchung.buchungsart "
-        + "and steuer is not null)"
+    sql = "update " + Zusatzbetrag.TABLE_NAME
+        + " set steuer = (select buchungsart.steuer from buchungsart "
+        + "where " + Zusatzbetrag.T_BUCHUNGSART + " = buchungsart.id) "
+        + "where exists (select id from buchungsart where buchungsart.id = "
+        + Zusatzbetrag.T_BUCHUNGSART + " and steuer is not null)"
         + "and buchungsart is not null and steuer is null";
 
     int anzahlZusatzbetraege = Einstellungen.getDBService().executeUpdate(sql,

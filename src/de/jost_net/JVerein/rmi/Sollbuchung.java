@@ -23,9 +23,9 @@ import java.util.List;
 
 public interface Sollbuchung extends JVereinDBObject
 {
-  public static final String TABLE_NAME = "mitgliedskonto";
+  public static final String TABLE_NAME = "sollbuchung";
 
-  public static final String TABLE_NAME_ID = "mitgliedskonto.id";
+  public static final String TABLE_NAME_ID = "sollbuchung.id";
 
   public static final String PRIMARY_ATTRIBUTE = "id";
 
