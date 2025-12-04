@@ -18,20 +18,16 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Map;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -45,24 +41,21 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class Rechnungsausgabe
+public class Rechnungsausgabe extends AbstractAusgabe
 {
 
   RechnungControl control;
 
-  File file = null;
-
-  FormularAufbereitung formularaufbereitung = null;
-
-  ZipOutputStream zos = null;
-
   RechnungControl.TYP typ;
 
   public Rechnungsausgabe(Rechnung[] rechnungen, RechnungControl control,
-      RechnungControl.TYP typ) throws IOException, ApplicationException
+      RechnungControl.TYP typ, String pdfMode)
+      throws IOException, ApplicationException
   {
     this.control = control;
     this.typ = typ;
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN)
+        && rechnungen.length > 1;
 
     Formular formular = null;
     // Bei Mahnung ist Formular nötig, bei Rechnung ist es individuell in der
@@ -79,37 +72,73 @@ public class Rechnungsausgabe
           .createObject(Formular.class, form.getID());
     }
 
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    Ausgabeart art = (Ausgabeart) control.getAusgabeart().getValue();
+    String extension = getExtension(art);
+
+    String dateiname = null;
+    if (rechnungen.length == 1)
     {
-      case DRUCK:
-        file = getDateiAuswahl("pdf", rechnungen);
-        if (file == null)
-        {
-          return;
-        }
-        formularaufbereitung = new FormularAufbereitung(file, true, false);
-        break;
-      case MAIL:
-        file = getDateiAuswahl("zip", rechnungen);
-        if (file == null)
-        {
-          return;
-        }
-        zos = new ZipOutputStream(new FileOutputStream(file));
-        break;
+      Rechnung rechnung = rechnungen[0];
+      if (typ == TYP.RECHNUNG)
+      {
+        dateiname = VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
+            rechnung, rechnung.getMitglied()) + "." + extension;
+      }
+      else
+      {
+        dateiname = VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME,
+            rechnung, rechnung.getMitglied()) + "." + extension;
+      }
     }
-    aufbereitung(formular, rechnungen);
+    else
+    {
+      if (typ == TYP.RECHNUNG)
+      {
+        dateiname = VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "."
+            + extension;
+      }
+      else
+      {
+        dateiname = VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "."
+            + extension;
+      }
+    }
+    file = getDateiAuswahl(extension, dateiname, einzelnePdfs, control,
+        control.getSettings());
+    if (file == null)
+    {
+      return;
+    }
+
+    init(art, einzelnePdfs, true);
+    aufbereitung(formular, rechnungen, einzelnePdfs);
   }
 
-  public void aufbereitung(Formular formular, Rechnung[] rechnungen)
-      throws IOException, ApplicationException
+  public void aufbereitung(Formular formular, Rechnung[] rechnungen,
+      boolean einzelnePdfs) throws IOException, ApplicationException
   {
     for (Rechnung re : rechnungen)
     {
       switch ((Ausgabeart) control.getAusgabeart().getValue())
       {
         case DRUCK:
+          if (einzelnePdfs)
+          {
+            VorlageTyp vtyp = VorlageTyp.RECHNUNG_MITGLIED_DATEINAME;
+            if (typ == TYP.MAHNUNG)
+            {
+              vtyp = VorlageTyp.MAHNUNG_MITGLIED_DATEINAME;
+            }
+            final File fx = new File(file.getParent() + File.separator
+                + VorlageUtil.getName(vtyp, re, re.getMitglied()) + ".pdf");
+            formularaufbereitung = new FormularAufbereitung(fx, true, false);
+          }
           aufbereitenFormular(re, formularaufbereitung, formular);
+          if (einzelnePdfs)
+          {
+            formularaufbereitung.closeFormular();
+            formularaufbereitung.addZUGFeRD(re, typ == TYP.MAHNUNG);
+          }
           break;
         case MAIL:
           File f = File.createTempFile(getDateiname(re), ".pdf");
@@ -133,10 +162,19 @@ public class Rechnungsausgabe
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        formularaufbereitung.showFormular();
-        if (rechnungen.length == 1)
+        if (!einzelnePdfs)
         {
-          formularaufbereitung.addZUGFeRD(rechnungen[0], typ == TYP.MAHNUNG);
+          formularaufbereitung.showFormular();
+          if (rechnungen.length == 1)
+          {
+            formularaufbereitung.addZUGFeRD(rechnungen[0], typ == TYP.MAHNUNG);
+          }
+        }
+        else
+        {
+          GUI.getStatusBar()
+              .setSuccessText("Die Dokumente wurden erstellt und unter: "
+                  + file.getParent() + " gespeichert.");
         }
         break;
       case MAIL:
@@ -145,62 +183,6 @@ public class Rechnungsausgabe
             (String) control.getTxt().getValue());
         break;
     }
-  }
-
-  private File getDateiAuswahl(String extension, Rechnung[] rechnungen)
-      throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = control.getSettings().getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    if (rechnungen.length == 1)
-    {
-      Rechnung rechnung = rechnungen[0];
-      if (typ == TYP.RECHNUNG)
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
-                rechnung, rechnung.getMitglied()) + "." + extension);
-      }
-      else
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, rechnung,
-                rechnung.getMitglied()) + "." + extension);
-      }
-    }
-    else
-    {
-      if (typ == TYP.RECHNUNG)
-      {
-        fd.setFileName(VorlageUtil.getName(VorlageTyp.RECHNUNG_DATEINAME) + "."
-            + extension);
-      }
-      else
-      {
-        fd.setFileName(VorlageUtil.getName(VorlageTyp.MAHNUNG_DATEINAME) + "."
-            + extension);
-      }
-    }
-    fd.setFilterExtensions(new String[] { "*." + extension });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return null;
-    }
-    if (!s.toLowerCase().endsWith("." + extension))
-    {
-      s = s + "." + extension;
-    }
-    final File file = new File(s);
-    control.getSettings().setAttribute("lastdir", file.getParent());
-    return file;
   }
 
   void aufbereitenFormular(Rechnung re, FormularAufbereitung fa,

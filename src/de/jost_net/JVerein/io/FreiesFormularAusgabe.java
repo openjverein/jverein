@@ -2,19 +2,15 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -26,20 +22,18 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
 
-public class FreiesFormularAusgabe
+public class FreiesFormularAusgabe extends AbstractAusgabe
 {
   FreieFormulareControl control;
 
-  File file = null;
-
-  FormularAufbereitung formularaufbereitung = null;
-
-  ZipOutputStream zos = null;
-
   public FreiesFormularAusgabe(ArrayList<Mitglied> mitglieder,
-      FreieFormulareControl control) throws IOException, ApplicationException
+      FreieFormulareControl control, String pdfMode)
+      throws IOException, ApplicationException
   {
     this.control = control;
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN)
+        && mitglieder.size() > 1;
+
     Formular formular = (Formular) control
         .getFormular(FormularArt.FREIESFORMULAR).getValue();
     if (formular == null)
@@ -48,37 +42,53 @@ public class FreiesFormularAusgabe
       return;
     }
 
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
+    Ausgabeart art = (Ausgabeart) control.getAusgabeart().getValue();
+    String extension = getExtension(art);
+    String dateiname = null;
+    if (mitglieder.size() == 1)
     {
-      case DRUCK:
-        file = getDateiAuswahl("pdf", formular.getBezeichnung(), mitglieder);
-        if (file == null)
-        {
-          return;
-        }
-        formularaufbereitung = new FormularAufbereitung(file, false, false);
-        break;
-      case MAIL:
-        file = getDateiAuswahl("zip", formular.getBezeichnung(), mitglieder);
-        if (file == null)
-        {
-          return;
-        }
-        zos = new ZipOutputStream(new FileOutputStream(file));
-        break;
+      dateiname = VorlageUtil.getName(
+          VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+          formular.getBezeichnung(), mitglieder.get(0)) + "." + extension;
     }
-    aufbereitung(formular, mitglieder);
+    else
+    {
+      dateiname = VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME,
+          formular.getBezeichnung()) + "." + extension;
+    }
+    file = getDateiAuswahl(extension, dateiname, einzelnePdfs, control,
+        control.getSettings());
+    if (file == null)
+    {
+      return;
+    }
+
+    init(art, einzelnePdfs, false);
+    aufbereitung(formular, mitglieder, einzelnePdfs);
   }
 
-  public void aufbereitung(Formular formular, ArrayList<Mitglied> mitglieder)
-      throws IOException, ApplicationException
+  public void aufbereitung(Formular formular, ArrayList<Mitglied> mitglieder,
+      boolean einzelnePdfs) throws IOException, ApplicationException
   {
     for (Mitglied m : mitglieder)
     {
       switch ((Ausgabeart) control.getAusgabeart().getValue())
       {
         case DRUCK:
+          if (einzelnePdfs)
+          {
+            final File fx = new File(file.getParent() + File.separator
+                + VorlageUtil.getName(
+                    VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                    formular.getBezeichnung(), m)
+                + ".pdf");
+            formularaufbereitung = new FormularAufbereitung(fx, true, false);
+          }
           aufbereitenFormular(m, formularaufbereitung, formular);
+          if (einzelnePdfs)
+          {
+            formularaufbereitung.closeFormular();
+          }
           break;
         case MAIL:
           if (m.getEmail() == null || m.getEmail().isEmpty())
@@ -105,7 +115,17 @@ public class FreiesFormularAusgabe
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        formularaufbereitung.showFormular();
+        if (!einzelnePdfs)
+        {
+          formularaufbereitung.showFormular();
+        }
+        else
+        {
+          formularaufbereitung.closeFormular();
+          GUI.getStatusBar()
+              .setSuccessText("Die freien Formulare wurden erstellt und unter: "
+                  + file.getParent() + " gespeichert.");
+        }
         break;
       case MAIL:
         zos.close();
@@ -114,44 +134,6 @@ public class FreiesFormularAusgabe
         break;
     }
 
-  }
-
-  File getDateiAuswahl(String extension, String name,
-      ArrayList<Mitglied> mitglieder) throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = control.getSettings().getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    if (mitglieder.size() == 1)
-    {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-              name, mitglieder.get(0)) + "." + extension);
-    }
-    else
-    {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME, name) + "."
-              + extension);
-    }
-    fd.setFilterExtensions(new String[] { "*." + extension });
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return null;
-    }
-    if (!s.toLowerCase().endsWith("." + extension))
-    {
-      s = s + "." + extension;
-    }
-    final File file = new File(s);
-    control.getSettings().setAttribute("lastdir", file.getParent());
-    return file;
   }
 
   void aufbereitenFormular(Mitglied m, FormularAufbereitung fa, Formular fo)
