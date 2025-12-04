@@ -36,6 +36,9 @@ public class EinstellungenReportsView extends AbstractView
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
     cont.addLabelPair(
+        "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
+        control.getKontonummerInBuchungsliste());
+    cont.addLabelPair(
         "Wirtschaftsplan Ist-Beträge von laufendem Zeitraum ausgeben",
         control.getWirtschaftsplanIstAbgeschlossen());
     cont.addLabelPair("Hintergrund bei Reports",

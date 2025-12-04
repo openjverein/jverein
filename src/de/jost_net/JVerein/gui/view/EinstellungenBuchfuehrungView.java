@@ -47,9 +47,6 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addLabelPair("Geprüft Markierung mit Hibiscus synchronisieren",
         control.getGeprueftSynchronisieren());
     cont.addLabelPair(
-        "Zeige Kontonummer in Buchungsliste (PDF Einzelbuchungen)",
-        control.getKontonummerInBuchungsliste());
-    cont.addLabelPair(
         "Umsatzsteuer Support (Neustart erforderlich bei jameica < 2.12.0)",
         control.getOptiert());
     cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
