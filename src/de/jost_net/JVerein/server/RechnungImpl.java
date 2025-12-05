@@ -349,12 +349,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
       throws RemoteException, ApplicationException
   {
     Mitglied mitglied = sollb.getZahler();
-
     if (mitglied == null)
     {
       throw new ApplicationException("Sollbuchung enthält keinen Zahler.");
     }
-    setMitglied(Integer.parseInt(mitglied.getID()));
+    // Es wir die ID des Mitglieds eingetragen, aber die Daten des Zahlers
+    setMitglied(Integer.parseInt(sollb.getMitgliedId()));
     setPersonenart(mitglied.getPersonenart());
     setAnrede(mitglied.getAnrede());
     setTitel(mitglied.getTitel());
