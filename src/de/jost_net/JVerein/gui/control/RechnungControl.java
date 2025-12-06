@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -130,6 +131,8 @@ public class RechnungControl extends DruckMailControl implements Savable
   private TextInput leitwegID;
 
   private TextAreaInput kommentar;
+
+  private EmailInput email;
 
   public enum TYP
   {
@@ -740,6 +743,18 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
+  public EmailInput getEmail() throws RemoteException
+  {
+    if (email != null)
+    {
+      return email;
+    }
+
+    email = new EmailInput(getRechnung().getEmail());
+    email.setName("EMail");
+    return email;
+  }
+
   public ButtonRtoL getRechnungDruckUndMailButton()
   {
 
@@ -779,6 +794,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
+    re.setEmail((String) getEmail().getValue());
     return re;
   }
 
@@ -833,7 +849,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung[] rechnungen = getRechnungen(object);
     for (Rechnung r : rechnungen)
     {
-      String mail = r.getMitglied().getEmail();
+      String mail = r.getEmail();
       if ((mail == null || mail.isEmpty())
           && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
@@ -851,11 +867,11 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
     if (ohneMail == 1)
     {
-      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+      text = ohneMail + " Rechnung hat keine Mail Adresse.";
     }
     else if (ohneMail > 1)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+      text = ohneMail + " Rechnungen haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
   }
