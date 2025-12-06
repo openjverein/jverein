@@ -349,12 +349,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
       throws RemoteException, ApplicationException
   {
     Mitglied mitglied = sollb.getZahler();
-
     if (mitglied == null)
     {
       throw new ApplicationException("Sollbuchung enthält keinen Zahler.");
     }
-    setMitglied(Integer.parseInt(mitglied.getID()));
+    // Es wir die ID des Mitglieds eingetragen, aber die Daten des Zahlers
+    setMitglied(Integer.parseInt(sollb.getMitgliedId()));
     setPersonenart(mitglied.getPersonenart());
     setAnrede(mitglied.getAnrede());
     setTitel(mitglied.getTitel());
@@ -378,6 +378,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     setZahlungsweg(sollb.getZahlungsweg());
     setBetrag(sollb.getBetrag());
     setKommentar("");
+    setEmail(mitglied.getEmail());
   }
 
   @Override
@@ -469,6 +470,18 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public void setEmail(String email) throws RemoteException
+  {
+    setAttribute("email", email);
+  }
+
+  @Override
+  public String getEmail() throws RemoteException
+  {
+    return (String) getAttribute("email");
+  }
+
+  @Override
   public Object getAttributeDefault(String fieldName)
   {
     switch (fieldName)
@@ -486,6 +499,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
       case "mandatid":
       case "staat":
       case "anrede":
+      case "email":
         return "";
       default:
         return null;

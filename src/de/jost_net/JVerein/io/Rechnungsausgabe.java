@@ -217,7 +217,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
     {
       filename = m.getID() + "#mahnung#" + re.getID() + "#";
     }
-    String email = StringTool.toNotNullString(m.getEmail());
+    String email = StringTool.toNotNullString(re.getEmail());
     if (email.length() > 0)
     {
       filename += email;

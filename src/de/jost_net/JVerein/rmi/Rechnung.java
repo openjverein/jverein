@@ -139,4 +139,8 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public void setKommentar(String value) throws RemoteException;
 
   public String getKommentar() throws RemoteException;
+
+  public String getEmail() throws RemoteException;
+
+  void setEmail(String email) throws RemoteException;
 }
