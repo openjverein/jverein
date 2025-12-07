@@ -146,4 +146,7 @@ public interface Spendenbescheinigung extends JVereinDBObject
 
   public Date getZeitraumBis() throws RemoteException;
 
+  public Boolean getVersand() throws RemoteException;
+
+  public void setVersand(Boolean versand) throws RemoteException;
 }

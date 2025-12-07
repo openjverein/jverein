@@ -16,17 +16,23 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MahnungSendAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.RechnungSendAction;
+import de.jost_net.JVerein.gui.action.RechnungVersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Rechnungen.
@@ -41,6 +47,10 @@ public class RechnungMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(RechnungDetailView.class, table), "text-x-generic.png"));
+    addItem(new VersandRechnungItem("Als \"versendet\" markieren",
+        new RechnungVersandAction(true), "emblem-default.png", false));
+    addItem(new VersandRechnungItem("Als \"nicht versendet\" markieren",
+        new RechnungVersandAction(false), "edit-undo.png", true));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
@@ -52,4 +62,33 @@ public class RechnungMenu extends ContextMenu
         new MahnungSendAction(), "document-print.png"));
   }
 
+  private static class VersandRechnungItem extends CheckedContextMenuItem
+  {
+    boolean versendet;
+
+    private VersandRechnungItem(String text, Action action, String icon,
+        boolean versendet)
+    {
+      super(text, action, icon);
+      this.versendet = versendet;
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Rechnung)
+      {
+        Rechnung r = (Rechnung) o;
+        try
+        {
+          return !versendet ^ r.getVersand();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return true;
+    }
+  }
 }

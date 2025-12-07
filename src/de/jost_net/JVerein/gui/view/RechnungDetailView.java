@@ -60,6 +60,7 @@ public class RechnungDetailView extends AbstractDetailView
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
     middle.addInput(control.getLeitwegID());
+    middle.addLabelPair("Versand", control.getVersand());
 
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
     rigth.addInput(control.getPlz());

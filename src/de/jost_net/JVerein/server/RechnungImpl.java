@@ -469,6 +469,18 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Boolean getVersand() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("versand"));
+  }
+
+  @Override
+  public void setVersand(Boolean versand) throws RemoteException
+  {
+    setAttribute("versand", Boolean.valueOf(versand));
+  }
+
+  @Override
   public Object getAttributeDefault(String fieldName)
   {
     switch (fieldName)
@@ -487,6 +499,8 @@ public class RechnungImpl extends AbstractJVereinDBObject
       case "staat":
       case "anrede":
         return "";
+      case "versand":
+        return false;
       default:
         return null;
     }

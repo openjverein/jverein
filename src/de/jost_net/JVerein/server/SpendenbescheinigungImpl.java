@@ -507,6 +507,18 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Boolean getVersand() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("versand"));
+  }
+
+  @Override
+  public void setVersand(Boolean versand) throws RemoteException
+  {
+    setAttribute("versand", Boolean.valueOf(versand));
+  }
+
+  @Override
   public Object getAttributeDefault(String fieldName)
   {
     switch (fieldName)
@@ -521,6 +533,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       case "bezeichnungsachzuwendung":
         return "";
       case "unterlagenwertermittlung":
+      case "versand":
         return false;
       case "herkunftspende":
         return HerkunftSpende.KEINEANGABEN;

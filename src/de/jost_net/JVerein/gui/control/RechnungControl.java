@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
@@ -65,6 +66,8 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -131,6 +134,8 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextAreaInput kommentar;
 
+  private CheckboxInput versand;
+
   public enum TYP
   {
     RECHNUNG,
@@ -152,8 +157,16 @@ public class RechnungControl extends DruckMailControl implements Savable
       return rechnungList;
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
-    rechnungList = new JVereinTablePart(rechnungen, null);
+    rechnungList = new AutoUpdateTablePart(rechnungen, null);
     rechnungList.addColumn("Nr", "id-int");
+    rechnungList.addColumn("Versand", "versand", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        return (Boolean) o ? "\u2705" : "";
+      }
+    });
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Mitglied", "mitglied");
@@ -703,6 +716,16 @@ public class RechnungControl extends DruckMailControl implements Savable
     return leitwegID;
   }
 
+  public CheckboxInput getVersand() throws RemoteException
+  {
+    if (versand != null && !versand.getControl().isDisposed())
+    {
+      return versand;
+    }
+    versand = new CheckboxInput(getRechnung().getVersand());
+    return versand;
+  }
+
   public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
@@ -779,6 +802,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
+    re.setVersand((Boolean) getVersand().getValue());
     return re;
   }
 
