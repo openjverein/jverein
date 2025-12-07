@@ -39,7 +39,7 @@ public class Update0497 extends AbstractDDLUpdate
     execute(idx.getCreateIndex("rechnung"));
 
     execute(createForeignKey("fkRechnungZahler", "rechnung", "zahler",
-        "mitglied", "id", "RESTRICT", "NO ACTION"));
+        "mitglied", "id", "CASCADE", "NO ACTION"));
 
     execute("UPDATE rechnung set zahler = mitglied");
   }
