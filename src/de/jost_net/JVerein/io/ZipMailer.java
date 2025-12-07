@@ -172,6 +172,10 @@ public class ZipMailer
               // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
+
+              // Bei diesem Mitglied wird die Mail gespeichert, kann bei
+              // Rechnungen abweichen
+              Mitglied mitgliedMail = m;
               map = new MitgliedMap().getMap(m, map);
 
               switch (art.toLowerCase().trim())
@@ -181,6 +185,7 @@ public class ZipMailer
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
+                  mitgliedMail = re.getZahler();
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
@@ -287,7 +292,7 @@ public class ZipMailer
 
                 MailEmpfaenger me = (MailEmpfaenger) Einstellungen
                     .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(m);
+                me.setMitglied(mitgliedMail);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
