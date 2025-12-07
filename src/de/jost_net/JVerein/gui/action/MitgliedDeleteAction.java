@@ -20,18 +20,17 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+
+import org.eclipse.swt.graphics.Image;
+
 import java.math.BigDecimal;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -40,111 +39,75 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 /**
  * Loeschen eines Mitgliedes.
  */
-public class MitgliedDeleteAction implements Action
+public class MitgliedDeleteAction extends DeleteAction
 {
-
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  protected String getText(JVereinDBObject object[])
+      throws RemoteException, ApplicationException
   {
-    Mitglied[] mitglieder = null;
-    if (context == null)
+    if (object == null || object.length == 0
+        || !(object[0] instanceof Mitglied))
     {
       throw new ApplicationException("Kein Mitglied ausgewählt");
     }
-    else if (context instanceof Mitglied)
-    {
-      mitglieder = new Mitglied[] { (Mitglied) context };
-    }
-    else if (context instanceof Mitglied[])
-    {
-      mitglieder = (Mitglied[]) context;
-    }
-    else
+
+    return String.format("Wollen Sie %d %s wirklich löschen?", object.length,
+        (object.length == 1 ? name : namen)) + "\nDies löscht auch alle "
+        + namen + " bezogenen Daten wie" + "\nz.B. Sollbuchungen, Mails etc."
+        + "\nDiese Daten können nicht wieder hergestellt werden!";
+  }
+
+  @Override
+  protected void doDelete(JVereinDBObject object, Integer selection)
+      throws RemoteException, ApplicationException
+  {
+    if (!(object instanceof Mitglied))
     {
       return;
     }
-    try
+
+    final DBService service = Einstellungen.getDBService();
+    // Suche Mails mit mehr als einem Empfänger
+    String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
+    sql += "group by mailempfaenger.mail ";
+    sql += "HAVING anzahl > 1 ";
+    ResultSetExtractor rs = new ResultSetExtractor()
     {
-      String mehrzahl = mitglieder.length > 1 ? "er" : "";
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle("Mitglied" + mehrzahl + " löschen");
-      d.setPanelText("Mitglied" + mehrzahl + " löschen?");
-      d.setSideImage(SWTUtil.getImage("dialog-warning-large.png"));
-      String text = "Wollen Sie diese" + (mitglieder.length > 1 ? "" : "s")
-          + " Mitglied" + mehrzahl + " wirklich löschen?"
-          + "\nDies löscht auch alle Mitglied bezogenen Daten wie"
-          + "\nz.B. Sollbuchungen, Mails etc."
-          + "\nDiese Daten können nicht wieder hergestellt werden!";
-      d.setText(text);
-
-      try
+      @Override
+      public Object extract(ResultSet rs) throws RemoteException, SQLException
       {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-          return;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Löschen des Mitgliedes", e);
-        return;
-      }
-
-      final DBService service = Einstellungen.getDBService();
-      DBTransaction.starten();
-      for (Mitglied m : mitglieder)
-      {
-        if (m.isNewObject())
+        ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
+        while (rs.next())
         {
-          continue;
+          list.add(rs.getBigDecimal(1));
         }
-
-        // Suche Mails mit mehr als einem Empfänger
-        String sql = "SELECT mail , count(id) anzahl from mailempfaenger ";
-        sql += "group by mailempfaenger.mail ";
-        sql += "HAVING anzahl > 1 ";
-        ResultSetExtractor rs = new ResultSetExtractor()
-        {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            ArrayList<BigDecimal> list = new ArrayList<BigDecimal>();
-            while (rs.next())
-            {
-              list.add(rs.getBigDecimal(1));
-            }
-            return list;
-          }
-        };
-        @SuppressWarnings("unchecked")
-        ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service
-            .execute(sql, new Object[] {}, rs);
-
-        // Alle Mails an das Mitglied löschen wenn nur ein Empfänger vorhanden
-        DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
-            .createList(MailEmpfaenger.class);
-        it.addFilter("mitglied = ?", m.getID());
-        while (it.hasNext())
-        {
-          Mail ma = ((MailEmpfaenger) it.next()).getMail();
-          if (!ergebnis.contains(new BigDecimal(ma.getID())))
-          {
-            // Die Mail hat keinen weiteren Empfänger also löschen
-            ma.delete();
-          }
-        }
-
-        m.delete();
+        return list;
       }
-      DBTransaction.commit();
-      GUI.getStatusBar().setSuccessText("Mitglied" + mehrzahl + " gelöscht.");
-    }
-    catch (RemoteException e)
+    };
+    @SuppressWarnings("unchecked")
+    ArrayList<BigDecimal> ergebnis = (ArrayList<BigDecimal>) service
+        .execute(sql, new Object[] {}, rs);
+
+    // Alle Mails an das Mitglied löschen wenn nur ein Empfänger vorhanden
+    DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
+        .createList(MailEmpfaenger.class);
+    it.addFilter("mitglied = ?", object.getID());
+    while (it.hasNext())
     {
-      DBTransaction.rollback();
-      String fehler = "Fehler beim Löschen des Mitgliedes";
-      GUI.getStatusBar().setErrorText(fehler);
-      Logger.error(fehler, e);
+      Mail ma = ((MailEmpfaenger) it.next()).getMail();
+      if (!ergebnis.contains(new BigDecimal(ma.getID())))
+      {
+        // Die Mail hat keinen weiteren Empfänger also löschen
+        ma.delete();
+      }
     }
+
+    object.delete();
+  }
+
+  @Override
+  protected Image getImage()
+  {
+    return SWTUtil.getImage("dialog-warning-large.png");
   }
 }

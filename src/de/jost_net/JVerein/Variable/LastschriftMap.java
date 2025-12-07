@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -47,39 +48,13 @@ public class LastschriftMap extends AbstractMap
     {
       map = inma;
     }
-    Abrechnungslauf abrl = null;
+
     if (ls.getID() == null)
     {
-      abrl = (Abrechnungslauf) Einstellungen.getDBService()
-          .createObject(Abrechnungslauf.class, null);
-      abrl.setDatum(new Date());
-      abrl.setFaelligkeit(new Date());
-      abrl.setID("123");
-      ls.setAdressierungszusatz("Hinterhaus bei Lieschen Müller");
-      ls.setAnrede("Herrn");
-      ls.setBetrag(123.45d);
-      ls.setBIC("XXXXXXXXXXX");
-      ls.setEmail("willi.wichtig@mail.de");
-      ls.setIBAN("DE89370400440532013000");
-      ls.setIBAN("DE89370400440532013000");
-      ls.setGeschlecht(GeschlechtInput.MAENNLICH);
-      ls.setMandatDatum(new Date());
-      ls.setMandatSequence("FRST");
-      ls.setMandatID("1234");
-      ls.setName("Wichtig");
-      ls.setOrt("Testenhausen");
-      ls.setPersonenart("n");
-      ls.setPlz("12345");
-      ls.setStaat("Deutschland");
-      ls.setStrasse("Bahnhofstr. 1");
-      ls.setTitel("Dr.");
-      ls.setVerwendungszweck("Beitrag 2013 Willi Wichtig");
-      ls.setVorname("Willi");
+      return getDummyMap(map);
     }
-    else
-    {
-      abrl = ls.getAbrechnungslauf();
-    }
+
+    Abrechnungslauf abrl = ls.getAbrechnungslauf();
 
     map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
     map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
@@ -120,7 +95,8 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATID.getName(), ls.getMandatID());
     map.put(LastschriftVar.MANDATDATUM.getName(), ls.getMandatDatum());
     map.put(LastschriftVar.BIC.getName(), ls.getBIC());
-    map.put(LastschriftVar.IBAN.getName(), ls.getIBAN());
+    map.put(LastschriftVar.IBAN.getName(),
+        new IBANFormatter().format(ls.getIBAN()));
     map.put(LastschriftVar.IBANMASKIERT.getName(),
         VarTools.maskieren(ls.getIBAN()));
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
@@ -172,7 +148,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATID.getName(), "12345");
     map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
-    map.put(LastschriftVar.IBAN.getName(), "DE89370400440532013000");
+    map.put(LastschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
     map.put(LastschriftVar.BETRAG.getName(), "23,80");

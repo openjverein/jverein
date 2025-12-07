@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.formatter.BeitragsgruppeFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
@@ -34,7 +34,6 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 
 public class MitgliedSpaltenauswahl extends Spaltenauswahl
@@ -113,21 +112,11 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new ZahlungsterminFormatter(), Column.ALIGN_LEFT, true);
     add("Datum des Mandats", "mandatdatum", false, true);
     add("BIC", "bic", false, true);
-    add("IBAN", "iban", false, new IbanFormatter(), Column.ALIGN_LEFT, true);
-    add("Kontoinhaber Anrede", "ktoianrede", false, true);
-    add("Kontoinhaber Name", "ktoiname", false, true);
-    add("Kontoinhaber Titel", "ktoititel", false, true);
-    add("Kontoinhaber Vorname", "ktoivorname", false, true);
-    add("Kontoinhaber Straße", "ktoistrasse", false, true);
-    add("Kontoinhaber Adressierungszusatz", "ktoiadressierungszsatz", false,
-        true);
-    add("Kontoinhaber PLZ", "ktoiplz", false, true);
-    add("Kontoinhaber Ort", "ktoiort", false, true);
-    add("Kontoinhaber Staat", "ktoistaat", false, new StaatFormatter(),
-        Column.ALIGN_LEFT, true);
-    add("Kontoinhaber Email", "ktoiemail", false, true);
-    add("Kontoinhaber Geschlecht", "ktoigeschlecht", false, true);
+    add("IBAN", "iban", false, new IBANFormatter(), Column.ALIGN_LEFT, true);
+    add("Kontoinhaber", "kontoinhaber", false, true);
+    add("Abweichender Zahler", "altzahlerstring", false, true);
     add("Mandat Version", "mandatversion", false, true);
+    add("Mandat ID", "mandatid", false, true);
     add("Geburtsdatum", "geburtsdatum", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
     add("Alter", "alter", false, true);
@@ -139,8 +128,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
     add("Eintritt", "eintritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
-    add("Beitragsgruppe", "beitragsgruppe", false,
-        new BeitragsgruppeFormatter(), Column.ALIGN_LEFT, false);
+    add("Beitragsgruppe", "beitragsgruppe", false, false);
     add("Austritt", "austritt", true,
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);

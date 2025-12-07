@@ -65,7 +65,6 @@ public class SpendenbescheinigungMap extends AbstractMap
       spb.setBescheinigungsdatum(new Date());
       spb.setBetrag(1234.56);
       spb.setBezeichnungSachzuwendung("Buch");
-      spb.setErsatzAufwendungen(false);
       spb.setHerkunftSpende(1);
       spb.setSpendedatum(new Date());
       spb.setSpendenart(Spendenart.GELDSPENDE);
@@ -122,6 +121,8 @@ public class SpendenbescheinigungMap extends AbstractMap
         .format(spb.getBescheinigungsdatum());
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
         bescheinigungsdatum);
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(),
+        fromDate((Date) spb.getBescheinigungsdatum()));
     switch (spb.getSpendenart())
     {
       case Spendenart.GELDSPENDE:
@@ -146,50 +147,39 @@ public class SpendenbescheinigungMap extends AbstractMap
         spb.getUnterlagenWertermittlung()
             ? "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor."
             : "");
-    // Unterscheidung bis 2012 / ab 2013
-    if (gc.get(GregorianCalendar.YEAR) <= 2012)
+
+    // ab 2013
+    switch (spb.getHerkunftSpende())
     {
-      map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-          HerkunftSpende.get(spb.getHerkunftSpende()));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (spb.getErsatzAufwendungen() ? "X" : ""));
+      case HerkunftSpende.BETRIEBSVERMOEGEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
+                + newLineStr
+                + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
+        break;
+      case HerkunftSpende.PRIVATVERMOEGEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
+        break;
+      case HerkunftSpende.KEINEANGABEN:
+        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
+            "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
+        break;
     }
-    else
+
+    boolean ersatz = false;
+    // Geldspende und keine Sammelbestätigung
+    if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1
+        && spb.getSpendenart() == Spendenart.GELDSPENDE)
     {
-      // ab 2013
-      switch (spb.getHerkunftSpende())
-      {
-        case HerkunftSpende.BETRIEBSVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
-                  + newLineStr
-                  + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
-          break;
-        case HerkunftSpende.PRIVATVERMOEGEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
-          break;
-        case HerkunftSpende.KEINEANGABEN:
-          map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-              "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
-          break;
-      }
-      boolean ersatz = spb.getErsatzAufwendungen();
-      if (spb.getAutocreate())
-      {
-        // Geldspende und keine Sammelbestätigung
-        if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1)
-        {
-          ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
-        }
-      }
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-          (ersatz ? "Ja" : "Nein"));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
-          (ersatz ? "X" : " "));
-      map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-          (ersatz ? " " : "X"));
+      ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
     }
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
+        (ersatz ? "Ja" : "Nein"));
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
+        (ersatz ? "X" : " "));
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
+        (ersatz ? " " : "X"));
 
     // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
     if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
@@ -380,6 +370,8 @@ public class SpendenbescheinigungMap extends AbstractMap
       map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
     }
     map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), spendedatum);
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(),
+        fromDate((Date) spb.getSpendedatum()));
 
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(),
         (String) Einstellungen.getEinstellung(Property.FINANZAMT));
@@ -388,6 +380,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     String bescheiddatum = new JVDateFormatTTMMJJJJ()
         .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), bescheiddatum);
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(),
+        fromDate((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM)));
     Calendar cal = Calendar.getInstance();
     cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
     String start = "" + cal.get(Calendar.YEAR);
@@ -450,15 +444,16 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
+    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(), "20251001");
     map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
     map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
     map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), "01.01.2025");
+    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(), "20250101");
     map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
         "01.01.2025 bis 01.03.2025");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "X");
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "Nein");
     map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(), "X");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-        (char) 113);
+    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(), "X");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Liste");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Daten");
     map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
@@ -472,10 +467,11 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
+    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(), "20250601");
     map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
         "2022 bis 2024");
     map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
-    map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(), "Unterschrift");
+
     map.put(SpendenbescheinigungVar.ZEILE1.getName(), "Herr");
     map.put(SpendenbescheinigungVar.ZEILE2.getName(), "Willi Wichtig");
     map.put(SpendenbescheinigungVar.ZEILE3.getName(), "Bahnhofstr. 22");

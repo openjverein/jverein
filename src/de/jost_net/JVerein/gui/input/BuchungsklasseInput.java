@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -45,12 +46,12 @@ public class BuchungsklasseInput
     buchungsklasse = new SelectInput(
         it != null ? PseudoIterator.asList(it) : null, klasse);
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         buchungsklasse.setAttribute("nrbezeichnung");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         buchungsklasse.setAttribute("bezeichnungnr");
         break;
       default:

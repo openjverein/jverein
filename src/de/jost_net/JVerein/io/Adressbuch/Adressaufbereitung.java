@@ -57,7 +57,15 @@ public class Adressaufbereitung
    */
   public static String getNameVorname(IAdresse adr) throws RemoteException
   {
-    String ret = adr.getName() + ", ";
+    String ret = "";
+    if (!adr.getName().isBlank())
+    {
+      ret = adr.getName();
+      if (!adr.getVorname().isBlank() || !adr.getTitel().isBlank())
+      {
+        ret += ", ";
+      }
+    }
     if (adr.getTitel() != null && adr.getTitel().length() > 0)
     {
       ret += adr.getTitel() + " ";

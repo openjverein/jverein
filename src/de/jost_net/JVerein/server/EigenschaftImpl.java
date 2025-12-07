@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
+import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -45,13 +46,31 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    try
+    {
+      // Prüfen ob Eigenschaft schon verwendet wird
+      DBIterator<Eigenschaften> it = Einstellungen.getDBService()
+          .createList(Eigenschaften.class);
+      it.addFilter("eigenschaft = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Sie ist noch mit Mitgliedern verknüpft.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Eigenschaft kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -59,36 +78,32 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   {
     try
     {
-      plausi();
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+      if (getEigenschaftGruppe() == null)
+      {
+        throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
+      }
+      DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      if (!this.isNewObject())
+      {
+        eigIt.addFilter("id != ?", getID());
+      }
+      eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+      if (eigIt.hasNext())
+      {
+        throw new ApplicationException(
+            "Bitte eindeutige Bezeichnung eingeben!");
+      }
     }
     catch (RemoteException e)
     {
       Logger.error("insert check of eigenschaft failed", e);
       throw new ApplicationException(
-          "Eigenschaft kann nicht gespeichert werden. Siehe system log");
-    }
-  }
-
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    if (getBezeichnung() == null || getBezeichnung().isEmpty())
-    {
-      throw new ApplicationException("Bitte Bezeichnung eingeben!");
-    }
-    if (getEigenschaftGruppe() == null)
-    {
-      throw new ApplicationException("Bitte Eigenschaftengruppe auswählen");
-    }
-    DBIterator<Eigenschaft> eigIt = Einstellungen.getDBService()
-        .createList(Eigenschaft.class);
-    if (!this.isNewObject())
-    {
-      eigIt.addFilter("id != ?", getID());
-    }
-    eigIt.addFilter("bezeichnung = ?", getBezeichnung());
-    if (eigIt.hasNext())
-    {
-      throw new ApplicationException("Bitte eindeutige Bezeichnung eingeben!");
+          "Eigenschaft kann nicht gespeichert werden. Siehe system log.");
     }
   }
 
@@ -143,6 +158,18 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
   public Object getAttribute(String fieldName) throws RemoteException
   {
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Eigenschaft";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Eigenschaften";
   }
 
 }

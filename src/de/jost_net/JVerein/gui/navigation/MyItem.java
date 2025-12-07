@@ -27,9 +27,11 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Item;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.logging.Logger;
 
 /**
  */
@@ -46,20 +48,17 @@ public class MyItem implements NavigationItem
 
   private String icon;
 
-  private static int maxId = 0;
+  private boolean enabled = true;
 
-  private int id;
-
-  public MyItem(NavigationItem item, String navitext, Action action)
+  public MyItem(NavigationItem parent, String navitext, Action action)
   {
-    this(item, navitext, action, null);
+    this(parent, navitext, action, null);
   }
 
-  public MyItem(NavigationItem item, String navitext, Action action,
+  public MyItem(NavigationItem parent, String navitext, Action action,
       String icon)
   {
-    this.id = maxId++;
-    this.parent = item;
+    this.parent = parent;
     this.action = action;
     this.navitext = navitext;
     this.icon = icon;
@@ -140,7 +139,7 @@ public class MyItem implements NavigationItem
   @Override
   public boolean isEnabled()
   {
-    return true;
+    return this.enabled;
   }
 
   /**
@@ -148,25 +147,30 @@ public class MyItem implements NavigationItem
    */
   @Override
   public void setEnabled(boolean enabled, boolean recursive)
+      throws RemoteException
   {
-    // ignore
+    this.enabled = enabled;
+    GUI.getNavigation().update(this);
+
+    if (recursive)
+    {
+      for (int i = 0; i < this.children.size(); ++i)
+      {
+        NavigationItem child = (NavigationItem) this.children.get(i);
+        child.setEnabled(enabled, recursive);
+      }
+    }
   }
 
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getChildren()
    */
+  @SuppressWarnings("unchecked")
   @Override
-  public GenericIterator getChildren() throws RemoteException
+  public GenericIterator<NavigationItem> getChildren() throws RemoteException
   {
-    // if (children.size() == 0)
-    // {
-    // return null;
-    // }
-    // else
-    // {
     return PseudoIterator
         .fromArray(children.toArray(new MyItem[children.size()]));
-    // }
   }
 
   /**
@@ -181,11 +185,23 @@ public class MyItem implements NavigationItem
   /**
    * @see de.willuhn.datasource.GenericObjectNode#getPath()
    */
-  @SuppressWarnings({ "rawtypes", "unchecked" })
+  @SuppressWarnings({ "unchecked" })
   @Override
-  public GenericIterator getPath() throws RemoteException
+  public GenericIterator<NavigationItem> getPath() throws RemoteException
   {
-    List list = PseudoIterator.asList(this.parent.getPath());
+    List<NavigationItem> list = new ArrayList<>();
+    if (this.parent != null)
+    {
+      try
+      {
+        list = PseudoIterator.asList(this.parent.getPath());
+      }
+      catch (UnsupportedOperationException ignore)
+      {
+        // getPath() ist bei AbstractItemXml nich implementiert, das brauchen wr
+        // für die ID aber auch nicht.
+      }
+    }
     list.add(this);
     return PseudoIterator.fromArray(
         (NavigationItem[]) list.toArray(new NavigationItem[list.size()]));
@@ -195,7 +211,7 @@ public class MyItem implements NavigationItem
    * @see de.willuhn.datasource.GenericObjectNode#getPossibleParents()
    */
   @Override
-  public GenericIterator getPossibleParents() throws RemoteException
+  public GenericIterator<?> getPossibleParents() throws RemoteException
   {
     throw new RemoteException("not implemented");
   }
@@ -239,12 +255,19 @@ public class MyItem implements NavigationItem
   }
 
   /**
+   * @throws RemoteException
    * @see de.willuhn.datasource.GenericObject#getID()
    */
   @Override
-  public String getID()
+  public String getID() throws RemoteException
   {
-    return getClass().getName() + "." + id + "." + getName();
+    String id = "";
+    GenericIterator<NavigationItem> p = getPath();
+    while (p.hasNext())
+    {
+      id += (id.length() > 0 ? "." : "") + p.next().getName();
+    }
+    return id;
   }
 
   /**
@@ -262,7 +285,15 @@ public class MyItem implements NavigationItem
   @Override
   public String getExtendableID()
   {
-    return getID();
+    try
+    {
+      return getID();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim bestimmen der Menü-ID", e);
+      return "";
+    }
   }
 
 }

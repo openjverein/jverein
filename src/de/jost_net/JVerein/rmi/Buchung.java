@@ -169,8 +169,6 @@ public interface Buchung extends JVereinDBObject
 
   public void plausi() throws RemoteException, ApplicationException;
 
-  public void store(boolean check) throws RemoteException, ApplicationException;
-
   public Boolean getGeprueft() throws RemoteException;
 
   public void setGeprueft(Boolean geprueft) throws RemoteException;
@@ -182,5 +180,20 @@ public interface Buchung extends JVereinDBObject
   public void setSteuer(Steuer steuer) throws RemoteException;
 
   public void setSteuerId(Long id) throws RemoteException;
+
+  // Für Sachspenden
+  public String getBezeichnungSachzuwendung() throws RemoteException;
+
+  public void setBezeichnungSachzuwendung(String bezeichungsachzuwendung)
+      throws RemoteException;
+
+  public int getHerkunftSpende() throws RemoteException;
+
+  public void setHerkunftSpende(int herkunftspende) throws RemoteException;
+
+  public Boolean getUnterlagenWertermittlung() throws RemoteException;
+
+  public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
+      throws RemoteException;
 
 }

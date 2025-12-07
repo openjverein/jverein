@@ -32,7 +32,6 @@ import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -213,11 +212,11 @@ public class BuchungQuery
 
     if (buchungart != null)
     {
-      if (buchungart.getNummer() == -1)
+      if (buchungart.getNummer() == "")
       {
         it.addFilter("buchung.buchungsart is null ");
       }
-      else if (buchungart.getNummer() >= 0)
+      else
       {
         it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
       }
@@ -326,7 +325,7 @@ public class BuchungQuery
       }
       catch (Exception e)
       {
-        
+
       }
       String ttext = text.toUpperCase();
       ttext = "%" + ttext + "%";
@@ -357,24 +356,6 @@ public class BuchungQuery
 
     this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
     return ergebnis;
-  }
-
-  public String getSubtitle() throws RemoteException
-  {
-    String subtitle = String.format("vom %s bis %s",
-        new JVDateFormatTTMMJJJJ().format(getDatumvon()),
-        new JVDateFormatTTMMJJJJ().format(getDatumbis()));
-    if (getKonto() != null)
-    {
-      subtitle += " " + String.format("für Konto %s - %s",
-          getKonto().getNummer(), getKonto().getBezeichnung());
-    }
-    if (getProjekt() != null)
-    {
-      subtitle += ", "
-          + String.format("Projekt %s", getProjekt().getBezeichnung());
-    }
-    return subtitle;
   }
 
   public int getSize()

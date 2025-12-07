@@ -27,11 +27,14 @@ import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -361,32 +364,38 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         it.addColumn(
             "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
                 + BUCHUNGSART);
         it.addColumn(
             "CONCAT(buchungsklasse.nummer,' - ',buchungsklasse.bezeichnung) as "
                 + BUCHUNGSKLASSE);
-        it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC ");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         it.addColumn(
             "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
                 + BUCHUNGSART);
         it.addColumn(
             "CONCAT(buchungsklasse.bezeichnung,' (',buchungsklasse.nummer,')') as "
                 + BUCHUNGSKLASSE);
-        it.setOrder(
-            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
         break;
       default:
         it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
         it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
+        break;
+    }
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.setOrder(
+            "Order by buchungsklasse.nummer is null,buchungsklasse.nummer,"
+                + " buchungsart.nummer is null, buchungsart.nummer");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG:
+      default:
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
                 + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
@@ -430,18 +439,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         it.leftJoin("steuer", "steuer.id = buchungsart.steuer");
       }
     }
-    if (klasseInBuchung)
-    {
-      it.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchung.buchungsklasse");
-      it.addGroupBy("buchung.buchungsklasse");
-    }
-    else
-    {
-      it.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchungsart.buchungsklasse ");
-      it.addGroupBy("buchungsart.buchungsklasse");
-    }
     it.addGroupBy("buchungsart.id");
     it.addGroupBy("buchungsklasse.bezeichnung");
     it.addGroupBy("buchungsklasse.nummer");
@@ -464,7 +461,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
-      String subselect = "(SELECT steuer.buchungsart, "
+      String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
           + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
           + "buchung.projekt " + " FROM buchung"
           // Keine Steuer bei Anlagekonten
@@ -484,18 +481,48 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       subselect += " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY steuer.buchungsart, buchung.projekt) AS st ";
+          + " GROUP BY steuer.buchungsart, buchung.projekt";
+      if (klasseInBuchung)
+      {
+        subselect += ",steuer.buchungsklasse";
+      }
+      subselect += ") AS st ";
       it.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
           Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
           getDatumvon().getDate(), getDatumbis().getDate());
     }
+    if (klasseInBuchung)
+    {
+      it.leftJoin("buchungsklasse", "buchungsklasse.id = buchung.buchungsklasse"
+          + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse" : ""));
+      it.addGroupBy("buchung.buchungsklasse");
+    }
+    else
+    {
+      it.leftJoin("buchungsklasse",
+          "buchungsklasse.id = buchungsart.buchungsklasse ");
+      it.addGroupBy("buchungsart.buchungsklasse");
+    }
+
     return it;
   }
 
   @Override
   protected String getAuswertungTitle()
   {
-    return "Buchungsklassen-Saldo";
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
   }
 
   @Override
@@ -506,9 +533,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new BuchungsklassesaldoCSV(mitUmbuchung);
       case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung, getAuswertungTitle());
+        return new BuchungsklassesaldoPDF(mitUmbuchung);
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

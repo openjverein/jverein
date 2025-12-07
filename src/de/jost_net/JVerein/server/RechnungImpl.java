@@ -35,11 +35,10 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
-    implements Rechnung, IAdresse
+    implements Rechnung, IAdresse, UnreadCounter
 {
 
   /**
@@ -275,18 +274,6 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
     if ("ist".equals(fieldName))
     {
       return getIstSumme();
@@ -325,16 +312,17 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Sollbuchung getSollbuchung() throws RemoteException
+  public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException
   {
+    ArrayList<Sollbuchung> sbs = new ArrayList<>();
     DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
         .createList(Sollbuchung.class);
     sollbIt.addFilter(Sollbuchung.RECHNUNG + " = ?", getID());
-    if (sollbIt.hasNext())
+    while (sollbIt.hasNext())
     {
-      return sollbIt.next();
+      sbs.add((Sollbuchung) sollbIt.next());
     }
-    return null;
+    return sbs;
   }
 
   @Override
@@ -360,42 +348,25 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException
   {
-    Mitglied mitglied = sollb.getMitglied();
+    Mitglied mitglied = sollb.getZahler();
 
     if (mitglied == null)
     {
-      throw new ApplicationException("Sollbuchung enthält kein Mitglied.");
+      throw new ApplicationException("Sollbuchung enthält keinen Zahler.");
     }
     setMitglied(Integer.parseInt(mitglied.getID()));
+    setPersonenart(mitglied.getPersonenart());
+    setAnrede(mitglied.getAnrede());
+    setTitel(mitglied.getTitel());
+    setName(mitglied.getName());
+    setVorname(mitglied.getVorname());
+    setStrasse(mitglied.getStrasse());
+    setAdressierungszusatz(mitglied.getAdressierungszusatz());
+    setPlz(mitglied.getPlz());
+    setOrt(mitglied.getOrt());
+    setStaat(mitglied.getStaat());
+    setGeschlecht(mitglied.getGeschlecht());
 
-    if (mitglied.getKtoiName() == null || mitglied.getKtoiName().length() == 0)
-    {
-      setPersonenart(mitglied.getPersonenart());
-      setAnrede(mitglied.getAnrede());
-      setTitel(mitglied.getTitel());
-      setName(mitglied.getName());
-      setVorname(mitglied.getVorname());
-      setStrasse(mitglied.getStrasse());
-      setAdressierungszusatz(mitglied.getAdressierungszusatz());
-      setPlz(mitglied.getPlz());
-      setOrt(mitglied.getOrt());
-      setStaat(mitglied.getStaat());
-      setGeschlecht(mitglied.getGeschlecht());
-    }
-    else
-    {
-      setPersonenart(mitglied.getKtoiPersonenart());
-      setAnrede(mitglied.getKtoiAnrede());
-      setTitel(mitglied.getKtoiTitel());
-      setName(mitglied.getKtoiName());
-      setVorname(mitglied.getKtoiVorname());
-      setStrasse(mitglied.getKtoiStrasse());
-      setAdressierungszusatz(mitglied.getKtoiAdressierungszusatz());
-      setPlz(mitglied.getKtoiPlz());
-      setOrt(mitglied.getKtoiOrt());
-      setStaat(mitglied.getKtoiStaat());
-      setGeschlecht(mitglied.getKtoiGeschlecht());
-    }
     if (!mitglied.getMandatDatum().equals(Einstellungen.NODATE))
     {
       setMandatDatum(mitglied.getMandatDatum());
@@ -494,10 +465,68 @@ public class RechnungImpl extends AbstractJVereinDBObject
   @Override
   public String getKommentar() throws RemoteException
   {
-    if (getAttribute("kommentar") == null)
-    {
-      return "";
-    }
     return (String) getAttribute("kommentar");
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "kommentar":
+      case "titel":
+      case "vorname":
+      case "adressierungszusatz":
+      case "strasse":
+      case "plz":
+      case "ort":
+      case "iban":
+      case "bic":
+      case "leitwegid":
+      case "mandatid":
+      case "staat":
+      case "anrede":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Rechnung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Rechnungen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+
+    it.join(
+        "(SELECT " + Sollbuchung.TABLE_NAME
+            + ".rechnung AS re,sum(buchung.betrag) AS betrag FROM "
+            + Sollbuchung.TABLE_NAME + " LEFT JOIN buchung ON "
+            + Buchung.T_SOLLBUCHUNG + "=" + Sollbuchung.TABLE_NAME_ID
+            + " GROUP BY " + Sollbuchung.TABLE_NAME + ".rechnung) AS ist",
+        "ist.re = rechnung.id");
+    it.addFilter(
+        "abs(COALESCE(ist.betrag,0) - " + getTableName() + ".betrag) >= 0.01");
+    it.addFilter(getTableName() + ".datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Rechnungen";
   }
 }

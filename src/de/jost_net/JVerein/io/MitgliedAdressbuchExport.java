@@ -35,7 +35,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
   }
 
   @Override
-  public void beforeGo()
+  public void beforeGo(String title)
   {
     // Nothing to do
   }
@@ -70,7 +70,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
   @Override
   public String getDateiendung()
   {
-    return "CSV";
+    return "csv";
   }
 
   @Override

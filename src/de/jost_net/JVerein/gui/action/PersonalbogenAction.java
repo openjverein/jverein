@@ -43,6 +43,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -58,8 +59,8 @@ import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
@@ -119,9 +120,15 @@ public class PersonalbogenAction implements Action
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("personalbogen", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    if (m.length == 1)
+    {
+      fd.setFileName(VorlageUtil
+          .getName(VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME, null, m[0]));
+    }
+    else
+    {
+      fd.setFileName(VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_DATEINAME));
+    }
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -143,8 +150,8 @@ public class PersonalbogenAction implements Action
       {
         try
         {
-          Reporter rpt = new Reporter(new FileOutputStream(file), "",
-              "Personalbogen", mitglied.length);
+          Reporter rpt = new Reporter(new FileOutputStream(file), "", "",
+              mitglied.length);
 
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
           GUI.getCurrentView().reload();
@@ -159,9 +166,18 @@ public class PersonalbogenAction implements Action
             }
             first = false;
 
-            rpt.add(
-                "Personalbogen" + " " + Adressaufbereitung.getVornameName(m),
-                14);
+            String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL,
+                null, m);
+            String subtitle = VorlageUtil
+                .getName(VorlageTyp.PERSONALBOGEN_SUBTITEL, null, m);
+            Paragraph pTitle = new Paragraph(title,
+                Reporter.getFreeSansBold(13));
+            pTitle.setAlignment(Element.ALIGN_CENTER);
+            rpt.add(pTitle);
+            Paragraph psubTitle = new Paragraph(subtitle,
+                Reporter.getFreeSansBold(10));
+            psubTitle.setAlignment(Element.ALIGN_CENTER);
+            rpt.add(psubTitle);
 
             generiereMitglied(rpt, m);
 
@@ -295,8 +311,7 @@ public class PersonalbogenAction implements Action
       kommunikation += "Email: " + m.getEmail();
     }
     rpt.addColumn(kommunikation, Element.ALIGN_LEFT);
-    if (m.getMitgliedstyp().getID()
-        .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+    if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
       rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
       rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
@@ -398,8 +413,7 @@ public class PersonalbogenAction implements Action
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
-            m.getZahlungstermin(), m.getZahlungsrhythmus().getKey(), bg,
-            new Date(), m))
+            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, new Date(), m))
         + " EUR";
     rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT);
   }

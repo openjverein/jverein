@@ -107,6 +107,8 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
             zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+            zb.setMitgliedzahltSelbst(
+                (Boolean) part.getMitgliedzahltSelbst().getValue());
             zb.store();
             count++;
           }
@@ -132,6 +134,8 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
             zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+            zv.setMitgliedzahltSelbst(
+                (Boolean) part.getMitgliedzahltSelbst().getValue());
             zv.store();
           }
           message = String.format("%d Zusatzbeiträge gespeichert.", count);

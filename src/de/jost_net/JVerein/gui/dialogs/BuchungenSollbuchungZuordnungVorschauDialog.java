@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungenSollbuchungZuordnungDialog.BookingMemberAccountEntry;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -40,7 +41,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -90,7 +90,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
     bu.addColumn("Buchungsnummer",
         BookingMemberAccountEntry.PREFIX_BUCHUNG + "id");
     bu.addColumn("IBAN oder Kontonummer",
-        BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban", new IbanFormatter());
+        BookingMemberAccountEntry.PREFIX_BUCHUNG + "iban", new IBANFormatter());
     bu.addColumn("Betrag", BookingMemberAccountEntry.PREFIX_BUCHUNG + "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Verwendungszweck",
@@ -147,7 +147,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
       {
         Sollbuchung sollb = dao.getSollbuchung();
         Buchung buchung = dao.getBuchung();
-        SplitbuchungsContainer.autoSplit(buchung, sollb, false);
+        SplitbuchungsContainer.autoSplit(buchung, sollb, true);
       }
 
       // Darstellung aktualisieren

@@ -21,8 +21,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 
 public class ProjektSaldoControl extends BuchungsklasseSaldoControl
@@ -56,9 +58,10 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        it.setOrder("ORDER BY projekt.bezeichnung, -buchungsart.nummer DESC ");
+        it.setOrder(
+            "ORDER BY projekt.bezeichnung, buchungsart.nummer is null, buchungsart.nummer ");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
         it.setOrder(
             "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
@@ -71,6 +74,18 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Projekt-Saldo";
+    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_DATEINAME, this);
   }
 }

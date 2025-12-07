@@ -28,6 +28,7 @@ import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
@@ -57,13 +58,30 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public String getPrimaryAttribute()
   {
-    return "id";
+    return "bezeichnung";
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("konto = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existieren Buchungen auf diesem Konto.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Konto kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -605,20 +623,42 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Anlagenzweck getAnlagenzweck() throws RemoteException
   {
-    Integer tmp = (Integer) super.getAttribute("zweck");
-    if (tmp == null)
-    {
-      return Anlagenzweck.NUTZUNGSGEBUNDEN;
-    }
-    else
-    {
-      return Anlagenzweck.getByKey((int) super.getAttribute("zweck"));
-    }
+    return Anlagenzweck.getByKey((int) super.getAttribute("zweck"));
   }
 
   @Override
   public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException
   {
     setAttribute("zweck", zweck.getKey());
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "kommentar":
+        return "";
+      case "zweck":
+        return Anlagenzweck.NUTZUNGSGEBUNDEN.getKey();
+      case "hibiscusid":
+        return -1;
+      case "kontoart":
+        return Kontoart.GELD.getKey();
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Konto";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Konten";
   }
 }

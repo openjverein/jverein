@@ -34,7 +34,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragImpl extends AbstractJVereinDBObject
-    implements Zusatzbetrag
+    implements Zusatzbetrag, IMitglied, UnreadCounter
 {
 
   private static final long serialVersionUID = 1L;
@@ -67,56 +67,60 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
       if (getStartdatum() == null)
       {
-        throw new ApplicationException("Bitte erste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte erste Fälligkeit eingeben!");
       }
       if (getFaelligkeit() == null)
       {
-        throw new ApplicationException("Bitte nächste Fälligkeit eingeben");
+        throw new ApplicationException("Bitte nächste Fälligkeit eingeben!");
       }
       if (getIntervall() == null)
       {
-        throw new ApplicationException("Bitte Intervall eingeben");
+        throw new ApplicationException("Bitte Intervall eingeben!");
       }
       if (getBuchungstext() == null || getBuchungstext().length() == 0)
       {
-        throw new ApplicationException("Bitte Buchungstext eingeben");
+        throw new ApplicationException("Bitte Buchungstext eingeben!");
       }
       if (getEndedatum() != null)
       {
         if (!Datum.isImInterval(getStartdatum(), getEndedatum(),
             getIntervall()))
         {
-          throw new ApplicationException("Endedatum liegt nicht im Intervall");
+          throw new ApplicationException("Endedatum liegt nicht im Intervall.");
         }
       }
       if (getFaelligkeit().getTime() < getStartdatum().getTime())
       {
         throw new ApplicationException(
-            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen");
+            "Das Fälligkeitsdatum darf nicht vor dem Startdatum liegen.");
       }
       if (!Datum.isImInterval(getStartdatum(), getFaelligkeit(),
           getIntervall()))
       {
         throw new ApplicationException(
-            "Nächste Fälligkeit liegt nicht im Intervall");
+            "Nächste Fälligkeit liegt nicht im Intervall.");
       }
       if (getBetrag() == null)
       {
-        throw new ApplicationException("Bitte Betrag eingeben");
+        throw new ApplicationException("Bitte Betrag eingeben!");
       }
       if (getZahlungsweg().getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        if (getMitglied().getZahlungsweg() == Zahlungsweg.VOLLZAHLER)
+        if (!getMitgliedzahltSelbst()
+            && getMitglied().getAbweichenderZahlerID() != null)
         {
-          Mitglied m = Einstellungen.getDBService().createObject(
-              MitgliedImpl.class, getMitglied().getVollZahlerID().toString());
+          Mitglied m = getMitglied().getAbweichenderZahler();
           if (m.getIban().length() == 0
               || m.getMandatDatum().equals(Einstellungen.NODATE))
           {
             throw new ApplicationException(
-                "Beim Vollzahler ist keine IBAN oder Mandatdatum hinterlegt.");
+                "Beim abweichenden Zahler ist keine IBAN oder Mandatdatum hinterlegt.");
           }
         }
         else if (getMitglied().getIban().length() == 0
@@ -156,7 +160,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Zusatzbetrag kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Zusatzbetrag kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -193,9 +197,9 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -460,12 +464,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Zahlungsweg getZahlungsweg() throws RemoteException
   {
-    Object o = getAttribute("zahlungsweg");
-    if (o == null)
-    {
-      return new Zahlungsweg(Zahlungsweg.STANDARD);
-    }
-    return new Zahlungsweg((Integer) o);
+    return new Zahlungsweg((Integer) getAttribute("zahlungsweg"));
   }
 
   @Override
@@ -503,5 +502,72 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   public void setSteuer(Steuer steuer) throws RemoteException
   {
     setAttribute("steuer", steuer);
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "zahlungsweg":
+        return Zahlungsweg.STANDARD;
+      case "intervall":
+        return IntervallZusatzzahlung.KEIN;
+      case "mitgliedzahltselbst":
+        return false;
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Zusatzbetrag";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Zusatzbeträge";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+    if (!(Boolean) Einstellungen
+        .getEinstellung(Property.ZUSATZBETRAGAUSGETRETENE))
+    {
+      it.join("mitglied", "mitglied.id = " + getTableName() + ".mitglied");
+      it.addFilter("mitglied.eintritt is null or mitglied.eintritt <= "
+          + getTableName() + ".faelligkeit");
+      it.addFilter("mitglied.austritt is null or mitglied.austritt > "
+          + getTableName() + ".faelligkeit");
+    }
+    it.addFilter("(intervall = 0 and ausfuehrung is null and faelligkeit <= ?) "
+        + "or (intervall != 0 and faelligkeit <= ? and (endedatum is null or endedatum > faelligkeit))",
+        new Date(), new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Zusatzbeträge";
+  }
+
+  public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
+      throws RemoteException
+  {
+    setAttribute("mitgliedzahltselbst", mitgliedzahltselbst);
+  }
+
+  @Override
+  public boolean getMitgliedzahltSelbst() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("mitgliedzahltselbst"));
   }
 }

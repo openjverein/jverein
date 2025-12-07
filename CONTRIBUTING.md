@@ -32,7 +32,7 @@ Um alle externen Abhängigkeiten bereitzustellen, muss initial das Ant-Build-Scr
 werden. Dieses lädt die benötigten Bibliotheken herunter und kopiert sie in das Verzeichnis `lib`.
 
 ```shell
-ant --file build/build.xml resolve-dependencies
+ant -file build/build.xml resolve-dependencies
 ```
 
 Sowohl IntelliJ als auch Eclipse enthalten eine Unterstützung für Ant-Build-Scripts, die es ermöglicht, das 

@@ -27,6 +27,8 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
 /**
  * @author Rolf Mamat Dieser View unterstützt beim Import von Buchungen aus
@@ -40,13 +42,13 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
  */
 public class QIFBuchungsImportView extends AbstractView
 {
+  final QIFBuchungsImportControl control = new QIFBuchungsImportControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("QIF-Datei-Import");
 
-    QIFBuchungsImportControl control = new QIFBuchungsImportControl(this);
     LabelGroup group = new LabelGroup(getParent(), "Konto Kopfdaten");
     group.addLabelPair("Externes Konto", control.getAuswahlExternesKonto());
 
@@ -94,5 +96,12 @@ public class QIFBuchungsImportView extends AbstractView
     buttons.addButton("Buchungen übernehmen", control.getPIFPosBuchenAction(),
         null, false, "document-new.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterQIFImportHeaderConsumer();
+    super.unbind();
   }
 }

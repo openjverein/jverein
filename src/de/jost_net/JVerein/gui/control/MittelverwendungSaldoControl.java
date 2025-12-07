@@ -20,8 +20,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 
 public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
@@ -102,6 +104,20 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Mittelverwendungs-Saldo";
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_SUBTITEL,
+        this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_DATEINAME,
+        this);
   }
 }

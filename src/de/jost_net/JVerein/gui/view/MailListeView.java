@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.MailDetailAction;
+import de.jost_net.JVerein.gui.action.MailNeuAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -61,7 +61,7 @@ public class MailListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton("Neu", new MailDetailAction(), null, false,
+    buttons.addButton("Neu", new MailNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
   }

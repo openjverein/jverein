@@ -27,8 +27,10 @@ import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
@@ -269,7 +271,22 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Umsatzsteuer Voranmeldung";
+    return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_TITEL,
+        this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_SUBTITEL,
+        this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_DATEINAME,
+        this);
   }
 
   @Override
@@ -280,7 +297,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       case AuswertungCSV:
         return new UmsatzsteuerSaldoCSV();
       case AuswertungPDF:
-        return new UmsatzsteuerSaldoPDF(getAuswertungTitle());
+        return new UmsatzsteuerSaldoPDF();
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }

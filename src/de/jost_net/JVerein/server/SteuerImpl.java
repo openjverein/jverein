@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.logging.Logger;
@@ -86,6 +87,31 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   }
 
   @Override
+  public Buchungsklasse getBuchungsklasse() throws RemoteException
+  {
+    Object l = (Object) super.getAttribute("buchungsklasse");
+    if (l == null)
+    {
+      return null;
+    }
+
+    if (l instanceof Buchungsklasse)
+    {
+      return (Buchungsklasse) l;
+    }
+
+    Cache cache = Cache.get(Buchungsklasse.class, true);
+    return (Buchungsklasse) cache.get(l);
+  }
+
+  @Override
+  public void setBuchungsklasse(Buchungsklasse buchungsklasse)
+      throws RemoteException
+  {
+    setAttribute("buchungsklasse", buchungsklasse);
+  }
+
+  @Override
   public void setAktiv(boolean aktiv) throws RemoteException
   {
     setAttribute("aktiv", aktiv);
@@ -94,13 +120,7 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   @Override
   public boolean getAktiv() throws RemoteException
   {
-    Object o = getAttribute("aktiv");
-    // Default aktiv
-    if (o == null)
-    {
-      return true;
-    }
-    return Util.getBoolean(o);
+    return Util.getBoolean(getAttribute("aktiv"));
   }
 
   @Override
@@ -214,6 +234,8 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   {
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
+    else if ("buchungsklasse".equals(fieldName))
+      return getBuchungsklasse();
 
     return super.getAttribute(fieldName);
   }
@@ -227,6 +249,30 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
   @Override
   public String getPrimaryAttribute() throws RemoteException
   {
-    return "id";
+    return "name";
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "aktiv":
+        return true;
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Steuer";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Steuern";
   }
 }

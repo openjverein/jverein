@@ -19,8 +19,6 @@ package de.jost_net.JVerein.gui.control;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -39,13 +37,15 @@ import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Dateiname;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -57,7 +57,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -73,7 +72,7 @@ public class BuchungsartControl extends FilterControl implements Savable
 {
   private JVereinTablePart buchungsartList;
 
-  private IntegerInput nummer;
+  private TextInput nummer;
 
   private Input bezeichnung;
 
@@ -112,13 +111,13 @@ public class BuchungsartControl extends FilterControl implements Savable
     return buchungsart;
   }
 
-  public IntegerInput getNummer(boolean withFocus) throws RemoteException
+  public TextInput getNummer(boolean withFocus) throws RemoteException
   {
     if (nummer != null)
     {
       return nummer;
     }
-    nummer = new IntegerInput(getBuchungsart().getNummer());
+    nummer = new TextInput(getBuchungsart().getNummer(), 50);
     if (withFocus)
     {
       nummer.focus();
@@ -232,11 +231,12 @@ public class BuchungsartControl extends FilterControl implements Savable
   {
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           return "nrbezeichnung";
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           return "bezeichnungnr";
         default:
           return "bezeichnung";
@@ -299,11 +299,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     Buchungsart b = getBuchungsart();
     if (getNummer(false).getValue() != null)
     {
-      b.setNummer(((Integer) getNummer(false).getValue()).intValue());
-    }
-    else
-    {
-      b.setNummer(-1);
+      b.setNummer((String) getNummer(false).getValue());
     }
 
     b.setBezeichnung((String) getBezeichnung().getValue());
@@ -331,18 +327,6 @@ public class BuchungsartControl extends FilterControl implements Savable
     b.setStatus(st.getKey());
     b.setSuchbegriff((String) getSuchbegriff().getValue());
     b.setRegexp((Boolean) getRegexp().getValue());
-    if ((Boolean) getRegexp().getValue())
-    {
-      try
-      {
-        Pattern.compile((String) getSuchbegriff().getValue());
-      }
-      catch (PatternSyntaxException pse)
-      {
-        throw new ApplicationException(
-            "Regulärer Ausdruck ungültig: " + pse.getDescription());
-      }
-    }
     if (steuer != null)
     {
       b.setSteuer((Steuer) steuer.getValue());
@@ -541,9 +525,8 @@ public class BuchungsartControl extends FilterControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("buchungsarten", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -558,6 +541,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     final File file = new File(s);
     final DBIterator<Buchungsart> it = getBuchungsarten();
     settings.setAttribute("lastdir", file.getParent());
+    final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL,
+        this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this);
     BackgroundTask t = new BackgroundTask()
     {
       @Override
@@ -566,7 +553,7 @@ public class BuchungsartControl extends FilterControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Buchungsarten", "", it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Nummer", Element.ALIGN_LEFT, 20,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_LEFT, 80,
@@ -597,7 +584,9 @@ public class BuchungsartControl extends FilterControl implements Savable
               reporter.addColumn("", Element.ALIGN_LEFT);
             }
             reporter.addColumn(b.getSpende());
-            reporter.addColumn(b.getSteuer().getName(), Element.ALIGN_RIGHT);
+            reporter.addColumn(
+                b.getSteuer() == null ? "" : b.getSteuer().getName(),
+                Element.ALIGN_RIGHT);
           }
           reporter.closeTable();
           reporter.close();

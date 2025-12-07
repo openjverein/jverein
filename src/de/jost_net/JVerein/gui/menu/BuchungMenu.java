@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.action.BuchungGeprueftAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
-import de.jost_net.JVerein.gui.action.BuchungSteuerZuordnenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
@@ -38,7 +37,6 @@ import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.Action;
@@ -82,7 +80,7 @@ public class BuchungMenu extends ContextMenu
         "edit-copy.png"));
     addItem(new AufloesenItem("Auflösen",
         new SplitbuchungBulkAufloesenAction(control), "unlocked.png"));
-    addItem(new BuchungItem("Löschen", new BuchungDeleteAction(false),
+    addItem(new CheckedContextMenuItem("Löschen", new BuchungDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     if (geldkonto)
@@ -91,39 +89,39 @@ public class BuchungMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
           new AnlagenkontoNeuAction(), "document-new.png"));
-      try
-      {
-        if ((Boolean) Einstellungen
-            .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-        {
-          addItem(new SpendenbescheinigungMenuItem("Geldspendenbescheinigung",
-              new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
-              "file-invoice.png"));
-        }
-      }
-      catch (RemoteException e)
-      {
-        // Dann nicht anzeigen
-      }
     }
-    addItem(new CheckedContextMenuItem("Buchungsart zuordnen",
-        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
     try
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        addItem(new CheckedContextMenuItem("Steuer zuordnen",
-            new BuchungSteuerZuordnenAction(), "view-refresh.png"));
+        addItem(new SpendenbescheinigungMenuItem("Spendenbescheinigung",
+            new SpendenbescheinigungNeuAction(), "file-invoice.png"));
       }
     }
     catch (RemoteException e)
     {
-      // Dann nicht anzeigen
+      // Dann nicht
     }
+    String text = "Buchungsart zuordnen";
+    try
+    {
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        text = "Buchungsart/Steuer zuordnen";
+      }
+    }
+    catch (RemoteException e)
+    {
+      // Dann nicht
+    }
+    addItem(new CheckedContextMenuItem(text,
+        new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
+
     if (geldkonto)
     {
       addItem(new CheckedContextMenuItem("Sollbuchung zuordnen",
-          new BuchungSollbuchungZuordnungAction(), "view-refresh.png"));
+          new BuchungSollbuchungZuordnungAction(control), "view-refresh.png"));
     }
     try
     {
@@ -172,42 +170,6 @@ public class BuchungMenu extends ContextMenu
         {
           Logger.error("Fehler", e);
         }
-      }
-      return false;
-    }
-  }
-
-  private static class BuchungItem extends CheckedContextMenuItem
-  {
-    private BuchungItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      try
-      {
-        if (o instanceof Buchung)
-        {
-          return ((Buchung) o).getSplitId() == null;
-        }
-        if (o instanceof Buchung[])
-        {
-          for (Buchung bu : ((Buchung[]) o))
-          {
-            if (bu.getSplitId() != null)
-            {
-              return false;
-            }
-          }
-          return true;
-        }
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
       }
       return false;
     }

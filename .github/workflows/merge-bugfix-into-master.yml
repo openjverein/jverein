@@ -1,0 +1,42 @@
+name: Merge bugfix branch into master branche
+
+on:
+  push:
+    branches:
+      - '[0-9]+.[0-9]+'
+    paths-ignore:
+      - plugin.xml
+jobs:
+  merge-branch:
+    if: github.repository == 'openjverein/jverein'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout openjverein
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Set Git config
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+
+      - name: Check for merge conflicts for ${{ github.ref_name }} into master
+        run: |
+          git checkout master
+          git pull
+          git merge ${{ github.ref_name }} --no-ff --no-commit
+
+      - name: Abort previous merge check
+        if: always()
+        run: |
+          git merge --abort
+          git reset --hard HEAD
+      
+      - name: Merge ${{ github.ref_name }} into master
+        if: always()
+        run: |
+          # Merge bugfix branch into master with master as king (ours)
+          git merge -X ours ${{ github.ref_name }} -m "Auto-merge ${{ github.ref_name }} into master" --stat
+          git push origin

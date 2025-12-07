@@ -22,9 +22,12 @@ import java.util.HashMap;
 
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -197,6 +200,27 @@ public class EigenschaftenAuswahlDialog
     {
       for (Mitglied mitglied : mitglieder)
       {
+        if (!mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+            && mitglied.getPersonenart().equalsIgnoreCase("n")
+            && !(Boolean) Einstellungen
+                .getEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN))
+        {
+          continue;
+        }
+        if (mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+            && mitglied.getPersonenart().equalsIgnoreCase("j")
+            && !(Boolean) Einstellungen
+                .getEinstellung(Property.JMITGLIEDPFLICHTEIGENSCHAFTEN))
+        {
+          continue;
+        }
+        if (!mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+            && mitglied.getPersonenart().equalsIgnoreCase("j")
+            && !(Boolean) Einstellungen
+                .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN))
+        {
+          continue;
+        }
         // 1. Prüfen auf Pflicht
         // Erst alle Pflicht Gruppen auf false setzten
         pflichtgruppenMap.clear();

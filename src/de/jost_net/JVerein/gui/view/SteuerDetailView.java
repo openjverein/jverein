@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SteuerControl;
@@ -40,6 +42,11 @@ public class SteuerDetailView extends AbstractDetailView
     group.addLabelPair("Name", control.getName());
     group.addLabelPair("Satz", control.getSatz());
     group.addLabelPair("Buchungsart", control.getBuchungsart());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      group.addLabelPair("Buchungklasse", control.getBuchungsklasse());
+    }
     group.addLabelPair("Aktiv", control.getAktiv());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();

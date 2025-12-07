@@ -416,20 +416,17 @@ public class SpendenbescheinigungAusgabe
     char verzichtJa = (char) 113; // box leer
     char verzichtNein = (char) 53; // X
 
-    if (spb.getAutocreate())
+    if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
     {
-      if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
+      if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
       {
-        if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
-        {
-          verzichtJa = (char) 53; // X
-          verzichtNein = (char) 113; // box leer
-        }
+        verzichtJa = (char) 53; // X
+        verzichtNein = (char) 113; // box leer
       }
     }
     else
     {
-      if (spb.getErsatzAufwendungen())
+      if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
       {
         verzichtJa = (char) 53; // X
         verzichtNein = (char) 113; // box leer

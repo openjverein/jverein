@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.control.VorlageControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class EinstellungenVorlageListeView extends AbstractView
 {
@@ -31,6 +32,15 @@ public class EinstellungenVorlageListeView extends AbstractView
     GUI.getView().setTitle("Einstellungen Vorlagen");
 
     VorlageControl control = new VorlageControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    group.addLabelPair("Enthaltener Text", control.getSuchtext());
+    group.addLabelPair("Vorlagenart", control.getVorlagenart());
+
+    ButtonArea fbuttons = new ButtonArea();
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
 
     control.getDateinamenList().paint(this.getParent());
 

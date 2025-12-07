@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout openjverein
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         path: jverein
 
@@ -28,4 +28,4 @@ jobs:
       uses: ./jverein/.github/actions/build-dependencies
 
     - name: Build openjverein plugin
-      run: ant -noinput -buildfile jverein/build/build.xml compile
+      run: ant -noinput -buildfile jverein/build/build.xml test

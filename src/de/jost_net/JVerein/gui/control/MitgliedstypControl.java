@@ -28,6 +28,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -47,6 +48,8 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
 
   private Mitgliedstyp mitgliedstyp;
 
+  private boolean editable = false;
+
   public MitgliedstypControl(AbstractView view)
   {
     super(view);
@@ -64,6 +67,17 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     return mitgliedstyp;
   }
 
+  public boolean isMitgliedstypEditable() throws RemoteException
+  {
+    if (getMitgliedstyp().getJVereinid() > 0)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Dieser Mitgliedstyp ist reserviert und darf durch den Benutzer nicht verändert werden.");
+      return editable = false;
+    }
+    return editable = true;
+  }
+
   public Input getBezeichnung() throws RemoteException
   {
     if (bezeichnung != null)
@@ -72,6 +86,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     }
     bezeichnung = new TextInput(getMitgliedstyp().getBezeichnung(), 30);
     bezeichnung.setMandatory(true);
+    bezeichnung.setEnabled(editable);
     return bezeichnung;
   }
 
@@ -84,6 +99,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     bezeichnungplural = new TextInput(getMitgliedstyp().getBezeichnungPlural(),
         30);
     bezeichnungplural.setMandatory(true);
+    bezeichnungplural.setEnabled(editable);
     return bezeichnungplural;
   }
 
@@ -131,6 +147,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mitgliedstypList.setRememberColWidths(true);
     mitgliedstypList.setRememberOrder(true);
     mitgliedstypList.addFeature(new FeatureSummary());
+    mitgliedstypList.setMulti(true);
     mitgliedstypList.setAction(
         new EditAction(MitgliedstypDetailView.class, mitgliedstypList));
     VorZurueckControl.setObjektListe(null, null);

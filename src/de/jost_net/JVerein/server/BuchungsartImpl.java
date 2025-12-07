@@ -17,10 +17,14 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -55,7 +59,24 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("buchungsart = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Es existieren Buchungen mit dieser Buchungsart.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Projekt kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -63,11 +84,23 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if ((Boolean) getRegexp())
+      {
+        try
+        {
+          Pattern.compile((String) getSuchbegriff());
+        }
+        catch (PatternSyntaxException pse)
+        {
+          throw new ApplicationException(
+              "Regulärer Ausdruck ungültig: " + pse.getDescription());
+        }
+      }
       if (getBezeichnung() == null || getBezeichnung().isEmpty())
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
-      if (getNummer() < 0)
+      if (getNummer().length() == 0)
       {
         throw new ApplicationException("Bitte Nummer eingeben!");
       }
@@ -107,7 +140,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Buchungsart kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Buchungsart kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -213,18 +246,18 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public int getNummer() throws RemoteException
+  public String getNummer() throws RemoteException
   {
-    Integer i = (Integer) getAttribute("nummer");
-    if (i == null)
-      return 0;
-    return i.intValue();
+    String nummer = (String) getAttribute("nummer");
+    if (nummer == null)
+      return "";
+    return nummer;
   }
 
   @Override
-  public void setNummer(int i) throws RemoteException
+  public void setNummer(String i) throws RemoteException
   {
-    setAttribute("nummer", Integer.valueOf(i));
+    setAttribute("nummer", i);
   }
 
   @Override
@@ -247,12 +280,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public int getStatus() throws RemoteException
   {
-    Integer i = (Integer) getAttribute("status");
-    if (i == null)
-    {
-      return 0;
-    }
-    return i.intValue();
+    return (Integer) getAttribute("status");
   }
 
   @Override
@@ -301,12 +329,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public String getSuchbegriff() throws RemoteException
   {
-    String s = (String) getAttribute("suchbegriff");
-    if (s == null)
-    {
-      return "";
-    }
-    return s;
+    return (String) getAttribute("suchbegriff");
   }
 
   @Override
@@ -318,12 +341,7 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   @Override
   public boolean getRegexp() throws RemoteException
   {
-    Boolean b = (Boolean) getAttribute("regularexp");
-    if (b == null)
-    {
-      return false;
-    }
-    return b;
+    return (Boolean) getAttribute("regularexp");
   }
 
   @Override
@@ -349,27 +367,11 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   {
     if (fieldName.equals("nrbezeichnung"))
     {
-      int nr = getNummer();
-      if (nr >= 0)
-      {
-        return nr + " - " + getBezeichnung();
-      }
-      else
-      {
-        return getBezeichnung();
-      }
+      return getNummer() + " - " + getBezeichnung();
     }
     else if (fieldName.equals("bezeichnungnr"))
     {
-      int nr = getNummer();
-      if (nr >= 0)
-      {
-        return getBezeichnung() + " (" + nr + ")";
-      }
-      else
-      {
-        return getBezeichnung();
-      }
+      return getBezeichnung() + " (" + getNummer() + ")";
     }
     else if (fieldName.equals("klasse-art-bez"))
     {
@@ -427,20 +429,32 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public boolean equals(Object bart)
+  public Object getAttributeDefault(String fieldName)
   {
-    try
+    switch (fieldName)
     {
-      if (this.getID().equalsIgnoreCase(((Buchungsart) bart).getID()))
-        return true;
-      else
+      case "status":
+        return StatusBuchungsart.ACTIVE;
+      case "suchbegriff":
+        return "";
+      case "regularexp":
+      case "spende":
+      case "abschreibung":
         return false;
+      default:
+        return null;
     }
-    catch (RemoteException e)
-    {
-      // Auto-generated catch block
-      e.printStackTrace();
-      return false;
-    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchungsart";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungsarten";
   }
 }

@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -28,16 +27,22 @@ import java.util.TreeMap;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class StatistikJahrgaengeExport implements Exporter
 {
+  protected String title;
+
+  protected String subtitle;
 
   @Override
   public abstract String getName();
@@ -57,7 +62,8 @@ public abstract class StatistikJahrgaengeExport implements Exporter
   {
     this.file = file;
     statistik = new TreeMap<>();
-    Integer jahr = (Integer) objects[0];
+    MitgliedControl control = (MitgliedControl) objects[0];
+    Integer jahr = control.getJJahr();
     try
     {
       stichtag = Datum.toDate("31.12." + jahr);
@@ -161,16 +167,23 @@ public abstract class StatistikJahrgaengeExport implements Exporter
     close();
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "statistikjahrgaenge";
-  }
-
-  protected abstract void open()
-      throws DocumentException, FileNotFoundException;
+  protected abstract void open() throws DocumentException, IOException;
 
   protected abstract void close() throws IOException, DocumentException;
+
+  @Override
+  public void calculateTitle(Object object)
+  {
+    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
+        object);
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
+  }
 
   public class StatistikJahrgang
   {

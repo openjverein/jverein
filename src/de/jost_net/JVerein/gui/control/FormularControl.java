@@ -23,13 +23,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
+import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
+import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -67,6 +73,12 @@ public class FormularControl extends FormularPartControl implements Savable
   private IntegerInput zaehler;
 
   private SelectInput formlink;
+
+  private ButtonRtoL exportButton;
+
+  private ButtonRtoL importButton;
+
+  private ButtonRtoL neuButton;
 
   public FormularControl(AbstractView view, Formular formular)
   {
@@ -120,6 +132,10 @@ public class FormularControl extends FormularPartControl implements Savable
       {
         list.remove(FormularArt.SAMMELSPENDENBESCHEINIGUNG);
       }
+      if (aktuelleFormularArt != FormularArt.SACHSPENDENBESCHEINIGUNG)
+      {
+        list.remove(FormularArt.SACHSPENDENBESCHEINIGUNG);
+      }
     }
     if (!(Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
@@ -133,6 +149,16 @@ public class FormularControl extends FormularPartControl implements Savable
       }
     }
     art = new SelectInput(list, aktuelleFormularArt);
+    art.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      boolean enabled = art.getValue() != FormularArt.HINTERGRUND;
+      importButton.setEnabled(enabled);
+      exportButton.setEnabled(enabled);
+      neuButton.setEnabled(enabled);
+    });
     return art;
   }
 
@@ -220,6 +246,52 @@ public class FormularControl extends FormularPartControl implements Savable
       formlink.setPleaseChoose("Keine");
     }
     return formlink;
+  }
+
+  public ButtonRtoL getExportButton() throws RemoteException
+  {
+    if (exportButton != null)
+    {
+      return exportButton;
+    }
+    exportButton = new ButtonRtoL("Export", new FormularfelderExportAction(),
+        formular, false, "document-save.png");
+    if (getFormular().getArt() == FormularArt.HINTERGRUND)
+    {
+      exportButton.setEnabled(false);
+    }
+    return exportButton;
+  }
+
+  public ButtonRtoL getImportButton() throws RemoteException
+  {
+    if (importButton != null)
+    {
+      return importButton;
+    }
+    importButton = new ButtonRtoL("Import",
+        new FormularfelderImportAction(this), formular, false,
+        "file-import.png");
+    if (getFormular().getArt() == FormularArt.HINTERGRUND)
+    {
+      importButton.setEnabled(false);
+    }
+    return importButton;
+  }
+
+  public ButtonRtoL getNeuButton() throws RemoteException
+  {
+    if (neuButton != null)
+    {
+      return neuButton;
+    }
+    neuButton = new ButtonRtoL("Neu", new FormularfeldNeuAction(), formular,
+        false, "document-new.png");
+    if (getFormular().getArt() == FormularArt.HINTERGRUND)
+    {
+      neuButton.setEnabled(false);
+    }
+    return neuButton;
   }
 
   @Override

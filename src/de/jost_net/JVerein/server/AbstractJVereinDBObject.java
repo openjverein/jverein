@@ -18,9 +18,13 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-
+import java.sql.Clob;
+import java.sql.SQLException;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
@@ -31,6 +35,12 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
 {
 
   private static final long serialVersionUID = 1L;
+
+  // Speichert ob Löschen ohne Delete Check gemacht wird
+  protected boolean forcedDelete = false;
+
+  // Speichert ob Update ohne Update Check gemacht wird
+  protected boolean forcedUpdate = false;
 
   public AbstractJVereinDBObject() throws RemoteException
   {
@@ -50,7 +60,67 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       value = Long.parseLong(((AbstractDBObject) value).getID());
     }
+    // Double Felder auf zwei Nachkommastellen runden.
+    if (value instanceof Double)
+    {
+      value = Math.round((Double) value * 100d) / 100d;
+    }
+    if (value instanceof Clob)
+    {
+      try
+      {
+        value = ((Clob) value).getSubString(1, (int) ((Clob) value).length());
+      }
+      catch (SQLException e)
+      {
+        throw new RemoteException("Fehler beim parsen eines CLOB wertes", e);
+      }
+    }
+    if (value == null)
+    {
+      value = getAttributeDefault(fieldName);
+    }
     return super.setAttribute(fieldName, value);
+  }
+
+  /**
+   * Gibt den default-Wert eines Attributs zurück, wenn es beim lesen oder
+   * schreiben 'null' ist.
+   * 
+   * @param fieldName
+   * @return
+   */
+  protected Object getAttributeDefault(String fieldName)
+  {
+    return null;
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("id-int".equals(fieldName))
+    {
+      try
+      {
+        return Integer.valueOf(getID());
+      }
+      catch (Exception e)
+      {
+        Logger.error("unable to parse id: " + getID());
+        return getID();
+      }
+    }
+    Object o = super.getAttribute(fieldName);
+    // Double Felder auf zwei Nachkommastellen runden.
+    if (o instanceof Double)
+    {
+      o = Math.round((Double) o * 100d) / 100d;
+    }
+    if (o == null)
+    {
+      o = getAttributeDefault(fieldName);
+    }
+    return o;
   }
 
   @Override
@@ -75,5 +145,37 @@ public abstract class AbstractJVereinDBObject extends AbstractDBObject
     {
       super.store();
     }
+    // Store-Message schicken
+    Application.getMessagingFactory()
+        .getMessagingQueue("jverein.dbobject.store")
+        .sendSyncMessage(new QueryMessage(this));
+  }
+
+  @Override
+  public void delete() throws RemoteException, ApplicationException
+  {
+    // Delete-Message schicken
+    Application.getMessagingFactory()
+        .getMessagingQueue("jverein.dbobject.delete")
+        .sendSyncMessage(new QueryMessage(this));
+
+    super.delete();
+
+  }
+
+  // Löschen ohne Delete Check oder eingeschränktem Check
+  @Override
+  public void deleteForced() throws RemoteException, ApplicationException
+  {
+    this.forcedDelete = true;
+    super.delete();
+  }
+
+  // Update ohne Update Check oder eingeschränktem Check
+  @Override
+  public void updateForced() throws RemoteException, ApplicationException
+  {
+    this.forcedUpdate = true;
+    super.store();
   }
 }

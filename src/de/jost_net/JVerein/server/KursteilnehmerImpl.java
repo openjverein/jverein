@@ -93,12 +93,16 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
       throw new ApplicationException("Bitte Datum des Mandats eingeben");
     }
     if ((Boolean) Einstellungen
-        .getEinstellung(Property.KURSTEILNEHMERGEBGESPFLICHT))
+        .getEinstellung(Property.KURSTEILNEHMERGEBPFLICHT))
     {
       if (getGeburtsdatum() == null)
       {
         throw new ApplicationException("Bitte Geburtsdatum eingeben");
       }
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.KURSTEILNEHMERGESPFLICHT))
+    {
       if (getGeschlecht() == null)
       {
         throw new ApplicationException("Bitte Geschlecht eingeben");
@@ -123,7 +127,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     }
     catch (SEPAException e1)
     {
-      throw new ApplicationException(e1.getMessage());
+      throw new ApplicationException("Ungültige IBAN");
     }
     try
     {
@@ -490,5 +494,39 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
       //
     }
     return d;
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "anrede":
+      case "titel":
+      case "vorname":
+      case "adressierungszusatz":
+      case "strasse":
+      case "plz":
+      case "ort":
+      case "iban":
+      case "bic":
+      case "staat":
+      case "email":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Kursteilnehmer";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Kursteilnehmer";
   }
 }

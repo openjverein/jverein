@@ -40,6 +40,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -55,8 +57,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -212,6 +214,20 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     {
       z.setSteuer((Steuer) getZusatzbetragPart().getSteuer().getValue());
     }
+    if (z.isNewObject())
+    {
+      if (getZusatzbetragPart().getMitglied().getValue() != null)
+      {
+        Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied().getValue();
+        z.setMitglied(Integer.parseInt(m.getID()));
+      }
+      else
+      {
+        z.setMitglied(null);
+      }
+    }
+    z.setMitgliedzahltSelbst(
+        (Boolean) getZusatzbetragPart().getMitgliedzahltSelbst().getValue());
     return z;
   }
 
@@ -221,19 +237,6 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     try
     {
       Zusatzbetrag z = (Zusatzbetrag) prepareStore();
-      if (z.isNewObject())
-      {
-        if (getZusatzbetragPart().getMitglied().getValue() != null)
-        {
-          Mitglied m = (Mitglied) getZusatzbetragPart().getMitglied()
-              .getValue();
-          z.setMitglied(Integer.parseInt(m.getID()));
-        }
-        else
-        {
-          throw new ApplicationException("Bitte Mitglied eingeben");
-        }
-      }
       z.store();
       if (getVorlage().getValue().equals(MITDATUM)
           || getVorlage().getValue().equals(OHNEDATUM))
@@ -256,6 +259,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         {
           zv.setSteuer(z.getSteuer());
         }
+        zv.setMitgliedzahltSelbst(z.getMitgliedzahltSelbst());
         zv.store();
       }
     }
@@ -274,6 +278,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     if (zusatzbetraegeList == null)
     {
       zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
+      zusatzbetraegeList.addColumn("Nr", "id-int");
       zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -321,6 +326,8 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
           return "";
         }, false, Column.ALIGN_RIGHT);
       }
+      zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+          new JaNeinFormatter(), false, Column.ALIGN_LEFT);
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
       zusatzbetraegeList.setRememberColWidths(true);
@@ -431,9 +438,9 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("zusatzbetraege", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_DATEINAME, this)
+            + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -448,6 +455,11 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     final File file = new File(s);
     final DBIterator<Zusatzbetrag> it = getIterator();
     settings.setAttribute("lastdir", file.getParent());
+    final String title = VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL,
+        this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this);
+
     BackgroundTask t = new BackgroundTask()
     {
 
@@ -457,7 +469,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, "Zusatzbeträge", "", it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,

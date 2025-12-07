@@ -62,9 +62,15 @@ public abstract class FormularfelderExport implements Exporter
   }
 
   @Override
-  public String getDateiname()
+  public void calculateTitle(Object object)
   {
-    return "formularfelder";
+    // Kein Titel bei csv
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Kein Subitel bei csv
   }
 
   protected abstract void add(Formularfeld ff) throws RemoteException;

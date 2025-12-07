@@ -71,6 +71,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         .createObject(SollbuchungPosition.class, null);
 
     sollbControl = new SollbuchungControl(null, sollbuchung);
+    sollbControl.isSollbuchungEditable();
     sollbPosControl = new SollbuchungPositionControl(null, sollbuchungPosition);
 
     LabelGroup group = new LabelGroup(parent, null);
@@ -137,6 +138,10 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       right.addLabelPair("Buchungsklasse", sollbPosControl.getBuchungsklasse());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      right.addLabelPair("Steuer", sollbPosControl.getSteuer());
     }
 
     ButtonArea buttons = new ButtonArea();
@@ -250,7 +255,9 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     try
     {
       DBTransaction.starten();
-      sollbControl.getBetrag().setValue(sollbPosControl.getBetrag().getValue());
+      // Betrag hier direkt setzen weil er nicht in prepareStore() gesetzt wird
+      // Er ist ja nicht editierbar sondern wird aus den Positionen berechnet
+      sollbuchung.setBetrag((Double) sollbPosControl.getBetrag().getValue());
       if (sollbPosControl.getDatum().getValue() == null)
       {
         sollbPosControl.getDatum().setValue(sollbControl.getDatum().getValue());

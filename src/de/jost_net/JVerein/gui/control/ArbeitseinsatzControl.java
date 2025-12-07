@@ -49,12 +49,15 @@ import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
+import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -142,7 +145,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
       }
       else
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        ae.setMitglied(null);
       }
     }
     ae.setDatum((Date) part.getDatum().getValue());
@@ -276,9 +279,8 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "pdf")
-            .get());
+    fd.setFileName(VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this) + ".pdf");
     fd.setFilterExtensions(new String[] { "*.pdf" });
 
     String s = fd.open();
@@ -292,8 +294,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
     final File file = new File(s);
     final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    final int jahr = (Integer) getSuchJahr().getValue();
-    final String sub = getAuswertungSchluessel().getText();
+    final String title = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_TITEL, this);
+    final String subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL, this);
     settings.setAttribute("lastdir", file.getParent());
     BackgroundTask t = new BackgroundTask()
     {
@@ -304,8 +308,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
         try
         {
           FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos,
-              String.format("Arbeitseinsätze %d", jahr), sub, it.size());
+          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
           reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
               BaseColor.LIGHT_GRAY);
           reporter.addHeaderColumn("Sollstunden", Element.ALIGN_RIGHT, 30,
@@ -379,9 +382,8 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     {
       fd.setFilterPath(path);
     }
-    fd.setFileName(new Dateiname("arbeitseinsaetze", "",
-        (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER), "csv")
-            .get());
+    fd.setFileName(VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this) + ".csv");
     fd.setFilterExtensions(new String[] { "*.csv" });
 
     String s = fd.open();
@@ -492,6 +494,17 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
+            zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
+                Mitglied.class, (String) z.getAttribute("mitgliedid"));
+            Beitragsgruppe b = m.getBeitragsgruppe();
+            zb.setBuchungsart(b.getBuchungsart());
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+            {
+              zb.setBuchungsklasseId(b.getBuchungsklasseId());
+            }
+            zb.setSteuer(b.getSteuer());
             zb.store();
           }
           GUI.getStatusBar().setSuccessText("Liste Arbeitseinsätze gestartet");
@@ -608,8 +621,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze, null);
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
+    arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList
         .setContextMenu(new ArbeitseinsatzMenu(arbeitseinsatzList));
+    arbeitseinsatzList.addColumn("Nr", "id-int");
     arbeitseinsatzList.addColumn("Name", "mitglied");
     arbeitseinsatzList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

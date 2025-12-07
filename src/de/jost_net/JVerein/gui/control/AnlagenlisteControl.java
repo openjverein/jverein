@@ -25,12 +25,15 @@ import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.KontoImpl;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -136,9 +139,9 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("konto");
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         it.addColumn(
             "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
                 + BUCHUNGSART);
@@ -147,10 +150,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
                 + BUCHUNGSKLASSE);
         it.addColumn(
             "CONCAT(afaart.nummer,' - ',afaart.bezeichnung) as " + AFAART);
-        it.setOrder(
-            "Order by -buchungsklasse.nummer DESC, -buchungsart.nummer DESC, konto.anschaffung");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         it.addColumn(
             "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
                 + BUCHUNGSART);
@@ -159,14 +160,22 @@ public class AnlagenlisteControl extends AbstractSaldoControl
                 + BUCHUNGSKLASSE);
         it.addColumn(
             "CONCAT(afaart.bezeichnung,' (',afaart.nummer,')') as " + AFAART);
-        it.setOrder(
-            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
         break;
       default:
         it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
         it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
         it.addColumn("afaart.bezeichnung as " + AFAART);
+        break;
+    }
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    {
+      case BuchungsartSort.NACH_NUMMER:
+        it.setOrder(
+            "Order by buchungsklasse.nummer is null,buchungsklasse.nummer,"
+                + " buchungsart.nummer is null, buchungsart.nummer, konto.anschaffung");
+        break;
+      case BuchungsartSort.NACH_BEZEICHNUNG:
+      default:
         it.setOrder(
             "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
                 + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung, konto.anschaffung");
@@ -254,6 +263,27 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         klasse = "Nicht zugeordnet";
       }
+
+      // Vor neuer Klasse Saldo der letzten anzeigen.
+      if (!klasse.equals(klasseAlt) && klasseAlt != null)
+      {
+        PseudoDBObject saldo = new PseudoDBObject();
+        saldo.setAttribute(ART, ART_SALDOFOOTER);
+        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
+        saldo.setAttribute(EINNAHMEN, summeStartwert);
+        saldo.setAttribute(AUSGABEN, summeZugang);
+        saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
+        saldo.setAttribute(ABGANG, summeAbgang);
+        saldo.setAttribute(ENDWERT, summeEndwert);
+        zeilen.add(saldo);
+
+        summeStartwert = 0d;
+        summeAbschreibung = 0d;
+        summeZugang = 0d;
+        summeAbgang = 0d;
+        summeEndwert = 0d;
+      }
+
       String buchungsart = (String) o.getAttribute(BUCHUNGSART);
       Integer konto = o.getInteger(KONTO_ID);
 
@@ -284,26 +314,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         summeEndwert += endwert;
         gesamtEndwert += endwert;
-      }
-
-      // Vor neuer Klasse Saldo der letzten anzeigen.
-      if (!klasse.equals(klasseAlt) && klasseAlt != null)
-      {
-        PseudoDBObject saldo = new PseudoDBObject();
-        saldo.setAttribute(ART, ART_SALDOFOOTER);
-        saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-        saldo.setAttribute(EINNAHMEN, summeStartwert);
-        saldo.setAttribute(AUSGABEN, summeZugang);
-        saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
-        saldo.setAttribute(ABGANG, summeAbgang);
-        saldo.setAttribute(ENDWERT, summeEndwert);
-        zeilen.add(saldo);
-
-        summeStartwert = 0d;
-        summeAbschreibung = 0d;
-        summeZugang = 0d;
-        summeAbgang = 0d;
-        summeEndwert = 0d;
       }
 
       // Bei neuer Klasse Kopfzeile anzeigen.
@@ -363,7 +373,19 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   @Override
   protected String getAuswertungTitle()
   {
-    return "Anlagenverzeichnis";
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
+  }
+
+  @Override
+  protected String getAuswertungSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
   }
 
   @Override
@@ -379,4 +401,5 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
+
 }

@@ -53,8 +53,8 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, mitgliedstyp.getBezeichnungPlural(),
-          subtitle, list.size(), 50, 10, 20, 25);
+      Reporter report = new Reporter(fos, title, subtitle, list.size(), 50, 10,
+          20, 25);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
           BaseColor.LIGHT_GRAY);
@@ -62,7 +62,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
           130, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+      if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
       {
         report
             .addHeaderColumn(
@@ -129,7 +129,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (mitgliedstyp.getJVereinid() == Mitgliedstyp.MITGLIED)
+        if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
         {
           report.addColumn(zelle, Element.ALIGN_LEFT);
         }
@@ -193,7 +193,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
   @Override
   public String getDateiendung()
   {
-    return "PDF";
+    return "pdf";
   }
 
   @Override

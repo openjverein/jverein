@@ -25,17 +25,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -134,12 +134,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     return bm;
   }
 
-  public void handleStore()
-  {
-    //
-  }
-
-  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf)
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -169,6 +165,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
       sollbuchungsList.setRememberColWidths(true);
       sollbuchungsList.setRememberOrder(true);
       sollbuchungsList.addFeature(new FeatureSummary());
+      sollbuchungsList.setMulti(true);
       sollbuchungsList.setContextMenu(new SollbuchungMenu(sollbuchungsList));
       sollbuchungsList.setAction(
           new EditAction(SollbuchungDetailView.class, sollbuchungsList));
@@ -216,9 +213,8 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("abrechnungslauf", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      fd.setFileName(VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME, this) + ".pdf");
 
       final String s = fd.open();
 
@@ -229,8 +225,12 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
+      final String title = VorlageUtil
+          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL, this);
+      final String subtitle = VorlageUtil
+          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL, this);
 
-      auswertungPDF(sollbIt, file, abrl);
+      auswertungPDF(sollbIt, file, title, subtitle);
     }
     catch (RemoteException e)
     {
@@ -239,7 +239,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
   }
 
   private void auswertungPDF(final DBIterator<Sollbuchung> it, final File file,
-      final Abrechnungslauf lauf)
+      String title, String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
@@ -250,7 +250,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
         try
         {
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          new AbrechnungslaufPDF(it, file, lauf);
+          new AbrechnungslaufPDF(it, file, title, subtitle);
         }
         catch (ApplicationException ae)
         {

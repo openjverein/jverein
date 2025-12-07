@@ -24,43 +24,64 @@ public enum MitgliedVar
   ANREDE_DU("mitglied_anrede_du"), //
   ANREDE_FOERMLICH("mitglied_anrede_foermlich"), //
   AUSTRITT("mitglied_austritt"), //
+  AUSTRITT_F("mitglied_austritt_f"), //
   BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG("mitglied_arbeitseinsatz_betrag"), //
   BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN("mitglied_arbeitseinsatz_stunden"), //
   BEITRAGSGRUPPE_BEZEICHNUNG("mitglied_beitragsgruppe_bezeichnung"), //
   BEITRAGSGRUPPE_BETRAG("mitglied_beitragsgruppe_betrag"), //
   BEITRAGSGRUPPE_ID("mitglied_beitragsgruppe_id"), //
   MANDATDATUM("mitglied_mandatdatum"), //
+  MANDATDATUM_F("mitglied_mandatdatum_f"), //
   MANDATID("mitglied_mandatid"), //
   BIC("mitglied_bic"), //
   BLZ("mitglied_blz"), //
   EINTRITT("mitglied_eintritt"), //
+  EINTRITT_F("mitglied_eintritt_f"), //
   EINGABEDATUM("mitglied_eingabedatum"), //
+  EINGABEDATUM_F("mitglied_eingabedatum_f"), //
   EMPFAENGER("mitglied_empfaenger"), //
   EMAIL("mitglied_email"), //
   EXTERNE_MITGLIEDSNUMMER("mitglied_externe_mitgliedsnummer"), //
   GEBURTSDATUM("mitglied_geburtsdatum"), //
+  GEBURTSDATUM_F("mitglied_geburtsdatum_f"), //
   GESCHLECHT("mitglied_geschlecht"), //
   HANDY("mitglied_handy"), //
   IBAN("mitglied_iban"), //
   IBANMASKIERT("mitglied_iban_maskiert"), //
+  BANK_NAME("mitglied_bank_name"),
   ID("mitglied_id"), //
   INDIVIDUELLERBEITRAG("mitglied_individuellerbeitrag"), //
   KONTO("mitglied_konto"), //
   BANKNAME("mitglied_bankname"), //
+  KONTO_KONTOINHABER("mitglied_konto_kontoinhaber"), //
   KONTOINHABER("mitglied_kontoinhaber"), //
+  @Deprecated
   KONTOINHABER_VORNAMENAME("mitglied_kontoinhaber_vornamename"), //
+  @Deprecated
   KONTOINHABER_EMPFAENGER("mitglied_kontoinhaber_empfaenger"), //
+  @Deprecated
   KONTOINHABER_PERSONENART("mitglied_kontoinhaber_personenart"), //
+  @Deprecated
   KONTOINHABER_ANREDE("mitglied_kontoinhaber_anrede"), //
+  @Deprecated
   KONTOINHABER_TITEL("mitglied_kontoinhaber_titel"), //
+  @Deprecated
   KONTOINHABER_NAME("mitglied_kontoinhaber_name"), //
+  @Deprecated
   KONTOINHABER_VORNAME("mitglied_kontoinhaber_vorname"), //
+  @Deprecated
   KONTOINHABER_STRASSE("mitglied_kontoinhaber_strasse"), //
+  @Deprecated
   KONTOINHABER_ADRESSIERUNGSZUSATZ("mitglied_kontoinhaber_adressierungszusatz"), //
+  @Deprecated
   KONTOINHABER_PLZ("mitglied_kontoinhaber_plz"), //
+  @Deprecated
   KONTOINHABER_ORT("mitglied_kontoinhaber_ort"), //
+  @Deprecated
   KONTOINHABER_STAAT("mitglied_kontoinhaber_staat"), //
+  @Deprecated
   KONTOINHABER_EMAIL("mitglied_kontoinhaber_email"), //
+  @Deprecated
   KONTOINHABER_GESCHLECHT("mitglied_kontoinhaber_geschlecht"), //
   KUENDIGUNG("mitglied_kuendigung"), //
   LETZTEAENDERUNG("mitglied_letzte.aenderung"), //

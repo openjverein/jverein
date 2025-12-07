@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -47,8 +48,7 @@ import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
-import de.jost_net.JVerein.gui.formatter.ProjektFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -69,7 +69,9 @@ import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -82,10 +84,10 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -112,10 +114,10 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
-import de.willuhn.jameica.hbci.HBCIProperties;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
+import de.willuhn.jameica.messaging.Message;
+import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -189,6 +191,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private CheckboxInput verzicht;
 
+  private TextInput bezeichnungsachzuwendung;
+
+  private SelectInput herkunftspende;
+
+  private CheckboxInput unterlagenwertermittlung;
+
   private Buchung buchung;
 
   private Button sammelueberweisungButton;
@@ -214,6 +222,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private boolean geldkonto = true;
 
   private TreeMap<String, String> params;
+
+  private boolean editable = false;
+
+  private SplitbuchungMessageConsumer splitbuchungConsumer = null;
 
   public enum Kontenfilter
   {
@@ -275,6 +287,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private SelectInput steuer;
 
+  private CheckboxInput geprueft;
+
   private enum RANGE
   {
     MONAT,
@@ -325,7 +339,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     if (ib == null)
       b.setIban(null);
     else
-      b.setIban(ib.toUpperCase().replace(" ", ""));
+      b.setIban(ib.replace(" ", ""));
     if (getBetrag().getValue() != null)
     {
       b.setBetrag((Double) getBetrag().getValue());
@@ -340,10 +354,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
+    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
+    b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
+    b.setBezeichnungSachzuwendung(
+        (String) getBezeichnungSachzuwendung().getValue());
+    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+    b.setHerkunftSpende(hsp.getKey());
+    b.setUnterlagenWertermittlung(
+        (Boolean) getUnterlagenWertermittlung().getValue());
     return b;
   }
 
@@ -388,6 +410,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       konto.focus();
     }
     konto.setMandatory(true);
+    konto.setEnabled(editable);
     return konto;
   }
 
@@ -420,6 +443,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     auszugsnummer = new IntegerInput(
         intAuszugsnummer != null ? intAuszugsnummer : -1);
+    auszugsnummer.setEnabled(editable);
     return auszugsnummer;
   }
 
@@ -440,6 +464,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     blattnummer = new IntegerInput(
         intBlattnummer != null ? intBlattnummer : -1);
+    blattnummer.setEnabled(editable);
     return blattnummer;
   }
 
@@ -450,6 +475,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return name;
     }
     name = new TextInput(getBuchung().getName(), 100);
+    name.setEnabled(editable);
     return name;
   }
 
@@ -470,6 +496,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           Einstellungen.DECIMALFORMAT);
     }
     betrag.setMandatory(true);
+    betrag.setEnabled(editable);
     return betrag;
   }
 
@@ -481,6 +508,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     zweck = new TextAreaInput(getBuchung().getZweck(), 500);
     zweck.setHeight(50);
+    zweck.setEnabled(editable);
     return zweck;
   }
 
@@ -495,6 +523,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     this.datum.setTitle("Datum");
     this.datum.setText("Bitte Datum wählen");
     datum.setMandatory(true);
+    datum.setEnabled(editable);
     return datum;
   }
 
@@ -608,11 +637,52 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       vz = Boolean.FALSE;
     }
     verzicht = new CheckboxInput(vz);
+    verzicht.setEnabled(editable);
     return verzicht;
+  }
+
+  public TextInput getBezeichnungSachzuwendung() throws RemoteException
+  {
+    if (bezeichnungsachzuwendung != null)
+    {
+      return bezeichnungsachzuwendung;
+    }
+    bezeichnungsachzuwendung = new TextInput(
+        getBuchung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung.setEnabled(editable);
+    return bezeichnungsachzuwendung;
+  }
+
+  public SelectInput getHerkunftSpende() throws RemoteException
+  {
+    if (herkunftspende != null)
+    {
+      return herkunftspende;
+    }
+    herkunftspende = new SelectInput(HerkunftSpende.getArray(),
+        new HerkunftSpende(getBuchung().getHerkunftSpende()));
+    herkunftspende.setEnabled(editable);
+    return herkunftspende;
+  }
+
+  public CheckboxInput getUnterlagenWertermittlung() throws RemoteException
+  {
+    if (unterlagenwertermittlung != null)
+    {
+      return unterlagenwertermittlung;
+    }
+    unterlagenwertermittlung = new CheckboxInput(
+        getBuchung().getUnterlagenWertermittlung());
+    unterlagenwertermittlung.setEnabled(editable);
+    return unterlagenwertermittlung;
   }
 
   public DialogInput getSollbuchung() throws RemoteException
   {
+    if (sollbuchung != null)
+    {
+      return sollbuchung;
+    }
     sollbuchung = new SollbuchungAuswahlInput(getBuchung())
         .getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
@@ -665,6 +735,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         Logger.error("Fehler", e);
       }
     });
+    sollbuchung.setEnabled(editable);
     return sollbuchung;
   }
 
@@ -675,6 +746,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return art;
     }
     art = new TextInput(getBuchung().getArt(), 100);
+    art.setEnabled(editable);
     return art;
   }
 
@@ -686,7 +758,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     kommentar = new TextAreaInput(getBuchung().getKommentar(), 1024);
     kommentar.setHeight(50);
+    kommentar.setEnabled(editable);
     return kommentar;
+  }
+
+  public CheckboxInput getGeprueft() throws RemoteException
+  {
+    if (geprueft != null && !geprueft.getControl().isDisposed())
+    {
+      return geprueft;
+    }
+    geprueft = new CheckboxInput(getBuchung().getGeprueft());
+    geprueft.setEnabled(editable);
+    return geprueft;
   }
 
   public Input getBuchungsart() throws RemoteException
@@ -734,6 +818,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       }
     });
+    buchungsart.setEnabled(editable);
     return buchungsart;
   }
 
@@ -750,6 +835,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       buchungsklasse.setMandatory(true);
     }
+    buchungsklasse.setEnabled(editable);
     return buchungsklasse;
   }
 
@@ -777,6 +863,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     projekt.setValue(getBuchung().getProjekt());
     projekt.setAttribute("bezeichnung");
     projekt.setPleaseChoose("Bitte auswählen");
+    projekt.setEnabled(editable);
     return projekt;
   }
 
@@ -849,7 +936,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return sammelueberweisungButton;
   }
 
-  public Input getSuchProjekt() throws RemoteException
+  public SelectInput getSuchProjekt() throws RemoteException
   {
     if (suchprojekt != null)
     {
@@ -936,19 +1023,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     ArrayList<Buchungsart> liste = new ArrayList<>();
     Buchungsart b2 = (Buchungsart) Einstellungen.getDBService()
         .createObject(Buchungsart.class, null);
-    b2.setNummer(-1);
+    b2.setNummer("");
     b2.setBezeichnung("Ohne Buchungsart");
     b2.setArt(-1);
     liste.add(b2);
     for (Buchungsart ba : suchliste)
       liste.add(ba);
 
-    int bwert = settings.getInt(settingsprefix + BUCHUNGSART, -2);
+    String bwert = settings.getString(settingsprefix + BUCHUNGSART, "-99");
     Buchungsart b = null;
     int size = liste.size();
     for (int i = 0; i < size; i++)
     {
-      if (liste.get(i).getNummer() == bwert)
+      if (liste.get(i).getNummer().equals(bwert))
       {
         b = liste.get(i);
         break;
@@ -979,7 +1066,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     steuer = new SteuerInput(getBuchung().getSteuer());
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
-
+    steuer.setEnabled(editable);
     return steuer;
   }
 
@@ -1342,7 +1429,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       b = (Buchungsart) getSuchBuchungsart().getValue();
     }
-    if (b != null && b.getNummer() != 0)
+    if (b != null)
     {
       settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
           b.getNummer());
@@ -1350,7 +1437,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     else
     {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART, -2);
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
+          "-99");
     }
     Projekt p = null;
     if (isSuchProjektAktiv())
@@ -1479,7 +1567,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       });
 
-      buchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      buchungsList.addColumn("Konto", "konto");
       buchungsList.addColumn("Datum", "datum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -1492,7 +1580,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList.addColumn("Name", "name");
       if (geldkonto)
         buchungsList.addColumn("IBAN oder Kontonummer", "iban",
-            new IbanFormatter());
+            new IBANFormatter());
       buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
       {
         @Override
@@ -1549,9 +1637,14 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        buchungsList.addColumn("Projekt", "projekt", new ProjektFormatter());
+        buchungsList.addColumn("Projekt", "projekt");
       }
       buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      {
+        buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
+      }
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
       buchungsList.setRememberColWidths(true);
@@ -1565,15 +1658,19 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     else
     {
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+
       buchungsList.removeAll();
 
       for (Buchung bu : buchungen)
       {
         buchungsList.addItem(bu);
       }
+
+      // Summenzeile neu laden
+      buchungsList.featureEvent(
+          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
       buchungsList.sort();
     }
-
     informKontoChangeListener();
 
     return buchungsList;
@@ -1586,7 +1683,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       splitbuchungsList = new SplitbuchungListTablePart(
           SplitbuchungsContainer.get(), new BuchungAction(true));
       splitbuchungsList.addColumn("Nr", "id-int");
-      splitbuchungsList.addColumn("Konto", "konto", new KontoFormatter());
+      splitbuchungsList.addColumn("Konto", "konto");
       splitbuchungsList.addColumn("Typ", "splittyp", new Formatter()
       {
         @Override
@@ -1639,8 +1736,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           new SollbuchungFormatter());
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
-        splitbuchungsList.addColumn("Projekt", "projekt",
-            new ProjektFormatter());
+        splitbuchungsList.addColumn("Projekt", "projekt");
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
@@ -1671,11 +1767,15 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           }
         }
       });
+      splitbuchungConsumer = new SplitbuchungMessageConsumer();
+      Application.getMessagingFactory()
+          .registerMessageConsumer(splitbuchungConsumer);
     }
     else
     {
       refreshSplitbuchungen();
     }
+    splitbuchungsList.setMulti(true);
     return splitbuchungsList;
   }
 
@@ -1729,9 +1829,44 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      String title = "";
+      String subtitle = "";
+      if (geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, this);
+        subtitle = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL,
+            this);
+      }
+      else if (geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_DATEINAME, this)
+                + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_TITEL, this);
+        subtitle = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_SUBTITEL,
+            this);
+      }
+      else if (!geldkonto && einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_DATEINAME, this) + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_TITEL,
+            this);
+        subtitle = VorlageUtil
+            .getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_SUBTITEL, this);
+      }
+      else if (!geldkonto && !einzelbuchungen)
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_DATEINAME, this) + ".pdf");
+        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_TITEL,
+            this);
+        subtitle = VorlageUtil
+            .getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL, this);
+      }
 
       final String s = fd.open();
 
@@ -1743,7 +1878,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      auswertungBuchungPDF(buchungsarten, file, einzelbuchungen);
+      auswertungBuchungPDF(buchungsarten, file, einzelbuchungen, title,
+          subtitle);
     }
     catch (RemoteException e)
     {
@@ -1767,9 +1903,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungen", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "CSV").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
+      else
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_CSVBUCHUNGEN_DATEINAME, this)
+                + ".csv");
+      }
 
       final String s = fd.open();
 
@@ -1784,7 +1929,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       BackgroundTask t = new BackgroundTask()
       {
 
-        @SuppressWarnings("unused")
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
@@ -1845,9 +1989,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname("buchungsjournal", "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          "PDF").get());
+      if (geldkonto)
+      {
+        fd.setFileName(
+            VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_DATEINAME, this)
+                + ".pdf");
+      }
+      else
+      {
+        fd.setFileName(VorlageUtil.getName(
+            VorlageTyp.ANLAGEN_BUCHUNGSJOURNAL_DATEINAME, this) + ".pdf");
+      }
 
       final String s = fd.open();
 
@@ -1858,8 +2010,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
+      final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_TITEL,
+          this);
+      final String subtitle = VorlageUtil
+          .getName(VorlageTyp.BUCHUNGSJOURNAL_SUBTITEL, this);
 
-      auswertungBuchungsjournalPDF(query, file, params);
+      auswertungBuchungsjournalPDF(query, file, params, title, subtitle);
     }
     catch (Exception e)
     {
@@ -1868,12 +2024,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   private void auswertungBuchungPDF(final ArrayList<Buchungsart> buchungsarten,
-      final File file, final boolean einzelbuchungen)
+      final File file, final boolean einzelbuchungen, String title,
+      String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
@@ -1881,7 +2037,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         {
           GUI.getStatusBar().setSuccessText("Auswertung gestartet");
           new BuchungAuswertungPDF(buchungsarten, file, query, einzelbuchungen,
-              params);
+              params, title, subtitle);
         }
         catch (ApplicationException ae)
         {
@@ -1912,18 +2068,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   private void auswertungBuchungsjournalPDF(final BuchungQuery query,
-      final File file, final TreeMap<String, String> params)
+      final File file, final TreeMap<String, String> params, String title,
+      String subtitle)
   {
     BackgroundTask t = new BackgroundTask()
     {
 
-      @SuppressWarnings("unused")
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
         try
         {
-          new BuchungsjournalPDF(query, file, params);
+          new BuchungsjournalPDF(query, file, params, title, subtitle);
           GUI.getCurrentView().reload();
         }
         catch (ApplicationException ae)
@@ -2016,21 +2172,21 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           GUI.getStatusBar().setErrorText(String.format(
               "Buchung wurde bereits am %s von %s abgeschlossen.",
               new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
-          return false;
+          return editable = false;
         }
         Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
         if (spb != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-          return false;
+          return editable = false;
         }
         // Aufruf einer Splitbuchung aus Vor Zurueck
         if (getBuchung().getSpeicherung() && getBuchung().getSplitId() != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Splitbuchung zugeordnet.");
-          return false;
+          return editable = false;
         }
       }
     }
@@ -2039,10 +2195,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return true;
+    return editable = true;
   }
 
-  public boolean isSplitBuchungAbgeschlossen() throws ApplicationException
+  public boolean isSplitBuchungEditable() throws ApplicationException
   {
     try
     {
@@ -2062,14 +2218,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                     "Buchung wurde bereits am %s von %s abgeschlossen.",
                     new JVDateFormatTTMMJJJJ().format(ja.getDatum()),
                     ja.getName()));
-            return true;
-          }
-          Spendenbescheinigung spb = getBuchung().getSpendenbescheinigung();
-          if (spb != null)
-          {
-            GUI.getStatusBar().setErrorText(
-                "Buchung kann nicht bearbeitet werden. Sie ist einer Spendenbescheinigung zugeordnet.");
-            return true;
+            return editable = false;
           }
         }
       }
@@ -2079,7 +2228,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       throw new ApplicationException(
           "Status der aktuellen Buchung kann nicht geprüft werden.", e);
     }
-    return false;
+    return editable = true;
   }
 
   public void buchungSpeichern() throws ApplicationException
@@ -2098,11 +2247,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     catch (ApplicationException e)
     {
       DBTransaction.rollback();
-      throw new ApplicationException(e);
+      throw new ApplicationException(e.getMessage());
     }
   }
 
-  public Input getSuchMitgliedZugeordnet()
+  public SelectInput getSuchMitgliedZugeordnet()
   {
     if (hasmitglied != null)
     {
@@ -2149,8 +2298,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return iban;
     }
-    iban = new IBANInput(HBCIProperties.formatIban(getBuchung().getIban()),
+    iban = new IBANInput(new IBANFormatter().format(getBuchung().getIban()),
         new TextInput(""));
+    iban.setEnabled(editable);
     return iban;
   }
 
@@ -2476,4 +2626,61 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class SplitbuchungMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { SplitbuchungMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            refreshSplitbuchungen();
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("Fehler beim Update der Splitbuchung Anzeige.", e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(SplitbuchungMessageConsumer.this);
+          }
+        }
+      });
+    }
+  }
+
+  public void deregisterSplitbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(splitbuchungConsumer);
+  }
 }

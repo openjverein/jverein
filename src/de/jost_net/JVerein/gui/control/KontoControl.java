@@ -43,6 +43,7 @@ import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -62,7 +63,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -80,7 +80,6 @@ import de.willuhn.jameica.plugin.Version;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-//import de.jost_net.JVerein.keys.ArtBuchungsart;
 
 public class KontoControl extends FilterControl implements Savable
 {
@@ -298,46 +297,11 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      prepareStore();
-
-      DBService service = Einstellungen.getDBService();
-      String sql = "SELECT DISTINCT konto.id from konto "
-          + "WHERE (kontoart = ?) ";
-      boolean exist = (boolean) service.execute(sql,
-          new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-          {
-            @Override
-            public Object extract(ResultSet rs)
-                throws RemoteException, SQLException
-            {
-              if (rs.next())
-              {
-                return true;
-              }
-              return false;
-            }
-          });
-      if (!exist && getKonto().getKontoArt() == Kontoart.ANLAGE)
-      {
-        SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-        d.setTitle("Erstes Anlagenkonto");
-        d.setText(
-            "Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
-        try
-        {
-          d.open();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      Konto k = getKonto();
-      k.store();
+      prepareStore().store();
     }
     catch (RemoteException e)
     {
-      String fehler = "Fehler bei speichern des Kontos";
+      String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -395,6 +359,7 @@ public class KontoControl extends FilterControl implements Savable
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
     kontenList.addFeature(new FeatureSummary());
+    kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);
     return kontenList;
@@ -587,12 +552,12 @@ public class KontoControl extends FilterControl implements Savable
     buchungsart = new SelectInput(liste, b);
     buchungsart.setPleaseChoose("Bitte auswählen");
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
     {
-      case BuchungsartSort.NACH_NUMMER:
+      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
         buchungsart.setAttribute("nrbezeichnung");
         break;
-      case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
         buchungsart.setAttribute("bezeichnungnr");
         break;
       default:
@@ -642,10 +607,38 @@ public class KontoControl extends FilterControl implements Savable
     {
       art = getKonto().getKontoArt();
     }
-    ArrayList<Kontoart> values = new ArrayList<Kontoart>(
+    ArrayList<Kontoart> values = new ArrayList<Kontoart>();
+    ArrayList<Kontoart> arten = new ArrayList<Kontoart>(
         Arrays.asList(Kontoart.values()));
-    values.remove(Kontoart.LIMIT);
-    values.remove(Kontoart.LIMIT_RUECKLAGE);
+    for (Kontoart ka : arten)
+    {
+      if (ka.getKey() < Kontoart.LIMIT.getKey() && ka != Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN)
+          && ka == Kontoart.ANLAGE)
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RUECKLAGENKONTEN)
+          && ka.getKey() > Kontoart.LIMIT.getKey()
+          && ka.getKey() < Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN)
+          && ka.getKey() > Kontoart.LIMIT_RUECKLAGE.getKey())
+      {
+        values.add(ka);
+      }
+    }
+
+    if (!values.contains(art))
+    {
+      values.add(art);
+    }
     kontoart = new SelectInput(values, art);
     kontoart.addListener(new Listener()
     {
@@ -1039,11 +1032,12 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      switch ((Integer) Einstellungen
+          .getEinstellung(Property.BUCHUNGSARTANZEIGE))
       {
-        case BuchungsartSort.NACH_NUMMER:
+        case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
           return "nrbezeichnung";
-        case BuchungsartSort.NACH_BEZEICHNUNG_NR:
+        case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
           return "bezeichnungnr";
         default:
           return "bezeichnung";
@@ -1051,7 +1045,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     catch (RemoteException e)
     {
-      String fehler = "Keine Buchungssortierung hinterlegt.";
+      String fehler = "Keine Buchungsartanzeige hinterlegt.";
       Logger.error(fehler, e);
       GUI.getStatusBar().setErrorText(fehler);
     }
@@ -1105,7 +1099,7 @@ public class KontoControl extends FilterControl implements Savable
         getAnschaffung().enable();
         getAfaRestwert().enable();
         getAfaRestwert().setValue(
-            (Boolean) Einstellungen.getEinstellung(Property.AFARESTWERT));
+            (Double) Einstellungen.getEinstellung(Property.AFARESTWERT));
         if (getBetrag().getValue() == null)
           getAutobutton().setEnabled(true);
         getAfabutton().setEnabled(false);
@@ -1230,7 +1224,6 @@ public class KontoControl extends FilterControl implements Savable
       while (buchungenIt.hasNext())
       {
         b = (Buchung) buchungenIt.next();
-        // TODO Bei der Anlage müssen wir immer Netto Beträge verwenden?
         betrag += b.getBetrag();
         d = b.getDatum();
       }

@@ -23,7 +23,7 @@ public interface Wiedervorlage extends JVereinDBObject
 {
   public Mitglied getMitglied() throws RemoteException;
 
-  public void setMitglied(int mitglied) throws RemoteException;
+  public void setMitglied(Integer mitglied) throws RemoteException;
 
   public Date getDatum() throws RemoteException;
 

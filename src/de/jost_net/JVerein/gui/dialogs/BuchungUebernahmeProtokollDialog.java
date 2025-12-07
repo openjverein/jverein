@@ -24,7 +24,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
-import de.jost_net.JVerein.gui.formatter.KontoFormatter;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -37,7 +37,6 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.hbci.gui.formatter.IbanFormatter;
 
 /**
  * Ein Dialog, ueber den man ein Konto auswaehlen kann.
@@ -68,11 +67,11 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
 
     final TablePart bu = new TablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
-    bu.addColumn("Konto", "konto", new KontoFormatter());
+    bu.addColumn("Konto", "konto");
     bu.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     bu.addColumn("Name", "name");
-    bu.addColumn("IBAN oder Kontonummer", "iban", new IbanFormatter());
+    bu.addColumn("IBAN oder Kontonummer", "iban", new IBANFormatter());
     bu.addColumn("Verwendungszweck", "zweck", new Formatter()
     {
 

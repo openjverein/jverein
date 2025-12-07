@@ -16,10 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.navigation;
 
-import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AboutAction;
@@ -58,6 +54,7 @@ import de.jost_net.JVerein.gui.view.EinstellungenMailView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliedAnsichtView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliederSpaltenView;
 import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
+import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
@@ -96,13 +93,8 @@ import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
-import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.Kontoart;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
@@ -119,35 +111,9 @@ public class MyExtension implements Extension
   {
     try
     {
-      // Check ob es ein Anlagenkonto gibt
-      boolean anlagenkonto = false;
-      try
-      {
-        DBService service = Einstellungen.getDBService();
-        String sql = "SELECT konto.id from konto " + "WHERE (kontoart = ?) ";
-        anlagenkonto = (boolean) service.execute(sql,
-            new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-            {
-              @Override
-              public Object extract(ResultSet rs)
-                  throws RemoteException, SQLException
-              {
-                if (rs.next())
-                {
-                  return true;
-                }
-                return false;
-              }
-            });
-      }
-      catch (Exception e)
-      {
-        
-      }
       NavigationItem jverein = (NavigationItem) extendable;
 
-      NavigationItem mitglieder = null;
-      mitglieder = new MyItem(mitglieder, "Mitglieder", null);
+      NavigationItem mitglieder = new MyItem(jverein, "Mitglieder", null);
 
       mitglieder.addChild(new MyItem(mitglieder, "Mitglieder",
           new StartViewAction(MitgliedListeView.class), "user-friends.png"));
@@ -163,16 +129,11 @@ public class MyExtension implements Extension
             new StartViewAction(KursteilnehmerListeView.class),
             "user-friends.png"));
       }
-      DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
-          .createList(Beitragsgruppe.class);
-      it.addFilter("beitragsart = ?",
-          new Object[] { ArtBeitragsart.FAMILIE_ANGEHOERIGER.getKey() });
-      if (it.size() > 0)
+      if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new StartViewAction(FamilienbeitragView.class), "users.png"));
       }
-
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -212,8 +173,7 @@ public class MyExtension implements Extension
       }
       jverein.addChild(mitglieder);
 
-      NavigationItem buchfuehrung = null;
-      buchfuehrung = new MyItem(buchfuehrung, "Buchführung", null);
+      NavigationItem buchfuehrung = new MyItem(jverein, "Buchführung", null);
       // Konten
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Konten",
           new StartViewAction(KontoListeView.class),
@@ -247,7 +207,7 @@ public class MyExtension implements Extension
             new StartViewAction(ProjektSaldoView.class), "screwdriver.png"));
       }
       // Anlagen
-      if (anlagenkonto)
+      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
       {
         buchfuehrung.addChild(new MyItem(buchfuehrung, "Anlagenbuchungen",
             new StartViewAction(AnlagenbuchungListeView.class),
@@ -270,10 +230,18 @@ public class MyExtension implements Extension
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Jahresabschlüsse",
           new StartViewAction(JahresabschlussListeView.class),
           "office-calendar.png"));
+
+      // Wirtschaftsplan
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN))
+      {
+        buchfuehrung.addChild(new MyItem(buchfuehrung, "Wirtschaftsplanung",
+            new StartViewAction(WirtschaftsplanListeView.class),
+            "x-office-spreadsheet.png"));
+      }
       jverein.addChild(buchfuehrung);
 
-      NavigationItem abrechnung = null;
-      abrechnung = new MyItem(abrechnung, "Abrechnung", null);
+      NavigationItem abrechnung = new MyItem(jverein, "Abrechnung", null);
       abrechnung.addChild(new MyItem(abrechnung, "Abrechnungsläufe",
           new StartViewAction(AbrechnungslaufListeView.class),
           "calculator.png"));
@@ -281,8 +249,7 @@ public class MyExtension implements Extension
           new StartViewAction(LastschriftListeView.class), "file-invoice.png"));
       jverein.addChild(abrechnung);
 
-      NavigationItem auswertung = null;
-      auswertung = new MyItem(auswertung, "Auswertungen", null);
+      NavigationItem auswertung = new MyItem(jverein, "Auswertungen", null);
       auswertung.addChild(new MyItem(auswertung, "Mitglieder",
           new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
@@ -312,8 +279,7 @@ public class MyExtension implements Extension
       }
       jverein.addChild(auswertung);
 
-      NavigationItem mail = null;
-      mail = new MyItem(mail, "Druck & Mail", null);
+      NavigationItem mail = new MyItem(jverein, "Druck & Mail", null);
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         mail.addChild(new MyItem(mail, "Rechnungen",
@@ -344,11 +310,10 @@ public class MyExtension implements Extension
           "envelope-open.png"));
       jverein.addChild(mail);
 
-      NavigationItem administration = null;
-      administration = new MyItem(administration, "Administration", null);
+      NavigationItem administration = new MyItem(jverein, "Administration",
+          null);
 
-      NavigationItem administrationEinstellungen = null;
-      administrationEinstellungen = new MyItem(administrationEinstellungen,
+      NavigationItem administrationEinstellungen = new MyItem(administration,
           "Einstellungen", null);
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Allgemein",
@@ -402,10 +367,12 @@ public class MyExtension implements Extension
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Statistik",
           new StartViewAction(EinstellungenStatistikView.class), "wrench.png"));
+      administrationEinstellungen.addChild(new MyItem(
+          administrationEinstellungen, "Reports",
+          new StartViewAction(EinstellungenReportsView.class), "wrench.png"));
       administration.addChild(administrationEinstellungen);
 
-      NavigationItem einstellungenmitglieder = null;
-      einstellungenmitglieder = new MyItem(einstellungenmitglieder,
+      NavigationItem einstellungenmitglieder = new MyItem(administration,
           "Mitglieder", null);
       einstellungenmitglieder
           .addChild(new MyItem(einstellungenmitglieder, "Beitragsgruppen",
@@ -417,9 +384,12 @@ public class MyExtension implements Extension
       einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
           "Eigenschaften", new StartViewAction(EigenschaftListeView.class),
           "document-properties.png"));
-      einstellungenmitglieder
-          .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
-              new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+      {
+        einstellungenmitglieder
+            .addChild(new MyItem(einstellungenmitglieder, "Zusatzfelder",
+                new StartViewAction(ZusatzfeldListeView.class), "list.png"));
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
       {
         einstellungenmitglieder.addChild(new MyItem(einstellungenmitglieder,
@@ -443,8 +413,7 @@ public class MyExtension implements Extension
       }
       administration.addChild(einstellungenmitglieder);
 
-      NavigationItem einstellungenbuchfuehrung = null;
-      einstellungenbuchfuehrung = new MyItem(einstellungenbuchfuehrung,
+      NavigationItem einstellungenbuchfuehrung = new MyItem(administration,
           "Buchführung", null);
       einstellungenbuchfuehrung.addChild(new MyItem(einstellungenbuchfuehrung,
           "Buchungsklassen", new StartViewAction(BuchungsklasseListeView.class),
@@ -471,9 +440,8 @@ public class MyExtension implements Extension
       }
       administration.addChild(einstellungenbuchfuehrung);
 
-      NavigationItem einstellungenerweitert = null;
-      einstellungenerweitert = new MyItem(einstellungenerweitert, "Erweitert",
-          null);
+      NavigationItem einstellungenerweitert = new MyItem(administration,
+          "Erweitert", null);
       einstellungenerweitert
           .addChild(new MyItem(einstellungenerweitert, "Migration",
               new StartViewAction(MigrationView.class), "file-import.png"));
@@ -491,6 +459,7 @@ public class MyExtension implements Extension
               new BackupRestoreAction(), "file-import.png"));
       administration.addChild(einstellungenerweitert);
       jverein.addChild(administration);
+
       jverein.addChild(new MyItem(jverein, "Dokumentation",
           new DokumentationAction(), "question-circle.png"));
       jverein.addChild(

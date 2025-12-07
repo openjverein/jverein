@@ -24,6 +24,8 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.extension.Extendable;
+import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -33,7 +35,17 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractDetailView extends AbstractView
+    implements Extendable
 {
+
+  private boolean bindSucessfull = false;
+
+  public AbstractDetailView()
+  {
+    // Nach dem bind() wird extend() aufgerufen, das nutzen wir, um zu prüfen,
+    // ob das bind() auch erfolgreich geklappt hat.
+    ExtensionRegistry.register(e -> bindSucessfull = true, "jverein.view");
+  }
 
   /**
    * Diese Funktion muss implementiert werden und den Controller zurückliefern
@@ -45,6 +57,12 @@ public abstract class AbstractDetailView extends AbstractView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
+    // Wenn das bind() nicht geklapt hat, keine Abfrage machen
+    if (!bindSucessfull)
+    {
+      return;
+    }
+
     JVereinDBObject o = null;
     try
     {
@@ -140,5 +158,11 @@ public abstract class AbstractDetailView extends AbstractView
     {
       return false;
     }
+  }
+
+  @Override
+  public String getExtendableID()
+  {
+    return "jverein.view";
   }
 }

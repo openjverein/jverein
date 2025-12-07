@@ -116,7 +116,7 @@ public class BuchungGegenbuchungAction implements Action
           }
           else
           {
-            GUI.startView(new BuchungDetailView(), buchungen[0]);
+            GUI.startView(new BuchungDetailView(), bu);
           }
         }
       }
@@ -137,7 +137,8 @@ public class BuchungGegenbuchungAction implements Action
     }
     catch (Exception e)
     {
-      GUI.getStatusBar().setErrorText("Fehler bei der Gegenbuchung.");
+      GUI.getStatusBar().setErrorText(
+          "Fehler beim Erstellen der Gegenbuchung: " + e.getMessage());
     }
   }
 }

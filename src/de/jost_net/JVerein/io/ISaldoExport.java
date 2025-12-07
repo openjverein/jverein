@@ -18,7 +18,6 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.util.ApplicationException;
@@ -28,6 +27,6 @@ import de.willuhn.util.ApplicationException;
  */
 public interface ISaldoExport
 {
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date von,
-      Date bis) throws ApplicationException;
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
+      String subtitle) throws ApplicationException;
 }

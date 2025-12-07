@@ -25,7 +25,7 @@ public interface Zusatzbetrag extends JVereinDBObject
 {
   public Mitglied getMitglied() throws RemoteException;
 
-  public void setMitglied(int mitglied) throws RemoteException;
+  public void setMitglied(Integer mitglied) throws RemoteException;
 
   public Date getFaelligkeit() throws RemoteException;
 
@@ -84,4 +84,9 @@ public interface Zusatzbetrag extends JVereinDBObject
   public Steuer getSteuer() throws RemoteException;
 
   void setSteuer(Steuer steuer) throws RemoteException;
+
+  public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
+      throws RemoteException;
+
+  public boolean getMitgliedzahltSelbst() throws RemoteException;
 }

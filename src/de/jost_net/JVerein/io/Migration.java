@@ -590,7 +590,7 @@ public class Migration
       final Map<String, Integer> beitragsGruppen)
       throws RemoteException, SQLException, ApplicationException, ParseException
   {
-    m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+    m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
 
     /*
      * necessary columns
@@ -741,23 +741,13 @@ public class Migration
       m.setMandatDatum(Datum.toDate(formatDate(m_d)));
     }
     m.setZahlungsweg(zahlweg);
-    m.setKtoiPersonenart(
-        getResultFrom(results, InternalColumns.KTOIPERSONENART));
-    m.setKtoiAnrede(getResultFrom(results, InternalColumns.KTOIANREDE));
-    m.setKtoiTitel(getResultFrom(results, InternalColumns.KTOITITEL));
-    m.setKtoiName(getResultFrom(results, InternalColumns.KTOINAME));
-    m.setKtoiVorname(getResultFrom(results, InternalColumns.KTOIVORNAME));
-    m.setKtoiStrasse(getResultFrom(results, InternalColumns.KTOISTRASSE));
-    m.setKtoiAdressierungszusatz(
-        getResultFrom(results, InternalColumns.KTOIADRESSIERUNGSZUSATZ));
-    m.setKtoiPlz(getResultFrom(results, InternalColumns.KTOIPLZ));
-    m.setKtoiOrt(getResultFrom(results, InternalColumns.KTOIORT));
-    String staat = getResultFrom(results, InternalColumns.KTOISTAAT);
+    m.setKontoinhaber(getResultFrom(results, InternalColumns.KONTOINHABER));
+    String staat = getResultFrom(results, InternalColumns.STAAT);
     if (staat != null && staat.length() != 0)
     {
       m.setStaat(getStaat(staat));
     }
-    m.setKtoiEmail(getResultFrom(results, InternalColumns.KTOIEMAIL));
+
     Integer bg = beitragsGruppen
         .get(getResultFrom(results, InternalColumns.BEITRAGSART));
     m.setBeitragsgruppeId(bg);
@@ -899,19 +889,19 @@ public class Migration
     {
       if (mitgliedstyp.matches("[0-9]+"))
       {
-        m.setMitgliedstyp(Integer.parseInt(mitgliedstyp));
+        m.setMitgliedstyp(Long.parseLong(mitgliedstyp));
       }
       else
       {
         progMonitor.log(String.format(
             "Mitgliedstyp bei: %s ist entweder leer oder besteht nicht nur aus Zahlen, setze auf 1 (Mitglied)",
             Adressaufbereitung.getNameVorname(m)));
-        m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+        m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       }
     }
     else
     { // Default value
-      m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+      m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
     }
 
     m.setVermerk1(getResultFrom(results, InternalColumns.VERMERKA));

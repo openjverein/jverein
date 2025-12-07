@@ -17,7 +17,6 @@
 
 package de.jost_net.JVerein.io;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -27,8 +26,11 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.util.VorlageUtil;
 
 public class MitgliedschaftsjubilaeumExportPDF
     extends MitgliedschaftsjubilaeumsExport
@@ -75,17 +77,18 @@ public class MitgliedschaftsjubilaeumExportPDF
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "mitgliedschaftsjubilare";
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,
+        (MitgliedControl) object) + ".pdf";
   }
 
   @Override
-  protected void open() throws DocumentException, FileNotFoundException
+  protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos,
-        String.format("Mitgliedschaftsjubilare %d", jahr), "", 3);
+    reporter = new Reporter(fos, title, subtitle, 3);
   }
 
   @Override

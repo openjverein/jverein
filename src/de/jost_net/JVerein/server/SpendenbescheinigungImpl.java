@@ -133,8 +133,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile1() throws RemoteException
   {
-    return getAttribute("zeile1") == null ? ""
-        : (String) getAttribute("zeile1");
+    return (String) getAttribute("zeile1");
   }
 
   @Override
@@ -146,8 +145,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile2() throws RemoteException
   {
-    return getAttribute("zeile2") == null ? ""
-        : (String) getAttribute("zeile2");
+    return (String) getAttribute("zeile2");
   }
 
   @Override
@@ -159,8 +157,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile3() throws RemoteException
   {
-    return getAttribute("zeile3") == null ? ""
-        : (String) getAttribute("zeile3");
+    return (String) getAttribute("zeile3");
   }
 
   @Override
@@ -172,8 +169,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile4() throws RemoteException
   {
-    return getAttribute("zeile4") == null ? ""
-        : (String) getAttribute("zeile4");
+    return (String) getAttribute("zeile4");
   }
 
   @Override
@@ -185,8 +181,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile5() throws RemoteException
   {
-    return getAttribute("zeile5") == null ? ""
-        : (String) getAttribute("zeile5");
+    return (String) getAttribute("zeile5");
   }
 
   @Override
@@ -198,8 +193,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile6() throws RemoteException
   {
-    return getAttribute("zeile6") == null ? ""
-        : (String) getAttribute("zeile6");
+    return (String) getAttribute("zeile6");
   }
 
   @Override
@@ -211,8 +205,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public String getZeile7() throws RemoteException
   {
-    return getAttribute("zeile7") == null ? ""
-        : (String) getAttribute("zeile7");
+    return (String) getAttribute("zeile7");
   }
 
   @Override
@@ -298,19 +291,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getErsatzAufwendungen() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("ersatzaufwendungen"));
-  }
-
-  @Override
-  public void setErsatzAufwendungen(Boolean ersatzaufwendungen)
-      throws RemoteException
-  {
-    setAttribute("ersatzaufwendungen", Boolean.valueOf(ersatzaufwendungen));
-  }
-
-  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");
@@ -326,36 +306,13 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public int getHerkunftSpende() throws RemoteException
   {
-    Integer ret = (Integer) getAttribute("herkunftspende");
-    if (ret == null)
-    {
-      ret = HerkunftSpende.KEINEANGABEN;
-    }
-    return ret;
+    return (Integer) getAttribute("herkunftspende");
   }
 
   @Override
   public void setHerkunftSpende(int herkunftspende) throws RemoteException
   {
     setAttribute("herkunftspende", herkunftspende);
-  }
-
-  @Override
-  public Object getAttribute(String fieldName) throws RemoteException
-  {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -368,7 +325,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       for (Buchung b : buchungen)
       {
         b.setSpendenbescheinigungId(id);
-        b.store(false);
+        b.updateForced();
       }
     }
   }
@@ -445,8 +402,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   /**
    * Fügt der Liste der Buchungen eine Buchung hinzu. Der Gesamtbetrag der
    * Spendenbescheinigung wird anhand der Einzelbeträge der Buchungen berechnet.
-   * Die Spendenart wird auf "GELDSPENDE" gesetzt. Das Spendendatum wird auf das
-   * kleinste Datum der Buchungen gesetzt.
+   * Das Spendendatum wird auf das kleinste Datum der Buchungen gesetzt.
    * 
    * @param buchung
    *          Die Buchung zum Hinzufügen
@@ -476,7 +432,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       {
         setSpendedatum(buchung.getDatum());
       }
-      setSpendenart(Spendenart.GELDSPENDE);
     }
   }
 
@@ -515,7 +470,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public List<Buchung> getBuchungen() throws RemoteException
   {
-    if (getSpendenart() == Spendenart.GELDSPENDE && buchungen == null)
+    if (buchungen == null)
     {
       buchungen = new ArrayList<>();
       DBIterator<Buchung> it = Einstellungen.getDBService()
@@ -552,15 +507,37 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getAutocreate() throws RemoteException
+  public Object getAttributeDefault(String fieldName)
   {
-    return Util.getBoolean(getAttribute("autocreate"));
+    switch (fieldName)
+    {
+      case "zeile1":
+      case "zeile2":
+      case "zeile3":
+      case "zeile4":
+      case "zeile5":
+      case "zeile6":
+      case "zeile7":
+      case "bezeichnungsachzuwendung":
+        return "";
+      case "unterlagenwertermittlung":
+        return false;
+      case "herkunftspende":
+        return HerkunftSpende.KEINEANGABEN;
+      default:
+        return null;
+    }
   }
 
   @Override
-  public void setAutocreate(Boolean autocreate) throws RemoteException
+  public String getObjektName()
   {
-    setAttribute("autocreate", Boolean.valueOf(autocreate));
+    return "Spendenbescheinigung";
   }
 
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Spendenbescheinigungen";
+  }
 }

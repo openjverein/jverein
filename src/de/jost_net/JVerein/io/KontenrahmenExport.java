@@ -72,9 +72,15 @@ public abstract class KontenrahmenExport implements Exporter
   }
 
   @Override
-  public String getDateiname()
+  public void calculateTitle(Object object)
   {
-    return "kontenrahmen";
+    // Kein Titel bei xml
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Kein Subitel bei xml
   }
 
   protected abstract void open() throws IOException;

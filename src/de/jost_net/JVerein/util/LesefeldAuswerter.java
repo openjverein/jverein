@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+
 import bsh.EvalError;
 import bsh.Interpreter;
 import de.jost_net.JVerein.Einstellungen;
@@ -105,10 +107,9 @@ public class LesefeldAuswerter
     // '.', '-' und ' ' werden ersetzt durch '_'.
     for (String key : map.keySet())
     {
-
-      // TODO: gibt es noch mehr Zeichen, die ersetzt werden müssen?
-      String keyNormalized = key.replace("-", "_").replace(".", "_")
-          .replace(" ", "_");
+      String keyNormalized = key.replaceAll("[^a-zA-Z0-9_]", "_")
+          .replaceAll("__", "_");
+      key = StringUtils.strip(key, "_");
 
       try
       {
@@ -120,16 +121,6 @@ public class LesefeldAuswerter
             + e.getMessage() + "\".", e);
       }
     }
-
-    // DEBUG: Zeige alle gesetzten Variablen.
-    /*
-     * String[] vars = bsh.getNameSpace().getVariableNames(); try { for (int i =
-     * 0; i < vars.length; i++) { if (vars[i].compareTo("bsh") == 0) continue;
-     * String s2 = "\"" + vars[i] + ":\" + " + vars[i] + ";"; Object o =
-     * bsh.eval(s2); Logger.debug("Skript-Variable: " + o); } } catch (EvalError
-     * e) { e.printStackTrace(); }
-     */
-    // END DEBUG.
   }
 
   /**
@@ -142,6 +133,7 @@ public class LesefeldAuswerter
   {
     DBIterator<Lesefeld> itlesefelder = Einstellungen.getDBService()
         .createList(Lesefeld.class);
+    lesefelder.removeAll(lesefelder);
     while (itlesefelder.hasNext())
     {
       Lesefeld lesefeld = itlesefelder.next();
@@ -187,8 +179,10 @@ public class LesefeldAuswerter
       {
         continue;
       }
-      map.put(Einstellungen.LESEFELD_PRE + lesefeld.getBezeichnung(),
-          lesefeld.getEvaluatedContent());
+      String key = lesefeld.getBezeichnung().replaceAll("[^a-zA-Z0-9_]", "_")
+          .replaceAll("__", "_");
+      key = StringUtils.strip(key, "_");
+      map.put(Einstellungen.LESEFELD_PRE + key, lesefeld.getEvaluatedContent());
     }
     Logger.debug(
         String.format("Lesefeld-Variablen für Mitglied %s:", vornamename));

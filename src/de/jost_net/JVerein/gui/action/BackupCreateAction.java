@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
-import de.jost_net.JVerein.server.MitgliedstypImpl;
 import de.jost_net.JVerein.server.AltersstaffelImpl;
 import de.jost_net.JVerein.server.AnfangsbestandImpl;
 import de.jost_net.JVerein.server.ArbeitseinsatzImpl;
@@ -36,7 +35,6 @@ import de.jost_net.JVerein.server.BuchungDokumentImpl;
 import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.server.BuchungsartImpl;
 import de.jost_net.JVerein.server.BuchungsklasseImpl;
-import de.jost_net.JVerein.server.VorlageImpl;
 import de.jost_net.JVerein.server.EigenschaftGruppeImpl;
 import de.jost_net.JVerein.server.EigenschaftImpl;
 import de.jost_net.JVerein.server.EigenschaftenImpl;
@@ -59,18 +57,22 @@ import de.jost_net.JVerein.server.MitgliedDokumentImpl;
 import de.jost_net.JVerein.server.MitgliedImpl;
 import de.jost_net.JVerein.server.MitgliedNextBGruppeImpl;
 import de.jost_net.JVerein.server.MitgliedfotoImpl;
-import de.jost_net.JVerein.server.SollbuchungImpl;
+import de.jost_net.JVerein.server.MitgliedstypImpl;
 import de.jost_net.JVerein.server.ProjektImpl;
 import de.jost_net.JVerein.server.QIFImportHeadImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
 import de.jost_net.JVerein.server.RechnungImpl;
 import de.jost_net.JVerein.server.SekundaereBeitragsgruppeImpl;
+import de.jost_net.JVerein.server.SollbuchungImpl;
 import de.jost_net.JVerein.server.SollbuchungPositionImpl;
 import de.jost_net.JVerein.server.SpendenbescheinigungImpl;
 import de.jost_net.JVerein.server.SteuerImpl;
 import de.jost_net.JVerein.server.SuchprofilImpl;
 import de.jost_net.JVerein.server.VersionImpl;
+import de.jost_net.JVerein.server.VorlageImpl;
 import de.jost_net.JVerein.server.WiedervorlageImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.jost_net.JVerein.server.WirtschaftsplanItemImpl;
 import de.jost_net.JVerein.server.ZusatzbetragAbrechnungslaufImpl;
 import de.jost_net.JVerein.server.ZusatzbetragImpl;
 import de.jost_net.JVerein.server.ZusatzbetragVorlageImpl;
@@ -276,7 +278,7 @@ public class BackupCreateAction implements Action
           backup(RechnungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
-          monitor.setStatusText("Speichere Mitgliedskonten");
+          monitor.setStatusText("Speichere Sollbuchungen");
           backup(SollbuchungImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
@@ -307,10 +309,6 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText("Speichere Arbeitseinsätze");
           backup(ArbeitseinsatzImpl.class, writer, monitor);
-          monitor.addPercentComplete(1);
-
-          monitor.setStatusText("Speichere Jahresabschlüsse");
-          backup(JahresabschlussImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatusText("Speichere Buchungen");
@@ -352,6 +350,18 @@ public class BackupCreateAction implements Action
 
           monitor.setStatusText("Speichere Vorlagen");
           backup(VorlageImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Wirtschaftspläne");
+          backup(WirtschaftsplanImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Wirtschaftsplan-positionen");
+          backup(WirtschaftsplanItemImpl.class, writer, monitor);
+          monitor.addPercentComplete(1);
+
+          monitor.setStatusText("Speichere Jahresabschlüsse");
+          backup(JahresabschlussImpl.class, writer, monitor);
           monitor.addPercentComplete(1);
 
           monitor.setStatus(ProgressMonitor.STATUS_DONE);

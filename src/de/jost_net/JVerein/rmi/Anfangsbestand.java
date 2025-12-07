@@ -33,9 +33,9 @@ public interface Anfangsbestand extends JVereinDBObject
 
   public void setDatum(Date datum) throws RemoteException;
 
-  public void setBetrag(double betrag) throws RemoteException;
+  public void setBetrag(Double betrag) throws RemoteException;
 
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
   public Jahresabschluss getJahresabschluss() throws RemoteException;
 

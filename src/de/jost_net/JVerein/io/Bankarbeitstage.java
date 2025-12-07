@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.util.Calendar;
 
 import de.jollyday.HolidayManager;
+import de.jollyday.ManagerParameters;
 
 public class Bankarbeitstage
 {
@@ -26,7 +27,8 @@ public class Bankarbeitstage
 
   public Bankarbeitstage()
   {
-    m = HolidayManager.getInstance("Bankfeiertage");
+    m = HolidayManager
+        .getInstance(ManagerParameters.create("Bankfeiertage", null));
   }
 
   public Calendar getCalendar(Calendar from, int anzahl)

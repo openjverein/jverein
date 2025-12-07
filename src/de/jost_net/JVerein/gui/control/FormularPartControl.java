@@ -53,17 +53,29 @@ public abstract class FormularPartControl extends VorZurueckControl
 
     formularfelderList = new TablePart(formularfelder,
         new EditAction(FormularfeldDetailView.class));
-    formularfelderList.addColumn("Name", "name");
+    formularfelderList.addColumn("Name", "name", o -> {
+      String s = (String) o;
+      if (s.contains("\n"))
+      {
+        return s.substring(0, s.indexOf("\n"));
+      }
+      else
+      {
+        return s;
+      }
+    });
     formularfelderList.addColumn("Seite", "seite");
     formularfelderList.addColumn("Von links", "x");
     formularfelderList.addColumn("Von unten", "y");
     formularfelderList.addColumn("Schriftart", "font");
     formularfelderList.addColumn("Schriftgröße", "fontsize");
+    formularfelderList.addColumn("Ausrichtung", "ausrichtung");
 
     formularfelderList.setRememberColWidths(true);
     formularfelderList.setContextMenu(new FormularfeldMenu());
     formularfelderList.setRememberOrder(true);
     formularfelderList.removeFeature(FeatureSummary.class);
+    formularfelderList.setMulti(true);
     return formularfelderList;
   }
 

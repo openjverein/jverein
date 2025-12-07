@@ -169,6 +169,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         Einstellungen.DECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragmonatlich.disable();
+    betragmonatlich.setMandatory(true);
     return betragmonatlich;
   }
 
@@ -183,6 +184,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         Einstellungen.DECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragvierteljaehrlich.disable();
+    betragvierteljaehrlich.setMandatory(true);
     return betragvierteljaehrlich;
   }
 
@@ -197,6 +199,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         Einstellungen.DECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betraghalbjaehrlich.disable();
+    betraghalbjaehrlich.setMandatory(true);
     return betraghalbjaehrlich;
   }
 
@@ -210,6 +213,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         Einstellungen.DECIMALFORMAT);
     if (getBeitragsgruppe().getHasAltersstaffel())
       betragjaehrlich.disable();
+    betragjaehrlich.setMandatory(true);
     return betragjaehrlich;
   }
 
@@ -232,20 +236,36 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
           Boolean b = (Boolean) isAltersstaffel.getValue();
 
           if (betrag != null)
+          {
+            betrag.setMandatory(!b);
             betrag.setEnabled(!b);
+          }
           if (betragjaehrlich != null)
+          {
+            betragjaehrlich.setMandatory(!b);
             betragjaehrlich.setEnabled(!b);
+          }
           if (betraghalbjaehrlich != null)
+          {
+            betraghalbjaehrlich.setMandatory(!b);
             betraghalbjaehrlich.setEnabled(!b);
+          }
           if (betragvierteljaehrlich != null)
+          {
+            betragvierteljaehrlich.setMandatory(!b);
             betragvierteljaehrlich.setEnabled(!b);
+          }
           if (betragmonatlich != null)
+          {
+            betragmonatlich.setMandatory(!b);
             betragmonatlich.setEnabled(!b);
+          }
 
           if (alterstaffel != null)
           {
             for (Input i : alterstaffel)
             {
+              i.setMandatory(b);
               i.setEnabled(b);
             }
           }
@@ -272,7 +292,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     while (ap.hasNext())
     {
       VonBis vb = ap.getNext();
-      double betrag = 0;
+      Double betrag = null;
       Altersstaffel a = beitrag.getAltersstaffel(i);
       if (a != null)
         betrag = a.getBetrag();
@@ -440,15 +460,23 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     {
       b.setSekundaer(false);
     }
-    ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
-
-    b.setBeitragsArt(ba.getKey());
+    if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
+    {
+      ArtBeitragsart ba = (ArtBeitragsart) getBeitragsArt().getValue();
+      b.setBeitragsArt(ba.getKey());
+    }
+    else
+    {
+      b.setBeitragsArt(ArtBeitragsart.NORMAL.getKey());
+    }
     b.setBuchungsart((Buchungsart) getBuchungsart().getValue());
     b.setBuchungsklasseId(getSelectedBuchungsKlasseId());
-    Double d = (Double) getArbeitseinsatzStunden().getValue();
-    b.setArbeitseinsatzStunden(d.doubleValue());
-    d = (Double) getArbeitseinsatzBetrag().getValue();
-    b.setArbeitseinsatzBetrag(d.doubleValue());
+    if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
+    {
+      b.setArbeitseinsatzStunden(
+          (Double) getArbeitseinsatzStunden().getValue());
+      b.setArbeitseinsatzBetrag((Double) getArbeitseinsatzBetrag().getValue());
+    }
     b.setNotiz((String) getNotiz().getValue());
     if (steuer != null)
     {
@@ -467,27 +495,16 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         }
         else
         {
-          Double betrag = (Double) getBetrag().getValue();
-          if (betrag != null)
-          {
-            b.setBetrag(betrag.doubleValue());
-          }
-          else
-          {
-            b.setBetrag(-1);
-          }
+          b.setBetrag((Double) getBetrag().getValue());
           b.setHasAltersstaffel(false);
         }
         break;
       case FLEXIBEL:
-        Double d1 = (Double) getBetragMonatlich().getValue();
-        b.setBetragMonatlich(d1.doubleValue());
-        Double d3 = (Double) getBetragVierteljaehrlich().getValue();
-        b.setBetragVierteljaehrlich(d3.doubleValue());
-        Double d6 = (Double) getBetragHalbjaehrlich().getValue();
-        b.setBetragHalbjaehrlich(d6.doubleValue());
-        Double d12 = (Double) getBetragJaehrlich().getValue();
-        b.setBetragJaehrlich(d12.doubleValue());
+        b.setBetragMonatlich((Double) getBetragMonatlich().getValue());
+        b.setBetragVierteljaehrlich(
+            (Double) getBetragVierteljaehrlich().getValue());
+        b.setBetragHalbjaehrlich((Double) getBetragHalbjaehrlich().getValue());
+        b.setBetragJaehrlich((Double) getBetragJaehrlich().getValue());
         b.setHasAltersstaffel(false);
         break;
     }
@@ -500,7 +517,6 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     try
     {
       Beitragsgruppe b = (Beitragsgruppe) prepareStore();
-      b.store();
       if (isAltersstaffel != null && (Boolean) isAltersstaffel.getValue()
           && alterstaffel != null)
       {
@@ -508,8 +524,13 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         {
           Altersstaffel a = null;
           Double betrag = (Double) i.getValue();
+          if (betrag == null)
+          {
+            throw new ApplicationException(
+                "Bitte Betrag bei Altersstaffel eingeben!");
+          }
           a = b.getAltersstaffel((Integer) i.getData("nummer"));
-          if (betrag != null && a != null)
+          if (a != null)
           {
             a.setBetrag(betrag);
           }
@@ -524,6 +545,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
           a.store();
         }
       }
+      b.store();
     }
     catch (RemoteException e)
     {
@@ -646,6 +668,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         }
       }
     });
+    beitragsgruppeList.setMulti(true);
     beitragsgruppeList.setAction(
         new EditAction(BeitragsgruppeDetailView.class, beitragsgruppeList));
     VorZurueckControl.setObjektListe(null, null);

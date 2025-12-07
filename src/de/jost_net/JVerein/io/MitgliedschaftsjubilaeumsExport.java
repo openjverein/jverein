@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
@@ -29,14 +28,19 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
 {
+  protected String title;
+
+  protected String subtitle;
 
   @Override
   public abstract String getName();
@@ -138,22 +142,29 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
         + " StartAlter= " + Integer.toString(jubilarStartAlter));
   }
 
-  @Override
-  public String getDateiname()
-  {
-    return "mitgliedschaftsjubilare";
-  }
-
   protected abstract void startJahrgang(int jahr) throws DocumentException;
 
   protected abstract void endeJahrgang() throws DocumentException;
 
-  protected abstract void open()
-      throws DocumentException, FileNotFoundException;
+  protected abstract void open() throws DocumentException, IOException;
 
   protected abstract void add(Mitglied m) throws RemoteException;
 
   protected abstract void close() throws IOException, DocumentException;
+
+  @Override
+  public void calculateTitle(Object object)
+  {
+    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
+        object);
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    subtitle = VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
+  }
 
   /**
    * Innerclass hilft beim Ermitteln ob das Mitglied das geforderte Jubilaeum im

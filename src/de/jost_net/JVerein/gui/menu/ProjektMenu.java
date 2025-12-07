@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.ProjektDeleteAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ProjektDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -25,19 +25,19 @@ import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Kontext-Menu zu den Buchungsarten.
+ * Kontext-Menu zu den Projekten.
  */
 public class ProjektMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer die Liste der Buchungsarten.
+   * Erzeugt ein Kontext-Menu fuer die Liste der Projekte.
    */
   public ProjektMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(ProjektDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new ProjektDeleteAction(),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
   }
 }

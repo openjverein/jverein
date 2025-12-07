@@ -6,7 +6,7 @@ name: OpenJVerein nightly release
 on:
   push:
     branches:
-      - feature-3.2.0
+      - master
     tags-ignore:
       - '**'
 
@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout openjverein
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
-        ref: 'feature-3.2.0'
+        ref: 'master'
         path: jverein
 
     - name: Setup
@@ -30,19 +30,15 @@ jobs:
         echo ${ant_output}
 
         ssa="SELECTED_VERSION="
-        ssb=".zip"
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
         ssa="SELECTED_FILENAME="
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
         ssa="SELECTED_PATH="
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT

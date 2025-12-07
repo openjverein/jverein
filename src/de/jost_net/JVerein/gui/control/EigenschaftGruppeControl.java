@@ -154,6 +154,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     eigenschaftgruppeList.setRememberColWidths(true);
     eigenschaftgruppeList.setRememberOrder(true);
     eigenschaftgruppeList.addFeature(new FeatureSummary());
+    eigenschaftgruppeList.setMulti(true);
     eigenschaftgruppeList.setAction(new EditAction(
         EigenschaftGruppeDetailView.class, eigenschaftgruppeList));
     VorZurueckControl.setObjektListe(null, null);

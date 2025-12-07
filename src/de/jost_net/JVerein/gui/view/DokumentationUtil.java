@@ -24,7 +24,7 @@ public class DokumentationUtil
 
   // private static final String ALLGEMEIN = "allgemein/";
 
-  private static final String FUNKTIONEN = PRE + "v/3.1/";
+  private static final String FUNKTIONEN = PRE + "v/4.0/";
 
   private static final String AUSWERTUNGEN = FUNKTIONEN + "auswertungen/";
 
@@ -118,6 +118,8 @@ public class DokumentationUtil
   public static final String MITTELVERWENDUNGSALDO = BUCHF
       + "mittelverwendungsaldo";
 
+  public static final String WIRTSCHAFTSPLANUNG = BUCHF + "wirtschaftsplanung";
+
   public static final String UMSATZSTEUERSALDO = BUCHF + "umsatzsteuersaldo";
 
   // Abrechnung
@@ -196,6 +198,8 @@ public class DokumentationUtil
 
   public static final String EINSTELLUNGEN_STATISTIK = ADMEINSTELLUNG
       + "statistik";
+
+  public static final String EINSTELLUNGEN_REPORTS = ADMEINSTELLUNG + "reports";
 
   // Einstellungen Mitglieder
   public static final String BEITRAGSGRUPPEN = ADMMITGLIEDER

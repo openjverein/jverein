@@ -27,7 +27,6 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedInZwischenablageKopierenAction;
@@ -45,7 +44,6 @@ import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
@@ -131,7 +129,7 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Mitgliedstyp.MITGLIED);
+                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
                 m.setEingabedatum();
                 GUI.startView(MitgliedDetailView.class.getName(), m);
               }
@@ -168,7 +166,7 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Mitgliedstyp.SPENDER);
+                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
                 m.setEingabedatum();
                 m.setBeitragsgruppe(null);
                 m.setExterneMitgliedsnummer(null);
@@ -176,6 +174,7 @@ public class MitgliedMenu extends ContextMenu
                 m.setEintritt("");
                 m.setAustritt("");
                 m.setKuendigung("");
+                m.setSterbetag("");
                 m.setVollZahlerID(null);
                 DBService service = Einstellungen.getDBService();
                 // Sekundäre Beitragsgruppen löschen
@@ -204,16 +203,8 @@ public class MitgliedMenu extends ContextMenu
             }
           }, "view-refresh.png"));
     }
-    if (detailaction instanceof NichtMitgliedDetailAction)
-    {
-      addItem(new CheckedContextMenuItem("Löschen",
-          new NichtMitgliedDeleteAction(), "user-trash-full.png"));
-    }
-    else
-    {
-      addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
-          "user-trash-full.png"));
-    }
+    addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
+        "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));
@@ -227,12 +218,8 @@ public class MitgliedMenu extends ContextMenu
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
-      addItem(new CheckedSingleContextMenuItem("Geldspendenbescheinigung",
-          new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
-          "file-invoice.png"));
-      addItem(new CheckedSingleContextMenuItem("Sachspendenbescheinigung",
-          new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
-          "file-invoice.png"));
+      addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
+          new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));

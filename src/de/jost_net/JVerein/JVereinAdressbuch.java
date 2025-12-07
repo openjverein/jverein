@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedAddress;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -43,22 +42,22 @@ public class JVereinAdressbuch implements Addressbook
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     String su = "%" + text.toLowerCase() + "%";
-    it.addFilter("(lower(name) like ? or lower(vorname) like ?)",
-        new Object[] { su, su });
+    it.addFilter(
+        "(lower(name) like ? or lower(vorname) like ? or lower(kontoinhaber) like ?)",
+        su, su, su);
     it.addFilter("(iban is not null and length(iban)>0)");
     ArrayList<MitgliedAddress> list = new ArrayList<>();
     while (it.hasNext())
     {
       Mitglied m = (Mitglied) it.next();
       String kategorie = m.getMitgliedstyp().getBezeichnung();
-      if (m.getMitgliedstyp().getID()
-          .equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+      if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
         kategorie = m.getBeitragsgruppe().getBezeichnung();
       }
       MitgliedAddress ma = new MitgliedAddress(
-          Adressaufbereitung.getNameVorname(m), "", m.getBic(), m.getIban(),
-          kategorie);
+          m.getKontoinhaber(Mitglied.namenformat.KONTOINHABER), "", m.getBic(),
+          m.getIban(), kategorie);
       list.add(ma);
     }
     return list;

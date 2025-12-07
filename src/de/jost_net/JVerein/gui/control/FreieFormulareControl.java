@@ -54,7 +54,8 @@ public class FreieFormulareControl extends DruckMailControl
     try
     {
       saveDruckMailSettings();
-      new FreiesFormularAusgabe(getMitglieder(currentObject), this);
+      String pdfMode = (String) getPdfModus().getValue();
+      new FreiesFormularAusgabe(getMitglieder(currentObject), this, pdfMode);
     }
     catch (ApplicationException ae)
     {
@@ -162,5 +163,11 @@ public class FreieFormulareControl extends DruckMailControl
       GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
     }
     return text;
+  }
+
+  @Override
+  protected void TabRefresh()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
   }
 }

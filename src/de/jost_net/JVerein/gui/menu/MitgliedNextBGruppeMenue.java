@@ -17,11 +17,9 @@
 package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeLoeschenAction;
-import de.jost_net.JVerein.gui.action.MitgliedNextBGruppeNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
  * @author Rolf Mamat
@@ -30,8 +28,6 @@ public class MitgliedNextBGruppeMenue extends ContextMenu
 {
   public MitgliedNextBGruppeMenue(MitgliedControl control)
   {
-    addItem(new ContextMenuItem("Beitragsgruppe hinzufügen",
-        new MitgliedNextBGruppeNeuAction(control), "document-new.png"));
     addItem(new CheckedContextMenuItem("Beitragsgruppe löschen",
         new MitgliedNextBGruppeLoeschenAction(), "user-trash-full.png"));
   }

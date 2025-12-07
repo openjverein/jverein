@@ -27,8 +27,10 @@ import java.rmi.RemoteException;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.serialize.XmlWriter;
@@ -72,9 +74,17 @@ public class FormularExporterXML implements Exporter
   }
 
   @Override
-  public String getDateiname()
+  public String getDateiname(Object object)
   {
-    return "formular";
+    try
+    {
+      return VorlageUtil.getName(VorlageTyp.FORMULAR_DATEINAME,
+          ((Formular) object).getBezeichnung()) + ".xml";
+    }
+    catch (RemoteException e)
+    {
+      return "Formular.xml";
+    }
   }
 
   @Override
@@ -108,4 +118,15 @@ public class FormularExporterXML implements Exporter
     writer.close();
   }
 
+  @Override
+  public void calculateTitle(Object object)
+  {
+    // Kein Titel bei xml
+  }
+
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Kein Subitel bei xml
+  }
 }

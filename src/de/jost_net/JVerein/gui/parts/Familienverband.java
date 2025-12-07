@@ -27,82 +27,49 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.util.Container;
-import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.logging.Logger;
 
 public class Familienverband implements Part
 {
-
   private TabFolder tab;
 
   private Beitragsgruppe gruppe;
 
   private MitgliedControl control;
 
-  private Container cont;
-
-  private Composite parent;
-
   public Familienverband(MitgliedControl control, Beitragsgruppe gruppe)
   {
     this.control = control;
     this.gruppe = gruppe;
-    this.parent = null;
-    this.cont = null;
     this.tab = null;
   }
 
   /**
-   * Zeichnet den Familienverband Part. Die Ausgabe hängt von Feld visible ab,
-   * das über die Funktion setVisible(boolean) gesetzt wird.
+   * Zeichnet den Familienverband Part.
    */
   @Override
   public void paint(Composite parent) throws RemoteException
   {
-    if (this.parent == null)
-    {
-      this.parent = parent;
-    }
-
     // Familienverband soll angezeigt werden...
 
     // Hier beginnt das eigentlich Zeichnen des Familienverbandes:
-    if (cont == null)
-      cont = new SimpleContainer(parent, true, 5);
+    LabelGroup cont = new LabelGroup(parent, "Familienverband");
+    final GridData g = new GridData(GridData.FILL_HORIZONTAL);
+    tab = new TabFolder(cont.getComposite(), SWT.NONE);
+    tab.setLayoutData(g);
+    TabGroup tg1 = new TabGroup(tab, "Familienmitglieder");
+    control.getFamilienangehoerigenTable().paint(tg1.getComposite());
+    TabGroup tg2 = new TabGroup(tab, "Vollzahlendes Familienmitglied");
+    // erstelle neuen zahler: (force == true)
+    control.getZahler(true)
+        .setComment("Nur für Beitragsgruppenart: \"Familienangehörige\"");
+    tg2.addLabelPair("Vollzahler", control.getZahler());
 
-    final GridData grid = new GridData(GridData.FILL_HORIZONTAL);
-    grid.grabExcessHorizontalSpace = true;
-    cont.getComposite().setLayoutData(grid);
-
-    boolean zeichneFamilienverbandAlsTabGroup = true;
-    if (zeichneFamilienverbandAlsTabGroup)
+    if (gruppe != null)
     {
-      final GridData g = new GridData(GridData.FILL_HORIZONTAL);
-
-      tab = new TabFolder(cont.getComposite(), SWT.NONE);
-      tab.setLayoutData(g);
-      TabGroup tg1 = new TabGroup(tab, "Familienverband");
-      control.getFamilienangehoerigenTable().paint(tg1.getComposite());
-      TabGroup tg2 = new TabGroup(tab, "Vollzahlendes Familienmitglied");
-      // erstelle neuen zahler: (force == true)
-      control.getZahler(true)
-          .setComment("Nur für Beitragsgruppenart: \"Familienangehörige\"");
-      tg2.addLabelPair("Vollzahler", control.getZahler());
-
-      if (gruppe != null)
-      {
-        setBeitragsgruppe(gruppe);
-      }
-    }
-    else
-    {
-      tab = null;
-      // erstelle neuen zahler: (force == true)
-      cont.addLabelPair("Zahler", control.getZahler(true));
-      control.getZahler().setMandatory(true);
-      cont.addPart(control.getFamilienangehoerigenTable());
+      setBeitragsgruppe(gruppe);
     }
 
   }

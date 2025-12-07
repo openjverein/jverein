@@ -61,5 +61,18 @@ public interface Exporter extends IO
       ProgressMonitor monitor) throws RemoteException, ApplicationException,
       FileNotFoundException, DocumentException, IOException;
 
-  public String getDateiname();
+  /**
+   * Dateiname für Report generieren
+   */
+  public String getDateiname(Object object);
+
+  /**
+   * Titel für Report generieren
+   */
+  public void calculateTitle(Object object);
+
+  /**
+   * Subtitel für Report generieren
+   */
+  public void calculateSubitle(Object object);
 }

@@ -10,10 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout OpenJVerein
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
       with:
         ref: ${{ github.ref_name }}
         path: jverein
+        ssh-key: ${{ secrets.DEPLOY_KEY }}
 
     - name: Setup
       uses: ./jverein/.github/actions/build-dependencies
@@ -25,25 +26,29 @@ jobs:
         echo ${ant_output}
 
         ssa="SELECTED_VERSION="
-        ssb=".zip"
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        tmp_version=$tmp_version
 
         ssa="SELECTED_FILENAME="
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
         ssa="SELECTED_PATH="
         text="${ant_output#*${ssa}}"
-        text="${text%${ssb}*}.zip"
         tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+        
+        ssa="SELECTED_PLUGIN_PATH="
+        text="${ant_output#*${ssa}}"
+        tmp_plugin_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
 
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
         echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
         echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
+        echo "selected_plugin_path=${tmp_plugin_path}" >> $GITHUB_OUTPUT
+        
+        echo "major=$(echo ${tmp_version} | sed -rn 's/^([0-9]+)\.[0-9]+\.[0-9]+$/\1/p')" >> $GITHUB_OUTPUT
+        echo "minor=$(echo ${tmp_version} | sed -rn 's/^[0-9]+\.([0-9]+)\.[0-9]+$/\1/p')" >> $GITHUB_OUTPUT
+        echo "bugfix=$(echo ${tmp_version} | sed -rn 's/^[0-9]+\.[0-9]+\.([0-9]+)$/\1/p')" >> $GITHUB_OUTPUT
 
         builddatetime=$(date +'%Y-%m-%d %H:%M')
         echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
@@ -56,3 +61,71 @@ jobs:
         name: Release ${{ steps.openjverein.outputs.selected_version }}
         files: ./jverein/${{ steps.openjverein.outputs.selected_path }}
         generate_release_notes: true
+        target_commitish: ${{ github.ref_name }}
+
+    - name: Checkout website repository
+      uses: actions/checkout@v6
+      with:
+        repository: openjverein/openjverein.github.io
+        path: website
+        ref: 'main'
+        token: ${{ secrets.WEBSITE_DEPLOY_KEY }}
+
+
+    - name: Upload Files to Website repository
+      run: |
+        path=jameica-repository/${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
+        if [ ! -d website/$path ];then
+          mkdir -p website/$path
+          #Add new direcotry in repository.xml
+          sed -i "s#<plugins name=\"OpenJVerein 3\">#\0\n<plugin url=\"https://openjverein.github.io/$path\"/>#" website/jameica-repository/repository.xml
+        fi
+        
+        cp "jverein/${{ steps.openjverein.outputs.selected_path }}" "website/$path/${{ steps.openjverein.outputs.selected_filename }}"
+        cp "jverein/${{ steps.openjverein.outputs.selected_plugin_path }}" website/$path/plugin.xml
+        cd website
+        
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+        git add -A
+        git commit -m "Release ${{ steps.openjverein.outputs.selected_version }}"
+        git push
+
+    - name: "Minor/major release: Create new Branch and update version in plugin.xml for bugfix branch"
+      if: github.ref_name == 'master'
+      run: |
+        cd jverein
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+        git checkout -b ${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
+        
+        new_version=${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}.1
+        sed -i "s/name=\"jverein\" version=\"${{ steps.openjverein.outputs.selected_version }}/name=\"jverein\" version=\"${new_version}/" plugin.xml
+        
+        git add plugin.xml
+        git commit -m "Update Version in plugin.xml to ${new_version}"
+        git push --set-upstream origin ${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
+        
+    - name: Update Version in plugin.xml
+      run: |
+        cd jverein
+        git config --local user.email "actions@github.com"
+        git config --local user.name "Github Actions"
+        git checkout ${{ github.ref_name }}
+        
+        minor=${{ steps.openjverein.outputs.minor }}
+        bugfix=${{ steps.openjverein.outputs.bugfix }}
+        if [ "${{ github.ref_name }}" == 'master' ];then
+          minor=$(($minor+1))
+          bugfix=0
+        else
+          bugfix=$(($bugfix+1))
+        fi
+
+        new_version=${{ steps.openjverein.outputs.major }}.$minor.$bugfix
+        
+        sed -i "s/name=\"jverein\" version=\"${{ steps.openjverein.outputs.selected_version }}/name=\"jverein\" version=\"${new_version}/" plugin.xml
+        
+        git add plugin.xml
+        git commit -m "Update Version in plugin.xml to ${new_version}"
+        git push

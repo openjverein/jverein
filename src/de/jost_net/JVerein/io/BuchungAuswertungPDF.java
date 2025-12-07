@@ -60,31 +60,22 @@ public class BuchungAuswertungPDF
 
   public BuchungAuswertungPDF(ArrayList<Buchungsart> buchungsarten,
       final File file, BuchungQuery query, boolean einzel,
-      final TreeMap<String, String> params) throws ApplicationException
+      final TreeMap<String, String> params, String title, String subtitle)
+      throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      String title = null;
-      if (einzel)
-      {
-        title = "Buchungsliste";
-      }
-      else
-      {
-        title = "Summenliste";
-      }
-
       if (Boolean.valueOf((Boolean) Einstellungen
           .getEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE)))
         kontonummer_in_buchungsliste = true;
 
-      Reporter reporter = new Reporter(fos, title, query.getSubtitle(),
+      Reporter reporter = new Reporter(fos, title, subtitle,
           buchungsarten.size());
       if (kontonummer_in_buchungsliste)
       {
-        reporter = new Reporter(fos, title, query.getSubtitle(),
-            buchungsarten.size(), 50, 30, 20, 20);
+        reporter = new Reporter(fos, title, subtitle, buchungsarten.size(), 50,
+            30, 20, 20);
       }
 
       if (!einzel)

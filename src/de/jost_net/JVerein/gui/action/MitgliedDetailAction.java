@@ -143,8 +143,8 @@ public class MitgliedDetailAction implements Action
       {
         GUI.getCurrentView().setCurrentObject(mitglied);
       }
-      if (mitglied.getMitgliedstyp() == null || mitglied.getMitgliedstyp()
-          .getID().equals(String.valueOf(Mitgliedstyp.MITGLIED)))
+      if (mitglied.getMitgliedstyp() == null
+          || mitglied.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
       {
         GUI.startView(new MitgliedDetailView(), mitglied);
       }

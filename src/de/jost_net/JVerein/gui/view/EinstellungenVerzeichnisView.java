@@ -36,8 +36,6 @@ public class EinstellungenVerzeichnisView extends AbstractView
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("Auswertung", control.getDateinamenmuster());
-
     cont.addLabelPair("CSV Vorlagenverzeichnis",
         control.getVorlagenCsvVerzeichnis());
 
@@ -51,7 +49,7 @@ public class EinstellungenVerzeichnisView extends AbstractView
       @Override
       public void handleAction(Object context)
       {
-        control.handleStoreDateinamen();
+        control.handleStoreVerzeichnisse();
       }
     }, null, true, "document-save.png");
     buttons.paint(this.getParent());

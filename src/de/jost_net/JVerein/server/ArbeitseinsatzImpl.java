@@ -24,10 +24,11 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArbeitsstundenModel;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
-    implements Arbeitseinsatz
+    implements Arbeitseinsatz, IMitglied
 {
 
   private static final long serialVersionUID = 380278347818535726L;
@@ -66,9 +67,13 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
       if (getStunden() == null)
       {
-        throw new ApplicationException("Bitte Stunden eingeben");
+        throw new ApplicationException("Bitte Stunden eingeben!");
       }
       if (getStunden() <= 0d)
       {
@@ -76,17 +81,19 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
             Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD)
         {
           throw new ApplicationException(
-              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern");
+              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern!");
         }
       }
       if (getDatum() == null)
       {
-        throw new ApplicationException("Bitte Datum eingeben");
+        throw new ApplicationException("Bitte Datum eingeben!");
       }
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(e);
+      String fehler = "Arbeitseinsatz kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -107,9 +114,9 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -149,8 +156,26 @@ public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
+  public Object getAttributeDefault(String fieldName)
   {
-    return super.getAttribute(fieldName);
+    switch (fieldName)
+    {
+      case "bemerkung":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Arbeitseinsatz";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Arbeitseinsätze";
   }
 }

@@ -33,6 +33,7 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -189,6 +190,15 @@ public class FormularfelderImportCSV implements Importer
           catch (SQLException e)
           {
             ff.setFontstyle(0);
+          }
+          try
+          {
+            ff.setAusrichtung(
+                Ausrichtung.getByKey(results.getInt("ausrichtung")));
+          }
+          catch (SQLException e)
+          {
+            ff.setAusrichtung(Ausrichtung.LINKS);
           }
 
           ff.store();

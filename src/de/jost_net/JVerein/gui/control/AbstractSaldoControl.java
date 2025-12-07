@@ -30,14 +30,11 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.Dateiname;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -47,7 +44,7 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AbstractSaldoControl extends AbstractControl
+public abstract class AbstractSaldoControl extends VorZurueckControl
 {
   /**
    * Die Art des Eintrags: Header, Detail, Footer (siehe Konstanten)
@@ -128,9 +125,9 @@ public abstract class AbstractSaldoControl extends AbstractControl
 
   public static final int ART_LEERZEILE = 8;
 
-  final static String AuswertungPDF = "PDF";
+  final static String AuswertungPDF = ".pdf";
 
-  final static String AuswertungCSV = "CSV";
+  final static String AuswertungCSV = ".csv";
 
   public AbstractSaldoControl(AbstractView view) throws RemoteException
   {
@@ -197,6 +194,21 @@ public abstract class AbstractSaldoControl extends AbstractControl
   protected abstract String getAuswertungTitle();
 
   /**
+   * 
+   * Holt den Titel für die Auswertungen
+   * 
+   * @return
+   */
+  protected abstract String getAuswertungSubtitle();
+
+  /**
+   * Holt den Dateinamen für die Auswertungen
+   * 
+   * @return
+   */
+  protected abstract String getDateiname();
+
+  /**
    * Git ein Object, dass das Interface ISaldoExport implementiert zurück.
    * 
    * @param type
@@ -218,8 +230,6 @@ public abstract class AbstractSaldoControl extends AbstractControl
   {
     try
     {
-      String title = getAuswertungTitle();
-
       ArrayList<PseudoDBObject> zeile = getList();
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -233,9 +243,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(new Dateiname(title, "",
-          (String) Einstellungen.getEinstellung(Property.DATEINAMENMUSTER),
-          type).get());
+      fd.setFileName(getDateiname() + type);
 
       final String s = fd.open();
 
@@ -247,15 +255,16 @@ public abstract class AbstractSaldoControl extends AbstractControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
+      final String title = getAuswertungTitle();
+      final String subtitle = getAuswertungSubtitle();
+
       BackgroundTask t = new BackgroundTask()
       {
         @Override
         public void run(ProgressMonitor monitor) throws ApplicationException
         {
           ISaldoExport export = getAuswertung(type);
-          export.export(zeile, file, getDatumvon().getDate(),
-              getDatumbis().getDate());
-
+          export.export(zeile, file, title, subtitle);
         }
 
         @Override
@@ -335,7 +344,7 @@ public abstract class AbstractSaldoControl extends AbstractControl
     return datumbis;
   }
 
-  public Input getGeschaeftsjahr()
+  public TextInput getGeschaeftsjahr()
   {
     if (geschaeftsjahr != null)
     {

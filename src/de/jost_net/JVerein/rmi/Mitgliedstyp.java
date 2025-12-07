@@ -30,9 +30,9 @@ public interface Mitgliedstyp extends JVereinDBObject
 
   public static final String JVEREINID = "jvereinid";
 
-  public static final int MITGLIED = 1;
+  public static final String MITGLIED = "1";
 
-  public static final int SPENDER = 2;
+  public static final String SPENDER = "2";
 
   public String getBezeichnung() throws RemoteException;
 

@@ -20,8 +20,10 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -54,7 +56,24 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    insertCheck();
+    try
+    {
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("projekt = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existieren Buchungen mit diesem Projekt.");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Projekt kann nicht gespeichert werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -62,28 +81,23 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
   {
     try
     {
-      plausi();
+      if (getBezeichnung() == null || getBezeichnung().isEmpty())
+      {
+        throw new ApplicationException("Bitte Bezeichnung eingeben!");
+      }
+
+      if (isStartDatumGesetzt() && isEndeDatumGesetzt()
+          && getEndeDatum().before(getStartDatum()))
+      {
+        throw new ApplicationException(
+            "Endedatum muss nach dem Startdatum liegen!");
+      }
     }
     catch (RemoteException e)
     {
       Logger.error("insert check of projekt failed", e);
       throw new ApplicationException(
-          "Projekt kann nicht gespeichert werden. Siehe system log");
-    }
-  }
-
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    if (getBezeichnung() == null || getBezeichnung().isEmpty())
-    {
-      throw new ApplicationException("Bitte Bezeichnung eingeben");
-    }
-
-    if (isStartDatumGesetzt() && isEndeDatumGesetzt()
-        && getEndeDatum().before(getStartDatum()))
-    {
-      throw new ApplicationException(
-          "Endedatum muss nach dem Startdatum liegen");
+          "Projekt kann nicht gespeichert werden. Siehe system log.");
     }
   }
 
@@ -189,5 +203,17 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
       //
     }
     return d;
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Projekt";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Projekte";
   }
 }

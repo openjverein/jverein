@@ -25,7 +25,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageImpl extends AbstractJVereinDBObject
-    implements Wiedervorlage
+    implements Wiedervorlage, IMitglied, UnreadCounter
 {
 
   private static final long serialVersionUID = 1L;
@@ -58,18 +58,22 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
       if (getDatum() == null)
       {
-        throw new ApplicationException("Bitte Datum eingeben");
+        throw new ApplicationException("Bitte Datum eingeben!");
       }
       if (getVermerk() == null || getVermerk().isEmpty())
       {
-        throw new ApplicationException("Bitte Vermerk eingeben");
+        throw new ApplicationException("Bitte Vermerk eingeben!");
       }
     }
     catch (RemoteException e)
     {
-      String fehler = "Wiedervorlage kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Wiedervorlage kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -98,9 +102,9 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -137,5 +141,34 @@ public class WiedervorlageImpl extends AbstractJVereinDBObject
   public void setErledigung(Date erledigung) throws RemoteException
   {
     setAttribute("erledigung", erledigung);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Wiedervorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Wiedervorlagen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+    it.addFilter("erledigung is null");
+    it.addFilter("datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Wiedervorlagen";
   }
 }

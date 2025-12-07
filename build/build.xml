@@ -13,6 +13,9 @@
     <resolver:resolve failonmissingattachments="true">
       <resolver:path refid="cp" classpath="compile" />
     </resolver:resolve>
+    <resolver:resolve failonmissingattachments="true">
+      <resolver:path refid="test-cp" classpath="test" />
+    </resolver:resolve>
     <!-- Download dependencies into lib dir to enable current workflow of testing the plugin -->
     <resolver:resolve failonmissingattachments="true">
       <resolver:files dir="lib"
@@ -74,6 +77,11 @@
       <path refid="compilepath" />
       <pathelement location="${class.dir}" />
     </path>
+    <path id="test-compilepath">
+      <path refid="classpath" />
+      <path refid="test-cp" />
+      <path location="${class-test.dir}" />
+    </path>
   </target>
 
   <target name="compile" depends="init">
@@ -84,7 +92,29 @@
     </javac>
   </target>
 
-  <target name="jar" depends="init,compile" description="Generates the jar file">
+  <target name="test-compile" depends="compile">
+    <mkdir dir="${class-test.dir}" />
+    <javac debug="true" includeantruntime="false" debuglevel="lines,vars,source" release="${define.java.version}"
+           encoding="${define.encoding}" deprecation="true" destdir="${class-test.dir}" srcdir="${src-test.dir}">
+      <classpath refid="test-compilepath" />
+    </javac>
+  </target>
+
+  <target name="test" depends="test-compile" description="Run test suite">
+    <mkdir dir="${release-test.dir}" />
+    <junitlauncher printsummary="true">
+      <classpath refid="test-cp" />
+        <!-- the test classes themselves -->
+      <classpath  refid="test-compilepath"/>
+      <testclasses outputdir="${release-test.dir}">
+        <fileset dir="${class-test.dir}"/>
+        <listener type="legacy-brief" sendSysOut="true"/>
+        <listener type="legacy-xml" sendSysErr="true" sendSysOut="true"/>
+      </testclasses>
+    </junitlauncher>
+</target>
+
+  <target name="jar" depends="test" description="Generates the jar file">
     <mkdir dir="${project.zipdir}" />
     <tstamp />
     <jar destfile="${project.zipdir}/${define.jarfilename}">
@@ -98,7 +128,7 @@
       </manifest>
       <fileset dir="${class.dir}" />
       <fileset dir="${src.dir}">
-        <exclude name="*.java" />
+        <exclude name="**/*.java" />
       </fileset>
     </jar>
 
@@ -107,9 +137,16 @@
       <fileset dir="${lib.dir}" />
     </copy>
 
+    <loadresource property="minor">
+           <propertyresource name="plugin.version" />
+           <filterchain>
+                   <replaceregex pattern="\.[0-9]+$" />
+           </filterchain>
+    </loadresource>
+
     <copy todir="${project.zipdir}" file="plugin.xml" />
     <replace file="${project.zipdir}/plugin.xml">
-      <replacefilter token="[PLUGIN_ZIP]" value="${project.zipfilename}" />
+      <replacefilter token="[PLUGIN_ZIP]" value="${minor}/${project.zipfilename}" />
     </replace>
 
     <!-- Jetzt muessen wir noch das ZIP-File erzeugen -->
@@ -131,20 +168,8 @@
     </javadoc>
   </target>
 
-  <!--  
-  <target name="junit" depends="init" description="JUnit-Tests">
-    <junit printsummary="yes" haltonfailure="yes">
-      <classpath refid="classpath" />
 
-      <formatter type="plain" usefile="false"/>
-
-      <test name="test.de.jost_net.JVerein.TestSuite" haltonfailure="yes">
-        <formatter type="xml" usefile="false" />
-      </test>
-    </junit>
-  </target>
--->
-  <target name="src" description="Build an source package, depends compile target to make sure, the code has no errors">
+  <target name="src" description="Build a source package, depends compile target to make sure, the code has no errors">
     <mkdir dir="${project.release}" />
     <mkdir dir="${project.tmp}/${plugin.name}" />
     <copy todir="${project.tmp}/${plugin.name}">
@@ -167,6 +192,7 @@
     <loadproperties srcfile="${build.dir}/build.properties" />
     <delete dir="${project.tmp}" />
     <delete dir="${class.dir}" />
+    <delete dir="${class-test.dir}" />
     <delete includeemptydirs="true">
       <fileset dir="${lib.dir}">
         <exclude name="nc.jar" />
@@ -174,6 +200,8 @@
       </fileset>
     </delete>
     <delete dir="lib.test" />
+    <delete dir="${releases-test.dir}" />
+    <delete dir="${release.dir}" />
   </target>
 
   <target name="lib">
@@ -181,17 +209,18 @@
     <copy file="${project.zipdir}/${define.jarfilename}" tofile="releases/jverein-lib.jar" />
   </target>
 
-  <target name="all" depends="init,jar,javadoc,src" description="Build an official openjverein release">
+  <target name="all" depends="jar,javadoc,src" description="Build an official openjverein release">
     <echo message="SELECTED_VERSION=${plugin.version}" />
     <echo message="SELECTED_PATH=${project.release}/${project.zipfilename}" />
     <echo message="SELECTED_FILENAME=${project.zipfilename}" />
+    <echo message="SELECTED_PLUGIN_PATH=${project.release}/jverein/plugin.xml" />
   </target>
 
-  <target name="fast" depends="init,jar,src" description="Build an development release">
+  <target name="fast" depends="jar,src" description="Build a development release">
     <move file="${project.release}/${project.zipfilename}" tofile="${project.release}/${project.zipfilename}" />
   </target>
 
-  <target name="nightly" depends="init,compile,jar,javadoc,src" description="Build an nightly release">
+  <target name="nightly" depends="jar,javadoc,src" description="Build a nightly release">
     <mkdir dir="${project.release.nightly}" />
 
     <copy file="${project.release}/${project.zipfilename}"

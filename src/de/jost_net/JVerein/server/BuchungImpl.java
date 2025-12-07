@@ -29,6 +29,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -82,6 +83,13 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   {
     try
     {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(String.format(
+            "Buchung wurde bereits am %s von %s abgeschlossen.",
+            new JVDateFormatTTMMJJJJ().format(ja.getDatum()), ja.getName()));
+      }
       if (this.getSpendenbescheinigung() != null)
       {
         throw new ApplicationException(
@@ -132,6 +140,20 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     if (isBetragNull())
     {
       throw new ApplicationException("Bitte Betrag eingeben");
+    }
+    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
+    // zuerst der Jahresabschluss gespeichert werden damit die Referenz in der
+    // Buchung gespeichert werden kann. Dann muss man die Buchung auch bei
+    // bestehendem Jahresabschluss speichern können. In diesem Fall wird mit
+    // updateForced() gespeichert.
+    if (!forcedUpdate)
+    {
+      Jahresabschluss ja = getJahresabschluss();
+      if (ja != null)
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+      }
     }
     Calendar cal1 = Calendar.getInstance();
     cal1.setTime(getDatum());
@@ -224,6 +246,15 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
             "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
     }
+
+    if (getVerzicht() && (getUnterlagenWertermittlung()
+        || getHerkunftSpende() != HerkunftSpende.KEINEANGABEN
+        || (getBezeichnungSachzuwendung() != null
+            && !getBezeichnungSachzuwendung().isEmpty())))
+    {
+      throw new ApplicationException(
+          "Geldspende und Sachspende ist nicht gleichzeitig möglich.");
+    }
   }
 
   @Override
@@ -235,11 +266,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   protected Class<?> getForeignObject(String field)
   {
-    if ("abrechnungslauf".equals(field))
-    {
-      return Abrechnungslauf.class;
-    }
-    else if ("spendenbescheinigung".equals(field))
+    if ("spendenbescheinigung".equals(field))
     {
       return Spendenbescheinigung.class;
     }
@@ -360,8 +387,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public boolean isBetragNull() throws RemoteException
   {
-    Double d = (Double) getAttribute("betrag");
-    return d == null;
+    return (Double) getAttribute("betrag") == null;
   }
 
   @Override
@@ -476,7 +502,14 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException
   {
-    return (Abrechnungslauf) getAttribute("abrechnungslauf");
+    Object l = (Object) super.getAttribute("abrechnungslauf");
+    if (l == null)
+    {
+      return null;
+    }
+
+    Cache cache = Cache.get(Abrechnungslauf.class, true);
+    return (Abrechnungslauf) cache.get(l);
   }
 
   @Override
@@ -730,10 +763,20 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
         StringTool.toNotNullString(this.getArt()));
     map.put(BuchungVar.AUSZUGSNUMMER.getName(), this.getAuszugsnummer());
     map.put(BuchungVar.BETRAG.getName(), this.getBetrag());
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
-      map.put(BuchungVar.STEUER.getName(),
-          this.getSteuer() == null ? null : this.getSteuer().getSatz());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        map.put(BuchungVar.STEUER.getName(),
+            this.getSteuer() == null ? 0d : this.getSteuer().getSatz());
+      }
+      else
+      {
+        map.put(BuchungVar.STEUER.getName(),
+            this.getBuchungsart() == null
+                || this.getBuchungsart().getSteuer() == null ? 0d
+                    : this.getBuchungsart().getSteuer().getSatz());
+      }
     }
     map.put(BuchungVar.BLATTNUMMER.getName(), this.getBlattnummer());
     map.put(BuchungVar.ID.getName(), this.getID());
@@ -798,19 +841,6 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Long.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
-
     if ("buchungsart".equals(fieldName))
       return getBuchungsart();
 
@@ -837,10 +867,33 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
       if (list.size() > 0)
         return list.size();
       else
-        return "";
+        return null;
     }
 
     return super.getAttribute(fieldName);
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "name":
+      case "zweck":
+      case "art":
+      case "kommentar":
+      case "iban":
+      case "bezeichnungsachzuwendung":
+        return "";
+      case "verzicht":
+      case "geprueft":
+      case "unterlagenwertermittlung":
+        return false;
+      case "herkunftspende":
+        return HerkunftSpende.KEINEANGABEN;
+      default:
+        return null;
+    }
   }
 
   private Date toDate(String datum)
@@ -912,12 +965,7 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   @Override
   public Boolean getGeprueft() throws RemoteException
   {
-    Boolean geprueft = (Boolean) getAttribute("geprueft");
-    if (geprueft == null)
-    {
-      return false;
-    }
-    return geprueft;
+    return (Boolean) getAttribute("geprueft");
   }
 
   @Override
@@ -967,32 +1015,53 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
     super.delete();
   }
 
-  @Override
-  public void store() throws RemoteException, ApplicationException
+  public String getBezeichnungSachzuwendung() throws RemoteException
   {
-    store(true);
+    return (String) getAttribute("bezeichnungsachzuwendung");
   }
 
   @Override
-  public void store(boolean check) throws RemoteException, ApplicationException
+  public void setBezeichnungSachzuwendung(String bezeichnungsachzuwendung)
+      throws RemoteException
   {
-    if (check)
-    {
-      Jahresabschluss ja = getJahresabschluss();
-      if (ja != null)
-      {
-        throw new ApplicationException(
-            "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
-      }
-    }
-    // Wird eine Abschreibung während des Jahresabschlusses generiert muss
-    // zuerst der
-    // Jahresabschluss gespeichert werden damit die Referenz in der Buchung
-    // gespeichert
-    // werden kann. Dann muss man die Buchung auch bei bestehendem
-    // Jahresabschluss speichern
-    // können. In diesem Fall wird mit check false gespeichert.
-    super.store();
+    setAttribute("bezeichnungsachzuwendung", bezeichnungsachzuwendung);
   }
 
+  @Override
+  public int getHerkunftSpende() throws RemoteException
+  {
+    return (Integer) getAttribute("herkunftspende");
+  }
+
+  @Override
+  public void setHerkunftSpende(int herkunftspende) throws RemoteException
+  {
+    setAttribute("herkunftspende", herkunftspende);
+  }
+
+  @Override
+  public Boolean getUnterlagenWertermittlung() throws RemoteException
+  {
+    return Util.getBoolean(getAttribute("unterlagenwertermittlung"));
+  }
+
+  @Override
+  public void setUnterlagenWertermittlung(Boolean unterlagenwertermittlung)
+      throws RemoteException
+  {
+    setAttribute("unterlagenwertermittlung",
+        Boolean.valueOf(unterlagenwertermittlung));
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Buchung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Buchungen";
+  }
 }

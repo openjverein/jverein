@@ -18,6 +18,8 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -36,14 +38,19 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.logging.Logger;
 
 public class BuchungPart implements Part
 {
   private BuchungsControl control;
 
+  private DokumentControl dcontrol;
+
   private AbstractView view;
 
   private boolean buchungabgeschlossen;
+
+  private Buchung bu;
 
   public BuchungPart(BuchungsControl control, AbstractView view,
       boolean buchungabgeschlossen)
@@ -79,6 +86,7 @@ public class BuchungPart implements Part
     if (!control.getBuchung().getSpeicherung())
       date.setEnabled(false);
     grKontoauszug.addLabelPair("Art", control.getArt());
+    grKontoauszug.addLabelPair("Kommentar", control.getKommentar());
 
     SimpleContainer grBuchungsinfos = new SimpleContainer(cols1.getComposite());
 
@@ -101,29 +109,60 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Auszugsnummer", control.getAuszugsnummer());
     grBuchungsinfos.addLabelPair("Blattnummer", control.getBlattnummer());
     grBuchungsinfos.addLabelPair("Sollbuchung", control.getSollbuchung());
-    grBuchungsinfos.addLabelPair("Kommentar", control.getKommentar());
+    grBuchungsinfos.addLabelPair("Geprüft", control.getGeprueft());
 
     SimpleContainer grSpendeninfos = grBuchungsinfos;
-    grSpendeninfos.addHeadline("Spendendetails");
+    grSpendeninfos.addHeadline("Geldspende");
     grSpendeninfos.addLabelPair("Erstattungsverzicht", control.getVerzicht());
+    grSpendeninfos.addHeadline("Sachspende");
+    grSpendeninfos.addLabelPair("Bezeichnung Sachzuwendung",
+        control.getBezeichnungSachzuwendung());
+    grSpendeninfos.addLabelPair("Herkunft", control.getHerkunftSpende());
+    grSpendeninfos.addLabelPair("Unterlagen Wertermittlung",
+        control.getUnterlagenWertermittlung());
 
     if (JVereinPlugin.isArchiveServiceActive())
     {
-      Buchung bu = (Buchung) control.getCurrentObject();
+      bu = (Buchung) control.getBuchung();
       if (!bu.isNewObject())
       {
+
         LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
-            "Dokumente");
+            "Dokumente", true);
+
         BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
             .createObject(BuchungDokument.class, null);
         budo.setReferenz(Long.valueOf(bu.getID()));
-        DokumentControl dcontrol = new DokumentControl(view, "buchungen",
+        dcontrol = new DokumentControl(view, "buchungen",
             !buchungabgeschlossen);
-        grDokument.addPart(dcontrol.getDokumenteList(budo));
+
+        grDokument.getComposite().setLayout(new GridLayout(1, false));
         ButtonArea butts = new ButtonArea();
         butts.addButton(dcontrol.getNeuButton(budo));
-        butts.paint(scrolled.getComposite());
+        butts.paint(grDokument.getComposite());
+
+        grDokument.addPart(dcontrol.getDokumenteList(budo));
+        dcontrol.setDragDrop(grDokument.getComposite(), BuchungDokument.class);
+
+        GridData gridData = new GridData(GridData.FILL_BOTH);
+        gridData.heightHint = 150;
+        grDokument.getComposite().setLayoutData(gridData);
       }
+    }
+  }
+
+  public void deregisterDocumentConsumer()
+  {
+    try
+    {
+      if (JVereinPlugin.isArchiveServiceActive() && dcontrol != null)
+      {
+        dcontrol.deregisterDocumentConsumer();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
     }
   }
 }

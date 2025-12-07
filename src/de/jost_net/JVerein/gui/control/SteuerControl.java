@@ -26,13 +26,16 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -40,6 +43,8 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -57,6 +62,8 @@ public class SteuerControl extends VorZurueckControl implements Savable
   private DecimalInput satz;
 
   private AbstractInput buchungsart;
+
+  private SelectInput buchungsklasse;
 
   private CheckboxInput aktiv;
 
@@ -91,10 +98,16 @@ public class SteuerControl extends VorZurueckControl implements Savable
       steuerList = new JVereinTablePart(steuern, null);
       steuerList.addColumn("Name", "name");
       steuerList.addColumn("Steuersatz", "satz", o -> {
-        return (Double) o + "%";
+        return Einstellungen.DECIMALFORMAT.format(o) + "%";
       }, false, Column.ALIGN_RIGHT);
       steuerList.addColumn("Buchungsart", "buchungsart",
           new BuchungsartFormatter());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+      {
+        steuerList.addColumn("Buchungsklasse", "buchungsklasse",
+            new BuchungsklasseFormatter());
+      }
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
       steuerList.setContextMenu(new SteuerMenue(steuerList));
       steuerList.setRememberColWidths(true);
@@ -178,7 +191,32 @@ public class SteuerControl extends VorZurueckControl implements Savable
     };
     buchungsart.addListener(listener);
     listener.handleEvent(null);
+    buchungsart.addListener(e -> {
+      if (buchungsklasse != null && buchungsart.getValue() != null)
+      {
+        try
+        {
+          buchungsklasse.setValue(
+              ((Buchungsart) buchungsart.getValue()).getBuchungsklasse());
+        }
+        catch (RemoteException e1)
+        {
+          Logger.error("Fehler beim Buchungsart-Listener", e1);
+        }
+      }
+    });
     return buchungsart;
+  }
+
+  public Input getBuchungsklasse() throws RemoteException
+  {
+    if (buchungsklasse != null)
+    {
+      return buchungsklasse;
+    }
+    buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
+        buchungsklasse, getSteuer().getBuchungsklasse());
+    return buchungsklasse;
   }
 
   public CheckboxInput getAktiv() throws RemoteException
@@ -202,6 +240,11 @@ public class SteuerControl extends VorZurueckControl implements Savable
     {
       s.setBuchungsartId(
           Long.parseLong(((Buchungsart) getBuchungsart().getValue()).getID()));
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      s.setBuchungsklasse((Buchungsklasse) getBuchungsklasse().getValue());
     }
     s.setAktiv((Boolean) getAktiv().getValue());
     return s;

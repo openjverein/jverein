@@ -63,7 +63,6 @@ public class ZusatzbetraegeNaechsteFaelligkeitAction implements Action
       }
       z.naechsteFaelligkeit();
       z.store();
-
       GUI.getStatusBar().setSuccessText("Fälligkeitsdatum gesetzt.");
     }
     catch (RemoteException e)

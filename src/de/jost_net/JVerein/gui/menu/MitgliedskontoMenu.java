@@ -25,11 +25,10 @@ import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
-import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
+import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -54,7 +53,7 @@ public class MitgliedskontoMenu extends ContextMenu
     addItem(new SollItem("Sollbuchung bearbeiten", new SollbuchungEditAction(),
         "text-x-generic.png"));
     addItem(new SollOhneIstItem("Sollbuchung löschen",
-        new SollbuchungLoeschenAction(), "user-trash-full.png"));
+        new MitgliedskontoSollbuchungDeleteAction(), "user-trash-full.png"));
     try
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -82,48 +81,13 @@ public class MitgliedskontoMenu extends ContextMenu
           .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
         addItem(ContextMenuItem.SEPARATOR);
-        addItem(new SpendenbescheinigungItem("Geldspendenbescheinigung",
-            new SpendenbescheinigungNeuAction(Spendenart.GELDSPENDE),
-            "file-invoice.png"));
-        addItem(new MitgliedItem("Sachspendenbescheinigung",
-            new SpendenbescheinigungNeuAction(Spendenart.SACHSPENDE),
-            "file-invoice.png"));
+        addItem(new SpendenbescheinigungItem("Spendenbescheinigung",
+            new SpendenbescheinigungNeuAction(), "file-invoice.png"));
       }
     }
     catch (RemoteException e)
     {
       // Dann nicht anzeigen
-    }
-  }
-
-  private static class MitgliedItem extends CheckedSingleContextMenuItem
-  {
-
-    /**
-     * @param text
-     * @param action
-     */
-    private MitgliedItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof MitgliedskontoNode)
-      {
-        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
-        if (mkn.getType() == MitgliedskontoNode.MITGLIED)
-        {
-          return true;
-        }
-        else
-        {
-          return false;
-        }
-      }
-      return super.isEnabledFor(o);
     }
   }
 
@@ -158,7 +122,7 @@ public class MitgliedskontoMenu extends ContextMenu
     }
   }
 
-  private static class SollOhneIstItem extends CheckedSingleContextMenuItem
+  private static class SollOhneIstItem extends CheckedContextMenuItem
   {
 
     private SollOhneIstItem(String text, Action action, String icon)
@@ -169,9 +133,23 @@ public class MitgliedskontoMenu extends ContextMenu
     @Override
     public boolean isEnabledFor(Object o)
     {
+      MitgliedskontoNode[] nodes = null;
+
       if (o instanceof MitgliedskontoNode)
       {
-        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
+        nodes = new MitgliedskontoNode[] { (MitgliedskontoNode) o };
+      }
+      else if (o instanceof MitgliedskontoNode[])
+      {
+        nodes = (MitgliedskontoNode[]) o;
+      }
+      else
+      {
+        return false;
+      }
+
+      for (MitgliedskontoNode mkn : nodes)
+      {
         if (mkn.getType() == MitgliedskontoNode.SOLL)
         {
           DBIterator<Buchung> it;
@@ -180,23 +158,24 @@ public class MitgliedskontoMenu extends ContextMenu
             it = Einstellungen.getDBService().createList(Buchung.class);
             it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
                 new Object[] { mkn.getID() });
-            if (it.size() == 0)
+            if (it.size() != 0)
             {
-              return true;
+              return false;
             }
           }
           catch (RemoteException e)
           {
             Logger.error("Fehler", e);
+            return false;
           }
-          return false;
         }
         else
         {
           return false;
         }
       }
-      return super.isEnabledFor(o);
+
+      return true;
     }
   }
 
@@ -246,11 +225,7 @@ public class MitgliedskontoMenu extends ContextMenu
       if (o instanceof MitgliedskontoNode)
       {
         MitgliedskontoNode mkn = (MitgliedskontoNode) o;
-        if (mkn.getType() == MitgliedskontoNode.MITGLIED)
-        {
-          return true;
-        }
-        else if (mkn.getType() == MitgliedskontoNode.IST)
+        if (mkn.getType() == MitgliedskontoNode.IST)
         {
           try
           {

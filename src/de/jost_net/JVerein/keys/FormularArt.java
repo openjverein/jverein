@@ -23,7 +23,9 @@ public enum FormularArt
   MAHNUNG(3, "Mahnung"),
   FREIESFORMULAR(4, "Freies Formular"),
   SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
-  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification");
+  SEPA_PRENOTIFICATION(6, "SEPA-Prenotification"),
+  SACHSPENDENBESCHEINIGUNG(7, "Sachspendenbescheinigung"),
+  HINTERGRUND(8, "Hintergrund/Vordergrund");
 
   private final String text;
 

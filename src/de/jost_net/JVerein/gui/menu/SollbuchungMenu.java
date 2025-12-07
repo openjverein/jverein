@@ -22,16 +22,14 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
-import de.jost_net.JVerein.gui.action.SollbuchungLoeschenAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -40,20 +38,20 @@ import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
 
 /**
- * Kontext-Menu zu den Mitgliedskonten.
+ * Kontext-Menu zu den Sollbuchungen.
  */
 public class SollbuchungMenu extends ContextMenu
 {
 
   /**
-   * Erzeugt ein Kontext-Menu fuer Mitgliedskonten.
+   * Erzeugt ein Kontext-Menu fuer Sollbuchungen.
    */
   public SollbuchungMenu(JVereinTablePart part)
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SollbuchungDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new SollOhneIstItem("Löschen", new SollbuchungLoeschenAction(),
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
@@ -73,45 +71,6 @@ public class SollbuchungMenu extends ContextMenu
     catch (RemoteException e)
     {
       // Dann nicht anzeigen
-    }
-  }
-
-  private static class SollOhneIstItem extends CheckedContextMenuItem
-  {
-
-    private SollOhneIstItem(String text, Action action, String icon)
-    {
-      super(text, action, icon);
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Sollbuchung)
-      {
-        Sollbuchung sollb = (Sollbuchung) o;
-        DBIterator<Buchung> it;
-        try
-        {
-          if (sollb.getRechnung() != null)
-          {
-            return false;
-          }
-          it = Einstellungen.getDBService().createList(Buchung.class);
-          it.addFilter(Buchung.SOLLBUCHUNG + " = ?",
-              new Object[] { sollb.getID() });
-          if (it.size() == 0)
-          {
-            return true;
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-        return false;
-      }
-      return false;
     }
   }
 

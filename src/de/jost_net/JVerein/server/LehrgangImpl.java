@@ -25,7 +25,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
+public class LehrgangImpl extends AbstractJVereinDBObject
+    implements Lehrgang, IMitglied
 {
 
   private static final long serialVersionUID = 380278347818535726L;
@@ -44,7 +45,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   @Override
   public String getPrimaryAttribute()
   {
-    return "bezeichnung";
+    return "id";
   }
 
   @Override
@@ -58,11 +59,22 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   {
     try
     {
-      plausi();
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
+      if (getLehrgangsart() == null)
+      {
+        throw new ApplicationException("Bitte Lehrgangsart auswählen!");
+      }
+      if (getVon() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben!");
+      }
     }
     catch (RemoteException e)
     {
-      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -71,28 +83,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   @Override
   protected void updateCheck() throws ApplicationException
   {
-    try
-    {
-      plausi();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Lehrgang kann nicht gespeichert werden. Siehe system log";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
-  }
-
-  private void plausi() throws RemoteException, ApplicationException
-  {
-    if (getLehrgangsart() == null)
-    {
-      throw new ApplicationException("Bitte Lehrgangsart auswählen");
-    }
-    if (getVon() == null)
-    {
-      throw new ApplicationException("Bitte Datum eingeben");
-    }
+    insertCheck();
   }
 
   @Override
@@ -117,9 +108,9 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -183,9 +174,28 @@ public class LehrgangImpl extends AbstractJVereinDBObject implements Lehrgang
   }
 
   @Override
-  public Object getAttribute(String fieldName) throws RemoteException
+  public Object getAttributeDefault(String fieldName)
   {
-    return super.getAttribute(fieldName);
+    switch (fieldName)
+    {
+      case "ergebnis":
+      case "veranstalter":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Lehrgang";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Lehrgänge";
   }
 
 }

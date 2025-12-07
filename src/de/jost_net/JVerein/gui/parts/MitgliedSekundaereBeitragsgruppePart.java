@@ -18,21 +18,15 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.util.Container;
-import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.gui.util.TabGroup;
+import de.willuhn.jameica.gui.util.LabelGroup;
 
 public class MitgliedSekundaereBeitragsgruppePart implements Part
 {
-  private TabFolder tab;
-
   private MitgliedControl control;
 
   private Container cont;
@@ -51,14 +45,7 @@ public class MitgliedSekundaereBeitragsgruppePart implements Part
     {
       this.parent = parent;
     }
-    cont = new SimpleContainer(parent, true, 5);
-    final GridData grid = new GridData(GridData.FILL_HORIZONTAL);
-    grid.grabExcessHorizontalSpace = true;
-    cont.getComposite().setLayoutData(grid);
-    tab = new TabFolder(cont.getComposite(), SWT.NONE);
-    tab.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-    TabGroup tg1 = new TabGroup(tab, "Sekundäre Beitragsgruppen");
-
-    control.getSekundaereBeitragsgruppe().paint(tg1.getComposite());
+    cont = new LabelGroup(parent, "Sekundäre Beitragsgruppen");
+    control.getSekundaereBeitragsgruppe().paint(cont.getComposite());
   }
 }

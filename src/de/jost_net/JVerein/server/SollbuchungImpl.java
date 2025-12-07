@@ -38,7 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungImpl extends AbstractJVereinDBObject
-    implements Sollbuchung
+    implements Sollbuchung, UnreadCounter
 {
 
   private static final long serialVersionUID = -1234L;
@@ -71,7 +71,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException(
             "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
-                + "Rechnung gehört");
+                + "Rechnung gehört!");
       }
     }
     catch (ObjectNotFoundException e)
@@ -84,7 +84,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Sollbuchung kann nicht gelöscht werden. Siehe system log");
+          "Sollbuchung kann nicht gelöscht werden. Siehe system log.");
     }
   }
 
@@ -95,19 +95,23 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     {
       if (getMitglied() == null)
       {
-        throw new ApplicationException("Bitte Mitglied eingeben");
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
+      if (getZahler() == null)
+      {
+        throw new ApplicationException("Bitte Zahler eingeben!");
       }
       if (getDatum() == null)
       {
-        throw new ApplicationException("Datum fehlt");
+        throw new ApplicationException("Bitte Datum eingeben!");
       }
       if (getZweck1().length() == 0)
       {
-        throw new ApplicationException("Verwendungszweck fehlt");
+        throw new ApplicationException("Bitte Verwendungszweck eingeben!");
       }
       if (getBetrag() == null)
       {
-        String fehler = "Betrag fehlt";
+        String fehler = "Bitte Betrag eingeben!";
         Logger.error(fehler);
         throw new ApplicationException(fehler);
       }
@@ -115,7 +119,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log";
+      String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
@@ -124,6 +128,29 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    if (!forcedUpdate)
+    {
+      try
+      {
+        if (getRechnung() != null)
+        {
+          throw new ApplicationException(
+              "Sollbuchung kann nicht geändert werden weil sie zu einer Rechnung gehört");
+        }
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Alles ok, es gibt keine Rechnung
+        // Das passiert wenn sie kurz vorher gelöscht wurde aber
+        // die ID noch im Cache gespeichert ist
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Sollbuchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 
@@ -196,7 +223,7 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setMitglied(Mitglied mitglied) throws RemoteException
   {
-    setAttribute(MITGLIED, Integer.valueOf(mitglied.getID()));
+    setAttribute(MITGLIED, Long.valueOf(mitglied.getID()));
   }
 
   @Override
@@ -321,18 +348,6 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if ("id-int".equals(fieldName))
-    {
-      try
-      {
-        return Integer.valueOf(getID());
-      }
-      catch (Exception e)
-      {
-        Logger.error("unable to parse id: " + getID());
-        return getID();
-      }
-    }
     if (fieldName.equals(ISTSUMME))
     {
       return getIstSumme();
@@ -382,5 +397,41 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
       buchungen.add(bu);
     }
     return buchungen;
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Sollbuchung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Sollbuchungen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+
+    it.join("(SELECT " + Sollbuchung.TABLE_NAME_ID
+        + ", sum(buchung.betrag) AS betrag FROM " + Sollbuchung.TABLE_NAME
+        + " LEFT JOIN buchung ON " + Buchung.T_SOLLBUCHUNG + "="
+        + Sollbuchung.TABLE_NAME_ID + " GROUP BY " + Sollbuchung.TABLE_NAME
+        + ".id) AS ist", "ist.id = " + Sollbuchung.TABLE_NAME + ".id");
+    it.addFilter(
+        "abs(COALESCE(ist.betrag,0) - " + getTableName() + ".betrag) >= 0.01");
+    it.addFilter(getTableName() + ".datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Sollbuchungen";
   }
 }

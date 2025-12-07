@@ -27,7 +27,6 @@ import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -36,8 +35,8 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
 {
 
   @Override
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, Date datumvon,
-      Date datumbis) throws ApplicationException
+  public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
+      String subtitle) throws ApplicationException
   {
     try
     {
@@ -67,11 +66,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       }
 
       FileOutputStream fos = new FileOutputStream(file);
-      String subtitle = "Geschäftsjahr: "
-          + new JVDateFormatTTMMJJJJ().format(datumvon) + " - "
-          + new JVDateFormatTTMMJJJJ().format(datumbis);
-      Reporter reporter = new Reporter(fos, "Anlagenverzeichnis", subtitle,
-          zeilen.size());
+      Reporter reporter = new Reporter(fos, title, subtitle, zeilen.size());
       makeHeader(reporter, anzahlSpalten, hasZugang, hasAbgang);
 
       for (PseudoDBObject akz : zeilen)

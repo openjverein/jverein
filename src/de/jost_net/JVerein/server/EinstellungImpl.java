@@ -31,11 +31,11 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.VonBis;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
-import de.willuhn.datasource.db.AbstractDBObject;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class EinstellungImpl extends AbstractDBObject implements Einstellung
+public class EinstellungImpl extends AbstractJVereinDBObject
+    implements Einstellung
 {
 
   private static final long serialVersionUID = 3513343626868776722L;
@@ -240,5 +240,17 @@ public class EinstellungImpl extends AbstractDBObject implements Einstellung
   public void setValue(Object wert) throws RemoteException
   {
     setAttribute("wert", wert);
+  }
+
+  @Override
+  public String getObjektName() throws RemoteException
+  {
+    return "Einstellung";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl() throws RemoteException
+  {
+    return "Einstellungen";
   }
 }
