@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
-import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
@@ -132,7 +131,7 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextAreaInput kommentar;
 
-  private EmailInput email;
+  private TextInput zahler;
 
   public enum TYP
   {
@@ -743,16 +742,18 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
-  public EmailInput getEmail() throws RemoteException
+  public TextInput getZahler() throws RemoteException
   {
-    if (email != null)
+    if (zahler != null)
     {
-      return email;
+      return zahler;
     }
 
-    email = new EmailInput(getRechnung().getEmail());
-    email.setName("EMail");
-    return email;
+    zahler = new TextInput(getRechnung().getZahler().getName() + ", "
+        + getRechnung().getZahler().getVorname());
+    zahler.setName("Zahler");
+    zahler.disable();
+    return zahler;
   }
 
   public ButtonRtoL getRechnungDruckUndMailButton()
@@ -794,7 +795,6 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
-    re.setEmail((String) getEmail().getValue());
     return re;
   }
 
@@ -849,13 +849,13 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung[] rechnungen = getRechnungen(object);
     for (Rechnung r : rechnungen)
     {
-      String mail = r.getEmail();
+      Mitglied m = r.getZahler();
+      String mail = m.getEmail();
       if ((mail == null || mail.isEmpty())
           && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
         ohneMail++;
       }
-      Mitglied m = r.getMitglied();
       String dokument = "Rechnung " + r.getID() + " vom "
           + Datum.formatDate(r.getDatum()) + " über "
           + Einstellungen.DECIMALFORMAT.format(r.getBetrag())

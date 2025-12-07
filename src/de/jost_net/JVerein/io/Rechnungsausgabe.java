@@ -207,7 +207,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
   String getDateiname(Rechnung re) throws RemoteException
   {
     // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-    Mitglied m = re.getMitglied();
+    Mitglied m = re.getZahler();
     String filename = "";
     if (typ == TYP.RECHNUNG)
     {
@@ -217,7 +217,7 @@ public class Rechnungsausgabe extends AbstractAusgabe
     {
       filename = m.getID() + "#mahnung#" + re.getID() + "#";
     }
-    String email = StringTool.toNotNullString(re.getEmail());
+    String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {
       filename += email;

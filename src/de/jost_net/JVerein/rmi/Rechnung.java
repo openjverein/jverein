@@ -140,7 +140,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse
 
   public String getKommentar() throws RemoteException;
 
-  public String getEmail() throws RemoteException;
+  public Mitglied getZahler() throws RemoteException;
 
-  void setEmail(String email) throws RemoteException;
+  void setZahler(Mitglied zahler) throws RemoteException;
 }

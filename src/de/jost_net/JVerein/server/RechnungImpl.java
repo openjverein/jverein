@@ -308,6 +308,10 @@ public class RechnungImpl extends AbstractJVereinDBObject
     {
       return Mitglied.class;
     }
+    if ("zahler".equals(field))
+    {
+      return Mitglied.class;
+    }
     return null;
   }
 
@@ -378,7 +382,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     setZahlungsweg(sollb.getZahlungsweg());
     setBetrag(sollb.getBetrag());
     setKommentar("");
-    setEmail(mitglied.getEmail());
+    setZahler(mitglied);
   }
 
   @Override
@@ -470,15 +474,20 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setEmail(String email) throws RemoteException
+  public void setZahler(Mitglied zahler) throws RemoteException
   {
-    setAttribute("email", email);
+    setAttribute("zahler", zahler);
   }
 
   @Override
-  public String getEmail() throws RemoteException
+  public Mitglied getZahler() throws RemoteException
   {
-    return (String) getAttribute("email");
+    Object o = getAttribute("zahler");
+    if (o == null)
+    {
+      return getMitglied();
+    }
+    return (Mitglied) o;
   }
 
   @Override
@@ -499,7 +508,6 @@ public class RechnungImpl extends AbstractJVereinDBObject
       case "mandatid":
       case "staat":
       case "anrede":
-      case "email":
         return "";
       default:
         return null;

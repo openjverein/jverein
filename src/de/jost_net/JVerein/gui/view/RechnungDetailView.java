@@ -46,13 +46,14 @@ public class RechnungDetailView extends AbstractDetailView
     left.addInput(control.getNummer());
     left.addInput(control.getRechnungsdatum());
     left.addInput(control.getMitglied());
+    left.addInput(control.getZahler());
     left.addInput(control.getBetrag());
     left.addInput(control.getRechnungFormular());
     left.addInput(control.getKommentar());
     left.addInput(control.getPersonenart());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getGeschlecht());
+    middle.addInput(control.getGeschlecht());
     middle.addInput(control.getAnrede());
     middle.addInput(control.getTitel());
     middle.addInput(control.getName());
@@ -60,7 +61,6 @@ public class RechnungDetailView extends AbstractDetailView
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
     middle.addInput(control.getLeitwegID());
-    middle.addInput(control.getEmail());
 
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
     rigth.addInput(control.getPlz());
