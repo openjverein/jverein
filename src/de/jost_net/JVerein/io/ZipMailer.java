@@ -297,6 +297,21 @@ public class ZipMailer
                   ma.setMail(ml);
                   ma.store();
                 }
+
+                // Als versendet markieren
+                switch (art.toLowerCase().trim())
+                {
+                  case "rechnung":
+                    re.setVersand(true);
+                    re.store();
+                    break;
+                  case "spendenbescheinigung":
+                    spb.setVersand(true);
+                    spb.store();
+                    break;
+                  default:
+                    break;
+                }
               }
               catch (MessagingException me)
               {
