@@ -17,9 +17,14 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
+import de.jost_net.JVerein.gui.dialogs.VersandDatumDialog;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungVersandAction implements Action
@@ -53,11 +58,38 @@ public class SpendenbescheinigungVersandAction implements Action
       return;
     }
 
+    Date datum = null;
+    if (versendet)
+    {
+      try
+      {
+        VersandDatumDialog d = new VersandDatumDialog(
+            VersandDatumDialog.POSITION_MOUSE);
+        datum = d.open();
+        // Wenn Dialog über das Schliesen Icon geschlossen wurde
+        if (d.getClosed())
+        {
+          return;
+        }
+      }
+      catch (OperationCanceledException oce)
+      {
+        throw oce;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler", e);
+        GUI.getStatusBar().setErrorText("Fehler bei der Datums Auswahl");
+        return;
+      }
+    }
+
     try
     {
       for (Spendenbescheinigung spb : spendenbescheinigungen)
       {
         spb.setVersand(versendet);
+        spb.setVersanddatum(datum);
         spb.store();
       }
     }

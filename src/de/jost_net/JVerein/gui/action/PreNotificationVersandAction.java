@@ -20,18 +20,18 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.gui.dialogs.VersandDatumDialog;
-import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class RechnungVersandAction implements Action
+public class PreNotificationVersandAction implements Action
 {
   private boolean versendet;
 
-  public RechnungVersandAction(boolean versendet)
+  public PreNotificationVersandAction(boolean versendet)
   {
     this.versendet = versendet;
   }
@@ -39,21 +39,21 @@ public class RechnungVersandAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Rechnung[] rechnungen = null;
-    if (context instanceof Rechnung)
+    Lastschrift[] lastschriften = null;
+    if (context instanceof Lastschrift)
     {
-      rechnungen = new Rechnung[1];
-      rechnungen[0] = (Rechnung) context;
+      lastschriften = new Lastschrift[1];
+      lastschriften[0] = (Lastschrift) context;
     }
-    else if (context instanceof Rechnung[])
+    else if (context instanceof Lastschrift[])
     {
-      rechnungen = (Rechnung[]) context;
+      lastschriften = (Lastschrift[]) context;
     }
-    if (rechnungen == null)
+    if (lastschriften == null)
     {
       return;
     }
-    if (rechnungen.length == 0)
+    if (lastschriften.length == 0)
     {
       return;
     }
@@ -86,11 +86,11 @@ public class RechnungVersandAction implements Action
 
     try
     {
-      for (Rechnung r : rechnungen)
+      for (Lastschrift l : lastschriften)
       {
-        r.setVersand(versendet);
-        r.setVersanddatum(datum);
-        r.store();
+        l.setVersand(versendet);
+        l.setVersanddatum(datum);
+        l.store();
       }
     }
     catch (RemoteException e)

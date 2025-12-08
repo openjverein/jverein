@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -53,9 +54,9 @@ public class LastschriftDetailView extends AbstractView
     left.addInput(control.getVorname());
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
+    left.addInput(control.getPLZ());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getPLZ());
     right.addInput(control.getOrt());
     right.addInput(control.getStaat());
     right.addInput(control.getEmail());
@@ -64,6 +65,8 @@ public class LastschriftDetailView extends AbstractView
     right.addInput(control.getIBAN());
     right.addInput(control.getBIC());
     right.addInput(control.getBetrag());
+    right.addLabelPair("Versand", control.getVersand());
+    right.addLabelPair("Versand Datum", control.getVersanddatum());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -71,6 +74,8 @@ public class LastschriftDetailView extends AbstractView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton(control.getDruckUndMailButton());
+    buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
 }

@@ -90,6 +90,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -141,6 +142,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private Spendenbescheinigung spendenbescheinigung;
 
   private CheckboxInput versand;
+
+  private DateInput versanddatum;
 
   private boolean and = false;
 
@@ -437,6 +440,16 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return versand;
   }
 
+  public DateInput getVersanddatum() throws RemoteException
+  {
+    if (versanddatum != null)
+    {
+      return versanddatum;
+    }
+    versanddatum = new DateInput(getSpendenbescheinigung().getVersanddatum());
+    return versanddatum;
+  }
+
   public Part getBuchungListPart() throws RemoteException
   {
     return new BuchungListPart(getSpendenbescheinigung().getBuchungen(),
@@ -468,6 +481,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
     spb.setVersand((Boolean) getVersand().getValue());
+    spb.setVersanddatum((Date) getVersanddatum().getValue());
     return spb;
   }
 
@@ -531,14 +545,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     spbList = new AutoUpdateTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
-    spbList.addColumn("Versand", "versand", new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        return (Boolean) o ? "\u2705" : "";
-      }
-    });
+    spbList.addColumn("Versand", "versandunddatum", null, false,
+        Column.ALIGN_RIGHT);
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
     {

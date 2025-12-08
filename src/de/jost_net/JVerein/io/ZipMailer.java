@@ -168,6 +168,7 @@ public class ZipMailer
 
               Rechnung re = null;
               Spendenbescheinigung spb = null;
+              Lastschrift ls = null;
 
               // Mitglied Map hinzufügen
               Mitglied m = (Mitglied) Einstellungen.getDBService()
@@ -188,7 +189,7 @@ public class ZipMailer
                   map = new SpendenbescheinigungMap().getMap(spb, map);
                   break;
                 case "lastschrift":
-                  Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                  ls = (Lastschrift) Einstellungen.getDBService()
                       .createObject(Lastschrift.class, artId);
                   map = new LastschriftMap().getMap(ls, map);
                   break;
@@ -232,6 +233,11 @@ public class ZipMailer
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
                       m) + ".pdf";
+                  break;
+                case "lastschrift":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls, m)
+                      + ".pdf";
                   break;
                 case "freiesformular":
                   finaldateiname = VorlageUtil.getName(
@@ -303,11 +309,18 @@ public class ZipMailer
                 {
                   case "rechnung":
                     re.setVersand(true);
+                    re.setVersanddatum(new Date());
                     re.store();
                     break;
                   case "spendenbescheinigung":
                     spb.setVersand(true);
+                    spb.setVersanddatum(new Date());
                     spb.store();
+                    break;
+                  case "lastschrift":
+                    ls.setVersand(true);
+                    ls.setVersanddatum(new Date());
+                    ls.store();
                     break;
                   default:
                     break;

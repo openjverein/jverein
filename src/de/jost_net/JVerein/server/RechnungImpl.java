@@ -32,6 +32,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -282,6 +283,16 @@ public class RechnungImpl extends AbstractJVereinDBObject
     {
       return getBetrag() - getIstSumme();
     }
+    if ("versandunddatum".equals(fieldName))
+    {
+      String icon = getVersand() ? "\u2705" : "";
+      String datum = "";
+      if (getVersanddatum() != null && getVersand())
+      {
+        datum = new JVDateFormatTTMMJJJJ().format(getVersanddatum());
+      }
+      return datum + " " + icon;
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -478,6 +489,18 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public void setVersand(Boolean versand) throws RemoteException
   {
     setAttribute("versand", Boolean.valueOf(versand));
+  }
+
+  @Override
+  public void setVersanddatum(Date datum) throws RemoteException
+  {
+    setAttribute("versanddatum", datum);
+  }
+
+  @Override
+  public Date getVersanddatum() throws RemoteException
+  {
+    return (Date) getAttribute("versanddatum");
   }
 
   @Override

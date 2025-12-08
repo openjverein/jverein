@@ -63,6 +63,7 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     left.addLabelPair("Zeile 6", control.getZeile6());
     left.addLabelPair("Zeile 7", control.getZeile7());
     left.addLabelPair("Versand", control.getVersand());
+    left.addLabelPair("Versand Datum", control.getVersanddatum());
 
     SimpleContainer right = new SimpleContainer(cols1.getComposite());
 
