@@ -389,8 +389,10 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public boolean isEchteGeldspende() throws RemoteException
   {
-    if (getBuchungen() == null)
+    if (getSpendenart() == Spendenart.SACHSPENDE)
+    {
       return false;
+    }
     for (Buchung buchung : getBuchungen())
     {
       if (buchung.getVerzicht())
