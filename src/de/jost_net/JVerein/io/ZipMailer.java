@@ -168,15 +168,7 @@ public class ZipMailer
 
               Rechnung re = null;
               Spendenbescheinigung spb = null;
-
-              // Mitglied Map hinzufügen
-              Mitglied m = (Mitglied) Einstellungen.getDBService()
-                  .createObject(Mitglied.class, id);
-
-              // Bei diesem Mitglied wird die Mail gespeichert, kann bei
-              // Rechnungen abweichen
-              Mitglied mitgliedMail = m;
-              map = new MitgliedMap().getMap(m, map);
+              Mitglied m = null;
 
               switch (art.toLowerCase().trim())
               {
@@ -185,7 +177,9 @@ public class ZipMailer
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
-                  mitgliedMail = re.getZahler();
+                  // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
+                  // das Mitglied selbst für die Map verwenden
+                  m = re.getMitglied();
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
@@ -206,6 +200,14 @@ public class ZipMailer
                   Logger.error("Zipmailer Map nicht implementiert: " + art);
                   break;
               }
+              // Mitglied Map hinzufügen
+              if (m == null)
+              {
+                m = (Mitglied) Einstellungen.getDBService()
+                    .createObject(Mitglied.class, id);
+              }
+              map = new MitgliedMap().getMap(m, map);
+
               VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
@@ -274,7 +276,7 @@ public class ZipMailer
                       anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
-                // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+                // Mail erfolgreich versendet, erst danach trat ein Fehler auf.
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
@@ -292,7 +294,7 @@ public class ZipMailer
 
                 MailEmpfaenger me = (MailEmpfaenger) Einstellungen
                     .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(mitgliedMail);
+                me.setMitglied(m);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
