@@ -59,7 +59,6 @@ public class RechnungDetailView extends AbstractDetailView
     middle.addInput(control.getVorname());
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
-
     middle.addInput(control.getPlz());
     middle.addInput(control.getOrt());
     middle.addInput(control.getStaat());
