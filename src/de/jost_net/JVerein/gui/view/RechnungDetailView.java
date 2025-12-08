@@ -71,7 +71,6 @@ public class RechnungDetailView extends AbstractDetailView
     rigth.addInput(control.getMandatid());
     rigth.addInput(control.getZahlungsweg());
     rigth.addInput(control.getLeitwegID());
-    rigth.addLabelPair("Versand", control.getVersand());
     rigth.addLabelPair("Versand Datum", control.getVersanddatum());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);

@@ -46,7 +46,7 @@ public class VersandDatumDialog extends AbstractDialog<Date>
   {
     super(position);
 
-    setTitle("Versand Datum Auswahl");
+    setTitle("Versanddatum setzen");
     setSize(400, SWT.DEFAULT);
   }
 
@@ -54,9 +54,9 @@ public class VersandDatumDialog extends AbstractDialog<Date>
   protected void paint(Composite parent) throws Exception
   {
     LabelGroup options = new LabelGroup(parent, "");
-    options.addLabelPair("Versand Datum", this.getDateInput());
+    options.addLabelPair("Versanddatum", this.getDateInput());
     ButtonArea b = new ButtonArea();
-    b.addButton("Mit Datum", new Action()
+    b.addButton("Übernehmen", new Action()
     {
 
       @Override
@@ -67,7 +67,7 @@ public class VersandDatumDialog extends AbstractDialog<Date>
         close();
       }
     }, null, false, "ok.png");
-    b.addButton("Ohne Datum", new Action()
+    b.addButton("Entfernen", new Action()
     {
 
       @Override
@@ -77,7 +77,7 @@ public class VersandDatumDialog extends AbstractDialog<Date>
         datum = null;
         close();
       }
-    }, null, false, "nok.png");
+    }, null, false, "user-trash-full.png");
     b.addButton("Abbrechen", new Action()
     {
 

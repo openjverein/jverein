@@ -28,7 +28,6 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -508,18 +507,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getVersand() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("versand"));
-  }
-
-  @Override
-  public void setVersand(Boolean versand) throws RemoteException
-  {
-    setAttribute("versand", Boolean.valueOf(versand));
-  }
-
-  @Override
   public void setVersanddatum(Date datum) throws RemoteException
   {
     setAttribute("versanddatum", datum);
@@ -529,22 +516,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   public Date getVersanddatum() throws RemoteException
   {
     return (Date) getAttribute("versanddatum");
-  }
-
-  @Override
-  public Object getAttribute(String fieldName) throws RemoteException
-  {
-    if ("versandunddatum".equals(fieldName))
-    {
-      String icon = getVersand() ? "\u2705" : "";
-      String datum = "";
-      if (getVersanddatum() != null && getVersand())
-      {
-        datum = new JVDateFormatTTMMJJJJ().format(getVersanddatum());
-      }
-      return datum + " " + icon;
-    }
-    return super.getAttribute(fieldName);
   }
 
   @Override
@@ -562,7 +533,6 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
       case "bezeichnungsachzuwendung":
         return "";
       case "unterlagenwertermittlung":
-      case "versand":
         return false;
       case "herkunftspende":
         return HerkunftSpende.KEINEANGABEN;

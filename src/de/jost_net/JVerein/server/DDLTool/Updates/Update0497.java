@@ -31,15 +31,6 @@ public class Update0497 extends AbstractDDLUpdate
   public void run() throws ApplicationException
   {
     execute(addColumn("rechnung",
-        new Column("versand", COLTYPE.BOOLEAN, 0, null, false, false)));
-
-    execute(addColumn("spendenbescheinigung",
-        new Column("versand", COLTYPE.BOOLEAN, 0, null, false, false)));
-
-    execute(addColumn("lastschrift",
-        new Column("versand", COLTYPE.BOOLEAN, 0, null, false, false)));
-
-    execute(addColumn("rechnung",
         new Column("versanddatum", COLTYPE.DATE, 10, null, false, false)));
 
     execute(addColumn("spendenbescheinigung",

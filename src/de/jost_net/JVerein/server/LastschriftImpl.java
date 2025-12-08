@@ -25,7 +25,6 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift
@@ -380,18 +379,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Boolean getVersand() throws RemoteException
-  {
-    return Util.getBoolean(getAttribute("versand"));
-  }
-
-  @Override
-  public void setVersand(Boolean versand) throws RemoteException
-  {
-    setAttribute("versand", Boolean.valueOf(versand));
-  }
-
-  @Override
   public void setVersanddatum(Date datum) throws RemoteException
   {
     setAttribute("versanddatum", datum);
@@ -404,18 +391,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public Object getAttributeDefault(String fieldName)
-  {
-    switch (fieldName)
-    {
-      case "versand":
-        return false;
-      default:
-        return null;
-    }
-  }
-
-  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if (fieldName.equals("faelligkeit"))
@@ -425,16 +400,6 @@ public class LastschriftImpl extends AbstractJVereinDBObject
     if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
-    }
-    if ("versandunddatum".equals(fieldName))
-    {
-      String icon = getVersand() ? "\u2705" : "";
-      String datum = "";
-      if (getVersanddatum() != null && getVersand())
-      {
-        datum = new JVDateFormatTTMMJJJJ().format(getVersanddatum());
-      }
-      return datum + " " + icon;
     }
     return super.getAttribute(fieldName);
   }

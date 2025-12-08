@@ -90,7 +90,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -140,8 +139,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private CheckboxInput unterlagenwertermittlung;
 
   private Spendenbescheinigung spendenbescheinigung;
-
-  private CheckboxInput versand;
 
   private DateInput versanddatum;
 
@@ -430,16 +427,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return unterlagenwertermittlung;
   }
 
-  public CheckboxInput getVersand() throws RemoteException
-  {
-    if (versand != null && !versand.getControl().isDisposed())
-    {
-      return versand;
-    }
-    versand = new CheckboxInput(getSpendenbescheinigung().getVersand());
-    return versand;
-  }
-
   public DateInput getVersanddatum() throws RemoteException
   {
     if (versanddatum != null)
@@ -480,7 +467,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setHerkunftSpende(hsp.getKey());
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
-    spb.setVersand((Boolean) getVersand().getValue());
     spb.setVersanddatum((Date) getVersanddatum().getValue());
     return spb;
   }
@@ -545,8 +531,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     spbList = new AutoUpdateTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
-    spbList.addColumn("Versand", "versandunddatum", null, false,
-        Column.ALIGN_RIGHT);
+    spbList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
     {

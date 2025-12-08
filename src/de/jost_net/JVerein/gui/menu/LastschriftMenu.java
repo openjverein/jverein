@@ -47,10 +47,8 @@ public class LastschriftMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new VersandLastschriftItem("Als \"versendet\" markieren",
-        new PreNotificationVersandAction(true), "emblem-default.png", false));
-    addItem(new VersandLastschriftItem("Als \"nicht versendet\" markieren",
-        new PreNotificationVersandAction(false), "edit-undo.png", true));
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new PreNotificationVersandAction(), "emblem-default.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
@@ -84,36 +82,6 @@ public class LastschriftMenu extends ContextMenu
         }
       }
       return false;
-    }
-  }
-
-  private static class VersandLastschriftItem extends CheckedContextMenuItem
-  {
-    boolean versendet;
-
-    private VersandLastschriftItem(String text, Action action, String icon,
-        boolean versendet)
-    {
-      super(text, action, icon);
-      this.versendet = versendet;
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Lastschrift)
-      {
-        Lastschrift l = (Lastschrift) o;
-        try
-        {
-          return !versendet ^ l.getVersand();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      return true;
     }
   }
 }

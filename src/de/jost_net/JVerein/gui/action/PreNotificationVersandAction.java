@@ -29,13 +29,6 @@ import de.willuhn.util.ApplicationException;
 
 public class PreNotificationVersandAction implements Action
 {
-  private boolean versendet;
-
-  public PreNotificationVersandAction(boolean versendet)
-  {
-    this.versendet = versendet;
-  }
-
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -59,36 +52,33 @@ public class PreNotificationVersandAction implements Action
     }
 
     Date datum = null;
-    if (versendet)
+
+    try
     {
-      try
+      VersandDatumDialog d = new VersandDatumDialog(
+          VersandDatumDialog.POSITION_MOUSE);
+      datum = d.open();
+      // Wenn Dialog über das Schliesen Icon geschlossen wurde
+      if (d.getClosed())
       {
-        VersandDatumDialog d = new VersandDatumDialog(
-            VersandDatumDialog.POSITION_MOUSE);
-        datum = d.open();
-        // Wenn Dialog über das Schliesen Icon geschlossen wurde
-        if (d.getClosed())
-        {
-          return;
-        }
-      }
-      catch (OperationCanceledException oce)
-      {
-        throw oce;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler", e);
-        GUI.getStatusBar().setErrorText("Fehler bei der Datums Auswahl");
         return;
       }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler bei der Datums Auswahl");
+      return;
     }
 
     try
     {
       for (Lastschrift l : lastschriften)
       {
-        l.setVersand(versendet);
         l.setVersanddatum(datum);
         l.store();
       }

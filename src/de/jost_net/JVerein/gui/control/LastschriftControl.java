@@ -46,12 +46,10 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -99,8 +97,6 @@ public class LastschriftControl extends FilterControl implements Savable
 
   private JVereinTablePart lastschriftList;
 
-  private CheckboxInput versand;
-
   private DateInput versanddatum;
 
   public LastschriftControl(AbstractView view)
@@ -118,8 +114,8 @@ public class LastschriftControl extends FilterControl implements Savable
     }
     lastschriftList = new AutoUpdateTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
-    lastschriftList.addColumn("Versand", "versandunddatum", null, false,
-        Column.ALIGN_RIGHT);
+    lastschriftList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
@@ -505,16 +501,6 @@ public class LastschriftControl extends FilterControl implements Savable
     return geschlecht;
   }
 
-  public CheckboxInput getVersand() throws RemoteException
-  {
-    if (versand != null && !versand.getControl().isDisposed())
-    {
-      return versand;
-    }
-    versand = new CheckboxInput(getLastschrift().getVersand());
-    return versand;
-  }
-
   public DateInput getVersanddatum() throws RemoteException
   {
     if (versanddatum != null)
@@ -530,7 +516,6 @@ public class LastschriftControl extends FilterControl implements Savable
       throws RemoteException, ApplicationException
   {
     Lastschrift la = getLastschrift();
-    la.setVersand((Boolean) getVersand().getValue());
     la.setVersanddatum((Date) getVersanddatum().getValue());
     return la;
   }

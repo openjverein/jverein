@@ -308,17 +308,14 @@ public class ZipMailer
                 switch (art.toLowerCase().trim())
                 {
                   case "rechnung":
-                    re.setVersand(true);
                     re.setVersanddatum(new Date());
                     re.store();
                     break;
                   case "spendenbescheinigung":
-                    spb.setVersand(true);
                     spb.setVersanddatum(new Date());
                     spb.store();
                     break;
                   case "lastschrift":
-                    ls.setVersand(true);
                     ls.setVersanddatum(new Date());
                     ls.store();
                     break;

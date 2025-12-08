@@ -66,7 +66,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -133,8 +132,6 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextAreaInput kommentar;
 
-  private CheckboxInput versand;
-
   private DateInput versanddatum;
 
   public enum TYP
@@ -160,8 +157,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
     rechnungList = new AutoUpdateTablePart(rechnungen, null);
     rechnungList.addColumn("Nr", "id-int");
-    rechnungList.addColumn("Versand", "versandunddatum", null, false,
-        Column.ALIGN_RIGHT);
+    rechnungList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Mitglied", "mitglied");
@@ -711,16 +708,6 @@ public class RechnungControl extends DruckMailControl implements Savable
     return leitwegID;
   }
 
-  public CheckboxInput getVersand() throws RemoteException
-  {
-    if (versand != null && !versand.getControl().isDisposed())
-    {
-      return versand;
-    }
-    versand = new CheckboxInput(getRechnung().getVersand());
-    return versand;
-  }
-
   public DateInput getVersanddatum() throws RemoteException
   {
     if (versanddatum != null)
@@ -807,7 +794,6 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
-    re.setVersand((Boolean) getVersand().getValue());
     re.setVersanddatum((Date) getVersanddatum().getValue());
     return re;
   }

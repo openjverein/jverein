@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import java.rmi.RemoteException;
-
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -27,14 +25,11 @@ import de.jost_net.JVerein.gui.action.SpendenbescheinigungVersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Adressblatt;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
-import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Spendenbescheinigungen.
@@ -50,12 +45,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SpendenbescheinigungDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new VersandSpendenbescheinigungItem("Als \"versendet\" markieren",
-        new SpendenbescheinigungVersandAction(true), "emblem-default.png",
-        false));
-    addItem(new VersandSpendenbescheinigungItem(
-        "Als \"nicht versendet\" markieren",
-        new SpendenbescheinigungVersandAction(false), "edit-undo.png", true));
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new SpendenbescheinigungVersandAction(), "emblem-default.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
@@ -69,36 +60,4 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
   }
-
-  private static class VersandSpendenbescheinigungItem
-      extends CheckedContextMenuItem
-  {
-    boolean versendet;
-
-    private VersandSpendenbescheinigungItem(String text, Action action,
-        String icon, boolean versendet)
-    {
-      super(text, action, icon);
-      this.versendet = versendet;
-    }
-
-    @Override
-    public boolean isEnabledFor(Object o)
-    {
-      if (o instanceof Spendenbescheinigung)
-      {
-        Spendenbescheinigung spb = (Spendenbescheinigung) o;
-        try
-        {
-          return !versendet ^ spb.getVersand();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-      return true;
-    }
-  }
-
 }
