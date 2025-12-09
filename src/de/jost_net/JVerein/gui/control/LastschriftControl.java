@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -224,6 +225,18 @@ public class LastschriftControl extends FilterControl implements Savable
     {
       lastschriften.addFilter("abrechnungslauf >= ?",
           new Object[] { (Integer) getIntegerAusw().getValue() });
+    }
+    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
+    {
+      switch ((SuchVersand) suchversand.getValue())
+      {
+        case VERSAND:
+          lastschriften.addFilter("versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          lastschriften.addFilter("versanddatum IS NULL");
+          break;
+      }
     }
 
     lastschriften.setOrder("ORDER BY name");

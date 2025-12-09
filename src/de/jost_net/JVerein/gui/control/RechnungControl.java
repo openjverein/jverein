@@ -44,6 +44,7 @@ import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -274,6 +275,19 @@ public class RechnungControl extends DruckMailControl implements Savable
   {
     DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
         .createList(Rechnung.class);
+
+    if (suchversand != null && suchversand.getValue() != null)
+    {
+      switch ((SuchVersand) suchversand.getValue())
+      {
+        case VERSAND:
+          rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
+          break;
+      }
+    }
 
     if (datumvon != null && datumvon.getValue() != null)
     {

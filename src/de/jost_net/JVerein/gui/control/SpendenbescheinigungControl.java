@@ -62,6 +62,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -735,6 +736,18 @@ public class SpendenbescheinigungControl extends DruckMailControl
       addCondition("spendedatum <= ?");
       Date d = (Date) getEingabedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
+    {
+      switch ((SuchVersand) getSuchVersand().getValue())
+      {
+        case VERSAND:
+          addCondition("versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          addCondition("versanddatum IS NULL");
+          break;
+      }
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()

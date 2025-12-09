@@ -46,6 +46,7 @@ import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -53,6 +54,7 @@ import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -569,6 +571,19 @@ public class PreNotificationControl extends DruckMailControl
       {
         it.addFilter("(email is null or length(email)=0)");
       }
+      if (suchversand != null && suchversand.getValue() != null)
+      {
+        switch ((SuchVersand) suchversand.getValue())
+        {
+          case VERSAND:
+            it.addFilter("versanddatum IS NOT NULL");
+            break;
+          case NICHT_VERSAND:
+            it.addFilter("versanddatum IS NULL");
+            break;
+        }
+      }
+
       it.setOrder("order by name, vorname");
       while (it.hasNext())
       {
@@ -686,6 +701,15 @@ public class PreNotificationControl extends DruckMailControl
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  public TextInput getAbrechnungslauf(AbrechnungslaufImpl lauf)
+      throws RemoteException
+  {
+    TextInput text = new TextInput(lauf.getIDText());
+    text.setName("Abrechnungslauf");
+    text.disable();
+    return text;
   }
 
 }
