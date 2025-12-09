@@ -168,7 +168,9 @@ public class ZipMailer
 
               Rechnung re = null;
               Spendenbescheinigung spb = null;
-              Mitglied m = null;
+              Mitglied mitgliedMap = (Mitglied) Einstellungen.getDBService()
+                  .createObject(Mitglied.class, id);
+              Mitglied mitgliedMail = mitgliedMap;
 
               switch (art.toLowerCase().trim())
               {
@@ -179,7 +181,7 @@ public class ZipMailer
                   map = new RechnungMap().getMap(re, map);
                   // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
                   // das Mitglied selbst für die Map verwenden
-                  m = re.getMitglied();
+                  mitgliedMap = re.getMitglied();
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
@@ -201,12 +203,7 @@ public class ZipMailer
                   break;
               }
               // Mitglied Map hinzufügen
-              if (m == null)
-              {
-                m = (Mitglied) Einstellungen.getDBService()
-                    .createObject(Mitglied.class, id);
-              }
-              map = new MitgliedMap().getMap(m, map);
+              map = new MitgliedMap().getMap(mitgliedMap, map);
 
               VarTools.add(context, map);
 
@@ -229,27 +226,29 @@ public class ZipMailer
               {
                 case "rechnung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                      + ".pdf";
                   break;
                 case "mahnung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                      + ".pdf";
                   break;
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                      m) + ".pdf";
+                      mitgliedMap) + ".pdf";
                   break;
                 case "freiesformular":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-                      dateiname.substring(0, dateiname.lastIndexOf('.')), m)
-                      + ".pdf";
+                      dateiname.substring(0, dateiname.lastIndexOf('.')),
+                      mitgliedMap) + ".pdf";
                   break;
                 case "kontoauszug":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m)
-                      + ".pdf";
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+                      mitgliedMap) + ".pdf";
                   break;
                 default:
                   StringWriter wdateiname = new StringWriter();
@@ -294,7 +293,7 @@ public class ZipMailer
 
                 MailEmpfaenger me = (MailEmpfaenger) Einstellungen
                     .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(m);
+                me.setMitglied(mitgliedMail);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();
