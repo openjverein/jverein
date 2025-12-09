@@ -38,7 +38,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
-    implements Rechnung, IAdresse, UnreadCounter
+    implements Rechnung, IAdresse, UnreadCounter, IVersand
 {
 
   /**

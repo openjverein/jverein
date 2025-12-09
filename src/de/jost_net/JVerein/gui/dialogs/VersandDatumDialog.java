@@ -22,7 +22,6 @@ import java.util.Date;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -56,36 +55,18 @@ public class VersandDatumDialog extends AbstractDialog<Date>
     LabelGroup options = new LabelGroup(parent, "");
     options.addLabelPair("Versanddatum", this.getDateInput());
     ButtonArea b = new ButtonArea();
-    b.addButton("Übernehmen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        closed = false;
-        datum = (Date) getDateInput().getValue();
-        close();
-      }
+    b.addButton("Übernehmen", c -> {
+      closed = false;
+      datum = (Date) getDateInput().getValue();
+      close();
     }, null, false, "ok.png");
-    b.addButton("Entfernen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        closed = false;
-        datum = null;
-        close();
-      }
+    b.addButton("Entfernen", c -> {
+      closed = false;
+      datum = null;
+      close();
     }, null, false, "user-trash-full.png");
-    b.addButton("Abbrechen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        throw new OperationCanceledException();
-      }
+    b.addButton("Abbrechen", c -> {
+      throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     b.paint(parent);
   }

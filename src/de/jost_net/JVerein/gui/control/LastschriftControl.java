@@ -41,7 +41,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -537,16 +536,9 @@ public class LastschriftControl extends FilterControl implements Savable
 
   public ButtonRtoL getDruckUndMailButton()
   {
-
-    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Lastschrift la = getLastschrift();
-        GUI.startView(PreNotificationMailView.class, new Lastschrift[] { la });
-      }
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", c -> {
+      Lastschrift la = getLastschrift();
+      GUI.startView(PreNotificationMailView.class, new Lastschrift[] { la });
     }, getLastschrift(), false, "document-print.png");
     return b;
   }

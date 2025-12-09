@@ -20,38 +20,39 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.gui.dialogs.VersandDatumDialog;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class SpendenbescheinigungVersandAction implements Action
+public class VersandAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    Spendenbescheinigung[] spendenbescheinigungen = null;
-    if (context instanceof Spendenbescheinigung)
+    IVersand[] versandObjekte = null;
+    if (context instanceof IVersand)
     {
-      spendenbescheinigungen = new Spendenbescheinigung[1];
-      spendenbescheinigungen[0] = (Spendenbescheinigung) context;
+      versandObjekte = new IVersand[1];
+      versandObjekte[0] = (IVersand) context;
     }
-    else if (context instanceof Spendenbescheinigung[])
+    else if (context instanceof IVersand[])
     {
-      spendenbescheinigungen = (Spendenbescheinigung[]) context;
+      versandObjekte = (IVersand[]) context;
     }
-    if (spendenbescheinigungen == null)
+    if (versandObjekte == null)
     {
       return;
     }
-    if (spendenbescheinigungen.length == 0)
+    if (versandObjekte.length == 0)
     {
       return;
     }
 
     Date datum = null;
+
     try
     {
       VersandDatumDialog d = new VersandDatumDialog(
@@ -76,10 +77,10 @@ public class SpendenbescheinigungVersandAction implements Action
 
     try
     {
-      for (Spendenbescheinigung spb : spendenbescheinigungen)
+      for (IVersand o : versandObjekte)
       {
-        spb.setVersanddatum(datum);
-        spb.store();
+        o.setVersanddatum(datum);
+        o.store();
       }
     }
     catch (RemoteException e)
