@@ -29,8 +29,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 
 /**
- * Ein Dialog, ueber den man die Personenart eines neuen Mitglieds auswählen
- * kann.
+ * Ein Dialog,zum Setzen des Versanddatums.
  */
 public class VersandDatumDialog extends AbstractDialog<Date>
 {

@@ -51,6 +51,7 @@ import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.IVersand;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
@@ -166,6 +167,7 @@ public class ZipMailer
               String mail = teile[3];
               String dateiname = teile[4];
 
+              IVersand versand = null;
               Rechnung re = null;
               Spendenbescheinigung spb = null;
               Lastschrift ls = null;
@@ -182,16 +184,19 @@ public class ZipMailer
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
+                  versand = (IVersand) re;
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
                       .createObject(Spendenbescheinigung.class, artId);
                   map = new SpendenbescheinigungMap().getMap(spb, map);
+                  versand = (IVersand) spb;
                   break;
                 case "lastschrift":
                   ls = (Lastschrift) Einstellungen.getDBService()
                       .createObject(Lastschrift.class, artId);
                   map = new LastschriftMap().getMap(ls, map);
+                  versand = (IVersand) ls;
                   break;
                 case "":
                 case "freiesformular":
@@ -305,22 +310,10 @@ public class ZipMailer
                 }
 
                 // Als versendet markieren
-                switch (art.toLowerCase().trim())
+                if (versand != null)
                 {
-                  case "rechnung":
-                    re.setVersanddatum(new Date());
-                    re.store();
-                    break;
-                  case "spendenbescheinigung":
-                    spb.setVersanddatum(new Date());
-                    spb.store();
-                    break;
-                  case "lastschrift":
-                    ls.setVersanddatum(new Date());
-                    ls.store();
-                    break;
-                  default:
-                    break;
+                  versand.setVersanddatum(new Date());
+                  versand.store();
                 }
               }
               catch (MessagingException me)
