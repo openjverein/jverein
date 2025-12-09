@@ -17,7 +17,6 @@ import java.sql.Connection;
 
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
-import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -31,16 +30,11 @@ public class Update0497 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    Column col = new Column("zahler", COLTYPE.BIGINT, 0, null, false, false);
-    execute(addColumn("rechnung", col));
-    Index idx = new Index("ixRechnungZahler", false);
+    execute(alterColumn("buchung", new Column("bezeichnungsachzuwendung",
+        COLTYPE.VARCHAR, 1000, null, false, false)));
 
-    idx.add(col);
-    execute(idx.getCreateIndex("rechnung"));
-
-    execute(createForeignKey("fkRechnungZahler", "rechnung", "zahler",
-        "mitglied", "id", "CASCADE", "NO ACTION"));
-
-    execute("UPDATE rechnung set zahler = mitglied");
+    execute(alterColumn("spendenbescheinigung",
+        new Column("bezeichnungsachzuwendung", COLTYPE.VARCHAR, 1000, null,
+            false, false)));
   }
 }
