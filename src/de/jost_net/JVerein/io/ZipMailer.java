@@ -180,11 +180,15 @@ public class ZipMailer
               switch (art.toLowerCase().trim())
               {
                 case "rechnung":
-                case "mahnung":
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
                   versand = (IVersand) re;
+                  break;
+                case "mahnung":
+                  re = (Rechnung) Einstellungen.getDBService()
+                      .createObject(Rechnung.class, artId);
+                  map = new RechnungMap().getMap(re, map);
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
