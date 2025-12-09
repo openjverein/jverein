@@ -89,6 +89,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -133,7 +134,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private CheckboxInput ersatzaufwendungen;
 
-  private TextInput bezeichnungsachzuwendung;
+  private TextAreaInput bezeichnungsachzuwendung;
 
   private SelectInput herkunftspende;
 
@@ -392,14 +393,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return ersatzaufwendungen;
   }
 
-  public TextInput getBezeichnungSachzuwendung() throws RemoteException
+  public TextAreaInput getBezeichnungSachzuwendung() throws RemoteException
   {
     if (bezeichnungsachzuwendung != null)
     {
       return bezeichnungsachzuwendung;
     }
-    bezeichnungsachzuwendung = new TextInput(
-        getSpendenbescheinigung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung = new TextAreaInput(
+        getSpendenbescheinigung().getBezeichnungSachzuwendung(), 1000);
+    bezeichnungsachzuwendung.setHeight(50);
     bezeichnungsachzuwendung.disable();
     return bezeichnungsachzuwendung;
   }

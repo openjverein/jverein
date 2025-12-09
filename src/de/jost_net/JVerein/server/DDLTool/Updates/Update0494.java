@@ -53,9 +53,9 @@ public class Update0494 extends AbstractDDLUpdate
         "UPDATE mitglied SET kontoinhaber = SUBSTR(CONCAT(ktoiname,' ',ktoivorname),1,70) WHERE ktoiname <> '' OR ktoivorname <> ''");
 
     execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
-        COLTYPE.BOOLEAN, 1, "0", true, false)));
+        COLTYPE.BOOLEAN, 1, "0", false, false)));
 
     execute(addColumn("zusatzbetragvorlage", new Column("mitgliedzahltselbst",
-        COLTYPE.BOOLEAN, 1, "0", true, false)));
+        COLTYPE.BOOLEAN, 1, "0", false, false)));
   }
 }
