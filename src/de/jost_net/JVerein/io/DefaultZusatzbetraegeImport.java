@@ -335,6 +335,15 @@ public class DefaultZusatzbetraegeImport implements Importer
           {
             zus.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
           }
+          try
+          {
+            Integer selbstzahler = results.getInt("MitgliedZahltSelbst");
+            zus.setMitgliedzahltSelbst(selbstzahler == 0 ? false : true);
+          }
+          catch (Exception e)
+          {
+            zus.setMitgliedzahltSelbst(false);
+          }
           monitor.setStatusText(String.format(
               "Zusatzbeitrag für Mitglied %s erfolgreich importiert.",
               Adressaufbereitung.getNameVorname(zus.getMitglied())));

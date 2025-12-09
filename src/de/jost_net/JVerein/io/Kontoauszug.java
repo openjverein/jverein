@@ -26,15 +26,13 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -45,12 +43,10 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 
-public class Kontoauszug
+public class Kontoauszug extends AbstractAusgabe
 {
 
   private de.willuhn.jameica.system.Settings settings;
-
-  private File file;
 
   private Reporter rpt;
 
@@ -62,33 +58,73 @@ public class Kontoauszug
     settings.setStoreWhenRead(true);
   }
 
-  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control)
-      throws Exception
+  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control,
+      String pdfMode) throws Exception
   {
     this();
+    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN)
+        && mitglieder.size() > 1;
+
+    Ausgabeart art = (Ausgabeart) control.getAusgabeart().getValue();
+    String extension = getExtension(art);
+    String dateiname = null;
+    if (mitglieder.size() == 1)
+    {
+      dateiname = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME,
+          null, mitglieder.get(0)) + "." + extension;
+    }
+    else
+    {
+      dateiname = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
+          + extension;
+    }
+    file = getDateiAuswahl(extension, dateiname, einzelnePdfs, control,
+        settings);
+    if (file == null)
+    {
+      return;
+    }
 
     switch ((Ausgabeart) control.getAusgabeart().getValue())
     {
       case DRUCK:
-        init("pdf", mitglieder);
-        if (file == null)
+        if (!einzelnePdfs)
         {
-          return;
+          rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
+          for (Mitglied mg : mitglieder)
+          {
+            generiereMitglied(mg, control);
+          }
+          rpt.close();
+          zeigeDokument();
         }
-        rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
-        for (Mitglied mg : mitglieder)
+        else
         {
-          generiereMitglied(mg, control);
+          for (Mitglied mg : mitglieder)
+          {
+            file = new File(
+                file.getParent() + File.separator
+                    + VorlageUtil.getName(
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, mg)
+                    + ".pdf");
+            rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40,
+                false);
+            generiereMitglied(mg, control);
+            rpt.close();
+          }
+          if (mitglieder.size() == 1)
+          {
+            zeigeDokument();
+          }
+          else
+          {
+            GUI.getStatusBar()
+                .setSuccessText("Die Kontoauszüge wurden erstellt und unter: "
+                    + file.getParent() + " gespeichert.");
+          }
         }
-        rpt.close();
-        zeigeDokument();
         break;
       case MAIL:
-        init("zip", mitglieder);
-        if (file == null)
-        {
-          return;
-        }
         ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
         for (Mitglied mg : mitglieder)
         {
@@ -116,43 +152,6 @@ public class Kontoauszug
             (String) control.getTxt().getValue());
         break;
     }
-  }
-
-  private void init(String extension, List<Mitglied> mitglieder)
-      throws IOException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    if (mitglieder.size() == 1)
-    {
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
-              mitglieder.get(0)) + "." + extension);
-    }
-    else
-    {
-      fd.setFileName(VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
-          + extension);
-    }
-    fd.setFilterExtensions(new String[] { "*." + extension });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith("." + extension))
-    {
-      s = s + "*." + extension;
-    }
-    file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
   }
 
   private void generiereMitglied(Mitglied m, SollbuchungControl control)
