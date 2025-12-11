@@ -76,6 +76,7 @@ public enum RechnungVar
   BIC("rechnung_bic"), //
   IBAN("rechnung_iban"), //
   IBANMASKIERT("rechnung_ibanmaskiert"), //
+  BANKNAME("rechnung_bankname"), //
   EMPFAENGER("rechnung_empfaenger"),
   ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text"),
   KOMMENTAR("rechnung_kommentar");
