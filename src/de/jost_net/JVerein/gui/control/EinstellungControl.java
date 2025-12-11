@@ -2757,8 +2757,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getAutomatischeBuchungskorrekturHibiscus().getValue());
       Einstellungen.setEinstellung(Property.AFARESTWERT,
           (Double) afarestwert.getValue());
-      Einstellungen.setEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE,
-          (Boolean) kontonummer_in_buchungsliste.getValue());
       Einstellungen.setEinstellung(Property.OPTIERT,
           (Boolean) getOptiert().getValue());
       Einstellungen.setEinstellung(Property.OPTIERTPFLICHT,
@@ -3006,6 +3004,9 @@ public class EinstellungControl extends AbstractControl
     try
     {
       DBTransaction.starten();
+
+      Einstellungen.setEinstellung(Property.KONTONUMMERINBUCHUNGSLISTE,
+          (Boolean) kontonummer_in_buchungsliste.getValue());
       Einstellungen.setEinstellung(
           Property.WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN,
           (Boolean) getWirtschaftsplanIstAbgeschlossen().getValue());

@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -54,7 +55,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
     left.addInput(control.getMailauswahl());
     SelectInput mitgliedsTyp = control
         .getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED);
-    mitgliedsTyp.setPleaseChoose("Bitte auswählen");
+    mitgliedsTyp.setPleaseChoose(FilterControl.ALLE);
     left.addInput(mitgliedsTyp);
     DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
     left.addInput(eigenschaftenInput);
