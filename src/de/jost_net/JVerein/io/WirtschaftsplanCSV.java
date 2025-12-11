@@ -19,8 +19,8 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.rmi.RemoteException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.supercsv.cellprocessor.ConvertNullTo;
@@ -32,130 +32,239 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
+import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
+import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class WirtschaftsplanCSV
+public class WirtschaftsplanCSV implements Exporter
 {
-  public WirtschaftsplanCSV(List<WirtschaftsplanNode> einnahmenList,
-      List<WirtschaftsplanNode> ausgabenList, final File file)
-      throws ApplicationException
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ProgressMonitor monitor) throws ApplicationException, RemoteException
   {
-    ICsvMapWriter writer = null;
-
-    try
+    Wirtschaftsplan[] wirtschaftsplaene;
+    if (objects[0] instanceof Wirtschaftsplan[])
     {
-      writer = new CsvMapWriter(new FileWriter(file),
-          CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+      wirtschaftsplaene = (Wirtschaftsplan[]) objects[0];
+    }
+    else if (objects[0] instanceof Wirtschaftsplan)
+    {
+      wirtschaftsplaene = new Wirtschaftsplan[] {
+          (Wirtschaftsplan) objects[0] };
+    }
+    else
+    {
+      throw new ApplicationException("Keine Pläne ausgewählt");
+    }
 
-      String[] header = { "Buchungsklasse", "Buchungsart", "Posten",
-          "Einnahmen", "Ausgaben" };
+    try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
+        CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
+    {
+      String[] header = new String[3 + wirtschaftsplaene.length * 2 + 1];
+      header[0] = "Buchungsklasse";
+      header[1] = "Buchungsart";
+      header[2] = "Posten";
+      int i = 3;
+
+      CellProcessor[] cellProcessor = new CellProcessor[3
+          + wirtschaftsplaene.length * 2 + 1];
+      cellProcessor[0] = new NotNull(); // Buchungsklasse
+      cellProcessor[1] = new NotNull(); // Buchungsart
+      cellProcessor[2] = new NotNull(); // Posten
+      int j = 3;
+
+      for (Wirtschaftsplan plan : wirtschaftsplaene)
+      {
+        header[i++] = plan.getBezeichung() + " "
+            + new JVDateFormatTTMMJJJJ().format(plan.getDatumVon()) + "-"
+            + new JVDateFormatTTMMJJJJ().format(plan.getDatumBis()) + " SOLL";
+
+        header[i++] = plan.getBezeichung() + " "
+            + new JVDateFormatTTMMJJJJ().format(plan.getDatumVon()) + "-"
+            + new JVDateFormatTTMMJJJJ().format(plan.getDatumBis()) + " IST";
+
+        cellProcessor[j++] = new ConvertNullTo("",
+            new FmtNumber(Einstellungen.DECIMALFORMAT));
+        cellProcessor[j++] = new ConvertNullTo("",
+            new FmtNumber(Einstellungen.DECIMALFORMAT));
+      }
       writer.writeHeader(header);
 
-      ICsvMapWriter finalWriter = writer;
-      einnahmenList.forEach(einnahme -> {
-        try
-        {
-          iterateOverNodes(einnahme.getChildren(), finalWriter, header, true);
-        }
-        catch (IOException e)
-        {
-          throw new RuntimeException(e);
-        }
-      });
-      ausgabenList.forEach(ausgabe -> {
-        try
-        {
-          iterateOverNodes(ausgabe.getChildren(), finalWriter, header, false);
-        }
-        catch (IOException e)
-        {
-          throw new RuntimeException(e);
-        }
-      });
+      DBIterator<Buchungsklasse> buchungsklasseIterator = Einstellungen
+          .getDBService().createList(Buchungsklasse.class);
+      switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
+      {
+        case BuchungsartSort.NACH_NUMMER:
+          buchungsklasseIterator.setOrder("Order by nummer is null, nummer");
+          break;
+        default:
+          buchungsklasseIterator
+              .setOrder("Order by bezeichnung is NULL, bezeichnung");
+          break;
+      }
 
-      GUI.getStatusBar().setSuccessText("Auswertung fertig");
-      writer.close();
+      while (buchungsklasseIterator.hasNext())
+      {
+        Buchungsklasse buchungsklasse = buchungsklasseIterator.next();
+        for (int art : new int[] { WirtschaftsplanImpl.EINNAHME,
+            WirtschaftsplanImpl.AUSGABE, WirtschaftsplanImpl.RUECKLAGE })
+        {
+          // Map mit allen anzuzeigenden Einträgen
+          // <Buchungsart<Posten<Header,Wert>>>
+          HashMap<String, HashMap<String, HashMap<String, Object>>> map = new HashMap<>();
 
-      FileViewer.show(file);
+          int n = -1;
+          for (Wirtschaftsplan plan : wirtschaftsplaene)
+          {
+            n++;
+            WirtschaftsplanNode buchungsklasseNode = new WirtschaftsplanNode(
+                buchungsklasse, art, plan);
+            String klasseKey = (String) buchungsklasseNode
+                .getAttribute("buchungsklassebezeichnung");
+            GenericIterator<WirtschaftsplanNode> buchungsartIt = buchungsklasseNode
+                .getChildren();
+            while (buchungsartIt.hasNext())
+            {
+              WirtschaftsplanNode buchungsartNode = buchungsartIt.next();
+
+              String buchungsartKey = (String) buchungsartNode
+                  .getAttribute("buchungsklassebezeichnung");
+
+              HashMap<String, HashMap<String, Object>> entryMap = map
+                  .getOrDefault(buchungsartKey, new HashMap<>());
+
+              HashMap<String, Object> entry = entryMap.get("-");
+              if (entry == null)
+              {
+                entry = new HashMap<String, Object>();
+                entry.put(header[0], klasseKey);
+                entry.put(header[1], buchungsartKey);
+                entry.put(header[2], "");
+              }
+
+              entry.put(header[3 + n * 2], buchungsartNode.getSoll());
+              entry.put(header[3 + n * 2 + 1], buchungsartNode.getIst());
+              entryMap.put("-", entry);
+
+              GenericIterator<WirtschaftsplanNode> it = buchungsartNode
+                  .getChildren();
+              while (it.hasNext())
+              {
+                WirtschaftsplanNode node = it.next();
+
+                String nodekey = (String) node
+                    .getAttribute("buchungsklassebezeichnung");
+
+                entry = entryMap.get(nodekey);
+                if (entry == null)
+                {
+                  entry = new HashMap<String, Object>();
+                  entry.put(header[0], klasseKey);
+                  entry.put(header[1], buchungsartKey);
+                  entry.put(header[2], nodekey);
+                }
+                entry.put(header[3 + n * 2], node.getSoll());
+                entry.put(header[3 + n * 2 + 1], node.getIst());
+                entryMap.put(nodekey, entry);
+              }
+              map.put(buchungsartKey, entryMap);
+            }
+          }
+          map.entrySet().stream().sorted(Map.Entry
+              .<String, HashMap<String, HashMap<String, Object>>> comparingByKey())
+              .forEach(buchungsartEntry -> {
+                // Posten
+                buchungsartEntry.getValue().entrySet().stream()
+                    .sorted(Map.Entry
+                        .<String, HashMap<String, Object>> comparingByKey())
+                    .forEach(postenEntry -> {
+                      try
+                      {
+                        writer.write(postenEntry.getValue(), header,
+                            cellProcessor);
+                      }
+                      catch (IOException e)
+                      {
+                        Logger.error("Fehler beim Wirtschaftsplan Export", e);
+                      }
+                    });
+              });
+        }
+      }
+
     }
     catch (Exception e)
     {
       Logger.error("Error while creating report", e);
       throw new ApplicationException("Fehler", e);
     }
-    finally
-    {
-      if (writer != null)
-      {
-        try
-        {
-          writer.close();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Error while creating report", e);
-          throw new ApplicationException("Fehler", e);
-        }
-      }
-    }
   }
 
-  private static CellProcessor[] getProcessors()
+  @Override
+  public String getName()
   {
+    return "Wirtschaftsplan CSV-Export";
+  }
 
-    return new CellProcessor[] { new NotNull(), // Buchungsklasse
-        new NotNull(), // Buchungsart
-        new NotNull(), // Posten
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT)),
-        // Einnahmen
-        new ConvertNullTo("", new FmtNumber(Einstellungen.DECIMALFORMAT))
-        // Ausgaben
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != Wirtschaftsplan.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return WirtschaftsplanCSV.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.csv" };
+      }
     };
+    return new IOFormat[] { f };
   }
 
-  private void iterateOverNodes(
-      @SuppressWarnings("rawtypes") GenericIterator iterator,
-      ICsvMapWriter writer, String[] header, boolean einnahme)
-      throws IOException
+  @Override
+  public String getDateiname(Object object)
   {
-    while (iterator.hasNext())
-    {
-      WirtschaftsplanNode currentNode = (WirtschaftsplanNode) iterator.next();
+    return VorlageUtil
+        .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_DATEINAME
+            : VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, object)
+        + ".csv";
+  }
 
-      if (currentNode.getType().equals(WirtschaftsplanNode.Type.POSTEN))
-      {
-        Map<String, Object> csvzeile = new HashMap<>();
+  @Override
+  public void calculateTitle(Object object)
+  {
+    // Bei CSV nicht nötig
+  }
 
-        WirtschaftsplanNode parent = (WirtschaftsplanNode) currentNode
-            .getParent();
-        WirtschaftsplanNode root = (WirtschaftsplanNode) parent.getParent();
-
-        csvzeile.put(header[0], root.getBuchungsklasse().getBezeichnung());
-        csvzeile.put(header[1], parent.getBuchungsart().getBezeichnung());
-        csvzeile.put(header[2],
-            currentNode.getWirtschaftsplanItem().getPosten());
-
-        if (einnahme)
-        {
-          csvzeile.put(header[3],
-              currentNode.getWirtschaftsplanItem().getSoll());
-        }
-        else
-        {
-          csvzeile.put(header[4],
-              currentNode.getWirtschaftsplanItem().getSoll());
-        }
-
-        writer.write(csvzeile, header, getProcessors());
-      }
-      else
-      {
-        iterateOverNodes(currentNode.getChildren(), writer, header, einnahme);
-      }
-    }
+  @Override
+  public void calculateSubitle(Object object)
+  {
+    // Bei CSV nicht nötig
   }
 }
