@@ -131,6 +131,8 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextAreaInput kommentar;
 
+  private TextInput zahler;
+
   public enum TYP
   {
     RECHNUNG,
@@ -740,6 +742,20 @@ public class RechnungControl extends DruckMailControl implements Savable
     return kommentar;
   }
 
+  public TextInput getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+
+    zahler = new TextInput(getRechnung().getZahler().getName() + ", "
+        + getRechnung().getZahler().getVorname());
+    zahler.setName("Zahler");
+    zahler.disable();
+    return zahler;
+  }
+
   public ButtonRtoL getRechnungDruckUndMailButton()
   {
 
@@ -833,13 +849,13 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung[] rechnungen = getRechnungen(object);
     for (Rechnung r : rechnungen)
     {
-      String mail = r.getMitglied().getEmail();
+      Mitglied m = r.getZahler();
+      String mail = m.getEmail();
       if ((mail == null || mail.isEmpty())
           && getAusgabeart().getValue() == Ausgabeart.MAIL)
       {
         ohneMail++;
       }
-      Mitglied m = r.getMitglied();
       String dokument = "Rechnung " + r.getID() + " vom "
           + Datum.formatDate(r.getDatum()) + " über "
           + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
@@ -851,11 +867,11 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
     if (ohneMail == 1)
     {
-      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+      text = ohneMail + " Rechnung hat keine Mail Adresse.";
     }
     else if (ohneMail > 1)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+      text = ohneMail + " Rechnungen haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
   }
