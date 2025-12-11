@@ -101,11 +101,12 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
       }
       report.closeTable();
 
-      report
-          .add(new Paragraph(
-              String.format("Anzahl %s: %d",
-                  mitgliedstyp.getBezeichnungPlural(), list.size()),
-              Reporter.getFreeSans(8)));
+      report.add(new Paragraph(
+          String.format("Anzahl %s: %d",
+              mitgliedstyp == null ? "Nicht-Mitglieder"
+                  : mitgliedstyp.getBezeichnungPlural(),
+              list.size()),
+          Reporter.getFreeSans(8)));
 
       report.addParams(params);
       report.close();
