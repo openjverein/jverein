@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Locale;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -40,8 +38,6 @@ import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
-import de.jost_net.JVerein.io.WirtschaftsplanCSV;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -49,7 +45,6 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -61,12 +56,8 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
@@ -572,79 +563,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
         storeNodes(currentNode.getChildren(), id, art);
       }
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  public void starteAuswertung(String type) throws ApplicationException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    //
-    Settings settings = new Settings(this.getClass());
-    //
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && !path.isEmpty())
-    {
-      fd.setFilterPath(path);
-    }
-
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAN_DATEINAME, this) + type);
-
-    final String s = fd.open();
-
-    if (s == null || s.isEmpty())
-    {
-      return;
-    }
-
-    final File file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
-
-    List<WirtschaftsplanNode> einnahmenList;
-    List<WirtschaftsplanNode> ausgabenList;
-
-    try
-    {
-      einnahmenList = (List<WirtschaftsplanNode>) einnahmen.getItems();
-      ausgabenList = (List<WirtschaftsplanNode>) ausgaben.getItems();
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(String
-          .format("Fehler beim Erstellen der Reports: %s", e.getMessage()));
-    }
-
-    BackgroundTask task = new BackgroundTask()
-    {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        switch (type)
-        {
-          case AUSWERTUNG_CSV:
-            new WirtschaftsplanCSV(einnahmenList, ausgabenList, file);
-            break;
-          default:
-            GUI.getStatusBar().setErrorText(
-                "Report konnte nicht erzeugt werden! Das Format ist unbekannt!");
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(task);
   }
 
   public void checkDate() throws ApplicationException

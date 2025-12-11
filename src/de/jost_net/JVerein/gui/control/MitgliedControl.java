@@ -2647,12 +2647,12 @@ public class MitgliedControl extends FilterControl implements Savable
     ArrayList<Mitglied> list = null;
     Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(
         Mitgliedstypen.NICHTMITGLIED).getValue();
-    if (mt == null)
+    int id = 0;
+    if (mt != null)
     {
-      GUI.getStatusBar().setErrorText("Bitte Mitgliedstyp auswählen");
-      return;
+      id = Integer.parseInt(mt.getID());
     }
-    list = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()), sort);
+    list = new MitgliedQuery(this).get(id, sort);
     try
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);

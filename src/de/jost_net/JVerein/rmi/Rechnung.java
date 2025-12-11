@@ -143,4 +143,8 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public Date getVersanddatum() throws RemoteException;
 
   public void setVersanddatum(Date datum) throws RemoteException;
+
+  public Mitglied getZahler() throws RemoteException;
+
+  void setZahler(Mitglied zahler) throws RemoteException;
 }

@@ -173,9 +173,9 @@ public class ZipMailer
               Lastschrift ls = null;
 
               // Mitglied Map hinzufügen
-              Mitglied m = (Mitglied) Einstellungen.getDBService()
+              Mitglied mitgliedMap = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
-              map = new MitgliedMap().getMap(m, map);
+              Mitglied mitgliedMail = mitgliedMap;
 
               switch (art.toLowerCase().trim())
               {
@@ -183,12 +183,18 @@ public class ZipMailer
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
+                  // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
+                  // das Mitglied selbst für die Map verwenden
+                  mitgliedMap = re.getMitglied();
                   versand = (IVersand) re;
                   break;
                 case "mahnung":
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
                   map = new RechnungMap().getMap(re, map);
+                  // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
+                  // das Mitglied selbst für die Map verwenden
+                  mitgliedMap = re.getMitglied();
                   break;
                 case "spendenbescheinigung":
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
@@ -211,6 +217,9 @@ public class ZipMailer
                   Logger.error("Zipmailer Map nicht implementiert: " + art);
                   break;
               }
+              // Mitglied Map hinzufügen
+              map = new MitgliedMap().getMap(mitgliedMap, map);
+
               VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
@@ -232,32 +241,34 @@ public class ZipMailer
               {
                 case "rechnung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                      + ".pdf";
                   break;
                 case "mahnung":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, m) + ".pdf";
+                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                      + ".pdf";
                   break;
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                      m) + ".pdf";
+                      mitgliedMap) + ".pdf";
                   break;
                 case "lastschrift":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls, m)
-                      + ".pdf";
+                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
+                      mitgliedMap) + ".pdf";
                   break;
                 case "freiesformular":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-                      dateiname.substring(0, dateiname.lastIndexOf('.')), m)
-                      + ".pdf";
+                      dateiname.substring(0, dateiname.lastIndexOf('.')),
+                      mitgliedMap) + ".pdf";
                   break;
                 case "kontoauszug":
                   finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, m)
-                      + ".pdf";
+                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+                      mitgliedMap) + ".pdf";
                   break;
                 default:
                   StringWriter wdateiname = new StringWriter();
@@ -284,7 +295,7 @@ public class ZipMailer
                       anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
-                // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
+                // Mail erfolgreich versendet, erst danach trat ein Fehler auf.
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
@@ -302,7 +313,7 @@ public class ZipMailer
 
                 MailEmpfaenger me = (MailEmpfaenger) Einstellungen
                     .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(m);
+                me.setMitglied(mitgliedMail);
                 me.setMail(ml);
                 me.setVersand(new Timestamp(new Date().getTime()));
                 me.store();

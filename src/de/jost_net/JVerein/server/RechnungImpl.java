@@ -308,6 +308,10 @@ public class RechnungImpl extends AbstractJVereinDBObject
     {
       return Mitglied.class;
     }
+    if ("zahler".equals(field))
+    {
+      return Mitglied.class;
+    }
     return null;
   }
 
@@ -349,12 +353,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
       throws RemoteException, ApplicationException
   {
     Mitglied mitglied = sollb.getZahler();
-
     if (mitglied == null)
     {
       throw new ApplicationException("Sollbuchung enthält keinen Zahler.");
     }
-    setMitglied(Integer.parseInt(mitglied.getID()));
+    // Es wir die ID des Mitglieds eingetragen, aber die Daten des Zahlers
+    setMitglied(Integer.parseInt(sollb.getMitgliedId()));
     setPersonenart(mitglied.getPersonenart());
     setAnrede(mitglied.getAnrede());
     setTitel(mitglied.getTitel());
@@ -378,6 +382,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     setZahlungsweg(sollb.getZahlungsweg());
     setBetrag(sollb.getBetrag());
     setKommentar("");
+    setZahler(mitglied);
   }
 
   @Override
@@ -478,6 +483,22 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public Date getVersanddatum() throws RemoteException
   {
     return (Date) getAttribute("versanddatum");
+  }
+
+  public void setZahler(Mitglied zahler) throws RemoteException
+  {
+    setAttribute("zahler", zahler);
+  }
+
+  @Override
+  public Mitglied getZahler() throws RemoteException
+  {
+    Object o = getAttribute("zahler");
+    if (o == null)
+    {
+      return getMitglied();
+    }
+    return (Mitglied) o;
   }
 
   @Override
