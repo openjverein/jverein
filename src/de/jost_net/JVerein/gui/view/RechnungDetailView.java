@@ -48,12 +48,12 @@ public class RechnungDetailView extends AbstractDetailView
     left.addInput(control.getMitglied());
     left.addInput(control.getZahler());
     left.addInput(control.getBetrag());
-    left.addInput(control.getRechnungFormular());
-    left.addInput(control.getKommentar());
     left.addInput(control.getPersonenart());
+    left.addInput(control.getGeschlecht());
+    left.addInput(control.getRechnungFormular());
+    left.addLabelPair("Versand Datum", control.getVersanddatum());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getGeschlecht());
     middle.addInput(control.getAnrede());
     middle.addInput(control.getTitel());
     middle.addInput(control.getName());
@@ -71,7 +71,7 @@ public class RechnungDetailView extends AbstractDetailView
     rigth.addInput(control.getMandatid());
     rigth.addInput(control.getZahlungsweg());
     rigth.addInput(control.getLeitwegID());
-    rigth.addLabelPair("Versand Datum", control.getVersanddatum());
+    rigth.addInput(control.getKommentar());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
     cont.addPart(control.getSollbuchungPositionListPart());
