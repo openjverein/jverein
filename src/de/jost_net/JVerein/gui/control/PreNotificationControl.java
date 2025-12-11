@@ -492,6 +492,10 @@ public class PreNotificationControl extends DruckMailControl
                 empf.store();
               }
 
+              // Als versendet markieren
+              ls.setVersanddatum(new Date());
+              ls.store();
+
               sentCount++;
               monitor.log(ls.getEmail() + " - versendet");
             }
