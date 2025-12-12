@@ -163,7 +163,6 @@ public class WirtschaftsplanNode
     istIt.leftJoin("buchung",
         "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
         wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
-
     if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
       if ((Boolean) Einstellungen
