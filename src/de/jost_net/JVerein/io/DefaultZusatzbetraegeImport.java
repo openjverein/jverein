@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
@@ -145,7 +146,8 @@ public class DefaultZusatzbetraegeImport implements Importer
 
       int anz = 0;
       String mitgliedIdString = "";
-      int zeilen = (int) Files.lines(Paths.get(file.getPath())).count();
+      int zeilen = (int) Files
+          .lines(Paths.get(file.getPath()), Charset.forName(encoding)).count();
       try
       {
         DBTransaction.starten();
