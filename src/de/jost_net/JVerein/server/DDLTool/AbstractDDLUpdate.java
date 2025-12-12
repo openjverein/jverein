@@ -233,6 +233,38 @@ public abstract class AbstractDDLUpdate implements IDDLUpdate
     return "";
   }
 
+  public String renameTable(String tableold, String tablenew)
+      throws ApplicationException
+  {
+    switch (drv)
+    {
+      case H2:
+        return "ALTER TABLE IF EXISTS " + tableold + " RENAME TO " + tablenew
+            + ";\n";
+      case MYSQL:
+      {
+        // Prüfen, ob die Tabelle bereits existeiert, ist bei MySQL leider nicht
+        // mehr per SQL möglich
+        try
+        {
+          ResultSet meta = conn.getMetaData().getTables(conn.getCatalog(), null,
+              tablenew, new String[] { "TABLE" });
+          if (meta.next())
+          {
+            return "";
+          }
+        }
+        catch (SQLException e)
+        {
+          throw new ApplicationException("Fehler beim Abfragen der Metadaten",
+              e);
+        }
+        return "ALTER TABLE " + tableold + " RENAME " + tablenew + ";\n";
+      }
+    }
+    return "";
+  }
+
   public String renameColumn(String table, String columnold, Column colnew)
       throws ApplicationException
   {

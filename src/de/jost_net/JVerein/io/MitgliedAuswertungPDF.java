@@ -62,7 +62,8 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
           130, BaseColor.LIGHT_GRAY);
       report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
           BaseColor.LIGHT_GRAY);
-      if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
+      if (mitgliedstyp != null
+          && mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
       {
         report
             .addHeaderColumn(
@@ -129,7 +130,8 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
+        if (mitgliedstyp != null
+            && mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
         {
           report.addColumn(zelle, Element.ALIGN_LEFT);
         }
@@ -168,8 +170,11 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
       }
       report.closeTable();
 
-      report.add(new Paragraph(String.format("Anzahl %d: %s", list.size(),
-          mitgliedstyp.getBezeichnungPlural()), Reporter.getFreeSans(8)));
+      report.add(new Paragraph(
+          String.format("Anzahl %d: %s", list.size(),
+              mitgliedstyp == null ? "Nicht-Mitglieder"
+                  : mitgliedstyp.getBezeichnungPlural()),
+          Reporter.getFreeSans(8)));
 
       report.addParams(params);
       report.closeTable();
