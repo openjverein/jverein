@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
@@ -43,6 +44,7 @@ import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -131,6 +133,8 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextAreaInput kommentar;
 
+  private DateInput versanddatum;
+
   private TextInput zahler;
 
   public enum TYP
@@ -154,8 +158,10 @@ public class RechnungControl extends DruckMailControl implements Savable
       return rechnungList;
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
-    rechnungList = new JVereinTablePart(rechnungen, null);
+    rechnungList = new AutoUpdateTablePart(rechnungen, null);
     rechnungList.addColumn("Nr", "id-int");
+    rechnungList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Rechnungsdatum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Mitglied", "mitglied");
@@ -271,6 +277,19 @@ public class RechnungControl extends DruckMailControl implements Savable
   {
     DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
         .createList(Rechnung.class);
+
+    if (suchversand != null && suchversand.getValue() != null)
+    {
+      switch ((SuchVersand) suchversand.getValue())
+      {
+        case VERSAND:
+          rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
+          break;
+      }
+    }
 
     if (datumvon != null && datumvon.getValue() != null)
     {
@@ -705,6 +724,16 @@ public class RechnungControl extends DruckMailControl implements Savable
     return leitwegID;
   }
 
+  public DateInput getVersanddatum() throws RemoteException
+  {
+    if (versanddatum != null)
+    {
+      return versanddatum;
+    }
+    versanddatum = new DateInput(getRechnung().getVersanddatum());
+    return versanddatum;
+  }
+
   public Part getSollbuchungPositionListPart() throws RemoteException
   {
     if (buchungList != null)
@@ -795,6 +824,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     Rechnung re = getRechnung();
     re.setFormular((Formular) getRechnungFormular().getValue());
     re.setKommentar((String) getKommentar().getValue());
+    re.setVersanddatum((Date) getVersanddatum().getValue());
     return re;
   }
 

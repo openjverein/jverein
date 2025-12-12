@@ -55,11 +55,12 @@ public class RechnungMailView extends AbstractView
       SimpleContainer left = new SimpleContainer(cl.getComposite());
       left.addInput(control.getSuchname());
       left.addInput(control.getMailauswahl());
-      left.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      left.addInput(control.getSuchVersand());
 
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
       middle.addInput(control.getDifferenz());
       middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
+      middle.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
       right.addInput(control.getDatumvon());

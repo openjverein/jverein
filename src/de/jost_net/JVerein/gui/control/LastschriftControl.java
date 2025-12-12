@@ -28,8 +28,13 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
+import de.jost_net.JVerein.keys.SuchVersand;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -37,6 +42,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -46,8 +52,9 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
-public class LastschriftControl extends FilterControl
+public class LastschriftControl extends FilterControl implements Savable
 {
 
   private TextInput personenart;
@@ -90,6 +97,8 @@ public class LastschriftControl extends FilterControl
 
   private JVereinTablePart lastschriftList;
 
+  private DateInput versanddatum;
+
   public LastschriftControl(AbstractView view)
   {
     super(view);
@@ -103,8 +112,10 @@ public class LastschriftControl extends FilterControl
     {
       return lastschriftList;
     }
-    lastschriftList = new JVereinTablePart(getLastschriften(), null);
+    lastschriftList = new AutoUpdateTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
+    lastschriftList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
     lastschriftList.addColumn("Vorname", "vorname");
@@ -214,6 +225,18 @@ public class LastschriftControl extends FilterControl
     {
       lastschriften.addFilter("abrechnungslauf >= ?",
           new Object[] { (Integer) getIntegerAusw().getValue() });
+    }
+    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
+    {
+      switch ((SuchVersand) suchversand.getValue())
+      {
+        case VERSAND:
+          lastschriften.addFilter("versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          lastschriften.addFilter("versanddatum IS NULL");
+          break;
+      }
     }
 
     lastschriften.setOrder("ORDER BY name");
@@ -488,5 +511,48 @@ public class LastschriftControl extends FilterControl
     geschlecht.setName("Geschlecht");
     geschlecht.setEnabled(false);
     return geschlecht;
+  }
+
+  public DateInput getVersanddatum() throws RemoteException
+  {
+    if (versanddatum != null)
+    {
+      return versanddatum;
+    }
+    versanddatum = new DateInput(getLastschrift().getVersanddatum());
+    return versanddatum;
+  }
+
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Lastschrift la = getLastschrift();
+    la.setVersanddatum((Date) getVersanddatum().getValue());
+    return la;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler bei speichern der Rechnung";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+  public ButtonRtoL getDruckUndMailButton()
+  {
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", c -> {
+      Lastschrift la = getLastschrift();
+      GUI.startView(PreNotificationMailView.class, new Lastschrift[] { la });
+    }, getLastschrift(), false, "document-print.png");
+    return b;
   }
 }

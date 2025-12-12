@@ -60,6 +60,8 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
         control.getMailauswahl().getText());
     map.put(SpendenbescheinigungListeFilterVar.SPENDENART.getName(),
         control.getSuchSpendenart().getText());
+    map.put(SpendenbescheinigungListeFilterVar.VERSAND.getName(),
+        control.getSuchVersand().getText());
 
     return map;
   }
@@ -89,6 +91,7 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
     map.put(SpendenbescheinigungListeFilterVar.ZEILE2.getName(), "Zeile2");
     map.put(SpendenbescheinigungListeFilterVar.MAIL.getName(), "Alle");
     map.put(SpendenbescheinigungListeFilterVar.SPENDENART.getName(), "Alle");
+    map.put(SpendenbescheinigungListeFilterVar.VERSAND.getName(), "Alle");
 
     return map;
   }

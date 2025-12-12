@@ -36,6 +36,8 @@ import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -62,6 +64,14 @@ public class PreNotificationMailView extends AbstractView
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
       group.addInput(control.getAbrechnungslaufAusw(10));
+      group.addInput(control.getSuchVersand());
+    }
+    else if (this.getCurrentObject() instanceof Abrechnungslauf)
+    {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
+      group.addInput(control
+          .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
+      group.addInput(control.getSuchVersand());
     }
 
     TabFolder folder = control.getFolder(getParent());

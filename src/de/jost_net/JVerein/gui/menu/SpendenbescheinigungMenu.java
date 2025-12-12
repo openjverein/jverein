@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.Adressblatt;
@@ -44,6 +45,8 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(SpendenbescheinigungDetailView.class, part),
         "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new VersandAction(), "office-calendar.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
@@ -57,5 +60,4 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
   }
-
 }

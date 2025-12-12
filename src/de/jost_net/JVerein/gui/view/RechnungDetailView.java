@@ -48,29 +48,30 @@ public class RechnungDetailView extends AbstractDetailView
     left.addInput(control.getMitglied());
     left.addInput(control.getZahler());
     left.addInput(control.getBetrag());
-    left.addInput(control.getRechnungFormular());
-    left.addInput(control.getKommentar());
     left.addInput(control.getPersonenart());
+    left.addInput(control.getGeschlecht());
+    left.addInput(control.getRechnungFormular());
+    left.addLabelPair("Versand Datum", control.getVersanddatum());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getGeschlecht());
     middle.addInput(control.getAnrede());
     middle.addInput(control.getTitel());
     middle.addInput(control.getName());
     middle.addInput(control.getVorname());
     middle.addInput(control.getStrasse());
     middle.addInput(control.getAdressierungszusatz());
-    middle.addInput(control.getLeitwegID());
+    middle.addInput(control.getPlz());
+    middle.addInput(control.getOrt());
+    middle.addInput(control.getStaat());
 
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
-    rigth.addInput(control.getPlz());
-    rigth.addInput(control.getOrt());
-    rigth.addInput(control.getStaat());
     rigth.addInput(control.getIban());
     rigth.addInput(control.getBic());
     rigth.addInput(control.getMandatdatum());
     rigth.addInput(control.getMandatid());
     rigth.addInput(control.getZahlungsweg());
+    rigth.addInput(control.getLeitwegID());
+    rigth.addInput(control.getKommentar());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
     cont.addPart(control.getSollbuchungPositionListPart());
