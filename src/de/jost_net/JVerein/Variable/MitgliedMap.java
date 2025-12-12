@@ -133,7 +133,6 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.MANDATDATUM_F.getName(),
         fromDate(mitglied.getMandatDatum()));
     map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
-    map.put(MitgliedVar.BIC.getName(), mitglied.getBic());
     map.put(MitgliedVar.EINGABEDATUM.getName(),
         Datum.formatDate(mitglied.getEingabedatum()));
     map.put(MitgliedVar.EINGABEDATUM_F.getName(),
@@ -167,7 +166,24 @@ public class MitgliedMap extends AbstractMap
     {
       map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
     }
-    map.put(MitgliedVar.BANKNAME.getName(), getBankname(mitglied));
+    String bic = mitglied.getBic();
+    map.put(MitgliedVar.BIC.getName(), bic);
+    if (bic != null)
+    {
+      Bank bank = Banken.getBankByBIC(bic);
+      if (bank != null)
+      {
+        String name = bank.getBezeichnung();
+        if (name != null)
+        {
+          map.put(MitgliedVar.BANKNAME.getName(), name.trim());
+        }
+      }
+    }
+    else
+    {
+      map.put(MitgliedVar.BANKNAME.getName(), null);
+    }
     map.put(MitgliedVar.KONTO_KONTOINHABER.getName(),
         mitglied.getKontoinhaber());
     map.put(MitgliedVar.KONTOINHABER.getName(),
@@ -352,30 +368,6 @@ public class MitgliedMap extends AbstractMap
   {
     key = key.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("__", "_");
     return StringUtils.strip(key, "_");
-  }
-
-  private Object getBankname(Mitglied m) throws RemoteException
-  {
-    String bic = m.getBic();
-    if (null != bic)
-    {
-      Bank bank = Banken.getBankByBIC(bic);
-      if (null != bank)
-      {
-        return formatBankname(bank);
-      }
-    }
-    return null;
-  }
-
-  private String formatBankname(Bank bank)
-  {
-    String name = bank.getBezeichnung();
-    if (null != name)
-    {
-      return name.trim();
-    }
-    return null;
   }
 
   @SuppressWarnings("deprecation")

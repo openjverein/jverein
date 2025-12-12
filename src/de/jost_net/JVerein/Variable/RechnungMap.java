@@ -169,8 +169,24 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
     map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
     map.put(RechnungVar.MANDATDATUM_F.getName(), fromDate(re.getMandatDatum()));
-    map.put(RechnungVar.BIC.getName(), re.getBIC());
-    map.put(RechnungVar.BANKNAME.getName(), getBankname(re));
+    String bic = re.getBIC();
+    map.put(RechnungVar.BIC.getName(), bic);
+    if (bic != null)
+    {
+      Bank bank = Banken.getBankByBIC(bic);
+      if (bank != null)
+      {
+        String name = bank.getBezeichnung();
+        if (name != null)
+        {
+          map.put(RechnungVar.BANKNAME.getName(), name.trim());
+        }
+      }
+    }
+    else
+    {
+      map.put(RechnungVar.BANKNAME.getName(), null);
+    }
     map.put(RechnungVar.IBAN.getName(),
         new IBANFormatter().format(re.getIBAN()));
     map.put(RechnungVar.IBANMASKIERT.getName(),
@@ -218,30 +234,6 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.KOMMENTAR.getName(), re.getKommentar());
 
     return map;
-  }
-
-  private Object getBankname(Rechnung re) throws RemoteException
-  {
-    String bic = re.getBIC();
-    if (null != bic)
-    {
-      Bank bank = Banken.getBankByBIC(bic);
-      if (null != bank)
-      {
-        return formatBankname(bank);
-      }
-    }
-    return null;
-  }
-
-  private String formatBankname(Bank bank)
-  {
-    String name = bank.getBezeichnung();
-    if (null != name)
-    {
-      return name.trim();
-    }
-    return null;
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
