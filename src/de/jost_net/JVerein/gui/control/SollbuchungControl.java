@@ -24,8 +24,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -148,8 +146,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private CheckboxInput spezialsuche = null;
 
-  // private CheckboxInput offenePosten = null;
-
   private MitgliedskontoMessageConsumer mc = null;
 
   private boolean umwandeln;
@@ -169,6 +165,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
+  // Aufruf durch SollbuchungNeuDialog
   public SollbuchungControl(AbstractView view, Sollbuchung sollb)
   {
     super(view);
@@ -216,19 +213,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.datum.setTitle("Datum");
     this.datum.setText("Bitte Datum wählen");
-    this.datum.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) datum.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     this.datum.setMandatory(true);
     datum.setEnabled(editable);
     return datum;
@@ -299,15 +283,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
     spezialsuche = new CheckboxInput(false);
     spezialsuche.setName("Erlaube Teilstring Vergleich");
-    spezialsuche.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        refreshMitgliederList();
-      }
-    });
+    spezialsuche.addListener(e -> refreshMitgliederList());
 
     return spezialsuche;
   }
@@ -685,8 +661,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         try
         {
           saveFilterSettings();
-          String pdfMode = (String) getPdfModus().getValue();
-          new Kontoauszug(getMitglieder(currentObject), control, pdfMode);
+          new Kontoauszug(getMitglieder(currentObject), control,
+              (String) getPdfModus().getValue());
         }
         catch (ApplicationException ae)
         {
@@ -725,7 +701,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   public static class MitgliedskontoTreeFormatter implements TreeFormatter
   {
-
     @Override
     public void format(TreeItem item)
     {
@@ -818,7 +793,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public String getInfoText(Object selection)
+  public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;
     String text = "";
@@ -836,29 +811,22 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       return "";
     }
 
-    try
+    // Aufruf aus Mitglieder View
+    if (mitglieder != null)
     {
-      // Aufruf aus Mitglieder View
-      if (mitglieder != null)
+      text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
+      String fehlen = "";
+      for (Mitglied m : mitglieder)
       {
-        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
-        String fehlen = "";
-        for (Mitglied m : mitglieder)
+        if (m.getEmail() == null || m.getEmail().isEmpty())
         {
-          if (m.getEmail() == null || m.getEmail().isEmpty())
-          {
-            fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
-          }
-        }
-        if (fehlen.length() > 0)
-        {
-          text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
       }
-    }
-    catch (Exception ex)
-    {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
     }
     return text;
   }

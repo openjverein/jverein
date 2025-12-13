@@ -80,7 +80,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -476,32 +475,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
   public ButtonRtoL getDruckUndMailButton()
   {
 
-    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Spendenbescheinigung spb = getSpendenbescheinigung();
-        try
-        {
-          if (spb.isNewObject())
-          {
-            GUI.getStatusBar()
-                .setErrorText("Spendenbescheinigung bitte erst speichern!");
-            return;
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler bei der Aufbereitung der Spendenbescheinigung");
-        }
-        GUI.startView(SpendenbescheinigungMailView.class,
-            new Spendenbescheinigung[] { (Spendenbescheinigung) spb });
-      }
-    }, getSpendenbescheinigung(), false, "document-print.png");
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail",
+        c -> GUI.startView(SpendenbescheinigungMailView.class,
+            new Spendenbescheinigung[] { getSpendenbescheinigung() }),
+        getSpendenbescheinigung(), false, "document-print.png");
     return b;
   }
 
@@ -514,14 +491,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList = new JVereinTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Spender", "mitglied");
-    spbList.addColumn("Spendenart", "spendenart", new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        return new Spendenart((Integer) o).getText();
-      }
-    });
+    spbList.addColumn("Spendenart", "spendenart",
+        o -> new Spendenart((Integer) o).getText());
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",
@@ -750,49 +721,43 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   // Mail/Drucken View
   @Override
-  public String getInfoText(Object spbArray)
+  public String getInfoText(Object spbArray) throws RemoteException
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
     String text = "Es wurden " + spbArr.length
         + " Spendenbescheinigungen ausgewählt";
     String fehlen = "";
     String keinMitglied = "";
-    try
+
+    for (Spendenbescheinigung spb : spbArr)
     {
-      for (Spendenbescheinigung spb : spbArr)
+      Mitglied m = spb.getMitglied();
+      if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
       {
-        Mitglied m = spb.getMitglied();
-        if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
-        {
-          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
-        }
-        if (spb.getMitglied() == null)
-        {
-          keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
-              + spb.getZeile2() + ", " + spb.getZeile3();
-        }
+        fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
       }
-      if (fehlen.length() > 0)
+      if (spb.getMitglied() == null)
       {
-        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
-      }
-      if (keinMitglied.length() > 0)
-      {
-        text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
-            + keinMitglied;
+        keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
+            + spb.getZeile2() + ", " + spb.getZeile3();
       }
     }
-    catch (Exception ex)
+    if (fehlen.length() > 0)
     {
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim Ermitteln der Mitglieder aus den Spendenbescheinigungen");
+      text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
     }
+    if (keinMitglied.length() > 0)
+    {
+      text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
+          + keinMitglied;
+    }
+
     return text;
   }
 
   public Button getStartButton(final Object currentObject)
   {
-    Button button = new Button("Starten", new Action()
+    return new Button("Starten", new Action()
     {
 
       @Override
@@ -801,12 +766,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-
           Spendenbescheinigung[] spbArray = getSpbArray(currentObject);
+          new SpendenbescheinigungAusgabe((String) mailtext.getValue(),
+              (Adressblatt) adressblatt.getValue(),
+              ((Ausgabeart) ausgabeart.getValue()) == Ausgabeart.DRUCK)
+                  .aufbereitung(spbArray);
 
-          generatePdf((String) mailtext.getValue(),
-              (Adressblatt) adressblatt.getValue(), spbArray,
-              (Ausgabeart) ausgabeart.getValue());
           if ((Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
           {
             sendeMail((String) mailbetreff.getValue(),
@@ -824,17 +789,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
       }
     }, null, true, "walking.png");
-    return button;
-  }
 
-  private void generatePdf(String text, Adressblatt adressblatt,
-      Spendenbescheinigung[] spba, Ausgabeart ausgabeart)
-      throws ApplicationException
-  {
-    boolean open = false;
-    if (ausgabeart == Ausgabeart.DRUCK)
-      open = true;
-    new SpendenbescheinigungAusgabe(text, adressblatt, open).aufbereitung(spba);
   }
 
   private void sendeMail(final String betr, String text,
@@ -883,31 +838,14 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   public Button getPDFExportButton()
   {
-    Button b = new Button("PDF", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteExport(ExportPDF);
-      }
-    }, null, false, "file-pdf.png");
-    // button
-    return b;
+    return new Button("PDF", c -> starteExport(ExportPDF), null, false,
+        "file-pdf.png");
   }
 
   public Button getCSVExportButton()
   {
-    Button b = new Button("CSV", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteExport(ExportCSV);
-      }
-    }, null, false, "xsd.png");
-    // button
-    return b;
+    return new Button("CSV", c -> starteExport(ExportCSV), null, false,
+        "xsd.png");
   }
 
   private void starteExport(String type) throws ApplicationException
@@ -1097,63 +1035,37 @@ public class SpendenbescheinigungControl extends DruckMailControl
             new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
       }
     }
-    if (ohneMail > 0 && ohneMitglied == 0)
+
+    if (ohneMail > 0)
     {
-      text = getMailText(ohneMail, false);
+      text = ohneMail + " Mitglied" + (ohneMail > 1 ? "er haben" : " hat")
+          + " keine Mail Adresse";
+      if (ohneMitglied == 0)
+      {
+        text += ".";
+      }
+      else
+      {
+        text += " und" + ohneMitglied + " Spendenbescheinigung"
+            + (ohneMitglied > 1 ? "en haben" : " hat")
+            + " kein Mitglied gesetzt.";
+      }
     }
-    if (ohneMail == 0 && ohneMitglied > 0)
+    else if (ohneMitglied > 0)
     {
-      text = getMitgliedText(ohneMitglied,
-          getAusgabeart().getValue() != Ausgabeart.MAIL);
-    }
-    if (ohneMail > 0 && ohneMitglied > 0)
-    {
-      text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
+      text = ohneMitglied + " Spendenbescheinigung"
+          + (ohneMitglied > 1 ? "en haben" : " hat") + " kein Mitglied gesetzt";
+      if (getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        text += ".";
+      }
+      else
+      {
+        text += ", " + (ohneMitglied > 1 ? "werden" : "wird")
+            + " aber gedruckt.";
+      }
+
     }
     return new DruckMailEmpfaenger(liste, text);
-  }
-
-  private String getMailText(int ohneMail, boolean druck)
-  {
-    String text = "";
-    String zusatz = ".";
-    if (druck)
-    {
-      zusatz = " und ";
-    }
-    if (ohneMail == 1)
-    {
-      text = ohneMail + " Mitglied hat keine Mail Adresse" + zusatz;
-    }
-    else if (ohneMail > 1)
-    {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse" + zusatz;
-    }
-    return text;
-  }
-
-  private String getMitgliedText(int ohneMitglied, boolean druck)
-  {
-    String text = "";
-    String zusatz = ".";
-    if (druck && ohneMitglied == 1)
-    {
-      zusatz = ", wird aber gedruckt.";
-    }
-    if (druck && ohneMitglied > 1)
-    {
-      zusatz = ", werden aber gedruckt.";
-    }
-    if (ohneMitglied == 1)
-    {
-      text = ohneMitglied + " Spendenbescheinigung hat kein Mitglied gesetzt"
-          + zusatz;
-    }
-    else if (ohneMitglied > 1)
-    {
-      text = ohneMitglied
-          + " Spendenbescheinigungen haben kein Mitglied gesetzt" + zusatz;
-    }
-    return text;
   }
 }

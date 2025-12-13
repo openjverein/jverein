@@ -116,7 +116,7 @@ public class FreieFormulareControl extends DruckMailControl
   }
 
   @Override
-  public String getInfoText(Object selection)
+  public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;
     String text = "";
@@ -134,29 +134,22 @@ public class FreieFormulareControl extends DruckMailControl
       return "";
     }
 
-    try
+    // Aufruf aus Mitglieder View
+    if (mitglieder != null)
     {
-      // Aufruf aus Mitglieder View
-      if (mitglieder != null)
+      text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
+      String fehlen = "";
+      for (Mitglied m : mitglieder)
       {
-        text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
-        String fehlen = "";
-        for (Mitglied m : mitglieder)
+        if (m.getEmail() == null || m.getEmail().isEmpty())
         {
-          if (m.getEmail() == null || m.getEmail().isEmpty())
-          {
-            fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
-          }
-        }
-        if (fehlen.length() > 0)
-        {
-          text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
       }
-    }
-    catch (Exception ex)
-    {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
     }
     return text;
   }

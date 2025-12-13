@@ -616,7 +616,7 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   @Override
-  public String getInfoText(Object selection)
+  public String getInfoText(Object selection) throws RemoteException
   {
     Lastschrift[] lastschrift = null;
     String text = "";
@@ -634,28 +634,21 @@ public class PreNotificationControl extends DruckMailControl
       return "";
     }
 
-    try
+    if (lastschrift != null)
     {
-      if (lastschrift != null)
+      text = "Es wurden " + lastschrift.length + " Lastschriften ausgewählt";
+      String fehlen = "";
+      for (Lastschrift l : lastschrift)
       {
-        text = "Es wurden " + lastschrift.length + " Lastschriften ausgewählt";
-        String fehlen = "";
-        for (Lastschrift l : lastschrift)
+        if (l.getEmail() == null || l.getEmail().isEmpty())
         {
-          if (l.getEmail() == null || l.getEmail().isEmpty())
-          {
-            fehlen = fehlen + "\n - " + l.getName() + ", " + l.getVorname();
-          }
-        }
-        if (fehlen.length() > 0)
-        {
-          text += "\nFolgende Lastschriften haben keine Mailadresse:" + fehlen;
+          fehlen = fehlen + "\n - " + l.getName() + ", " + l.getVorname();
         }
       }
-    }
-    catch (Exception ex)
-    {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Lastschriften haben keine Mailadresse:" + fehlen;
+      }
     }
     return text;
   }

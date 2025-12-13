@@ -50,10 +50,7 @@ public abstract class DruckMailControl extends FilterControl
 
   protected TextAreaInput mailtext = null;
 
-  public String getInfoText(Object selection)
-  {
-    return "";
-  }
+  abstract public String getInfoText(Object selection) throws RemoteException;
 
   public TextAreaInput getInfo() throws RemoteException
   {

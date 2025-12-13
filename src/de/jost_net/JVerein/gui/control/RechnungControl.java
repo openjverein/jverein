@@ -368,7 +368,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public String getInfoText(Object selection)
+  public String getInfoText(Object selection) throws RemoteException
   {
     Rechnung[] rechnungen = null;
     String text = "";
@@ -386,29 +386,22 @@ public class RechnungControl extends DruckMailControl implements Savable
       return "";
     }
 
-    try
+    if (rechnungen != null)
     {
-      if (rechnungen != null)
+      text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt";
+      String fehlen = "";
+      for (Rechnung re : rechnungen)
       {
-        text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt";
-        String fehlen = "";
-        for (Rechnung re : rechnungen)
+        Mitglied m = re.getMitglied();
+        if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          Mitglied m = re.getMitglied();
-          if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
-          {
-            fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
-          }
-        }
-        if (fehlen.length() > 0)
-        {
-          text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
       }
-    }
-    catch (Exception ex)
-    {
-      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
     }
     return text;
   }
@@ -763,34 +756,18 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   public ButtonRtoL getRechnungDruckUndMailButton()
   {
-
-    ButtonRtoL b = new ButtonRtoL("Druck und Mail", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Rechnung re = getRechnung();
-        GUI.startView(RechnungMailView.class, new Rechnung[] { (Rechnung) re });
-      }
-    }, getRechnung(), false, "document-print.png");
-    return b;
+    return new ButtonRtoL("Druck und Mail",
+        context -> GUI.startView(RechnungMailView.class,
+            new Rechnung[] { getRechnung() }),
+        getRechnung(), false, "document-print.png");
   }
 
   public ButtonRtoL getMahnungDruckUndMailButton()
   {
-
-    ButtonRtoL b = new ButtonRtoL("Mahnung Druck und Mail", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Rechnung re = getRechnung();
-        GUI.startView(MahnungMailView.class, new Rechnung[] { (Rechnung) re });
-      }
-    }, getRechnung(), false, "document-print.png");
-    return b;
+    return new ButtonRtoL("Mahnung Druck und Mail",
+        context -> GUI.startView(MahnungMailView.class,
+            new Rechnung[] { getRechnung() }),
+        getRechnung(), false, "document-print.png");
   }
 
   @Override
@@ -823,11 +800,11 @@ public class RechnungControl extends DruckMailControl implements Savable
       throws RemoteException, ApplicationException
   {
     Rechnung[] rechnungen = null;
-    if (currentObject != null && currentObject instanceof Rechnung[])
+    if (currentObject instanceof Rechnung[])
     {
       rechnungen = (Rechnung[]) currentObject;
     }
-    else if (currentObject != null && currentObject instanceof Rechnung)
+    else if (currentObject instanceof Rechnung)
     {
       rechnungen = (new Rechnung[] { (Rechnung) currentObject });
     }
