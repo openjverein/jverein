@@ -237,7 +237,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
               if (ret == YesNoCancelDialog.YES)
               {
                 Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung,
-                    sollb, true);
+                    sollb, false);
                 if (restbuchung != null)
                 {
                   YesNoDialog restbuchungDialog = new YesNoDialog(
@@ -300,7 +300,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
     catch (ApplicationException ae)
     {
       GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung der Sollbuchung " + ae.getMessage());
+          "Fehler bei der Zuordnung der Sollbuchung. " + ae.getMessage());
     }
     catch (Exception e)
     {

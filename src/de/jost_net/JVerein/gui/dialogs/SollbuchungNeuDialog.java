@@ -40,6 +40,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.logging.Logger;
 
 /**
  * Dialog zur Bearbeitung einer Splitbuchung.
@@ -278,7 +279,8 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     catch (Exception e)
     {
       String fehler = "Fehler beim speichern der Sollbuchung";
-      GUI.getStatusBar().setErrorText(fehler);
+      Logger.error(fehler, e);
+      GUI.getStatusBar().setErrorText(fehler + ": " + e.getMessage());
       DBTransaction.rollback();
       return false;
     }
