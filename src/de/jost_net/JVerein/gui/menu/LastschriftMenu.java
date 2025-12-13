@@ -48,7 +48,7 @@ public class LastschriftMenu extends ContextMenu
         new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
-        new StartViewAction(PreNotificationMailView.class),
+        new StartViewAction(PreNotificationMailView.class, true),
         "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));

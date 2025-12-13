@@ -195,8 +195,12 @@ public class PreNotificationControl extends DruckMailControl
     settings.setAttribute(settingsprefix + "ct1ausgabe",
         ((Ct1Ausgabe) ct1ausgabe.getValue()).getKey());
 
-    settings.setAttribute(settingsprefix + "faelligkeitsdatum",
-        new JVDateFormatDATETIME().format((Date) ausfuehrungsdatum.getValue()));
+    if (ausfuehrungsdatum != null && ausfuehrungsdatum.getValue() != null)
+    {
+      settings.setAttribute(settingsprefix + "faelligkeitsdatum",
+          new JVDateFormatDATETIME()
+              .format((Date) ausfuehrungsdatum.getValue()));
+    }
 
     settings.setAttribute(settingsprefix + "verwendungszweck",
         (String) getVerwendungszweck().getValue());
@@ -573,7 +577,7 @@ public class PreNotificationControl extends DruckMailControl
       if (lastschriften.size() == 0)
       {
         throw new ApplicationException(
-            "Für die gewählten Filterkriterien wurden keine Lastschrift gefunden.");
+            "Für die gewählten Filterkriterien wurde keine Lastschrift gefunden.");
       }
     }
     else if (currentObject instanceof Lastschrift)
@@ -612,6 +616,51 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   @Override
+  public String getInfoText(Object selection)
+  {
+    Lastschrift[] lastschrift = null;
+    String text = "";
+
+    if (selection instanceof Lastschrift)
+    {
+      lastschrift = new Lastschrift[] { (Lastschrift) selection };
+    }
+    else if (selection instanceof Lastschrift[])
+    {
+      lastschrift = (Lastschrift[]) selection;
+    }
+    else
+    {
+      return "";
+    }
+
+    try
+    {
+      if (lastschrift != null)
+      {
+        text = "Es wurden " + lastschrift.length + " Lastschriften ausgewählt";
+        String fehlen = "";
+        for (Lastschrift l : lastschrift)
+        {
+          if (l.getEmail() == null || l.getEmail().isEmpty())
+          {
+            fehlen = fehlen + "\n - " + l.getName() + ", " + l.getVorname();
+          }
+        }
+        if (fehlen.length() > 0)
+        {
+          text += "\nFolgende Lastschriften haben keine Mailadresse:" + fehlen;
+        }
+      }
+    }
+    catch (Exception ex)
+    {
+      GUI.getStatusBar().setErrorText("Fehler beim Ermitteln der Info");
+    }
+    return text;
+  }
+
+  @Override
   DruckMailEmpfaenger getDruckMailMitglieder(Object currentObject,
       String option) throws RemoteException, ApplicationException
   {
@@ -637,11 +686,11 @@ public class PreNotificationControl extends DruckMailControl
     if (ohneMail == 1)
 
     {
-      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+      text = ohneMail + " Lastschrift hat keine Mail Adresse.";
     }
     else if (ohneMail > 1)
     {
-      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+      text = ohneMail + " Lastschriften haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
   }

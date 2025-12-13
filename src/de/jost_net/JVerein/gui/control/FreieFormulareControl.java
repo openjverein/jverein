@@ -2,6 +2,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
@@ -58,6 +59,14 @@ public class FreieFormulareControl extends DruckMailControl
   private ArrayList<Mitglied> getMitglieder(Object object)
       throws RemoteException, ApplicationException
   {
+    if (object instanceof Mitglied)
+    {
+      object = new Mitglied[] { (Mitglied) object };
+    }
+    if (object instanceof Mitglied[])
+    {
+      return new ArrayList<Mitglied>(Arrays.asList((Mitglied[]) object));
+    }
     Mitgliedstyp mitgliedstyp = (Mitgliedstyp) getSuchMitgliedstyp(
         Mitgliedstypen.ALLE).getValue();
     int type = -1;
