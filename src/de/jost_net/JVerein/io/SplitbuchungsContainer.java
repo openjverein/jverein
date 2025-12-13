@@ -526,6 +526,30 @@ public class SplitbuchungsContainer
         }
       }
 
+      // Bei nur einem Eintrag ist kein Splitten nötig, wir können also die
+      // Daten direkt speichern
+      if (splitMap.size() == 1)
+      {
+        if (spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
+        }
+        if (klasseInBuchung && spArray.get(0).getBuchungsklasseId() != null)
+        {
+          buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+        }
+        // Wenn die Buchungsart gesetzt ist, auch die Steuer aus der Position
+        // nehmen, sonst kann es zu Fehlern beim Speichern kommen (zB. Steuer
+        // bei Spenden)
+        if (steuerInBuchung && spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setSteuer(spArray.get(0).getSteuer());
+        }
+        buchung.setSollbuchung(sollb);
+        buchung.store();
+        return null;
+      }
+
       // Das Splittbuchungen immmer eine Buchungsart haben müssen, ordnen wir
       // diejenige der ersten Position zu, wenn keine Buchungsart in der
       // Buchung vorhanden ist.
