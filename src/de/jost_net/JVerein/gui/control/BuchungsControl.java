@@ -191,7 +191,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private CheckboxInput verzicht;
 
-  private TextInput bezeichnungsachzuwendung;
+  private TextAreaInput bezeichnungsachzuwendung;
 
   private SelectInput herkunftspende;
 
@@ -641,14 +641,15 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return verzicht;
   }
 
-  public TextInput getBezeichnungSachzuwendung() throws RemoteException
+  public TextAreaInput getBezeichnungSachzuwendung() throws RemoteException
   {
     if (bezeichnungsachzuwendung != null)
     {
       return bezeichnungsachzuwendung;
     }
-    bezeichnungsachzuwendung = new TextInput(
-        getBuchung().getBezeichnungSachzuwendung(), 100);
+    bezeichnungsachzuwendung = new TextAreaInput(
+        getBuchung().getBezeichnungSachzuwendung(), 1000);
+    bezeichnungsachzuwendung.setHeight(50);
     bezeichnungsachzuwendung.setEnabled(editable);
     return bezeichnungsachzuwendung;
   }

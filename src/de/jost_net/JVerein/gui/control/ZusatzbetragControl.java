@@ -150,7 +150,8 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     werte.addElement("Aktive");
     werte.addElement("Noch nicht ausgeführt");
 
-    String sql = "select ausfuehrung from zusatzabbuchung where ausfuehrung is not null "
+    String sql = "select ausfuehrung from " + Zusatzbetrag.TABLE_NAME
+        + " where ausfuehrung is not null "
         + "group by ausfuehrung order by ausfuehrung desc";
     DBService service = Einstellungen.getDBService();
 
@@ -359,7 +360,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     DBIterator<Zusatzbetrag> zusatzbetraege = Einstellungen.getDBService()
         .createList(Zusatzbetrag.class);
     zusatzbetraege.join("mitglied");
-    zusatzbetraege.addFilter("zusatzabbuchung.mitglied = mitglied.id");
+    zusatzbetraege.addFilter(Zusatzbetrag.T_MITGLIED + " = mitglied.id");
     if (this.ausfuehrungSuch.getText().equals("Alle"))
     {
       // nichts tun

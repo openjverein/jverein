@@ -47,7 +47,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   protected String getTableName()
   {
-    return "zusatzabbuchung";
+    return TABLE_NAME;
   }
 
   @Override
@@ -181,7 +181,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Mitglied getMitglied() throws RemoteException
   {
-    Object o = super.getAttribute("mitglied");
+    Object o = super.getAttribute(MITGLIED);
     if (o == null)
     {
       return null;
@@ -199,7 +199,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", mitglied);
+    setAttribute(MITGLIED, mitglied);
   }
 
   @Override
@@ -301,7 +301,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Object o = super.getAttribute("buchungsart");
+    Object o = super.getAttribute(BUCHUNGSART);
     if (o == null)
     {
       return null;
@@ -319,7 +319,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
   @Override
   public Long getBuchungsartId() throws RemoteException
   {
-    return (Long) super.getAttribute("buchungsart");
+    return (Long) super.getAttribute(BUCHUNGSART);
   }
 
   @Override
@@ -354,11 +354,11 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     {
       return getIntervallText();
     }
-    if (fieldName.equals("mitglied"))
+    if (fieldName.equals(MITGLIED))
     {
       return getMitglied();
     }
-    if (fieldName.equals("buchungsart"))
+    if (fieldName.equals(BUCHUNGSART))
     {
       return getBuchungsart();
     }

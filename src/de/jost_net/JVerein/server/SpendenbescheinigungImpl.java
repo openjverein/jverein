@@ -380,7 +380,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
 
   /**
    * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine echte
-   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Gelspende handelt
+   * Geldspende ist. Dies ist der Fall, wenn es sich um eine Geldspende handelt
    * bei der bei keiner Buchung das Flag Erstattungsverzicht gesetzt ist.
    * 
    * @return Flag, ob echte Geldspende
@@ -389,8 +389,10 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   @Override
   public boolean isEchteGeldspende() throws RemoteException
   {
-    if (getBuchungen() == null)
+    if (getSpendenart() == Spendenart.SACHSPENDE)
+    {
       return false;
+    }
     for (Buchung buchung : getBuchungen())
     {
       if (buchung.getVerzicht())

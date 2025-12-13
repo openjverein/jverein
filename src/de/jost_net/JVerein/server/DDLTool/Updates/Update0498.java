@@ -21,9 +21,9 @@ import de.jost_net.JVerein.server.DDLTool.Index;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class Update0494 extends AbstractDDLUpdate
+public class Update0498 extends AbstractDDLUpdate
 {
-  public Update0494(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0498(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -31,31 +31,16 @@ public class Update0494 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("mitglied",
-        new Column("kontoinhaber", COLTYPE.VARCHAR, 70, null, false, false)));
+    Column col = new Column("zahler", COLTYPE.BIGINT, 0, null, false, false);
+    execute(addColumn("rechnung", col));
+    Index idx = new Index("ixRechnungZahler", false);
 
-    Column altZahler = new Column("altzahler", COLTYPE.BIGINT, 4, null, false,
-        false);
-    execute(addColumn("mitglied", altZahler));
+    idx.add(col);
+    execute(idx.getCreateIndex("rechnung"));
 
-    Index idx = new Index("ix_mitglied_altzahler", false);
-    idx.add(altZahler);
-    execute(idx.getCreateIndex("mitglied"));
+    execute(createForeignKey("fkRechnungZahler", "rechnung", "zahler",
+        "mitglied", "id", "CASCADE", "NO ACTION"));
 
-    execute(createForeignKey("fk_mitglied_altzahler", "mitglied", "altzahler",
-        "mitglied", "id", "RESTRICT", "CASCADE"));
-
-    execute("UPDATE mitglied SET altzahler = zahlerid WHERE zahlungsweg = 4");
-
-    execute("UPDATE mitglied SET zahlungsweg = 2 WHERE zahlungsweg = 4");
-
-    execute(
-        "UPDATE mitglied SET kontoinhaber = SUBSTR(CONCAT(ktoiname,' ',ktoivorname),1,70) WHERE ktoiname <> '' OR ktoivorname <> ''");
-
-    execute(addColumn("zusatzabbuchung", new Column("mitgliedzahltselbst",
-        COLTYPE.BOOLEAN, 1, "0", false, false)));
-
-    execute(addColumn("zusatzbetragvorlage", new Column("mitgliedzahltselbst",
-        COLTYPE.BOOLEAN, 1, "0", false, false)));
+    execute("UPDATE rechnung set zahler = mitglied");
   }
 }
