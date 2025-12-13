@@ -39,7 +39,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -51,6 +50,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.io.ZipMailer;
@@ -144,8 +144,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   private String sql = "";
 
-  private boolean editable = false;
-
   final static String ExportPDF = ".pdf";
 
   final static String ExportCSV = ".csv";
@@ -155,11 +153,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     super(view);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
     settings.setStoreWhenRead(true);
-  }
-
-  public void setEditable()
-  {
-    editable = true;
   }
 
   public Spendenbescheinigung getSpendenbescheinigung()
@@ -202,7 +195,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         ((SelectInput) mitglied).setPreselected(null);
       }
     }
-    if (m != null || !editable)
+    if (m != null || !getSpendenbescheinigung().isNewObject())
     {
       mitglied.disable();
     }
@@ -220,7 +213,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       zeile1.focus();
     }
-    zeile1.setEnabled(editable);
+    zeile1.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile1;
   }
 
@@ -231,7 +224,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile2;
     }
     zeile2 = new TextInput(getSpendenbescheinigung().getZeile2(), 80);
-    zeile2.setEnabled(editable);
+    zeile2.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile2;
   }
 
@@ -242,7 +235,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile3;
     }
     zeile3 = new TextInput(getSpendenbescheinigung().getZeile3(), 80);
-    zeile3.setEnabled(editable);
+    zeile3.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile3;
   }
 
@@ -253,7 +246,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile4;
     }
     zeile4 = new TextInput(getSpendenbescheinigung().getZeile4(), 80);
-    zeile4.setEnabled(editable);
+    zeile4.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile4;
   }
 
@@ -264,7 +257,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile5;
     }
     zeile5 = new TextInput(getSpendenbescheinigung().getZeile5(), 80);
-    zeile5.setEnabled(editable);
+    zeile5.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile5;
   }
 
@@ -275,7 +268,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile6;
     }
     zeile6 = new TextInput(getSpendenbescheinigung().getZeile6(), 80);
-    zeile6.setEnabled(editable);
+    zeile6.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile6;
   }
 
@@ -286,7 +279,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return zeile7;
     }
     zeile7 = new TextInput(getSpendenbescheinigung().getZeile7(), 80);
-    zeile7.setEnabled(editable);
+    zeile7.setEnabled(getSpendenbescheinigung().isNewObject());
     return zeile7;
   }
 
@@ -309,7 +302,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
     bescheinigungsdatum = new DateInput(
         getSpendenbescheinigung().getBescheinigungsdatum());
-    bescheinigungsdatum.setEnabled(editable);
+    bescheinigungsdatum.setEnabled(getSpendenbescheinigung().isNewObject());
     return bescheinigungsdatum;
   }
 
@@ -760,8 +753,9 @@ public class SpendenbescheinigungControl extends DruckMailControl
   {
     Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
     String text = "Es wurden " + spbArr.length
-        + " Spendenbescheinigungen ausgewählt"
-        + "\nFolgende Mitglieder haben keine Mailadresse:";
+        + " Spendenbescheinigungen ausgewählt";
+    String fehlen = "";
+    String keinMitglied = "";
     try
     {
       for (Spendenbescheinigung spb : spbArr)
@@ -769,18 +763,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
         Mitglied m = spb.getMitglied();
         if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
         {
-          text = text + "\n - " + m.getName() + ", " + m.getVorname();
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
         }
-      }
-      text = text
-          + "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:";
-      for (Spendenbescheinigung spb : spbArr)
-      {
         if (spb.getMitglied() == null)
         {
-          text = text + "\n - " + spb.getZeile1() + ", " + spb.getZeile2()
-              + ", " + spb.getZeile3();
+          keinMitglied = keinMitglied + "\n - " + spb.getZeile1() + ", "
+              + spb.getZeile2() + ", " + spb.getZeile3();
         }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+      if (keinMitglied.length() > 0)
+      {
+        text += "\nFür folgende Spendenbescheinigungen existiert kein Mitglied und keine Mailadresse:"
+            + keinMitglied;
       }
     }
     catch (Exception ex)
@@ -835,9 +833,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     boolean open = false;
     if (ausgabeart == Ausgabeart.DRUCK)
       open = true;
-    SpendenbescheinigungPrintAction action = new SpendenbescheinigungPrintAction(
-        text, adressblatt, open);
-    action.handleAction(spba);
+    new SpendenbescheinigungAusgabe(text, adressblatt, open).aufbereitung(spba);
   }
 
   private void sendeMail(final String betr, String text,
@@ -1048,6 +1044,11 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       spbArray = (Spendenbescheinigung[]) object;
     }
+    else if (object instanceof Spendenbescheinigung)
+    {
+      spbArray = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
+    }
+
     if (spbArray == null || spbArray.length == 0)
     {
       throw new ApplicationException(
