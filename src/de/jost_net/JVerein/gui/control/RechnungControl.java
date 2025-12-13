@@ -73,6 +73,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -142,7 +143,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   public RechnungControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -194,7 +195,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
           String pdfMode = (String) getPdfModus().getValue();
           new Rechnungsausgabe(getRechnungen(currentObject), control,
               TYP.RECHNUNG, pdfMode);
@@ -224,7 +225,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
           String pdfMode = (String) getPdfModus().getValue();
           new Rechnungsausgabe(getRechnungen(currentObject), control,
               TYP.MAHNUNG, pdfMode);

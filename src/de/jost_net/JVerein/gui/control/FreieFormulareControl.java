@@ -13,6 +13,7 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -22,7 +23,7 @@ public class FreieFormulareControl extends DruckMailControl
   public FreieFormulareControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -53,7 +54,7 @@ public class FreieFormulareControl extends DruckMailControl
   {
     try
     {
-      saveDruckMailSettings();
+      saveFilterSettings();
       String pdfMode = (String) getPdfModus().getValue();
       new FreiesFormularAusgabe(getMitglieder(currentObject), this, pdfMode);
     }

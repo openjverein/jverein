@@ -165,14 +165,14 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   public SollbuchungControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
   public SollbuchungControl(AbstractView view, Sollbuchung sollb)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     sollbuchung = sollb;
   }
@@ -684,7 +684,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
           String pdfMode = (String) getPdfModus().getValue();
           new Kontoauszug(getMitglieder(currentObject), control, pdfMode);
         }

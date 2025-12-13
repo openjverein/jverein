@@ -93,6 +93,7 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -151,7 +152,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   public SpendenbescheinigungControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -799,7 +800,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
 
           Spendenbescheinigung[] spbArray = getSpbArray(currentObject);
 

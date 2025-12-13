@@ -7,7 +7,6 @@ import de.jost_net.JVerein.gui.dialogs.DruckMailMitgliedDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.Ausgabesortierung;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
@@ -97,19 +96,6 @@ public abstract class DruckMailControl extends FilterControl
     return ausgabeart;
   }
 
-  public SelectInput getAusgabesortierung()
-  {
-    if (ausgabesortierung != null)
-    {
-      return ausgabesortierung;
-    }
-    ausgabesortierung = new SelectInput(Ausgabesortierung.values(),
-        Ausgabesortierung.getByKey(
-            settings.getInt(settingsprefix + "ausgabesortierung", 1)));
-    ausgabesortierung.setName("Sortierung");
-    return ausgabesortierung;
-  }
-
   public SelectInput getAdressblatt()
   {
     if (adressblatt != null)
@@ -193,7 +179,8 @@ public abstract class DruckMailControl extends FilterControl
     return (String) getTxt().getValue();
   }
 
-  protected void saveDruckMailSettings() throws RemoteException
+  @Override
+  public void saveFilterSettings() throws RemoteException
   {
     if (ausgabeart != null)
     {
@@ -204,12 +191,6 @@ public abstract class DruckMailControl extends FilterControl
     {
       Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
       settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
-    }
-    if (ausgabesortierung != null)
-    {
-      Ausgabesortierung as = (Ausgabesortierung) getAusgabesortierung()
-          .getValue();
-      settings.setAttribute(settingsprefix + "ausgabesortierung", as.getKey());
     }
     if (output != null)
     {
@@ -231,7 +212,7 @@ public abstract class DruckMailControl extends FilterControl
       settings.setAttribute(settingsprefix + "mail.text",
           (String) getTxt().getValue());
     }
-    saveFilterSettings();
+    super.saveFilterSettings();
   }
 
   abstract DruckMailEmpfaenger getDruckMailMitglieder(Object object,

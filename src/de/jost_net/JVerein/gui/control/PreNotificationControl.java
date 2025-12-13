@@ -159,7 +159,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
 
           String val = (String) getOutput().getValue();
           String pdfMode = (String) getPdfModus().getValue();
@@ -206,7 +206,7 @@ public class PreNotificationControl extends DruckMailControl
       {
         try
         {
-          saveDruckMailSettings();
+          saveFilterSettings();
 
           Ct1Ausgabe aa = (Ct1Ausgabe) ct1ausgabe.getValue();
           settings.setAttribute(settingsprefix + "ct1ausgabe", aa.getKey());
