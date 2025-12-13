@@ -356,7 +356,6 @@ public class SplitbuchungsContainer
     buch.setSteuer(b.getSteuer());
 
     // Folgende Spalten werden nicht übertragen (Stand 4.0.0):
-    // betrag
     // sollbuchung
     // abrechnungslauf
     // splitid

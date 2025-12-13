@@ -280,7 +280,7 @@ public class SollbuchungNeuDialog extends AbstractDialog<Boolean>
     {
       String fehler = "Fehler beim speichern der Sollbuchung";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler + ":" + e.getMessage());
+      GUI.getStatusBar().setErrorText(fehler + ": " + e.getMessage());
       DBTransaction.rollback();
       return false;
     }
