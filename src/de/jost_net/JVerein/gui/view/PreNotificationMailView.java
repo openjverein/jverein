@@ -36,6 +36,7 @@ import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -58,10 +59,15 @@ public class PreNotificationMailView extends AbstractView
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification.", null, null);
 
-    if (this.getCurrentObject() == null)
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    if (getCurrentObject() == null)
     {
-      LabelGroup group = new LabelGroup(getParent(), "Filter");
       group.addInput(control.getAbrechnungslaufAusw(10));
+    }
+    if (getCurrentObject() == null
+        || getCurrentObject() instanceof Abrechnungslauf)
+    {
+      group.addInput(control.getMailauswahl());
     }
 
     TabFolder folder = control.getFolder(getParent());
@@ -72,7 +78,7 @@ public class PreNotificationMailView extends AbstractView
         tabMailPDF.getComposite(), true);
 
     grtabMailPDF.addHeadline("Parameter");
-    grtabMailPDF.addInput(control.getOutput());
+    grtabMailPDF.addInput(control.getAusgabeart());
     grtabMailPDF.addInput(control.getPdfModus());
     grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));

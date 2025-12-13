@@ -32,41 +32,27 @@ public class FreieFormulareControl extends DruckMailControl
   {
     Button button = new Button("Starten", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {
         try
         {
-          generiereFreieFormulare(context);
+          saveFilterSettings();
+          new FreiesFormularAusgabe(getMitglieder(context),
+              FreieFormulareControl.this, (String) getPdfModus().getValue());
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Freie Formulare Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
     }, null, true, "walking.png");
     return button;
-  }
-
-  private void generiereFreieFormulare(Object currentObject)
-  {
-    try
-    {
-      saveFilterSettings();
-      String pdfMode = (String) getPdfModus().getValue();
-      new FreiesFormularAusgabe(getMitglieder(currentObject), this, pdfMode);
-    }
-    catch (ApplicationException ae)
-    {
-      GUI.getStatusBar().setErrorText(ae.getMessage());
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler bei der Freie Formulare Ausgabe.", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
   }
 
   private ArrayList<Mitglied> getMitglieder(Object object)
