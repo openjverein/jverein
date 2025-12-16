@@ -525,9 +525,11 @@ public class SplitbuchungsContainer
         }
       }
 
-      // Bei nur einem Eintrag ist kein Splitten nötig, wir können also die
+      // Bei nur einem Eintrag und gleichem Betrag ist kein Splitten nötig, wir
+      // können also die
       // Daten direkt speichern
-      if (splitMap.size() == 1)
+      if (splitMap.size() == 1
+          && Math.abs(sollb.getBetrag() - buchung.getBetrag()) < 0.01d)
       {
         if (spArray.get(0).getBuchungsartId() != null)
         {
