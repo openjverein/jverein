@@ -131,7 +131,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
       Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
       map = new AllgemeineMap().getMap(map);
       boolean isSammelbestaetigung = spb.isSammelbestaetigung();
-      rpt = new Reporter(fos, 80, 50, 50, 50, true);
+      rpt = new Reporter(fos, 80, 50, 30, 20, true);
 
       // Aussteller, kein Header
       rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
