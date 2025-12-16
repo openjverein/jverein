@@ -171,6 +171,7 @@ public class ZipMailer
               Mitglied mitgliedMap = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               Mitglied mitgliedMail = mitgliedMap;
+              Lastschrift ls = null;
 
               switch (art.toLowerCase().trim())
               {
@@ -189,7 +190,7 @@ public class ZipMailer
                   map = new SpendenbescheinigungMap().getMap(spb, map);
                   break;
                 case "lastschrift":
-                  Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                  ls = (Lastschrift) Einstellungen.getDBService()
                       .createObject(Lastschrift.class, artId);
                   map = new LastschriftMap().getMap(ls, map);
                   break;
@@ -248,6 +249,11 @@ public class ZipMailer
                 case "kontoauszug":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+                      mitgliedMap) + ".pdf";
+                  break;
+                case "lastschrift":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
                       mitgliedMap) + ".pdf";
                   break;
                 default:

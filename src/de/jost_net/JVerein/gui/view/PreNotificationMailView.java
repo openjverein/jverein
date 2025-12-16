@@ -85,7 +85,6 @@ public class PreNotificationMailView extends AbstractView
 
     grtabMailPDF.addHeadline("Parameter");
     grtabMailPDF.addInput(control.getAusgabeart());
-    grtabMailPDF.addInput(control.getPdfModus());
     grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));
 

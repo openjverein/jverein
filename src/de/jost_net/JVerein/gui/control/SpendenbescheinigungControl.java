@@ -17,18 +17,13 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -53,7 +48,6 @@ import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
 import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
-import de.jost_net.JVerein.io.ZipMailer;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -474,7 +468,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   public ButtonRtoL getDruckUndMailButton()
   {
-
     ButtonRtoL b = new ButtonRtoL("Druck und Mail",
         c -> GUI.startView(SpendenbescheinigungMailView.class,
             new Spendenbescheinigung[] { getSpendenbescheinigung() }),
@@ -766,17 +759,12 @@ public class SpendenbescheinigungControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          Spendenbescheinigung[] spbArray = getSpbArray(currentObject);
           new SpendenbescheinigungAusgabe((String) mailtext.getValue(),
-              (Adressblatt) adressblatt.getValue(),
-              ((Ausgabeart) ausgabeart.getValue()) == Ausgabeart.DRUCK)
-                  .aufbereitung(spbArray);
-
-          if ((Ausgabeart) ausgabeart.getValue() == Ausgabeart.MAIL)
-          {
-            sendeMail((String) mailbetreff.getValue(),
-                (String) mailtext.getValue(), spbArray);
-          }
+              (Adressblatt) adressblatt.getValue()).aufbereiten(
+                  getDruckMailSpendenbescheinigungen(currentObject),
+                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+                  getTxtString(), false, (Boolean) Einstellungen
+                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
         }
         catch (ApplicationException ae)
         {
@@ -789,51 +777,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
       }
     }, null, true, "walking.png");
-
-  }
-
-  private void sendeMail(final String betr, String text,
-      final Spendenbescheinigung[] spba) throws IOException
-  {
-
-    File zip = File.createTempFile("Spendenbescheinigungen", ".zip");
-    ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
-
-    for (Spendenbescheinigung spb : spba)
-    {
-      Mitglied m = spb.getMitglied();
-      if (m == null || m.getEmail() == null || m.getEmail().isEmpty())
-      {
-        continue;
-      }
-      // PDF wurde bereits erstellt, dieses holen wir und schreiben es in das
-      // ZIP
-      String path = (String) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS);
-      if (path == null || path.length() == 0)
-      {
-        path = settings.getString("lastdir", System.getProperty("user.home"));
-      }
-      settings.setAttribute("lastdir", path);
-      path = path.endsWith(File.separator) ? path : path + File.separator;
-      String fileName = VorlageUtil.getName(
-          VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb, m) + ".pdf";
-
-      // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-      zos.putNextEntry(new ZipEntry(m.getID() + "#spendenbescheinigung#"
-          + spb.getID() + "#" + m.getEmail() + "#" + fileName));
-      FileInputStream in = new FileInputStream(new File(path + fileName));
-      // buffer size
-      byte[] b = new byte[1024];
-      int count;
-      while ((count = in.read(b)) > 0)
-      {
-        zos.write(b, 0, count);
-      }
-      in.close();
-    }
-    zos.close();
-    new ZipMailer(zip, (String) betr, text);
   }
 
   public Button getPDFExportButton()
@@ -935,11 +878,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   public class MitgliedListener implements Listener
   {
-
-    MitgliedListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -970,30 +908,27 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }
   }
 
-  private Spendenbescheinigung[] getSpbArray(Object object)
-      throws RemoteException, ApplicationException
+  private ArrayList<Spendenbescheinigung> getDruckMailSpendenbescheinigungen(
+      Object object) throws RemoteException, ApplicationException
   {
-    Spendenbescheinigung[] spbArray = null;
-    if (object == null)
+    if (object instanceof Spendenbescheinigung)
     {
-      ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
-      spbArray = spblist.toArray(new Spendenbescheinigung[spblist.size()]);
+      object = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
     }
     else if (object instanceof Spendenbescheinigung[])
     {
-      spbArray = (Spendenbescheinigung[]) object;
-    }
-    else if (object instanceof Spendenbescheinigung)
-    {
-      spbArray = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
+      return new ArrayList<Spendenbescheinigung>(
+          Arrays.asList((Spendenbescheinigung[]) object));
     }
 
-    if (spbArray == null || spbArray.length == 0)
+    ArrayList<Spendenbescheinigung> spblist = getSpendenbescheinigungen();
+
+    if (spblist == null || spblist.size() == 0)
     {
       throw new ApplicationException(
           "Für die gewählten Filterkriterien wurden keine Spendenbescheinigungen gefunden");
     }
-    return spbArray;
+    return spblist;
   }
 
   @Override
@@ -1004,7 +939,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     String text = "";
     int ohneMail = 0;
     int ohneMitglied = 0;
-    Spendenbescheinigung[] spbs = getSpbArray(object);
+    ArrayList<Spendenbescheinigung> spbs = getDruckMailSpendenbescheinigungen(
+        object);
     Mitglied m;
     String dokument = "";
     for (Spendenbescheinigung spb : spbs)

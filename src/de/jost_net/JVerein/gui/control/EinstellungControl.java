@@ -196,8 +196,6 @@ public class EinstellungControl extends AbstractControl
 
   private DecimalInput spendenbescheinigungminbetrag;
 
-  private DirectoryInput spendenbescheinigungverzeichnis;
-
   private CheckboxInput spendenbescheinigungprintbuchungsart;
 
   private TextInput beginngeschaeftsjahr;
@@ -1170,18 +1168,6 @@ public class EinstellungControl extends AbstractControl
             .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG),
         new DecimalFormat("###0.00"));
     return spendenbescheinigungminbetrag;
-  }
-
-  public DirectoryInput getSpendenbescheinigungverzeichnis()
-      throws RemoteException
-  {
-    if (spendenbescheinigungverzeichnis != null)
-    {
-      return spendenbescheinigungverzeichnis;
-    }
-    spendenbescheinigungverzeichnis = new DirectoryInput((String) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS));
-    return spendenbescheinigungverzeichnis;
   }
 
   public CheckboxInput getSpendenbescheinigungPrintBuchungsart()
@@ -2660,8 +2646,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getMitgliedsbetraege().getValue());
       Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG,
           (Double) spendenbescheinigungminbetrag.getValue());
-      Einstellungen.setEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS,
-          (String) spendenbescheinigungverzeichnis.getValue());
       Einstellungen.setEinstellung(
           Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART,
           (Boolean) spendenbescheinigungprintbuchungsart.getValue());

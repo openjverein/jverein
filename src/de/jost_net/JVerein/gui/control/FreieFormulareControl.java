@@ -7,6 +7,7 @@ import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -28,8 +29,7 @@ public class FreieFormulareControl extends DruckMailControl
     settings.setStoreWhenRead(true);
   }
 
-  public Button getStartFreieFormulareButton(Object currentObject,
-      FreieFormulareControl control)
+  public Button getStartFreieFormulareButton(Object currentObject)
   {
     Button button = new Button("Starten", new Action()
     {
@@ -39,8 +39,11 @@ public class FreieFormulareControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new FreiesFormularAusgabe(getMitglieder(context),
-              FreieFormulareControl.this, (String) getPdfModus().getValue());
+          new FreiesFormularAusgabe((Formular) FreieFormulareControl.this
+              .getFormular(null).getValue()).aufbereiten(
+                  getMitglieder(currentObject),
+                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+                  getTxtString(), false, false);
         }
         catch (ApplicationException ae)
         {

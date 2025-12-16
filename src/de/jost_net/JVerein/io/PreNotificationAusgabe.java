@@ -19,20 +19,19 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.Map;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
 
-public class FreiesFormularAusgabe extends AbstractAusgabe
+public class PreNotificationAusgabe extends AbstractAusgabe
 {
-
   private Formular formular;
 
-  public FreiesFormularAusgabe(Formular formular)
+  public PreNotificationAusgabe(Formular formular)
   {
     this.formular = formular;
   }
@@ -40,24 +39,26 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
   @Override
   protected String getZipDateiname(DBObject object) throws RemoteException
   {
-    Mitglied m = (Mitglied) object;
-    String filename = object.getID() + "#freiesformular# #";
-    String email = StringTool.toNotNullString(m.getEmail());
+    Lastschrift ls = (Lastschrift) object;
+    String filename = (ls.getMitglied() == null ? "" : ls.getMitglied().getID())
+        + "#lastschrift#" + object.getID() + "#";
+    String email = StringTool.toNotNullString(ls.getEmail());
     if (email.length() > 0)
     {
       filename += email;
     }
     else
     {
-      filename += m.getName() + m.getVorname();
+      filename += ls.getName() + ls.getVorname();
     }
-    return filename + "#" + formular.getBezeichnung();
+    return filename + "#PreNotification";
   }
 
   @Override
   protected Map<String, Object> getMap(DBObject object) throws RemoteException
   {
-    Map<String, Object> map = new MitgliedMap().getMap((Mitglied) object, null);
+    Map<String, Object> map = new LastschriftMap().getMap((Lastschrift) object,
+        null);
     return new AllgemeineMap().getMap(map);
   }
 
@@ -66,13 +67,12 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
   {
     if (object != null)
     {
-      return VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-          formular.getBezeichnung(), (Mitglied) object);
+      return VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
+          object, ((Lastschrift) object).getMitglied());
     }
     else
     {
-      return VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_DATEINAME,
-          formular.getBezeichnung());
+      return VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_DATEINAME);
     }
   }
 
@@ -81,4 +81,5 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
   {
     return formular;
   }
+
 }

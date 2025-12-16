@@ -290,8 +290,6 @@ public class Einstellungen
     MITGLIEDSBETRAEGE("mitgliedsbeitraege", Boolean.class, "0"),
     SPENDENBESCHEINIGUNGMINBETRAG("spendenbescheinigungminbetrag", Double.class,
         "0.01"),
-    SPENDENBESCHEINIGUNGVERZEICHNIS("spendenbescheinigungverzeichnis",
-        String.class, ""),
     SPENDENBESCHEINIGUNGPRINTBUCHUNGSART("spendenbescheinigungprintbuchungsart",
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),

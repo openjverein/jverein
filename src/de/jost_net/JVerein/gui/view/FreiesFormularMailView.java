@@ -80,7 +80,6 @@ public class FreiesFormularMailView extends AbstractView
     cont.addLabelPair("Formular",
         control.getFormular(FormularArt.FREIESFORMULAR));
     cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getPdfModus());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -105,7 +104,7 @@ public class FreiesFormularMailView extends AbstractView
     buttons.addButton(
         control.getDruckMailMitgliederButton(this.getCurrentObject(), null));
     buttons.addButton(
-        control.getStartFreieFormulareButton(this.getCurrentObject(), control));
+        control.getStartFreieFormulareButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }
 }

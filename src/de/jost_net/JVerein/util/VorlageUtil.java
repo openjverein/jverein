@@ -92,14 +92,13 @@ public class VorlageUtil
       muster = getVorlageMuster(typ);
       switch (typ)
       {
-        case SPENDENBESCHEINIGUNG_DATEINAME:
-          map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
-              map);
-          break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
-          map = new MitgliedMap().getMap(mitglied, map);
+          if (mitglied != null)
+          {
+            map = new MitgliedMap().getMap(mitglied, map);
+          }
           break;
         case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED_DATEINAME:
@@ -129,6 +128,7 @@ public class VorlageUtil
           map = new MitgliedMap().getMap(mitglied, map);
           map.put("formular_name", (String) obj);
           break;
+        case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
         case MAHNUNG_DATEINAME:
         case KONTOAUSZUG_DATEINAME:
@@ -319,9 +319,6 @@ public class VorlageUtil
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
-        case SPENDENBESCHEINIGUNG_DATEINAME:
-          map = SpendenbescheinigungMap.getDummyMap(map);
-          break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = SpendenbescheinigungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
@@ -357,6 +354,7 @@ public class VorlageUtil
           map = MitgliedMap.getDummyMap(map);
           map.put("formular_name", "Freies Formular");
           break;
+        case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
         case MAHNUNG_DATEINAME:
         case KONTOAUSZUG_DATEINAME:

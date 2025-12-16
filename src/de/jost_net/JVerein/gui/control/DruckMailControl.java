@@ -28,10 +28,6 @@ public abstract class DruckMailControl extends FilterControl
     super(view);
   }
 
-  public static final String NICHT_EINZELN = "Eine PDF-Datei";
-
-  public static final String EINZELN = "Einzelne PDF-Dateien";
-
   protected TextAreaInput info = null;
 
   protected FormularInput formular = null;
@@ -99,26 +95,6 @@ public abstract class DruckMailControl extends FilterControl
     return adressblatt;
   }
 
-  public SelectInput getPdfModus()
-  {
-    if (pdfModus != null)
-    {
-      return pdfModus;
-    }
-    Object[] values = new Object[] { NICHT_EINZELN, EINZELN };
-    // Wegen gelöschter Werte die noch in den Settings gespeichert sein können
-    String istvalue = EINZELN;
-    String value = settings.getString(settingsprefix + "pdfModus",
-        NICHT_EINZELN);
-    if (value.equals(NICHT_EINZELN) || value.equals(EINZELN))
-    {
-      istvalue = value;
-    }
-    pdfModus = new SelectInput(values, istvalue);
-    pdfModus.setName("PDF als");
-    return pdfModus;
-  }
-
   public TextInput getBetreff()
   {
     if (mailbetreff != null)
@@ -167,11 +143,6 @@ public abstract class DruckMailControl extends FilterControl
     {
       Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
       settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
-    }
-    if (pdfModus != null)
-    {
-      String pdfMode = (String) getPdfModus().getValue();
-      settings.setAttribute(settingsprefix + "pdfModus", pdfMode);
     }
     if (mailbetreff != null)
     {

@@ -649,8 +649,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Button getStartKontoauszugButton(final Object currentObject,
-      final SollbuchungControl control)
+  public Button getStartKontoauszugButton(final Object currentObject)
   {
     Button button = new Button("Starten", new Action()
     {
@@ -661,8 +660,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         try
         {
           saveFilterSettings();
-          new Kontoauszug(getMitglieder(currentObject), control,
-              (String) getPdfModus().getValue());
+          new Kontoauszug(SollbuchungControl.this).aufbereiten(
+              getMitglieder(currentObject),
+              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+              getTxtString(), false, false);
         }
         catch (ApplicationException ae)
         {
@@ -922,7 +923,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         getDatumbis().getValue(), getMailauswahl().getValue() };
   }
 
-  private List<Mitglied> getMitglieder(Object object)
+  private ArrayList<Mitglied> getMitglieder(Object object)
       throws RemoteException, ApplicationException
   {
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
