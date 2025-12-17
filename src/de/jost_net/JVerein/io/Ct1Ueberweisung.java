@@ -215,12 +215,6 @@ public class Ct1Ueberweisung
           ue.setGegenkontoName(StringUtils.trimToEmpty(Adressaufbereitung
               .getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
         }
-        ue.setGegenkontoName(
-            StringTool
-                .getStringWithMaxLength(
-                    Zeichen.convert(ls.getMitglied()
-                        .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
-                    255));
         ue.setTermin(faell);
         ue.setZweck(StringTool.getStringWithMaxLength(
             Zeichen.convert(eval(ls, verwendungszweck)), 140));
