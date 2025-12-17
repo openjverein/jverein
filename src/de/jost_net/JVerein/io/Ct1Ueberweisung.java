@@ -202,8 +202,25 @@ public class Ct1Ueberweisung
         ad.setIban(ls.getIBAN());
         ue.setGegenkonto(ad);
         ue.setEndtoEndId(ls.getMandatID());
-        ue.setGegenkontoName(StringTool
-            .getStringWithMaxLength(Zeichen.convert(ls.getName()), 255));
+        if (ls.getMitglied() != null)
+        {
+          ue.setGegenkontoName(
+              StringTool.getStringWithMaxLength(
+                  Zeichen.convert(ls.getMitglied()
+                      .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
+                  255));
+        }
+        else if (ls.getKursteilnehmer() != null)
+        {
+          ue.setGegenkontoName(StringUtils.trimToEmpty(Adressaufbereitung
+              .getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
+        }
+        ue.setGegenkontoName(
+            StringTool
+                .getStringWithMaxLength(
+                    Zeichen.convert(ls.getMitglied()
+                        .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
+                    255));
         ue.setTermin(faell);
         ue.setZweck(StringTool.getStringWithMaxLength(
             Zeichen.convert(eval(ls, verwendungszweck)), 140));
