@@ -36,7 +36,7 @@ public class BuchungsuebernahmeAction implements Action
           BuchungsuebernahmeDialog.POSITION_CENTER);
       if (d.open())
       {
-        new Buchungsuebernahme();
+        new Buchungsuebernahme(true);
         GUI.getCurrentView().reload();
       }
     }
