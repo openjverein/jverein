@@ -75,6 +75,12 @@ public abstract class AbstractAusgabe
         extension = "zip";
         break;
     }
+    // Wenn nur ein Dokument gedruck wird, immer PDF verwenden, so dass
+    // der Dateiname und nicht der Ordner gewählt wird
+    if (art == Ausgabeart.PDF_EINZELN && list.size() == 1)
+    {
+      art = Ausgabeart.PDF;
+    }
 
     File file = getDateiAuswahl(extension, getDateiname(null) + "." + extension,
         art == Ausgabeart.PDF_EINZELN);
