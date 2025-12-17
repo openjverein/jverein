@@ -139,7 +139,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
       rpt.addColumn(
           "Aussteller (Bezeichnung und Anschrift der steuerbegünstigten Einrichtung)"
               + "\n\n" + getAussteller() + "\n ",
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, (BaseColor) null);
       rpt.closeTable();
 
       rpt.add(new Paragraph(" ", Reporter.getFreeSans(4)));
@@ -165,7 +165,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
       rpt.addColumn(
           "Name und Anschrift des Zuwendenden\n\n"
               + (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, (BaseColor) null);
       rpt.closeTable();
 
       // Betrag und Tag der Zuwendeung, kein Header
@@ -188,7 +188,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
                 + Einstellungen.DECIMALFORMAT.format(
                     map.get(SpendenbescheinigungVar.BETRAG.getName()))
                 + "-",
-            Element.ALIGN_CENTER);
+            Element.ALIGN_CENTER, (BaseColor) null);
       }
       else
       {
@@ -197,23 +197,23 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
                 + Einstellungen.DECIMALFORMAT.format(
                     map.get(SpendenbescheinigungVar.BETRAG.getName()))
                 + "-",
-            Element.ALIGN_CENTER);
+            Element.ALIGN_CENTER, (BaseColor) null);
       }
       rpt.addColumn("-in Buchstaben-\n"
           + (String) map.get(SpendenbescheinigungVar.BETRAGINWORTEN.getName()),
-          Element.ALIGN_CENTER);
+          Element.ALIGN_CENTER, (BaseColor) null);
       if (!isSammelbestaetigung)
       {
         rpt.addColumn("Tag der Zuwendung\n"
             + (String) map.get(SpendenbescheinigungVar.SPENDEDATUM.getName()),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, (BaseColor) null);
       }
       else
       {
         rpt.addColumn(
             "Zeitraum der Sammelbestätigung\n" + (String) map
                 .get(SpendenbescheinigungVar.SPENDENZEITRAUM.getName()),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, (BaseColor) null);
       }
       rpt.closeTable();
 
@@ -299,7 +299,6 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
        * Bei Sammelbestätigungen ist der Verweis auf Verzicht in der Anlage
        * vermerkt
        */
-      String verzicht = "";
       char verzichtJa = (char) 113; // box leer
       char verzichtNein = (char) 53; // X
 
@@ -310,18 +309,6 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
           verzichtJa = (char) 53; // X
           verzichtNein = (char) 113; // box leer
         }
-      }
-      else
-      {
-        if (spb.getBuchungen().get(0).getVerzicht().booleanValue())
-        {
-          verzichtJa = (char) 53; // X
-          verzichtNein = (char) 113; // box leer
-        }
-      }
-
-      if (!isSammelbestaetigung && spb.getSpendenart() != Spendenart.SACHSPENDE)
-      {
         Paragraph p = new Paragraph();
         p.setFont(Reporter.getFreeSans(8));
         p.setAlignment(Element.ALIGN_LEFT);
@@ -591,6 +578,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
             verwendung = buchung.getZweck();
           }
           rpt.addColumn(verwendung, Element.ALIGN_LEFT);
+          String verzicht = "";
           if (buchung.getVerzicht().booleanValue())
           {
             verzicht = "ja";

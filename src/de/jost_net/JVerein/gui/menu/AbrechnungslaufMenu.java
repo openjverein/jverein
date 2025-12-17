@@ -54,7 +54,7 @@ public class AbrechnungslaufMenu extends ContextMenu
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new StartViewAction(PreNotificationMailView.class, true),
-        "document-new.png"));
+        "document-print.png"));
     addItem(new AbgeschlossenDisabledItem("Löschen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try

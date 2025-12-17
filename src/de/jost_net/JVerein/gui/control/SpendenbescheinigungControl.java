@@ -83,6 +83,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -468,10 +469,26 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   public ButtonRtoL getDruckUndMailButton()
   {
-    ButtonRtoL b = new ButtonRtoL("Druck und Mail",
-        c -> GUI.startView(SpendenbescheinigungMailView.class,
-            new Spendenbescheinigung[] { getSpendenbescheinigung() }),
-        getSpendenbescheinigung(), false, "document-print.png");
+    ButtonRtoL b = new ButtonRtoL("Druck und Mail", c -> {
+      Spendenbescheinigung spb = getSpendenbescheinigung();
+      try
+      {
+        if (spb.isNewObject())
+        {
+          GUI.getStatusBar()
+              .setErrorText("Spendenbescheinigung bitte erst speichern!");
+          return;
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error(e.getMessage());
+        throw new ApplicationException(
+            "Fehler bei der Aufbereitung der Spendenbescheinigung");
+      }
+      GUI.startView(SpendenbescheinigungMailView.class,
+          new Spendenbescheinigung[] { getSpendenbescheinigung() });
+    }, getSpendenbescheinigung(), false, "document-print.png");
     return b;
   }
 
@@ -485,7 +502,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart",
-        o -> new Spendenart((Integer) o).getText());
+        o -> new Spendenart((Integer) o).getText(), false, Column.ALIGN_LEFT);
     spbList.addColumn("Bescheinigungsdatum", "bescheinigungsdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spendedatum", "spendedatum",
@@ -714,9 +731,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   // Mail/Drucken View
   @Override
-  public String getInfoText(Object spbArray) throws RemoteException
+  public String getInfoText(Object selection) throws RemoteException
   {
-    Spendenbescheinigung[] spbArr = (Spendenbescheinigung[]) spbArray;
+    Spendenbescheinigung[] spbArr = null;
+    if (selection instanceof Spendenbescheinigung)
+    {
+      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) selection };
+    }
+    else if (selection instanceof Spendenbescheinigung[])
+    {
+      spbArr = (Spendenbescheinigung[]) selection;
+    }
+    else
+    {
+      return "";
+    }
+
     String text = "Es wurden " + spbArr.length
         + " Spendenbescheinigungen ausgewählt";
     String fehlen = "";
@@ -915,7 +945,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       object = new Spendenbescheinigung[] { (Spendenbescheinigung) object };
     }
-    else if (object instanceof Spendenbescheinigung[])
+    if (object instanceof Spendenbescheinigung[])
     {
       return new ArrayList<Spendenbescheinigung>(
           Arrays.asList((Spendenbescheinigung[]) object));

@@ -233,7 +233,7 @@ public class MitgliedMenu extends ContextMenu
     {
       addItem(new CheckedContextMenuItem("Freie Formulare",
           new StartViewAction(FreiesFormularMailView.class, true),
-          "file-invoice.png"));
+          "document-print.png"));
     }
   }
 }

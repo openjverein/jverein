@@ -47,12 +47,13 @@ public class LastschriftMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Pre-Notification",
-        new StartViewAction(PreNotificationMailView.class, true),
-        "document-new.png"));
+
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedContextMenuItem("Pre-Notification",
+        new StartViewAction(PreNotificationMailView.class, true),
+        "document-print.png"));
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
   }
