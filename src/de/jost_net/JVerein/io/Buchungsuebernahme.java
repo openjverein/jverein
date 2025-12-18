@@ -58,11 +58,16 @@ public class Buchungsuebernahme
 
   public Buchungsuebernahme()
   {
-    uebernahme();
+    this(false);
+  }
+
+  public Buchungsuebernahme(boolean showAllways)
+  {
+    uebernahme(showAllways);
   }
 
   @SuppressWarnings("unchecked")
-  private void uebernahme()
+  private void uebernahme(boolean showAllways)
   {
     try
     {
@@ -93,9 +98,12 @@ public class Buchungsuebernahme
     }
     try
     {
-      BuchungUebernahmeProtokollDialog bup = new BuchungUebernahmeProtokollDialog(
-          buchungen, fehlerbuchung, exception);
-      bup.open();
+      if (showAllways || buchungen.size() > 0)
+      {
+        BuchungUebernahmeProtokollDialog bup = new BuchungUebernahmeProtokollDialog(
+            buchungen, fehlerbuchung, exception);
+        bup.open();
+      }
     }
     catch (OperationCanceledException oce)
     {
