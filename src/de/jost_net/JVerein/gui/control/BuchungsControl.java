@@ -550,7 +550,16 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return suchbetrag;
     }
     suchbetrag = new TextInput(
-        settings.getString(settingsprefix + "suchbetrag", ""));
+        settings.getString(settingsprefix + "suchbetrag", ""))
+    {
+      @Override
+      protected void update()
+      {
+        super.update();
+        this.text.setToolTipText(
+            "Nach Betrag Suchen\nFolgende Vergleichsoperatoren sind möglich:\n<\t>\t>=\t<=\t| (Betrag)\t.. (Bereich)");
+      }
+    };
     return suchbetrag;
   }
 
