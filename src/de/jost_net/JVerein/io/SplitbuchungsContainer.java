@@ -101,7 +101,8 @@ public class SplitbuchungsContainer
     {
       // Wenn keine Buchung gefunden wurde, gibt es auch keine Gegenbuchung.
       // Dann wird die jetzt erstellt.
-      Buchung b2 = getGegenbuchung(b);
+      Buchung b2 = createSplitbuchung(b);
+      b2.setSplitTyp(SplitbuchungTyp.GEGEN);
       SplitbuchungsContainer.add(b2);
     }
     while (it.hasNext())
@@ -300,7 +301,8 @@ public class SplitbuchungsContainer
         master.setSplitTyp(SplitbuchungTyp.HAUPT);
         master.setSplitId(Long.valueOf(master.getID()));
         master.store();
-        gegen = getGegenbuchung(master);
+        gegen = createSplitbuchung(master);
+        gegen.setSplitTyp(SplitbuchungTyp.GEGEN);
         gegen.store();
         for (Buchung b : get())
         {
@@ -322,7 +324,16 @@ public class SplitbuchungsContainer
     return text;
   }
 
-  private static Buchung getGegenbuchung(Buchung b) throws RemoteException
+  /**
+   * Erstellt eine Kopie der Buchung als Splitbuchung. Der splittyp muss noch
+   * zugeordnet werden
+   * 
+   * @param b
+   *          die zu kopierende Buchung
+   * @return die neue erstellt (Split-) Buchung
+   * @throws RemoteException
+   */
+  private static Buchung createSplitbuchung(Buchung b) throws RemoteException
   {
     Buchung buch = (Buchung) Einstellungen.getDBService()
         .createObject(Buchung.class, null);
@@ -342,8 +353,21 @@ public class SplitbuchungsContainer
     buch.setUmsatzid(b.getUmsatzid());
     buch.setZweck(b.getZweck());
     buch.setIban(b.getIban());
-    buch.setSplitTyp(SplitbuchungTyp.GEGEN);
     buch.setSteuer(b.getSteuer());
+
+    // Folgende Spalten werden nicht übertragen (Stand 4.0.0):
+    // sollbuchung
+    // abrechnungslauf
+    // splitid
+    // splittyp
+    // spendenbescheinigung
+    // verzicht
+    // abschluss
+    // geprueft
+    // unterlagenwertermittlung
+    // herkunftspende
+    // bezeichnungsachzuwendung
+
     return buch;
   }
 
@@ -501,6 +525,32 @@ public class SplitbuchungsContainer
         }
       }
 
+      // Bei nur einem Eintrag und gleichem Betrag ist kein Splitten nötig, wir
+      // können also die
+      // Daten direkt speichern
+      if (splitMap.size() == 1 && Math.abs(sollb.getBetrag()
+          - sollb.getIstSumme() - buchung.getBetrag()) < 0.01d)
+      {
+        if (spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setBuchungsartId(spArray.get(0).getBuchungsartId());
+        }
+        if (klasseInBuchung && spArray.get(0).getBuchungsklasseId() != null)
+        {
+          buchung.setBuchungsklasseId(spArray.get(0).getBuchungsklasseId());
+        }
+        // Wenn die Buchungsart gesetzt ist, auch die Steuer aus der Position
+        // nehmen, sonst kann es zu Fehlern beim Speichern kommen (zB. Steuer
+        // bei Spenden)
+        if (steuerInBuchung && spArray.get(0).getBuchungsartId() != null)
+        {
+          buchung.setSteuer(spArray.get(0).getSteuer());
+        }
+        buchung.setSollbuchung(sollb);
+        buchung.store();
+        return null;
+      }
+
       // Das Splittbuchungen immmer eine Buchungsart haben müssen, ordnen wir
       // diejenige der ersten Position zu, wenn keine Buchungsart in der
       // Buchung vorhanden ist.
@@ -575,19 +625,11 @@ public class SplitbuchungsContainer
         }
         zugeordnet += betragZuordnen;
 
-        Buchung splitBuchung = (Buchung) Einstellungen.getDBService()
-            .createObject(Buchung.class, null);
+        Buchung splitBuchung = createSplitbuchung(buchung);
         splitBuchung.setBetrag(betragZuordnen);
-        splitBuchung.setDatum(buchung.getDatum());
-        splitBuchung.setKonto(buchung.getKonto());
-        splitBuchung.setName(buchung.getName());
         if (splitPositionZweck)
         {
           splitBuchung.setZweck(splitZweckMap.get(entry.getKey()));
-        }
-        else
-        {
-          splitBuchung.setZweck(buchung.getZweck());
         }
         splitBuchung.setSollbuchung(sollb);
         String buchungsart = entry.getKey().substring(0,
@@ -613,20 +655,10 @@ public class SplitbuchungsContainer
       }
       if (Math.abs(buchung.getBetrag() - zugeordnet) >= 0.01d)
       {
-        restBuchung = (Buchung) Einstellungen.getDBService()
-            .createObject(Buchung.class, null);
+        restBuchung = createSplitbuchung(buchung);
         restBuchung.setBetrag(buchung.getBetrag() - zugeordnet);
-        restBuchung.setDatum(buchung.getDatum());
-        restBuchung.setKonto(buchung.getKonto());
-        restBuchung.setName(buchung.getName());
-        restBuchung.setZweck(buchung.getZweck());
         restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
         restBuchung.setSplitId(Long.parseLong(getMaster().getID()));
-        restBuchung.setBuchungsartId(buchung.getBuchungsartId());
-        if (klasseInBuchung)
-        {
-          restBuchung.setBuchungsklasseId(buchung.getBuchungsklasseId());
-        }
 
         SplitbuchungsContainer.add(restBuchung);
       }
