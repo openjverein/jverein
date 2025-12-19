@@ -35,6 +35,8 @@ import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class RechnungMap extends AbstractMap
 {
@@ -167,7 +169,24 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MANDATID.getName(), re.getMandatID());
     map.put(RechnungVar.MANDATDATUM.getName(), re.getMandatDatum());
     map.put(RechnungVar.MANDATDATUM_F.getName(), fromDate(re.getMandatDatum()));
-    map.put(RechnungVar.BIC.getName(), re.getBIC());
+    String bic = re.getBIC();
+    map.put(RechnungVar.BIC.getName(), bic);
+    if (bic != null)
+    {
+      Bank bank = Banken.getBankByBIC(bic);
+      if (bank != null)
+      {
+        String name = bank.getBezeichnung();
+        if (name != null)
+        {
+          map.put(RechnungVar.BANKNAME.getName(), name.trim());
+        }
+      }
+    }
+    else
+    {
+      map.put(RechnungVar.BANKNAME.getName(), null);
+    }
     map.put(RechnungVar.IBAN.getName(),
         new IBANFormatter().format(re.getIBAN()));
     map.put(RechnungVar.IBANMASKIERT.getName(),
@@ -282,6 +301,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(RechnungVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(RechnungVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
+    map.put(RechnungVar.BANKNAME.getName(), "XY Bank");
     map.put(RechnungVar.EMPFAENGER.getName(),
         "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
