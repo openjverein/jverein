@@ -34,13 +34,7 @@ public abstract class DruckMailControl extends FilterControl
 
   protected SelectInput ausgabeart = null;
 
-  protected SelectInput ausgabesortierung = null;
-
   protected SelectInput adressblatt = null;
-
-  protected SelectInput output = null;
-
-  protected SelectInput pdfModus = null;
 
   protected TextInput mailbetreff = null;
 
