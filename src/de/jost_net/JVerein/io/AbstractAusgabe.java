@@ -81,8 +81,14 @@ public abstract class AbstractAusgabe
     {
       art = Ausgabeart.PDF;
     }
+    DBObject dateinameContext = null;
+    if (list.size() == 1)
+    {
+      dateinameContext = list.get(0);
+    }
 
-    File file = getDateiAuswahl(extension, getDateiname(null) + "." + extension,
+    File file = getDateiAuswahl(extension,
+        getDateiname(dateinameContext) + "." + extension,
         art == Ausgabeart.PDF_EINZELN);
     if (file == null)
     {
