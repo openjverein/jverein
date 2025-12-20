@@ -212,19 +212,20 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardDateiAction(), "address-card.png"));
     addItem(new CheckedSingleContextMenuItem("vCard QR-Code",
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
-    addItem(new CheckedContextMenuItem("Kontoauszug",
-        new StartViewAction(KontoauszugMailView.class, true),
-        "file-invoice.png"));
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
           new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
-    addItem(new CheckedContextMenuItem("Personalbogen",
-        new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "file-invoice.png"));
+    addItem(new CheckedContextMenuItem("Kontoauszug",
+        new StartViewAction(KontoauszugMailView.class, true),
+        "document-print.png"));
+
+    addItem(new CheckedContextMenuItem("Personalbogen",
+        new PersonalbogenAction(), "document-print.png"));
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",

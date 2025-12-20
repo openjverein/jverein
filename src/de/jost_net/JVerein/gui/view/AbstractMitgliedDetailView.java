@@ -245,13 +245,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       buttons.addButton(new ButtonRtoL("Kontoauszug",
           new StartViewAction(KontoauszugMailView.class, true),
-          control.getMitglied(), false, "file-invoice.png"));
+          control.getMitglied(), false, "document-print.png"));
     }
     if (isMitgliedDetail())
     {
       buttons
           .addButton(new ButtonRtoL("Personalbogen", new PersonalbogenAction(),
-              control.getCurrentObject(), false, "receipt.png"));
+              control.getCurrentObject(), false, "document-print.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
       buttons.addButton(
