@@ -111,6 +111,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private DateInput voneingabedatum;
 
+  private CheckboxInput rechnungsdokumentspeichern;
+
   public AbrechnungSEPAControl(AbstractView view)
   {
     super(view);
@@ -319,6 +321,17 @@ public class AbrechnungSEPAControl extends AbstractControl
     rechnung = new CheckboxInput(settings.getBoolean("rechnung", false));
     rechnung.addListener(new RechnungListener());
     return rechnung;
+  }
+
+  public CheckboxInput getRechnungsdokumentSpeichern()
+  {
+    if (rechnungsdokumentspeichern != null)
+    {
+      return rechnungsdokumentspeichern;
+    }
+    rechnungsdokumentspeichern = new CheckboxInput(
+        settings.getBoolean("rechnungsdokumentspeichern", false));
+    return rechnungsdokumentspeichern;
   }
 
   public FormularInput getRechnungFormular() throws RemoteException
@@ -662,11 +675,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class RechnungListener implements Listener
   {
-
-    RechnungListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -677,16 +685,15 @@ public class AbrechnungSEPAControl extends AbstractControl
       rechnungsformular.setEnabled((boolean) rechnung.getValue());
       rechnungstext.setEnabled((boolean) rechnung.getValue());
       rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      if (rechnungsdokumentspeichern != null)
+      {
+        rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
+      }
     }
   }
 
   public class ZusammenfassenListener implements Listener
   {
-
-    ZusammenfassenListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -703,11 +710,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class KompaktListener implements Listener
   {
-
-    KompaktListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {

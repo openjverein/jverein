@@ -46,7 +46,6 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -1265,10 +1264,7 @@ public class AbrechnungSEPA
       buchung.setGeprueft(false);
       buchung.store();
 
-      if (re != null
-          && (Boolean) Einstellungen
-              .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-          && JVereinPlugin.isArchiveServiceActive())
+      if (re != null && param.rechnungsdokumentSpeichern)
       {
         FileInputStream fis = null;
         try
