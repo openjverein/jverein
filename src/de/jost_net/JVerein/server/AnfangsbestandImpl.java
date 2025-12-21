@@ -32,7 +32,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class AnfangsbestandImpl extends AbstractJVereinDBObject
-    implements Anfangsbestand
+    implements Anfangsbestand, IBetrag
 {
 
   private static final long serialVersionUID = 1L;

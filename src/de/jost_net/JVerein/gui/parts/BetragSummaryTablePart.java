@@ -21,32 +21,44 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.server.IBetrag;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class SollbuchungListTablePart extends JVereinTablePart
+public class BetragSummaryTablePart extends AutoUpdateTablePart
 {
 
-  public SollbuchungListTablePart(Action action)
+  public BetragSummaryTablePart(Action action)
   {
     super(action);
+
+    // ChangeListener für die Summe der ausgewählten Buchungen anhängen.
+    addSelectionListener(e -> featureEvent(
+        de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null));
   }
 
   @SuppressWarnings("rawtypes")
-  public SollbuchungListTablePart(GenericIterator mitgliedskonten,
-      Action action)
+  public BetragSummaryTablePart(GenericIterator it, Action action)
   {
-    super(mitgliedskonten, action);
+    super(it, action);
+
+    // ChangeListener für die Summe der ausgewählten Buchungen anhängen.
+    addSelectionListener(e -> featureEvent(
+        de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null));
   }
 
-  /**
-   * Belegt den Context mit dem anzuzeigenden Text. Ersetzt getSummary() welches
-   * deprecated ist.
-   */
+  public BetragSummaryTablePart(List<?> list, Action action)
+  {
+    super(list, action);
+
+    // ChangeListener für die Summe der ausgewählten Buchungen anhängen.
+    addSelectionListener(e -> featureEvent(
+        de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null));
+  }
+
   @SuppressWarnings("unchecked")
   @Override
   protected Context createFeatureEventContext(Feature.Event e, Object data)
@@ -54,24 +66,33 @@ public class SollbuchungListTablePart extends JVereinTablePart
     Context ctx = super.createFeatureEventContext(e, data);
     if (this.hasEvent(FeatureSummary.class, e))
     {
-      double sumBetrag = 0.0;
-      String summary = "";
+      double sumBetrag = 0d;
+      double sumAuswahl = 0d;
+      String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
       try
       {
-        @SuppressWarnings("rawtypes")
-        List l = this.getItems();
-        summary = new String(l.size() + " Datensätze");
-        for (int i = 0; i < l.size(); i++)
+        for (IBetrag b : (List<IBetrag>) this.getItems())
         {
-          Sollbuchung sollb = (Sollbuchung) l.get(i);
-          if (sollb.getBetrag() != null)
+          if (b.getBetrag() != null)
           {
-            sumBetrag += sollb.getBetrag();
+            sumBetrag += b.getBetrag();
           }
         }
         summary += " / " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
+
+        Object o = this.getSelection();
+        if (o != null && o instanceof IBetrag[])
+        {
+          for (IBetrag i : (IBetrag[]) o)
+          {
+            sumAuswahl += i.getBetrag();
+          }
+          summary += " / Summe Auswahl:" + " "
+              + Einstellungen.DECIMALFORMAT.format(sumAuswahl) + " "
+              + Einstellungen.CURRENCY;
+        }
       }
       catch (RemoteException re)
       {

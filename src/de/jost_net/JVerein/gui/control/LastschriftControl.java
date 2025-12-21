@@ -28,7 +28,7 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -44,7 +44,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 
 public class LastschriftControl extends FilterControl
@@ -88,7 +87,7 @@ public class LastschriftControl extends FilterControl
 
   private Lastschrift lastschrift;
 
-  private JVereinTablePart lastschriftList;
+  private BetragSummaryTablePart lastschriftList;
 
   public LastschriftControl(AbstractView view)
   {
@@ -103,7 +102,7 @@ public class LastschriftControl extends FilterControl
     {
       return lastschriftList;
     }
-    lastschriftList = new JVereinTablePart(getLastschriften(), null);
+    lastschriftList = new BetragSummaryTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
     lastschriftList.addColumn("Name", "name");
@@ -121,7 +120,6 @@ public class LastschriftControl extends FilterControl
     lastschriftList.setRememberColWidths(true);
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
     lastschriftList.setRememberOrder(true);
-    lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
     lastschriftList.setAction(
         new EditAction(LastschriftDetailView.class, lastschriftList));

@@ -38,7 +38,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
-    implements Rechnung, IAdresse, UnreadCounter
+    implements Rechnung, IAdresse, UnreadCounter, IBetrag
 {
 
   /**
@@ -66,9 +66,13 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
-    return (double) getAttribute("betrag");
+    if (getAttribute("betrag") == null)
+    {
+      return 0d;
+    }
+    return (Double) getAttribute("betrag");
   }
 
   @Override

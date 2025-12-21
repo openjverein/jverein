@@ -52,7 +52,8 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
+public class BuchungImpl extends AbstractJVereinDBObject
+    implements Buchung, IBetrag
 {
 
   private static final long serialVersionUID = 1L;
@@ -370,11 +371,11 @@ public class BuchungImpl extends AbstractJVereinDBObject implements Buchung
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
     Double d = (Double) getAttribute("betrag");
     if (d == null)
-      return 0;
+      return 0d;
     return d.doubleValue();
   }
 

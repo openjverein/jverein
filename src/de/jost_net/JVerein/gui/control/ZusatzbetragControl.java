@@ -42,7 +42,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
-import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -93,7 +93,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
 
   private SelectInput ausfuehrungSuch = null;
 
-  private AutoUpdateTablePart zusatzbetraegeList;
+  private BetragSummaryTablePart zusatzbetraegeList;
 
   public static final String NEIN = "nein";
 
@@ -278,7 +278,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
 
     if (zusatzbetraegeList == null)
     {
-      zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege, null);
+      zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege, null);
       zusatzbetraegeList.addColumn("Nr", "id-int");
       zusatzbetraegeList.addColumn("Name", "mitglied");
       zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",

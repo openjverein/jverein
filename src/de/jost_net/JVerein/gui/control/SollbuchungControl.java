@@ -43,8 +43,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -140,7 +139,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   private TreePart mitgliedskontoTree;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
-  private JVereinTablePart sollbuchungenList;
+  private BetragSummaryTablePart sollbuchungenList;
 
   private TablePart mitgliederList;
 
@@ -458,7 +457,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         .get();
     if (sollbuchungenList == null)
     {
-      sollbuchungenList = new SollbuchungListTablePart(sollbuchungen, null);
+      sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
       sollbuchungenList.addColumn("Nr", "id-int");
       sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));

@@ -28,7 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -73,7 +73,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
 
   private Abrechnungslauf abrl;
 
-  private JVereinTablePart sollbuchungsList;
+  private BetragSummaryTablePart sollbuchungsList;
 
   public AbrechnungslaufBuchungenControl(AbstractView view)
   {
@@ -134,8 +134,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     return bm;
   }
 
-  private DBIterator<Sollbuchung> getIterator(int lauf)
-      throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -150,7 +149,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
     if (sollbuchungsList == null)
     {
-      sollbuchungsList = new JVereinTablePart(sollbIt, null);
+      sollbuchungsList = new BetragSummaryTablePart(sollbIt, null);
       sollbuchungsList.addColumn("Fälligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
