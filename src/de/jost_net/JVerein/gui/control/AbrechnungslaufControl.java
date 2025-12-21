@@ -390,7 +390,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
       abrechnungslaufList.setRememberColWidths(true);
       abrechnungslaufList.setRememberOrder(true);
-      abrechnungslaufList.addFeature(new FeatureSummary());
       abrechnungslaufList.setAction(
           new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
       VorZurueckControl.setObjektListe(null, null);

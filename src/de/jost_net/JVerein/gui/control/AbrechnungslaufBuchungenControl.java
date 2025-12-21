@@ -49,7 +49,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -163,7 +162,6 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
           new ZahlungswegFormatter(), false, Column.ALIGN_LEFT);
       sollbuchungsList.setRememberColWidths(true);
       sollbuchungsList.setRememberOrder(true);
-      sollbuchungsList.addFeature(new FeatureSummary());
       sollbuchungsList.setMulti(true);
       sollbuchungsList.setContextMenu(new SollbuchungMenu(sollbuchungsList));
       sollbuchungsList.setAction(

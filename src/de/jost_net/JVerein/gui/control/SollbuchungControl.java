@@ -80,7 +80,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -486,7 +485,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
       sollbuchungenList.setMulti(true);
-      sollbuchungenList.addFeature(new FeatureSummary());
       if (action == null)
       {
         sollbuchungenList
@@ -529,7 +527,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       mitgliederList.setRememberColWidths(true);
       mitgliederList.setRememberOrder(true);
       mitgliederList.setMulti(true);
-      mitgliederList.addFeature(new FeatureSummary());
     }
     else
     {

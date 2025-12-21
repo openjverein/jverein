@@ -90,7 +90,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -545,7 +544,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setRememberOrder(true);
-    spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
     spbList.setAction(
         new EditAction(SpendenbescheinigungDetailView.class, spbList));

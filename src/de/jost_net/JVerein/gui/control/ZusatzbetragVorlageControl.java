@@ -55,7 +55,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -441,7 +440,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
           .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
       zusatzbetragVorlageList.setRememberColWidths(true);
       zusatzbetragVorlageList.setRememberOrder(true);
-      zusatzbetragVorlageList.addFeature(new FeatureSummary());
       zusatzbetragVorlageList.setMulti(true);
       zusatzbetragVorlageList.setAction(new EditAction(
           ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));
