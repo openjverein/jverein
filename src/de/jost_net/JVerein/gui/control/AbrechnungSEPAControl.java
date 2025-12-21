@@ -331,7 +331,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungsdokumentspeichern = new CheckboxInput(
         settings.getBoolean("rechnungsdokumentspeichern", false));
+    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
     return rechnungsdokumentspeichern;
+  }
+
+  public boolean istRechnungsdokumentActiv()
+  {
+    return rechnungsdokumentspeichern != null;
   }
 
   public FormularInput getRechnungFormular() throws RemoteException
@@ -488,6 +494,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+      settings.setAttribute("rechnungsdokumentspeichern",
+          (Boolean) rechnungsdokumentspeichern.getValue());
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
       settings.setAttribute("rechnungsformular",
           rechnungsformular.getValue() == null ? null
