@@ -764,6 +764,8 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
     {
       rpt.close();
       fos.close();
+      rpt = null;
+      fos = null;
     }
   }
 }
