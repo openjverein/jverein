@@ -108,6 +108,8 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
   private GeschlechtInput geschlecht;
 
+  private TextInput kontoinhaber;
+
   private Kursteilnehmer ktn;
 
   private JVereinTablePart part;
@@ -404,6 +406,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     part.addColumn("Verwendungszweck", "vzweck1");
     part.addColumn("BIC", "bic");
     part.addColumn("IBAN", "iban", new IBANFormatter());
+    part.addColumn("Kontoinhaber", "kontoinhaber");
     part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     part.addColumn("Mandats-ID", "mandatid");
@@ -458,6 +461,18 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return b;
   }
 
+  public TextInput getKontoinhaber() throws RemoteException
+  {
+    if (kontoinhaber != null)
+    {
+      return kontoinhaber;
+    }
+    kontoinhaber = new TextInput(getKursteilnehmer().getKontoinhaber(), 70);
+    kontoinhaber.setName("Kontoinhaber");
+    kontoinhaber.setHint("Optional");
+    return kontoinhaber;
+  }
+
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
@@ -493,6 +508,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     {
       k.setGeschlecht((String) getGeschlecht().getValue());
     }
+    k.setKontoinhaber((String) getKontoinhaber().getValue());
 
     if (k.getID() == null)
     {
