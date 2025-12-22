@@ -8,6 +8,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -61,8 +62,13 @@ public abstract class DruckMailControl extends FilterControl
     {
       return formular;
     }
-    formular = new FormularInput(formulartyp);
-    formular.setPleaseChoose("Kein Formular");
+    formular = new FormularInput(formulartyp,
+        settings.getString(settingsprefix + "formular.key", ""));
+    // Pre-Notifications können auch ohne Formular gemailt werden
+    if (formulartyp == FormularArt.SEPA_PRENOTIFICATION)
+    {
+      formular.setPleaseChoose("Kein Formular");
+    }
     return formular;
   }
 
@@ -148,6 +154,12 @@ public abstract class DruckMailControl extends FilterControl
     {
       settings.setAttribute(settingsprefix + "mail.text",
           (String) getTxt().getValue());
+    }
+    if (formular != null)
+    {
+      Formular f = (Formular) getFormular(null).getValue();
+      settings.setAttribute(settingsprefix + "formular.key",
+          f == null ? "" : f.getID());
     }
     super.saveFilterSettings();
   }
