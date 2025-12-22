@@ -24,7 +24,8 @@ public enum SpendenbescheinigungListeFilterVar
   DATUM_SPENDE_BIS_F("filter_spendedatum_bis_f"),
   ZEILE2("filter_zeile2"),
   MAIL("filter_mail"),
-  SPENDENART("filter_spendeart");
+  SPENDENART("filter_spendeart"),
+  VERSAND("filter_versand");
 
   private String name;
 

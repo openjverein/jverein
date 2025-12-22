@@ -51,6 +51,7 @@ import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.server.IVersand;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
@@ -166,8 +167,12 @@ public class ZipMailer
               String mail = teile[3];
               String dateiname = teile[4];
 
+              IVersand versand = null;
               Rechnung re = null;
               Spendenbescheinigung spb = null;
+              Lastschrift ls = null;
+
+              // Mitglied Map hinzufügen
               Mitglied mitgliedMap = (Mitglied) Einstellungen.getDBService()
                   .createObject(Mitglied.class, id);
               Mitglied mitgliedMail = mitgliedMap;
@@ -175,6 +180,14 @@ public class ZipMailer
               switch (art.toLowerCase().trim())
               {
                 case "rechnung":
+                  re = (Rechnung) Einstellungen.getDBService()
+                      .createObject(Rechnung.class, artId);
+                  map = new RechnungMap().getMap(re, map);
+                  // Bei Rechnungen ist der Zahler angegeben, wir wollen aber
+                  // das Mitglied selbst für die Map verwenden
+                  mitgliedMap = re.getMitglied();
+                  versand = (IVersand) re;
+                  break;
                 case "mahnung":
                   re = (Rechnung) Einstellungen.getDBService()
                       .createObject(Rechnung.class, artId);
@@ -187,11 +200,13 @@ public class ZipMailer
                   spb = (Spendenbescheinigung) Einstellungen.getDBService()
                       .createObject(Spendenbescheinigung.class, artId);
                   map = new SpendenbescheinigungMap().getMap(spb, map);
+                  versand = (IVersand) spb;
                   break;
                 case "lastschrift":
-                  Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+                  ls = (Lastschrift) Einstellungen.getDBService()
                       .createObject(Lastschrift.class, artId);
                   map = new LastschriftMap().getMap(ls, map);
+                  versand = (IVersand) ls;
                   break;
                 case "":
                 case "freiesformular":
@@ -237,6 +252,11 @@ public class ZipMailer
                 case "spendenbescheinigung":
                   finaldateiname = VorlageUtil.getName(
                       VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
+                      mitgliedMap) + ".pdf";
+                  break;
+                case "lastschrift":
+                  finaldateiname = VorlageUtil.getName(
+                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
                       mitgliedMap) + ".pdf";
                   break;
                 case "freiesformular":
@@ -302,6 +322,13 @@ public class ZipMailer
                 {
                   ma.setMail(ml);
                   ma.store();
+                }
+
+                // Als versendet markieren
+                if (versand != null)
+                {
+                  versand.setVersanddatum(new Date());
+                  versand.store();
                 }
               }
               catch (MessagingException me)
