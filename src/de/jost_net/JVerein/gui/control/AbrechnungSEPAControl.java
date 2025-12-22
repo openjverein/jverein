@@ -331,7 +331,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungsdokumentspeichern = new CheckboxInput(
         settings.getBoolean("rechnungsdokumentspeichern", false));
-    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
+    rechnungsdokumentspeichern
+        .setEnabled(settings.getBoolean("rechnung", false));
     return rechnungsdokumentspeichern;
   }
 
