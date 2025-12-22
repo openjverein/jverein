@@ -289,25 +289,28 @@ public class ZipMailer
                 }
                 sentCount++;
 
-                Mail ml = (Mail) Einstellungen.getDBService()
-                    .createObject(Mail.class, null);
-                ml.setBetreff(wtext1.toString());
-                ml.setTxt(wtext2.toString());
-                ml.setBearbeitung(new Timestamp(new Date().getTime()));
-                ml.setVersand(new Timestamp(new Date().getTime()));
-                ml.store();
-
-                MailEmpfaenger me = (MailEmpfaenger) Einstellungen
-                    .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(mitgliedMail);
-                me.setMail(ml);
-                me.setVersand(new Timestamp(new Date().getTime()));
-                me.store();
-                if ((Boolean) Einstellungen
-                    .getEinstellung(Property.ANHANGSPEICHERN))
+                if (mitgliedMail.getID() != null)
                 {
-                  ma.setMail(ml);
-                  ma.store();
+                  Mail ml = (Mail) Einstellungen.getDBService()
+                      .createObject(Mail.class, null);
+                  ml.setBetreff(wtext1.toString());
+                  ml.setTxt(wtext2.toString());
+                  ml.setBearbeitung(new Timestamp(new Date().getTime()));
+                  ml.setVersand(new Timestamp(new Date().getTime()));
+                  ml.store();
+
+                  MailEmpfaenger me = (MailEmpfaenger) Einstellungen
+                      .getDBService().createObject(MailEmpfaenger.class, null);
+                  me.setMitglied(mitgliedMail);
+                  me.setMail(ml);
+                  me.setVersand(new Timestamp(new Date().getTime()));
+                  me.store();
+                  if ((Boolean) Einstellungen
+                      .getEinstellung(Property.ANHANGSPEICHERN))
+                  {
+                    ma.setMail(ml);
+                    ma.store();
+                  }
                 }
               }
               catch (MessagingException me)
