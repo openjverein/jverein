@@ -693,8 +693,16 @@ public class PreNotificationControl extends DruckMailControl
       Mitglied m = l.getMitglied();
       String dokument = "Lastschrift über "
           + Einstellungen.DECIMALFORMAT.format(l.getBetrag()) + "€";
-      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
-          m.getVorname(), m.getMitgliedstyp()));
+      if (m != null)
+      {
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+            m.getVorname(), m.getMitgliedstyp()));
+      }
+      else
+      {
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, l.getName(),
+            l.getVorname(), "Kursteilnehmer"));
+      }
     }
     if (ohneMail == 1)
     {
