@@ -28,7 +28,7 @@ import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
-public class BetragSummaryTablePart extends AutoUpdateTablePart
+public class BetragSummaryTablePart extends JVereinTablePart
 {
 
   public BetragSummaryTablePart(Action action)

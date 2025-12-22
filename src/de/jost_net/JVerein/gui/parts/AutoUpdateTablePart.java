@@ -28,7 +28,7 @@ import de.willuhn.datasource.rmi.Listener;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 
-public class AutoUpdateTablePart extends JVereinTablePart
+public class AutoUpdateTablePart extends BetragSummaryTablePart
 {
 
   private Listener storeListener = new StoreListener();
