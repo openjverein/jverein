@@ -31,6 +31,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TabFolder;
 
@@ -86,6 +87,8 @@ public class PreNotificationControl extends DruckMailControl
   private SelectInput ct1ausgabe;
 
   private TextInput verwendungszweck;
+
+  private String lastdir;
 
   public enum TYP
   {
@@ -243,42 +246,47 @@ public class PreNotificationControl extends DruckMailControl
   private void generierePDF(List<Lastschrift> lastschriften, String pdfMode)
       throws IOException, ApplicationException
   {
-    boolean einzelnePdfs = false;
-    if (pdfMode.equals(EINZELN))
-    {
-      einzelnePdfs = true;
-    }
-
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_DATEINAME) + ".pdf");
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    String lastdir = file.getParent();
-    settings.setAttribute("lastdir", lastdir);
     Formular form = (Formular) getFormular(FormularArt.SEPA_PRENOTIFICATION)
         .getValue();
     if (form == null)
     {
-      throw new IOException("kein SEPA Pre-Notification-Formular ausgewählt");
+      throw new IOException("Kein SEPA Pre-Notification-Formular ausgewählt");
     }
+
+    boolean einzelnePdfs = false;
+    if (pdfMode.equals(EINZELN) && lastschriften.size() > 1)
+    {
+      einzelnePdfs = true;
+    }
+
+    String dateiname = null;
+    if (lastschriften.size() == 1)
+    {
+      Lastschrift ls = lastschriften.get(0);
+      if (ls.getMitglied() != null)
+      {
+        dateiname = VorlageUtil.getName(
+            VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls, ls.getMitglied())
+            + ".pdf";
+      }
+      else
+      {
+        dateiname = VorlageUtil.getName(
+            VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME, ls) + ".pdf";
+      }
+    }
+    else
+    {
+      dateiname = VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_DATEINAME)
+          + ".pdf";
+    }
+
+    final File file = getDateiAuswahl("pdf", dateiname, einzelnePdfs);
+    if (file == null)
+    {
+      return;
+    }
+
     Formular fo = (Formular) Einstellungen.getDBService()
         .createObject(Formular.class, form.getID());
     if (!einzelnePdfs)
@@ -290,10 +298,22 @@ public class PreNotificationControl extends DruckMailControl
     {
       if (einzelnePdfs)
       {
-        final File fx = new File(lastdir + File.separator
-            + VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
-                ls, ls.getMitglied())
-            + ".pdf");
+        File fx;
+        if (ls.getMitglied() != null)
+        {
+          fx = new File(lastdir + File.separator
+              + VorlageUtil.getName(
+                  VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
+                  ls.getMitglied())
+              + ".pdf");
+        }
+        else
+        {
+          fx = new File(lastdir + File.separator
+              + VorlageUtil.getName(
+                  VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME, ls)
+              + ".pdf");
+        }
         fa = new FormularAufbereitung(fx, false, false);
       }
 
@@ -304,9 +324,16 @@ public class PreNotificationControl extends DruckMailControl
         fa.closeFormular();
       }
     }
-
-    fa.showFormular();
-
+    if (!einzelnePdfs)
+    {
+      fa.showFormular();
+    }
+    else
+    {
+      GUI.getStatusBar()
+          .setSuccessText("Die Dokumente wurden erstellt und unter: "
+              + file.getParent() + " gespeichert.");
+    }
   }
 
   private void generiere1ct(ArrayList<Lastschrift> lastschriften)
@@ -724,4 +751,52 @@ public class PreNotificationControl extends DruckMailControl
     return text;
   }
 
+  public File getDateiAuswahl(String extension, String dateiname,
+      boolean einzelnePdfs) throws RemoteException
+  {
+    String s = null;
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
+    if (!einzelnePdfs)
+    {
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("Ausgabedatei wählen.");
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(dateiname);
+      fd.setFilterExtensions(new String[] { "*." + extension });
+      s = fd.open();
+      if (s == null || s.length() == 0)
+      {
+        return null;
+      }
+      if (!s.toLowerCase().endsWith("." + extension))
+      {
+        s = s + "." + extension;
+      }
+    }
+    else
+    {
+      DirectoryDialog dd = new DirectoryDialog(GUI.getShell(), SWT.SAVE);
+      dd.setText("Ausgabepfad wählen.");
+      if (path != null && path.length() > 0)
+      {
+        dd.setFilterPath(path);
+        s = dd.open();
+        if (s == null || s.length() == 0)
+        {
+          return null;
+        }
+        // Filename für das zip File
+        s = s + File.separator + dateiname;
+      }
+    }
+
+    final File file = new File(s);
+    lastdir = file.getParent();
+    settings.setAttribute("lastdir", file.getParent());
+    return file;
+  }
 }
