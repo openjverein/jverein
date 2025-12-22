@@ -110,6 +110,9 @@ public class VorlageUtil
           map = new LastschriftMap().getMap((Lastschrift) obj, map);
           map = new MitgliedMap().getMap(mitglied, map);
           break;
+        case PRENOTIFICATION_KURSTEILNEHMER_DATEINAME:
+          map = new LastschriftMap().getMap((Lastschrift) obj, map);
+          break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
         case PERSONALBOGEN_TITEL:
         case PERSONALBOGEN_SUBTITEL:
@@ -331,6 +334,9 @@ public class VorlageUtil
         case PRENOTIFICATION_MITGLIED_DATEINAME:
           map = LastschriftMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
+          break;
+        case PRENOTIFICATION_KURSTEILNEHMER_DATEINAME:
+          map = LastschriftMap.getDummyMap(map);
           break;
         case PERSONALBOGEN_MITGLIED_DATEINAME:
         case PERSONALBOGEN_TITEL:

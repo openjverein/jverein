@@ -456,5 +456,4 @@ public class PreNotificationControl extends DruckMailControl
     text.disable();
     return text;
   }
-
 }
