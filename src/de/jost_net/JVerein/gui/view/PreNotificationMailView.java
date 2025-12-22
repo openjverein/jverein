@@ -60,21 +60,24 @@ public class PreNotificationMailView extends AbstractView
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification.", null, null);
 
-    LabelGroup group = new LabelGroup(getParent(), "Filter");
     if (getCurrentObject() == null
         || getCurrentObject() instanceof Abrechnungslauf)
     {
+      LabelGroup group = new LabelGroup(getParent(), "Filter");
       group.addInput(control.getMailauswahl());
       if (getCurrentObject() == null)
       {
         group.addInput(control.getAbrechnungslaufAusw(10));
       }
+      else
+      {
+        group.addInput(control
+            .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
+      }
       group.addInput(control.getSuchVersand());
     }
     else
     {
-      group.addInput(control
-          .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
       SimpleContainer cont1 = new SimpleContainer(getParent(), false);
       cont1.addHeadline("Info");
       cont1.addInput(control.getInfo());
