@@ -65,6 +65,11 @@ public enum VorlageTyp
       "Pre-Notification-MitgliedDateiname",
       "Prenotification-$mitglied_name-$mitglied_vorname-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
+  PRENOTIFICATION_KURSTEILNEHMER_DATEINAME(
+      "pre-notification-kursteilnehmer-dateiname",
+      "Pre-Notification-KursteilnehmerDateiname",
+      "Prenotification-$lastschrift_name-$lastschrift_vorname-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Mitglieder
   PERSONALBOGEN_DATEINAME("personalbogen-dateiname", "PersonalbogenDateiname",

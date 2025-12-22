@@ -27,7 +27,7 @@ import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
-    implements Lastschrift, IBetrag
+    implements Lastschrift, IBetrag, IVersand
 {
 
   private static final long serialVersionUID = 380278347818535726L;
@@ -379,20 +379,29 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public void setVersanddatum(Date datum) throws RemoteException
+  {
+    setAttribute("versanddatum", datum);
+  }
+
+  @Override
+  public Date getVersanddatum() throws RemoteException
+  {
+    return (Date) getAttribute("versanddatum");
+  }
+
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if (fieldName.equals("faelligkeit"))
     {
       return (Date) getAbrechnungslauf().getFaelligkeit();
     }
-    else if (fieldName.equals("abrechnungslauf"))
+    if (fieldName.equals("abrechnungslauf"))
     {
       return getAbrechnungslauf();
     }
-    else
-    {
-      return super.getAttribute(fieldName);
-    }
+    return super.getAttribute(fieldName);
   }
 
   @Override

@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -61,6 +62,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -138,6 +140,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
   private CheckboxInput unterlagenwertermittlung;
 
   private Spendenbescheinigung spendenbescheinigung;
+
+  private DateInput versanddatum;
 
   private boolean and = false;
 
@@ -425,6 +429,16 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return unterlagenwertermittlung;
   }
 
+  public DateInput getVersanddatum() throws RemoteException
+  {
+    if (versanddatum != null)
+    {
+      return versanddatum;
+    }
+    versanddatum = new DateInput(getSpendenbescheinigung().getVersanddatum());
+    return versanddatum;
+  }
+
   public Part getBuchungListPart() throws RemoteException
   {
     return new BuchungListPart(getSpendenbescheinigung().getBuchungen(),
@@ -455,6 +469,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spb.setHerkunftSpende(hsp.getKey());
     spb.setUnterlagenWertermittlung(
         (Boolean) getUnterlagenWertermittlung().getValue());
+    spb.setVersanddatum((Date) getVersanddatum().getValue());
     return spb;
   }
 
@@ -516,8 +531,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    spbList = new BetragSummaryTablePart(getSpendenbescheinigungen(), null);
+    spbList = new AutoUpdateTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
+    spbList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
     spbList.addColumn("Spender", "mitglied");
     spbList.addColumn("Spendenart", "spendenart", new Formatter()
     {
@@ -719,6 +736,18 @@ public class SpendenbescheinigungControl extends DruckMailControl
       addCondition("spendedatum <= ?");
       Date d = (Date) getEingabedatumbis().getValue();
       bedingungen.add(new java.sql.Date(d.getTime()));
+    }
+    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
+    {
+      switch ((SuchVersand) getSuchVersand().getValue())
+      {
+        case VERSAND:
+          addCondition("versanddatum IS NOT NULL");
+          break;
+        case NICHT_VERSAND:
+          addCondition("versanddatum IS NULL");
+          break;
+      }
     }
 
     ResultSetExtractor rs = new ResultSetExtractor()
@@ -1089,8 +1118,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
             + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
             + Einstellungen.DECIMALFORMAT.format(spb.getBetrag())
             + "€ und Zeile 2: " + spb.getZeile2();
-        liste.add(
-            new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
+        liste.add(new DruckMailEmpfaengerEntry(dokument, null, null, null, ""));
       }
     }
     if (ohneMail > 0 && ohneMitglied == 0)
