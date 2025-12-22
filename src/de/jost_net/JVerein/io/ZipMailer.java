@@ -204,7 +204,10 @@ public class ZipMailer
                   break;
               }
               // Mitglied Map hinzufügen
-              map = new MitgliedMap().getMap(mitgliedMap, map);
+              if (mitgliedMap.getID() != null)
+              {
+                map = new MitgliedMap().getMap(mitgliedMap, map);
+              }
 
               VarTools.add(context, map);
 
