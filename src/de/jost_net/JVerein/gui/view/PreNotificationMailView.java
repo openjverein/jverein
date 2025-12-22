@@ -37,6 +37,7 @@ import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -59,10 +60,10 @@ public class PreNotificationMailView extends AbstractView
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification.", null, null);
 
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
     if (getCurrentObject() == null
         || getCurrentObject() instanceof Abrechnungslauf)
     {
-      LabelGroup group = new LabelGroup(getParent(), "Filter");
       group.addInput(control.getMailauswahl());
       if (getCurrentObject() == null)
       {
@@ -72,6 +73,8 @@ public class PreNotificationMailView extends AbstractView
     }
     else
     {
+      group.addInput(control
+          .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
       SimpleContainer cont1 = new SimpleContainer(getParent(), false);
       cont1.addHeadline("Info");
       cont1.addInput(control.getInfo());

@@ -274,9 +274,18 @@ public class ZipMailer
                         mitgliedMap) + ".pdf";
                     break;
                   case "lastschrift":
-                    finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
-                        mitgliedMap) + ".pdf";
+                    if (mitgliedMap.getID() != null)
+                    {
+                      finaldateiname = VorlageUtil.getName(
+                          VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
+                          mitgliedMap) + ".pdf";
+                    }
+                    else
+                    {
+                      finaldateiname = VorlageUtil.getName(
+                          VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME,
+                          ls) + ".pdf";
+                    }
                     break;
                   default:
                     StringWriter wdateiname = new StringWriter();

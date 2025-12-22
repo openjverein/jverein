@@ -86,8 +86,17 @@ public class PreNotificationAusgabe extends AbstractAusgabe
   {
     if (object != null)
     {
-      return VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME,
-          object, ((Lastschrift) object).getMitglied());
+      if (((Lastschrift) object).getMitglied() != null)
+      {
+        return VorlageUtil.getName(
+            VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, object,
+            ((Lastschrift) object).getMitglied());
+      }
+      else
+      {
+        return VorlageUtil.getName(
+            VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME, object);
+      }
     }
     else
     {
