@@ -220,51 +220,56 @@ public class ZipMailer
                 bos.write(b, 0, count);
               }
               in.close();
-              ma.setAnhang(bos.toByteArray());
 
-              String finaldateiname = "";
-              switch (art.toLowerCase().trim())
-              {
-                case "rechnung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                      + ".pdf";
-                  break;
-                case "mahnung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                      + ".pdf";
-                  break;
-                case "spendenbescheinigung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "freiesformular":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-                      dateiname.substring(0, dateiname.lastIndexOf('.')),
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "kontoauszug":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "lastschrift":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
-                      mitgliedMap) + ".pdf";
-                  break;
-                default:
-                  StringWriter wdateiname = new StringWriter();
-                  Velocity.evaluate(context, wdateiname, "LOG", dateiname);
-                  finaldateiname = wdateiname.toString();
-                  break;
-              }
-              ma.setDateiname(finaldateiname);
+              // Wenn es kein Formular gibt ist die Datei leer
               TreeSet<MailAnhang> anhang = new TreeSet<>();
-              anhang.add(ma);
+              if (bos.size() > 0)
+              {
+                ma.setAnhang(bos.toByteArray());
+
+                String finaldateiname = "";
+                switch (art.toLowerCase().trim())
+                {
+                  case "rechnung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                        + ".pdf";
+                    break;
+                  case "mahnung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                        + ".pdf";
+                    break;
+                  case "spendenbescheinigung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "freiesformular":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                        dateiname.substring(0, dateiname.lastIndexOf('.')),
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "kontoauszug":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "lastschrift":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
+                        mitgliedMap) + ".pdf";
+                    break;
+                  default:
+                    StringWriter wdateiname = new StringWriter();
+                    Velocity.evaluate(context, wdateiname, "LOG", dateiname);
+                    finaldateiname = wdateiname.toString();
+                    break;
+                }
+                ma.setDateiname(finaldateiname);
+                anhang.add(ma);
+              }
 
               StringWriter wtext1 = new StringWriter();
               Velocity.evaluate(context, wtext1, "LOG", betreff);
@@ -306,7 +311,8 @@ public class ZipMailer
                   me.setVersand(new Timestamp(new Date().getTime()));
                   me.store();
                   if ((Boolean) Einstellungen
-                      .getEinstellung(Property.ANHANGSPEICHERN))
+                      .getEinstellung(Property.ANHANGSPEICHERN)
+                      && ma.getDateiname() != null)
                   {
                     ma.setMail(ml);
                     ma.store();

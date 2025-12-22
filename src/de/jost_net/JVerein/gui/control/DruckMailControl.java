@@ -62,6 +62,7 @@ public abstract class DruckMailControl extends FilterControl
       return formular;
     }
     formular = new FormularInput(formulartyp);
+    formular.setPleaseChoose("Kein Formular");
     return formular;
   }
 

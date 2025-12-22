@@ -16,24 +16,43 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Map;
+
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public class PreNotificationAusgabe extends AbstractAusgabe
 {
   private Formular formular;
 
+  private Ausgabeart art;
+
   public PreNotificationAusgabe(Formular formular)
   {
     this.formular = formular;
+  }
+
+  @Override
+  public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
+      String betreff, String text, boolean pdfa, boolean encrypt)
+      throws IOException, ApplicationException, DocumentException
+  {
+    this.art = art;
+    super.aufbereiten(list, art, betreff, text, pdfa, encrypt);
   }
 
   @Override
@@ -73,6 +92,30 @@ public class PreNotificationAusgabe extends AbstractAusgabe
     else
     {
       return VorlageUtil.getName(VorlageTyp.PRENOTIFICATION_DATEINAME);
+    }
+  }
+
+  @Override
+  protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
+      File file, DBObject object)
+      throws IOException, DocumentException, ApplicationException
+  {
+    // Bei Mailversand ist nicht zwingend ein Formular notwendig
+    if (art != Ausgabeart.MAIL || formular != null)
+    {
+      super.createPDF(formular, aufbereitung, file, object);
+    }
+  }
+
+  @Override
+  protected void closeDocument(FormularAufbereitung aufbereitung,
+      DBObject object) throws IOException, DocumentException
+  {
+    // Bei Mailversand ist nicht zwingend ein Formular notwendig, daher auch
+    // nicht schließen
+    if (art != Ausgabeart.MAIL || formular != null)
+    {
+      super.closeDocument(aufbereitung, object);
     }
   }
 
