@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.mail.MessagingException;
@@ -371,18 +370,10 @@ public class ZipMailer
               "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
           GUI.getCurrentView().reload();
         }
-        catch (ZipException e)
-        {
-          e.printStackTrace();
-        }
         catch (IOException e)
         {
-          e.printStackTrace();
-        }
-        catch (Exception e)
-        {
-          e.printStackTrace();
-          throw new ApplicationException(e);
+          Logger.error("Fehler beim Mailversand", e);
+          throw new ApplicationException("Fehler beim Mailversand");
         }
 
         monitor.setPercentComplete(100);
