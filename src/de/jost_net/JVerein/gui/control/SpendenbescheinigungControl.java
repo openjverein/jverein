@@ -1084,8 +1084,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
             + Datum.formatDate(spb.getBescheinigungsdatum()) + " über "
             + Einstellungen.DECIMALFORMAT.format(spb.getBetrag())
             + "€ und Zeile 2: " + spb.getZeile2();
-        liste.add(
-            new DruckMailEmpfaengerEntry(dokument, null, null, null, null));
+        liste.add(new DruckMailEmpfaengerEntry(dokument, null, null, null, ""));
       }
     }
     if (ohneMail > 0 && ohneMitglied == 0)
