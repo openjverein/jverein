@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -166,6 +167,8 @@ public abstract class FilterControl extends VorZurueckControl
   protected SelectInput suchbuchungsklasse = null;
 
   protected SelectInput suchbuchungsartart = null;
+
+  protected SelectInput suchversand = null;
 
   protected SelectInput suchkontoart = null;
 
@@ -1272,6 +1275,37 @@ public abstract class FilterControl extends VorZurueckControl
     return suchbuchungsartart != null;
   }
 
+  public SelectInput getSuchVersand() throws RemoteException
+  {
+    if (suchversand != null)
+    {
+      return suchversand;
+    }
+    String versand = settings.getString(settingsprefix + "suchversand.key", "");
+    SuchVersand suchv = null;
+    if (versand.length() > 0)
+    {
+      try
+      {
+        suchv = SuchVersand.getByKey(Integer.valueOf(versand));
+      }
+      catch (Exception e)
+      {
+        //
+      }
+    }
+    suchversand = new SelectInput(SuchVersand.values(), suchv);
+    suchversand.setName("Versand");
+    suchversand.setPleaseChoose(ALLE);
+    suchversand.addListener(new FilterListener());
+    return suchversand;
+  }
+
+  public boolean isSuchVersandAktiv()
+  {
+    return suchversand != null;
+  }
+
   public SelectInput getSuchKontoart() throws RemoteException
   {
     if (suchkontoart != null)
@@ -1477,6 +1511,8 @@ public abstract class FilterControl extends VorZurueckControl
           suchbuchungsklasse.setValue(null);
         if (suchbuchungsartart != null)
           suchbuchungsartart.setValue(null);
+        if (suchversand != null)
+          suchversand.setValue(null);
         if (suchkontoart != null)
           suchkontoart.setValue(null);
         if (doubleauswahl != null)
@@ -1962,6 +1998,20 @@ public abstract class FilterControl extends VorZurueckControl
       else
       {
         settings.setAttribute(settingsprefix + "suchbuchungsartart", "");
+      }
+    }
+
+    if (suchversand != null)
+    {
+      SuchVersand versand = (SuchVersand) suchversand.getValue();
+      if (versand != null)
+      {
+        settings.setAttribute(settingsprefix + "suchversand.key",
+            versand.getKey());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchversand.key", "");
       }
     }
 

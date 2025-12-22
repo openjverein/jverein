@@ -59,6 +59,12 @@ public class MarkOverdueMessageConsumer implements MessageConsumer
 
     QueryMessage msg = (QueryMessage) message;
 
+    if (msg.getData() == null)
+    {
+      updateAll();
+      return;
+    }
+
     // Beim speichern/löschen von Buchungen müssen die Counter von Rechnung und
     // Sollbuchung aktuallisiert werden, daher schicken wir die manuell
     if (msg.getData() instanceof Buchung)
@@ -66,8 +72,7 @@ public class MarkOverdueMessageConsumer implements MessageConsumer
       handleMessage(new QueryMessage(new RechnungImpl()));
       handleMessage(new QueryMessage(new SollbuchungImpl()));
     }
-    if (msg.getData() == null
-        || !UnreadCounter.class.isAssignableFrom(msg.getData().getClass()))
+    if (!UnreadCounter.class.isAssignableFrom(msg.getData().getClass()))
     {
       return;
     }

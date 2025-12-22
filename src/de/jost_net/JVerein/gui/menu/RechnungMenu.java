@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
@@ -42,6 +43,8 @@ public class RechnungMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(RechnungDetailView.class, table), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new VersandAction(), "office-calendar.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
@@ -54,5 +57,4 @@ public class RechnungMenu extends ContextMenu
         new StartViewAction(MahnungMailView.class, true),
         "document-print.png"));
   }
-
 }

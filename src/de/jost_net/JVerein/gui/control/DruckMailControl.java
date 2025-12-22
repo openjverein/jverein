@@ -240,10 +240,16 @@ public abstract class DruckMailControl extends FilterControl
 
     private String vorname;
 
-    private Mitgliedstyp mitgliedstyp;
+    private String mitgliedstyp = "";
 
     public DruckMailEmpfaengerEntry(String dokument, String email, String name,
-        String vorname, Mitgliedstyp mitgliedstyp)
+        String vorname, Mitgliedstyp mitgliedstyp) throws RemoteException
+    {
+      this(dokument, email, name, vorname, mitgliedstyp.getBezeichnung());
+    }
+
+    public DruckMailEmpfaengerEntry(String dokument, String email, String name,
+        String vorname, String mitgliedstyp)
     {
       this.dokument = dokument;
       this.email = email;
@@ -272,7 +278,7 @@ public abstract class DruckMailControl extends FilterControl
       return vorname;
     }
 
-    public Mitgliedstyp getMitgliedstyp()
+    public String getMitgliedstyp()
     {
       return mitgliedstyp;
     }

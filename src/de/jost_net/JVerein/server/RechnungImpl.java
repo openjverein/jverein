@@ -38,7 +38,7 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
-    implements Rechnung, IAdresse, UnreadCounter
+    implements Rechnung, IAdresse, UnreadCounter, IVersand
 {
 
   /**
@@ -474,6 +474,17 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public void setVersanddatum(Date datum) throws RemoteException
+  {
+    setAttribute("versanddatum", datum);
+  }
+
+  @Override
+  public Date getVersanddatum() throws RemoteException
+  {
+    return (Date) getAttribute("versanddatum");
+  }
+
   public void setZahler(Mitglied zahler) throws RemoteException
   {
     setAttribute("zahler", zahler);

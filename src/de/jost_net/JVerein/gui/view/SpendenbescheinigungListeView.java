@@ -44,11 +44,12 @@ public class SpendenbescheinigungListeView extends AbstractView
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addLabelPair("Zeile 2", control.getSuchname());
     left.addInput(control.getMailauswahl());
-    left.addInput(control.getSuchSpendenart());
+    left.addInput(control.getSuchVersand());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
     middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
+    middle.addInput(control.getSuchSpendenart());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Spendedatum von", control.getEingabedatumvon());

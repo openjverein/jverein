@@ -16,44 +16,76 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.dialogs.BuchungsuebernahmeDialog;
-import de.jost_net.JVerein.io.Buchungsuebernahme;
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.JVerein.gui.dialogs.VersandDatumDialog;
+import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsuebernahmeAction implements Action
+public class VersandAction implements Action
 {
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
+    IVersand[] versandObjekte = null;
+    if (context instanceof IVersand)
+    {
+      versandObjekte = new IVersand[1];
+      versandObjekte[0] = (IVersand) context;
+    }
+    else if (context instanceof IVersand[])
+    {
+      versandObjekte = (IVersand[]) context;
+    }
+    if (versandObjekte == null)
+    {
+      return;
+    }
+    if (versandObjekte.length == 0)
+    {
+      return;
+    }
+
+    Date datum = null;
 
     try
     {
-      BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(
-          BuchungsuebernahmeDialog.POSITION_CENTER);
-      if (d.open())
+      VersandDatumDialog d = new VersandDatumDialog(
+          VersandDatumDialog.POSITION_MOUSE);
+      datum = d.open();
+      // Wenn Dialog über das Schliesen Icon geschlossen wurde
+      if (d.getClosed())
       {
-        new Buchungsuebernahme(true);
-        GUI.getCurrentView().reload();
+        return;
       }
     }
     catch (OperationCanceledException oce)
     {
-      return;
-    }
-    catch (ApplicationException ae)
-    {
-      throw ae;
+      throw oce;
     }
     catch (Exception e)
     {
-      Logger.error("Error while importing from Hibiscus", e);
-      GUI.getStatusBar()
-          .setErrorText("Fehler beim Importieren von Hibiscus Buchungen");
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler bei der Datums Auswahl");
+      return;
+    }
+
+    try
+    {
+      for (IVersand o : versandObjekte)
+      {
+        o.setVersanddatum(datum);
+        o.store();
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(e);
     }
   }
-
 }

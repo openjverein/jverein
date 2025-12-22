@@ -48,7 +48,6 @@ public enum MitgliedVar
   HANDY("mitglied_handy"), //
   IBAN("mitglied_iban"), //
   IBANMASKIERT("mitglied_iban_maskiert"), //
-  BANK_NAME("mitglied_bank_name"),
   ID("mitglied_id"), //
   INDIVIDUELLERBEITRAG("mitglied_individuellerbeitrag"), //
   KONTO("mitglied_konto"), //

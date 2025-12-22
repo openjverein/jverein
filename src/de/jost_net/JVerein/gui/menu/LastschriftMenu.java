@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
@@ -47,7 +48,8 @@ public class LastschriftMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new EditAction(LastschriftDetailView.class, part),
         "text-x-generic.png"));
-
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new VersandAction(), "office-calendar.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);

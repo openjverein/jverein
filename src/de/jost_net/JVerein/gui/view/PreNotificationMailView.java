@@ -68,6 +68,7 @@ public class PreNotificationMailView extends AbstractView
       {
         group.addInput(control.getAbrechnungslaufAusw(10));
       }
+      group.addInput(control.getSuchVersand());
     }
     else
     {

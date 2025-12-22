@@ -32,6 +32,7 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
@@ -59,7 +60,6 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
-
 import de.jost_net.JVerein.util.SteuerUtil;
 
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
@@ -86,6 +86,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -2537,6 +2538,9 @@ public class EinstellungControl extends AbstractControl
       ExtensionRegistry.extend(item);
 
       reload.invoke(GUI.getNavigation(), item);
+
+      // Die Unread-Counter müssen neu berechent werden
+      new MarkOverdueMessageConsumer().handleMessage(new QueryMessage());
     }
     catch (NoSuchMethodException ignore)
     {

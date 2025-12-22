@@ -37,17 +37,20 @@ public class LastschriftListeView extends AbstractView
     LastschriftControl control = new LastschriftControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
-    left.addLabelPair("Zweck", control.getSuchtext());
     left.addInput(control.getMitgliedArt());
+    left.addInput(control.getSuchname());
+    left.addInput(control.getSuchVersand());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addLabelPair("Zweck", control.getSuchtext());
+    middle.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addLabelPair("Fälligkeit von", control.getDatumvon());
     right.addLabelPair("Fälligkeit bis", control.getDatumbis());
-    right.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
 
     ButtonArea fbuttons = new ButtonArea();
     ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),

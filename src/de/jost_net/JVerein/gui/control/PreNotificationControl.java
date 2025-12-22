@@ -33,10 +33,12 @@ import de.jost_net.JVerein.io.PreNotificationAusgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.AbrechnungslaufImpl;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -305,6 +307,19 @@ public class PreNotificationControl extends DruckMailControl
           it.addFilter("(email is  not null and length(email) > 0)");
         }
       }
+      if (suchversand != null && suchversand.getValue() != null)
+      {
+        switch ((SuchVersand) suchversand.getValue())
+        {
+          case VERSAND:
+            it.addFilter("versanddatum IS NOT NULL");
+            break;
+          case NICHT_VERSAND:
+            it.addFilter("versanddatum IS NULL");
+            break;
+        }
+      }
+
       it.setOrder("order by name, vorname");
       while (it.hasNext())
       {
@@ -410,8 +425,16 @@ public class PreNotificationControl extends DruckMailControl
       Mitglied m = l.getMitglied();
       String dokument = "Lastschrift über "
           + Einstellungen.DECIMALFORMAT.format(l.getBetrag()) + "€";
-      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
-          m.getVorname(), m.getMitgliedstyp()));
+      if (m != null)
+      {
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+            m.getVorname(), m.getMitgliedstyp()));
+      }
+      else
+      {
+        liste.add(new DruckMailEmpfaengerEntry(dokument, mail, l.getName(),
+            l.getVorname(), "Kursteilnehmer"));
+      }
     }
     if (ohneMail == 1)
 
@@ -423,6 +446,15 @@ public class PreNotificationControl extends DruckMailControl
       text = ohneMail + " Lastschriften haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  public TextInput getAbrechnungslauf(AbrechnungslaufImpl lauf)
+      throws RemoteException
+  {
+    TextInput text = new TextInput(lauf.getIDText());
+    text.setName("Abrechnungslauf");
+    text.disable();
+    return text;
   }
 
 }
