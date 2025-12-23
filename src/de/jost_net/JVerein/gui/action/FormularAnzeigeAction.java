@@ -72,6 +72,7 @@ public class FormularAnzeigeAction implements Action
       map = RechnungMap.getDummyMap(map);
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
+      fab.closeFormular();
       fab.showFormular();
     }
     catch (RemoteException e)

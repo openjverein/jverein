@@ -21,7 +21,6 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
-import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -38,12 +37,6 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     GUI.getView().setTitle("Spendenbescheinigung");
 
     control = new SpendenbescheinigungControl(this);
-
-    Spendenbescheinigung spb = control.getSpendenbescheinigung();
-    if (spb.isNewObject())
-    {
-      control.setEditable();
-    }
 
     ScrolledContainer scrolled = new ScrolledContainer(getParent());
 

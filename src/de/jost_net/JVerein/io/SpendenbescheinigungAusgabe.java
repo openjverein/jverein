@@ -14,18 +14,18 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 
@@ -35,6 +35,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfAConformanceException;
 import com.itextpdf.text.pdf.PdfPCell;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -44,10 +45,8 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.FormularAufbereitung;
-import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Adressblatt;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
@@ -58,9 +57,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Base64;
 
@@ -70,234 +67,57 @@ import de.willuhn.util.Base64;
  * der Generierung eines Dokuments aus der Detailansicht der
  * Spendenbescheinigung heraus verwendet.
  */
-public class SpendenbescheinigungPrintAction implements Action
+public class SpendenbescheinigungAusgabe extends AbstractAusgabe
 {
 
   private Adressblatt adressblatt = Adressblatt.OHNE_ADRESSBLATT;
 
-  private String fileName = null;
-
   private String text = null;
 
-  private boolean open = false;
+  private FileOutputStream fos;
 
-  private de.willuhn.jameica.system.Settings settings;
+  private Reporter rpt;
 
-  /**
-   * Konstruktor ohne Parameter. Es wird angenommen, dass das Standard-Dokument
-   * aufbereitet werden soll.
-   */
-  public SpendenbescheinigungPrintAction()
+  public SpendenbescheinigungAusgabe(String text, Adressblatt adressblatt)
   {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-  }
-
-  /**
-   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
-   * oder das individuelle Dokument aufbereitet werden soll.
-   * 
-   * @param txt
-   *          Anschreiben auf PDF
-   * @param standard
-   *          true=Standard-Dokument, false=individuelles Dokument
-   * @param adressblatt
-   *          enum Adressblatt
-   */
-  public SpendenbescheinigungPrintAction(String text, Adressblatt adressblatt,
-      boolean open)
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     this.adressblatt = adressblatt;
     this.text = text;
-    this.open = open;
   }
 
-  /**
-   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
-   * oder das individuelle Dokument aufbereitet werden soll.
-   * 
-   * @param adressblatt
-   *          enum Adressblatt
-   */
-  public SpendenbescheinigungPrintAction(Adressblatt adressblatt, boolean open)
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-    this.adressblatt = adressblatt;
-    this.open = open;
-  }
-
-  /**
-   * Konstruktor. Über den Parameter kann festgelegt werden, ob das Standard-
-   * oder das individuelle Dokument aufbereitet werden soll.
-   * 
-   * @param adressblatt
-   *          enum Adressblatt
-   * @param fileName
-   *          Dateiname als Vorgabe inklusive Pfad
-   */
-  public SpendenbescheinigungPrintAction(Adressblatt adressblatt,
-      String fileName)
-  {
-    super();
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
-    this.fileName = fileName;
-    this.adressblatt = adressblatt;
-  }
-
-  /**
-   * Aufbereitung der Spendenbescheinigungen Hinweis: Das bzw. die generierten
-   * Formulare werden nicht im Acrobat Reader angezeigt.
-   * 
-   * @param context
-   *          Die Spendenbescheinigung(en)
-   */
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
+      String betreff, String text, boolean pdfa, boolean encrypt)
+      throws IOException, ApplicationException, PdfAConformanceException,
+      DocumentException
   {
-    Spendenbescheinigung[] spbArr = null;
-    // Prüfung des Contexs, vorhanden, eine oder mehrere
-    if (context instanceof TablePart)
+    GregorianCalendar gc = new GregorianCalendar();
+    boolean standard = false;
+    boolean individuell = false;
+    for (DBObject o : list)
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
-    }
-    if (context == null)
-    {
-      throw new ApplicationException("Keine Spendenbescheinigung ausgewählt");
-    }
-    else if (context instanceof Spendenbescheinigung)
-    {
-      spbArr = new Spendenbescheinigung[] { (Spendenbescheinigung) context };
-    }
-    else if (context instanceof Spendenbescheinigung[])
-    {
-      spbArr = (Spendenbescheinigung[]) context;
-    }
-    else
-    {
-      return;
-    }
-    // Aufbereitung
-    try
-    {
-      String path = (String) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGVERZEICHNIS);
-      if (path == null || path.length() == 0)
+      Spendenbescheinigung spb = (Spendenbescheinigung) o;
+      gc.setTime(spb.getBescheinigungsdatum());
+      Formular spendeformular = spb.getFormular();
+      if (spendeformular == null && (gc.get(GregorianCalendar.YEAR) <= 2013))
       {
-        path = settings.getString("lastdir", System.getProperty("user.home"));
+        throw new ApplicationException(
+            "Standard Spendenbescheinigungen vor 2014 werden nicht mehr unterstützt!");
       }
-
-      settings.setAttribute("lastdir", path);
-      path = path.endsWith(File.separator) ? path : path + File.separator;
-
-      // Check ob Standard Spendenbescheinigungen mit Datum vor 2014
-      // gedruckt werden sollen
-      GregorianCalendar gc = new GregorianCalendar();
-      for (Spendenbescheinigung spb : spbArr)
+      if (spendeformular == null)
       {
-        gc.setTime(spb.getBescheinigungsdatum());
-        Formular spendeformular = spb.getFormular();
-        if (spendeformular == null && (gc.get(GregorianCalendar.YEAR) <= 2013))
-        {
-          String text = "Standard Spendenbescheinigungen vor 2014 werden nicht mehr unterstützt!";
-          throw new ApplicationException(text);
-        }
+        standard = true;
       }
-      File file = null;
-      // Start der Aufbereitung der Dokumente
-      for (Spendenbescheinigung spb : spbArr)
+      else
       {
-        String fileName = null;
-        if (spbArr.length > 1 || this.fileName == null)
-        {
-          // Dokumentennamen aus konfiguriertem Verzeichnis und dem
-          // DateinamenmusterSpende
-          // zusammensetzen, wenn mehr als eine Spendenbescheinigung
-          // aufzubereiten
-          // oder keine Vorgabe für einen Dateinamen gemacht wurde.
-          Mitglied mitglied = spb.getMitglied();
-          if (mitglied != null)
-          {
-            fileName = path + VorlageUtil.getName(
-                VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                mitglied) + ".pdf";
-          }
-          else
-          {
-            fileName = path + VorlageUtil.getName(
-                VorlageTyp.SPENDENBESCHEINIGUNG_DATEINAME, spb) + ".pdf";
-          }
-        }
-        else
-        {
-          fileName = this.fileName;
-        }
-        file = new File(fileName);
-        // Aufbereitung des Dokumentes
-        if (spb.getFormular() == null)
-        {
-          generiereSpendenbescheinigungStandardAb2014(spb, fileName,
-              adressblatt);
-        }
-        else
-        {
-          Formular fo = (Formular) Einstellungen.getDBService()
-              .createObject(Formular.class, spb.getFormular().getID());
-          Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb,
-              null);
-          map = new AllgemeineMap().getMap(map);
-          if (spb.getMitglied() != null)
-            map = new MitgliedMap().getMap(spb.getMitglied(), map);
-          boolean encrypt = (Boolean) Einstellungen
-              .getEinstellung(Property.UNTERSCHRIFTDRUCKEN);
-          FormularAufbereitung fa = new FormularAufbereitung(file, false,
-              encrypt);
-          fa.writeForm(fo, map);
-          if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
-          {
-            // Neue Seite für Anschrift in Fenster in querem Brief
-            // oder für Anschreiben
-            fa.printNeueSeite();
-          }
-          // Brieffenster drucken bei Spendenbescheinigung
-          if (adressblatt == Adressblatt.MIT_ADRESSE
-              || adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
-          {
-            fa.printAdressfenster(getAussteller(),
-                (String) map.get(SpendenbescheinigungVar.EMPFAENGER.getName()));
-          }
-          // Anschreiben drucken
-          if (adressblatt == Adressblatt.MIT_ANSCHREIBEN
-              || adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
-          {
-            fa.printAnschreiben(spb, text);
-          }
-          fa.closeFormular();
-          fo.store();
-        }
+        individuell = true;
       }
-      String erfolg = (spbArr.length > 1)
-          ? "Die Spendenbescheinigungen wurden erstellt und unter " + path
-              + " gespeichert."
-          : "Die Spendenbescheinigung wurde erstellt und unter " + path
-              + " gespeichert.";
-      GUI.getStatusBar().setSuccessText(erfolg);
-      if (file != null && spbArr.length == 1 && open)
-        FileViewer.show(file);
+      if (individuell && standard && art == Ausgabeart.PDF)
+      {
+        throw new ApplicationException(
+            "PDF mit Standard und individuellen Spendenbescheinigungen wird nicht unterstützt!");
+      }
     }
-    catch (Exception e)
-    {
-      String fehler = "Fehler beim Aufbereiten der Spendenbescheinigung ("
-          + e.getMessage() + ")";
-      throw new ApplicationException(fehler);
-    }
+    super.aufbereiten(list, art, betreff, text, pdfa, encrypt);
   }
 
   /**
@@ -312,16 +132,24 @@ public class SpendenbescheinigungPrintAction implements Action
    * @throws DocumentException
    */
   private void generiereSpendenbescheinigungStandardAb2014(
-      Spendenbescheinigung spb, String fileName, Adressblatt adressblatt)
+      Spendenbescheinigung spb, File file, Adressblatt adressblatt)
       throws IOException, DocumentException
   {
-    final File file = new File(fileName);
-    FileOutputStream fos = new FileOutputStream(file);
-
+    if (fos == null)
+    {
+      fos = new FileOutputStream(file);
+    }
     Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
     map = new AllgemeineMap().getMap(map);
     boolean isSammelbestaetigung = spb.isSammelbestaetigung();
-    Reporter rpt = new Reporter(fos, 80, 50, 30, 20, true);
+    if (rpt == null)
+    {
+      rpt = new Reporter(fos, 80, 50, 30, 20, true);
+    }
+    else
+    {
+      rpt.newPage();
+    }
 
     // Aussteller, kein Header
     rpt.addHeaderColumn("", Element.ALIGN_CENTER, 100, BaseColor.LIGHT_GRAY);
@@ -825,6 +653,7 @@ public class SpendenbescheinigungPrintAction implements Action
           context.put("email", m.getEmail());
         Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
         mmap = new AllgemeineMap().getMap(mmap);
+        mmap = new SpendenbescheinigungMap().getMap(spb, mmap);
         VarTools.add(context, mmap);
         StringWriter wtext = new StringWriter();
         Velocity.evaluate(context, wtext, "LOG", text);
@@ -835,9 +664,6 @@ public class SpendenbescheinigungPrintAction implements Action
         rpt.addLight(text, 10);
       }
     }
-
-    rpt.close();
-    fos.close();
   }
 
   private String getAussteller() throws RemoteException
@@ -846,5 +672,100 @@ public class SpendenbescheinigungPrintAction implements Action
         + (String) Einstellungen.getEinstellung(Property.STRASSE) + ", "
         + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
         + (String) Einstellungen.getEinstellung(Property.ORT);
+  }
+
+  @Override
+  protected String getZipDateiname(DBObject object) throws RemoteException
+  {
+    // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
+    Spendenbescheinigung spb = (Spendenbescheinigung) object;
+    return spb.getMitgliedID() + "#spendenbescheinigung#" + spb.getID() + "#"
+        + (spb.getMitglied() == null ? " " : spb.getMitglied().getEmail())
+        + "#Spendenbescheinigung";
+  }
+
+  @Override
+  protected Map<String, Object> getMap(DBObject object) throws RemoteException
+  {
+    Spendenbescheinigung spb = (Spendenbescheinigung) object;
+    Map<String, Object> map = new SpendenbescheinigungMap().getMap(spb, null);
+    map = new AllgemeineMap().getMap(map);
+    if (spb.getMitglied() != null)
+      map = new MitgliedMap().getMap(spb.getMitglied(), map);
+    return map;
+  }
+
+  @Override
+  protected String getDateiname(DBObject object) throws RemoteException
+  {
+    if (object != null)
+    {
+      return VorlageUtil.getName(
+          VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, object,
+          ((Spendenbescheinigung) object).getMitglied());
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNG_DATEINAME);
+    }
+  }
+
+  @Override
+  protected Formular getFormular(DBObject object) throws RemoteException
+  {
+    return ((Spendenbescheinigung) object).getFormular();
+  }
+
+  @Override
+  protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
+      File file, DBObject object)
+      throws IOException, DocumentException, ApplicationException
+  {
+    if (formular == null)
+    {
+      generiereSpendenbescheinigungStandardAb2014((Spendenbescheinigung) object,
+          file, adressblatt);
+    }
+    else
+    {
+      super.createPDF(formular, aufbereitung, file, object);
+
+      if (adressblatt != Adressblatt.OHNE_ADRESSBLATT)
+      {
+        // Neue Seite für Anschrift in Fenster in querem Brief
+        // oder für Anschreiben
+        aufbereitung.printNeueSeite();
+      }
+      // Brieffenster drucken bei Spendenbescheinigung
+      if (adressblatt == Adressblatt.MIT_ADRESSE
+          || adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
+      {
+        aufbereitung.printAdressfenster(getAussteller(), (String) getMap(object)
+            .get(SpendenbescheinigungVar.EMPFAENGER.getName()));
+      }
+      // Anschreiben drucken
+      if (adressblatt == Adressblatt.MIT_ANSCHREIBEN
+          || adressblatt == Adressblatt.MIT_ADRESSE_ANSCHREIBEN)
+      {
+        aufbereitung.printAnschreiben((Spendenbescheinigung) object, text);
+      }
+    }
+  }
+
+  @Override
+  protected void closeDocument(FormularAufbereitung formularaufbereitung,
+      DBObject object) throws IOException, DocumentException
+  {
+    if (object != null && ((Spendenbescheinigung) object).getFormular() != null)
+    {
+      super.closeDocument(formularaufbereitung, object);
+    }
+    else
+    {
+      rpt.close();
+      fos.close();
+      rpt = null;
+      fos = null;
+    }
   }
 }
