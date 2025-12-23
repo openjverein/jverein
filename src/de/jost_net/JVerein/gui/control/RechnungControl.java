@@ -34,9 +34,9 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
@@ -74,14 +74,13 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungControl extends DruckMailControl implements Savable
 {
 
-  private JVereinTablePart rechnungList;
+  private BetragSummaryTablePart rechnungList;
 
   private Rechnung rechnung;
 
@@ -181,7 +180,6 @@ public class RechnungControl extends DruckMailControl implements Savable
     rechnungList.setRememberColWidths(true);
     rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setRememberOrder(true);
-    rechnungList.addFeature(new FeatureSummary());
     rechnungList.setMulti(true);
     rechnungList
         .setAction(new EditAction(RechnungDetailView.class, rechnungList));

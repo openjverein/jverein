@@ -33,7 +33,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
-    implements Spendenbescheinigung, IVersand
+    implements Spendenbescheinigung, IBetrag, IVersand
 {
 
   private static final long serialVersionUID = -1861750218155086064L;

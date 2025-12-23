@@ -42,7 +42,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;
 
-  double getBetrag() throws RemoteException;
+  Double getBetrag() throws RemoteException;
 
   void setBetrag(double betrag) throws RemoteException;
 

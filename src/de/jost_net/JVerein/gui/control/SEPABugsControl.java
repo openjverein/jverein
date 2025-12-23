@@ -42,7 +42,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 
 public class SEPABugsControl extends AbstractControl
@@ -89,7 +88,6 @@ public class SEPABugsControl extends AbstractControl
     bugsList.addColumn("Klassifikation", "klassifikationText");
     bugsList.setRememberColWidths(true);
     bugsList.setRememberOrder(true);
-    bugsList.addFeature(new FeatureSummary());
     return bugsList;
   }
 

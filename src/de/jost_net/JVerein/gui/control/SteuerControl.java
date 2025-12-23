@@ -48,7 +48,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -111,7 +110,6 @@ public class SteuerControl extends VorZurueckControl implements Savable
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
       steuerList.setContextMenu(new SteuerMenue(steuerList));
       steuerList.setRememberColWidths(true);
-      steuerList.removeFeature(FeatureSummary.class);
       steuerList.setMulti(true);
       steuerList.setCheckable(false);
       steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));

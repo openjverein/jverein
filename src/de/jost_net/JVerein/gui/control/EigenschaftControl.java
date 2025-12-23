@@ -35,7 +35,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -153,7 +152,6 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       eigenschaftList.setRememberColWidths(true);
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
-      eigenschaftList.addFeature(new FeatureSummary());
       eigenschaftList.setMulti(true);
       eigenschaftList.setAction(
           new EditAction(EigenschaftDetailView.class, eigenschaftList));
