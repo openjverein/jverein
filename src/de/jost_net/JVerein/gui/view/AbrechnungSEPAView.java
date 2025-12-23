@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
@@ -79,6 +80,12 @@ public class AbrechnungSEPAView extends AbstractView
     {
       rigth.addHeadline("Rechnungen");
       rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+          && JVereinPlugin.isArchiveServiceActive())
+      {
+        rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
+            control.getRechnungsdokumentSpeichern());
+      }
       rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
       rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
       rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
