@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.ILastschrift;
+import de.jost_net.JVerein.rmi.Mitglied.namenformat;
 import de.willuhn.util.ApplicationException;
 
 public interface Kursteilnehmer extends JVereinDBObject, ILastschrift
@@ -85,4 +86,9 @@ public interface Kursteilnehmer extends JVereinDBObject, ILastschrift
 
   public void insert() throws RemoteException, ApplicationException;
 
+  public String getKontoinhaber(namenformat art) throws RemoteException;
+
+  public String getKontoinhaber() throws RemoteException;
+
+  public void setKontoinhaber(String kontoinhaber) throws RemoteException;
 }
