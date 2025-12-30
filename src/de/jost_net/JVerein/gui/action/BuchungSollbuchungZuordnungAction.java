@@ -78,7 +78,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
       {
         return;
       }
-      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0]);
+      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0], true);
       Object open = mkaz.open();
       Sollbuchung sollb = null;
 

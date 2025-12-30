@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -35,6 +36,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungAuswahlInput
 {
@@ -67,7 +69,8 @@ public class SollbuchungAuswahlInput
     {
       return sollbuchungAuswahl;
     }
-    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(buchungen[0]);
+    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(buchungen[0],
+        false);
     d.addCloseListener(new SollbuchungListener());
 
     sollbuchungAuswahl = new DialogInput(sollbuchung != null
@@ -105,7 +108,10 @@ public class SollbuchungAuswahlInput
         try
         {
           if (event.detail != SWT.CANCEL)
+          {
             getSollbuchungAuswahl().setText("");
+            sollbuchung = null;
+          }
           return;
         }
         catch (RemoteException er)
@@ -118,6 +124,43 @@ public class SollbuchungAuswahlInput
       try
       {
         String b = "";
+        if (event.data instanceof Mitglied)
+        {
+          mitglied = (Mitglied) event.data;
+
+          Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, null);
+          sollb.setBetrag(buchungen[0].getBetrag());
+          sollb.setDatum(buchungen[0].getDatum());
+          sollb.setMitglied(mitglied);
+          sollb.setZahlerId(mitglied.getZahlerID());
+          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+          sollb.setZweck1(buchungen[0].getZweck());
+          sollb.store();
+
+          SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+              .getDBService().createObject(SollbuchungPosition.class, null);
+          sbp.setBetrag(buchungen[0].getBetrag());
+          if (buchungen[0].getBuchungsartId() != null)
+          {
+            sbp.setBuchungsartId(buchungen[0].getBuchungsartId());
+          }
+          if (buchungen[0].getBuchungsklasseId() != null)
+          {
+            sbp.setBuchungsklasseId(buchungen[0].getBuchungsklasseId());
+          }
+          if (buchungen[0].getSteuer() != null)
+          {
+            sbp.setSteuer(buchungen[0].getSteuer());
+          }
+          sbp.setDatum(buchungen[0].getDatum());
+          sbp.setZweck(buchungen[0].getZweck());
+          sbp.setSollbuchung(sollb.getID());
+          sbp.store();
+
+          event.data = sollb;
+        }
+
         if (event.data instanceof Sollbuchung)
         {
           sollbuchung = (Sollbuchung) event.data;
@@ -147,20 +190,20 @@ public class SollbuchungAuswahlInput
             }
           }
         }
-        else if (event.data instanceof Mitglied)
-        {
-          mitglied = (Mitglied) event.data;
-          b = Adressaufbereitung.getNameVorname(mitglied)
-              + ", Sollbuchung erzeugen";
-        }
+
         getSollbuchungAuswahl().setText(b);
       }
-      catch (RemoteException er)
+      catch (RemoteException | ApplicationException er)
       {
         String error = "Fehler bei Zuordnung der Sollbuchung";
         Logger.error(error, er);
         GUI.getStatusBar().setErrorText(error);
       }
     }
+  }
+
+  public Sollbuchung getSollbuchung()
+  {
+    return sollbuchung;
   }
 }

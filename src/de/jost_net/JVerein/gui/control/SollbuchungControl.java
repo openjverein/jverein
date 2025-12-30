@@ -449,8 +449,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return mitgliedskontoTree;
   }
 
-  public TablePart getSollbuchungenList(Action action, boolean umwandeln)
-      throws RemoteException, ApplicationException
+  public TablePart getSollbuchungenList(Action action, boolean umwandeln,
+      boolean multi) throws RemoteException, ApplicationException
   {
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
@@ -486,7 +486,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
-      sollbuchungenList.setMulti(true);
+      if (multi)
+      {
+        sollbuchungenList.setMulti(true);
+      }
       sollbuchungenList.addFeature(new FeatureSummary());
       if (action == null)
       {
@@ -710,7 +713,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       try
       {
-        getSollbuchungenList(null, umwandeln);
+        getSollbuchungenList(null, umwandeln, true);
       }
       catch (RemoteException e)
       {

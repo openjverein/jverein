@@ -159,6 +159,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private DialogInput sollbuchung;
 
+  private SollbuchungAuswahlInput sollbuchungAuswahlInput;
+
   private TextAreaInput kommentar;
 
   // Definition für beide Auswahlvarianten (SelectInput und
@@ -354,7 +356,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
-    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
+    b.setSollbuchung(getSollbuchungAuswahlInput().getSollbuchung());
     b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
@@ -693,8 +695,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return sollbuchung;
     }
-    sollbuchung = new SollbuchungAuswahlInput(getBuchung())
-        .getSollbuchungAuswahl();
+    sollbuchungAuswahlInput = new SollbuchungAuswahlInput(getBuchung());
+    sollbuchung = sollbuchungAuswahlInput.getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
       try
       {
@@ -747,6 +749,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     });
     sollbuchung.setEnabled(editable);
     return sollbuchung;
+  }
+
+  public SollbuchungAuswahlInput getSollbuchungAuswahlInput()
+  {
+    return sollbuchungAuswahlInput;
   }
 
   public Input getArt() throws RemoteException
