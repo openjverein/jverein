@@ -26,12 +26,16 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
+import de.jost_net.JVerein.gui.util.JameicaUtil;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.gui.util.SimpleContainer;
 
 import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 
 public class MailVorlageDetailView extends AbstractDetailView
 {
@@ -44,10 +48,14 @@ public class MailVorlageDetailView extends AbstractDetailView
 
     control = new MailVorlageControl(this);
 
-    LabelGroup group = new LabelGroup(getParent(), "Mail-Vorlage");
-    group.addInput(control.getBetreff(true));
-    SimpleContainer t = new SimpleContainer(getParent(), true);
-    t.addPart(control.getTxt());
+    Composite comp = new Composite(this.getParent(), SWT.NONE);
+    comp.setLayoutData(new GridData(GridData.FILL_BOTH));
+    GridLayout layout = new GridLayout(2, false);
+    comp.setLayout(layout);
+    JameicaUtil.addLabel("Betreff", comp, GridData.VERTICAL_ALIGN_CENTER);
+    control.getBetreff(true).paint(comp);
+    JameicaUtil.addLabel("Text", comp, GridData.VERTICAL_ALIGN_BEGINNING);
+    control.getTxt().paint(comp);
 
     Map<String, Object> map = MitgliedMap
         .getDummyMap(new AllgemeineMap().getMap(null));
