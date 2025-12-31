@@ -486,10 +486,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
-      if (multi)
-      {
-        sollbuchungenList.setMulti(true);
-      }
+      sollbuchungenList.setMulti(multi);
       sollbuchungenList.addFeature(new FeatureSummary());
       if (action == null)
       {

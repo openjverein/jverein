@@ -78,7 +78,6 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -713,12 +712,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             getBetrag().setValue(sb.getBetrag());
             getZweck().setValue(sb.getZweck1());
             getDatum().setValue(sb.getDatum());
-          }
-          if (sollbuchung.getValue() instanceof Mitglied)
-          {
-            Mitglied m2 = (Mitglied) sollbuchung.getValue();
-            getName().setValue(Adressaufbereitung.getNameVorname(m2));
-            getDatum().setValue(new Date());
           }
         }
         if (sollbuchung.getValue() instanceof Sollbuchung)

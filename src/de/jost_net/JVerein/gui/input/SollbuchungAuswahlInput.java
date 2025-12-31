@@ -111,6 +111,8 @@ public class SollbuchungAuswahlInput
           {
             getSollbuchungAuswahl().setText("");
             sollbuchung = null;
+            GUI.getStatusBar()
+                .setSuccessText("Sollbuchung Zuordnung gelöscht.");
           }
           return;
         }
@@ -124,6 +126,7 @@ public class SollbuchungAuswahlInput
       try
       {
         String b = "";
+        String message = "";
         if (event.data instanceof Mitglied)
         {
           mitglied = (Mitglied) event.data;
@@ -133,7 +136,7 @@ public class SollbuchungAuswahlInput
           sollb.setBetrag(buchungen[0].getBetrag());
           sollb.setDatum(buchungen[0].getDatum());
           sollb.setMitglied(mitglied);
-          sollb.setZahlerId(mitglied.getZahlerID());
+          sollb.setZahler(mitglied);
           sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           sollb.setZweck1(buchungen[0].getZweck());
           sollb.store();
@@ -141,23 +144,14 @@ public class SollbuchungAuswahlInput
           SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
               .getDBService().createObject(SollbuchungPosition.class, null);
           sbp.setBetrag(buchungen[0].getBetrag());
-          if (buchungen[0].getBuchungsartId() != null)
-          {
-            sbp.setBuchungsartId(buchungen[0].getBuchungsartId());
-          }
-          if (buchungen[0].getBuchungsklasseId() != null)
-          {
-            sbp.setBuchungsklasseId(buchungen[0].getBuchungsklasseId());
-          }
-          if (buchungen[0].getSteuer() != null)
-          {
-            sbp.setSteuer(buchungen[0].getSteuer());
-          }
+          sbp.setBuchungsartId(buchungen[0].getBuchungsartId());
+          sbp.setBuchungsklasseId(buchungen[0].getBuchungsklasseId());
+          sbp.setSteuer(buchungen[0].getSteuer());
           sbp.setDatum(buchungen[0].getDatum());
           sbp.setZweck(buchungen[0].getZweck());
           sbp.setSollbuchung(sollb.getID());
           sbp.store();
-
+          message = "Sollbuchung erzeugt und ";
           event.data = sollb;
         }
 
@@ -189,11 +183,18 @@ public class SollbuchungAuswahlInput
                   .getSollbuchungPositionList().get(0).getBuchungsklasseId());
             }
           }
+          message += "Sollbuchung zugeordnet.";
         }
-
         getSollbuchungAuswahl().setText(b);
+        GUI.getStatusBar().setSuccessText(message);
       }
-      catch (RemoteException | ApplicationException er)
+      catch (ApplicationException ae)
+      {
+        String error = ae.getMessage();
+        Logger.error(error, ae);
+        GUI.getStatusBar().setErrorText(error);
+      }
+      catch (RemoteException er)
       {
         String error = "Fehler bei Zuordnung der Sollbuchung";
         Logger.error(error, er);

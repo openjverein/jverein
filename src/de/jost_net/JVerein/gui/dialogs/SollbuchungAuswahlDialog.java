@@ -18,6 +18,8 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.rmi.RemoteException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -196,6 +198,22 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
+        try
+        {
+          if (buchung.isNewObject())
+          {
+            GUI.getStatusBar()
+                .setErrorText("Neues Mitglied bitte erst speichern.");
+            choosen = null;
+            close();
+          }
+        }
+        catch (RemoteException e)
+        {
+          String error = "Fehler bei Auswahl der Sollbuchung";
+          Logger.error(error, e);
+          GUI.getStatusBar().setErrorText(error);
+        }
         Object o = sollbuchunglist.getSelection();
 
         if (o instanceof Sollbuchung || o instanceof Sollbuchung[])
