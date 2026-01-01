@@ -226,6 +226,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
               String error = "Fehler bei Auswahl der Sollbuchung";
               Logger.error(error, e);
               GUI.getStatusBar().setErrorText(error);
+              throw new OperationCanceledException();
             }
             choosen = o;
             abort = false;
