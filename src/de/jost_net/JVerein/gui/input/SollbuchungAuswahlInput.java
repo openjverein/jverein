@@ -189,7 +189,7 @@ public class SollbuchungAuswahlInput
                   .getSollbuchungPositionList().get(0).getBuchungsklasseId());
             }
           }
-          message += "Sollbuchung zugeordnet.";
+          message = "Sollbuchung zugeordnet.";
           updated = true;
         }
         getSollbuchungAuswahl().setText(b);
