@@ -699,12 +699,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     sollbuchung.addListener(event -> {
       try
       {
-        String name = (String) getName().getValue();
-        String zweck1 = (String) getZweck().getValue();
-        if (sollbuchung.getValue() != null && name.length() == 0
-            && zweck1.length() == 0)
+        if (!sollbuchungAuswahlInput.getUpdated())
         {
-          if (sollbuchung.getValue() instanceof Sollbuchung)
+          return;
+        }
+        sollbuchungAuswahlInput.setUpdated(false);
+        if (sollbuchung.getValue() instanceof Sollbuchung)
+        {
+          String name = (String) getName().getValue();
+          String zweck1 = (String) getZweck().getValue();
+          if (sollbuchung.getValue() != null && name.length() == 0
+              && zweck1.length() == 0)
           {
             Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
             getName()
@@ -713,9 +718,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             getZweck().setValue(sb.getZweck1());
             getDatum().setValue(sb.getDatum());
           }
-        }
-        if (sollbuchung.getValue() instanceof Sollbuchung)
-        {
+
           Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
           ArrayList<SollbuchungPosition> sbpList = sb
               .getSollbuchungPositionList();

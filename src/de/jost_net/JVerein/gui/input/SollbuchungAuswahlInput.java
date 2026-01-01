@@ -49,6 +49,8 @@ public class SollbuchungAuswahlInput
 
   private Mitglied mitglied = null;
 
+  private boolean updated = false;
+
   public SollbuchungAuswahlInput(Buchung buchung) throws RemoteException
   {
     buchungen = new Buchung[1];
@@ -184,6 +186,7 @@ public class SollbuchungAuswahlInput
             }
           }
           message += "Sollbuchung zugeordnet.";
+          updated = true;
         }
         getSollbuchungAuswahl().setText(b);
         GUI.getStatusBar().setSuccessText(message);
@@ -206,5 +209,15 @@ public class SollbuchungAuswahlInput
   public Sollbuchung getSollbuchung()
   {
     return sollbuchung;
+  }
+
+  public void setUpdated(boolean value)
+  {
+    updated = value;
+  }
+
+  public boolean getUpdated()
+  {
+    return updated;
   }
 }
