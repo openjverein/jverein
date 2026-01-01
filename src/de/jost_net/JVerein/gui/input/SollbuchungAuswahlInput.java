@@ -153,8 +153,12 @@ public class SollbuchungAuswahlInput
           sbp.setZweck(buchungen[0].getZweck());
           sbp.setSollbuchung(sollb.getID());
           sbp.store();
-          message = "Sollbuchung erzeugt und ";
-          event.data = sollb;
+          message = "Sollbuchung erzeugt und zugeordnet.";
+          sollbuchung = sollb;
+          b = Adressaufbereitung.getNameVorname(sollbuchung.getMitglied())
+              + ", " + new JVDateFormatTTMMJJJJ().format(sollbuchung.getDatum())
+              + ", "
+              + Einstellungen.DECIMALFORMAT.format(sollbuchung.getBetrag());
         }
 
         if (event.data instanceof Sollbuchung)
