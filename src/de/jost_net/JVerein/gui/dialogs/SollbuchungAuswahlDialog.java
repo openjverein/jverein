@@ -198,22 +198,6 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
       @Override
       public void handleAction(Object context)
       {
-        try
-        {
-          if (buchung.isNewObject())
-          {
-            GUI.getStatusBar()
-                .setErrorText("Neues Mitglied bitte erst speichern.");
-            choosen = null;
-            close();
-          }
-        }
-        catch (RemoteException e)
-        {
-          String error = "Fehler bei Auswahl der Sollbuchung";
-          Logger.error(error, e);
-          GUI.getStatusBar().setErrorText(error);
-        }
         Object o = sollbuchunglist.getSelection();
 
         if (o instanceof Sollbuchung || o instanceof Sollbuchung[])
@@ -228,6 +212,21 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
           if (o instanceof Mitglied)
           {
+            try
+            {
+              if (buchung.isNewObject())
+              {
+                GUI.getStatusBar()
+                    .setErrorText("Neue Buchung bitte erst speichern.");
+                throw new OperationCanceledException();
+              }
+            }
+            catch (RemoteException e)
+            {
+              String error = "Fehler bei Auswahl der Sollbuchung";
+              Logger.error(error, e);
+              GUI.getStatusBar().setErrorText(error);
+            }
             choosen = o;
             abort = false;
             close();
