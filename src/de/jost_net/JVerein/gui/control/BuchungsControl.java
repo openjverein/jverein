@@ -78,7 +78,6 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -158,6 +157,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private Input art;
 
   private DialogInput sollbuchung;
+
+  private SollbuchungAuswahlInput sollbuchungAuswahlInput;
 
   private TextAreaInput kommentar;
 
@@ -354,7 +355,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
-    b.setSollbuchung((Sollbuchung) getSollbuchung().getValue());
+    b.setSollbuchung(getSollbuchungAuswahlInput().getSollbuchung());
     b.setGeprueft((Boolean) getGeprueft().getValue());
     if (getSteuer() != null)
     {
@@ -693,17 +694,22 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return sollbuchung;
     }
-    sollbuchung = new SollbuchungAuswahlInput(getBuchung())
-        .getSollbuchungAuswahl();
+    sollbuchungAuswahlInput = new SollbuchungAuswahlInput(getBuchung());
+    sollbuchung = sollbuchungAuswahlInput.getSollbuchungAuswahl();
     sollbuchung.addListener(event -> {
       try
       {
-        String name = (String) getName().getValue();
-        String zweck1 = (String) getZweck().getValue();
-        if (sollbuchung.getValue() != null && name.length() == 0
-            && zweck1.length() == 0)
+        if (!sollbuchungAuswahlInput.getUpdated())
         {
-          if (sollbuchung.getValue() instanceof Sollbuchung)
+          return;
+        }
+        sollbuchungAuswahlInput.setUpdated(false);
+        if (sollbuchung.getValue() instanceof Sollbuchung)
+        {
+          String name = (String) getName().getValue();
+          String zweck1 = (String) getZweck().getValue();
+          if (sollbuchung.getValue() != null && name.length() == 0
+              && zweck1.length() == 0)
           {
             Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
             getName()
@@ -712,15 +718,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             getZweck().setValue(sb.getZweck1());
             getDatum().setValue(sb.getDatum());
           }
-          if (sollbuchung.getValue() instanceof Mitglied)
-          {
-            Mitglied m2 = (Mitglied) sollbuchung.getValue();
-            getName().setValue(Adressaufbereitung.getNameVorname(m2));
-            getDatum().setValue(new Date());
-          }
-        }
-        if (sollbuchung.getValue() instanceof Sollbuchung)
-        {
+
           Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
           ArrayList<SollbuchungPosition> sbpList = sb
               .getSollbuchungPositionList();
@@ -747,6 +745,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     });
     sollbuchung.setEnabled(editable);
     return sollbuchung;
+  }
+
+  public SollbuchungAuswahlInput getSollbuchungAuswahlInput()
+  {
+    return sollbuchungAuswahlInput;
   }
 
   public Input getArt() throws RemoteException

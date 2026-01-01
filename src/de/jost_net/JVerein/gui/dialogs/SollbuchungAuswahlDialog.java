@@ -18,6 +18,8 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.rmi.RemoteException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -69,7 +71,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
   private MyButton suchen2;
 
-  public SollbuchungAuswahlDialog(Buchung buchung)
+  private boolean multi;
+
+  public SollbuchungAuswahlDialog(Buchung buchung, boolean multi)
   {
     super(SollbuchungAuswahlDialog.POSITION_MOUSE, true);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -78,6 +82,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     this.setSize(900, 700);
     this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
+    this.multi = multi;
     control = new SollbuchungControl(null);
   }
 
@@ -140,7 +145,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    sollbuchunglist = control.getSollbuchungenList(action, true);
+    sollbuchunglist = control.getSollbuchungenList(action, true, multi);
     sollbuchunglist.paint(tabNurIst.getComposite());
 
     TabGroup tabSollIst = new TabGroup(folder,
@@ -207,6 +212,22 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
           if (o instanceof Mitglied)
           {
+            try
+            {
+              if (buchung.isNewObject())
+              {
+                GUI.getStatusBar()
+                    .setErrorText("Neue Buchung bitte erst speichern.");
+                throw new OperationCanceledException();
+              }
+            }
+            catch (RemoteException e)
+            {
+              String error = "Fehler bei Auswahl der Sollbuchung";
+              Logger.error(error, e);
+              GUI.getStatusBar().setErrorText(error);
+              throw new OperationCanceledException();
+            }
             choosen = o;
             abort = false;
             close();

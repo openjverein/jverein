@@ -78,7 +78,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
       {
         return;
       }
-      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0]);
+      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0], true);
       Object open = mkaz.open();
       Sollbuchung sollb = null;
 
@@ -103,7 +103,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
           sollb.setBetrag(betrag);
           sollb.setDatum(b[0].getDatum());
           sollb.setMitglied(m);
-          sollb.setZahlerId(m.getZahlerID());
+          sollb.setZahler(m);
           sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
           sollb.setZweck1(b[0].getZweck());
           sollb.store();
@@ -113,18 +113,9 @@ public class BuchungSollbuchungZuordnungAction implements Action
             SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
                 .getDBService().createObject(SollbuchungPosition.class, null);
             sbp.setBetrag(buchung.getBetrag());
-            if (buchung.getBuchungsartId() != null)
-            {
-              sbp.setBuchungsartId(buchung.getBuchungsartId());
-            }
-            if (buchung.getBuchungsklasseId() != null)
-            {
-              sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
-            }
-            if (buchung.getSteuer() != null)
-            {
-              sbp.setSteuer(buchung.getSteuer());
-            }
+            sbp.setBuchungsartId(buchung.getBuchungsartId());
+            sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
+            sbp.setSteuer(buchung.getSteuer());
             sbp.setDatum(buchung.getDatum());
             sbp.setZweck(buchung.getZweck());
             sbp.setSollbuchung(sollb.getID());

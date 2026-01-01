@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -35,6 +36,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class SollbuchungAuswahlInput
 {
@@ -46,6 +48,8 @@ public class SollbuchungAuswahlInput
   private Sollbuchung sollbuchung = null;
 
   private Mitglied mitglied = null;
+
+  private boolean updated = false;
 
   public SollbuchungAuswahlInput(Buchung buchung) throws RemoteException
   {
@@ -67,7 +71,8 @@ public class SollbuchungAuswahlInput
     {
       return sollbuchungAuswahl;
     }
-    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(buchungen[0]);
+    SollbuchungAuswahlDialog d = new SollbuchungAuswahlDialog(buchungen[0],
+        false);
     d.addCloseListener(new SollbuchungListener());
 
     sollbuchungAuswahl = new DialogInput(sollbuchung != null
@@ -105,7 +110,12 @@ public class SollbuchungAuswahlInput
         try
         {
           if (event.detail != SWT.CANCEL)
+          {
             getSollbuchungAuswahl().setText("");
+            sollbuchung = null;
+            GUI.getStatusBar()
+                .setSuccessText("Sollbuchung Zuordnung gelöscht.");
+          }
           return;
         }
         catch (RemoteException er)
@@ -118,6 +128,39 @@ public class SollbuchungAuswahlInput
       try
       {
         String b = "";
+        String message = "";
+        if (event.data instanceof Mitglied)
+        {
+          mitglied = (Mitglied) event.data;
+
+          Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, null);
+          sollb.setBetrag(buchungen[0].getBetrag());
+          sollb.setDatum(buchungen[0].getDatum());
+          sollb.setMitglied(mitglied);
+          sollb.setZahler(mitglied);
+          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+          sollb.setZweck1(buchungen[0].getZweck());
+          sollb.store();
+
+          SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+              .getDBService().createObject(SollbuchungPosition.class, null);
+          sbp.setBetrag(buchungen[0].getBetrag());
+          sbp.setBuchungsartId(buchungen[0].getBuchungsartId());
+          sbp.setBuchungsklasseId(buchungen[0].getBuchungsklasseId());
+          sbp.setSteuer(buchungen[0].getSteuer());
+          sbp.setDatum(buchungen[0].getDatum());
+          sbp.setZweck(buchungen[0].getZweck());
+          sbp.setSollbuchung(sollb.getID());
+          sbp.store();
+          message = "Sollbuchung erzeugt und zugeordnet.";
+          sollbuchung = sollb;
+          b = Adressaufbereitung.getNameVorname(sollbuchung.getMitglied())
+              + ", " + new JVDateFormatTTMMJJJJ().format(sollbuchung.getDatum())
+              + ", "
+              + Einstellungen.DECIMALFORMAT.format(sollbuchung.getBetrag());
+        }
+
         if (event.data instanceof Sollbuchung)
         {
           sollbuchung = (Sollbuchung) event.data;
@@ -146,14 +189,17 @@ public class SollbuchungAuswahlInput
                   .getSollbuchungPositionList().get(0).getBuchungsklasseId());
             }
           }
-        }
-        else if (event.data instanceof Mitglied)
-        {
-          mitglied = (Mitglied) event.data;
-          b = Adressaufbereitung.getNameVorname(mitglied)
-              + ", Sollbuchung erzeugen";
+          message = "Sollbuchung zugeordnet.";
+          updated = true;
         }
         getSollbuchungAuswahl().setText(b);
+        GUI.getStatusBar().setSuccessText(message);
+      }
+      catch (ApplicationException ae)
+      {
+        String error = ae.getMessage();
+        Logger.error(error, ae);
+        GUI.getStatusBar().setErrorText(error);
       }
       catch (RemoteException er)
       {
@@ -162,5 +208,20 @@ public class SollbuchungAuswahlInput
         GUI.getStatusBar().setErrorText(error);
       }
     }
+  }
+
+  public Sollbuchung getSollbuchung()
+  {
+    return sollbuchung;
+  }
+
+  public void setUpdated(boolean value)
+  {
+    updated = value;
+  }
+
+  public boolean getUpdated()
+  {
+    return updated;
   }
 }
