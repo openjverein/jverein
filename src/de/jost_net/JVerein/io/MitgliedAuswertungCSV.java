@@ -188,7 +188,10 @@ public class MitgliedAuswertungCSV implements IAuswertung
   {
     try
     {
-      return new MitgliedMap().getMap(m, null).keySet().toArray(new String[0]);
+      Map<String, Object> map = new MitgliedMap().getMap(m, null);
+      map.remove("decimalformat");
+      map.remove("dateformat");
+      return map.keySet().toArray(new String[0]);
     }
     catch (RemoteException e)
     {
