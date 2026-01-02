@@ -364,7 +364,7 @@ public class MitgliedMap extends AbstractMap
     return map;
   }
 
-  private String formatKey(String key)
+  private static String formatKey(String key)
   {
     key = key.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("__", "_");
     return StringUtils.strip(key, "_");
@@ -477,22 +477,23 @@ public class MitgliedMap extends AbstractMap
     while (itfd.hasNext())
     {
       Felddefinition fd = itfd.next();
+      String name = Einstellungen.ZUSATZFELD_PRE + formatKey(fd.getName());
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "31.12.2024");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "31.12.2024");
           break;
         case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "X");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "X");
           break;
         case Datentyp.GANZZAHL:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "22");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "22");
           break;
         case Datentyp.WAEHRUNG:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "3.00");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "3.00");
           break;
         case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "abcd");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "abcd");
           break;
       }
     }
@@ -503,7 +504,7 @@ public class MitgliedMap extends AbstractMap
     while (iteig.hasNext())
     {
       Eigenschaft eig = iteig.next();
-      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), "X");
+      map.put("mitglied_eigenschaft_" + formatKey(eig.getBezeichnung()), "X");
     }
 
     // Liste der Eigenschaften einer Eigenschaftengruppe
@@ -513,8 +514,8 @@ public class MitgliedMap extends AbstractMap
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
-      String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
+      map.put("mitglied_eigenschaften_" + formatKey(eg.getBezeichnung()),
+          "Eigenschaft1, Eigenschaft2");
     }
 
     // Füge Lesefelder diesem Mitglied-Objekt hinzu.
