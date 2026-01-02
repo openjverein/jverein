@@ -35,7 +35,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
 public class WiedervorlageList extends TablePart implements Part
 {
@@ -67,7 +66,6 @@ public class WiedervorlageList extends TablePart implements Part
           .setContextMenu(new WiedervorlageMenu(wiedervorlageList));
       wiedervorlageList.setRememberColWidths(true);
       wiedervorlageList.setRememberOrder(true);
-      wiedervorlageList.addFeature(new FeatureSummary());
       wiedervorlageList.setMulti(true);
       wiedervorlageList.setAction(
           new EditAction(WiedervorlageDetailView.class, wiedervorlageList));

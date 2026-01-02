@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
@@ -34,8 +35,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
@@ -51,7 +50,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
   private static final String ARTSTEUERBUCHUNGSART = "artsteuerbuchungsart";
 
-  private TablePart saldoList;
+  private SaldoListTablePart saldoList;
 
   public UmsatzsteuerSaldoControl(AbstractView view) throws RemoteException
   {
@@ -59,7 +58,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public TablePart getSaldoList() throws ApplicationException
+  public SaldoListTablePart getSaldoList() throws ApplicationException
   {
     try
     {
@@ -67,7 +66,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new TablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), null)
       {
         @Override
         protected void orderBy(int index)
@@ -85,7 +84,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
-      saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setMulti(true);
       saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)

@@ -32,7 +32,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
-    implements ZusatzbetragVorlage
+    implements ZusatzbetragVorlage, IBetrag
 {
 
   private static final long serialVersionUID = 1L;
@@ -154,12 +154,12 @@ public class ZusatzbetragVorlageImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public double getBetrag() throws RemoteException
+  public Double getBetrag() throws RemoteException
   {
     Double d = (Double) getAttribute("betrag");
     if (d == null)
     {
-      return 0;
+      return 0d;
     }
     return d.doubleValue();
   }

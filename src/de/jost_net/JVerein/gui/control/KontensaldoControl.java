@@ -36,7 +36,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class KontensaldoControl extends AbstractSaldoControl
@@ -101,7 +100,6 @@ public class KontensaldoControl extends AbstractSaldoControl
       saldoList.addColumn("Bemerkung", BEMERKUNG);
       saldoList.setRememberColWidths(true);
       saldoList.setMulti(true);
-      saldoList.addFeature(new FeatureSummary());
       saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)

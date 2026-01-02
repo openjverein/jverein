@@ -28,9 +28,10 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
+
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.keys.SuchVersand;
@@ -50,7 +51,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -95,7 +95,7 @@ public class LastschriftControl extends FilterControl implements Savable
 
   private Lastschrift lastschrift;
 
-  private JVereinTablePart lastschriftList;
+  private BetragSummaryTablePart lastschriftList;
 
   private DateInput versanddatum;
 
@@ -132,7 +132,6 @@ public class LastschriftControl extends FilterControl implements Savable
     lastschriftList.setRememberColWidths(true);
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
     lastschriftList.setRememberOrder(true);
-    lastschriftList.addFeature(new FeatureSummary());
     lastschriftList.setMulti(true);
     lastschriftList.setAction(
         new EditAction(LastschriftDetailView.class, lastschriftList));

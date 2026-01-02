@@ -39,7 +39,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseSaldoControl extends AbstractSaldoControl
@@ -122,7 +121,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setRememberOrder(true);
       saldoList.setRememberState(true);
-      saldoList.addFeature(new FeatureSummary());
       saldoList.setFormatter(new SaldoFormatter());
 
       return saldoList;
