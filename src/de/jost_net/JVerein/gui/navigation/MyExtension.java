@@ -41,7 +41,6 @@ import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
-import de.jost_net.JVerein.gui.view.BuchungsTextKorrekturView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;
@@ -187,9 +186,6 @@ public class MyExtension implements Extension
       // Buchungen
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungen",
           new StartViewAction(BuchungListeView.class), "emblem-documents.png"));
-      buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungskorrektur",
-          new StartViewAction(BuchungsTextKorrekturView.class),
-          "emblem-documents.png"));
       buchfuehrung.addChild(new MyItem(buchfuehrung, "Buchungsklassensaldo",
           new StartViewAction(BuchungsklasseSaldoView.class),
           "emblem-documents.png"));
