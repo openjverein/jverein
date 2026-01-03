@@ -21,10 +21,11 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
@@ -49,11 +50,12 @@ public class LastschriftMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Versanddatum setzen",
         new VersandAction(), "office-calendar.png"));
-    addItem(new CheckedContextMenuItem("Pre-Notification",
-        new PreNotificationAction(), "document-new.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedContextMenuItem("Pre-Notification",
+        new StartViewAction(PreNotificationMailView.class, true),
+        "document-print.png"));
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
   }

@@ -7,8 +7,8 @@ import de.jost_net.JVerein.gui.dialogs.DruckMailMitgliedDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.Ausgabesortierung;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -29,38 +29,19 @@ public abstract class DruckMailControl extends FilterControl
     super(view);
   }
 
-  public static final String EMAIL = "Mail";
-
-  public static final String PDF1 = "PDF (Lastschriften ohne Mail Empfänger)";
-
-  public static final String PDF2 = "PDF (Alle)";
-
-  public static final String NICHT_EINZELN = "Eine PDF-Datei";
-
-  public static final String EINZELN = "Einzelne PDF-Dateien";
-
   protected TextAreaInput info = null;
 
   protected FormularInput formular = null;
 
   protected SelectInput ausgabeart = null;
 
-  protected SelectInput ausgabesortierung = null;
-
   protected SelectInput adressblatt = null;
-
-  protected SelectInput output = null;
-
-  protected SelectInput pdfModus = null;
 
   protected TextInput mailbetreff = null;
 
   protected TextAreaInput mailtext = null;
 
-  public String getInfoText(Object selection)
-  {
-    return "";
-  }
+  abstract public String getInfoText(Object selection) throws RemoteException;
 
   public TextAreaInput getInfo() throws RemoteException
   {
@@ -81,7 +62,13 @@ public abstract class DruckMailControl extends FilterControl
     {
       return formular;
     }
-    formular = new FormularInput(formulartyp);
+    formular = new FormularInput(formulartyp,
+        settings.getString(settingsprefix + "formular.key", ""));
+    // Pre-Notifications können auch ohne Formular gemailt werden
+    if (formulartyp == FormularArt.SEPA_PRENOTIFICATION)
+    {
+      formular.setPleaseChoose("Kein Formular");
+    }
     return formular;
   }
 
@@ -97,19 +84,6 @@ public abstract class DruckMailControl extends FilterControl
     return ausgabeart;
   }
 
-  public SelectInput getAusgabesortierung()
-  {
-    if (ausgabesortierung != null)
-    {
-      return ausgabesortierung;
-    }
-    ausgabesortierung = new SelectInput(Ausgabesortierung.values(),
-        Ausgabesortierung.getByKey(
-            settings.getInt(settingsprefix + "ausgabesortierung", 1)));
-    ausgabesortierung.setName("Sortierung");
-    return ausgabesortierung;
-  }
-
   public SelectInput getAdressblatt()
   {
     if (adressblatt != null)
@@ -120,41 +94,6 @@ public abstract class DruckMailControl extends FilterControl
         .getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
     adressblatt.setName("Adressblatt");
     return adressblatt;
-  }
-
-  public SelectInput getOutput()
-  {
-    if (output != null)
-    {
-      return output;
-    }
-    Object[] values = new Object[] { EMAIL, PDF1, PDF2 };
-    String out = settings.getString(settingsprefix + "output", PDF1);
-    if (out.equals("EMail"))
-      out = "Mail";
-    output = new SelectInput(values, out);
-    output.setName("Ausgabe");
-    return output;
-  }
-
-  public SelectInput getPdfModus()
-  {
-    if (pdfModus != null)
-    {
-      return pdfModus;
-    }
-    Object[] values = new Object[] { NICHT_EINZELN, EINZELN };
-    // Wegen gelöschter Werte die noch in den Settings gespeichert sein können
-    String istvalue = EINZELN;
-    String value = settings.getString(settingsprefix + "pdfModus",
-        NICHT_EINZELN);
-    if (value.equals(NICHT_EINZELN) || value.equals(EINZELN))
-    {
-      istvalue = value;
-    }
-    pdfModus = new SelectInput(values, istvalue);
-    pdfModus.setName("PDF als");
-    return pdfModus;
   }
 
   public TextInput getBetreff()
@@ -193,7 +132,8 @@ public abstract class DruckMailControl extends FilterControl
     return (String) getTxt().getValue();
   }
 
-  protected void saveDruckMailSettings() throws RemoteException
+  @Override
+  public void saveFilterSettings() throws RemoteException
   {
     if (ausgabeart != null)
     {
@@ -205,22 +145,6 @@ public abstract class DruckMailControl extends FilterControl
       Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
       settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
     }
-    if (ausgabesortierung != null)
-    {
-      Ausgabesortierung as = (Ausgabesortierung) getAusgabesortierung()
-          .getValue();
-      settings.setAttribute(settingsprefix + "ausgabesortierung", as.getKey());
-    }
-    if (output != null)
-    {
-      String val = (String) getOutput().getValue();
-      settings.setAttribute(settingsprefix + "output", val);
-    }
-    if (pdfModus != null)
-    {
-      String pdfMode = (String) getPdfModus().getValue();
-      settings.setAttribute(settingsprefix + "pdfModus", pdfMode);
-    }
     if (mailbetreff != null)
     {
       settings.setAttribute(settingsprefix + "mail.betreff",
@@ -231,7 +155,13 @@ public abstract class DruckMailControl extends FilterControl
       settings.setAttribute(settingsprefix + "mail.text",
           (String) getTxt().getValue());
     }
-    saveFilterSettings();
+    if (formular != null)
+    {
+      Formular f = (Formular) getFormular(null).getValue();
+      settings.setAttribute(settingsprefix + "formular.key",
+          f == null ? "" : f.getID());
+    }
+    super.saveFilterSettings();
   }
 
   abstract DruckMailEmpfaenger getDruckMailMitglieder(Object object,

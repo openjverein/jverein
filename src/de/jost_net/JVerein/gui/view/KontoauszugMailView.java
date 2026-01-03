@@ -86,7 +86,6 @@ public class KontoauszugMailView extends AbstractView
     cont.addHeadline("Parameter");
 
     cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getPdfModus());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
@@ -115,8 +114,8 @@ public class KontoauszugMailView extends AbstractView
             control, false, "document-new.png"));
     buttons.addButton(
         control.getDruckMailMitgliederButton(this.getCurrentObject(), null));
-    buttons.addButton(
-        control.getStartKontoauszugButton(this.getCurrentObject(), control));
+    buttons
+        .addButton(control.getStartKontoauszugButton(this.getCurrentObject()));
     buttons.paint(this.getParent());
   }
 }
