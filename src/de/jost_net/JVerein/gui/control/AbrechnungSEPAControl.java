@@ -606,7 +606,6 @@ public class AbrechnungSEPAControl extends AbstractControl
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
             GUI.getStatusBar()
                 .setSuccessText("Abrechnung durchgeführt" + abupar.getText());
-
           }
           catch (ApplicationException ae)
           {
@@ -617,30 +616,10 @@ public class AbrechnungSEPAControl extends AbstractControl
           catch (Exception e)
           {
             DBTransaction.rollback();
-            ApplicationException ae;
-            if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
-            {
-              Logger.error(String.format("error while creating %s",
-                  abupar.sepafileRCUR.getAbsolutePath()), e);
-              ae = new ApplicationException(
-                  String.format("Fehler beim Erstellen der Abbuchungsdatei: %s",
-                      abupar.sepafileRCUR.getAbsolutePath()),
-                  e);
-            }
-            else if (abupar.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
-            {
-              Logger.error("error while creating debit in Hibiscus", e);
-              ae = new ApplicationException(
-                  "Fehler beim Erstellen der Hibiscus-Lastschrift", e);
-            }
-            else
-            {
-              Logger.error("error during operation", e);
-              ae = new ApplicationException("Fehler beim Abrechnungslauf", e);
-            }
+            Logger.error("Fehler beim Abrechnungslauf", e);
             GUI.getStatusBar()
-                .setErrorText(ae.getMessage() + ": " + e.getMessage());
-            throw ae;
+                .setErrorText("Fehler beim Abrechnungslauf: " + e.getMessage());
+            throw new ApplicationException("Fehler beim Abrechnungslauf", e);
           }
         }
 
