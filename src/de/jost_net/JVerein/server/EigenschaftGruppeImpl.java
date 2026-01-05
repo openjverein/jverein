@@ -79,6 +79,15 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
+      if (getName() == null || getName().isEmpty())
+      {
+        throw new ApplicationException("Bitte Name eingeben!");
+      }
+      if (!getName().matches("^[a-zA-Z0-9_]+$"))
+      {
+        throw new ApplicationException(
+            "Name enthält ungültige Zeichen, nur 0-9, a-z, A-Z, _ erlaubt!");
+      }
       DBIterator<EigenschaftGruppe> gruppeIt = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
       if (!this.isNewObject())
@@ -160,4 +169,15 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
     return "Eigenschaftengruppen";
   }
 
+  @Override
+  public String getName() throws RemoteException
+  {
+    return (String) getAttribute("name");
+  }
+
+  @Override
+  public void setName(String name) throws RemoteException
+  {
+    setAttribute("name", name);
+  }
 }

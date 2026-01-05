@@ -32,4 +32,8 @@ public interface EigenschaftGruppe extends JVereinDBObject
 
   public Boolean getMax1() throws RemoteException;
 
+  void setName(String name) throws RemoteException;
+
+  String getName() throws RemoteException;
+
 }
