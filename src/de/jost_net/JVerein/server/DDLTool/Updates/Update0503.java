@@ -37,8 +37,8 @@ public class Update0503 extends AbstractDDLUpdate
         new Column("name", COLTYPE.VARCHAR, 30, null, false, false)));
 
     execute(
-        "update eigenschaft set name = REGEXP_REPLACE(bezeichnung, '[^0-9a-zA-Z_]','_')");
+        "update eigenschaft set name = REGEXP_REPLACE(bezeichnung, '[ -]','_')");
     execute(
-        "update eigenschaftgruppe set name = REGEXP_REPLACE(bezeichnung, '[^0-9a-zA-Z_]','_')");
+        "update eigenschaftgruppe set name = REGEXP_REPLACE(bezeichnung, '[ -]','_')");
   }
 }

@@ -86,10 +86,10 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Name eingeben!");
       }
-      if (!getName().matches("^[a-zA-Z0-9_]+$"))
+      if (!getName().matches("^[a-z0-9_]+$"))
       {
         throw new ApplicationException(
-            "Name enthält ungültige Zeichen, nur 0-9, a-z, A-Z, _ erlaubt!");
+            "Name enthält ungültige Zeichen, nur 0-9, a-z, _ erlaubt!");
       }
       if (getEigenschaftGruppe() == null)
       {
