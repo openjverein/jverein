@@ -262,56 +262,56 @@ public class SaldoListTablePart extends TablePart
           {
             summary.append(
                 " Endbestand: " + Einstellungen.DECIMALFORMAT.format(endbestand)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
           if (steuerSumme != null)
           {
             summary.append(" Bemessungsgrundlage: "
                 + Einstellungen.DECIMALFORMAT.format(steuerSumme) + " "
-                + Einstellungen.CURRENCY);
+                + Einstellungen.CURRENCY + ",");
           }
           if (steuer != null)
           {
             summary
                 .append(" Steuer: " + Einstellungen.DECIMALFORMAT.format(steuer)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
 
           if (anschaffung != null)
           {
             summary.append(" Anschaffung: "
                 + Einstellungen.DECIMALFORMAT.format(anschaffung) + " "
-                + Einstellungen.CURRENCY);
+                + Einstellungen.CURRENCY + ",");
           }
           if (startwert != null)
           {
             summary.append(
                 " Startwert: " + Einstellungen.DECIMALFORMAT.format(startwert)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
           if (zugang != null)
           {
             summary
                 .append(" Zugang: " + Einstellungen.DECIMALFORMAT.format(zugang)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
           if (afa != null)
           {
             summary.append(
                 " Abschreibung: " + Einstellungen.DECIMALFORMAT.format(afa)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
           if (abgang != null)
           {
             summary
                 .append(" Abgang: " + Einstellungen.DECIMALFORMAT.format(abgang)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
           if (endwert != null)
           {
             summary.append(
                 " Endwert: " + Einstellungen.DECIMALFORMAT.format(endwert) + " "
-                    + Einstellungen.CURRENCY);
+                    + Einstellungen.CURRENCY + ",");
           }
 
           if (anzahl != null)

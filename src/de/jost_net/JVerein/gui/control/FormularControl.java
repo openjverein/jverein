@@ -51,7 +51,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -363,7 +362,6 @@ public class FormularControl extends FormularPartControl implements Savable
     formularList.setRememberColWidths(true);
     formularList.setContextMenu(new FormularMenu(this, formularList));
     formularList.setRememberOrder(true);
-    formularList.removeFeature(FeatureSummary.class);
     formularList.setMulti(true);
     formularList
         .setAction(new EditAction(FormularDetailView.class, formularList));

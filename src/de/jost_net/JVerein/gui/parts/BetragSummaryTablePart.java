@@ -78,7 +78,7 @@ public class BetragSummaryTablePart extends AutoUpdateTablePart
             sumBetrag += b.getBetrag();
           }
         }
-        summary += " / " + "Gesamtbetrag:" + " "
+        summary += " , " + "Gesamtbetrag:" + " "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
 
@@ -89,7 +89,7 @@ public class BetragSummaryTablePart extends AutoUpdateTablePart
           {
             sumAuswahl += i.getBetrag();
           }
-          summary += " / Summe Auswahl:" + " "
+          summary += " , Summe Auswahl:" + " "
               + Einstellungen.DECIMALFORMAT.format(sumAuswahl) + " "
               + Einstellungen.CURRENCY;
         }

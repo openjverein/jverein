@@ -30,7 +30,6 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
-import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
@@ -112,7 +111,7 @@ public class LastschriftControl extends FilterControl implements Savable
     {
       return lastschriftList;
     }
-    lastschriftList = new AutoUpdateTablePart(getLastschriften(), null);
+    lastschriftList = new BetragSummaryTablePart(getLastschriften(), null);
     lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

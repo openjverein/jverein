@@ -45,7 +45,6 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
-import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
@@ -531,7 +530,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    spbList = new AutoUpdateTablePart(getSpendenbescheinigungen(), null);
+    spbList = new BetragSummaryTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
