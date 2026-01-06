@@ -274,6 +274,11 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     return choosen;
   }
 
+  public void setData(Object data)
+  {
+    choosen = data;
+  }
+
   public boolean getAbort()
   {
     return abort;

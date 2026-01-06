@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
 import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -55,7 +56,6 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.KontoauswahlInput;
-import de.jost_net.JVerein.gui.input.SollbuchungAuswahlInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
@@ -72,12 +72,14 @@ import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -156,9 +158,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private Input art;
 
-  private DialogInput sollbuchung;
-
-  private SollbuchungAuswahlInput sollbuchungAuswahlInput;
+  private DialogInput sollbuchungInput;
 
   private TextAreaInput kommentar;
 
@@ -227,6 +227,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private boolean editable = false;
 
   private SplitbuchungMessageConsumer splitbuchungConsumer = null;
+
+  private SollbuchungAuswahlDialog sollbuchungDialog = null;
 
   public enum Kontenfilter
   {
@@ -355,9 +357,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setArt((String) getArt().getValue());
     b.setVerzicht((Boolean) getVerzicht().getValue());
     b.setKommentar((String) getKommentar().getValue());
-    b.setSollbuchung(getSollbuchungAuswahlInput().getSollbuchung());
+    b.setSollbuchung((Sollbuchung) getSollbuchungInput().getValue());
     b.setGeprueft((Boolean) getGeprueft().getValue());
-    if (getSteuer() != null)
+    if (steuer != null)
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
@@ -688,68 +690,157 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return unterlagenwertermittlung;
   }
 
-  public DialogInput getSollbuchung() throws RemoteException
+  public DialogInput getSollbuchungInput() throws RemoteException
   {
-    if (sollbuchung != null)
+    if (sollbuchungInput != null && !sollbuchungInput.getControl().isDisposed())
     {
-      return sollbuchung;
+      return sollbuchungInput;
     }
-    sollbuchungAuswahlInput = new SollbuchungAuswahlInput(getBuchung());
-    sollbuchung = sollbuchungAuswahlInput.getSollbuchungAuswahl();
-    sollbuchung.addListener(event -> {
-      try
-      {
-        if (!sollbuchungAuswahlInput.getUpdated())
-        {
-          return;
-        }
-        sollbuchungAuswahlInput.setUpdated(false);
-        if (sollbuchung.getValue() instanceof Sollbuchung)
-        {
-          String name = (String) getName().getValue();
-          String zweck1 = (String) getZweck().getValue();
-          if (sollbuchung.getValue() != null && name.length() == 0
-              && zweck1.length() == 0)
-          {
-            Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
-            getName()
-                .setValue(Adressaufbereitung.getNameVorname(sb.getMitglied()));
-            getBetrag().setValue(sb.getBetrag());
-            getZweck().setValue(sb.getZweck1());
-            getDatum().setValue(sb.getDatum());
-          }
-
-          Sollbuchung sb = (Sollbuchung) sollbuchung.getValue();
-          ArrayList<SollbuchungPosition> sbpList = sb
-              .getSollbuchungPositionList();
-          if (getBuchungsart().getValue() == null && sbpList.size() > 0)
-          {
-            getBuchungsart().setValue(sbpList.get(0).getBuchungsart());
-          }
-          if (isBuchungsklasseActive() && getBuchungsklasse().getValue() == null
-              && sbpList.size() > 0)
-          {
-            getBuchungsklasse().setValue(sbpList.get(0).getBuchungsklasse());
-          }
-          if (getSteuer() != null && getSteuer().getValue() == null
-              && sbpList.size() > 0)
-          {
-            getSteuer().setValue(sbpList.get(0).getSteuer());
-          }
-        }
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-    });
-    sollbuchung.setEnabled(editable);
-    return sollbuchung;
+    sollbuchungDialog = new SollbuchungAuswahlDialog(getBuchung(), false);
+    sollbuchungDialog.addCloseListener(new SollbuchungListener());
+    Sollbuchung sollb = getBuchung().getSollbuchung();
+    sollbuchungInput = new DialogInput(
+        sollb != null
+            ? Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
+                + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
+                + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag())
+            : "",
+        sollbuchungDialog);
+    sollbuchungInput.disableClientControl();
+    sollbuchungInput.setValue(sollb);
+    return sollbuchungInput;
   }
 
-  public SollbuchungAuswahlInput getSollbuchungAuswahlInput()
+  /**
+   * Listener, der die Auswahl der Sollbuchung ueberwacht und die
+   * Waehrungsbezeichnung hinter dem Betrag abhaengig vom ausgewaehlten Konto
+   * anpasst.
+   */
+  private class SollbuchungListener implements Listener
   {
-    return sollbuchungAuswahlInput;
+
+    /**
+     * @see org.eclipse.swt.widgets.Listener#handleEvent(org.eclipse.swt.widgets.Event)
+     */
+    @Override
+    public void handleEvent(Event event)
+    {
+
+      if (event == null)
+      {
+        return;
+      }
+
+      if (event.data == null)
+      {
+        try
+        {
+          if (event.detail != SWT.CANCEL)
+          {
+            getSollbuchungInput().setText("");
+            GUI.getStatusBar()
+                .setSuccessText("Sollbuchung Zuordnung gelöscht.");
+          }
+          return;
+        }
+        catch (RemoteException er)
+        {
+          String error = "Fehler bei Auswahl der Sollbuchung";
+          Logger.error(error, er);
+          GUI.getStatusBar().setErrorText(error);
+        }
+      }
+      try
+      {
+        String b = "";
+        String message = "";
+        if (event.data instanceof Mitglied)
+        {
+          Mitglied mitglied = (Mitglied) event.data;
+
+          Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+              .createObject(Sollbuchung.class, null);
+          sollb.setBetrag((Double) getBetrag().getValue());
+          sollb.setDatum((Date) getDatum().getValue());
+          sollb.setMitglied(mitglied);
+          sollb.setZahler(mitglied);
+          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+          sollb.setZweck1((String) getZweck().getValue());
+          sollb.store();
+
+          SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+              .getDBService().createObject(SollbuchungPosition.class, null);
+          sbp.setBetrag(sollb.getBetrag());
+          sbp.setBuchungsartId(getSelectedBuchungsArtId());
+          sbp.setBuchungsklasseId(getSelectedBuchungsKlasseId());
+          if (steuer != null)
+          {
+            sbp.setSteuer((Steuer) getSteuer().getValue());
+          }
+          sbp.setDatum(sollb.getDatum());
+          sbp.setZweck(sollb.getZweck1());
+          sbp.setSollbuchung(sollb.getID());
+          sbp.store();
+          message = "Sollbuchung erzeugt und zugeordnet.";
+          sollbuchungDialog.setData(sollb);
+          b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
+              + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
+              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
+        }
+
+        if (event.data instanceof Sollbuchung)
+        {
+          Sollbuchung sollb = (Sollbuchung) event.data;
+          b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
+              + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
+              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
+          String name = (String) getName().getValue();
+          String zweck1 = (String) getZweck().getValue();
+          if ((name == null || name.length() == 0)
+              && (zweck1 == null || zweck1.length() == 0))
+          {
+            getName().setValue(
+                Adressaufbereitung.getNameVorname(sollb.getMitglied()));
+            getZweck().setValue(sollb.getZweck1());
+            getBetrag().setValue(sollb.getBetrag());
+            getDatum().setValue(sollb.getDatum());
+          }
+          ArrayList<SollbuchungPosition> sbpList = sollb
+              .getSollbuchungPositionList();
+          if (sbpList.size() > 0)
+          {
+            if (getBuchungsart().getValue() == null)
+            {
+              getBuchungsart().setValue(sbpList.get(0).getBuchungsart());
+            }
+            if (isBuchungsklasseActive()
+                && getBuchungsklasse().getValue() == null)
+            {
+              getBuchungsklasse().setValue(sbpList.get(0).getBuchungsklasse());
+            }
+            if (steuer != null && getSteuer().getValue() == null)
+            {
+              getSteuer().setValue(sbpList.get(0).getSteuer());
+            }
+          }
+          message = "Sollbuchung zugeordnet.";
+        }
+        getSollbuchungInput().setText(b);
+        GUI.getStatusBar().setSuccessText(message);
+      }
+      catch (ApplicationException ae)
+      {
+        String error = ae.getMessage();
+        Logger.error(error, ae);
+        GUI.getStatusBar().setErrorText(error);
+      }
+      catch (RemoteException er)
+      {
+        String error = "Fehler bei Zuordnung der Sollbuchung";
+        Logger.error(error, er);
+        GUI.getStatusBar().setErrorText(error);
+      }
+    }
   }
 
   public Input getArt() throws RemoteException
