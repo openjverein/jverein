@@ -231,6 +231,8 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.VORNAMENAME.getName(),
         Adressaufbereitung.getVornameName(mitglied));
     map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getVollZahlerID());
+    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(),
+        mitglied.getAbweichenderZahlerID());
     map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
@@ -470,6 +472,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(MitgliedVar.ZAHLERID.getName(), "123456");
+    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(), "123456");
 
     // Liste der Felddefinitionen
     DBIterator<Felddefinition> itfd = Einstellungen.getDBService()

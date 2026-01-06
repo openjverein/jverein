@@ -105,7 +105,8 @@ public enum MitgliedVar
   ZAHLUNGSTERMIN("mitglied_zahlungstermin"), //
   ZAHLUNGSWEG("mitglied_zahlungsweg"), //
   ZAHLUNGSWEGTEXT("mitglied_zahlungsweg_text"), //
-  ZAHLERID("mitglied_zahlerid");
+  ZAHLERID("mitglied_zahlerid"),
+  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlelrid");
 
   private String name;
 
