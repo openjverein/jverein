@@ -359,9 +359,25 @@ public class MitgliederImport implements Importer
             it.addFilter("id = ?", zahlerId);
             if (!it.hasNext())
               throw new ApplicationException(
-                  "Zeile " + anz + ": Zahler nicht gefunden: " + zahlerId);
+                  "Zeile " + anz + ": Vollzahler nicht gefunden: " + zahlerId);
             m.setVollZahlerID(Long.parseLong(zahlerId));
           }
+        }
+        catch (SQLException e)
+        {
+          // Optionaler parameter, ignorieren wir
+        }
+
+        try
+        {
+          String alternativeZahler = results.getString("alternativer_zahlerid");
+          DBIterator<Mitglied> it = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          it.addFilter("id = ?", alternativeZahler);
+          if (!it.hasNext())
+            throw new ApplicationException("Zeile " + anz
+                + ": Alternativen Zahler nicht gefunden: " + alternativeZahler);
+          m.setVollZahlerID(Long.parseLong(alternativeZahler));
         }
         catch (SQLException e)
         {
