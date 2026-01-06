@@ -430,6 +430,7 @@ public class SpendenbescheinigungMap extends AbstractMap
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+      throws RemoteException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -471,8 +472,11 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(), "20250601");
-    map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
-        "2022 bis 2024");
+    if (!((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG)))
+    {
+      map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
+          "2022 bis 2024");
+    }
     map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
 
     map.put(SpendenbescheinigungVar.ZEILE1.getName(), "Herr");
