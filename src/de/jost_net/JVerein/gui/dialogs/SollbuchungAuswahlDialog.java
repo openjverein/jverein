@@ -179,6 +179,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         {
           return;
         }
+        checkNewMitglied();
         choosen = context;
         abort = false;
         close();
@@ -212,22 +213,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
           if (o instanceof Mitglied)
           {
-            try
-            {
-              if (buchung.isNewObject())
-              {
-                GUI.getStatusBar()
-                    .setErrorText("Neue Buchung bitte erst speichern.");
-                throw new OperationCanceledException();
-              }
-            }
-            catch (RemoteException e)
-            {
-              String error = "Fehler bei Auswahl der Sollbuchung";
-              Logger.error(error, e);
-              GUI.getStatusBar().setErrorText(error);
-              throw new OperationCanceledException();
-            }
+            checkNewMitglied();
             choosen = o;
             abort = false;
             close();
@@ -260,6 +246,25 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     }, null, false, "process-stop.png");
 
     b.paint(parent);
+  }
+
+  private void checkNewMitglied()
+  {
+    try
+    {
+      if (buchung.isNewObject())
+      {
+        GUI.getStatusBar().setErrorText("Neue Buchung bitte erst speichern.");
+        throw new OperationCanceledException();
+      }
+    }
+    catch (RemoteException e)
+    {
+      String error = "Fehler bei Auswahl der Sollbuchung";
+      Logger.error(error, e);
+      GUI.getStatusBar().setErrorText(error);
+      throw new OperationCanceledException();
+    }
   }
 
   /**

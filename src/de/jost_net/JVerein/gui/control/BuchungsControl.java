@@ -752,11 +752,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         String b = "";
         String message = "";
+        Sollbuchung sollb = null;
         if (event.data instanceof Mitglied)
         {
           Mitglied mitglied = (Mitglied) event.data;
 
-          Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+          sollb = (Sollbuchung) Einstellungen.getDBService()
               .createObject(Sollbuchung.class, null);
           sollb.setBetrag((Double) getBetrag().getValue());
           sollb.setDatum((Date) getDatum().getValue());
@@ -781,21 +782,18 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           sbp.store();
           message = "Sollbuchung erzeugt und zugeordnet.";
           sollbuchungDialog.setData(sollb);
-          b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
-              + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
-              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
         }
 
         if (event.data instanceof Sollbuchung)
         {
-          Sollbuchung sollb = (Sollbuchung) event.data;
-          b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
-              + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
-              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
+          sollb = (Sollbuchung) event.data;
           String name = (String) getName().getValue();
           String zweck1 = (String) getZweck().getValue();
+          Double betrag = (Double) getBetrag().getValue();
+          Date datum = (Date) getDatum().getValue();
           if ((name == null || name.length() == 0)
-              && (zweck1 == null || zweck1.length() == 0))
+              && (zweck1 == null || zweck1.length() == 0) && betrag == null
+              && datum == null)
           {
             getName().setValue(
                 Adressaufbereitung.getNameVorname(sollb.getMitglied()));
@@ -822,6 +820,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             }
           }
           message = "Sollbuchung zugeordnet.";
+        }
+        if (sollb != null)
+        {
+          b = Adressaufbereitung.getNameVorname(sollb.getMitglied()) + ", "
+              + new JVDateFormatTTMMJJJJ().format(sollb.getDatum()) + ", "
+              + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
         }
         getSollbuchungInput().setText(b);
         GUI.getStatusBar().setSuccessText(message);
