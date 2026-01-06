@@ -94,11 +94,10 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       {
         gruppeIt.addFilter("id != ?", getID());
       }
-      gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
+      gruppeIt.addFilter("name = ?", getName());
       if (gruppeIt.hasNext())
       {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
+        throw new ApplicationException("Bitte eindeutigen Name eingeben!");
       }
     }
     catch (RemoteException e)

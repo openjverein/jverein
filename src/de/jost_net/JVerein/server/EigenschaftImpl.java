@@ -101,11 +101,10 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       {
         eigIt.addFilter("id != ?", getID());
       }
-      eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+      eigIt.addFilter("name = ?", getName());
       if (eigIt.hasNext())
       {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
+        throw new ApplicationException("Bitte eindeutigen Name eingeben!");
       }
     }
     catch (RemoteException e)
