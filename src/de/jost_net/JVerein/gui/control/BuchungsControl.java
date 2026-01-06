@@ -712,9 +712,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   /**
-   * Listener, der die Auswahl der Sollbuchung ueberwacht und die
-   * Waehrungsbezeichnung hinter dem Betrag abhaengig vom ausgewaehlten Konto
-   * anpasst.
+   * Listener, der die Auswahl der Sollbuchung ueberwacht
    */
   private class SollbuchungListener implements Listener
   {
