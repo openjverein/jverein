@@ -179,7 +179,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         {
           return;
         }
-        checkNewMitglied();
+        checkNewBuchung();
         choosen = context;
         abort = false;
         close();
@@ -213,7 +213,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
           if (o instanceof Mitglied)
           {
-            checkNewMitglied();
+            checkNewBuchung();
             choosen = o;
             abort = false;
             close();
@@ -248,7 +248,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     b.paint(parent);
   }
 
-  private void checkNewMitglied()
+  private void checkNewBuchung()
   {
     try
     {
