@@ -383,11 +383,14 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(),
         fromDate((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM)));
     Calendar cal = Calendar.getInstance();
-    cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
-    String start = "" + cal.get(Calendar.YEAR);
-    cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS));
-    map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
-        String.format("%s bis %s", start, "" + cal.get(Calendar.YEAR)));
+    if (!((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG)))
+    {
+      cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
+      String start = "" + cal.get(Calendar.YEAR);
+      cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS));
+      map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
+          String.format("%s bis %s", start, "" + cal.get(Calendar.YEAR)));
+    }
     map.put(SpendenbescheinigungVar.ZWECK.getName(),
         (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK));
 
