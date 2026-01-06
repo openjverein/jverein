@@ -377,7 +377,7 @@ public class MitgliederImport implements Importer
           if (!it.hasNext())
             throw new ApplicationException("Zeile " + anz
                 + ": Alternativen Zahler nicht gefunden: " + alternativeZahler);
-          m.setVollZahlerID(Long.parseLong(alternativeZahler));
+          m.setAbweichenderZahlerID(Long.parseLong(alternativeZahler));
         }
         catch (SQLException e)
         {
