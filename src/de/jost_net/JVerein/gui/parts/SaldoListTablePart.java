@@ -164,8 +164,8 @@ public class SaldoListTablePart extends TablePart
             }
             try
             {
-              steuerSumme = (steuerSumme == null ? 0d : steuerSumme)
-                  + zeile.getDouble(UmsatzsteuerSaldoControl.SUMME);
+              steuerSumme = (steuerSumme == null ? 0d : steuerSumme) + zeile
+                  .getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE);
             }
             catch (NullPointerException ignore)
             {

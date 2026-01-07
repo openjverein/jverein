@@ -42,7 +42,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   /**
    * Die Summe
    */
-  public static final String SUMME = "summe";
+  public static final String BEMESSUNGSGRUNDLAGE = "bemessungsgrundlage";
 
   public static final String STEUER = "steuer";
 
@@ -76,7 +76,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       };
       saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
       saldoList.addColumn("Steuer Name", STEUER);
-      saldoList.addColumn("Bemessungsgrundlage", SUMME,
+      saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Steuerbetrag", STEUERBETRAG,
@@ -211,7 +211,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         // Anlagebuchungen.
         "COALESCE(SUM(CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? then buchung.betrag ELSE "
             + "CAST(buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END),0) AS "
-            + SUMME,
+            + BEMESSUNGSGRUNDLAGE,
         Kontoart.ANLAGE.getKey());
 
     // Steuer berechnen.

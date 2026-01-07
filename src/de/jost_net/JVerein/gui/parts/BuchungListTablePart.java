@@ -99,7 +99,7 @@ public class BuchungListTablePart extends AutoUpdateTablePart
             summe += b.getBetrag();
             netto += b.getNetto();
           }
-          summary += " , Summe Auswahl: "
+          summary += " ==> Summe Auswahl: "
               + Einstellungen.DECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
