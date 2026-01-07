@@ -67,7 +67,6 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Namen des Label eingeben");
       }
-      setName(getName().toLowerCase());
       String validChars = "abcdefghijklmnopqrstuvwxyz0123456789_";
       String testString = getName();
       for (int i = 0; i < testString.length(); i++)
@@ -75,7 +74,8 @@ public class FelddefinitionImpl extends AbstractJVereinDBObject
         char c = testString.charAt(i);
         if (validChars.indexOf(c) == -1)
           throw new ApplicationException(String.format(
-              "Ungültiges Zeichen (%s) im Feldnamen an Position %d", c, i));
+              "Ungültiges Zeichen (%s) im Feldnamen an Position %d, nur 0-9, a-z, _ erlaubt!",
+              c, i + 1));
       }
       Mitglied m = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, null);
