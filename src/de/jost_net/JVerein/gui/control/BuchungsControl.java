@@ -790,10 +790,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           String name = (String) getName().getValue();
           String zweck1 = (String) getZweck().getValue();
           Double betrag = (Double) getBetrag().getValue();
-          Date datum = (Date) getDatum().getValue();
           if ((name == null || name.length() == 0)
-              && (zweck1 == null || zweck1.length() == 0) && betrag == null
-              && datum == null)
+              && (zweck1 == null || zweck1.length() == 0) && betrag == null)
           {
             getName().setValue(
                 Adressaufbereitung.getNameVorname(sollb.getMitglied()));
