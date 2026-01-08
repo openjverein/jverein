@@ -70,7 +70,7 @@ public class SollbuchungListeView extends AbstractView
     zurueck.setToolTipText("Datumsbereich zurück");
     vor.setToolTipText("Datumsbereich vowärts");
 
-    control.getSollbuchungenList(null, false).paint(this.getParent());
+    control.getSollbuchungenList(null, false, true).paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

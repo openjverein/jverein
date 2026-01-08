@@ -18,6 +18,8 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.rmi.RemoteException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -69,7 +71,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
   private MyButton suchen2;
 
-  public SollbuchungAuswahlDialog(Buchung buchung)
+  private boolean multi;
+
+  public SollbuchungAuswahlDialog(Buchung buchung, boolean multi)
   {
     super(SollbuchungAuswahlDialog.POSITION_MOUSE, true);
     settings = new de.willuhn.jameica.system.Settings(this.getClass());
@@ -78,6 +82,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     this.setSize(900, 700);
     this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
+    this.multi = multi;
     control = new SollbuchungControl(null);
   }
 
@@ -140,7 +145,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         close();
       }
     };
-    sollbuchunglist = control.getSollbuchungenList(action, true);
+    sollbuchunglist = control.getSollbuchungenList(action, true, multi);
     sollbuchunglist.paint(tabNurIst.getComposite());
 
     TabGroup tabSollIst = new TabGroup(folder,
@@ -174,6 +179,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         {
           return;
         }
+        checkNewBuchung();
         choosen = context;
         abort = false;
         close();
@@ -207,6 +213,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
           if (o instanceof Mitglied)
           {
+            checkNewBuchung();
             choosen = o;
             abort = false;
             close();
@@ -241,6 +248,25 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     b.paint(parent);
   }
 
+  private void checkNewBuchung()
+  {
+    try
+    {
+      if (buchung.isNewObject())
+      {
+        GUI.getStatusBar().setErrorText("Neue Buchung bitte erst speichern.");
+        throw new OperationCanceledException();
+      }
+    }
+    catch (RemoteException e)
+    {
+      String error = "Fehler bei Auswahl der Sollbuchung";
+      Logger.error(error, e);
+      GUI.getStatusBar().setErrorText(error);
+      throw new OperationCanceledException();
+    }
+  }
+
   /**
    * Liefert das ausgewaehlte Sollbuchung zurueck oder <code>null</code> wenn
    * der Abbrechen-Knopf gedrueckt wurde.
@@ -251,6 +277,11 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
   protected Object getData() throws Exception
   {
     return choosen;
+  }
+
+  public void setData(Object data)
+  {
+    choosen = data;
   }
 
   public boolean getAbort()
