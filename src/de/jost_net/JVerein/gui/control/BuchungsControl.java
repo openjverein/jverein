@@ -797,7 +797,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
                 Adressaufbereitung.getNameVorname(sollb.getMitglied()));
             getZweck().setValue(sollb.getZweck1());
             getBetrag().setValue(sollb.getBetrag());
-            getDatum().setValue(sollb.getDatum());
           }
           ArrayList<SollbuchungPosition> sbpList = sollb
               .getSollbuchungPositionList();
