@@ -194,8 +194,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
       {
         EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeit.next();
 
-        add(eg.getBezeichnung(), "eigenschaften_" + eg.getBezeichnung(), false,
-            true);
+        add(eg.getBezeichnung(), "eigenschaften_" + eg.getName(), false, true);
       }
     }
     catch (RemoteException e)

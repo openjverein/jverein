@@ -31,4 +31,8 @@ public interface Eigenschaft extends JVereinDBObject
   public void setEigenschaftGruppe(Long eigenschaftgruppe)
       throws RemoteException;
 
+  public String getName() throws RemoteException;
+
+  public void setName(String name) throws RemoteException;
+
 }

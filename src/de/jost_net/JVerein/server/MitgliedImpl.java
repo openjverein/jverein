@@ -1329,7 +1329,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     {
       DBIterator<EigenschaftGruppe> it = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
-      it.addFilter("bezeichnung = ?", new Object[] { fieldName.substring(14) });
+      it.addFilter("name = ?", new Object[] { fieldName.substring(14) });
       EigenschaftGruppe eg = (EigenschaftGruppe) it.next();
 
       DBIterator<Eigenschaft> eigenschaftIt = Einstellungen.getDBService()
