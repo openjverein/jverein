@@ -79,17 +79,25 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
+      if (getName() == null || getName().isEmpty())
+      {
+        throw new ApplicationException("Bitte Name eingeben!");
+      }
+      if (!getName().matches("^[a-z0-9_]+$"))
+      {
+        throw new ApplicationException(
+            "Name enthält ungültige Zeichen, nur 0-9, a-z, _ erlaubt!");
+      }
       DBIterator<EigenschaftGruppe> gruppeIt = Einstellungen.getDBService()
           .createList(EigenschaftGruppe.class);
       if (!this.isNewObject())
       {
         gruppeIt.addFilter("id != ?", getID());
       }
-      gruppeIt.addFilter("bezeichnung = ?", getBezeichnung());
+      gruppeIt.addFilter("name = ?", getName());
       if (gruppeIt.hasNext())
       {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
+        throw new ApplicationException("Bitte eindeutigen Name eingeben!");
       }
     }
     catch (RemoteException e)
@@ -160,4 +168,15 @@ public class EigenschaftGruppeImpl extends AbstractJVereinDBObject
     return "Eigenschaftengruppen";
   }
 
+  @Override
+  public String getName() throws RemoteException
+  {
+    return (String) getAttribute("name");
+  }
+
+  @Override
+  public void setName(String name) throws RemoteException
+  {
+    setAttribute("name", name);
+  }
 }

@@ -82,6 +82,15 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Bezeichnung eingeben!");
       }
+      if (getName() == null || getName().isEmpty())
+      {
+        throw new ApplicationException("Bitte Name eingeben!");
+      }
+      if (!getName().matches("^[a-z0-9_]+$"))
+      {
+        throw new ApplicationException(
+            "Name enthält ungültige Zeichen, nur 0-9, a-z, _ erlaubt!");
+      }
       if (getEigenschaftGruppe() == null)
       {
         throw new ApplicationException("Bitte Eigenschaftengruppe auswählen!");
@@ -92,11 +101,10 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
       {
         eigIt.addFilter("id != ?", getID());
       }
-      eigIt.addFilter("bezeichnung = ?", getBezeichnung());
+      eigIt.addFilter("name = ?", getName());
       if (eigIt.hasNext())
       {
-        throw new ApplicationException(
-            "Bitte eindeutige Bezeichnung eingeben!");
+        throw new ApplicationException("Bitte eindeutigen Name eingeben!");
       }
     }
     catch (RemoteException e)
@@ -172,4 +180,15 @@ public class EigenschaftImpl extends AbstractJVereinDBObject
     return "Eigenschaften";
   }
 
+  @Override
+  public String getName() throws RemoteException
+  {
+    return (String) getAttribute("name");
+  }
+
+  @Override
+  public void setName(String name) throws RemoteException
+  {
+    setAttribute("name", name);
+  }
 }

@@ -37,6 +37,7 @@ public class EigenschaftGruppeDetailView extends AbstractDetailView
     control = new EigenschaftGruppeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Eigenschaften-Gruppe");
+    group.addLabelPair("Name", control.getName());
     group.addLabelPair("Bezeichnung", control.getBezeichnung());
     group.addLabelPair("Pflicht", control.getPflicht());
     group.addLabelPair("Maximal 1 Eigenschaft", control.getMax1());

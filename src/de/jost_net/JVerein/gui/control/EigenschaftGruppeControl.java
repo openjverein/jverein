@@ -53,6 +53,8 @@ public class EigenschaftGruppeControl extends VorZurueckControl
 
   private EigenschaftGruppe eigenschaftgruppe;
 
+  private TextInput name;
+
   public EigenschaftGruppeControl(AbstractView view)
   {
     super(view);
@@ -81,6 +83,17 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     return bezeichnung;
   }
 
+  public Input getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+    name = new TextInput(getEigenschaftGruppe().getName(), 30);
+    name.setMandatory(true);
+    return name;
+  }
+
   public CheckboxInput getPflicht() throws RemoteException
   {
     if (pflicht != null)
@@ -105,6 +118,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   public JVereinDBObject prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
+    eg.setName((String) getName().getValue());
     eg.setBezeichnung((String) getBezeichnung().getValue());
     eg.setPflicht((Boolean) getPflicht().getValue());
     eg.setMax1((Boolean) getMax1().getValue());
@@ -144,6 +158,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
     eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
+    eigenschaftgruppeList.addColumn("Name", "name");
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
         new JaNeinFormatter());
