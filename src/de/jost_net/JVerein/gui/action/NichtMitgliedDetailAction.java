@@ -64,6 +64,7 @@ public class NichtMitgliedDetailAction implements Action
         {
           m.setPersonenart("n");
         }
+        m.setMitgliedstyp(Einstellungen.getNichtMitgliedDefaultTypId());
       }
     }
     catch (OperationCanceledException oce)

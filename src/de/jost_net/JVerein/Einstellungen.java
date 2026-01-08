@@ -817,7 +817,6 @@ public class Einstellungen
   {
     Long id = Long.valueOf(
         (Integer) Einstellungen.getEinstellung(Property.DEFAULTMITGLIEDSTYPID));
-    boolean notfound = false;
     if (id != null)
     {
       try
@@ -827,25 +826,12 @@ public class Einstellungen
       }
       catch (ObjectNotFoundException e)
       {
-        // Dann wird es das erste aus der Liste
-        notfound = true;
-      }
-    }
-
-    if (id == null || notfound)
-    {
-      DBIterator<Mitgliedstyp> list = Einstellungen.getDBService()
-          .createList(Mitgliedstyp.class);
-      list.addFilter("id != 1");
-      list.setOrder("ORDER BY bezeichnung");
-      if (list != null && list.size() > 0)
-      {
-        id = Long.parseLong(list.next().getID());
-      }
-      else
-      {
         id = Long.valueOf(Mitgliedstyp.SPENDER);
       }
+    }
+    else
+    {
+      id = Long.valueOf(Mitgliedstyp.SPENDER);
     }
     return id;
   }

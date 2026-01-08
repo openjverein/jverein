@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
@@ -349,6 +350,19 @@ public class MitgliedControl extends FilterControl implements Savable
         mtIt != null ? PseudoIterator.asList(mtIt) : null,
         getMitglied().getMitgliedstyp());
     mitgliedstyp.setName("Mitgliedstyp");
+    mitgliedstyp.addListener(event -> {
+      try
+      {
+        DBTransaction.starten();
+        Einstellungen.setEinstellung(Property.DEFAULTMITGLIEDSTYPID, (Integer
+            .parseInt(((Mitgliedstyp) getMitgliedstyp().getValue()).getID())));
+        DBTransaction.commit();
+      }
+      catch (RemoteException | NumberFormatException | ApplicationException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    });
     return mitgliedstyp;
   }
 
