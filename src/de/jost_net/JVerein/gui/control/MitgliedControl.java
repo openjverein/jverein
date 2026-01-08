@@ -1862,7 +1862,8 @@ public class MitgliedControl extends FilterControl implements Savable
                 // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
                 // war übernehmen wir diese Daten
                 ktoi = true;
-                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setMitgliedstyp(
+                    Einstellungen.getNichtMitgliedDefaultTypId());
                 nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
                 nm.setAnrede((String) m.getAttribute("ktoianrede"));
                 nm.setTitel((String) m.getAttribute("ktoititel"));
@@ -1902,7 +1903,8 @@ public class MitgliedControl extends FilterControl implements Savable
                 {
                   nm.setPersonenart("n");
                 }
-                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setMitgliedstyp(
+                    Einstellungen.getNichtMitgliedDefaultTypId());
                 nm.setAnrede("");
                 nm.setName((String) getName(false).getValue());
                 nm.setVorname("");

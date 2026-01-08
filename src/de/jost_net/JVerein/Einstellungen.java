@@ -34,11 +34,13 @@ import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.Util;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.security.Wallet;
@@ -207,6 +209,8 @@ public class Einstellungen
         Boolean.class, "1"),
     JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN("jnichtmitgliedpflichteigenschaften",
         Boolean.class, "1"),
+    DEFAULTMITGLIEDSTYPID("defaultmitgliedstyp", Integer.class,
+        Mitgliedstyp.SPENDER),
 
     // Anzeige
     STERBEDATUM("sterbedatum", Boolean.class, "0"),
@@ -799,5 +803,50 @@ public class Einstellungen
         (Boolean) getEinstellung(Property.IMAPSTARTTLS),
         (String) getEinstellung(Property.IMAPSENTFOLDER));
     return imapCopyData;
+  }
+
+  /**
+   * Liefert den Default Nicht-Mitglied Typ. Falls kein Wert in den Properties
+   * gesetzt ist oder der Mutgliedstyp gelöscht wurde, wird der erste in der
+   * Liste genommen.
+   *
+   * @return Id des Default Nicht-Mitglied Typ.
+   * @throws RemoteException
+   */
+  public final static Long getNichtMitgliedDefaultTypId() throws RemoteException
+  {
+    Long id = Long.valueOf(
+        (Integer) Einstellungen.getEinstellung(Property.DEFAULTMITGLIEDSTYPID));
+    boolean notfound = false;
+    if (id != null)
+    {
+      try
+      {
+        Einstellungen.getDBService().createObject(Mitgliedstyp.class,
+            id.toString());
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Dann wird es das erste aus der Liste
+        notfound = true;
+      }
+    }
+
+    if (id == null || notfound)
+    {
+      DBIterator<Mitgliedstyp> list = Einstellungen.getDBService()
+          .createList(Mitgliedstyp.class);
+      list.addFilter("id != 1");
+      list.setOrder("ORDER BY bezeichnung");
+      if (list != null && list.size() > 0)
+      {
+        id = Long.parseLong(list.next().getID());
+      }
+      else
+      {
+        id = Long.valueOf(Mitgliedstyp.SPENDER);
+      }
+    }
+    return id;
   }
 }

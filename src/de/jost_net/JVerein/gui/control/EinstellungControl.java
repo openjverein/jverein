@@ -60,11 +60,15 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.SteuerUtil;
 
 import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -421,6 +425,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput zellenTransparent;
 
+  private SelectInput defaultNichtMitgliedTyp;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -697,6 +703,39 @@ public class EinstellungControl extends AbstractControl
         (Boolean) Einstellungen
             .getEinstellung(Property.JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN));
     return jnichtmitgliedpflichteigenschaften;
+  }
+
+  public SelectInput getNichtMitgliedDefaultTyp() throws RemoteException
+  {
+    if (defaultNichtMitgliedTyp != null)
+    {
+      return defaultNichtMitgliedTyp;
+    }
+
+    Integer index = (Integer) Einstellungen
+        .getEinstellung(Property.DEFAULTMITGLIEDSTYPID);
+    Mitgliedstyp typ = null;
+
+    if (index != null)
+    {
+      try
+      {
+        typ = (Mitgliedstyp) Einstellungen.getDBService()
+            .createObject(Mitgliedstyp.class, index.toString());
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Dann wird es das erste aus der Liste
+      }
+    }
+    DBIterator<Mitgliedstyp> list = Einstellungen.getDBService()
+        .createList(Mitgliedstyp.class);
+    list.addFilter("id != 1");
+    list.setOrder("ORDER BY bezeichnung");
+    defaultNichtMitgliedTyp = new SelectInput(
+        list != null ? PseudoIterator.asList(list) : null, typ);
+
+    return defaultNichtMitgliedTyp;
   }
 
   public CheckboxInput getEintrittsdatumPflicht() throws RemoteException
@@ -2421,6 +2460,13 @@ public class EinstellungControl extends AbstractControl
           (Boolean) jnichtmitgliedpflichteigenschaften.getValue());
       Einstellungen.setEinstellung(Property.NICHTMITGLIEDPFLICHTEIGENSCHAFTEN,
           (Boolean) nichtmitgliedpflichteigenschaften.getValue());
+      if (defaultNichtMitgliedTyp.getValue() != null)
+      {
+        Einstellungen.setEinstellung(Property.DEFAULTMITGLIEDSTYPID,
+            (Integer.parseInt(
+                (String) ((Mitgliedstyp) defaultNichtMitgliedTyp.getValue())
+                    .getID())));
+      }
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen Allgemein gespeichert");

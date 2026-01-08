@@ -86,6 +86,13 @@ public class EinstellungenAllgemeinView extends AbstractView
     left3.addLabelPair("Auch für Nicht-Mitglieder",
         control.getNichtMitgliedPflichtEigenschaften());
 
+    LabelGroup dafaultwerte = new LabelGroup(scrolled.getComposite(),
+        "Default Werte", false);
+    ColumnLayout cols4 = new ColumnLayout(dafaultwerte.getComposite(), 1);
+    SimpleContainer left4 = new SimpleContainer(cols4.getComposite());
+    left4.addLabelPair("Mitgliedstyp für neue Nicht-Mitglieder",
+        control.getNichtMitgliedDefaultTyp());
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false,
