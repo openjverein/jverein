@@ -525,10 +525,10 @@ public class SplitbuchungsContainer
         }
       }
 
-      // Bei nur einem Eintrag und gleichem Betrag ist kein Splitten nötig, wir
-      // können also die
+      // Bei nur einem oder keinem Eintrag (kann bei Überzahlung passieren)
+      // und gleichem Betrag ist kein Splitten nötig, wir können also die
       // Daten direkt speichern
-      if (splitMap.size() == 1 && Math.abs(sollb.getBetrag()
+      if (splitMap.size() <= 1 && Math.abs(sollb.getBetrag()
           - sollb.getIstSumme() - buchung.getBetrag()) < 0.01d)
       {
         if (spArray.get(0).getBuchungsartId() != null)
