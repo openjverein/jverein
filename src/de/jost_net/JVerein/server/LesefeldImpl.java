@@ -59,10 +59,10 @@ public class LesefeldImpl extends AbstractJVereinDBObject
       {
         throw new ApplicationException("Bitte Skript-Namen eingeben!");
       }
-      if (getBezeichnung().contains(" "))
+      if (!getBezeichnung().matches("^[a-z0-9_]+$"))
       {
         throw new ApplicationException(
-            "Der Skript-Name darf keine Leerzeichen enthalten!");
+            "Skript-Name enthält ungültige Zeichen, nur 0-9, a-z, _ erlaubt!");
       }
       if (getScript() == null || getScript().isEmpty())
       {
