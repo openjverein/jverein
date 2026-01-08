@@ -1948,6 +1948,10 @@ public class MitgliedControl extends FilterControl implements Savable
                     getZahlungsweg()
                         .setValue(new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG));
                     deleteBankverbindung();
+                    mandatid.setMandatory(false);
+                    mandatdatum.setMandatory(false);
+                    mandatversion.setMandatory(false);
+                    iban.setMandatory(false);
                     m.clearKtoi();
                   }
                 }
