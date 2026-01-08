@@ -806,11 +806,11 @@ public class Einstellungen
   }
 
   /**
-   * Liefert den Default Nicht-Mitglied Typ. Falls kein Wert in den Properties
-   * gesetzt ist oder der Mutgliedstyp gelöscht wurde, wird der erste in der
-   * Liste genommen.
+   * Liefert den gespeicherten Nicht-Mitglied Typ. Falls kein Wert in den
+   * Properties gesetzt ist oder der Mitgliedstyp gelöscht wurde, wird der
+   * Spender genommen.
    *
-   * @return Id des Default Nicht-Mitglied Typ.
+   * @return Id des gespeicherten Nicht-Mitglied Typ.
    * @throws RemoteException
    */
   public final static Long getNichtMitgliedDefaultTypId() throws RemoteException
