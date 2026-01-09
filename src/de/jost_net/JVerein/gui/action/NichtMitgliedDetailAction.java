@@ -21,6 +21,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -64,6 +65,8 @@ public class NichtMitgliedDetailAction implements Action
         {
           m.setPersonenart("n");
         }
+        m.setMitgliedstyp(Long.valueOf(Einstellungen.getSettingInt(
+            "defaultmitgliedstyp", Integer.valueOf(Mitgliedstyp.SPENDER))));
       }
     }
     catch (OperationCanceledException oce)

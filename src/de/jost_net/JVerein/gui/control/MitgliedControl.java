@@ -122,6 +122,7 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -340,15 +341,35 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mitgliedstyp;
     }
+    Mitgliedstyp typ = null;
+    try
+    {
+      typ = getMitglied().getMitgliedstyp();
+    }
+    catch (ObjectNotFoundException e)
+    {
+      // Weil z.B. der default Mitgliedstyp gelöscht wurde
+      // Dann wird es das erste aus der Liste
+    }
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
     mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
         + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
     mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
     mitgliedstyp = new SelectNoScrollInput(
-        mtIt != null ? PseudoIterator.asList(mtIt) : null,
-        getMitglied().getMitgliedstyp());
+        mtIt != null ? PseudoIterator.asList(mtIt) : null, typ);
     mitgliedstyp.setName("Mitgliedstyp");
+    mitgliedstyp.addListener(event -> {
+      try
+      {
+        Einstellungen.setSettingInt("defaultmitgliedstyp", (Integer
+            .parseInt(((Mitgliedstyp) getMitgliedstyp().getValue()).getID())));
+      }
+      catch (RemoteException | NumberFormatException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+    });
     return mitgliedstyp;
   }
 
@@ -1862,7 +1883,9 @@ public class MitgliedControl extends FilterControl implements Savable
                 // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
                 // war übernehmen wir diese Daten
                 ktoi = true;
-                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
                 nm.setAnrede((String) m.getAttribute("ktoianrede"));
                 nm.setTitel((String) m.getAttribute("ktoititel"));
@@ -1902,7 +1925,9 @@ public class MitgliedControl extends FilterControl implements Savable
                 {
                   nm.setPersonenart("n");
                 }
-                nm.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                nm.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 nm.setAnrede("");
                 nm.setName((String) getName(false).getValue());
                 nm.setVorname("");
