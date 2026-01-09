@@ -34,13 +34,11 @@ import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.rmi.JVereinDBService;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.Util;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.security.Wallet;
@@ -209,8 +207,6 @@ public class Einstellungen
         Boolean.class, "1"),
     JNICHTMITGLIEDPFLICHTEIGENSCHAFTEN("jnichtmitgliedpflichteigenschaften",
         Boolean.class, "1"),
-    DEFAULTMITGLIEDSTYPID("defaultmitgliedstyp", Integer.class,
-        Mitgliedstyp.SPENDER),
 
     // Anzeige
     STERBEDATUM("sterbedatum", Boolean.class, "0"),
@@ -803,36 +799,5 @@ public class Einstellungen
         (Boolean) getEinstellung(Property.IMAPSTARTTLS),
         (String) getEinstellung(Property.IMAPSENTFOLDER));
     return imapCopyData;
-  }
-
-  /**
-   * Liefert den gespeicherten Nicht-Mitglied Typ. Falls kein Wert in den
-   * Properties gesetzt ist oder der Mitgliedstyp gelöscht wurde, wird der
-   * Spender genommen.
-   *
-   * @return Id des gespeicherten Nicht-Mitglied Typ.
-   * @throws RemoteException
-   */
-  public final static Long getNichtMitgliedDefaultTypId() throws RemoteException
-  {
-    Long id = Long.valueOf(
-        (Integer) Einstellungen.getEinstellung(Property.DEFAULTMITGLIEDSTYPID));
-    if (id != null)
-    {
-      try
-      {
-        Einstellungen.getDBService().createObject(Mitgliedstyp.class,
-            id.toString());
-      }
-      catch (ObjectNotFoundException e)
-      {
-        id = Long.valueOf(Mitgliedstyp.SPENDER);
-      }
-    }
-    else
-    {
-      id = Long.valueOf(Mitgliedstyp.SPENDER);
-    }
-    return id;
   }
 }

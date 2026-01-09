@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
@@ -353,12 +352,10 @@ public class MitgliedControl extends FilterControl implements Savable
     mitgliedstyp.addListener(event -> {
       try
       {
-        DBTransaction.starten();
-        Einstellungen.setEinstellung(Property.DEFAULTMITGLIEDSTYPID, (Integer
+        Einstellungen.setSettingInt("defaultmitgliedstyp", (Integer
             .parseInt(((Mitgliedstyp) getMitgliedstyp().getValue()).getID())));
-        DBTransaction.commit();
       }
-      catch (RemoteException | NumberFormatException | ApplicationException e1)
+      catch (RemoteException | NumberFormatException e1)
       {
         Logger.error("Fehler", e1);
       }
@@ -1876,8 +1873,9 @@ public class MitgliedControl extends FilterControl implements Savable
                 // Für den Fall, dass ein alternativer Kontoinhaber konfiguriert
                 // war übernehmen wir diese Daten
                 ktoi = true;
-                nm.setMitgliedstyp(
-                    Einstellungen.getNichtMitgliedDefaultTypId());
+                nm.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 nm.setPersonenart((String) m.getAttribute("ktoipersonenart"));
                 nm.setAnrede((String) m.getAttribute("ktoianrede"));
                 nm.setTitel((String) m.getAttribute("ktoititel"));
@@ -1917,8 +1915,9 @@ public class MitgliedControl extends FilterControl implements Savable
                 {
                   nm.setPersonenart("n");
                 }
-                nm.setMitgliedstyp(
-                    Einstellungen.getNichtMitgliedDefaultTypId());
+                nm.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 nm.setAnrede("");
                 nm.setName((String) getName(false).getValue());
                 nm.setVorname("");
