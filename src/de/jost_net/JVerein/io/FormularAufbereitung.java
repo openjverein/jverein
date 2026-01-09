@@ -71,6 +71,7 @@ import de.jost_net.JVerein.Variable.AllgemeineVar;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
@@ -87,6 +88,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
@@ -99,6 +101,10 @@ public class FormularAufbereitung
   private PdfWriter writer;
 
   private File f;
+
+  private boolean encrypt;
+
+  private boolean pdfa;
 
   // Constanten für QR-Code
   private static final String EPC_STRING = "BCD";
@@ -113,128 +119,112 @@ public class FormularAufbereitung
 
   private static final String EPC_EUR = "EUR";
 
-  /**
-   * Öffnet die Datei und startet die PDF-Generierung
-   * 
-   * @param f
-   *          Die Datei, in die geschrieben werden soll
-   * @throws RemoteException
-   */
   public FormularAufbereitung(final File f, boolean pdfa, boolean encrypt)
-      throws RemoteException
   {
     this.f = f;
-    try
+    this.pdfa = pdfa;
+    this.encrypt = encrypt;
+  }
+
+  private void init()
+      throws IOException, DocumentException, ApplicationException
+  {
+    doc = new Document();
+    fos = new FileOutputStream(f);
+
+    if (pdfa)
     {
-      doc = new Document();
-      fos = new FileOutputStream(f);
+      writer = PdfAWriter.getInstance(doc, fos, PdfAConformanceLevel.PDF_A_3B);
 
-      if (pdfa)
+      writer.createXmpMetadata();
+      doc.open();
+      try
       {
-        writer = PdfAWriter.getInstance(doc, fos,
-            PdfAConformanceLevel.PDF_A_3B);
-
-        writer.createXmpMetadata();
-        doc.open();
-
         ICC_Profile icc = ICC_Profile
             .getInstance(Class.forName("org.mustangproject.Invoice")
                 .getClassLoader().getResourceAsStream("sRGB.icc"));
         writer.setOutputIntents("Custom", "", "http://www.color.org",
             "sRGB IEC61966-2.1", icc);
-
-        writer.setCompressionLevel(9);
       }
-      else
+      catch (ClassNotFoundException e)
       {
-        writer = PdfWriter.getInstance(doc, fos);
-        if (encrypt)
-        {
-          writer.setEncryption(null, null,
-              PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
-                  | PdfWriter.ALLOW_COPY,
-              PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
-        }
-        doc.open();
+        Logger.error("ICC Profil nicht gefunden", e);
+        throw new ApplicationException(
+            "Programmfehler: ICC Profil nicht gefunden.");
       }
+      writer.setCompressionLevel(9);
     }
-    catch (IOException e)
+    else
     {
-      throw new RemoteException("Fehler", e);
-    }
-    catch (DocumentException e)
-    {
-      throw new RemoteException("Fehler", e);
-    }
-    catch (ClassNotFoundException e)
-    {
-      throw new RemoteException("Fehler", e);
+      writer = PdfWriter.getInstance(doc, fos);
+      if (encrypt)
+      {
+        writer.setEncryption(null, null,
+            PdfWriter.ALLOW_PRINTING | PdfWriter.ALLOW_SCREENREADERS
+                | PdfWriter.ALLOW_COPY,
+            PdfWriter.ENCRYPTION_AES_256 | PdfWriter.DO_NOT_ENCRYPT_METADATA);
+      }
+      doc.open();
     }
   }
 
   public void writeForm(Formular formular, Map<String, Object> map)
-      throws RemoteException
+      throws IOException, DocumentException, ApplicationException
   {
-    try
+
+    if (doc == null)
     {
-      PdfReader reader = new PdfReader(formular.getInhalt());
-      int numOfPages = reader.getNumberOfPages();
+      init();
+    }
+    PdfReader reader = new PdfReader(formular.getInhalt());
+    int numOfPages = reader.getNumberOfPages();
 
-      // Get current counter
-      Integer zaehler = formular.getZaehler();
-      // Get settings and length of counter
-      Integer zaehlerLaenge = (Integer) Einstellungen
-          .getEinstellung(Property.ZAEHLERLAENGE);
+    // Get current counter
+    Integer zaehler = formular.getZaehler();
+    // Get settings and length of counter
+    Integer zaehlerLaenge = (Integer) Einstellungen
+        .getEinstellung(Property.ZAEHLERLAENGE);
 
-      for (int i = 1; i <= numOfPages; i++)
+    for (int i = 1; i <= numOfPages; i++)
+    {
+      doc.setPageSize(reader.getPageSize(i));
+      doc.newPage();
+      PdfImportedPage page = writer.getImportedPage(reader, i);
+      PdfContentByte contentByte = writer.getDirectContent();
+      contentByte.addTemplate(page, 0, 0);
+
+      DBIterator<Formularfeld> it = Einstellungen.getDBService()
+          .createList(Formularfeld.class);
+      it.addFilter("formular = ? and seite = ?", formular.getID(), i);
+
+      Boolean increased = false;
+
+      while (it.hasNext())
       {
-        doc.setPageSize(reader.getPageSize(i));
-        doc.newPage();
-        PdfImportedPage page = writer.getImportedPage(reader, i);
-        PdfContentByte contentByte = writer.getDirectContent();
-        contentByte.addTemplate(page, 0, 0);
+        Formularfeld f = (Formularfeld) it.next();
 
-        DBIterator<Formularfeld> it = Einstellungen.getDBService()
-            .createList(Formularfeld.class);
-        it.addFilter("formular = ? and seite = ?", formular.getID(), i);
-
-        Boolean increased = false;
-
-        while (it.hasNext())
+        // Increase counter if form field is zaehler or qrcode (counter is
+        // needed in QR code, so it needs to be incremented)
+        if (!increased && (f.getName().toLowerCase()
+            .contains(AllgemeineVar.ZAEHLER.getName().toLowerCase())
+            || f.getName().toLowerCase()
+                .contains(RechnungVar.QRCODE_SUMME.getName().toLowerCase())))
         {
-          Formularfeld f = (Formularfeld) it.next();
-
-          // Increase counter if form field is zaehler or qrcode (counter is
-          // needed in QR code, so it needs to be incremented)
-          if (!increased && (f.getName().toLowerCase()
-              .contains(AllgemeineVar.ZAEHLER.getName().toLowerCase())
-              || f.getName().toLowerCase()
-                  .contains(RechnungVar.QRCODE_SUMME.getName().toLowerCase())))
-          {
-            zaehler++;
-            // Prevent multiple increases by next page
-            increased = true;
-            // Set new value to field with leading zero to get the defined
-            // length
-            map.put(AllgemeineVar.ZAEHLER.getName(),
-                StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
-          }
-
-          goFormularfeld(contentByte, f, map);
+          zaehler++;
+          // Prevent multiple increases by next page
+          increased = true;
+          // Set new value to field with leading zero to get the defined
+          // length
+          map.put(AllgemeineVar.ZAEHLER.getName(),
+              StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
         }
-      }
 
-      // Set counter to form (not yet saved to the DB)
-      formular.setZaehler(zaehler);
+        goFormularfeld(contentByte, f, map);
+      }
     }
-    catch (IOException e)
-    {
-      throw new RemoteException("Fehler", e);
-    }
-    catch (DocumentException e)
-    {
-      throw new RemoteException("Fehler", e);
-    }
+
+    // Set counter to form (not yet saved to the DB)
+    formular.setZaehler(zaehler);
   }
 
   private Image getPaymentQRCode(Map<String, Object> fieldsMap)
@@ -402,14 +392,12 @@ public class FormularAufbereitung
   }
 
   /**
-   * Anzeige des gerade aufbereiteten Formulars. Die Ausgabedatei wird vorher
-   * geschlossen.
+   * Anzeige des gerade aufbereiteten Formulars.
    * 
    * @throws IOException
    */
   public void showFormular() throws IOException
   {
-    closeFormular();
     GUI.getDisplay().asyncExec(new Runnable()
     {
 
@@ -605,6 +593,7 @@ public class FormularAufbereitung
           context.put("email", m.getEmail());
         Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
         mmap = new AllgemeineMap().getMap(mmap);
+        mmap = new SpendenbescheinigungMap().getMap(spb, mmap);
         VarTools.add(context, mmap);
         StringWriter wtext = new StringWriter();
         Velocity.evaluate(context, wtext, "LOG", text);

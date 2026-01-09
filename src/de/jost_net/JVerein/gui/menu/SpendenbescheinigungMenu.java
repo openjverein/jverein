@@ -20,12 +20,11 @@ import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungEmailAction;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungSendAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
-import de.jost_net.JVerein.keys.Adressblatt;
-import de.jost_net.JVerein.gui.action.SpendenbescheinigungPrintAction;
+import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -52,11 +51,9 @@ public class SpendenbescheinigungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new CheckedContextMenuItem("PDF",
-        new SpendenbescheinigungPrintAction(Adressblatt.OHNE_ADRESSBLATT, true),
-        "file-pdf.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
-        new SpendenbescheinigungSendAction(), "document-print.png"));
+        new StartViewAction(SpendenbescheinigungMailView.class, true),
+        "document-print.png"));
     addItem(new CheckedContextMenuItem("Mail an Spender",
         new SpendenbescheinigungEmailAction(), "envelope-open.png"));
   }
