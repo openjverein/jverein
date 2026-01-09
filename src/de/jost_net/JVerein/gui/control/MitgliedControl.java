@@ -122,6 +122,7 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -340,14 +341,23 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mitgliedstyp;
     }
+    Mitgliedstyp typ = null;
+    try
+    {
+      typ = getMitglied().getMitgliedstyp();
+    }
+    catch (ObjectNotFoundException e)
+    {
+      // Weil z.B. der default Mitgliedstyp gelöscht wurde
+      // Dann wird es das erste aus der Liste
+    }
     DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
         .createList(Mitgliedstyp.class);
     mtIt.addFilter(Mitgliedstyp.JVEREINID + " != " + Mitgliedstyp.MITGLIED
         + " OR " + Mitgliedstyp.JVEREINID + " IS NULL");
     mtIt.setOrder("order by " + Mitgliedstyp.BEZEICHNUNG);
     mitgliedstyp = new SelectNoScrollInput(
-        mtIt != null ? PseudoIterator.asList(mtIt) : null,
-        getMitglied().getMitgliedstyp());
+        mtIt != null ? PseudoIterator.asList(mtIt) : null, typ);
     mitgliedstyp.setName("Mitgliedstyp");
     mitgliedstyp.addListener(event -> {
       try
