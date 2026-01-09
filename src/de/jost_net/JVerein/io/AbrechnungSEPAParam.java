@@ -66,6 +66,8 @@ public class AbrechnungSEPAParam
 
   public final boolean rechnung;
 
+  public final boolean rechnungsdokumentSpeichern;
+
   public final Formular rechnungsformular;
 
   public final String rechnungstext;
@@ -111,6 +113,15 @@ public class AbrechnungSEPAParam
     sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen()
         .getValue();
     rechnung = (Boolean) ac.getRechnung().getValue();
+    if (ac.istRechnungsdokumentActiv())
+    {
+      rechnungsdokumentSpeichern = (Boolean) ac.getRechnungsdokumentSpeichern()
+          .getValue();
+    }
+    else
+    {
+      rechnungsdokumentSpeichern = false;
+    }
     rechnungsformular = (Formular) ac.getRechnungFormular().getValue();
     rechnungstext = (String) ac.getRechnungstext().getValue();
     rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();

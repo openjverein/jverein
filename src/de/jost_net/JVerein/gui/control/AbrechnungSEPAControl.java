@@ -111,6 +111,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private DateInput voneingabedatum;
 
+  private CheckboxInput rechnungsdokumentspeichern;
+
   public AbrechnungSEPAControl(AbstractView view)
   {
     super(view);
@@ -321,6 +323,24 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnung;
   }
 
+  public CheckboxInput getRechnungsdokumentSpeichern()
+  {
+    if (rechnungsdokumentspeichern != null)
+    {
+      return rechnungsdokumentspeichern;
+    }
+    rechnungsdokumentspeichern = new CheckboxInput(
+        settings.getBoolean("rechnungsdokumentspeichern", false));
+    rechnungsdokumentspeichern
+        .setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungsdokumentspeichern;
+  }
+
+  public boolean istRechnungsdokumentActiv()
+  {
+    return rechnungsdokumentspeichern != null;
+  }
+
   public FormularInput getRechnungFormular() throws RemoteException
   {
     if (rechnungsformular != null)
@@ -475,6 +495,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+      settings.setAttribute("rechnungsdokumentspeichern",
+          (Boolean) rechnungsdokumentspeichern.getValue());
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
       settings.setAttribute("rechnungsformular",
           rechnungsformular.getValue() == null ? null
@@ -641,11 +663,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class RechnungListener implements Listener
   {
-
-    RechnungListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -656,16 +673,15 @@ public class AbrechnungSEPAControl extends AbstractControl
       rechnungsformular.setEnabled((boolean) rechnung.getValue());
       rechnungstext.setEnabled((boolean) rechnung.getValue());
       rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      if (rechnungsdokumentspeichern != null)
+      {
+        rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
+      }
     }
   }
 
   public class ZusammenfassenListener implements Listener
   {
-
-    ZusammenfassenListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -682,11 +698,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class KompaktListener implements Listener
   {
-
-    KompaktListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
