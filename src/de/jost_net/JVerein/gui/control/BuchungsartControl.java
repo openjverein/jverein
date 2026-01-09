@@ -61,7 +61,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -422,7 +421,6 @@ public class BuchungsartControl extends FilterControl implements Savable
       buchungsartList.setRememberColWidths(true);
       buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);
-      buchungsartList.addFeature(new FeatureSummary());
       buchungsartList.setAction(
           new EditAction(BuchungsartDetailView.class, buchungsartList));
       VorZurueckControl.setObjektListe(null, null);

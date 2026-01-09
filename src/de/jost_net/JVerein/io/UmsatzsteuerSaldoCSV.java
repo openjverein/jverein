@@ -87,7 +87,7 @@ public class UmsatzsteuerSaldoCSV implements ISaldoExport
             csvzeile.put(header[1],
                 (String) bkz.getAttribute(UmsatzsteuerSaldoControl.STEUER));
             csvzeile.put(header[2],
-                bkz.getDouble(UmsatzsteuerSaldoControl.SUMME));
+                bkz.getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE));
             csvzeile.put(header[3],
                 bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
             break;

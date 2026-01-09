@@ -60,7 +60,8 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(UmsatzsteuerSaldoControl.STEUER),
                 Element.ALIGN_LEFT);
-            reporter.addColumn(bkz.getDouble(UmsatzsteuerSaldoControl.SUMME));
+            reporter.addColumn(
+                bkz.getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE));
             reporter.addColumn(
                 bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
             break;

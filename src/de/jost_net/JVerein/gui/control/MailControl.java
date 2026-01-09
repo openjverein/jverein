@@ -141,7 +141,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     empfaenger.setContextMenu(new MailEmpfaengerMenu(this));
     empfaenger.setMulti(true);
     empfaenger.setRememberOrder(true);
-    empfaenger.removeFeature(FeatureSummary.class);
     return empfaenger;
   }
 
@@ -254,7 +253,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));
     anhang.setRememberOrder(true);
-    anhang.removeFeature(FeatureSummary.class);
     anhang.setMulti(true);
     return anhang;
   }

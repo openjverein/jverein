@@ -34,7 +34,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -180,7 +179,6 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsartList.setRememberColWidths(true);
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setRememberOrder(true);
-    lehrgangsartList.removeFeature(FeatureSummary.class);
     lehrgangsartList.setMulti(true);
     lehrgangsartList.setAction(
         new EditAction(LehrgangsartDetailView.class, lehrgangsartList));

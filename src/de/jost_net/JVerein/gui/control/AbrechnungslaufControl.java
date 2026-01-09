@@ -45,7 +45,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -390,7 +389,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
       abrechnungslaufList.setRememberColWidths(true);
       abrechnungslaufList.setRememberOrder(true);
-      abrechnungslaufList.addFeature(new FeatureSummary());
       abrechnungslaufList.setAction(
           new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
       VorZurueckControl.setObjektListe(null, null);

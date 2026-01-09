@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -38,8 +39,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class AnlagenlisteControl extends AbstractSaldoControl
@@ -67,7 +66,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
 
   private static final String KONTO_ID = "konto_id";
 
-  private TablePart saldoList;
+  private SaldoListTablePart saldoList;
 
   public AnlagenlisteControl(AbstractView view) throws RemoteException
   {
@@ -75,7 +74,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
-  public TablePart getSaldoList() throws ApplicationException
+  public SaldoListTablePart getSaldoList() throws ApplicationException
   {
     try
     {
@@ -83,7 +82,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new TablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), null)
       {
         // Sortieren verhindern
         @Override
@@ -123,8 +122,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_LEFT);
       saldoList.setRememberColWidths(true);
-      saldoList.removeFeature(FeatureSummary.class);
       saldoList.setFormatter(new SaldoFormatter());
+      saldoList.setMulti(true);
       return saldoList;
     }
     catch (RemoteException e)

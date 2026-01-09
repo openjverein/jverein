@@ -51,7 +51,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -384,7 +383,6 @@ public class JahresabschlussControl extends KontensaldoControl
     jahresabschlussList
         .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
     jahresabschlussList.setRememberOrder(true);
-    jahresabschlussList.removeFeature(FeatureSummary.class);
     jahresabschlussList.setAction(
         new EditAction(JahresabschlussDetailView.class, jahresabschlussList));
     VorZurueckControl.setObjektListe(null, null);

@@ -34,7 +34,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragImpl extends AbstractJVereinDBObject
-    implements Zusatzbetrag, IMitglied, UnreadCounter
+    implements Zusatzbetrag, IMitglied, UnreadCounter, IBetrag
 {
 
   private static final long serialVersionUID = 1L;

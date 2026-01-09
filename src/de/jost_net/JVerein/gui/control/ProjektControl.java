@@ -34,7 +34,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -159,7 +158,6 @@ public class ProjektControl extends FilterControl implements Savable
     projektList.setContextMenu(new ProjektMenu(projektList));
     projektList.setRememberColWidths(true);
     projektList.setRememberOrder(true);
-    projektList.addFeature(new FeatureSummary());
     projektList.setMulti(true);
     projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
     VorZurueckControl.setObjektListe(null, null);

@@ -46,7 +46,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -438,7 +437,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
       lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
       lesefeldList.setRememberColWidths(true);
       lesefeldList.setRememberOrder(true);
-      lesefeldList.addFeature(new FeatureSummary());
       lesefeldList.setMulti(true);
       lesefeldList
           .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));

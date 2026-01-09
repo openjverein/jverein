@@ -22,6 +22,8 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
+import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
+import de.jost_net.JVerein.gui.control.UmsatzsteuerSaldoControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -79,7 +81,18 @@ public class SaldoListTablePart extends TablePart
           Double ausgaben = null;
           Double umbuchungen = null;
           Double endbestand = null;
+          Double steuer = null;
+          Double steuerSumme = null;
+
+          Double anschaffung = null;
+          Double startwert = null;
+          Double zugang = null;
+          Double afa = null;
+          Double abgang = null;
+          Double endwert = null;
+
           Integer anzahl = null;
+
           PseudoDBObject[] zeilen = (PseudoDBObject[]) o;
 
           // Werte berechnen
@@ -103,96 +116,117 @@ public class SaldoListTablePart extends TablePart
             }
             try
             {
-              if (anfangsbestand == null)
-              {
-                anfangsbestand = zeile
-                    .getDouble(AbstractSaldoControl.ANFANGSBESTAND);
-              }
-              else
-              {
-                anfangsbestand += zeile
-                    .getDouble(AbstractSaldoControl.ANFANGSBESTAND);
-              }
+              anfangsbestand = (anfangsbestand == null ? 0d : anfangsbestand)
+                  + zeile.getDouble(AbstractSaldoControl.ANFANGSBESTAND);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
             }
             try
             {
-              if (einnahmen == null)
-              {
-                einnahmen = zeile.getDouble(AbstractSaldoControl.EINNAHMEN);
-              }
-              else
-              {
-                einnahmen += zeile.getDouble(AbstractSaldoControl.EINNAHMEN);
-              }
+              einnahmen = (einnahmen == null ? 0d : einnahmen)
+                  + zeile.getDouble(AbstractSaldoControl.EINNAHMEN);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
             }
             try
             {
-              if (ausgaben == null)
-              {
-                ausgaben = zeile.getDouble(AbstractSaldoControl.AUSGABEN);
-              }
-              else
-              {
-                ausgaben += zeile.getDouble(AbstractSaldoControl.AUSGABEN);
-              }
+              ausgaben = (ausgaben == null ? 0d : ausgaben)
+                  + zeile.getDouble(AbstractSaldoControl.AUSGABEN);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
             }
             try
             {
-              if (umbuchungen == null)
-              {
-                umbuchungen = zeile.getDouble(AbstractSaldoControl.UMBUCHUNGEN);
-              }
-              else
-              {
-                umbuchungen += zeile
-                    .getDouble(AbstractSaldoControl.UMBUCHUNGEN);
-              }
+              umbuchungen = (umbuchungen == null ? 0d : umbuchungen)
+                  + zeile.getDouble(AbstractSaldoControl.UMBUCHUNGEN);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
             }
             try
             {
-              if (endbestand == null)
-              {
-                endbestand = zeile.getDouble(AbstractSaldoControl.ENDBESTAND);
-              }
-              else
-              {
-                endbestand += zeile.getDouble(AbstractSaldoControl.ENDBESTAND);
-              }
+              endbestand = (endbestand == null ? 0d : endbestand)
+                  + zeile.getDouble(AbstractSaldoControl.ENDBESTAND);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
             }
             try
             {
-              if (anzahl == null)
-              {
-                anzahl = zeile.getInteger(AbstractSaldoControl.ANZAHL);
-              }
-              else
-              {
-                anzahl += zeile.getInteger(AbstractSaldoControl.ANZAHL);
-              }
+              steuer = (steuer == null ? 0d : steuer)
+                  + zeile.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG);
             }
-            catch (NullPointerException ex)
+            catch (NullPointerException ignore)
             {
-              // Das Feld hat keinen Eintrag, also ignorieren
+            }
+            try
+            {
+              steuerSumme = (steuerSumme == null ? 0d : steuerSumme) + zeile
+                  .getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+
+            try
+            {
+              anschaffung = (anschaffung == null ? 0d : anschaffung)
+                  + zeile.getDouble(AnlagenlisteControl.BETRAG);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+            try
+            {
+              startwert = (startwert == null ? 0d : startwert)
+                  + zeile.getDouble(AnlagenlisteControl.STARTWERT);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+            try
+            {
+              zugang = (zugang == null ? 0d : zugang)
+                  + zeile.getDouble(AnlagenlisteControl.ZUGANG);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+            try
+            {
+              afa = (afa == null ? 0d : afa)
+                  + zeile.getDouble(AnlagenlisteControl.ABSCHREIBUNG);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+            try
+            {
+              abgang = (abgang == null ? 0d : abgang)
+                  + zeile.getDouble(AnlagenlisteControl.ABGANG);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+            try
+            {
+              endwert = (endwert == null ? 0d : endwert)
+                  + zeile.getDouble(AnlagenlisteControl.ENDWERT);
+            }
+            catch (NullPointerException ignore)
+            {
+            }
+
+            try
+            {
+              anzahl = (anzahl == null ? 0 : anzahl)
+                  + zeile.getInteger(AbstractSaldoControl.ANZAHL);
+            }
+            catch (NullPointerException ignore)
+            {
             }
           }
 
@@ -228,8 +262,58 @@ public class SaldoListTablePart extends TablePart
           {
             summary.append(
                 " Endbestand: " + Einstellungen.DECIMALFORMAT.format(endbestand)
-                    + " " + Einstellungen.CURRENCY);
+                    + " " + Einstellungen.CURRENCY + ",");
           }
+          if (steuerSumme != null)
+          {
+            summary.append(" Bemessungsgrundlage: "
+                + Einstellungen.DECIMALFORMAT.format(steuerSumme) + " "
+                + Einstellungen.CURRENCY + ",");
+          }
+          if (steuer != null)
+          {
+            summary
+                .append(" Steuer: " + Einstellungen.DECIMALFORMAT.format(steuer)
+                    + " " + Einstellungen.CURRENCY + ",");
+          }
+
+          if (anschaffung != null)
+          {
+            summary.append(" Anschaffung: "
+                + Einstellungen.DECIMALFORMAT.format(anschaffung) + " "
+                + Einstellungen.CURRENCY + ",");
+          }
+          if (startwert != null)
+          {
+            summary.append(
+                " Startwert: " + Einstellungen.DECIMALFORMAT.format(startwert)
+                    + " " + Einstellungen.CURRENCY + ",");
+          }
+          if (zugang != null)
+          {
+            summary
+                .append(" Zugang: " + Einstellungen.DECIMALFORMAT.format(zugang)
+                    + " " + Einstellungen.CURRENCY + ",");
+          }
+          if (afa != null)
+          {
+            summary.append(
+                " Abschreibung: " + Einstellungen.DECIMALFORMAT.format(afa)
+                    + " " + Einstellungen.CURRENCY + ",");
+          }
+          if (abgang != null)
+          {
+            summary
+                .append(" Abgang: " + Einstellungen.DECIMALFORMAT.format(abgang)
+                    + " " + Einstellungen.CURRENCY + ",");
+          }
+          if (endwert != null)
+          {
+            summary.append(
+                " Endwert: " + Einstellungen.DECIMALFORMAT.format(endwert) + " "
+                    + Einstellungen.CURRENCY + ",");
+          }
+
           if (anzahl != null)
           {
             summary.append(" Anzahl: " + anzahl);

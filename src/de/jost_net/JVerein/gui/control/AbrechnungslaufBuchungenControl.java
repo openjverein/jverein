@@ -28,7 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -49,7 +49,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
@@ -73,7 +72,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
 
   private Abrechnungslauf abrl;
 
-  private JVereinTablePart sollbuchungsList;
+  private BetragSummaryTablePart sollbuchungsList;
 
   public AbrechnungslaufBuchungenControl(AbstractView view)
   {
@@ -134,8 +133,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     return bm;
   }
 
-  private DBIterator<Sollbuchung> getIterator(int lauf)
-      throws RemoteException
+  private DBIterator<Sollbuchung> getIterator(int lauf) throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
@@ -150,7 +148,7 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
     DBIterator<Sollbuchung> sollbIt = getIterator((Integer) lauf.getValue());
     if (sollbuchungsList == null)
     {
-      sollbuchungsList = new JVereinTablePart(sollbIt, null);
+      sollbuchungsList = new BetragSummaryTablePart(sollbIt, null);
       sollbuchungsList.addColumn("Fälligkeit", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
@@ -164,7 +162,6 @@ public class AbrechnungslaufBuchungenControl extends VorZurueckControl
           new ZahlungswegFormatter(), false, Column.ALIGN_LEFT);
       sollbuchungsList.setRememberColWidths(true);
       sollbuchungsList.setRememberOrder(true);
-      sollbuchungsList.addFeature(new FeatureSummary());
       sollbuchungsList.setMulti(true);
       sollbuchungsList.setContextMenu(new SollbuchungMenu(sollbuchungsList));
       sollbuchungsList.setAction(

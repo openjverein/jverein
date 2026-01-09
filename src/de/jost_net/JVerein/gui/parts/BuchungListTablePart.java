@@ -28,7 +28,6 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
-import de.willuhn.jameica.gui.parts.table.Feature.Event;
 
 public class BuchungListTablePart extends AutoUpdateTablePart
 {
@@ -60,35 +59,33 @@ public class BuchungListTablePart extends AutoUpdateTablePart
   protected Context createFeatureEventContext(Feature.Event e, Object data)
   {
     ctx = super.createFeatureEventContext(e, data);
-    if (this.hasEvent(FeatureSummary.class, e)
-        && (e == Event.REFRESH || e == Event.REMOVED || e == Event.REMOVED_ALL))
+    if (this.hasEvent(FeatureSummary.class, e))
     {
       double sumBetrag = 0.0;
       double sumNetto = 0d;
-      String summary = "";
+      String summary = (String) ctx.addon.get(FeatureSummary.CTX_KEY_TEXT);
       try
       {
         @SuppressWarnings("rawtypes")
         List l = this.getItems();
-        summary = new String(l.size() + " Datensätze");
         for (int i = 0; i < l.size(); i++)
         {
           Buchung b = (Buchung) l.get(i);
           sumBetrag += b.getBetrag();
           sumNetto += b.getNetto();
         }
-        summary += " / " + "Gesamtbetrag:" + " "
+        summary += ", Gesamtbetrag: "
             + Einstellungen.DECIMALFORMAT.format(sumBetrag) + " "
             + Einstellungen.CURRENCY;
         if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
         {
-          summary += " / " + "Gesamtnetto:" + " "
+          summary += " , Gesamtnetto: "
               + Einstellungen.DECIMALFORMAT.format(sumNetto) + " "
               + Einstellungen.CURRENCY;
         }
         if (saldo != null)
         {
-          summary += " / " + "Kontosaldo:" + " "
+          summary += " , Kontosaldo: "
               + Einstellungen.DECIMALFORMAT.format(saldo) + " "
               + Einstellungen.CURRENCY;
         }
@@ -102,12 +99,12 @@ public class BuchungListTablePart extends AutoUpdateTablePart
             summe += b.getBetrag();
             netto += b.getNetto();
           }
-          summary += " / " + "Summe Auswahl: "
+          summary += " ==> Summe Auswahl: "
               + Einstellungen.DECIMALFORMAT.format(summe) + " "
               + Einstellungen.CURRENCY;
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
-            summary += " / " + "Auswahl Netto:" + " "
+            summary += " , Auswahl Netto: "
                 + Einstellungen.DECIMALFORMAT.format(netto) + " "
                 + Einstellungen.CURRENCY;
           }
