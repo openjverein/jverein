@@ -572,7 +572,7 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            if (!m.getBic().isEmpty() && m.getIban() != null
+            if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() > 0)
             {
               IBAN i = new IBAN(m.getIban());
