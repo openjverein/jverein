@@ -55,7 +55,7 @@ public class BeitragsUtil
         {
           String stufen = (String) Einstellungen
               .getEinstellung(Property.BEITRAGALTERSSTUFEN);
-          if (stufen != null && stufen != "")
+          if (stufen != null && stufen.isEmpty())
           {
             if (m.getAlter() == null)
               throw new ApplicationException(m.getName() + ", " + m.getVorname()
@@ -108,7 +108,7 @@ public class BeitragsUtil
         {
           String stufen = (String) Einstellungen
               .getEinstellung(Property.BEITRAGALTERSSTUFEN);
-          if (stufen != null && stufen != "")
+          if (stufen != null && !stufen.isEmpty())
           {
             if (m.getAlter() == null)
               throw new ApplicationException(m.getName() + ", " + m.getVorname()

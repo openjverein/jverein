@@ -32,7 +32,7 @@ public class BuchungsuebernahmeThread implements Runnable
     new Thread(this).start();
   }
 
-  public static BuchungsuebernahmeThread getInstance()
+  public synchronized static BuchungsuebernahmeThread getInstance()
   {
     if (instance == null)
     {
@@ -46,6 +46,16 @@ public class BuchungsuebernahmeThread implements Runnable
     countdown = DEFAULTCOUNTDOWN;
   }
 
+  public synchronized void decrement()
+  {
+    countdown--;
+  }
+
+  public synchronized int getCount()
+  {
+    return countdown;
+  }
+
   @Override
   public void run()
   {
@@ -54,8 +64,8 @@ public class BuchungsuebernahmeThread implements Runnable
       try
       {
         Thread.sleep(5000);
-        countdown--;
-        if (countdown == 0)
+        decrement();
+        if (getCount() == 0)
         {
           new Buchungsuebernahme();
         }

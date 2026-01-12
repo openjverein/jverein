@@ -178,12 +178,12 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
     super.paint(parent);
   }
 
-  public void setJahr(int jahr)
+  public synchronized void setJahr(int jahr)
   {
     this.jahr = jahr;
   }
 
-  public void setSchluessel(int schluessel)
+  public synchronized void setSchluessel(int schluessel)
   {
     this.schluessel = schluessel;
   }
