@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
@@ -139,6 +140,9 @@ public class BuchungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.BUCHUNGEN, false, "question-circle.png");
+    buttons.addButton("Buchungskorrektur",
+        new StartViewAction(BuchungsTextKorrekturView.class), null, false,
+        "emblem-documents.png");
     buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null,
         false, "file-import.png");
     buttons.addButton("Import", new BuchungImportAction(), null, false,

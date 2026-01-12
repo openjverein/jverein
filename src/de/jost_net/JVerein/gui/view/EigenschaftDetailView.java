@@ -37,6 +37,7 @@ public class EigenschaftDetailView extends AbstractDetailView
     control = new EigenschaftControl(this);
 
     LabelGroup grEigenschaft = new LabelGroup(getParent(), "Eigenschaft");
+    grEigenschaft.addLabelPair("Name", control.getName());
     grEigenschaft.addLabelPair("Bezeichnung", control.getBezeichnung());
     grEigenschaft.addLabelPair("Gruppe", control.getEigenschaftGruppe());
 

@@ -22,8 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
-
 import bsh.EvalError;
 import bsh.Interpreter;
 import de.jost_net.JVerein.Einstellungen;
@@ -102,18 +100,11 @@ public class LesefeldAuswerter
   public void setMap(Map<String, Object> map)
   {
     vornamename = (String) map.get("mitglied_vornamename");
-
-    // Mache alle Variablen aus map in BeanScript verfügbar.
-    // '.', '-' und ' ' werden ersetzt durch '_'.
     for (String key : map.keySet())
     {
-      String keyNormalized = key.replaceAll("[^a-zA-Z0-9_]", "_")
-          .replaceAll("__", "_");
-      key = StringUtils.strip(key, "_");
-
       try
       {
-        bsh.set(keyNormalized, map.get(key));
+        bsh.set(key, map.get(key));
       }
       catch (EvalError e)
       {
@@ -179,10 +170,8 @@ public class LesefeldAuswerter
       {
         continue;
       }
-      String key = lesefeld.getBezeichnung().replaceAll("[^a-zA-Z0-9_]", "_")
-          .replaceAll("__", "_");
-      key = StringUtils.strip(key, "_");
-      map.put(Einstellungen.LESEFELD_PRE + key, lesefeld.getEvaluatedContent());
+      map.put(Einstellungen.LESEFELD_PRE + lesefeld.getBezeichnung(),
+          lesefeld.getEvaluatedContent());
     }
     Logger.debug(
         String.format("Lesefeld-Variablen für Mitglied %s:", vornamename));

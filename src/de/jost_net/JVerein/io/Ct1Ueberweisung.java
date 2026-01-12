@@ -212,10 +212,11 @@ public class Ct1Ueberweisung
         }
         else if (ls.getKursteilnehmer() != null)
         {
-          ue.setGegenkontoName(StringTool.getStringWithMaxLength(
-              Zeichen.convert(
-                  Adressaufbereitung.getNameVorname(ls.getKursteilnehmer())),
-              255));
+          ue.setGegenkontoName(
+              StringTool.getStringWithMaxLength(
+                  Zeichen.convert(ls.getKursteilnehmer()
+                      .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)),
+                  255));
         }
         ue.setTermin(faell);
         ue.setZweck(StringTool.getStringWithMaxLength(

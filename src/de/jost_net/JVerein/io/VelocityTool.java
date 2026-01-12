@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
@@ -48,7 +49,8 @@ public class VelocityTool
       throws ParseErrorException, MethodInvocationException,
       ResourceNotFoundException, IOException
   {
-    VelocityContext context = new VelocityContext(map);
+    VelocityContext context = new VelocityContext(
+        new HashMap<String, Object>(map));
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     StringWriter wtext = new StringWriter();

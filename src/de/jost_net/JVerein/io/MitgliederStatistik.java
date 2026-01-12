@@ -142,7 +142,7 @@ public class MitgliederStatistik
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      throw new ApplicationException("Fehler", e);
+      throw new ApplicationException("Fehler: " + e.getMessage());
     }
   }
 

@@ -51,6 +51,8 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
 
   private Eigenschaft eigenschaft;
 
+  private TextInput name;
+
   public EigenschaftControl(AbstractView view)
   {
     super(view);
@@ -71,6 +73,17 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
           .createObject(Eigenschaft.class, null);
     }
     return eigenschaft;
+  }
+
+  public Input getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+    name = new TextInput(getEigenschaft().getName(), 30);
+    name.setMandatory(true);
+    return name;
   }
 
   public Input getBezeichnung() throws RemoteException
@@ -118,6 +131,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       ei.setEigenschaftGruppe(null);
     }
     ei.setBezeichnung((String) getBezeichnung().getValue());
+    ei.setName((String) getName().getValue());
     return ei;
   }
 
@@ -146,6 +160,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     if (eigenschaftList == null)
     {
       eigenschaftList = new JVereinTablePart(eigenschaften, null);
+      eigenschaftList.addColumn("Name", "name");
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
       eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
       eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));

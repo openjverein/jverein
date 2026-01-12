@@ -54,15 +54,16 @@ public class KursteilnehmerDetailView extends AbstractDetailView
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
     left.addInput(control.getPLZ());
+    left.addInput(control.getOrt());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getOrt());
     right.addInput(control.getStaat());
     right.addInput(control.getEmail());
     right.addInput(control.getVZweck1());
     right.addInput(control.getMandatDatum());
     right.addInput(control.getIBAN());
     right.addInput(control.getBIC());
+    right.addInput(control.getKontoinhaber());
     right.addInput(control.getBetrag());
 
     LabelGroup grStatistik = new LabelGroup(scrolled.getComposite(),

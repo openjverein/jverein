@@ -111,6 +111,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private DateInput voneingabedatum;
 
+  private CheckboxInput rechnungsdokumentspeichern;
+
   public AbrechnungSEPAControl(AbstractView view)
   {
     super(view);
@@ -321,6 +323,24 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnung;
   }
 
+  public CheckboxInput getRechnungsdokumentSpeichern()
+  {
+    if (rechnungsdokumentspeichern != null)
+    {
+      return rechnungsdokumentspeichern;
+    }
+    rechnungsdokumentspeichern = new CheckboxInput(
+        settings.getBoolean("rechnungsdokumentspeichern", false));
+    rechnungsdokumentspeichern
+        .setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungsdokumentspeichern;
+  }
+
+  public boolean istRechnungsdokumentActiv()
+  {
+    return rechnungsdokumentspeichern != null;
+  }
+
   public FormularInput getRechnungFormular() throws RemoteException
   {
     if (rechnungsformular != null)
@@ -475,6 +495,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+      settings.setAttribute("rechnungsdokumentspeichern",
+          (Boolean) rechnungsdokumentspeichern.getValue());
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
       settings.setAttribute("rechnungsformular",
           rechnungsformular.getValue() == null ? null
@@ -606,7 +628,6 @@ public class AbrechnungSEPAControl extends AbstractControl
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
             GUI.getStatusBar()
                 .setSuccessText("Abrechnung durchgeführt" + abupar.getText());
-
           }
           catch (ApplicationException ae)
           {
@@ -617,30 +638,10 @@ public class AbrechnungSEPAControl extends AbstractControl
           catch (Exception e)
           {
             DBTransaction.rollback();
-            ApplicationException ae;
-            if (abupar.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
-            {
-              Logger.error(String.format("error while creating %s",
-                  abupar.sepafileRCUR.getAbsolutePath()), e);
-              ae = new ApplicationException(
-                  String.format("Fehler beim Erstellen der Abbuchungsdatei: %s",
-                      abupar.sepafileRCUR.getAbsolutePath()),
-                  e);
-            }
-            else if (abupar.abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
-            {
-              Logger.error("error while creating debit in Hibiscus", e);
-              ae = new ApplicationException(
-                  "Fehler beim Erstellen der Hibiscus-Lastschrift", e);
-            }
-            else
-            {
-              Logger.error("error during operation", e);
-              ae = new ApplicationException("Fehler beim Abrechnungslauf", e);
-            }
+            Logger.error("Fehler beim Abrechnungslauf", e);
             GUI.getStatusBar()
-                .setErrorText(ae.getMessage() + ": " + e.getMessage());
-            throw ae;
+                .setErrorText("Fehler beim Abrechnungslauf: " + e.getMessage());
+            throw new ApplicationException("Fehler beim Abrechnungslauf", e);
           }
         }
 
@@ -662,11 +663,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class RechnungListener implements Listener
   {
-
-    RechnungListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -677,16 +673,15 @@ public class AbrechnungSEPAControl extends AbstractControl
       rechnungsformular.setEnabled((boolean) rechnung.getValue());
       rechnungstext.setEnabled((boolean) rechnung.getValue());
       rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      if (rechnungsdokumentspeichern != null)
+      {
+        rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
+      }
     }
   }
 
   public class ZusammenfassenListener implements Listener
   {
-
-    ZusammenfassenListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -703,11 +698,6 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public class KompaktListener implements Listener
   {
-
-    KompaktListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {

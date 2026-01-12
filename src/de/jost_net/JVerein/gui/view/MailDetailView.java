@@ -83,7 +83,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl3 = new GridLayout();
     gl3.marginWidth = 0;
     comp3.setLayout(gl3);
-    ButtonRtoL add = new ButtonRtoL("Hinzufügen", new Action()
+    ButtonRtoL add = new ButtonRtoL("Empfänger hinzufügen", new Action()
     {
 
       @Override
@@ -104,13 +104,35 @@ public class MailDetailView extends AbstractDetailView
           throw new ApplicationException(e.getMessage());
         }
       }
-    });
+    }, control, false, "list-add.png");
     add.paint(comp3);
 
     JameicaUtil.addLabel("Betreff", comp, GridData.VERTICAL_ALIGN_CENTER);
     control.getBetreff().paint(comp);
     JameicaUtil.addLabel("Text", comp, GridData.VERTICAL_ALIGN_BEGINNING);
     control.getTxt().paint(comp);
+
+    Composite comp6 = new Composite(comp, SWT.NONE);
+    GridData gd6 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+    gd6.horizontalSpan = 2;
+    comp6.setLayoutData(gd6);
+    GridLayout gl6 = new GridLayout();
+    gl6.marginWidth = 0;
+    gl6.numColumns = 4;
+    comp6.setLayout(gl6);
+    (new ButtonRtoL("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
+        false, "view-refresh.png")).paint(comp6);
+
+    Map<String, Object> map = MitgliedMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+
+    (new ButtonRtoL("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png")).paint(comp6);
+    (new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true), control,
+        false, "edit-copy.png")).paint(comp6);
+    (new ButtonRtoL("Als Vorlage übernehmen",
+        new MailVorlageUebernehmenAction(), control, false, "document-new.png"))
+            .paint(comp6);
 
     JameicaUtil.addLabel("Anhang", comp, GridData.VERTICAL_ALIGN_BEGINNING);
     Composite comp4 = new Composite(comp, SWT.NONE);
@@ -125,52 +147,50 @@ public class MailDetailView extends AbstractDetailView
     Composite comp5 = new Composite(comp, SWT.NONE);
     GridData gd5 = new GridData(GridData.HORIZONTAL_ALIGN_END);
     gd5.horizontalSpan = 2;
-    comp5.setLayoutData(gd3);
+    comp5.setLayoutData(gd5);
     GridLayout gl5 = new GridLayout();
     gl5.marginWidth = 0;
     comp5.setLayout(gl5);
-    ButtonRtoL addAttachment = new ButtonRtoL("    " + "Anlage" + "    ",
-        new Action()
-        {
+    ButtonRtoL addAttachment = new ButtonRtoL("Anhang hinzufügen", new Action()
+    {
 
-          @Override
-          public void handleAction(Object context) throws ApplicationException
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Settings settings = new Settings(this.getClass());
+        settings.setStoreWhenRead(true);
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
+        fd.setFilterPath(
+            settings.getString("lastdir", System.getProperty("user.home")));
+        fd.setText("Bitte wählen Sie einen Anhang aus.");
+        if (fd.open() != null)
+        {
+          try
           {
-            Settings settings = new Settings(this.getClass());
-            settings.setStoreWhenRead(true);
-            FileDialog fd = new FileDialog(GUI.getShell(),
-                SWT.OPEN | SWT.MULTI);
-            fd.setFilterPath(
-                settings.getString("lastdir", System.getProperty("user.home")));
-            fd.setText("Bitte wählen Sie einen Anhang aus.");
-            if (fd.open() != null)
+            for (String f : fd.getFileNames())
             {
-              try
-              {
-                for (String f : fd.getFileNames())
-                {
-                  MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                      .createObject(MailAnhang.class, null);
-                  anh.setDateiname(f);
-                  File file = new File(fd.getFilterPath()
-                      + System.getProperty("file.separator") + f);
-                  FileInputStream fis = new FileInputStream(file);
-                  byte[] buffer = new byte[(int) file.length()];
-                  fis.read(buffer);
-                  anh.setAnhang(buffer);
-                  control.addAnhang(anh);
-                  fis.close();
-                  settings.setAttribute("lastdir", file.getParent());
-                }
-              }
-              catch (Exception e)
-              {
-                Logger.error("", e);
-                throw new ApplicationException(e);
-              }
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              anh.setDateiname(f);
+              File file = new File(fd.getFilterPath()
+                  + System.getProperty("file.separator") + f);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              control.addAnhang(anh);
+              fis.close();
+              settings.setAttribute("lastdir", file.getParent());
             }
           }
-        });
+          catch (Exception e)
+          {
+            Logger.error("", e);
+            throw new ApplicationException(e);
+          }
+        }
+      }
+    }, control, false, "list-add.png");
     addAttachment.paint(comp5);
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -179,20 +199,6 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(new ButtonRtoL("Mail-Vorlage",
-        new MailVorlageZuweisenAction(), control, false, "view-refresh.png"));
-
-    Map<String, Object> map = MitgliedMap.getDummyMap(null);
-    map = new AllgemeineMap().getMap(map);
-
-    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
-        control, false, "bookmark.png");
-    buttons.addButton(
-        new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true),
-            control, false, "edit-copy.png"));
-    buttons.addButton(new ButtonRtoL("Als Vorlage übernehmen",
-        new MailVorlageUebernehmenAction(), control, false,
-        "document-new.png"));
     buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
