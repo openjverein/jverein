@@ -46,12 +46,12 @@ public class BuchungsuebernahmeThread implements Runnable
     countdown = DEFAULTCOUNTDOWN;
   }
 
-  public synchronized void decrement()
+  private synchronized void decrement()
   {
     countdown--;
   }
 
-  public synchronized int getCount()
+  private synchronized int getCount()
   {
     return countdown;
   }
