@@ -33,7 +33,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -168,7 +167,6 @@ public class EigenschaftGruppeControl extends VorZurueckControl
         .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
     eigenschaftgruppeList.setRememberColWidths(true);
     eigenschaftgruppeList.setRememberOrder(true);
-    eigenschaftgruppeList.addFeature(new FeatureSummary());
     eigenschaftgruppeList.setMulti(true);
     eigenschaftgruppeList.setAction(new EditAction(
         EigenschaftGruppeDetailView.class, eigenschaftgruppeList));

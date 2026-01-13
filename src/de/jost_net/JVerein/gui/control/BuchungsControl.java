@@ -114,7 +114,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -1753,7 +1752,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList.setRememberColWidths(true);
       buchungsList.setRememberOrder(true);
       buchungsList.setRememberState(true);
-      buchungsList.addFeature(new FeatureSummary());
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.setAction(new BuchungAction(false, buchungsList));
       VorZurueckControl.setObjektListe(null, null);
@@ -1843,7 +1841,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
       splitbuchungsList.setRememberColWidths(true);
-      splitbuchungsList.addFeature(new FeatureSummary());
       splitbuchungsList.setFormatter(new TableFormatter()
       {
         /**

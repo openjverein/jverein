@@ -40,7 +40,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -112,7 +112,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
   private Kursteilnehmer ktn;
 
-  private JVereinTablePart part;
+  private BetragSummaryTablePart part;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -396,7 +396,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new JVereinTablePart(kursteilnehmer, null);
+    part = new BetragSummaryTablePart(kursteilnehmer, null);
     part.addColumn("Nr", "id-int");
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");

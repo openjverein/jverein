@@ -33,7 +33,7 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.ZusatzbetragVorlageMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragVorlageDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -48,7 +48,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -56,7 +55,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -85,7 +83,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
 
   private SelectInput buchungsklasse;
 
-  private JVereinTablePart zusatzbetragVorlageList;
+  private BetragSummaryTablePart zusatzbetragVorlageList;
 
   public ZusatzbetragVorlage auswahl;
 
@@ -395,8 +393,8 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
 
     if (zusatzbetragVorlageList == null)
     {
-      zusatzbetragVorlageList = new JVereinTablePart(zusatzbetragsvorlagen,
-          null);
+      zusatzbetragVorlageList = new BetragSummaryTablePart(
+          zusatzbetragsvorlagen, null);
       zusatzbetragVorlageList.addColumn("Nr", "id-int");
       zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -409,14 +407,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
       zusatzbetragVorlageList.addColumn("Betrag", "betrag",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
-          new Formatter()
-          {
-            @Override
-            public String format(Object o)
-            {
-              return new Zahlungsweg((Integer) o).getText();
-            }
-          });
+          o -> new Zahlungsweg((Integer) o).getText());
       if ((Boolean) Einstellungen
           .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
@@ -449,7 +440,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
           .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
       zusatzbetragVorlageList.setRememberColWidths(true);
       zusatzbetragVorlageList.setRememberOrder(true);
-      zusatzbetragVorlageList.addFeature(new FeatureSummary());
       zusatzbetragVorlageList.setMulti(true);
       zusatzbetragVorlageList.setAction(new EditAction(
           ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));

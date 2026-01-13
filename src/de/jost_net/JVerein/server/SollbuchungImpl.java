@@ -38,7 +38,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SollbuchungImpl extends AbstractJVereinDBObject
-    implements Sollbuchung, UnreadCounter
+    implements Sollbuchung, UnreadCounter, IBetrag
 {
 
   private static final long serialVersionUID = -1234L;

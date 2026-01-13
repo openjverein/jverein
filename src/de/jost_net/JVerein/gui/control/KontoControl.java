@@ -74,7 +74,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.jameica.plugin.Version;
 import de.willuhn.jameica.system.Application;
@@ -358,7 +357,6 @@ public class KontoControl extends FilterControl implements Savable
     kontenList.setRememberColWidths(true);
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setRememberOrder(true);
-    kontenList.addFeature(new FeatureSummary());
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);

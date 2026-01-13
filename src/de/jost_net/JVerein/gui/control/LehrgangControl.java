@@ -44,7 +44,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -301,7 +300,6 @@ public class LehrgangControl extends FilterControl implements Savable
       lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
       lehrgaengeList.setRememberColWidths(true);
       lehrgaengeList.setRememberOrder(true);
-      lehrgaengeList.addFeature(new FeatureSummary());
       lehrgaengeList.setMulti(true);
       lehrgaengeList
           .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));

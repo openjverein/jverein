@@ -37,7 +37,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerImpl extends AbstractJVereinDBObject
-    implements Kursteilnehmer
+    implements Kursteilnehmer, IBetrag
 {
 
   private static final long serialVersionUID = 1L;

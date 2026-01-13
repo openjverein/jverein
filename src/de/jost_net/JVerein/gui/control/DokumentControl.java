@@ -54,7 +54,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -234,7 +233,6 @@ public class DokumentControl extends AbstractControl
     docsList.setRememberColWidths(true);
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setRememberOrder(true);
-    docsList.addFeature(new FeatureSummary());
     docsList.setMulti(true);
     this.mc = new DokumentMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
