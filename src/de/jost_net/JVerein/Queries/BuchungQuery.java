@@ -212,7 +212,7 @@ public class BuchungQuery
 
     if (buchungart != null)
     {
-      if (buchungart.getNummer() == "")
+      if (buchungart.getNummer().isEmpty())
       {
         it.addFilter("buchung.buchungsart is null ");
       }

@@ -116,11 +116,11 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
       String art = null;
       Integer steuerArt = o.getInteger(ARTSTEUERBUCHUNGSART);
-      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || steuerArt == null)
+      if (steuerArt == ArtBuchungsart.EINNAHME || steuerArt == null)
       {
         art = "Umsatzsteuer";
       }
-      else if (steuerArt == (Integer) ArtBuchungsart.AUSGABE)
+      else if (steuerArt == ArtBuchungsart.AUSGABE)
       {
         art = "Vorsteuer";
       }

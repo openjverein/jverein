@@ -572,7 +572,7 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            if (m.getBic() == "" && m.getIban() != null
+            if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() > 0)
             {
               IBAN i = new IBAN(m.getIban());
@@ -586,7 +586,7 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             m.setBic("");
-            if (m.getBic() == "" && m.getIban() != null
+            if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() != 0)
             {
               IBAN i = new IBAN(m.getIban());

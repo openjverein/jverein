@@ -405,7 +405,7 @@ public class Einstellungen
     {
       for (Property prop : Property.values())
       {
-        if (prop.getKey() == key)
+        if (prop.getKey().equals(key))
         {
           return prop;
         }

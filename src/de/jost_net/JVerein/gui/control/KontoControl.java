@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -1301,7 +1302,7 @@ public class KontoControl extends FilterControl implements Savable
         getAfaDauer().setValue((betrag - restwert) / nutzungsdauer);
       }
     }
-    catch (Exception e)
+    catch (RemoteException | ParseException e)
     {
       GUI.getStatusBar().setErrorText("Fehler bei der AfA Berechnung");
     }

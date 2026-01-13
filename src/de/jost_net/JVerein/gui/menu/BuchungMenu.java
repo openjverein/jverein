@@ -307,10 +307,10 @@ public class BuchungMenu extends ContextMenu
         }
         if (o instanceof Buchung[])
         {
-          Double betrag = ((Buchung[]) o)[0].getBetrag();
+          double betrag = ((Buchung[]) o)[0].getBetrag();
           for (Buchung bu : ((Buchung[]) o))
           {
-            if ((bu.getSplitId() != null) || (bu.getBetrag() != betrag))
+            if (bu.getSplitId() != null || bu.getBetrag() != betrag)
             {
               return false;
             }

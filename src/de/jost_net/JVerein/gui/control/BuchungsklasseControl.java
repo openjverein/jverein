@@ -127,7 +127,6 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsklasse> buchungsklassen = service
         .createList(Buchungsklasse.class);
-    buchungsklassen.addFilter("nummer >= 0");
     buchungsklassen.setOrder("ORDER BY nummer");
 
     buchungsklassenList = new JVereinTablePart(buchungsklassen, null);

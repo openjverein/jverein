@@ -283,7 +283,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     }
     String stufen = (String) Einstellungen
         .getEinstellung(Property.BEITRAGALTERSSTUFEN);
-    if (stufen == null || stufen == "")
+    if (stufen == null || stufen.isEmpty())
       return null;
     AltersgruppenParser ap = new AltersgruppenParser(stufen);
 

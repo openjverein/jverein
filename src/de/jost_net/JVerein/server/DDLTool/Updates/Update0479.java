@@ -77,7 +77,7 @@ public class Update0479 extends AbstractDDLUpdate
       {
         String value = null;
         String col = m.getColumnName(i).toLowerCase();
-        if (col == "id" || result.getObject(i) == null)
+        if (col.equals("id") || result.getObject(i) == null)
         {
           continue;
         }

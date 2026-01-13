@@ -225,8 +225,7 @@ public class FormularControl extends FormularPartControl implements Savable
         // Cast to FormularImpl
         FormularImpl formimpl = (FormularImpl) object;
         // Remove current form object and stop comparing
-        if (Integer.valueOf(formimpl.getID()) == Integer
-            .valueOf(currentForm.getID()))
+        if (formimpl.getID().equals(currentForm.getID()))
         {
           list.remove(i);
           formlink.setList(list);
