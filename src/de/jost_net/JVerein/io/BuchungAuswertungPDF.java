@@ -95,8 +95,8 @@ public class BuchungAuswertungPDF
           if (!(Boolean) Einstellungen
               .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
           {
-            if (bua.getBuchungsklasseId() == null
-                || bua.getBuchungsklasse().getNummer() != bukla.getNummer())
+            if (bua.getBuchungsklasseId() == null || !bua.getBuchungsklasse()
+                .getNummer().equals(bukla.getNummer()))
             {
               continue;
             }
@@ -403,7 +403,7 @@ public class BuchungAuswertungPDF
     for (Buchung b : buchungen)
     {
       if (b.getBuchungsart() == null
-          || b.getBuchungsart().getNummer() != bua.getNummer())
+          || !b.getBuchungsart().getNummer().equals(bua.getNummer()))
       {
         continue;
       }
@@ -412,7 +412,7 @@ public class BuchungAuswertungPDF
           .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
         if (b.getBuchungsklasseId() == null
-            || b.getBuchungsklasse().getNummer() != bukla.getNummer())
+            || !b.getBuchungsklasse().getNummer().equals(bukla.getNummer()))
         {
           continue;
         }
@@ -430,7 +430,7 @@ public class BuchungAuswertungPDF
     for (Buchung b : buchungen)
     {
       if (b.getBuchungsart() == null
-          || b.getBuchungsart().getNummer() != bua.getNummer())
+          || !b.getBuchungsart().getNummer().equals(bua.getNummer()))
       {
         continue;
       }

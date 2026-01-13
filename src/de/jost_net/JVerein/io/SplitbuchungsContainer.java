@@ -225,7 +225,7 @@ public class SplitbuchungsContainer
         steuer_gegen = b.getSteuer();
       }
     }
-    if (ba_haupt.getNummer() != ba_gegen.getNummer())
+    if (!ba_haupt.getNummer().equals(ba_gegen.getNummer()))
     {
       throw new RemoteException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");

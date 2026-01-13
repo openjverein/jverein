@@ -22,8 +22,6 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
 
   private String table;
 
-  private T object = null;
-
   private String columns = "";
 
   private String filter = "";
@@ -463,9 +461,6 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
     init();
 
     if (other == null)
-      return null;
-
-    if (!other.getClass().equals(object.getClass()))
       return null;
 
     T object = null;
