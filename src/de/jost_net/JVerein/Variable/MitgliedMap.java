@@ -23,8 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang.StringUtils;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -231,6 +229,8 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.VORNAMENAME.getName(),
         Adressaufbereitung.getVornameName(mitglied));
     map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getVollZahlerID());
+    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(),
+        mitglied.getAbweichenderZahlerID());
     map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
@@ -291,7 +291,7 @@ public class MitgliedMap extends AbstractMap
         z = Einstellungen.getDBService().createObject(Zusatzfelder.class, null);
       }
 
-      String name = Einstellungen.ZUSATZFELD_PRE + formatKey(fd.getName());
+      String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
@@ -334,7 +334,7 @@ public class MitgliedMap extends AbstractMap
       {
         val = "X";
       }
-      map.put("mitglied_eigenschaft_" + formatKey(eig.getBezeichnung()), val);
+      map.put("mitglied_eigenschaft_" + eig.getName(), val);
     }
 
     DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
@@ -343,8 +343,8 @@ public class MitgliedMap extends AbstractMap
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
-      String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + formatKey(key), mitglied.getAttribute(key));
+      String key = "eigenschaften_" + eg.getName();
+      map.put("mitglied_" + key, mitglied.getAttribute(key));
     }
 
     for (String varname : mitglied.getVariablen().keySet())
@@ -362,12 +362,6 @@ public class MitgliedMap extends AbstractMap
     }
 
     return map;
-  }
-
-  private String formatKey(String key)
-  {
-    key = key.replaceAll("[^a-zA-Z0-9_]", "_").replaceAll("__", "_");
-    return StringUtils.strip(key, "_");
   }
 
   @SuppressWarnings("deprecation")
@@ -470,6 +464,7 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(MitgliedVar.ZAHLERID.getName(), "123456");
+    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(), "123456");
 
     // Liste der Felddefinitionen
     DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
@@ -477,22 +472,23 @@ public class MitgliedMap extends AbstractMap
     while (itfd.hasNext())
     {
       Felddefinition fd = itfd.next();
+      String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "31.12.2024");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "31.12.2024");
           break;
         case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "X");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "X");
           break;
         case Datentyp.GANZZAHL:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "22");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "22");
           break;
         case Datentyp.WAEHRUNG:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "3.00");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "3.00");
           break;
         case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + fd.getName(), "abcd");
+          map.put(Einstellungen.ZUSATZFELD_PRE + name, "abcd");
           break;
       }
     }
@@ -503,7 +499,7 @@ public class MitgliedMap extends AbstractMap
     while (iteig.hasNext())
     {
       Eigenschaft eig = iteig.next();
-      map.put("mitglied_eigenschaft_" + eig.getBezeichnung(), "X");
+      map.put("mitglied_eigenschaft_" + eig.getName(), "X");
     }
 
     // Liste der Eigenschaften einer Eigenschaftengruppe
@@ -513,8 +509,8 @@ public class MitgliedMap extends AbstractMap
     {
       EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
 
-      String key = "eigenschaften_" + eg.getBezeichnung();
-      map.put("mitglied_" + key, "Eigenschaft1, Eigenschaft2");
+      map.put("mitglied_eigenschaften_" + eg.getName(),
+          "Eigenschaft1, Eigenschaft2");
     }
 
     // Füge Lesefelder diesem Mitglied-Objekt hinzu.

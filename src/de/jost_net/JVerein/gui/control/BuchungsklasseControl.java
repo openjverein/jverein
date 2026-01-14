@@ -31,7 +31,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -127,7 +126,6 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsklasse> buchungsklassen = service
         .createList(Buchungsklasse.class);
-    buchungsklassen.addFilter("nummer >= 0");
     buchungsklassen.setOrder("ORDER BY nummer");
 
     buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
@@ -137,7 +135,6 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
         .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
     buchungsklassenList.setRememberColWidths(true);
     buchungsklassenList.setRememberOrder(true);
-    buchungsklassenList.addFeature(new FeatureSummary());
     buchungsklassenList.setMulti(true);
     buchungsklassenList.setAction(
         new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));

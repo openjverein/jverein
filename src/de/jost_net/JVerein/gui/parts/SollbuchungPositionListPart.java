@@ -30,11 +30,9 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 
-public class SollbuchungPositionListPart extends TablePart
+public class SollbuchungPositionListPart extends BetragSummaryTablePart
 {
   public SollbuchungPositionListPart(Action action)
   {
@@ -83,7 +81,6 @@ public class SollbuchungPositionListPart extends TablePart
 
     setRememberColWidths(true);
     setRememberOrder(true);
-    addFeature(new FeatureSummary());
     setMulti(true);
   }
 }

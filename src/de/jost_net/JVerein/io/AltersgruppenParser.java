@@ -29,7 +29,7 @@ public class AltersgruppenParser
   public AltersgruppenParser(String altersgruppe) throws RuntimeException
   {
     ArrayList<VonBis> elemente;
-    if (altersgruppe == null)
+    if (altersgruppe == null || altersgruppe.isEmpty())
     {
       throw new RuntimeException("Altersgruppe(n) müssen gefüllt sein!");
     }
@@ -63,8 +63,8 @@ public class AltersgruppenParser
         throw new RuntimeException(
             "Fehler in den Altergruppen" + " " + e.getMessage());
       }
-      iterator = elemente.iterator();
     }
+    iterator = elemente.iterator();
   }
 
   public boolean hasNext()

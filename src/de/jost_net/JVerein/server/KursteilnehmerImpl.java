@@ -23,9 +23,11 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
+import de.jost_net.JVerein.rmi.Mitglied.namenformat;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
@@ -35,7 +37,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class KursteilnehmerImpl extends AbstractJVereinDBObject
-    implements Kursteilnehmer
+    implements Kursteilnehmer, IBetrag
 {
 
   private static final long serialVersionUID = 1L;
@@ -496,6 +498,42 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     return d;
   }
 
+  public String getKontoinhaber(namenformat art) throws RemoteException
+  {
+    switch (art)
+    {
+      case KONTOINHABER:
+        String ktoi = getKontoinhaber();
+        if (ktoi != null && !ktoi.isEmpty())
+        {
+          return ktoi;
+        }
+        else
+        {
+          return Adressaufbereitung.getNameVorname(this);
+        }
+      case NAME_VORNAME:
+        return Adressaufbereitung.getNameVorname(this);
+      case VORNAME_NAME:
+        return Adressaufbereitung.getVornameName(this);
+      case ADRESSE:
+        return Adressaufbereitung.getAdressfeld(this);
+    }
+    return null;
+  }
+
+  @Override
+  public void setKontoinhaber(String kontoinhaber) throws RemoteException
+  {
+    setAttribute("kontoinhaber", kontoinhaber);
+  }
+
+  @Override
+  public String getKontoinhaber() throws RemoteException
+  {
+    return (String) getAttribute("kontoinhaber");
+  }
+
   @Override
   public Object getAttributeDefault(String fieldName)
   {
@@ -512,6 +550,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
       case "bic":
       case "staat":
       case "email":
+      case "kontoinhaber":
         return "";
       default:
         return null;

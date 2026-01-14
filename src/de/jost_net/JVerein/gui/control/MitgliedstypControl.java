@@ -32,7 +32,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -146,7 +145,6 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mitgliedstypList.setContextMenu(new MitgliedstypMenu(mitgliedstypList));
     mitgliedstypList.setRememberColWidths(true);
     mitgliedstypList.setRememberOrder(true);
-    mitgliedstypList.addFeature(new FeatureSummary());
     mitgliedstypList.setMulti(true);
     mitgliedstypList.setAction(
         new EditAction(MitgliedstypDetailView.class, mitgliedstypList));

@@ -347,6 +347,45 @@ public class MitgliederImport implements Importer
 
         try
         {
+          // Vollzahler nur bei Mitgliedern und Beitragsgruppe
+          // Familenangehörigen möglich
+          if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED)
+              && m.getBeitragsgruppe()
+                  .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
+          {
+            String zahlerId = results.getString("zahlerid");
+            DBIterator<Mitglied> it = Einstellungen.getDBService()
+                .createList(Mitglied.class);
+            it.addFilter("id = ?", zahlerId);
+            if (!it.hasNext())
+              throw new ApplicationException(
+                  "Zeile " + anz + ": Vollzahler nicht gefunden: " + zahlerId);
+            m.setVollZahlerID(Long.parseLong(zahlerId));
+          }
+        }
+        catch (SQLException e)
+        {
+          // Optionaler parameter, ignorieren wir
+        }
+
+        try
+        {
+          String alternativeZahler = results.getString("alternativer_zahlerid");
+          DBIterator<Mitglied> it = Einstellungen.getDBService()
+              .createList(Mitglied.class);
+          it.addFilter("id = ?", alternativeZahler);
+          if (!it.hasNext())
+            throw new ApplicationException("Zeile " + anz
+                + ": Alternativen Zahler nicht gefunden: " + alternativeZahler);
+          m.setAbweichenderZahlerID(Long.parseLong(alternativeZahler));
+        }
+        catch (SQLException e)
+        {
+          // Optionaler parameter, ignorieren wir
+        }
+
+        try
+        {
           if ((Boolean) Einstellungen
               .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
           {
@@ -375,11 +414,6 @@ public class MitgliederImport implements Importer
             if (Zahlungsweg.get(Integer.parseInt(zahlungsweg)) == null)
               throw new ApplicationException(
                   "Zeile " + anz + ": Zahlungsweg ungültig: " + zahlungsweg);
-            if (Integer.parseInt(zahlungsweg) == 4 && m.getBeitragsgruppe()
-                .getBeitragsArt() != ArtBeitragsart.FAMILIE_ANGEHOERIGER)
-              throw new ApplicationException(
-                  "Zeile " + anz + ": Zahlungsweg VOLLZAHLER(" + 4
-                      + ") nur für Familienangehörige");
             m.setZahlungsweg(Integer.parseInt(zahlungsweg));
           }
           else
@@ -572,7 +606,7 @@ public class MitgliederImport implements Importer
           }
           else
           {
-            if (m.getBic() == "" && m.getIban() != null
+            if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() > 0)
             {
               IBAN i = new IBAN(m.getIban());
@@ -586,7 +620,7 @@ public class MitgliederImport implements Importer
           if (id == null)
           {
             m.setBic("");
-            if (m.getBic() == "" && m.getIban() != null
+            if (m.getBic().isEmpty() && m.getIban() != null
                 && m.getIban().length() != 0)
             {
               IBAN i = new IBAN(m.getIban());

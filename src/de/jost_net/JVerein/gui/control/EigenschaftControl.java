@@ -35,7 +35,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -51,6 +50,8 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
   private SelectInput eigenschaftgruppe;
 
   private Eigenschaft eigenschaft;
+
+  private TextInput name;
 
   public EigenschaftControl(AbstractView view)
   {
@@ -72,6 +73,17 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
           .createObject(Eigenschaft.class, null);
     }
     return eigenschaft;
+  }
+
+  public Input getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+    name = new TextInput(getEigenschaft().getName(), 30);
+    name.setMandatory(true);
+    return name;
   }
 
   public Input getBezeichnung() throws RemoteException
@@ -119,6 +131,7 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       ei.setEigenschaftGruppe(null);
     }
     ei.setBezeichnung((String) getBezeichnung().getValue());
+    ei.setName((String) getName().getValue());
     return ei;
   }
 
@@ -147,13 +160,13 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     if (eigenschaftList == null)
     {
       eigenschaftList = new JVereinTablePart(eigenschaften, null);
+      eigenschaftList.addColumn("Name", "name");
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
       eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
       eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
       eigenschaftList.setRememberColWidths(true);
       eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
-      eigenschaftList.addFeature(new FeatureSummary());
       eigenschaftList.setMulti(true);
       eigenschaftList.setAction(
           new EditAction(EigenschaftDetailView.class, eigenschaftList));

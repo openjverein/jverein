@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
@@ -34,8 +35,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 
 public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
@@ -43,7 +42,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   /**
    * Die Summe
    */
-  public static final String SUMME = "summe";
+  public static final String BEMESSUNGSGRUNDLAGE = "bemessungsgrundlage";
 
   public static final String STEUER = "steuer";
 
@@ -51,7 +50,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
   private static final String ARTSTEUERBUCHUNGSART = "artsteuerbuchungsart";
 
-  private TablePart saldoList;
+  private SaldoListTablePart saldoList;
 
   public UmsatzsteuerSaldoControl(AbstractView view) throws RemoteException
   {
@@ -59,7 +58,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public TablePart getSaldoList() throws ApplicationException
+  public SaldoListTablePart getSaldoList() throws ApplicationException
   {
     try
     {
@@ -67,7 +66,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new TablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), null)
       {
         @Override
         protected void orderBy(int index)
@@ -77,7 +76,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       };
       saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
       saldoList.addColumn("Steuer Name", STEUER);
-      saldoList.addColumn("Bemessungsgrundlage", SUMME,
+      saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Steuerbetrag", STEUERBETRAG,
@@ -85,7 +84,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setRememberColWidths(true);
-      saldoList.removeFeature(FeatureSummary.class);
+      saldoList.setMulti(true);
       saldoList.setFormatter(new SaldoFormatter());
     }
     catch (RemoteException e)
@@ -116,11 +115,11 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
       String art = null;
       Integer steuerArt = o.getInteger(ARTSTEUERBUCHUNGSART);
-      if (steuerArt == (Integer) ArtBuchungsart.EINNAHME || steuerArt == null)
+      if (steuerArt == ArtBuchungsart.EINNAHME || steuerArt == null)
       {
         art = "Umsatzsteuer";
       }
-      else if (steuerArt == (Integer) ArtBuchungsart.AUSGABE)
+      else if (steuerArt == ArtBuchungsart.AUSGABE)
       {
         art = "Vorsteuer";
       }
@@ -212,7 +211,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         // Anlagebuchungen.
         "COALESCE(SUM(CASE WHEN buchung.dependencyid > -1 OR konto.kontoart = ? then buchung.betrag ELSE "
             + "CAST(buchung.betrag*100/(100+COALESCE(steuer.satz,0)) AS DECIMAL(10,2)) END),0) AS "
-            + SUMME,
+            + BEMESSUNGSGRUNDLAGE,
         Kontoart.ANLAGE.getKey());
 
     // Steuer berechnen.

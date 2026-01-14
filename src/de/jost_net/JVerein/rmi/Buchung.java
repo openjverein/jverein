@@ -64,7 +64,7 @@ public interface Buchung extends JVereinDBObject
 
   public void setBetragNull() throws RemoteException;
 
-  public double getBetrag() throws RemoteException;
+  public Double getBetrag() throws RemoteException;
 
   public void setBetrag(double betrag) throws RemoteException;
 

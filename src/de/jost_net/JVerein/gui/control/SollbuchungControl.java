@@ -41,8 +41,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.SollbuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -79,7 +78,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -138,7 +136,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   private TreePart mitgliedskontoTree;
 
   // SollbuchungListeView, SollbuchungAuswahldialog
-  private JVereinTablePart sollbuchungenList;
+  private BetragSummaryTablePart sollbuchungenList;
 
   private TablePart mitgliederList;
 
@@ -425,8 +423,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return mitgliedskontoTree;
   }
 
-  public TablePart getSollbuchungenList(Action action, boolean umwandeln)
-      throws RemoteException, ApplicationException
+  public TablePart getSollbuchungenList(Action action, boolean umwandeln,
+      boolean multi) throws RemoteException, ApplicationException
   {
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
@@ -434,7 +432,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         .get();
     if (sollbuchungenList == null)
     {
-      sollbuchungenList = new SollbuchungListTablePart(sollbuchungen, null);
+      sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
       sollbuchungenList.addColumn("Nr", "id-int");
       sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -462,8 +460,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
       sollbuchungenList.setRememberColWidths(true);
       sollbuchungenList.setRememberOrder(true);
-      sollbuchungenList.setMulti(true);
-      sollbuchungenList.addFeature(new FeatureSummary());
+      sollbuchungenList.setMulti(multi);
       if (action == null)
       {
         sollbuchungenList
@@ -506,7 +503,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       mitgliederList.setRememberColWidths(true);
       mitgliederList.setRememberOrder(true);
       mitgliederList.setMulti(true);
-      mitgliederList.addFeature(new FeatureSummary());
     }
     else
     {
@@ -687,7 +683,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       try
       {
-        getSollbuchungenList(null, umwandeln);
+        getSollbuchungenList(null, umwandeln, true);
       }
       catch (RemoteException e)
       {

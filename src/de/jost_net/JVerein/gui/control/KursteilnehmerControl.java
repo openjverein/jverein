@@ -40,7 +40,7 @@ import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -108,9 +108,11 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
   private GeschlechtInput geschlecht;
 
+  private TextInput kontoinhaber;
+
   private Kursteilnehmer ktn;
 
-  private JVereinTablePart part;
+  private BetragSummaryTablePart part;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -394,7 +396,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       return part;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new JVereinTablePart(kursteilnehmer, null);
+    part = new BetragSummaryTablePart(kursteilnehmer, null);
     part.addColumn("Nr", "id-int");
     part.addColumn("Name", "name");
     part.addColumn("Vorname", "vorname");
@@ -404,6 +406,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     part.addColumn("Verwendungszweck", "vzweck1");
     part.addColumn("BIC", "bic");
     part.addColumn("IBAN", "iban", new IBANFormatter());
+    part.addColumn("Kontoinhaber", "kontoinhaber");
     part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     part.addColumn("Mandats-ID", "mandatid");
@@ -458,6 +461,18 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return b;
   }
 
+  public TextInput getKontoinhaber() throws RemoteException
+  {
+    if (kontoinhaber != null)
+    {
+      return kontoinhaber;
+    }
+    kontoinhaber = new TextInput(getKursteilnehmer().getKontoinhaber(), 70);
+    kontoinhaber.setName("Kontoinhaber");
+    kontoinhaber.setHint("Optional");
+    return kontoinhaber;
+  }
+
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
@@ -493,6 +508,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     {
       k.setGeschlecht((String) getGeschlecht().getValue());
     }
+    k.setKontoinhaber((String) getKontoinhaber().getValue());
 
     if (k.getID() == null)
     {

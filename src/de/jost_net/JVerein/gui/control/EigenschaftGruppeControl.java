@@ -33,7 +33,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -52,6 +51,8 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   private CheckboxInput max1;
 
   private EigenschaftGruppe eigenschaftgruppe;
+
+  private TextInput name;
 
   public EigenschaftGruppeControl(AbstractView view)
   {
@@ -81,6 +82,17 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     return bezeichnung;
   }
 
+  public Input getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+    name = new TextInput(getEigenschaftGruppe().getName(), 30);
+    name.setMandatory(true);
+    return name;
+  }
+
   public CheckboxInput getPflicht() throws RemoteException
   {
     if (pflicht != null)
@@ -105,6 +117,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   public JVereinDBObject prepareStore() throws RemoteException
   {
     EigenschaftGruppe eg = getEigenschaftGruppe();
+    eg.setName((String) getName().getValue());
     eg.setBezeichnung((String) getBezeichnung().getValue());
     eg.setPflicht((Boolean) getPflicht().getValue());
     eg.setMax1((Boolean) getMax1().getValue());
@@ -144,6 +157,7 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     eigenschaftgruppe.setOrder("ORDER BY bezeichnung");
 
     eigenschaftgruppeList = new JVereinTablePart(eigenschaftgruppe, null);
+    eigenschaftgruppeList.addColumn("Name", "name");
     eigenschaftgruppeList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftgruppeList.addColumn("Pflicht", "pflicht",
         new JaNeinFormatter());
@@ -153,7 +167,6 @@ public class EigenschaftGruppeControl extends VorZurueckControl
         .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
     eigenschaftgruppeList.setRememberColWidths(true);
     eigenschaftgruppeList.setRememberOrder(true);
-    eigenschaftgruppeList.addFeature(new FeatureSummary());
     eigenschaftgruppeList.setMulti(true);
     eigenschaftgruppeList.setAction(new EditAction(
         EigenschaftGruppeDetailView.class, eigenschaftgruppeList));

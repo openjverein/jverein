@@ -36,7 +36,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -171,7 +170,6 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     anfangsbestandList
         .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
     anfangsbestandList.setRememberOrder(true);
-    anfangsbestandList.removeFeature(FeatureSummary.class);
     anfangsbestandList.setMulti(true);
     anfangsbestandList.setAction(
         new EditAction(AnfangsbestandDetailView.class, anfangsbestandList));

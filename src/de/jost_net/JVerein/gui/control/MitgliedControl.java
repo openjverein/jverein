@@ -67,6 +67,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
@@ -274,7 +275,7 @@ public class MitgliedControl extends FilterControl implements Savable
   private FamilienbeitragMessageConsumer fbc = null;
 
   // Liste aller Zusatzbeträge
-  private AutoUpdateTablePart zusatzbetraegeList;
+  private BetragSummaryTablePart zusatzbetraegeList;
 
   // Liste der Wiedervorlagen
   private AutoUpdateTablePart wiedervorlageList;
@@ -1515,7 +1516,7 @@ public class MitgliedControl extends FilterControl implements Savable
     DBIterator<Zusatzbetrag> zusatzbetraege = service
         .createList(Zusatzbetrag.class);
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
-    zusatzbetraegeList = new AutoUpdateTablePart(zusatzbetraege,
+    zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege,
         new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.setRememberColWidths(true);
     zusatzbetraegeList.setRememberOrder(true);
@@ -1532,14 +1533,8 @@ public class MitgliedControl extends FilterControl implements Savable
     zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
     zusatzbetraegeList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        return new Zahlungsweg((Integer) o).getText();
-      }
-    });
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg",
+        o -> new Zahlungsweg((Integer) o).getText());
     if ((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
@@ -1948,6 +1943,10 @@ public class MitgliedControl extends FilterControl implements Savable
                     getZahlungsweg()
                         .setValue(new Zahlungsweg(Zahlungsweg.ÜBERWEISUNG));
                     deleteBankverbindung();
+                    mandatid.setMandatory(false);
+                    mandatdatum.setMandatory(false);
+                    mandatversion.setMandatory(false);
+                    iban.setMandatory(false);
                     m.clearKtoi();
                   }
                 }

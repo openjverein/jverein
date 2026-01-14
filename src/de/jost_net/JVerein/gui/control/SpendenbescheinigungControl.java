@@ -39,10 +39,9 @@ import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
-import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.FileViewer;
@@ -86,7 +85,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -99,7 +97,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
 {
 
   // Spendenbescheinigung View
-  private JVereinTablePart spbList;
+  private BetragSummaryTablePart spbList;
 
   private SelectInput spendenart;
 
@@ -513,7 +511,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     {
       return spbList;
     }
-    spbList = new AutoUpdateTablePart(getSpendenbescheinigungen(), null);
+    spbList = new BetragSummaryTablePart(getSpendenbescheinigungen(), null);
     spbList.addColumn("Nr", "id-int");
     spbList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -537,7 +535,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setRememberOrder(true);
-    spbList.addFeature(new FeatureSummary());
     spbList.setMulti(true);
     spbList.setAction(
         new EditAction(SpendenbescheinigungDetailView.class, spbList));

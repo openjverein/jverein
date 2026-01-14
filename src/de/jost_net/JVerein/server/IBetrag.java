@@ -14,26 +14,11 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
-public interface EigenschaftGruppe extends JVereinDBObject
+public interface IBetrag
 {
-  public String getBezeichnung() throws RemoteException;
-
-  public void setBezeichnung(String bezeichnung) throws RemoteException;
-
-  public void setPflicht(Boolean pflicht) throws RemoteException;
-
-  public Boolean getPflicht() throws RemoteException;
-
-  public void setMax1(Boolean max1) throws RemoteException;
-
-  public Boolean getMax1() throws RemoteException;
-
-  void setName(String name) throws RemoteException;
-
-  String getName() throws RemoteException;
-
+  public Double getBetrag() throws RemoteException;
 }
