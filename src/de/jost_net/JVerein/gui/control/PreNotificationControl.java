@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -740,6 +741,23 @@ public class PreNotificationControl extends DruckMailControl
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    ArrayList<Lastschrift> lastschriften = getLastschriften(
+        this.view.getCurrentObject(), true);
+    for (Lastschrift l : lastschriften)
+    {
+      if (l.getMitglied() != null)
+      {
+        map.put(l.getMitglied(), l);
+      }
+    }
+    return map;
   }
 
   public TextInput getAbrechnungslauf(AbrechnungslaufImpl lauf)
