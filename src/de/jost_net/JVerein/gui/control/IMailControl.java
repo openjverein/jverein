@@ -43,7 +43,8 @@ public interface IMailControl
   /**
    * @return Liste der Mailempfänger
    */
-  default List<Mitglied> getEmpfaengerList() throws RemoteException
+  default List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
   {
     return null;
   }

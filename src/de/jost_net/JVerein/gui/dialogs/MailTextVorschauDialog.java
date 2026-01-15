@@ -77,7 +77,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private final Settings settings;
 
-  private Map<Mitglied, Object> objects = null;
+  private Map<Mitglied, Object> objectslist = null;
 
   public MailTextVorschauDialog(IMailControl control, Map<String, Object> map,
       int position, boolean mitMitglied)
@@ -114,9 +114,10 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
     betreffString = control.getBetreffString();
     textString = control.getTxtString();
-    objects = control.getDruckMailList();
+    objectslist = control.getDruckMailList();
+    List<Mitglied> empfaengerlist = control.getEmpfaengerList();
 
-    if (mitMitglied && control.getEmpfaengerList() == null && objects == null)
+    if (mitMitglied && control.getEmpfaengerList() == null && objectslist == null)
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
@@ -131,13 +132,13 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     else if (mitMitglied)
     {
       List<Mitglied> empfaenger = null;
-      if (control.getEmpfaengerList() != null)
+      if (empfaengerlist != null)
       {
-        empfaenger = control.getEmpfaengerList();
+        empfaenger = empfaengerlist;
       }
-      else if (objects != null)
+      else if (objectslist != null)
       {
-        empfaenger = new ArrayList<>(objects.keySet());
+        empfaenger = new ArrayList<>(objectslist.keySet());
       }
       mitglied = new SelectInput(empfaenger, null);
       listener = new MitgliedListener();
@@ -188,21 +189,21 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       {
         // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
-        if (objects != null)
+        if (objectslist != null)
         {
-          if (objects.get(m) instanceof Rechnung)
+          if (objectslist.get(m) instanceof Rechnung)
           {
-            map = new RechnungMap().getMap((Rechnung) objects.get(m), map);
+            map = new RechnungMap().getMap((Rechnung) objectslist.get(m), map);
           }
-          else if (objects.get(m) instanceof Lastschrift)
+          else if (objectslist.get(m) instanceof Lastschrift)
           {
-            map = new LastschriftMap().getMap((Lastschrift) objects.get(m),
+            map = new LastschriftMap().getMap((Lastschrift) objectslist.get(m),
                 map);
           }
-          else if (objects.get(m) instanceof Spendenbescheinigung)
+          else if (objectslist.get(m) instanceof Spendenbescheinigung)
           {
             map = new SpendenbescheinigungMap()
-                .getMap((Spendenbescheinigung) objects.get(m), map);
+                .getMap((Spendenbescheinigung) objectslist.get(m), map);
           }
         }
         em = new EvalMail(map);

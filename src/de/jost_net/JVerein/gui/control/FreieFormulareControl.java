@@ -120,6 +120,13 @@ public class FreieFormulareControl extends DruckMailControl
   }
 
   @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
+  }
+
+  @Override
   protected void TabRefresh()
   {
     // Nichts tun, hier ist keine Tabelle implementiert

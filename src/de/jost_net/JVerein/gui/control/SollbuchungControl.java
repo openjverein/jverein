@@ -1020,6 +1020,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return new DruckMailEmpfaenger(liste, text);
   }
 
+  @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
+  }
+
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
    */
