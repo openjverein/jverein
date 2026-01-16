@@ -17,73 +17,195 @@
 package de.jost_net.JVerein.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import java.rmi.RemoteException;
+import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 
-import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
+import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.util.ApplicationException;
 
-@Disabled
 public class BeitragsUtilTest
 {
-  public BeitragsUtilTest() throws RemoteException
+
+  @Test
+  @DisplayName("Ein und Austritsdatum des Mitglieds testen.")
+  void mitgliedActivTest() throws RemoteException, ApplicationException
   {
-    super();
+    try (MockedStatic<Einstellungen> einstellungen = Mockito
+        .mockStatic(Einstellungen.class))
+    {
+      einstellungen
+          .when(
+              () -> Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+          .thenReturn(true);
+
+      Beitragsgruppe bg = mock(Beitragsgruppe.class);
+      doReturn(10d).when(bg).getBetrag();
+
+      Mitglied m = mock(Mitglied.class);
+
+      Calendar calendar = Calendar.getInstance();
+      calendar.set(2026, 01, 15);
+      Date stichtag = calendar.getTime();
+
+      assertThrows(ApplicationException.class,
+          () -> BeitragsUtil.getBeitrag(Beitragsmodel.GLEICHERTERMINFUERALLE,
+              null, null, bg, stichtag, m));
+
+      calendar.set(2026, 02, 01);
+      doReturn(calendar.getTime()).when(m).getEintritt();
+      assertEquals(0d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
+
+      calendar.set(2026, 01, 01);
+      doReturn(calendar.getTime()).when(m).getEintritt();
+      assertEquals(10d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
+
+      calendar.set(2026, 02, 01);
+      doReturn(calendar.getTime()).when(m).getAustritt();
+      assertEquals(10d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
+
+      calendar.set(2026, 01, 01);
+      doReturn(calendar.getTime()).when(m).getAustritt();
+      assertEquals(0d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, stichtag, m));
+    }
   }
 
   @Test
-  void test01() throws ApplicationException
+  @DisplayName("Beitrag Höhe testen.")
+  void testBeitrag() throws ApplicationException, RemoteException
   {
-    try
+    try (MockedStatic<Einstellungen> einstellungen = Mockito
+        .mockStatic(Einstellungen.class))
     {
-      Beitragsgruppe bg = getBeitragsgruppe();
-      assertEquals(10d,
-          BeitragsUtil.getBeitrag(Beitragsmodel.GLEICHERTERMINFUERALLE, null,
-              null, bg, new Date(), null));
+      einstellungen
+          .when(
+              () -> Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+          .thenReturn(true);
+
+      Mitglied m = mock(Mitglied.class);
+      doReturn(new Date()).when(m).getEintritt();
+
+      Beitragsgruppe bg = mock(Beitragsgruppe.class);
+
+      doReturn(10d).when(bg).getBetrag();
+      doReturn(15d).when(bg).getBetragMonatlich();
+      doReturn(42d).when(bg).getBetragVierteljaehrlich();
+      doReturn(85d).when(bg).getBetragHalbjaehrlich();
+      doReturn(167d).when(bg).getBetragJaehrlich();
+
+      assertEquals(10d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
+
       assertEquals(10d,
           BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
               new Zahlungsrhythmus(Zahlungsrhythmus.MONATLICH), bg, new Date(),
-              null));
+              m));
+
       assertEquals(30d,
           BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
               new Zahlungsrhythmus(Zahlungsrhythmus.VIERTELJAEHRLICH), bg,
-              new Date(), null));
+              new Date(), m));
+
       assertEquals(60d,
           BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
               new Zahlungsrhythmus(Zahlungsrhythmus.HALBJAEHRLICH), bg,
-              new Date(), null));
+              new Date(), m));
+
       assertEquals(120d,
           BeitragsUtil.getBeitrag(Beitragsmodel.MONATLICH12631, null,
               new Zahlungsrhythmus(Zahlungsrhythmus.JAEHRLICH), bg, new Date(),
-              null));
-      assertEquals(20d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
-          Zahlungstermin.MONATLICH, null, bg, new Date(), null));
+              m));
 
-    }
-    catch (RemoteException e)
-    {
-      e.printStackTrace();
+      assertEquals(15d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
+          Zahlungstermin.MONATLICH, null, bg, new Date(), m));
+
+      assertEquals(42d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
+          Zahlungstermin.VIERTELJAEHRLICH1, null, bg, new Date(), m));
+
+      assertEquals(85d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
+          Zahlungstermin.HALBJAEHRLICH1, null, bg, new Date(), m));
+
+      assertEquals(167d, BeitragsUtil.getBeitrag(Beitragsmodel.FLEXIBEL,
+          Zahlungstermin.JAERHLICH01, null, bg, new Date(), m));
     }
   }
 
-  private Beitragsgruppe getBeitragsgruppe() throws RemoteException
+  @Test
+  @DisplayName("Altersstaffel testen")
+  void alterstaffelTest() throws RemoteException, ApplicationException
   {
-    Beitragsgruppe bg = (Beitragsgruppe) Einstellungen.getDBService()
-        .createObject(Beitragsgruppe.class, null);
-    bg.setBezeichnung("Test");
-    bg.setBetrag(10d);
-    bg.setBetragMonatlich(20d);
-    bg.setBetragVierteljaehrlich(60d);
-    bg.setBetragHalbjaehrlich(120d);
-    bg.setBetragJaehrlich(240d);
-    return bg;
+    try (MockedStatic<Einstellungen> einstellungen = Mockito
+        .mockStatic(Einstellungen.class))
+    {
+      einstellungen
+          .when(
+              () -> Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
+          .thenReturn(true);
+
+      einstellungen
+          .when(
+              () -> Einstellungen.getEinstellung(Property.BEITRAGALTERSSTUFEN))
+          .thenReturn("0-6,7-18,19-99");
+
+      Beitragsgruppe bg = mock(Beitragsgruppe.class);
+      doReturn(true).when(bg).getHasAltersstaffel();
+
+      Mitglied m = mock(Mitglied.class);
+      doReturn(new Date()).when(m).getEintritt();
+
+      Altersstaffel altersstaffel1 = mock(Altersstaffel.class);
+      doReturn(5d).when(altersstaffel1).getBetrag();
+
+      Altersstaffel altersstaffel2 = mock(Altersstaffel.class);
+      doReturn(7d).when(altersstaffel2).getBetrag();
+
+      Altersstaffel altersstaffel3 = mock(Altersstaffel.class);
+      doReturn(9d).when(altersstaffel3).getBetrag();
+
+      doReturn(altersstaffel1).when(bg).getAltersstaffel(0);
+      doReturn(altersstaffel2).when(bg).getAltersstaffel(1);
+      doReturn(altersstaffel3).when(bg).getAltersstaffel(2);
+
+      doReturn(null).when(m).getAlter();
+      assertThrows(ApplicationException.class,
+          () -> BeitragsUtil.getBeitrag(Beitragsmodel.GLEICHERTERMINFUERALLE,
+              null, null, bg, new Date(), m));
+
+      doReturn(6).when(m).getAlter();
+      assertEquals(5d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
+
+      doReturn(7).when(m).getAlter();
+      assertEquals(7d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
+
+      doReturn(20).when(m).getAlter();
+      assertEquals(9d, BeitragsUtil.getBeitrag(
+          Beitragsmodel.GLEICHERTERMINFUERALLE, null, null, bg, new Date(), m));
+
+      doReturn(110).when(m).getAlter();
+      assertThrows(ApplicationException.class,
+          () -> BeitragsUtil.getBeitrag(Beitragsmodel.GLEICHERTERMINFUERALLE,
+              null, null, bg, new Date(), m));
+    }
   }
 }

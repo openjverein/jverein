@@ -39,6 +39,11 @@ public class BeitragsUtil
       throws RemoteException, ApplicationException
   {
     Double betr = Double.valueOf(0);
+    if (m.getEintritt() == null)
+    {
+      throw new ApplicationException(m.getName() + ", " + m.getVorname()
+          + ": Eintrittsdatum nicht gesetzt!");
+    }
     if (m.getEintritt() != null && m.getEintritt().after(stichtag))
     {
       return 0;
