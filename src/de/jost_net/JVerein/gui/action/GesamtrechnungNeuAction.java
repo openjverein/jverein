@@ -79,7 +79,12 @@ public class GesamtrechnungNeuAction implements Action
 
     try
     {
-      RechnungDialog dialog = new RechnungDialog();
+      double summe = 0d;
+      for (Sollbuchung sollb : sollbs)
+      {
+        summe += sollb.getBetrag();
+      }
+      RechnungDialog dialog = new RechnungDialog(summe <= -0.005d);
       if (!dialog.open())
       {
         throw new OperationCanceledException();
@@ -148,7 +153,7 @@ public class GesamtrechnungNeuAction implements Action
       rechnung.fill(sollbs[0]);
       rechnung.store();
 
-      double summe = 0d;
+      summe = 0d;
       for (Sollbuchung sollb : sollbs)
       {
         summe += sollb.getBetrag();

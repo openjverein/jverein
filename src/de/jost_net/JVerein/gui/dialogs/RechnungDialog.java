@@ -56,10 +56,13 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput sollbuchungsdatumInput;
 
-  public RechnungDialog()
+  private boolean mitErstattung = false;
+
+  public RechnungDialog(boolean mitErstattung)
   {
     super(SWT.CENTER);
     setTitle("Rechnung(en) erstellen");
+    this.mitErstattung = mitErstattung;
   }
 
   @Override
@@ -102,13 +105,24 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   protected void paint(Composite parent) throws Exception
   {
     LabelGroup group = new LabelGroup(parent, "");
-    group.addText(
-        "Bitte Rechnungsdatum und zu verwendende Formulare auswählen.", true);
+    if (mitErstattung)
+    {
+      group.addText(
+          "Bitte Rechnungsdatum und zu verwendende Formulare auswählen.", true);
+    }
+    else
+    {
+      group.addText(
+          "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.", true);
+    }
     group.addInput(getStatus());
     formularRechnungInput = new FormularInput(FormularArt.RECHNUNG);
     group.addLabelPair("Formular Rechnung", formularRechnungInput);
-    formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
-    group.addLabelPair("Formular Erstattung", formularErstattungInput);
+    if (mitErstattung)
+    {
+      formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
+      group.addLabelPair("Formular Erstattung", formularErstattungInput);
+    }
 
     datumInput = new DateInput(new Date());
     group.addLabelPair("Datum", datumInput);
@@ -121,10 +135,15 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Rechnung(en) erstellen", context -> {
-      if (formularRechnungInput.getValue() == null
-          || (formularErstattungInput.getValue() == null))
+      if (formularRechnungInput.getValue() == null)
       {
-        status.setValue("Bitte Formular auswählen");
+        status.setValue("Bitte Formular Rechnung auswählen");
+        status.setColor(Color.ERROR);
+        return;
+      }
+      if (mitErstattung && formularErstattungInput.getValue() == null)
+      {
+        status.setValue("Bitte Formular Erstattung auswählen");
         status.setColor(Color.ERROR);
         return;
       }
@@ -136,7 +155,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
         return;
       }
       formularRechnung = (Formular) formularRechnungInput.getValue();
-      formularErstattung = (Formular) formularErstattungInput.getValue();
+      if (mitErstattung)
+      {
+        formularErstattung = (Formular) formularErstattungInput.getValue();
+      }
+      else
+      {
+        formularErstattung = (Formular) formularRechnungInput.getValue();
+      }
       datum = (Date) datumInput.getValue();
       sollbuchungsdatum = (boolean) sollbuchungsdatumInput.getValue();
       fortfahren = true;

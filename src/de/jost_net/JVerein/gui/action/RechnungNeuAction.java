@@ -75,7 +75,20 @@ public class RechnungNeuAction implements Action
 
     try
     {
-      RechnungDialog dialog = new RechnungDialog();
+      boolean mitErstattung = false;
+      for (Sollbuchung sollb : sollbs)
+      {
+        if (sollb.getRechnung() != null)
+        {
+          continue;
+        }
+        if (sollb.getBetrag() <= -0.005d)
+        {
+          mitErstattung = true;
+          break;
+        }
+      }
+      RechnungDialog dialog = new RechnungDialog(mitErstattung);
       if (!dialog.open())
       {
         return;
