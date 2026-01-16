@@ -80,10 +80,12 @@ public class RechnungNeuAction implements Action
       {
         return;
       }
-      Formular formular = dialog.getFormular();
+      Formular formularRechnung = dialog.getFormularRechnung();
+      Formular formularErstattung = dialog.getFormularErstattung();
       Date rechnungsdatum = dialog.getDatum();
       boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
-      if (formular == null || (rechnungsdatum == null && !sollbuchungsDatum))
+      if (formularRechnung == null || formularErstattung == null
+          || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         return;
       }
@@ -98,8 +100,14 @@ public class RechnungNeuAction implements Action
         }
         Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
             .createObject(Rechnung.class, null);
-
-        rechnung.setFormular(formular);
+        if (sollb.getBetrag() > -0.005d)
+        {
+          rechnung.setFormular(formularRechnung);
+        }
+        else
+        {
+          rechnung.setFormular(formularErstattung);
+        }
 
         if (sollbuchungsDatum)
         {
@@ -134,7 +142,7 @@ public class RechnungNeuAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim erstellen der Rechnung";
+      String fehler = "Fehler beim Erstellen der Rechnung";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
       return;

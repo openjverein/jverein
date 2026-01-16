@@ -36,11 +36,15 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class RechnungDialog extends AbstractDialog<Boolean>
 {
 
-  private FormularInput formularInput;
+  private FormularInput formularRechnungInput;
+
+  private FormularInput formularErstattungInput;
 
   private DateInput datumInput;
 
-  private Formular formular;
+  private Formular formularRechnung;
+
+  private Formular formularErstattung;
 
   private Date datum;
 
@@ -74,9 +78,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     return status;
   }
 
-  public Formular getFormular()
+  public Formular getFormularRechnung()
   {
-    return formular;
+    return formularRechnung;
+  }
+
+  public Formular getFormularErstattung()
+  {
+    return formularErstattung;
   }
 
   public Date getDatum()
@@ -96,8 +105,10 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     group.addText(
         "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.", true);
     group.addInput(getStatus());
-    formularInput = new FormularInput(FormularArt.RECHNUNG);
-    group.addLabelPair("Formular", formularInput);
+    formularRechnungInput = new FormularInput(FormularArt.RECHNUNG);
+    group.addLabelPair("Formular Rechnung", formularRechnungInput);
+    formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
+    group.addLabelPair("Formular Erstattung", formularErstattungInput);
 
     datumInput = new DateInput(new Date());
     group.addLabelPair("Datum", datumInput);
@@ -110,7 +121,8 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Rechnung(en) erstellen", context -> {
-      if (formularInput.getValue() == null)
+      if (formularRechnungInput.getValue() == null
+          || (formularErstattungInput.getValue() == null))
       {
         status.setValue("Bitte Formular auswählen");
         status.setColor(Color.ERROR);
@@ -123,7 +135,8 @@ public class RechnungDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      formular = (Formular) formularInput.getValue();
+      formularRechnung = (Formular) formularRechnungInput.getValue();
+      formularErstattung = (Formular) formularErstattungInput.getValue();
       datum = (Date) datumInput.getValue();
       sollbuchungsdatum = (boolean) sollbuchungsdatumInput.getValue();
       fortfahren = true;
