@@ -836,7 +836,7 @@ public class AbrechnungSEPA
         zahler.setMandatdatum(kt.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
         zahler.setFaelligkeit(param.faelligkeit);
-        zahler.setName(kt.getName());
+        zahler.setName(kt.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
         zahler
             .setVerwendungszweck(getVerwendungszweckName(kt, kt.getVZweck1()));
         zahler.setZahlungsweg(new Zahlungsweg(Zahlungsweg.BASISLASTSCHRIFT));
