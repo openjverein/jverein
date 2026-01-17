@@ -58,6 +58,8 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
   private boolean mitErstattung = false;
 
+  private String label = "Formular";
+
   public RechnungDialog(boolean mitErstattung)
   {
     super(SWT.CENTER);
@@ -109,6 +111,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     {
       group.addText(
           "Bitte Rechnungsdatum und zu verwendende Formulare auswählen.", true);
+      label = "Formular Rechnung";
     }
     else
     {
@@ -117,7 +120,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     }
     group.addInput(getStatus());
     formularRechnungInput = new FormularInput(FormularArt.RECHNUNG);
-    group.addLabelPair("Formular Rechnung", formularRechnungInput);
+    group.addLabelPair(label, formularRechnungInput);
     if (mitErstattung)
     {
       formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
@@ -137,7 +140,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Rechnung(en) erstellen", context -> {
       if (formularRechnungInput.getValue() == null)
       {
-        status.setValue("Bitte Formular Rechnung auswählen");
+        status.setValue("Bitte " + label + " auswählen");
         status.setColor(Color.ERROR);
         return;
       }

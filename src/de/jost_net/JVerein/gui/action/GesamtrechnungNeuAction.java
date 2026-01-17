@@ -153,10 +153,8 @@ public class GesamtrechnungNeuAction implements Action
       rechnung.fill(sollbs[0]);
       rechnung.store();
 
-      summe = 0d;
       for (Sollbuchung sollb : sollbs)
       {
-        summe += sollb.getBetrag();
         sollb.setRechnung(rechnung);
         sollb.updateForced();
       }
