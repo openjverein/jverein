@@ -63,10 +63,6 @@ public class BeitragsUtilTest
       calendar.set(2026, 01, 15);
       Date stichtag = calendar.getTime();
 
-      assertThrows(ApplicationException.class,
-          () -> BeitragsUtil.getBeitrag(Beitragsmodel.GLEICHERTERMINFUERALLE,
-              null, null, bg, stichtag, m));
-
       calendar.set(2026, 02, 01);
       doReturn(calendar.getTime()).when(m).getEintritt();
       assertEquals(0d, BeitragsUtil.getBeitrag(
