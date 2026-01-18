@@ -84,7 +84,8 @@ public class GesamtrechnungNeuAction implements Action
       {
         summe += sollb.getBetrag();
       }
-      RechnungDialog dialog = new RechnungDialog(summe <= -0.005d);
+      RechnungDialog dialog = new RechnungDialog(summe > -0.005d,
+          summe <= -0.005d);
       if (!dialog.open())
       {
         throw new OperationCanceledException();
@@ -131,6 +132,7 @@ public class GesamtrechnungNeuAction implements Action
       DBTransaction.starten();
       Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
           .createObject(Rechnung.class, null);
+      // Bei Erstattung liefert formularRechnung auch das Erstattung Formular
       rechnung.setFormular(formularRechnung);
       if (sollbuchungsDatum)
       {
@@ -159,10 +161,6 @@ public class GesamtrechnungNeuAction implements Action
         sollb.updateForced();
       }
       rechnung.setBetrag(summe);
-      if (summe <= -0.005d)
-      {
-        rechnung.setFormular(formularErstattung);
-      }
       rechnung.store();
 
       DBTransaction.commit();
