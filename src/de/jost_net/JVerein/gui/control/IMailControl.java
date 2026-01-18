@@ -41,6 +41,11 @@ public interface IMailControl
   public String getTxtString() throws RemoteException;
 
   /**
+   * Liefert die Liste der Mail Empfänger damit sie z.B. für die Genereierung
+   * der MitgliedMap bei der Mailtext Vorschau verwendet werden können. Dies ist
+   * ausreichend bei Mails in denen neben der Allgemeinen Map nur die Mitglied
+   * Map in der Mailtext Vorschau verwendet wird.
+   * 
    * @return Liste der Mailempfänger
    */
   default List<Mitglied> getEmpfaengerList()
@@ -50,6 +55,13 @@ public interface IMailControl
   }
 
   /**
+   * Liefert die Liste der Mail Empfänger und die an die Mail angehängten
+   * Dokumente. Die Mitglieder können für die Genereierung der MitgliedMap der
+   * Mailtext Vorschau verwendet werden. Über die Anhänge lassen sich die
+   * spezifischen Maps wie z.B. Rechnung Map erzeugen. Damit können auch für
+   * Dokument spezifischen Variablen die Daten aus dem Dokument in der Mailtext
+   * Vorschau angezeigt werden.
+   * 
    * @return Liste der Mailempfänger und Anhänge
    */
   default Map<Mitglied, Object> getDruckMailList()

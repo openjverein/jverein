@@ -117,7 +117,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     objectslist = control.getDruckMailList();
     List<Mitglied> empfaengerlist = control.getEmpfaengerList();
 
-    if (mitMitglied && control.getEmpfaengerList() == null && objectslist == null)
+    if (mitMitglied && empfaengerlist == null && objectslist == null)
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
@@ -189,6 +189,9 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       {
         // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
+        // Falls es Anhänge gibt, dann auch deren Maps erzeugen, damit in der
+        // Mailtext Vorschau die Variablen Werte aus den Attachements verwendet
+        // werden und nicht deren Dummy Maps
         if (objectslist != null)
         {
           if (objectslist.get(m) instanceof Rechnung)
