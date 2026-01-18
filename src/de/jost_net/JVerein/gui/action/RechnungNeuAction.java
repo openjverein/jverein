@@ -92,6 +92,11 @@ public class RechnungNeuAction implements Action
           mitErstattung = true;
         }
       }
+      if (!mitRechnung && !mitErstattung)
+      {
+        throw new ApplicationException(
+            "Es sind keine Sollbuchungen ohne Rechnung ausgewählt!");
+      }
       RechnungDialog dialog = new RechnungDialog(mitRechnung, mitErstattung);
       if (!dialog.open())
       {
@@ -159,8 +164,8 @@ public class RechnungNeuAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Erstellen der Rechnung";
-      GUI.getStatusBar().setErrorText(fehler);
+      String fehler = "Fehler beim Erstellen der Rechnung: ";
+      GUI.getStatusBar().setErrorText(fehler + e.getMessage());
       Logger.error(fehler, e);
       return;
     }
