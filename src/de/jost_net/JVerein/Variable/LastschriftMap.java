@@ -27,6 +27,8 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class LastschriftMap extends AbstractMap
 {
@@ -97,6 +99,22 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.BIC.getName(), ls.getBIC());
     map.put(LastschriftVar.IBAN.getName(),
         new IBANFormatter().format(ls.getIBAN()));
+    if (ls.getBIC() != null)
+    {
+      Bank bank = Banken.getBankByBIC(ls.getBIC());
+      if (bank != null)
+      {
+        String name = bank.getBezeichnung();
+        if (name != null)
+        {
+          map.put(LastschriftVar.BANKNAME.getName(), name.trim());
+        }
+      }
+    }
+    else
+    {
+      map.put(LastschriftVar.BANKNAME.getName(), null);
+    }
     map.put(LastschriftVar.IBANMASKIERT.getName(),
         VarTools.maskieren(ls.getIBAN()));
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
