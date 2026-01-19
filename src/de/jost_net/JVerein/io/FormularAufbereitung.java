@@ -41,6 +41,7 @@ import org.mustangproject.Item;
 import org.mustangproject.Product;
 import org.mustangproject.TradeParty;
 import org.mustangproject.ZUGFeRD.IZUGFeRDExporter;
+import org.mustangproject.ZUGFeRD.TransactionCalculator;
 import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromPDFA;
 
 import com.google.zxing.BarcodeFormat;
@@ -730,12 +731,26 @@ public class FormularAufbereitung
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
       BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+
       invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
                                                                     // pauschal
           new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
           betrag.abs().setScale(4, RoundingMode.HALF_UP),
           new BigDecimal(betrag.signum())));
     }
+    // Summe der Rechnung mit der Zugferd Summe vergleichen. Da wir für die
+    // Brutto Beträge addieren, ZuGfERd jedoch die Nettobeträge und erst am Ende
+    // die Steuer berechnet, kann es zu differenzen kommen. Diese fügen wir als
+    // Rundungsbetrag hinzu
+    TransactionCalculator tc = new TransactionCalculator(invoice);
+
+    BigDecimal diff = new BigDecimal(re.getBetrag())
+        .subtract(tc.getGrandTotal());
+    if (diff.abs().doubleValue() >= .01d)
+    {
+      invoice.setRoundingAmount(diff);
+    }
+
     ze.setTransaction(invoice);
     ze.export(f.getAbsolutePath());
     ze.close();
