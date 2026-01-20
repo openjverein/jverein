@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public interface Sollbuchung extends JVereinDBObject
+import de.jost_net.JVerein.server.IGutschriftProvider;
+
+public interface Sollbuchung extends JVereinDBObject, IGutschriftProvider
 {
   public static final String TABLE_NAME = "sollbuchung";
 

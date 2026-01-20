@@ -74,6 +74,8 @@ public class DokumentationUtil
 
   public static final String RECHNUNG = MITGLIEDER + "rechnung";
 
+  public static final String GUTSCHRIFT = MITGLIEDER + "gutschrift";
+
   public static final String SUCHPROFIL = MITGLIEDER + "content/suchprofil";
 
   public static final String WIEDERVORLAGE = MITGLIEDER + "wiedervorlage";

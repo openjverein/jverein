@@ -22,9 +22,11 @@ import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung extends JVereinDBObject, IAdresse
+public interface Rechnung
+    extends JVereinDBObject, IAdresse, IGutschriftProvider
 {
   public Mitglied getMitglied() throws RemoteException;
 

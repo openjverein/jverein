@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -66,6 +67,8 @@ public class SollbuchungMenu extends ContextMenu
             new RechnungNeuAction(), "file-invoice.png"));
         addItem(new MultiItem("Gesamtrechnung erstellen",
             new GesamtrechnungNeuAction(), "file-invoice.png"));
+        addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+            new GutschriftAction(), "ueberweisung.png"));
       }
     }
     catch (RemoteException e)

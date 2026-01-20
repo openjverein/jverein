@@ -41,10 +41,10 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.io.Ct1Ueberweisung;
+import de.jost_net.JVerein.io.Ueberweisung;
 import de.jost_net.JVerein.io.FormularAufbereitung;
 import de.jost_net.JVerein.io.MailSender;
-import de.jost_net.JVerein.keys.Ct1Ausgabe;
+import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.SuchVersand;
@@ -131,13 +131,15 @@ public class PreNotificationControl extends DruckMailControl
     {
       return ct1ausgabe;
     }
-    Ct1Ausgabe aus = Ct1Ausgabe.getByKey(settings
-        .getInt(settingsprefix + "ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
-    if (aus != Ct1Ausgabe.SEPA_DATEI && aus != Ct1Ausgabe.HIBISCUS)
+    UeberweisungAusgabe aus = UeberweisungAusgabe
+        .getByKey(settings.getInt(settingsprefix + "ct1ausgabe",
+            UeberweisungAusgabe.SEPA_DATEI.getKey()));
+    if (aus != UeberweisungAusgabe.SEPA_DATEI
+        && aus != UeberweisungAusgabe.HIBISCUS)
     {
-      aus = Ct1Ausgabe.HIBISCUS;
+      aus = UeberweisungAusgabe.HIBISCUS;
     }
-    ct1ausgabe = new SelectInput(Ct1Ausgabe.values(), aus);
+    ct1ausgabe = new SelectInput(UeberweisungAusgabe.values(), aus);
     ct1ausgabe.setName("Ausgabe");
     return ct1ausgabe;
   }
@@ -213,7 +215,7 @@ public class PreNotificationControl extends DruckMailControl
         {
           saveDruckMailSettings();
 
-          Ct1Ausgabe aa = (Ct1Ausgabe) ct1ausgabe.getValue();
+          UeberweisungAusgabe aa = (UeberweisungAusgabe) ct1ausgabe.getValue();
           settings.setAttribute(settingsprefix + "ct1ausgabe", aa.getKey());
           if (ausfuehrungsdatum.getValue() == null)
           {
@@ -341,9 +343,10 @@ public class PreNotificationControl extends DruckMailControl
   {
 
     File file = null;
-    Ct1Ausgabe aa = Ct1Ausgabe.getByKey(settings
-        .getInt(settingsprefix + "ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
-    if (aa == Ct1Ausgabe.SEPA_DATEI)
+    UeberweisungAusgabe aa = UeberweisungAusgabe
+        .getByKey(settings.getInt(settingsprefix + "ct1ausgabe",
+            UeberweisungAusgabe.SEPA_DATEI.getKey()));
+    if (aa == UeberweisungAusgabe.SEPA_DATEI)
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("SEPA-Ausgabedatei wählen.");
@@ -373,11 +376,12 @@ public class PreNotificationControl extends DruckMailControl
     String faelligkeitsdatum = settings
         .getString(settingsprefix + "faelligkeitsdatum", null);
     Date faell = Datum.toDate(faelligkeitsdatum);
-    Ct1Ausgabe ct1ausgabe = Ct1Ausgabe.getByKey(settings
-        .getInt(settingsprefix + "ct1ausgabe", Ct1Ausgabe.SEPA_DATEI.getKey()));
+    UeberweisungAusgabe ct1ausgabe = UeberweisungAusgabe
+        .getByKey(settings.getInt(settingsprefix + "ct1ausgabe",
+            UeberweisungAusgabe.SEPA_DATEI.getKey()));
     String verwendungszweck = settings
         .getString(settingsprefix + "verwendungszweck", "");
-    Ct1Ueberweisung ct1ueberweisung = new Ct1Ueberweisung();
+    Ueberweisung ct1ueberweisung = new Ueberweisung(0.01d);
     int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
     GUI.getStatusBar().setSuccessText("Anzahl Überweisungen: " + anzahl);

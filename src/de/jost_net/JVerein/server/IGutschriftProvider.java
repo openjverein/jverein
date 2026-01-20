@@ -14,52 +14,27 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.keys;
+package de.jost_net.JVerein.server;
 
-/**
- * Abrechnungsausgabe
- */
-public enum Ct1Ausgabe
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
+
+public interface IGutschriftProvider extends JVereinDBObject
 {
+  public Mitglied getMitglied() throws RemoteException;
 
-  SEPA_DATEI(1, "Datei"),
-  HIBISCUS(2, "Hibiscus");
+  public Mitglied getZahler() throws RemoteException;
 
-  private final String text;
+  public Double getBetrag() throws RemoteException;
 
-  private final int key;
+  public Double getIstSumme() throws RemoteException;
 
-  Ct1Ausgabe(int key, String text)
-  {
-    this.key = key;
-    this.text = text;
-  }
+  public String getID() throws RemoteException;
 
-  public int getKey()
-  {
-    return key;
-  }
-
-  public String getText()
-  {
-    return text;
-  }
-
-  public static Ct1Ausgabe getByKey(int key)
-  {
-    for (Ct1Ausgabe ara : Ct1Ausgabe.values())
-    {
-      if (ara.getKey() == key)
-      {
-        return ara;
-      }
-    }
-    return null;
-  }
-
-  @Override
-  public String toString()
-  {
-    return getText();
-  }
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
 }
