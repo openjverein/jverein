@@ -161,20 +161,12 @@ public class RechnungDialog extends AbstractDialog<Boolean>
         return;
       }
 
-      if (mitRechnung && mitErstattung)
+      if (mitRechnung)
       {
-        // Rechnung und Erstattung Formular ist angezeigt
-        formularRechnung = (Formular) formularRechnungInput.getValue();
-        formularErstattung = (Formular) formularErstattungInput.getValue();
-      }
-      else if (mitRechnung)
-      {
-        // Nur Rechnung Formular ist angezeigt
         formularRechnung = (Formular) formularRechnungInput.getValue();
       }
-      else if (mitErstattung)
+      if (mitErstattung)
       {
-        // Nur Erstattung Formular ist angezeigt
         formularErstattung = (Formular) formularErstattungInput.getValue();
       }
 
