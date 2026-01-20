@@ -83,6 +83,10 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private boolean rechnungsDokumentSpeichern;
 
+  private boolean teilbetragAbrechnen;
+
+  private Double teilbetrag;
+
   private int erstellt = 0;
 
   private int skip = 0;
@@ -164,9 +168,13 @@ public class GutschriftAction extends SEPASupport implements Action
       buchungErzeugen = dialog.getBuchungErzeugen();
       rechnungErzeugen = dialog.getRechnungErzeugen();
       rechnungsDokumentSpeichern = dialog.getRechnungsDokumentSpeichern();
+      teilbetragAbrechnen = dialog.getTeilbetragAbrechnen();
+      teilbetrag = dialog.getTeilbetrag();
+
       if (datum == null || verwendungszweck == null
           || verwendungszweck.isEmpty()
-          || (formular == null && rechnungErzeugen))
+          || (rechnungErzeugen && formular == null) || (teilbetragAbrechnen
+              && (teilbetrag == null || teilbetrag < 0.005d)))
       {
         return;
       }
@@ -270,7 +278,7 @@ public class GutschriftAction extends SEPASupport implements Action
   private void generiereSollbuchung(IGutschriftProvider prov)
       throws RemoteException, ApplicationException
   {
-    Double betrag = prov.getIstSumme();
+    Double betrag = teilbetragAbrechnen ? teilbetrag : prov.getIstSumme();
     String zweck = verwendungszweck;
     Rechnung rechnung = null;
     Sollbuchung sollbuchung = null;

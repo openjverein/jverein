@@ -24,6 +24,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -36,6 +37,7 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -79,6 +81,14 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   private boolean rechnungsDokumentSpeichern;
 
   private CheckboxInput rechnungsDokumentSpeichernInput;
+
+  private boolean teilbetragAbrechnen;
+
+  private CheckboxInput teilbetragAbrechnenInput;
+
+  private Double teilbetrag;
+
+  private DecimalInput teilbetragInput;
 
   private Settings settings = null;
 
@@ -142,6 +152,16 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     return ausgabe;
   }
 
+  public boolean getTeilbetragAbrechnen()
+  {
+    return teilbetragAbrechnen;
+  }
+
+  public Double getTeilbetrag()
+  {
+    return teilbetrag;
+  }
+
   @Override
   protected void paint(Composite parent) throws Exception
   {
@@ -200,6 +220,26 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     group.addLabelPair("Rechnung als Buchungsdokument speichern",
         rechnungsDokumentSpeichernInput);
 
+    teilbetragAbrechnenInput = new CheckboxInput(
+        settings.getBoolean("teilbetragAbrechnen", false));
+    teilbetragAbrechnenInput.addListener(e -> {
+      teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+    });
+    group.addLabelPair("Fixen Betrag erstatten", teilbetragAbrechnenInput);
+
+    String tmp = settings.getString("teilbetrag", "");
+    if (tmp != null && !tmp.isEmpty())
+    {
+      teilbetragInput = new DecimalInput(Double.parseDouble(tmp),
+          Einstellungen.DECIMALFORMAT);
+    }
+    else
+    {
+      teilbetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
+    }
+    teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+    group.addLabelPair("Erstattungsbetrag", teilbetragInput);
+
     Map<String, Object> map = LastschriftMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
     ButtonArea buttons = new ButtonArea();
@@ -228,6 +268,15 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
+      if ((teilbetragInput.getValue() == null
+          || ((Double) teilbetragInput.getValue()) < 0.005d)
+          && (boolean) teilbetragAbrechnenInput.getValue())
+      {
+        status.setValue("Bitte positiven Erstattungsbetrag eingeben");
+        status.setColor(Color.ERROR);
+        return;
+      }
+
       formular = (Formular) formularInput.getValue();
       try
       {
@@ -250,6 +299,13 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       settings.setAttribute("verwendungszweck", zweck);
       ausgabe = (UeberweisungAusgabe) ausgabeInput.getValue();
       settings.setAttribute("ausgabe", ausgabe.getKey());
+      teilbetragAbrechnen = (boolean) teilbetragAbrechnenInput.getValue();
+      settings.setAttribute("teilbetragAbrechnen", teilbetragAbrechnen);
+      teilbetrag = (Double) teilbetragInput.getValue();
+      if (teilbetrag != null)
+      {
+        settings.setAttribute("teilbetrag", teilbetrag);
+      }
       fortfahren = true;
       close();
     }, null, false, "ok.png");
