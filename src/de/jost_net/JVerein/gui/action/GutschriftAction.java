@@ -132,7 +132,7 @@ public class GutschriftAction extends SEPASupport implements Action
         if (sollbIt.size() == 0)
         {
           throw new ApplicationException(
-              "Der Abrechnungslauf enthält keine Sollbuchungen");
+              "Der Abrechnungslauf enthält keine Sollbuchungen!");
         }
         providerArray = new IGutschriftProvider[sollbIt.size()];
         PseudoIterator.asList(sollbIt).toArray(providerArray);
@@ -172,7 +172,7 @@ public class GutschriftAction extends SEPASupport implements Action
     else
     {
       throw new ApplicationException(
-          "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt.");
+          "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt!");
     }
 
     try
@@ -289,7 +289,7 @@ public class GutschriftAction extends SEPASupport implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim erstellen der Gutschrift";
+      String fehler = "Fehler beim Erstellen der Gutschrift!";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
       return;
@@ -512,7 +512,7 @@ public class GutschriftAction extends SEPASupport implements Action
     else
     {
       throw new ApplicationException(
-          "Lastschrift hat kein Mitglied und keinen Krsteilnehmer.");
+          "Lastschrift hat kein Mitglied und keinen Kursteilnehmer!");
     }
     ls.setEmail(la.getEmail());
     ls.setBIC(la.getBIC());

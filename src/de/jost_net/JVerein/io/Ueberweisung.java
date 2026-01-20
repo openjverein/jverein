@@ -137,7 +137,7 @@ public class Ueberweisung
       if (betrag != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
-            (BigDecimal.valueOf(0.01)).toString());
+            (BigDecimal.valueOf(betrag)).toString());
       }
       else
       {
@@ -207,7 +207,7 @@ public class Ueberweisung
             .createObject(AuslandsUeberweisung.class, null);
         if (betrag != null)
         {
-          ue.setBetrag(0.01);
+          ue.setBetrag(betrag);
         }
         else
         {
