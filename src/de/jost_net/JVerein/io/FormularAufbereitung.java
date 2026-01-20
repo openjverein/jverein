@@ -738,10 +738,10 @@ public class FormularAufbereitung
           betrag.abs().setScale(4, RoundingMode.HALF_UP),
           new BigDecimal(betrag.signum())));
     }
-    // Summe der Rechnung mit der Zugferd Summe vergleichen. Da wir für die
-    // Brutto Beträge addieren, ZuGfERd jedoch die Nettobeträge und erst am Ende
-    // die Steuer berechnet, kann es zu differenzen kommen. Diese fügen wir als
-    // Rundungsbetrag hinzu
+    // Summe der Rechnung mit der ZUGFeRD Summe vergleichen. Da wir für die
+    // Rechnung Brutto Beträge addieren, ZUGFeRD jedoch die Nettobeträge addiert
+    // und erst am Ende die Steuer berechnet, kann es zu Differenzen kommen.
+    // Diese fügen wir als Rundungsbetrag hinzu.
     TransactionCalculator tc = new TransactionCalculator(invoice);
 
     BigDecimal diff = new BigDecimal(re.getBetrag())
