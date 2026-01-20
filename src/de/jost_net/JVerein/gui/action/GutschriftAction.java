@@ -139,7 +139,9 @@ public class GutschriftAction extends SEPASupport implements Action
       }
       catch (RemoteException e)
       {
-        Logger.error("Fehler Abrechnungslauf Auswertung", e);
+        String text = "Fehler der Abrechnungslauf Auswertung!";
+        Logger.error(text, e);
+        throw new ApplicationException(text);
       }
     }
     else if (context instanceof MitgliedskontoNode)
@@ -155,8 +157,9 @@ public class GutschriftAction extends SEPASupport implements Action
         }
         catch (RemoteException e)
         {
-          throw new ApplicationException(
-              "Fehler beim Erstellen der Sollbuchung!");
+          String text = "Fehler beim Erstellen der Sollbuchung!";
+          Logger.error(text, e);
+          throw new ApplicationException(text);
         }
       }
     }
@@ -197,7 +200,7 @@ public class GutschriftAction extends SEPASupport implements Action
           || (rechnungErzeugen && formular == null) || (teilbetragAbrechnen
               && (teilbetrag == null || teilbetrag < 0.005d)))
       {
-        return;
+        throw new ApplicationException("Eingabeparameter fehlerhaft!");
       }
 
       if (buchungErzeugen)
@@ -270,13 +273,13 @@ public class GutschriftAction extends SEPASupport implements Action
       if (erstellt == 0)
       {
         GUI.getStatusBar().setErrorText(
-            "Keine Gutschrift erstellt: Entweder kein Erstattungsbetrag oder keine IBAN vorhanden.");
+            "Keine Gutschrift erstellt: Entweder kein Erstattungsbetrag oder keine IBAN vorhanden!");
       }
       else
       {
         GUI.getCurrentView().reload();
         GUI.getStatusBar().setSuccessText(erstellt + " Gutschrift(en) erstellt"
-            + (skip > 0 ? ", " + skip + " vorhandene übersprungen." : "."));
+            + (skip > 0 ? ", " + skip + " übersprungen." : "."));
       }
     }
     catch (OperationCanceledException ignore)

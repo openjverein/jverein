@@ -46,7 +46,6 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
 
 public class GutschriftDialog extends AbstractDialog<Boolean>
 {
@@ -326,7 +325,9 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       }
       catch (RemoteException e1)
       {
-        Logger.error("Fehler beim lesen der Formular ID", e1);
+        status.setValue("Fehler beim lesen der Formular ID");
+        status.setColor(Color.ERROR);
+        return;
       }
       zweck = (String) zweckInput.getValue();
       settings.setAttribute("verwendungszweck", zweck);
