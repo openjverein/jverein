@@ -167,6 +167,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(LastschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
+    map.put(LastschriftVar.BANKNAME.getName(), "XY Bank");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
     map.put(LastschriftVar.BETRAG.getName(), "23,80");
