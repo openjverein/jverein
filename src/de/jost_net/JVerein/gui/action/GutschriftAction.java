@@ -32,6 +32,7 @@ import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
+import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.SEPASupport;
 import de.jost_net.JVerein.io.Ueberweisung;
 import de.jost_net.JVerein.io.VelocityTool;
@@ -50,6 +51,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -190,27 +192,43 @@ public class GutschriftAction extends SEPASupport implements Action
       for (IGutschriftProvider provider : providerArray)
       {
         // Keine Gutschrift bei Erstattungen und keiner Einzahlung
-        // Ohne IBAN keine Überweisung möglich
-        String iban = provider.getZahler().getIban();
-        if (provider.getBetrag() < 0.005d || provider.getIstSumme() < 0.005d
-            || iban == null || iban.isEmpty())
+        if (provider.getBetrag() < 0.005d || provider.getIstSumme() < 0.005d)
         {
           skip++;
           continue;
+        }
+
+        // Ohne Zahler und IBAN keine Überweisung möglich
+        // Bei Lastschrift erstatten wir auf das gleiche Konto wie bei der
+        // Lastschrift
+        if (!(provider instanceof Lastschrift))
+        {
+          Mitglied zahler = provider.getZahler();
+          if (zahler == null)
+          {
+            skip++;
+            continue;
+          }
+          String iban = provider.getZahler().getIban();
+          if (iban == null || iban.isEmpty())
+          {
+            skip++;
+            continue;
+          }
         }
 
         // Sollbuchung, Buchungen und Lastschriften erzeugen
         generiereSollbuchung(provider);
       }
 
-      // Überweisung und Gegebbuchung erstellen
+      // Überweisung und Gegenbuchung erstellen
       if (erstellt > 0)
       {
         generiereUeberweisungen();
         if (buchungErzeugen)
         {
           // Gegenbuchung
-          getBuchung(summe, null, "", null);
+          getBuchung(summe, "JVerein", "Gegenbuchung", "", null);
         }
       }
 
@@ -254,34 +272,23 @@ public class GutschriftAction extends SEPASupport implements Action
   {
     Double betrag = prov.getIstSumme();
     String zweck = verwendungszweck;
+    Rechnung rechnung = null;
+    Sollbuchung sollbuchung = null;
+    ArrayList<SollbuchungPosition> positionenList = prov
+        .getSollbuchungPositionList();
 
     // Lastschrift für Überweisungen erstellen
     // Das ist eine Hilfsklasse um die bestehende Klasse für Überweisungen
     // verwenden zu können
-    Mitglied m = prov.getZahler();
-    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
-        .createObject(Lastschrift.class, null);
-    ls.setAbrechnungslauf(Integer.valueOf(abrl.getID()));
-    ls.setMitglied(Integer.parseInt(m.getID()));
-    ls.setPersonenart(m.getPersonenart());
-    ls.setAnrede(m.getAnrede());
-    ls.setTitel(m.getTitel());
-    ls.setName(m.getName());
-    ls.setVorname(m.getVorname());
-    ls.setStrasse(m.getStrasse());
-    ls.setAdressierungszusatz(m.getAdressierungszusatz());
-    ls.setPlz(m.getPlz());
-    ls.setOrt(m.getOrt());
-    ls.setStaat(m.getStaatCode());
-    ls.setEmail(m.getEmail());
-    ls.setGeschlecht(m.getGeschlecht());
-    ls.setVerwendungszweck(zweck);
-    ls.setBetrag(betrag);
-    ls.setBIC(m.getBic());
-    ls.setIBAN(m.getIban());
-    ls.setMandatDatum(m.getMandatDatum());
-    ls.setMandatID(m.getMandatID());
-    ls.store();
+    Lastschrift ls = null;
+    if (prov instanceof Lastschrift)
+    {
+      ls = getLastschriftVonLastschrift((Lastschrift) prov, zweck, betrag);
+    }
+    else
+    {
+      ls = getLastschriftVonMitglied(prov.getZahler(), zweck, betrag);
+    }
     lastschriften.add(ls);
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
@@ -301,56 +308,68 @@ public class GutschriftAction extends SEPASupport implements Action
       Logger.error("Fehler bei der Aufbereitung der Variablen", e);
     }
 
-    // Sollbuchung mit negativem bereits bezahltem Betrag
-    Sollbuchung sollbuchung = (Sollbuchung) Einstellungen.getDBService()
-        .createObject(Sollbuchung.class, null);
-    sollbuchung.setBetrag(-betrag);
-    sollbuchung.setDatum(datum);
-    sollbuchung.setMitglied(prov.getMitglied());
-    sollbuchung.setZahler(prov.getZahler());
-    sollbuchung.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-    sollbuchung.setZweck1(zweck);
-    sollbuchung.setAbrechnungslauf(abrl);
-    sollbuchung.store();
-
-    // Sollbuchungsposition ertellen
-    SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen.getDBService()
-        .createObject(SollbuchungPosition.class, null);
-    sbp.setBetrag(-betrag);
-    ArrayList<SollbuchungPosition> positionenList = prov
-        .getSollbuchungPositionList();
-    if (positionenList != null && positionenList.size() > 0)
+    // Sollbuchung nur wenn Mitglied und Zahler vorhanden, z.B. nicht bei
+    // Kursteilnehmer
+    if (prov.getMitglied() != null && prov.getZahler() != null)
     {
-      sbp.setBuchungsartId(positionenList.get(0).getBuchungsartId());
-      sbp.setBuchungsklasseId(positionenList.get(0).getBuchungsklasseId());
-      sbp.setSteuer(positionenList.get(0).getSteuer());
-    }
-    sbp.setDatum(datum);
-    sbp.setZweck(zweck);
-    sbp.setSollbuchung(sollbuchung.getID());
-    sbp.store();
+      // Sollbuchung mit negativem bereits bezahltem Betrag
+      sollbuchung = (Sollbuchung) Einstellungen.getDBService()
+          .createObject(Sollbuchung.class, null);
+      sollbuchung.setBetrag(-betrag);
+      sollbuchung.setDatum(datum);
+      sollbuchung.setMitglied(prov.getMitglied());
+      sollbuchung.setZahler(prov.getZahler());
+      sollbuchung.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+      sollbuchung.setZweck1(zweck);
+      sollbuchung.setAbrechnungslauf(abrl);
+      sollbuchung.store();
 
-    // Rechnung erzeugen
-    Rechnung rechnung = null;
-    if (rechnungErzeugen)
-    {
-      rechnung = (Rechnung) Einstellungen.getDBService()
-          .createObject(Rechnung.class, null);
+      // Sollbuchungsposition ertellen
+      SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+          .getDBService().createObject(SollbuchungPosition.class, null);
+      sbp.setBetrag(-betrag);
+      if (positionenList != null && positionenList.size() > 0)
+      {
+        sbp.setBuchungsartId(positionenList.get(0).getBuchungsartId());
+        sbp.setBuchungsklasseId(positionenList.get(0).getBuchungsklasseId());
+        sbp.setSteuer(positionenList.get(0).getSteuer());
+      }
+      sbp.setDatum(datum);
+      sbp.setZweck(zweck);
+      sbp.setSollbuchung(sollbuchung.getID());
+      sbp.store();
 
-      rechnung.setFormular(formular);
-      rechnung.setDatum(datum);
-      rechnung.fill(sollbuchung);
-      rechnung.store();
+      // Rechnung erzeugen
+      if (rechnungErzeugen)
+      {
+        rechnung = (Rechnung) Einstellungen.getDBService()
+            .createObject(Rechnung.class, null);
+        rechnung.setFormular(formular);
+        rechnung.setDatum(datum);
+        rechnung.fill(sollbuchung);
+        rechnung.store();
 
-      sollbuchung.setRechnung(rechnung);
-      sollbuchung.updateForced();
+        sollbuchung.setRechnung(rechnung);
+        sollbuchung.updateForced();
+      }
     }
 
     // Buchung erzeugen
     if (buchungErzeugen)
     {
-      Buchung buchung = getBuchung(-betrag, prov.getZahler(), zweck,
-          positionenList);
+      String name = "";
+      String iban = "";
+      if (prov instanceof Lastschrift)
+      {
+        name = Adressaufbereitung.getNameVorname((IAdresse) prov);
+        iban = ((Lastschrift) prov).getIBAN();
+      }
+      else
+      {
+        name = Adressaufbereitung.getNameVorname(prov.getZahler());
+        iban = prov.getZahler().getIban();
+      }
+      Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
       buchung.setSollbuchung(sollbuchung);
       buchung.store();
 
@@ -401,8 +420,8 @@ public class GutschriftAction extends SEPASupport implements Action
     ueberweisung.write(lastschriften, file, datum, ausgabe, verwendungszweck);
   }
 
-  private Buchung getBuchung(Double betrag, Mitglied m, String zweck,
-      ArrayList<SollbuchungPosition> positionenList)
+  private Buchung getBuchung(Double betrag, String name, String zweck,
+      String iban, ArrayList<SollbuchungPosition> positionenList)
       throws RemoteException, ApplicationException
   {
     Buchung buchung = (Buchung) Einstellungen.getDBService()
@@ -410,10 +429,9 @@ public class GutschriftAction extends SEPASupport implements Action
     buchung.setBetrag(betrag);
     buchung.setDatum(datum);
     buchung.setKonto(konto);
-    buchung
-        .setName(m != null ? Adressaufbereitung.getNameVorname(m) : "JVerein");
-    buchung.setZweck(m == null ? "Gegenbuchung" : zweck);
-    buchung.setIban("");
+    buchung.setName(name);
+    buchung.setZweck(zweck);
+    buchung.setIban(iban);
     buchung.setVerzicht(false);
     buchung.setArt("Überweisung");
     buchung.setBezeichnungSachzuwendung("");
@@ -429,5 +447,58 @@ public class GutschriftAction extends SEPASupport implements Action
     }
     buchung.store();
     return buchung;
+  }
+
+  private Lastschrift getLastschriftVonMitglied(Mitglied m, String zweck,
+      Double betrag) throws RemoteException, ApplicationException
+  {
+    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+        .createObject(Lastschrift.class, null);
+    ls.setMitglied(Integer.parseInt(m.getID()));
+    ls.setEmail(m.getEmail());
+    ls.setBIC(m.getBic());
+    ls.setIBAN(m.getIban());
+    ls.setMandatDatum(m.getMandatDatum());
+    ls.setMandatID(m.getMandatID());
+    setAdresse((IAdresse) m, ls, zweck, betrag);
+    ls.store();
+    return ls;
+  }
+
+  private Lastschrift getLastschriftVonLastschrift(Lastschrift la, String zweck,
+      Double betrag) throws RemoteException, ApplicationException
+  {
+    Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
+        .createObject(Lastschrift.class, null);
+    ls.setEmail(la.getEmail());
+    ls.setBIC(la.getBIC());
+    ls.setIBAN(la.getIBAN());
+    ls.setMandatDatum(la.getMandatDatum());
+    ls.setMandatID(la.getMandatID());
+    setAdresse((IAdresse) la, ls, zweck, betrag);
+    ls.store();
+    return ls;
+  }
+
+  private void setAdresse(IAdresse adr, Lastschrift ls, String zweck,
+      Double betrag) throws RemoteException
+  {
+    ls.setPersonenart(adr.getPersonenart());
+    ls.setAnrede(adr.getAnrede());
+    ls.setTitel(adr.getTitel());
+    ls.setName(adr.getName());
+    ls.setVorname(adr.getVorname());
+    ls.setStrasse(adr.getStrasse());
+    ls.setAdressierungszusatz(adr.getAdressierungszusatz());
+    ls.setPlz(adr.getPlz());
+    ls.setOrt(adr.getOrt());
+    ls.setStaat(adr.getStaatCode());
+    ls.setGeschlecht(adr.getGeschlecht());
+    ls.setVerwendungszweck(zweck);
+    ls.setBetrag(betrag);
+    ls.setAbrechnungslauf(Integer.valueOf(abrl.getID()));
+    // Wird bei Überweisung nicht gebraucht aber wegen der Map implementierung
+    // gesetzt
+    ls.setMandatSequence(MandatSequence.RCUR.getTxt());
   }
 }

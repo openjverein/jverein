@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
@@ -51,6 +52,8 @@ public class LastschriftMenu extends ContextMenu
         new VersandAction(), "office-calendar.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);

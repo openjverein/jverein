@@ -189,12 +189,14 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
     formularInput = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("formular", ""));
-    formularInput.disable();
+    formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
     group.addLabelPair("Erstattung Formular", formularInput);
 
     rechnungsDokumentSpeichernInput = new CheckboxInput(
         settings.getBoolean("rechnungsDokumentSpeichern", false));
-    rechnungsDokumentSpeichernInput.setEnabled(false);
+    rechnungsDokumentSpeichernInput
+        .setEnabled((boolean) rechnungErzeugenInput.getValue()
+            && (boolean) buchungErzeugenInput.getValue());
     group.addLabelPair("Rechnung als Buchungsdokument speichern",
         rechnungsDokumentSpeichernInput);
 
