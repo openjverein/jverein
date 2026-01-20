@@ -106,7 +106,8 @@ public class RechnungNeuAction implements Action
       Formular formularErstattung = dialog.getFormularErstattung();
       Date rechnungsdatum = dialog.getDatum();
       boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
-      if (formularRechnung == null || formularErstattung == null
+      if ((mitRechnung && formularRechnung == null)
+          || (mitErstattung && formularErstattung == null)
           || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         return;

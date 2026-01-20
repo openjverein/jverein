@@ -84,8 +84,8 @@ public class GesamtrechnungNeuAction implements Action
       {
         summe += sollb.getBetrag();
       }
-      RechnungDialog dialog = new RechnungDialog(summe > -0.005d,
-          summe <= -0.005d);
+      boolean mitRechnung = summe > -0.005d;
+      RechnungDialog dialog = new RechnungDialog(mitRechnung, !mitRechnung);
       if (!dialog.open())
       {
         throw new OperationCanceledException();
@@ -94,7 +94,8 @@ public class GesamtrechnungNeuAction implements Action
       Formular formularErstattung = dialog.getFormularErstattung();
       Date rechnungsdatum = dialog.getDatum();
       boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
-      if (formularRechnung == null || formularErstattung == null
+      if ((mitRechnung && formularRechnung == null)
+          || (!mitRechnung && formularErstattung == null)
           || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         throw new OperationCanceledException();
@@ -132,8 +133,14 @@ public class GesamtrechnungNeuAction implements Action
       DBTransaction.starten();
       Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
           .createObject(Rechnung.class, null);
-      // Bei Erstattung liefert formularRechnung auch das Erstattung Formular
-      rechnung.setFormular(formularRechnung);
+      if (mitRechnung)
+      {
+        rechnung.setFormular(formularRechnung);
+      }
+      else
+      {
+        rechnung.setFormular(formularErstattung);
+      }
       if (sollbuchungsDatum)
       {
         // Datum der letzten Sollbuchung finden und als Rechnungsdatum verwenden
