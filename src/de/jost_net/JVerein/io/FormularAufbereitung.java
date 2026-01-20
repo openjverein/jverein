@@ -88,6 +88,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
@@ -749,6 +750,10 @@ public class FormularAufbereitung
     if (diff.abs().doubleValue() >= .01d)
     {
       invoice.setRoundingAmount(diff);
+      if (diff.abs().doubleValue() > 0.1d)
+        Logger.warn(
+            "Differenz zwischen ZUGFeRD Summe (Netto-Berechnung) und Rechnungssumme (Brutto-Berechnung) größer als 10ct."
+                + " Füge Rundungsbetrag hinzu");
     }
 
     ze.setTransaction(invoice);
