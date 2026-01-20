@@ -146,8 +146,16 @@ public class Ueberweisung
       }
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
           HBCIProperties.CURRENCY_DEFAULT_DE);
-      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
-          StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+      if (verwendungszweck != null)
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+            StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+      }
+      else
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+            StringUtils.trimToEmpty(ls.getVerwendungszweck()));
+      }
       ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
           "NOTPROVIDED");
       ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
@@ -236,8 +244,16 @@ public class Ueberweisung
                   255));
         }
         ue.setTermin(faell);
-        ue.setZweck(StringTool.getStringWithMaxLength(
-            Zeichen.convert(eval(ls, verwendungszweck)), 140));
+        if (verwendungszweck != null)
+        {
+          ue.setZweck(StringTool.getStringWithMaxLength(
+              Zeichen.convert(eval(ls, verwendungszweck)), 140));
+        }
+        else
+        {
+          ue.setZweck(StringTool.getStringWithMaxLength(
+              Zeichen.convert(ls.getVerwendungszweck()), 140));
+        }
         ue.setKonto(hibk);
         ueberweisungen[i] = ue;
         i++;

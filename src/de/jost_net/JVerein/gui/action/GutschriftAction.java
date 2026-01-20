@@ -450,7 +450,7 @@ public class GutschriftAction extends SEPASupport implements Action
       settings.setAttribute("lastdir", file.getParent());
     }
     Ueberweisung ueberweisung = new Ueberweisung(null);
-    ueberweisung.write(lastschriften, file, datum, ausgabe, verwendungszweck);
+    ueberweisung.write(lastschriften, file, datum, ausgabe, null);
   }
 
   private Buchung getBuchung(Double betrag, String name, String zweck,

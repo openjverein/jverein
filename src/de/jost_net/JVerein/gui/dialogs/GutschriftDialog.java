@@ -325,7 +325,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       }
       catch (RemoteException e1)
       {
-        status.setValue("Fehler beim lesen der Formular ID");
+        status.setValue("Fehler beim Lesen der Formular ID");
         status.setColor(Color.ERROR);
         return;
       }
