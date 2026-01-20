@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.IstbuchungEditAction;
 import de.jost_net.JVerein.gui.action.IstbuchungLoesenAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.MitgliedskontoSollbuchungDeleteAction;
@@ -70,6 +71,8 @@ public class MitgliedskontoMenu extends ContextMenu
     {
       // Dann nicht anzeigen
     }
+    addItem(new SollGutschriftItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));
@@ -112,6 +115,37 @@ public class MitgliedskontoMenu extends ContextMenu
         if (mkn.getType() == MitgliedskontoNode.SOLL)
         {
           return true;
+        }
+        else
+        {
+          return false;
+        }
+      }
+      return super.isEnabledFor(o);
+    }
+  }
+
+  private static class SollGutschriftItem extends CheckedSingleContextMenuItem
+  {
+
+    /**
+     * @param text
+     * @param action
+     */
+    private SollGutschriftItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof MitgliedskontoNode)
+      {
+        MitgliedskontoNode mkn = (MitgliedskontoNode) o;
+        if (mkn.getType() == MitgliedskontoNode.SOLL)
+        {
+          return mkn.getSoll() >= 0.005d;
         }
         else
         {

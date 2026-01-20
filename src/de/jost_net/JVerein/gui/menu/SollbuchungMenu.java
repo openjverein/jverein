@@ -67,14 +67,14 @@ public class SollbuchungMenu extends ContextMenu
             new RechnungNeuAction(), "file-invoice.png"));
         addItem(new MultiItem("Gesamtrechnung erstellen",
             new GesamtrechnungNeuAction(), "file-invoice.png"));
-        addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
-            new GutschriftAction(), "ueberweisung.png"));
       }
     }
     catch (RemoteException e)
     {
       // Dann nicht anzeigen
     }
+    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
   }
 
   private static class OhneRechnungItem extends CheckedContextMenuItem

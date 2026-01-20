@@ -25,6 +25,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -50,7 +51,7 @@ import de.willuhn.logging.Logger;
 public class GutschriftDialog extends AbstractDialog<Boolean>
 {
 
-  private FormularInput formularInput;
+  private FormularInput formularInput = null;
 
   private DateInput datumInput;
 
@@ -58,7 +59,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private SelectInput ausgabeInput;
 
-  private Formular formular;
+  private Formular formular = null;
 
   private Date datum;
 
@@ -70,7 +71,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private boolean fortfahren = false;
 
-  private boolean rechnungErzeugen;
+  private boolean rechnungErzeugen = false;
 
   private CheckboxInput rechnungErzeugenInput;
 
@@ -78,7 +79,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput buchungErzeugenInput;
 
-  private boolean rechnungsDokumentSpeichern;
+  private boolean rechnungsDokumentSpeichern = false;
 
   private CheckboxInput rechnungsDokumentSpeichernInput;
 
@@ -168,6 +169,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     LabelGroup group = new LabelGroup(parent, "");
     group.addInput(getStatus());
 
+    // Ausgabe
     UeberweisungAusgabe aus = UeberweisungAusgabe.getByKey(
         settings.getInt("ausgabe", UeberweisungAusgabe.HIBISCUS.getKey()));
     if (aus != UeberweisungAusgabe.SEPA_DATEI
@@ -179,14 +181,17 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     ausgabeInput.setMandatory(true);
     group.addLabelPair("Ausgabe", ausgabeInput);
 
+    // Ausführungsdatum
     datumInput = new DateInput(new Date());
     datumInput.setMandatory(true);
     group.addLabelPair("Ausführungsdatum", datumInput);
 
+    // Verwendungszweck
     zweckInput = new TextInput(settings.getString("verwendungszweck", ""));
     zweckInput.setMandatory(true);
     group.addLabelPair("Verwendungszweck", zweckInput);
 
+    // Buchung zur Gutschrift erzeugen
     buchungErzeugenInput = new CheckboxInput(
         settings.getBoolean("buchungErzeugen", true));
     buchungErzeugenInput.addListener(e -> {
@@ -196,6 +201,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     });
     group.addLabelPair("Buchung zur Gutschrift erzeugen", buchungErzeugenInput);
 
+    // Rechnung zur Gutschrift erzeugen
     rechnungErzeugenInput = new CheckboxInput(
         settings.getBoolean("rechnungErzeugen", false));
     rechnungErzeugenInput.addListener(e -> {
@@ -204,29 +210,40 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
           .setEnabled((boolean) rechnungErzeugenInput.getValue()
               && (boolean) buchungErzeugenInput.getValue());
     });
-    group.addLabelPair("Rechnung zur Gutschrift erzeugen",
-        rechnungErzeugenInput);
 
+    // Erstattung Formular
     formularInput = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("formular", ""));
     formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
-    group.addLabelPair("Erstattung Formular", formularInput);
 
+    // Rechnung als Buchungsdokument speichern
     rechnungsDokumentSpeichernInput = new CheckboxInput(
         settings.getBoolean("rechnungsDokumentSpeichern", false));
     rechnungsDokumentSpeichernInput
         .setEnabled((boolean) rechnungErzeugenInput.getValue()
             && (boolean) buchungErzeugenInput.getValue());
-    group.addLabelPair("Rechnung als Buchungsdokument speichern",
-        rechnungsDokumentSpeichernInput);
 
+    // Nur anzeigen wenn Rechnungen aktiviert sind
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      group.addLabelPair("Rechnung zur Gutschrift erzeugen",
+          rechnungErzeugenInput);
+      group.addLabelPair("Erstattung Formular", formularInput);
+      group.addLabelPair("Rechnung als Buchungsdokument speichern",
+          rechnungsDokumentSpeichernInput);
+    }
+
+    // Fixen Betrag erstatten
     teilbetragAbrechnenInput = new CheckboxInput(
         settings.getBoolean("teilbetragAbrechnen", false));
     teilbetragAbrechnenInput.addListener(e -> {
+      teilbetragInput
+          .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
       teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
     });
     group.addLabelPair("Fixen Betrag erstatten", teilbetragAbrechnenInput);
 
+    // Erstattungsbetrag
     String tmp = settings.getString("teilbetrag", "");
     if (tmp != null && !tmp.isEmpty())
     {
@@ -237,11 +254,14 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     {
       teilbetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
     }
+    teilbetragInput.setMandatory((boolean) teilbetragAbrechnenInput.getValue());
     teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
     group.addLabelPair("Erstattungsbetrag", teilbetragInput);
 
     Map<String, Object> map = LastschriftMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
+
+    // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.GUTSCHRIFT, false, "question-circle.png");
@@ -261,10 +281,20 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      if (formularInput.getValue() == null
-          && (boolean) rechnungErzeugenInput.getValue())
+      try
       {
-        status.setValue("Bitte Formular auswählen");
+        if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN)
+            && formularInput.getValue() == null
+            && (boolean) rechnungErzeugenInput.getValue())
+        {
+          status.setValue("Bitte Formular auswählen");
+          status.setColor(Color.ERROR);
+          return;
+        }
+      }
+      catch (RemoteException e1)
+      {
+        status.setValue("Fehler beim Zugriff auf die Einstellungen");
         status.setColor(Color.ERROR);
         return;
       }
@@ -277,24 +307,27 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         return;
       }
 
-      formular = (Formular) formularInput.getValue();
-      try
-      {
-        settings.setAttribute("formular", formular.getID());
-      }
-      catch (RemoteException re)
-      {
-        Logger.error("Fehler beim lesen der Formular ID", re);
-      }
       datum = (Date) datumInput.getValue();
       buchungErzeugen = (boolean) buchungErzeugenInput.getValue();
       settings.setAttribute("buchungErzeugen", buchungErzeugen);
-      rechnungErzeugen = (boolean) rechnungErzeugenInput.getValue();
-      settings.setAttribute("rechnungErzeugen", rechnungErzeugen);
-      rechnungsDokumentSpeichern = (boolean) rechnungsDokumentSpeichernInput
-          .getValue();
-      settings.setAttribute("rechnungsDokumentSpeichern",
-          rechnungsDokumentSpeichern);
+      try
+      {
+        if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+        {
+          formular = (Formular) formularInput.getValue();
+          settings.setAttribute("formular", formular.getID());
+          rechnungErzeugen = (boolean) rechnungErzeugenInput.getValue();
+          settings.setAttribute("rechnungErzeugen", rechnungErzeugen);
+          rechnungsDokumentSpeichern = (boolean) rechnungsDokumentSpeichernInput
+              .getValue();
+          settings.setAttribute("rechnungsDokumentSpeichern",
+              rechnungsDokumentSpeichern);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler beim lesen der Formular ID", e1);
+      }
       zweck = (String) zweckInput.getValue();
       settings.setAttribute("verwendungszweck", zweck);
       ausgabe = (UeberweisungAusgabe) ausgabeInput.getValue();

@@ -50,15 +50,16 @@ public class LastschriftMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Versanddatum setzen",
         new VersandAction(), "office-calendar.png"));
-    addItem(new CheckedContextMenuItem("Pre-Notification",
-        new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
-        new GutschriftAction(), "ueberweisung.png"));
+
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new MitgliedAnzeigenMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new CheckedContextMenuItem("Pre-Notification",
+        new PreNotificationAction(), "document-new.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
   }
 
   private static class MitgliedAnzeigenMenuItem

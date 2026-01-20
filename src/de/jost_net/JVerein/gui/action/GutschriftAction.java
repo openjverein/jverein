@@ -27,10 +27,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.SEPASupport;
@@ -46,6 +48,7 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
+import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
@@ -139,6 +142,24 @@ public class GutschriftAction extends SEPASupport implements Action
         Logger.error("Fehler Abrechnungslauf Auswertung", e);
       }
     }
+    else if (context instanceof MitgliedskontoNode)
+    {
+      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+
+      if (mkn.getType() == MitgliedskontoNode.SOLL)
+      {
+        try
+        {
+          providerArray = new IGutschriftProvider[] { Einstellungen
+              .getDBService().createObject(Sollbuchung.class, mkn.getID()) };
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(
+              "Fehler beim Erstellen der Sollbuchung!");
+        }
+      }
+    }
     else if (context instanceof IGutschriftProvider)
     {
       providerArray = new IGutschriftProvider[] {
@@ -151,7 +172,7 @@ public class GutschriftAction extends SEPASupport implements Action
     else
     {
       throw new ApplicationException(
-          "Keine Sollbuchung, Rechnung oder Abrechnungslauf ausgewählt");
+          "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt.");
     }
 
     try
@@ -236,11 +257,11 @@ public class GutschriftAction extends SEPASupport implements Action
         if (buchungErzeugen)
         {
           // Gegenbuchung
-          getBuchung(summe, "JVerein", "Gegenbuchung", "", null);
+          getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
         }
       }
 
-      // Temoräre Lastschriften löschen
+      // Temporäre Lastschriften löschen
       for (Lastschrift la : lastschriften)
       {
         la.delete();
@@ -348,7 +369,8 @@ public class GutschriftAction extends SEPASupport implements Action
       sbp.store();
 
       // Rechnung erzeugen
-      if (rechnungErzeugen)
+      if (rechnungErzeugen && (Boolean) Einstellungen
+          .getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
         rechnung = (Rechnung) Einstellungen.getDBService()
             .createObject(Rechnung.class, null);
@@ -453,7 +475,6 @@ public class GutschriftAction extends SEPASupport implements Action
       buchung.setBuchungsklasseId(positionenList.get(0).getBuchungsklasseId());
       buchung.setSteuer(positionenList.get(0).getSteuer());
     }
-    buchung.store();
     return buchung;
   }
 
@@ -478,6 +499,21 @@ public class GutschriftAction extends SEPASupport implements Action
   {
     Lastschrift ls = (Lastschrift) Einstellungen.getDBService()
         .createObject(Lastschrift.class, null);
+    Mitglied m = la.getMitglied();
+    Kursteilnehmer k = la.getKursteilnehmer();
+    if (m != null)
+    {
+      ls.setMitglied(Integer.parseInt(m.getID()));
+    }
+    else if (k != null)
+    {
+      ls.setKursteilnehmer(Integer.parseInt(k.getID()));
+    }
+    else
+    {
+      throw new ApplicationException(
+          "Lastschrift hat kein Mitglied und keinen Krsteilnehmer.");
+    }
     ls.setEmail(la.getEmail());
     ls.setBIC(la.getBIC());
     ls.setIBAN(la.getIBAN());
