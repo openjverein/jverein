@@ -73,6 +73,12 @@ import de.willuhn.util.ProgressMonitor;
 
 public class GutschriftAction extends SEPASupport implements Action
 {
+  private static final String ERROR = "===== Fehler ===== ";
+
+  private static final String SKIP = "====> Überspringe ";
+
+  private static final String MARKER = "-> ";
+
   private ArrayList<Lastschrift> lastschriften;
 
   private IGutschriftProvider[] providerArray = null;
@@ -250,7 +256,7 @@ public class GutschriftAction extends SEPASupport implements Action
         {
           if (isInterrupted())
           {
-            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+            monitor.setStatus(ProgressMonitor.STATUS_CANCEL);
             monitor.setStatusText("Generierung abgebrochen.");
             monitor.setPercentComplete(100);
             throw new OperationCanceledException();
@@ -276,8 +282,8 @@ public class GutschriftAction extends SEPASupport implements Action
               if (provider.getZahler() == null)
               {
                 skip++;
-                monitor.setStatusText("Überspringe " + statustext
-                    + ": Kein Zahler konfiguriert!");
+                monitor.setStatusText(
+                    SKIP + statustext + ": Kein Zahler konfiguriert!");
                 continue;
               }
               name = Adressaufbereitung.getNameVorname(provider.getZahler());
@@ -291,7 +297,7 @@ public class GutschriftAction extends SEPASupport implements Action
               if (iban == null || iban.isEmpty())
               {
                 skip++;
-                monitor.setStatusText("Überspringe " + statustext
+                monitor.setStatusText(SKIP + statustext
                     + ": Bei dem Mitglied ist keine IBAN gesetzt!");
                 continue;
               }
@@ -302,7 +308,7 @@ public class GutschriftAction extends SEPASupport implements Action
                 || provider.getIstSumme() < 0.005d)
             {
               skip++;
-              monitor.setStatusText("Überspringe " + statustext
+              monitor.setStatusText(SKIP + statustext
                   + ": Betrag oder Zahlungseingang ist nicht größer als 0!");
               continue;
             }
@@ -314,14 +320,15 @@ public class GutschriftAction extends SEPASupport implements Action
           catch (ApplicationException ae)
           {
             error++;
-            String text = statustext + ": " + ae.getMessage();
+            String text = ERROR + statustext + ": " + ae.getMessage();
             monitor.setStatusText(text);
             continue;
           }
           catch (Exception e)
           {
             error++;
-            String text = statustext + ": Fehler beim Datenbank Zugriff!";
+            String text = ERROR + statustext
+                + ": Fehler beim Datenbank Zugriff!";
             monitor.setStatusText(text);
             Logger.error(text, e);
             continue;
@@ -339,12 +346,12 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
-            monitor.setStatusText(ae.getMessage());
+            monitor.setStatusText(ERROR + ae.getMessage());
           }
           catch (Exception e)
           {
             String text = "Fehler beim Generieren der Gegenbuchung!";
-            monitor.setStatusText(text);
+            monitor.setStatusText(ERROR + text);
             Logger.error(text, e);
           }
         }
@@ -370,12 +377,12 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
-            monitor.setStatusText(ae.getMessage());
+            monitor.setStatusText(ERROR + ae.getMessage());
           }
           catch (Exception e)
           {
             String text = "Fehler bei der SEPA Ausgabe!";
-            monitor.setStatusText(text);
+            monitor.setStatusText(ERROR + text);
             Logger.error(text, e);
           }
         }
@@ -400,7 +407,14 @@ public class GutschriftAction extends SEPASupport implements Action
         }
 
         monitor.setPercentComplete(100);
-        monitor.setStatus(ProgressMonitor.STATUS_DONE);
+        if (skip + error > 0)
+        {
+          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+        }
+        else
+        {
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+        }
 
         if (erstellt == 0)
         {
@@ -414,6 +428,7 @@ public class GutschriftAction extends SEPASupport implements Action
               + (skip > 0 ? ", " + skip + " übersprungen." : ".")
               + (error > 0 ? " " + error + " fehlerhaft." : ""));
         }
+
       }
 
       @Override
@@ -443,6 +458,9 @@ public class GutschriftAction extends SEPASupport implements Action
     ArrayList<SollbuchungPosition> positionenList = prov
         .getSollbuchungPositionList();
 
+    monitor.setStatusText(
+        "Generiere Gutschrift für " + statustext + " und Zahler " + name + ".");
+
     // Lastschrift für Überweisungen erstellen
     // Das ist eine Hilfsklasse um die bestehende Klasse für Überweisungen
     // verwenden zu können
@@ -457,8 +475,6 @@ public class GutschriftAction extends SEPASupport implements Action
       ls = getLastschriftVonMitglied(prov.getZahler(), zweck, betrag);
     }
     lastschriften.add(ls);
-    monitor.setStatusText(
-        "Gutschrift für " + statustext + " und Zahler " + name + " erzeugt.");
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new LastschriftMap().getMap(ls, map);
@@ -507,8 +523,7 @@ public class GutschriftAction extends SEPASupport implements Action
       sbp.setZweck(zweck);
       sbp.setSollbuchung(sollbuchung.getID());
       sbp.store();
-      monitor.setStatusText("Sollbuchung für " + statustext + " und Zahler "
-          + name + " erzeugt.");
+      monitor.setStatusText(MARKER + "Sollbuchung erzeugt.");
 
       // Rechnung erzeugen
       if (rechnungErzeugen && (Boolean) Einstellungen
@@ -520,8 +535,7 @@ public class GutschriftAction extends SEPASupport implements Action
         rechnung.setDatum(datum);
         rechnung.fill(sollbuchung);
         rechnung.store();
-        monitor.setStatusText(
-            "Rechnung für " + statustext + " und Zahler " + name + " erzeugt.");
+        monitor.setStatusText(MARKER + "Rechnung erzeugt.");
 
         sollbuchung.setRechnung(rechnung);
         sollbuchung.updateForced();
@@ -544,8 +558,7 @@ public class GutschriftAction extends SEPASupport implements Action
       Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
       buchung.setSollbuchung(sollbuchung);
       buchung.store();
-      monitor.setStatusText(
-          "Buchung für " + statustext + " und Zahler " + name + " erzeugt.");
+      monitor.setStatusText(MARKER + "Buchung erzeugt.");
 
       if (rechnung != null && rechnungsDokumentSpeichern)
       {
@@ -553,8 +566,7 @@ public class GutschriftAction extends SEPASupport implements Action
         rmap = new MitgliedMap().getMap(prov.getZahler(), rmap);
         rmap = new RechnungMap().getMap(rechnung, rmap);
         storeBuchungsDokument(rechnung, buchung, datum, rmap);
-        monitor.setStatusText("Buchungsdokument für " + statustext
-            + " und Zahler " + name + " erzeugt.");
+        monitor.setStatusText(MARKER + "Buchungsdokument erzeugt.");
       }
     }
 
