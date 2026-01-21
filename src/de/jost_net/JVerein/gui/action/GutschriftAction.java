@@ -105,7 +105,9 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private int skip = 0;
 
-  private int error = 0;
+  private int error1 = 0;
+
+  private int error2 = 0;
 
   private Konto konto = null;
 
@@ -194,7 +196,8 @@ public class GutschriftAction extends SEPASupport implements Action
       lastschriften = new ArrayList<>();
       erstellt = 0;
       skip = 0;
-      error = 0;
+      error1 = 0;
+      error2 = 0;
       summe = 0d;
       file = null;
 
@@ -263,7 +266,7 @@ public class GutschriftAction extends SEPASupport implements Action
           }
 
           monitor.setPercentComplete(
-              100 * (erstellt + skip + error) / providerArray.length);
+              100 * (erstellt + skip + error1) / providerArray.length);
 
           String statustext = "";
           String name = "";
@@ -319,14 +322,14 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
-            error++;
+            error1++;
             String text = ERROR + statustext + ": " + ae.getMessage();
             monitor.setStatusText(text);
             continue;
           }
           catch (Exception e)
           {
-            error++;
+            error1++;
             String text = ERROR + statustext
                 + ": Fehler beim Datenbank Zugriff!";
             monitor.setStatusText(text);
@@ -346,10 +349,12 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
+            error2++;
             monitor.setStatusText(ERROR + ae.getMessage());
           }
           catch (Exception e)
           {
+            error2++;
             String text = "Fehler beim Generieren der Gegenbuchung!";
             monitor.setStatusText(ERROR + text);
             Logger.error(text, e);
@@ -377,10 +382,12 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
+            error2++;
             monitor.setStatusText(ERROR + ae.getMessage());
           }
           catch (Exception e)
           {
+            error2++;
             String text = "Fehler bei der SEPA Ausgabe!";
             monitor.setStatusText(ERROR + text);
             Logger.error(text, e);
@@ -396,18 +403,20 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (ApplicationException ae)
           {
-            monitor.setStatusText(ae.getMessage());
+            monitor.setStatusText(
+                "Fehler beim Löschen einer temporären Lastschrift: "
+                    + ae.getMessage());
           }
           catch (Exception e)
           {
-            String text = "Fehler beim Datenbank Zugriff!";
+            String text = "Fehler beim Löschen einer temporären Lastschrift!";
             monitor.setStatusText(text);
             Logger.error(text, e);
           }
         }
 
         monitor.setPercentComplete(100);
-        if (skip + error > 0)
+        if (skip + error1 + error2 > 0)
         {
           monitor.setStatus(ProgressMonitor.STATUS_ERROR);
         }
@@ -419,14 +428,17 @@ public class GutschriftAction extends SEPASupport implements Action
         if (erstellt == 0)
         {
           monitor.setStatusText("Keine Gutschrift erstellt: " + skip
-              + " übersprungen und " + error + " fehlerhaft.");
+              + " übersprungen, " + error1 + " Gutschriften fehlerhaft.");
         }
         else
         {
           GUI.getCurrentView().reload();
           monitor.setStatusText(erstellt + " Gutschrift(en) erstellt"
               + (skip > 0 ? ", " + skip + " übersprungen." : ".")
-              + (error > 0 ? " " + error + " fehlerhaft." : ""));
+              + (error1 > 0 ? " " + error1 + " Gutschriften fehlerhaft." : "")
+              + (error2 > 0
+                  ? " " + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
+                  : ""));
         }
 
       }
@@ -641,7 +653,13 @@ public class GutschriftAction extends SEPASupport implements Action
     ls.setIBAN(m.getIban());
     ls.setMandatDatum(m.getMandatDatum());
     ls.setMandatID(m.getMandatID());
-    setAdresse((IAdresse) m, ls, zweck, betrag);
+    ls.setVerwendungszweck(zweck);
+    ls.setBetrag(betrag);
+    ls.setAbrechnungslauf(Integer.valueOf(abrl.getID()));
+    // Wird bei Überweisung nicht gebraucht aber wegen der Map implementierung
+    // gesetzt
+    ls.setMandatSequence(MandatSequence.RCUR.getTxt());
+    ls.set(m);
     ls.store();
     return ls;
   }
@@ -671,30 +689,14 @@ public class GutschriftAction extends SEPASupport implements Action
     ls.setIBAN(la.getIBAN());
     ls.setMandatDatum(la.getMandatDatum());
     ls.setMandatID(la.getMandatID());
-    setAdresse((IAdresse) la, ls, zweck, betrag);
-    ls.store();
-    return ls;
-  }
-
-  private void setAdresse(IAdresse adr, Lastschrift ls, String zweck,
-      Double betrag) throws RemoteException
-  {
-    ls.setPersonenart(adr.getPersonenart());
-    ls.setAnrede(adr.getAnrede());
-    ls.setTitel(adr.getTitel());
-    ls.setName(adr.getName());
-    ls.setVorname(adr.getVorname());
-    ls.setStrasse(adr.getStrasse());
-    ls.setAdressierungszusatz(adr.getAdressierungszusatz());
-    ls.setPlz(adr.getPlz());
-    ls.setOrt(adr.getOrt());
-    ls.setStaat(adr.getStaatCode());
-    ls.setGeschlecht(adr.getGeschlecht());
     ls.setVerwendungszweck(zweck);
     ls.setBetrag(betrag);
     ls.setAbrechnungslauf(Integer.valueOf(abrl.getID()));
     // Wird bei Überweisung nicht gebraucht aber wegen der Map implementierung
     // gesetzt
     ls.setMandatSequence(MandatSequence.RCUR.getTxt());
+    ls.set(la);
+    ls.store();
+    return ls;
   }
 }
