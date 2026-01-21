@@ -63,14 +63,19 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class GutschriftAction extends SEPASupport implements Action
 {
-  private ArrayList<Lastschrift> lastschriften = new ArrayList<>();
+  private ArrayList<Lastschrift> lastschriften;
+
+  private IGutschriftProvider[] providerArray = null;
 
   private Formular formular;
 
@@ -96,9 +101,11 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private Konto konto = null;
 
-  private Double summe = 0d;
+  private double summe = 0d;
 
   private Abrechnungslauf abrl = null;
+
+  private File file = null;
 
   private Settings settings = null;
 
@@ -112,18 +119,16 @@ public class GutschriftAction extends SEPASupport implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    IGutschriftProvider[] providerArray = null;
-    if (context instanceof TablePart)
+    try
     {
-      TablePart tp = (TablePart) context;
-      context = tp.getSelection();
-    }
-
-    if (context instanceof Abrechnungslauf)
-    {
-      Abrechnungslauf lauf = (Abrechnungslauf) context;
-      try
+      if (context instanceof TablePart)
       {
+        TablePart tp = (TablePart) context;
+        context = tp.getSelection();
+      }
+      if (context instanceof Abrechnungslauf)
+      {
+        Abrechnungslauf lauf = (Abrechnungslauf) context;
         DBService service = Einstellungen.getDBService();
         DBIterator<Sollbuchung> sollbIt = service.createList(Sollbuchung.class);
         sollbIt.addFilter(Sollbuchung.ABRECHNUNGSLAUF + " = ?",
@@ -137,49 +142,31 @@ public class GutschriftAction extends SEPASupport implements Action
         providerArray = new IGutschriftProvider[sollbIt.size()];
         PseudoIterator.asList(sollbIt).toArray(providerArray);
       }
-      catch (RemoteException e)
+      else if (context instanceof MitgliedskontoNode)
       {
-        String text = "Fehler der Abrechnungslauf Auswertung!";
-        Logger.error(text, e);
-        throw new ApplicationException(text);
-      }
-    }
-    else if (context instanceof MitgliedskontoNode)
-    {
-      MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+        MitgliedskontoNode mkn = (MitgliedskontoNode) context;
 
-      if (mkn.getType() == MitgliedskontoNode.SOLL)
-      {
-        try
+        if (mkn.getType() == MitgliedskontoNode.SOLL)
         {
           providerArray = new IGutschriftProvider[] { Einstellungen
               .getDBService().createObject(Sollbuchung.class, mkn.getID()) };
         }
-        catch (RemoteException e)
-        {
-          String text = "Fehler beim Erstellen der Sollbuchung!";
-          Logger.error(text, e);
-          throw new ApplicationException(text);
-        }
       }
-    }
-    else if (context instanceof IGutschriftProvider)
-    {
-      providerArray = new IGutschriftProvider[] {
-          (IGutschriftProvider) context };
-    }
-    else if (context instanceof IGutschriftProvider[])
-    {
-      providerArray = (IGutschriftProvider[]) context;
-    }
-    else
-    {
-      throw new ApplicationException(
-          "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt!");
-    }
+      else if (context instanceof IGutschriftProvider)
+      {
+        providerArray = new IGutschriftProvider[] {
+            (IGutschriftProvider) context };
+      }
+      else if (context instanceof IGutschriftProvider[])
+      {
+        providerArray = (IGutschriftProvider[]) context;
+      }
+      else
+      {
+        throw new ApplicationException(
+            "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt!");
+      }
 
-    try
-    {
       GutschriftDialog dialog = new GutschriftDialog();
       if (!dialog.open())
       {
@@ -194,6 +181,13 @@ public class GutschriftAction extends SEPASupport implements Action
       rechnungsDokumentSpeichern = dialog.getRechnungsDokumentSpeichern();
       teilbetragAbrechnen = dialog.getTeilbetragAbrechnen();
       teilbetrag = dialog.getTeilbetrag();
+
+      // Attribute initialisieren
+      lastschriften = new ArrayList<>();
+      erstellt = 0;
+      skip = 0;
+      summe = 0d;
+      file = null;
 
       if (datum == null || verwendungszweck == null
           || verwendungszweck.isEmpty()
@@ -221,70 +215,11 @@ public class GutschriftAction extends SEPASupport implements Action
       abrl.setAbgeschlossen(false);
       abrl.store();
 
-      for (IGutschriftProvider provider : providerArray)
+      // Datei für SEPA Ausgabe holen
+      if (ausgabe == UeberweisungAusgabe.SEPA_DATEI)
       {
-        // Keine Gutschrift bei Erstattungen und keiner Einzahlung
-        if (provider.getBetrag() < 0.005d || provider.getIstSumme() < 0.005d)
-        {
-          skip++;
-          continue;
-        }
-
-        // Ohne Zahler und IBAN keine Überweisung möglich
-        // Bei Lastschrift erstatten wir auf das gleiche Konto wie bei der
-        // Lastschrift
-        if (!(provider instanceof Lastschrift))
-        {
-          Mitglied zahler = provider.getZahler();
-          if (zahler == null)
-          {
-            skip++;
-            continue;
-          }
-          String iban = provider.getZahler().getIban();
-          if (iban == null || iban.isEmpty())
-          {
-            skip++;
-            continue;
-          }
-        }
-
-        // Sollbuchung, Buchungen und Lastschriften erzeugen
-        generiereSollbuchung(provider);
+        file = getFile();
       }
-
-      // Überweisung und Gegenbuchung erstellen
-      if (erstellt > 0)
-      {
-        generiereUeberweisungen();
-        if (buchungErzeugen)
-        {
-          // Gegenbuchung
-          getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
-        }
-      }
-
-      // Temporäre Lastschriften löschen
-      for (Lastschrift la : lastschriften)
-      {
-        la.delete();
-      }
-
-      if (erstellt == 0)
-      {
-        GUI.getStatusBar().setErrorText(
-            "Keine Gutschrift erstellt: Entweder kein Erstattungsbetrag oder keine IBAN vorhanden!");
-      }
-      else
-      {
-        GUI.getCurrentView().reload();
-        GUI.getStatusBar().setSuccessText(erstellt + " Gutschrift(en) erstellt"
-            + (skip > 0 ? ", " + skip + " übersprungen." : "."));
-      }
-    }
-    catch (OperationCanceledException ignore)
-    {
-
     }
     catch (ApplicationException ae)
     {
@@ -292,14 +227,172 @@ public class GutschriftAction extends SEPASupport implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim Erstellen der Gutschrift!";
+      String fehler = "Fehler beim Datenbank Zugriff!";
       GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
       return;
     }
+
+    BackgroundTask t = new BackgroundTask()
+    {
+      private boolean interrupted = false;
+
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        monitor.setStatusText("Starte die Generierung der Gutschriften");
+
+        for (IGutschriftProvider provider : providerArray)
+        {
+          if (isInterrupted())
+          {
+            throw new OperationCanceledException();
+          }
+
+          monitor.setPercentComplete(
+              100 * (erstellt + skip) / providerArray.length);
+
+          String statustext = "";
+          String name = "";
+          try
+          {
+            statustext = provider.getObjektName() + " mit Nr. "
+                + provider.getID();
+
+            if (provider instanceof Lastschrift && provider.getZahler() == null)
+            {
+              name = Adressaufbereitung.getNameVorname((IAdresse) provider);
+            }
+            else
+            {
+              // Kein Zahler gesetzt
+              if (provider.getZahler() == null)
+              {
+                skip++;
+                monitor.setStatusText("Überspringe " + statustext
+                    + ": Kein Zahler konfiguriert!");
+                continue;
+              }
+              name = Adressaufbereitung.getNameVorname(provider.getZahler());
+            }
+
+            // Bei Lastschrift ohne Zahler erstatten wir auf das gleiche Konto
+            // wie bei der Lastschrift
+            if (provider.getZahler() != null)
+            {
+              String iban = provider.getZahler().getIban();
+              if (iban == null || iban.isEmpty())
+              {
+                skip++;
+                monitor.setStatusText("Überspringe " + statustext
+                    + ": Bei dem Mitglied ist keine IBAN gesetzt!");
+                continue;
+              }
+            }
+
+            // Keine Gutschrift bei Erstattungen und keiner Einzahlung
+            if (provider.getBetrag() < 0.005d
+                || provider.getIstSumme() < 0.005d)
+            {
+              skip++;
+              monitor.setStatusText("Überspringe " + statustext
+                  + ": Betrag oder Zahlungseingang ist nicht größer als 0!");
+              continue;
+            }
+
+            // Sollbuchung, Buchungen und Lastschriften erzeugen
+            generiereSollbuchung(provider, name, statustext, monitor);
+          }
+          catch (ApplicationException ae)
+          {
+            monitor.setStatusText(ae.getMessage());
+          }
+          catch (Exception e)
+          {
+            skip++;
+            String text = "Überspringe " + statustext
+                + ": Fehler beim Datenbank Zugriff!";
+            monitor.setStatusText(text);
+            Logger.error(text, e);
+            continue;
+          }
+        }
+
+        try
+        {
+          // Überweisung und Gegenbuchung erstellen
+          if (erstellt > 0)
+          {
+            // Wenn keine Datei ausgewählt wurde, dann wird keine generiert
+            Ueberweisung ueberweisung = new Ueberweisung(null);
+            if (ausgabe == UeberweisungAusgabe.HIBISCUS)
+            {
+              ueberweisung.write(lastschriften, file, datum, ausgabe, null);
+              monitor.setStatusText("SEPA Auftrag an Hibiscus übergeben.");
+            }
+            else if (file != null)
+            {
+              // Dateiausgabe
+              ueberweisung.write(lastschriften, file, datum, ausgabe, null);
+              monitor.setStatusText("SEPA Datei erzeugt.");
+            }
+            if (buchungErzeugen)
+            {
+              // Gegenbuchung
+              getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
+              monitor.setStatusText("Gegenbuchung erzeugt.");
+            }
+          }
+
+          // Temporäre Lastschriften löschen
+          for (Lastschrift la : lastschriften)
+          {
+            la.delete();
+          }
+        }
+        catch (ApplicationException ae)
+        {
+          monitor.setStatusText(ae.getMessage());
+        }
+        catch (Exception e)
+        {
+          String text = "Fehler beim Datenbank Zugriff!";
+          monitor.setStatusText(text);
+          Logger.error(text, e);
+        }
+        monitor.setPercentComplete(100);
+
+        if (erstellt == 0)
+        {
+          monitor.setStatusText(
+              "Keine Gutschrift erstellt: " + skip + " übersprungen.");
+        }
+        else
+        {
+          GUI.getCurrentView().reload();
+          monitor.setStatusText(erstellt + " Gutschrift(en) erstellt"
+              + (skip > 0 ? ", " + skip + " übersprungen." : "."));
+        }
+      }
+
+      @Override
+      public void interrupt()
+      {
+        interrupted = true;
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return interrupted;
+      }
+
+    };
+    Application.getController().start(t);
   }
 
-  private void generiereSollbuchung(IGutschriftProvider prov)
+  private void generiereSollbuchung(IGutschriftProvider prov, String name,
+      String statustext, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
     Double betrag = teilbetragAbrechnen ? teilbetrag : prov.getIstSumme();
@@ -313,8 +406,9 @@ public class GutschriftAction extends SEPASupport implements Action
     // Das ist eine Hilfsklasse um die bestehende Klasse für Überweisungen
     // verwenden zu können
     Lastschrift ls = null;
-    if (prov instanceof Lastschrift)
+    if (prov.getZahler() == null)
     {
+      // Dann muss es eine Lastschrift sein
       ls = getLastschriftVonLastschrift((Lastschrift) prov, zweck, betrag);
     }
     else
@@ -322,6 +416,8 @@ public class GutschriftAction extends SEPASupport implements Action
       ls = getLastschriftVonMitglied(prov.getZahler(), zweck, betrag);
     }
     lastschriften.add(ls);
+    monitor.setStatusText(
+        "Gutschrift für " + statustext + " und Zahler " + name + " erzeugt.");
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new LastschriftMap().getMap(ls, map);
@@ -370,6 +466,8 @@ public class GutschriftAction extends SEPASupport implements Action
       sbp.setZweck(zweck);
       sbp.setSollbuchung(sollbuchung.getID());
       sbp.store();
+      monitor.setStatusText("Sollbuchung für " + statustext + " und Zahler "
+          + name + " erzeugt.");
 
       // Rechnung erzeugen
       if (rechnungErzeugen && (Boolean) Einstellungen
@@ -381,6 +479,8 @@ public class GutschriftAction extends SEPASupport implements Action
         rechnung.setDatum(datum);
         rechnung.fill(sollbuchung);
         rechnung.store();
+        monitor.setStatusText(
+            "Rechnung für " + statustext + " und Zahler " + name + " erzeugt.");
 
         sollbuchung.setRechnung(rechnung);
         sollbuchung.updateForced();
@@ -390,21 +490,21 @@ public class GutschriftAction extends SEPASupport implements Action
     // Buchung erzeugen
     if (buchungErzeugen)
     {
-      String name = "";
       String iban = "";
-      if (prov instanceof Lastschrift)
+      if (prov.getZahler() == null)
       {
-        name = Adressaufbereitung.getNameVorname((IAdresse) prov);
+        // Dann muss es eine Lastschrift sein
         iban = ((Lastschrift) prov).getIBAN();
       }
       else
       {
-        name = Adressaufbereitung.getNameVorname(prov.getZahler());
         iban = prov.getZahler().getIban();
       }
       Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
       buchung.setSollbuchung(sollbuchung);
       buchung.store();
+      monitor.setStatusText(
+          "Buchung für " + statustext + " und Zahler " + name + " erzeugt.");
 
       if (rechnung != null && rechnungsDokumentSpeichern)
       {
@@ -412,6 +512,8 @@ public class GutschriftAction extends SEPASupport implements Action
         rmap = new MitgliedMap().getMap(prov.getZahler(), rmap);
         rmap = new RechnungMap().getMap(rechnung, rmap);
         storeBuchungsDokument(rechnung, buchung, datum, rmap);
+        monitor.setStatusText("Buchungsdokument für " + statustext
+            + " und Zahler " + name + " erzeugt.");
       }
     }
 
@@ -419,38 +521,33 @@ public class GutschriftAction extends SEPASupport implements Action
     erstellt++;
   }
 
-  private void generiereUeberweisungen() throws Exception
+  private File getFile() throws Exception
   {
-
     File file = null;
-    if (ausgabe == UeberweisungAusgabe.SEPA_DATEI)
+    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+    fd.setText("SEPA-Ausgabedatei wählen.");
+    String path = settings.getString("lastdir",
+        System.getProperty("user.home"));
+    if (path != null && path.length() > 0)
     {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wählen.");
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.GUTSCHRIFT_DATEINAME) + ".xml");
-      fd.setFilterExtensions(new String[] { "*.xml" });
-
-      String s = fd.open();
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-      if (!s.toLowerCase().endsWith(".xml"))
-      {
-        s = s + ".xml";
-      }
-      file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
+      fd.setFilterPath(path);
     }
-    Ueberweisung ueberweisung = new Ueberweisung(null);
-    ueberweisung.write(lastschriften, file, datum, ausgabe, null);
+    fd.setFileName(
+        VorlageUtil.getName(VorlageTyp.GUTSCHRIFT_DATEINAME) + ".xml");
+    fd.setFilterExtensions(new String[] { "*.xml" });
+
+    String s = fd.open();
+    if (s == null || s.length() == 0)
+    {
+      return null;
+    }
+    if (!s.toLowerCase().endsWith(".xml"))
+    {
+      s = s + ".xml";
+    }
+    file = new File(s);
+    settings.setAttribute("lastdir", file.getParent());
+    return file;
   }
 
   private Buchung getBuchung(Double betrag, String name, String zweck,
