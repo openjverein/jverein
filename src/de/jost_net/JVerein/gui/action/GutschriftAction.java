@@ -99,6 +99,8 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private int skip = 0;
 
+  private int error = 0;
+
   private Konto konto = null;
 
   private double summe = 0d;
@@ -186,6 +188,7 @@ public class GutschriftAction extends SEPASupport implements Action
       lastschriften = new ArrayList<>();
       erstellt = 0;
       skip = 0;
+      error = 0;
       summe = 0d;
       file = null;
 
@@ -241,11 +244,15 @@ public class GutschriftAction extends SEPASupport implements Action
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
         monitor.setStatusText("Starte die Generierung der Gutschriften");
+        monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
 
         for (IGutschriftProvider provider : providerArray)
         {
           if (isInterrupted())
           {
+            monitor.setStatus(ProgressMonitor.STATUS_ERROR);
+            monitor.setStatusText("Generierung abgebrochen.");
+            monitor.setPercentComplete(100);
             throw new OperationCanceledException();
           }
 
@@ -302,6 +309,33 @@ public class GutschriftAction extends SEPASupport implements Action
 
             // Sollbuchung, Buchungen und Lastschriften erzeugen
             generiereSollbuchung(provider, name, statustext, monitor);
+            erstellt++;
+          }
+          catch (ApplicationException ae)
+          {
+            error++;
+            String text = statustext + ": " + ae.getMessage();
+            monitor.setStatusText(text);
+            continue;
+          }
+          catch (Exception e)
+          {
+            error++;
+            String text = statustext + ": Fehler beim Datenbank Zugriff!";
+            monitor.setStatusText(text);
+            Logger.error(text, e);
+            continue;
+          }
+        }
+
+        // Gegenbuchung erstellen
+        if (erstellt > 0 && buchungErzeugen)
+        {
+          try
+          {
+            // Gegenbuchung
+            getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
+            monitor.setStatusText("Gegenbuchung erzeugt.");
           }
           catch (ApplicationException ae)
           {
@@ -309,19 +343,16 @@ public class GutschriftAction extends SEPASupport implements Action
           }
           catch (Exception e)
           {
-            skip++;
-            String text = "Überspringe " + statustext
-                + ": Fehler beim Datenbank Zugriff!";
+            String text = "Fehler beim Generieren der Gegenbuchung!";
             monitor.setStatusText(text);
             Logger.error(text, e);
-            continue;
           }
         }
 
-        try
+        // Überweisung erstellen
+        if (erstellt > 0)
         {
-          // Überweisung und Gegenbuchung erstellen
-          if (erstellt > 0)
+          try
           {
             // Wenn keine Datei ausgewählt wurde, dann wird keine generiert
             Ueberweisung ueberweisung = new Ueberweisung(null);
@@ -336,31 +367,40 @@ public class GutschriftAction extends SEPASupport implements Action
               ueberweisung.write(lastschriften, file, datum, ausgabe, null);
               monitor.setStatusText("SEPA Datei erzeugt.");
             }
-            if (buchungErzeugen)
-            {
-              // Gegenbuchung
-              getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
-              monitor.setStatusText("Gegenbuchung erzeugt.");
-            }
           }
+          catch (ApplicationException ae)
+          {
+            monitor.setStatusText(ae.getMessage());
+          }
+          catch (Exception e)
+          {
+            String text = "Fehler bei der SEPA Ausgabe!";
+            monitor.setStatusText(text);
+            Logger.error(text, e);
+          }
+        }
 
-          // Temporäre Lastschriften löschen
-          for (Lastschrift la : lastschriften)
+        // Temporäre Lastschriften löschen
+        for (Lastschrift la : lastschriften)
+        {
+          try
           {
             la.delete();
           }
+          catch (ApplicationException ae)
+          {
+            monitor.setStatusText(ae.getMessage());
+          }
+          catch (Exception e)
+          {
+            String text = "Fehler beim Datenbank Zugriff!";
+            monitor.setStatusText(text);
+            Logger.error(text, e);
+          }
         }
-        catch (ApplicationException ae)
-        {
-          monitor.setStatusText(ae.getMessage());
-        }
-        catch (Exception e)
-        {
-          String text = "Fehler beim Datenbank Zugriff!";
-          monitor.setStatusText(text);
-          Logger.error(text, e);
-        }
+
         monitor.setPercentComplete(100);
+        monitor.setStatus(ProgressMonitor.STATUS_DONE);
 
         if (erstellt == 0)
         {
@@ -371,7 +411,8 @@ public class GutschriftAction extends SEPASupport implements Action
         {
           GUI.getCurrentView().reload();
           monitor.setStatusText(erstellt + " Gutschrift(en) erstellt"
-              + (skip > 0 ? ", " + skip + " übersprungen." : "."));
+              + (skip > 0 ? ", " + skip + " übersprungen." : ".")
+              + (error > 0 ? " " + error + " fehlerhaft." : ""));
         }
       }
 
@@ -518,7 +559,6 @@ public class GutschriftAction extends SEPASupport implements Action
     }
 
     summe += betrag;
-    erstellt++;
   }
 
   private File getFile() throws Exception
