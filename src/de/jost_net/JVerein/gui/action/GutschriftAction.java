@@ -257,7 +257,7 @@ public class GutschriftAction extends SEPASupport implements Action
           }
 
           monitor.setPercentComplete(
-              100 * (erstellt + skip) / providerArray.length);
+              100 * (erstellt + skip + error) / providerArray.length);
 
           String statustext = "";
           String name = "";
@@ -404,8 +404,8 @@ public class GutschriftAction extends SEPASupport implements Action
 
         if (erstellt == 0)
         {
-          monitor.setStatusText(
-              "Keine Gutschrift erstellt: " + skip + " übersprungen.");
+          monitor.setStatusText("Keine Gutschrift erstellt: " + skip
+              + " übersprungen und " + error + " fehlerhaft.");
         }
         else
         {
