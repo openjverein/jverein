@@ -427,8 +427,9 @@ public class GutschriftAction extends SEPASupport implements Action
 
         if (erstellt == 0)
         {
-          monitor.setStatusText("Keine Gutschrift erstellt: " + skip
-              + " übersprungen, " + error1 + " Gutschriften fehlerhaft.");
+          monitor.setStatusText("Keine Gutschrift erstellt: "
+              + (skip > 0 ? skip + " übersprungen." : "")
+              + (error1 > 0 ? " " + error1 + " fehlerhaft." : ""));
         }
         else
         {
