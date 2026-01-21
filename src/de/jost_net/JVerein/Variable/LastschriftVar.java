@@ -42,7 +42,8 @@ public enum LastschriftVar
   IBANMASKIERT("lastschrift_ibanmaskiert"), //
   VERWENDUNGSZWECK("lastschrift_verwendungszweck"), //
   BETRAG("lastschrift_betrag"), //
-  EMPFAENGER("lastschrift_empfaenger");
+  EMPFAENGER("lastschrift_empfaenger"),
+  BANKNAME("lastschrift_bankname");
 
   private String name;
 

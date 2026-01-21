@@ -65,11 +65,31 @@ public class FormularAnzeigeAction implements Action
     try
     {
       final File file = File.createTempFile("formular", ".pdf");
-      Map<String, Object> map = MitgliedMap.getDummyMap(null);
-      map = LastschriftMap.getDummyMap(map);
-      map = new AllgemeineMap().getMap(map);
-      map = SpendenbescheinigungMap.getDummyMap(map);
-      map = RechnungMap.getDummyMap(map);
+
+      Map<String, Object> map = new AllgemeineMap().getMap(null);
+      switch (formular.getArt())
+      {
+        case SPENDENBESCHEINIGUNG:
+        case SAMMELSPENDENBESCHEINIGUNG:
+        case SACHSPENDENBESCHEINIGUNG:
+          map = SpendenbescheinigungMap.getDummyMap(map);
+          map = MitgliedMap.getDummyMap(map);
+          break;
+        case FREIESFORMULAR:
+          map = MitgliedMap.getDummyMap(map);
+          break;
+        case SEPA_PRENOTIFICATION:
+          map = MitgliedMap.getDummyMap(map);
+          map = LastschriftMap.getDummyMap(map);
+          break;
+        case RECHNUNG:
+        case MAHNUNG:
+          map = MitgliedMap.getDummyMap(map);
+          map = RechnungMap.getDummyMap(map);
+          break;
+        case HINTERGRUND:
+          break;
+      }
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
       fab.showFormular();
