@@ -26,6 +26,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
@@ -76,8 +77,12 @@ public class PreNotificationAusgabe extends AbstractAusgabe
   @Override
   protected Map<String, Object> getMap(DBObject object) throws RemoteException
   {
-    Map<String, Object> map = new LastschriftMap().getMap((Lastschrift) object,
-        null);
+    Lastschrift ls = (Lastschrift) object;
+    Map<String, Object> map = new LastschriftMap().getMap(ls, null);
+    if (ls.getMitglied() != null)
+    {
+      map = new MitgliedMap().getMap(ls.getMitglied(), map);
+    }
     return new AllgemeineMap().getMap(map);
   }
 
