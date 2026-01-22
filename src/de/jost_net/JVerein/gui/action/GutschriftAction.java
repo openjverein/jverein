@@ -345,7 +345,7 @@ public class GutschriftAction extends SEPASupport implements Action
           {
             // Gegenbuchung
             getBuchung(summe, "JVerein", "Gegenbuchung", "", null).store();
-            monitor.setStatusText("Gegenbuchung erzeugt.");
+            monitor.setStatusText("Gegenbuchung erzeugt");
           }
           catch (ApplicationException ae)
           {
@@ -371,13 +371,13 @@ public class GutschriftAction extends SEPASupport implements Action
             if (ausgabe == UeberweisungAusgabe.HIBISCUS)
             {
               ueberweisung.write(lastschriften, file, datum, ausgabe, null);
-              monitor.setStatusText("SEPA Auftrag an Hibiscus übergeben.");
+              monitor.setStatusText("SEPA Auftrag an Hibiscus übergeben");
             }
             else if (file != null)
             {
               // Dateiausgabe
               ueberweisung.write(lastschriften, file, datum, ausgabe, null);
-              monitor.setStatusText("SEPA Datei erzeugt.");
+              monitor.setStatusText("SEPA Datei erzeugt");
             }
           }
           catch (ApplicationException ae)
@@ -390,27 +390,6 @@ public class GutschriftAction extends SEPASupport implements Action
             error2++;
             String text = "Fehler bei der SEPA Ausgabe!";
             monitor.setStatusText(ERROR + text);
-            Logger.error(text, e);
-          }
-        }
-
-        // Temporäre Lastschriften löschen
-        for (Lastschrift la : lastschriften)
-        {
-          try
-          {
-            la.delete();
-          }
-          catch (ApplicationException ae)
-          {
-            monitor.setStatusText(
-                "Fehler beim Löschen einer temporären Lastschrift: "
-                    + ae.getMessage());
-          }
-          catch (Exception e)
-          {
-            String text = "Fehler beim Löschen einer temporären Lastschrift!";
-            monitor.setStatusText(text);
             Logger.error(text, e);
           }
         }
@@ -488,6 +467,7 @@ public class GutschriftAction extends SEPASupport implements Action
       ls = getLastschriftVonMitglied(prov.getZahler(), zweck, betrag);
     }
     lastschriften.add(ls);
+    monitor.setStatusText(MARKER + "Überweisung erzeugt");
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new LastschriftMap().getMap(ls, map);
@@ -499,7 +479,6 @@ public class GutschriftAction extends SEPASupport implements Action
         zweck = zweck.substring(0, 136) + "...";
       }
       ls.setVerwendungszweck(zweck);
-      ls.store();
     }
     catch (IOException e)
     {
@@ -536,7 +515,7 @@ public class GutschriftAction extends SEPASupport implements Action
       sbp.setZweck(zweck);
       sbp.setSollbuchung(sollbuchung.getID());
       sbp.store();
-      monitor.setStatusText(MARKER + "Sollbuchung erzeugt.");
+      monitor.setStatusText(MARKER + "Sollbuchung erzeugt");
 
       // Rechnung erzeugen
       if (rechnungErzeugen && (Boolean) Einstellungen
@@ -548,7 +527,7 @@ public class GutschriftAction extends SEPASupport implements Action
         rechnung.setDatum(datum);
         rechnung.fill(sollbuchung);
         rechnung.store();
-        monitor.setStatusText(MARKER + "Rechnung erzeugt.");
+        monitor.setStatusText(MARKER + "Rechnung erzeugt");
 
         sollbuchung.setRechnung(rechnung);
         sollbuchung.updateForced();
@@ -571,7 +550,7 @@ public class GutschriftAction extends SEPASupport implements Action
       Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
       buchung.setSollbuchung(sollbuchung);
       buchung.store();
-      monitor.setStatusText(MARKER + "Buchung erzeugt.");
+      monitor.setStatusText(MARKER + "Buchung erzeugt");
 
       if (rechnung != null && rechnungsDokumentSpeichern)
       {
@@ -579,7 +558,7 @@ public class GutschriftAction extends SEPASupport implements Action
         rmap = new MitgliedMap().getMap(prov.getZahler(), rmap);
         rmap = new RechnungMap().getMap(rechnung, rmap);
         storeBuchungsDokument(rechnung, buchung, datum, rmap);
-        monitor.setStatusText(MARKER + "Buchungsdokument erzeugt.");
+        monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
       }
     }
 
@@ -661,7 +640,6 @@ public class GutschriftAction extends SEPASupport implements Action
     // gesetzt
     ls.setMandatSequence(MandatSequence.RCUR.getTxt());
     ls.set(m);
-    ls.store();
     return ls;
   }
 
@@ -697,7 +675,6 @@ public class GutschriftAction extends SEPASupport implements Action
     // gesetzt
     ls.setMandatSequence(MandatSequence.RCUR.getTxt());
     ls.set(la);
-    ls.store();
     return ls;
   }
 }

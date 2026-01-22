@@ -49,7 +49,7 @@ public class LastschriftMap extends AbstractMap
       map = inma;
     }
 
-    if (ls.getID() == null)
+    if (ls == null)
     {
       return getDummyMap(map);
     }
