@@ -283,11 +283,18 @@ public class LastschriftControl extends FilterControl implements Savable
     String text = "";
     if (getLastschrift().getKursteilnehmer() != null)
       text = "Kursteilnehmer";
-    else if (getLastschrift().getMitglied().getMitgliedstyp().getID()
-        .equals(Mitgliedstyp.MITGLIED))
-      text = "Mitglied";
-    else
-      text = "Nicht-Mitglied";
+    else if (getLastschrift().getMitglied() != null)
+    {
+      if (getLastschrift().getMitglied().getMitgliedstyp().getID()
+          .equals(Mitgliedstyp.MITGLIED))
+      {
+        text = "Mitglied";
+      }
+      else
+      {
+        text = "Nicht-Mitglied";
+      }
+    }
     mitgliedstyp = new TextInput(text, 15);
     mitgliedstyp.setName("Mitgliedstyp");
     mitgliedstyp.setEnabled(false);
