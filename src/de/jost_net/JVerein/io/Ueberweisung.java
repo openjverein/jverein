@@ -47,7 +47,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -131,8 +130,9 @@ public class Ueberweisung
       else if (ls.getKursteilnehmer() != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-            StringUtils.trimToEmpty(Adressaufbereitung
-                .getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
+            StringUtils.trimToEmpty(ls.getKursteilnehmer()
+                .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
+                .toUpperCase()));
       }
       if (betrag != null)
       {
