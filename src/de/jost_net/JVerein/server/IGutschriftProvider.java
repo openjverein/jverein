@@ -27,13 +27,11 @@ public interface IGutschriftProvider extends JVereinDBObject
 {
   public Mitglied getMitglied() throws RemoteException;
 
-  public Mitglied getZahler() throws RemoteException;
+  public Mitglied getGutschriftZahler() throws RemoteException;
 
   public Double getBetrag() throws RemoteException;
 
   public Double getIstSumme() throws RemoteException;
-
-  public String getID() throws RemoteException;
 
   public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException;

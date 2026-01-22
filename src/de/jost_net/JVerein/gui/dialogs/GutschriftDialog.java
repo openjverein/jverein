@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -49,6 +49,8 @@ import de.willuhn.jameica.system.Settings;
 
 public class GutschriftDialog extends AbstractDialog<Boolean>
 {
+
+  private boolean isMitglied;
 
   private FormularInput formularInput = null;
 
@@ -92,12 +94,13 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private Settings settings = null;
 
-  public GutschriftDialog()
+  public GutschriftDialog(boolean isMitglied)
   {
     super(SWT.CENTER);
     setTitle("Gutschrift(en) erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
+    this.isMitglied = isMitglied;
     setSize(700, SWT.DEFAULT);
   }
 
@@ -233,13 +236,22 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     }
 
     // Fixen Betrag erstatten
-    teilbetragAbrechnenInput = new CheckboxInput(
-        settings.getBoolean("teilbetragAbrechnen", false));
-    teilbetragAbrechnenInput.addListener(e -> {
-      teilbetragInput
-          .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
-      teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
-    });
+    if (isMitglied)
+    {
+      teilbetragAbrechnenInput = new CheckboxInput(true);
+      teilbetragAbrechnenInput.disable();
+    }
+    else
+    {
+      teilbetragAbrechnenInput = new CheckboxInput(
+          settings.getBoolean("teilbetragAbrechnen", false));
+      teilbetragAbrechnenInput.addListener(e -> {
+        teilbetragInput
+            .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
+        teilbetragInput
+            .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+      });
+    }
     group.addLabelPair("Fixen Betrag erstatten", teilbetragAbrechnenInput);
 
     // Erstattungsbetrag
@@ -257,7 +269,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
     group.addLabelPair("Erstattungsbetrag", teilbetragInput);
 
-    Map<String, Object> map = LastschriftMap.getDummyMap(null);
+    Map<String, Object> map = GutschriftMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
 
     // Buttons

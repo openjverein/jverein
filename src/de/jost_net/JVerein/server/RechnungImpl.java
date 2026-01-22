@@ -566,4 +566,11 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     return "Mitglieder.Rechnungen";
   }
+
+  // Für Gutschrift Support
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getZahler();
+  }
 }

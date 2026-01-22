@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
@@ -221,7 +222,9 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
-        new MitgliedLastschriftAction(), "file-invoice.png"));
+        new MitgliedLastschriftAction(), "lastschrift.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",

@@ -421,7 +421,7 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   // Für Gutschrift Support
 
   @Override
-  public Mitglied getZahler() throws RemoteException
+  public Mitglied getGutschriftZahler() throws RemoteException
   {
     return getMitglied();
   }

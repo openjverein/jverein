@@ -29,7 +29,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.LastschriftMap;
+import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
@@ -177,7 +177,8 @@ public class GutschriftAction extends SEPASupport implements Action
             "Keine Sollbuchung, Rechnung, Abrechnungslauf oder Lastschrift ausgewählt!");
       }
 
-      GutschriftDialog dialog = new GutschriftDialog();
+      GutschriftDialog dialog = new GutschriftDialog(
+          providerArray[0] instanceof Mitglied);
       if (!dialog.open())
       {
         return;
@@ -275,28 +276,30 @@ public class GutschriftAction extends SEPASupport implements Action
             statustext = provider.getObjektName() + " mit Nr. "
                 + provider.getID();
 
-            if (provider instanceof Lastschrift && provider.getZahler() == null)
+            if (provider instanceof Lastschrift
+                && provider.getGutschriftZahler() == null)
             {
               name = Adressaufbereitung.getNameVorname((IAdresse) provider);
             }
             else
             {
               // Kein Zahler gesetzt
-              if (provider.getZahler() == null)
+              if (provider.getGutschriftZahler() == null)
               {
                 skip++;
                 monitor.setStatusText(
                     SKIP + statustext + ": Kein Zahler konfiguriert!");
                 continue;
               }
-              name = Adressaufbereitung.getNameVorname(provider.getZahler());
+              name = Adressaufbereitung
+                  .getNameVorname(provider.getGutschriftZahler());
             }
 
             // Bei Lastschrift ohne Zahler erstatten wir auf das gleiche Konto
             // wie bei der Lastschrift
-            if (provider.getZahler() != null)
+            if (provider.getGutschriftZahler() != null)
             {
-              String iban = provider.getZahler().getIban();
+              String iban = provider.getGutschriftZahler().getIban();
               if (iban == null || iban.isEmpty())
               {
                 skip++;
@@ -307,8 +310,8 @@ public class GutschriftAction extends SEPASupport implements Action
             }
 
             // Keine Gutschrift bei Erstattungen und keiner Einzahlung
-            if (provider.getBetrag() < 0.005d
-                || provider.getIstSumme() < 0.005d)
+            if (!teilbetragAbrechnen && (provider.getBetrag() < 0.005d
+                || provider.getIstSumme() < 0.005d))
             {
               skip++;
               monitor.setStatusText(SKIP + statustext
@@ -457,20 +460,20 @@ public class GutschriftAction extends SEPASupport implements Action
     // Das ist eine Hilfsklasse um die bestehende Klasse für Überweisungen
     // verwenden zu können
     Lastschrift ls = null;
-    if (prov.getZahler() == null)
+    if (prov.getGutschriftZahler() == null)
     {
       // Dann muss es eine Lastschrift sein
       ls = getLastschriftVonLastschrift((Lastschrift) prov, zweck, betrag);
     }
     else
     {
-      ls = getLastschriftVonMitglied(prov.getZahler(), zweck, betrag);
+      ls = getLastschriftVonMitglied(prov.getGutschriftZahler(), zweck, betrag);
     }
     lastschriften.add(ls);
     monitor.setStatusText(MARKER + "Überweisung erzeugt");
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = new LastschriftMap().getMap(ls, map);
+    map = new GutschriftMap().getMap(ls, map);
     try
     {
       zweck = VelocityTool.eval(map, verwendungszweck);
@@ -487,7 +490,7 @@ public class GutschriftAction extends SEPASupport implements Action
 
     // Sollbuchung nur wenn Mitglied und Zahler vorhanden, z.B. nicht bei
     // Kursteilnehmer
-    if (prov.getMitglied() != null && prov.getZahler() != null)
+    if (prov.getMitglied() != null && prov.getGutschriftZahler() != null)
     {
       // Sollbuchung mit negativem bereits bezahltem Betrag
       sollbuchung = (Sollbuchung) Einstellungen.getDBService()
@@ -495,7 +498,7 @@ public class GutschriftAction extends SEPASupport implements Action
       sollbuchung.setBetrag(-betrag);
       sollbuchung.setDatum(datum);
       sollbuchung.setMitglied(prov.getMitglied());
-      sollbuchung.setZahler(prov.getZahler());
+      sollbuchung.setZahler(prov.getGutschriftZahler());
       sollbuchung.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
       sollbuchung.setZweck1(zweck);
       sollbuchung.setAbrechnungslauf(abrl);
@@ -538,14 +541,14 @@ public class GutschriftAction extends SEPASupport implements Action
     if (buchungErzeugen)
     {
       String iban = "";
-      if (prov.getZahler() == null)
+      if (prov.getGutschriftZahler() == null)
       {
         // Dann muss es eine Lastschrift sein
         iban = ((Lastschrift) prov).getIBAN();
       }
       else
       {
-        iban = prov.getZahler().getIban();
+        iban = prov.getGutschriftZahler().getIban();
       }
       Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
       buchung.setSollbuchung(sollbuchung);
@@ -555,7 +558,7 @@ public class GutschriftAction extends SEPASupport implements Action
       if (rechnung != null && rechnungsDokumentSpeichern)
       {
         Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-        rmap = new MitgliedMap().getMap(prov.getZahler(), rmap);
+        rmap = new MitgliedMap().getMap(prov.getGutschriftZahler(), rmap);
         rmap = new RechnungMap().getMap(rechnung, rmap);
         storeBuchungsDokument(rechnung, buchung, datum, rmap);
         monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
