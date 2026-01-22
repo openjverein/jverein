@@ -400,6 +400,10 @@ public class PreNotificationControl extends DruckMailControl
   {
     Map<String, Object> map = new LastschriftMap().getMap(ls, null);
     map = new AllgemeineMap().getMap(map);
+    if (ls.getMitglied() != null)
+    {
+      map = new MitgliedMap().getMap(ls.getMitglied(), map);
+    }
     fa.writeForm(fo, map);
     fo.store();
   }
