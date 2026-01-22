@@ -239,7 +239,9 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     if (isMitglied)
     {
       teilbetragAbrechnenInput = new CheckboxInput(true);
-      teilbetragAbrechnenInput.disable();
+      teilbetragAbrechnenInput.addListener(e -> {
+        teilbetragAbrechnenInput.setValue(true);
+      });
     }
     else
     {
