@@ -80,6 +80,10 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput buchungErzeugenInput;
 
+  private boolean sollbuchungErzeugen;
+
+  private CheckboxInput sollbuchungErzeugenInput;
+
   private boolean rechnungsDokumentSpeichern = false;
 
   private CheckboxInput rechnungsDokumentSpeichernInput;
@@ -140,6 +144,11 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     return buchungErzeugen;
   }
 
+  public boolean getSollbuchungErzeugen()
+  {
+    return sollbuchungErzeugen;
+  }
+
   public boolean getRechnungsDokumentSpeichern()
   {
     return rechnungsDokumentSpeichern;
@@ -193,13 +202,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     zweckInput.setMandatory(true);
     group.addLabelPair("Verwendungszweck", zweckInput);
 
+    // Solluchung zur Gutschrift erzeugen
+    sollbuchungErzeugenInput = new CheckboxInput(
+        settings.getBoolean("sollbuchungErzeugen", true));
+    group.addLabelPair("Sollbuchung zur Gutschrift erzeugen",
+        sollbuchungErzeugenInput);
+
     // Buchung zur Gutschrift erzeugen
     buchungErzeugenInput = new CheckboxInput(
         settings.getBoolean("buchungErzeugen", true));
     buchungErzeugenInput.addListener(e -> {
       rechnungsDokumentSpeichernInput
-          .setEnabled((boolean) rechnungErzeugenInput.getValue()
-              && (boolean) buchungErzeugenInput.getValue());
+          .setEnabled(getRechnungsDokumentSpeichernInputEnabled());
     });
     group.addLabelPair("Buchung zur Gutschrift erzeugen", buchungErzeugenInput);
 
@@ -207,23 +221,21 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     rechnungErzeugenInput = new CheckboxInput(
         settings.getBoolean("rechnungErzeugen", false));
     rechnungErzeugenInput.addListener(e -> {
-      formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
+      formularInput.setEnabled(getFormularInputEnabled());
       rechnungsDokumentSpeichernInput
-          .setEnabled((boolean) rechnungErzeugenInput.getValue()
-              && (boolean) buchungErzeugenInput.getValue());
+          .setEnabled(getRechnungsDokumentSpeichernInputEnabled());
     });
 
     // Erstattung Formular
     formularInput = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("formular", ""));
-    formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
+    formularInput.setEnabled(getFormularInputEnabled());
 
     // Rechnung als Buchungsdokument speichern
     rechnungsDokumentSpeichernInput = new CheckboxInput(
         settings.getBoolean("rechnungsDokumentSpeichern", false));
     rechnungsDokumentSpeichernInput
-        .setEnabled((boolean) rechnungErzeugenInput.getValue()
-            && (boolean) buchungErzeugenInput.getValue());
+        .setEnabled(getRechnungsDokumentSpeichernInputEnabled());
 
     // Nur anzeigen wenn Rechnungen aktiviert sind
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -323,6 +335,8 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       datum = (Date) datumInput.getValue();
       buchungErzeugen = (boolean) buchungErzeugenInput.getValue();
       settings.setAttribute("buchungErzeugen", buchungErzeugen);
+      sollbuchungErzeugen = (boolean) sollbuchungErzeugenInput.getValue();
+      settings.setAttribute("sollbuchungErzeugen", sollbuchungErzeugen);
       try
       {
         if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
@@ -361,4 +375,16 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         "process-stop.png");
     buttons.paint(parent);
   }
+
+  private boolean getRechnungsDokumentSpeichernInputEnabled()
+  {
+    return (boolean) rechnungErzeugenInput.getValue()
+        && (boolean) buchungErzeugenInput.getValue();
+  }
+
+  private boolean getFormularInputEnabled()
+  {
+    return (boolean) rechnungErzeugenInput.getValue();
+  }
+
 }
