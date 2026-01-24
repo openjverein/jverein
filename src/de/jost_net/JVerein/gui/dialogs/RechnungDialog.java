@@ -36,11 +36,15 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 public class RechnungDialog extends AbstractDialog<Boolean>
 {
 
-  private FormularInput formularInput;
+  private FormularInput formularRechnungInput;
+
+  private FormularInput formularErstattungInput;
 
   private DateInput datumInput;
 
-  private Formular formular;
+  private Formular formularRechnung;
+
+  private Formular formularErstattung;
 
   private Date datum;
 
@@ -52,10 +56,16 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput sollbuchungsdatumInput;
 
-  public RechnungDialog()
+  private boolean mitRechnung = false;
+
+  private boolean mitErstattung = false;
+
+  public RechnungDialog(boolean mitRechnung, boolean mitErstattung)
   {
     super(SWT.CENTER);
     setTitle("Rechnung(en) erstellen");
+    this.mitRechnung = mitRechnung;
+    this.mitErstattung = mitErstattung;
   }
 
   @Override
@@ -74,9 +84,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     return status;
   }
 
-  public Formular getFormular()
+  public Formular getFormularRechnung()
   {
-    return formular;
+    return formularRechnung;
+  }
+
+  public Formular getFormularErstattung()
+  {
+    return formularErstattung;
   }
 
   public Date getDatum()
@@ -93,11 +108,27 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   protected void paint(Composite parent) throws Exception
   {
     LabelGroup group = new LabelGroup(parent, "");
-    group.addText(
-        "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.", true);
+    if (mitRechnung && mitErstattung)
+    {
+      group.addText(
+          "Bitte Rechnungsdatum und zu verwendende Formulare auswählen.", true);
+    }
+    else
+    {
+      group.addText(
+          "Bitte Rechnungsdatum und zu verwendendes Formular auswählen.", true);
+    }
     group.addInput(getStatus());
-    formularInput = new FormularInput(FormularArt.RECHNUNG);
-    group.addLabelPair("Formular", formularInput);
+    if (mitRechnung)
+    {
+      formularRechnungInput = new FormularInput(FormularArt.RECHNUNG);
+      group.addLabelPair("Rechnung Formular", formularRechnungInput);
+    }
+    if (mitErstattung)
+    {
+      formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
+      group.addLabelPair("Erstattung Formular", formularErstattungInput);
+    }
 
     datumInput = new DateInput(new Date());
     group.addLabelPair("Datum", datumInput);
@@ -110,9 +141,15 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Rechnung(en) erstellen", context -> {
-      if (formularInput.getValue() == null)
+      if (mitRechnung && formularRechnungInput.getValue() == null)
       {
-        status.setValue("Bitte Formular auswählen");
+        status.setValue("Bitte Rechnung Formular auswählen");
+        status.setColor(Color.ERROR);
+        return;
+      }
+      if (mitErstattung && formularErstattungInput.getValue() == null)
+      {
+        status.setValue("Bitte Erstattung Formular auswählen");
         status.setColor(Color.ERROR);
         return;
       }
@@ -123,7 +160,16 @@ public class RechnungDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      formular = (Formular) formularInput.getValue();
+
+      if (mitRechnung)
+      {
+        formularRechnung = (Formular) formularRechnungInput.getValue();
+      }
+      if (mitErstattung)
+      {
+        formularErstattung = (Formular) formularErstattungInput.getValue();
+      }
+
       datum = (Date) datumInput.getValue();
       sollbuchungsdatum = (boolean) sollbuchungsdatumInput.getValue();
       fortfahren = true;
