@@ -21,12 +21,12 @@ public enum VorlageTyp
   // Dateinamen
   SPENDENBESCHEINIGUNG_DATEINAME("spendenbescheinigung-dateiname",
       "Spendenbescheinigung Dateiname",
-      "Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2",
+      "Spendenbescheinigung-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME(
       "spendenbescheinigung-mitglied-dateiname",
       "Spendenbescheinigung-Mitglied Dateiname",
-      "Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$mitglied_name-$mitglied_vorname",
+      "Spendenbescheinigung-$spendenbescheinigung_spendedatum_erstes-$spendenbescheinigung_zeile2",
       Vorlageart.DATEINAME.getKey()),
   RECHNUNG_DATEINAME("rechnung-dateiname", "Rechnung Dateiname",
       "Rechnung-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),

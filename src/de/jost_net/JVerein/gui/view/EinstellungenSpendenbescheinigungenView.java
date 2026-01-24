@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -47,8 +46,6 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
         control.getMitgliedsbetraege());
     cont.addLabelPair("Mindestbetrag",
         control.getSpendenbescheinigungminbetrag());
-    cont.addLabelPair("Verzeichnis",
-        control.getSpendenbescheinigungverzeichnis());
     cont.addLabelPair("Buchungsart drucken",
         control.getSpendenbescheinigungPrintBuchungsart());
     cont.addLabelPair("Unterschrift drucken", control.getUnterschriftdrucken());
@@ -64,15 +61,9 @@ public class EinstellungenSpendenbescheinigungenView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN, false,
         "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreSpendenbescheinigungen();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton("Speichern",
+        c -> control.handleStoreSpendenbescheinigungen(), null, true,
+        "document-save.png");
     buttons.paint(this.getParent());
   }
 }

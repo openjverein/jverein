@@ -2,17 +2,20 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
-import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -22,26 +25,33 @@ public class FreieFormulareControl extends DruckMailControl
   public FreieFormulareControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
-  public Button getStartFreieFormulareButton(Object currentObject,
-      FreieFormulareControl control)
+  public Button getStartFreieFormulareButton(Object currentObject)
   {
     Button button = new Button("Starten", new Action()
     {
-
       @Override
       public void handleAction(Object context)
       {
         try
         {
-          generiereFreieFormulare(context);
+          saveFilterSettings();
+          new FreiesFormularAusgabe((Formular) FreieFormulareControl.this
+              .getFormular(null).getValue()).aufbereiten(
+                  getMitglieder(currentObject),
+                  (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+                  getTxtString(), false, false);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
         }
         catch (Exception e)
         {
-          Logger.error("", e);
+          Logger.error("Fehler bei der Freie Formulare Ausgabe.", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
         }
       }
@@ -49,28 +59,17 @@ public class FreieFormulareControl extends DruckMailControl
     return button;
   }
 
-  private void generiereFreieFormulare(Object currentObject)
-  {
-    try
-    {
-      saveDruckMailSettings();
-      String pdfMode = (String) getPdfModus().getValue();
-      new FreiesFormularAusgabe(getMitglieder(currentObject), this, pdfMode);
-    }
-    catch (ApplicationException ae)
-    {
-      GUI.getStatusBar().setErrorText(ae.getMessage());
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler bei der Freie Formulare Ausgabe.", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
   private ArrayList<Mitglied> getMitglieder(Object object)
       throws RemoteException, ApplicationException
   {
+    if (object instanceof Mitglied)
+    {
+      object = new Mitglied[] { (Mitglied) object };
+    }
+    if (object instanceof Mitglied[])
+    {
+      return new ArrayList<Mitglied>(Arrays.asList((Mitglied[]) object));
+    }
     Mitgliedstyp mitgliedstyp = (Mitgliedstyp) getSuchMitgliedstyp(
         Mitgliedstypen.ALLE).getValue();
     int type = -1;
@@ -117,6 +116,45 @@ public class FreieFormulareControl extends DruckMailControl
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public String getInfoText(Object selection) throws RemoteException
+  {
+    Mitglied[] mitglieder = null;
+    String text = "";
+
+    if (selection instanceof Mitglied)
+    {
+      mitglieder = new Mitglied[] { (Mitglied) selection };
+    }
+    else if (selection instanceof Mitglied[])
+    {
+      mitglieder = (Mitglied[]) selection;
+    }
+    else
+    {
+      return "";
+    }
+
+    // Aufruf aus Mitglieder View
+    if (mitglieder != null)
+    {
+      text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
+      String fehlen = "";
+      for (Mitglied m : mitglieder)
+      {
+        if (m.getEmail() == null || m.getEmail().isEmpty())
+        {
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
+        }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+    }
+    return text;
   }
 
   @Override
