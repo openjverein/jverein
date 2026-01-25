@@ -20,15 +20,12 @@ import java.rmi.RemoteException;
 import java.sql.Clob;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
 import de.jost_net.JVerein.rmi.Einstellung;
 import de.jost_net.JVerein.util.Datum;
-import de.jost_net.JVerein.util.VonBis;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.logging.Logger;
@@ -76,30 +73,9 @@ public class EinstellungImpl extends AbstractJVereinDBObject
       {
         try
         {
-          AltersgruppenParser ap = new AltersgruppenParser(
+          new AltersgruppenParser(
               (String) getAttribute(Property.BEITRAGALTERSSTUFEN.getKey()));
-          ArrayList<VonBis> vbs = new ArrayList<VonBis>();
-          while (ap.hasNext())
-          {
-            vbs.add(ap.getNext());
-          }
-          for (int i = 0; i < 100; i++)
-          {
-            boolean found = false;
-            for (VonBis vb : vbs)
-            {
-              if (i >= vb.getVon() && i <= vb.getBis())
-              {
-                if (found)
-                  throw new ApplicationException(
-                      i + " Jahre ist in mehreren Altersstufen enthalten");
-                found = true;
-              }
-            }
-            if (!found)
-              throw new ApplicationException(
-                  "Keine passende Altersstufe gefunden für " + i + " Jahre");
-          }
+
         }
         catch (RuntimeException e)
         {
