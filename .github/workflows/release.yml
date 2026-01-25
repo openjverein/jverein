@@ -77,7 +77,7 @@ jobs:
         path=jameica-repository/${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
         if [ ! -d website/$path ];then
           mkdir -p website/$path
-          #Add new direcotry in repository.xml
+          #Add new directory in repository.xml
           sed -i "s#<plugins name=\"OpenJVerein\" certificate=\"https://eickedorfer-hof.de/testrepro/openjverein.crt\">#\0\n<plugin url=\"https://openjverein.github.io/$path\"/>#" website/jameica-repository/repository.xml
         fi
 
