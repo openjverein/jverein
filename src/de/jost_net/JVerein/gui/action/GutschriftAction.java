@@ -93,8 +93,6 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private boolean buchungErzeugen;
 
-  private boolean sollbuchungErzeugen;
-
   private boolean rechnungErzeugen;
 
   private boolean rechnungsDokumentSpeichern;
@@ -190,7 +188,6 @@ public class GutschriftAction extends SEPASupport implements Action
       verwendungszweck = dialog.getZweck();
       ausgabe = dialog.getAusgabe();
       buchungErzeugen = dialog.getBuchungErzeugen();
-      sollbuchungErzeugen = dialog.getSollbuchungErzeugen();
       rechnungErzeugen = dialog.getRechnungErzeugen();
       rechnungsDokumentSpeichern = dialog.getRechnungsDokumentSpeichern();
       teilbetragAbrechnen = dialog.getTeilbetragAbrechnen();
@@ -493,8 +490,7 @@ public class GutschriftAction extends SEPASupport implements Action
 
     // Sollbuchung nur wenn Mitglied und Zahler vorhanden, z.B. nicht bei
     // Kursteilnehmer
-    if (sollbuchungErzeugen && prov.getMitglied() != null
-        && prov.getGutschriftZahler() != null)
+    if (prov.getMitglied() != null && prov.getGutschriftZahler() != null)
     {
       // Sollbuchung mit negativem bereits bezahltem Betrag
       sollbuchung = (Sollbuchung) Einstellungen.getDBService()
@@ -507,21 +503,8 @@ public class GutschriftAction extends SEPASupport implements Action
       sollbuchung.setZweck1(zweck);
       sollbuchung.setAbrechnungslauf(abrl);
       sollbuchung.store();
-      monitor.setStatusText(MARKER + "Sollbuchung erzeugt");
-    }
 
-    // Entweder wurde eine Solluchung oben erzeugt oder
-    // es sollte keine erzeugt werden und eine Sollbuchung wurde selektiert
-    if (sollbuchung != null
-        || (!sollbuchungErzeugen && prov instanceof Sollbuchung))
-    {
-      boolean update = false;
-      if (sollbuchung == null)
-      {
-        sollbuchung = (Sollbuchung) prov;
-        update = true;
-      }
-      // Sollbuchungsposition ertellen auch wenn sie schon eine Rechnung hat!
+      // Sollbuchungsposition ertellen
       SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
           .getDBService().createObject(SollbuchungPosition.class, null);
       sbp.setBetrag(-betrag);
@@ -535,31 +518,23 @@ public class GutschriftAction extends SEPASupport implements Action
       sbp.setZweck(zweck);
       sbp.setSollbuchung(sollbuchung.getID());
       sbp.store();
-      monitor.setStatusText(MARKER + "Sollbuchungsposition erzeugt");
+      monitor.setStatusText(MARKER + "Sollbuchung erzeugt");
 
-      if (update)
+      // Rechnung erzeugen
+      if (rechnungErzeugen && (Boolean) Einstellungen
+          .getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        // Sollbetrag der Sollbuchung anpassen
-        sollbuchung.setBetrag(sollbuchung.getBetrag() - betrag);
+        rechnung = (Rechnung) Einstellungen.getDBService()
+            .createObject(Rechnung.class, null);
+        rechnung.setFormular(formular);
+        rechnung.setDatum(datum);
+        rechnung.fill(sollbuchung);
+        rechnung.store();
+        monitor.setStatusText(MARKER + "Rechnung erzeugt");
+
+        sollbuchung.setRechnung(rechnung);
         sollbuchung.updateForced();
       }
-    }
-
-    // Rechnung erzeugen aber nur wenn die Sollbuchung noch keine hat
-    if (rechnungErzeugen && sollbuchung != null
-        && sollbuchung.getRechnung() == null
-        && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-    {
-      rechnung = (Rechnung) Einstellungen.getDBService()
-          .createObject(Rechnung.class, null);
-      rechnung.setFormular(formular);
-      rechnung.setDatum(datum);
-      rechnung.fill(sollbuchung);
-      rechnung.store();
-      monitor.setStatusText(MARKER + "Rechnung erzeugt");
-
-      sollbuchung.setRechnung(rechnung);
-      sollbuchung.updateForced();
     }
 
     // Buchung erzeugen
