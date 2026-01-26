@@ -33,6 +33,7 @@ import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -57,6 +58,8 @@ public class LastschriftControl extends FilterControl implements Savable
 {
 
   private TextInput personenart;
+
+  private TextInput mitglied;
 
   private TextInput mitgliedstyp;
 
@@ -283,15 +286,39 @@ public class LastschriftControl extends FilterControl implements Savable
     String text = "";
     if (getLastschrift().getKursteilnehmer() != null)
       text = "Kursteilnehmer";
-    else if (getLastschrift().getMitglied().getMitgliedstyp().getID()
-        .equals(Mitgliedstyp.MITGLIED))
-      text = "Mitglied";
-    else
-      text = "Nicht-Mitglied";
+    else if (getLastschrift().getMitglied() != null)
+    {
+      if (getLastschrift().getMitglied().getMitgliedstyp().getID()
+          .equals(Mitgliedstyp.MITGLIED))
+      {
+        text = "Mitglied";
+      }
+      else
+      {
+        text = "Nicht-Mitglied";
+      }
+    }
     mitgliedstyp = new TextInput(text, 15);
     mitgliedstyp.setName("Mitgliedstyp");
     mitgliedstyp.setEnabled(false);
     return mitgliedstyp;
+  }
+
+  public TextInput getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+    String text = "";
+    if (getLastschrift().getMitglied() != null)
+    {
+      text = Adressaufbereitung.getNameVorname(getLastschrift().getMitglied());
+    }
+    mitglied = new TextInput(text);
+    mitglied.setName("Mitglied");
+    mitglied.setEnabled(false);
+    return mitglied;
   }
 
   public TextInput getAnrede() throws RemoteException

@@ -75,15 +75,40 @@ public class RechnungNeuAction implements Action
 
     try
     {
-      RechnungDialog dialog = new RechnungDialog();
+      boolean mitRechnung = false;
+      boolean mitErstattung = false;
+      for (Sollbuchung sollb : sollbs)
+      {
+        if (sollb.getRechnung() != null)
+        {
+          continue;
+        }
+        if (sollb.getBetrag() > -0.005d)
+        {
+          mitRechnung = true;
+        }
+        else
+        {
+          mitErstattung = true;
+        }
+      }
+      if (!mitRechnung && !mitErstattung)
+      {
+        throw new ApplicationException(
+            "Es sind keine Sollbuchungen ohne Rechnung ausgewählt!");
+      }
+      RechnungDialog dialog = new RechnungDialog(mitRechnung, mitErstattung);
       if (!dialog.open())
       {
         return;
       }
-      Formular formular = dialog.getFormular();
+      Formular formularRechnung = dialog.getFormularRechnung();
+      Formular formularErstattung = dialog.getFormularErstattung();
       Date rechnungsdatum = dialog.getDatum();
       boolean sollbuchungsDatum = dialog.getSollbuchungsdatum();
-      if (formular == null || (rechnungsdatum == null && !sollbuchungsDatum))
+      if ((mitRechnung && formularRechnung == null)
+          || (mitErstattung && formularErstattung == null)
+          || (rechnungsdatum == null && !sollbuchungsDatum))
       {
         return;
       }
@@ -98,8 +123,14 @@ public class RechnungNeuAction implements Action
         }
         Rechnung rechnung = (Rechnung) Einstellungen.getDBService()
             .createObject(Rechnung.class, null);
-
-        rechnung.setFormular(formular);
+        if (sollb.getBetrag() > -0.005d)
+        {
+          rechnung.setFormular(formularRechnung);
+        }
+        else
+        {
+          rechnung.setFormular(formularErstattung);
+        }
 
         if (sollbuchungsDatum)
         {
@@ -134,8 +165,8 @@ public class RechnungNeuAction implements Action
     }
     catch (Exception e)
     {
-      String fehler = "Fehler beim erstellen der Rechnung";
-      GUI.getStatusBar().setErrorText(fehler);
+      String fehler = "Fehler beim Erstellen der Rechnung: ";
+      GUI.getStatusBar().setErrorText(fehler + e.getMessage());
       Logger.error(fehler, e);
       return;
     }

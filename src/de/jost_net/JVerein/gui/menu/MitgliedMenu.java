@@ -165,7 +165,9 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                m.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 m.setEingabedatum();
                 m.setBeitragsgruppe(null);
                 m.setExterneMitgliedsnummer(null);
