@@ -91,8 +91,6 @@ public class GutschriftAction extends SEPASupport implements Action
 
   private UeberweisungAusgabe ausgabe;
 
-  private boolean buchungErzeugen;
-
   private boolean rechnungErzeugen;
 
   private boolean rechnungsDokumentSpeichern;
@@ -187,7 +185,6 @@ public class GutschriftAction extends SEPASupport implements Action
       datum = dialog.getDatum();
       verwendungszweck = dialog.getZweck();
       ausgabe = dialog.getAusgabe();
-      buchungErzeugen = dialog.getBuchungErzeugen();
       rechnungErzeugen = dialog.getRechnungErzeugen();
       rechnungsDokumentSpeichern = dialog.getRechnungsDokumentSpeichern();
       teilbetragAbrechnen = dialog.getTeilbetragAbrechnen();
@@ -210,10 +207,7 @@ public class GutschriftAction extends SEPASupport implements Action
         throw new ApplicationException("Eingabeparameter fehlerhaft!");
       }
 
-      if (buchungErzeugen)
-      {
-        konto = getKonto();
-      }
+      konto = getKonto();
 
       // Abrechnungslauf erzeugen damit man die Lastschrift speichern kann was
       // wegen der Map nötig ist. Es hat auch noch den Vorteil, dass man ihn
@@ -234,7 +228,7 @@ public class GutschriftAction extends SEPASupport implements Action
         file = getFile();
       }
     }
-    catch (ApplicationException ae)
+    catch (ApplicationException | OperationCanceledException ae)
     {
       throw ae;
     }
@@ -342,7 +336,7 @@ public class GutschriftAction extends SEPASupport implements Action
         }
 
         // Gegenbuchung erstellen
-        if (erstellt > 0 && buchungErzeugen)
+        if (erstellt > 0)
         {
           try
           {
@@ -538,31 +532,29 @@ public class GutschriftAction extends SEPASupport implements Action
     }
 
     // Buchung erzeugen
-    if (buchungErzeugen)
+    String iban = "";
+    if (prov.getGutschriftZahler() == null)
     {
-      String iban = "";
-      if (prov.getGutschriftZahler() == null)
-      {
-        // Dann muss es eine Lastschrift sein
-        iban = ((Lastschrift) prov).getIBAN();
-      }
-      else
-      {
-        iban = prov.getGutschriftZahler().getIban();
-      }
-      Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
-      buchung.setSollbuchung(sollbuchung);
-      buchung.store();
-      monitor.setStatusText(MARKER + "Buchung erzeugt");
+      // Dann muss es eine Lastschrift sein
+      iban = ((Lastschrift) prov).getIBAN();
+    }
+    else
+    {
+      iban = prov.getGutschriftZahler().getIban();
+    }
+    Buchung buchung = getBuchung(-betrag, name, zweck, iban, positionenList);
+    buchung.setSollbuchung(sollbuchung);
+    buchung.store();
+    monitor.setStatusText(MARKER + "Buchung erzeugt");
 
-      if (rechnung != null && rechnungsDokumentSpeichern)
-      {
-        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-        rmap = new MitgliedMap().getMap(prov.getGutschriftZahler(), rmap);
-        rmap = new RechnungMap().getMap(rechnung, rmap);
-        storeBuchungsDokument(rechnung, buchung, datum, rmap);
-        monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
-      }
+    // Buchungsdokument erzeugen
+    if (rechnung != null && rechnungsDokumentSpeichern)
+    {
+      Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+      rmap = new MitgliedMap().getMap(prov.getGutschriftZahler(), rmap);
+      rmap = new RechnungMap().getMap(rechnung, rmap);
+      storeBuchungsDokument(rechnung, buchung, datum, rmap);
+      monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
     }
 
     summe += betrag;
