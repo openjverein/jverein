@@ -509,24 +509,24 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
             rechnungsDokumentSpeichern);
       }
       settings.setAttribute("teilbetragAbrechnen", teilbetragAbrechnen);
-      if (teilbetrag != null)
-      {
-        settings.setAttribute("teilbetrag", teilbetrag);
-      }
-      else
-      {
-        settings.setAttribute("teilbetrag", "");
-      }
-      if (buchungsart != null)
-      {
-        settings.setAttribute("buchungsart", buchungsart.getID());
-      }
-      else
-      {
-        settings.setAttribute("buchungsart", "");
-      }
       if (teilbetragAbrechnen)
       {
+        if (teilbetrag != null)
+        {
+          settings.setAttribute("teilbetrag", teilbetrag);
+        }
+        else
+        {
+          settings.setAttribute("teilbetrag", "");
+        }
+        if (buchungsart != null)
+        {
+          settings.setAttribute("buchungsart", buchungsart.getID());
+        }
+        else
+        {
+          settings.setAttribute("buchungsart", "");
+        }
         if (buchungsklasse != null)
         {
           settings.setAttribute("buchungsklasse", buchungsklasse.getID());
