@@ -433,10 +433,10 @@ public class Gutschrift extends SEPASupport
           monitor.setStatusText("Keine Gutschrift erstellt: "
               + (skip > 0 ? skip + " übersprungen." : "")
               + (nurausgleich > 0
-                  ? "\nBei " + nurausgleich
+                  ? " Bei " + nurausgleich
                       + " Sollbuchung(en) wurde nur diese ausgeglichen."
                   : "")
-              + (error1 > 0 ? "\n" + error1 + " fehlerhaft." : ""));
+              + (error1 > 0 ? " " + error1 + " fehlerhaft." : ""));
         }
         else
         {
@@ -444,12 +444,12 @@ public class Gutschrift extends SEPASupport
           monitor.setStatusText(erstellt + " Gutschrift(en) erstellt"
               + (skip > 0 ? ", " + skip + " übersprungen." : ".")
               + (nurausgleich > 0
-                  ? "\nBei " + nurausgleich
+                  ? " Bei " + nurausgleich
                       + " Sollbuchung(en) wurden nur diese ausgeglichen."
                   : "")
-              + (error1 > 0 ? "\n" + error1 + " Gutschriften fehlerhaft." : "")
+              + (error1 > 0 ? " " + error1 + " Gutschriften fehlerhaft." : "")
               + (error2 > 0
-                  ? "\n" + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
+                  ? " " + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
                   : ""));
         }
 
