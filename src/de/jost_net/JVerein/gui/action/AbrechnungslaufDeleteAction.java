@@ -28,6 +28,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -235,6 +236,17 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
         kt.store();
       }
     }
+    it = Einstellungen.getDBService().createList(SollbuchungPosition.class);
+    it.addFilter("abrechnungslauf = ?", object.getID());
+    while (it.hasNext())
+    {
+      SollbuchungPosition pos = (SollbuchungPosition) it.next();
+      Sollbuchung sollb = pos.getSollbuchung();
+      sollb.setBetrag(sollb.getBetrag() - pos.getBetrag());
+      sollb.updateForced();
+      pos.delete();
+    }
+
     object.delete();
   }
 

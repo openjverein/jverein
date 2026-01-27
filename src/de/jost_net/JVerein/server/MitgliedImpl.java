@@ -1601,13 +1601,13 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return null;
+    return Double.valueOf(0d);
   }
 
   @Override
   public Double getIstSumme() throws RemoteException
   {
-    return null;
+    return Double.valueOf(0d);
   }
 
   @Override

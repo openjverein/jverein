@@ -60,4 +60,8 @@ public interface SollbuchungPosition extends JVereinDBObject
 
   public Double getSteuerbetrag() throws RemoteException;
 
+  public Long getAbrechnungslaufId() throws RemoteException;
+
+  public void setAbrechnungslaufId(Long abrl) throws RemoteException;
+
 }

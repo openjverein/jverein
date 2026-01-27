@@ -297,6 +297,18 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Long getAbrechnungslaufId() throws RemoteException
+  {
+    return (Long) super.getAttribute("abrechnungslauf");
+  }
+
+  @Override
+  public void setAbrechnungslaufId(Long abrechnungslauf) throws RemoteException
+  {
+    setAttribute("abrechnungslauf", abrechnungslauf);
+  }
+
+  @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
     if ("buchungsart".equals(fieldName))

@@ -102,6 +102,8 @@ public class Gutschrift extends SEPASupport
 
   private int erstellt = 0;
 
+  private int nurausgleich = 0;
+
   private int skip = 0;
 
   private int error1 = 0;
@@ -216,6 +218,17 @@ public class Gutschrift extends SEPASupport
                   .getNameVorname(provider.getGutschriftZahler());
             }
 
+            // Fixer Betrag bei Gesamtrechnung wird nicht unterstützt
+            // Bei welcher Sollbuchung soll man da die Erstattung ausgleichen?
+            if (teilbetragAbrechnen && provider instanceof Rechnung
+                && ((Rechnung) provider).getSollbuchungList().size() > 1)
+            {
+              skip++;
+              monitor.setStatusText(SKIP + statustext
+                  + ": Fixer Betrag bei Gesamtrechnungen wird nicht unterstützt!");
+              continue;
+            }
+
             // Bei Lastschrift ohne Zahler erstatten wir auf das gleiche Konto
             // wie bei der Lastschrift
             if (provider.getGutschriftZahler() != null)
@@ -230,31 +243,62 @@ public class Gutschrift extends SEPASupport
               }
             }
 
-            // Keine Gutschrift bei Erstattungen und keiner Einzahlung
-            if (!teilbetragAbrechnen && (provider.getBetrag() < 0.005d
-                || provider.getIstSumme() < 0.005d))
+            // Keine Gutschrift bei Erstattungen
+            if (provider.getBetrag() < -0.005d)
             {
               skip++;
-              monitor.setStatusText(SKIP + statustext
-                  + ": Betrag oder Zahlungseingang ist nicht größer als 0!");
+              monitor.setStatusText(
+                  SKIP + statustext + ": Der Betrag ist negtiv!");
               continue;
             }
 
+            // Keine Gutschrift bei Erstattungen und keiner Einzahlung
+            if (provider.getIstSumme() < -0.005d)
+            {
+              skip++;
+              monitor.setStatusText(SKIP + statustext
+                  + ": Der Zahlungseingang ist negativ, dadurch kann nichts erstattet werden!");
+              continue;
+            }
+
+            monitor.setStatusText("Generiere Gutschrift für " + statustext
+                + " und Zahler " + name + ".");
+
             Double betrag = null;
+            Double offen = provider.getBetrag() - provider.getIstSumme();
             // Bei Teilbetrag mit offenem Betrag verrechnen
             if (teilbetragAbrechnen)
             {
-              Double offen = provider.getBetrag() - provider.getIstSumme();
               if (offen > 0.005d)
               {
+                // Kann nur bei Rechnung oder Sollbuchung sein
+                Sollbuchung sollb = null;
+                if (provider instanceof Sollbuchung)
+                {
+                  sollb = (Sollbuchung) provider;
+                }
+                else if (provider instanceof Rechnung)
+                {
+                  // Keine Gesamtrechnung hier, wird oben abgefangen
+                  sollb = ((Rechnung) provider).getSollbuchungList().get(0);
+                }
+
+                // Erstattungsbetrag
                 betrag = teilbetrag - offen;
                 if (betrag < 0.005d)
                 {
-                  skip++;
-                  monitor.setStatusText(SKIP + statustext
-                      + ": Erstattungsbetrag ist kleiner als der offene Betrag!");
+                  // Teilbetrag nur bei der Sollbuchung abziehen
+                  // es muss nichts erstattet werden
+                  sollbuchungAusgleich(sollb, -teilbetrag, monitor);
+                  nurausgleich++;
+                  monitor.setStatusText(MARKER
+                      + "Erstattungsbetrag ist kleiner als der offene Betrag!");
                   continue;
                 }
+                // Sollbuchung ausgleichen mit dem offenen Betrag
+                sollbuchungAusgleich(sollb, -offen, monitor);
+                monitor.setStatusText(INFO
+                    + ": Der Erstattungsbetrag wurde mit dem offenen Betrag verrechnet!");
               }
               else
               {
@@ -263,15 +307,37 @@ public class Gutschrift extends SEPASupport
             }
             else
             {
+              // Komplette Erstattung der Einzahlung
+              if (offen > 0.005d)
+              {
+                // Erst Sollbuchungen ausgleichen wenn etwas offen ist
+                if (provider instanceof Sollbuchung)
+                {
+                  Sollbuchung sollb = (Sollbuchung) provider;
+                  sollbuchungAusgleich(sollb,
+                      sollb.getIstSumme() - sollb.getBetrag(), monitor);
+                }
+                else if (provider instanceof Rechnung)
+                {
+                  for (Sollbuchung sollb : ((Rechnung) provider)
+                      .getSollbuchungList())
+                  {
+                    sollbuchungAusgleich(sollb,
+                        sollb.getIstSumme() - sollb.getBetrag(), monitor);
+                  }
+                }
+              }
+              // Erstattungsbetrag
               betrag = provider.getIstSumme();
-            }
-
-            monitor.setStatusText("Generiere Gutschrift für " + statustext
-                + " und Zahler " + name + ".");
-            if (teilbetragAbrechnen && betrag < teilbetrag)
-            {
-              monitor.setStatusText(INFO
-                  + ": Der Erstattungsbetrag wurde mit dem offenen Betrag verrechnet!");
+              if (betrag < 0.005d)
+              {
+                // Zahlungseingang ist 0, darum nur die Sollbuchung(en)
+                // ausgleichen aber nichts erstatten
+                nurausgleich++;
+                monitor.setStatusText(MARKER
+                    + "Der Zahlungseingang ist 0€, also nichts zu erstatten!");
+                continue;
+              }
             }
 
             // Sollbuchung, Buchungen und Lastschriften erzeugen
@@ -366,16 +432,24 @@ public class Gutschrift extends SEPASupport
         {
           monitor.setStatusText("Keine Gutschrift erstellt: "
               + (skip > 0 ? skip + " übersprungen." : "")
-              + (error1 > 0 ? " " + error1 + " fehlerhaft." : ""));
+              + (nurausgleich > 0
+                  ? "\nBei " + nurausgleich
+                      + " Sollbuchung(en) wurde nur diese ausgeglichen."
+                  : "")
+              + (error1 > 0 ? "\n" + error1 + " fehlerhaft." : ""));
         }
         else
         {
           GUI.getCurrentView().reload();
           monitor.setStatusText(erstellt + " Gutschrift(en) erstellt"
               + (skip > 0 ? ", " + skip + " übersprungen." : ".")
-              + (error1 > 0 ? " " + error1 + " Gutschriften fehlerhaft." : "")
+              + (nurausgleich > 0
+                  ? "\nBei " + nurausgleich
+                      + " Sollbuchung(en) wurden nur diese ausgeglichen."
+                  : "")
+              + (error1 > 0 ? "\n" + error1 + " Gutschriften fehlerhaft." : "")
               + (error2 > 0
-                  ? " " + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
+                  ? "\n" + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
                   : ""));
         }
 
@@ -553,7 +627,10 @@ public class Gutschrift extends SEPASupport
     Buchung buchung = getBuchung(-betrag, name, zweck, iban);
     buchung.setSollbuchung(sollbuchung);
     buchung.store();
-    SplitbuchungsContainer.autoSplit(buchung, sollbuchung, false);
+    if (!(teilbetragAbrechnen || prov instanceof Lastschrift))
+    {
+      SplitbuchungsContainer.autoSplit(buchung, sollbuchung, false);
+    }
     monitor.setStatusText(MARKER + "Buchung erzeugt");
     return buchung;
   }
@@ -571,6 +648,22 @@ public class Gutschrift extends SEPASupport
       storeBuchungsDokument(rechnung, buchung, datum, rmap);
       monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
     }
+  }
+
+  private void sollbuchungAusgleich(Sollbuchung sollb, Double betrag,
+      ProgressMonitor monitor) throws RemoteException, ApplicationException
+  {
+    SollbuchungPosition sbp = (SollbuchungPosition) service
+        .createObject(SollbuchungPosition.class, null);
+    sbp.setBetrag(betrag);
+    sbp.setDatum(datum);
+    sbp.setZweck("Gutschrift Ausgleich für Abrechnungslauf #" + abrl.getID());
+    sbp.setSollbuchung(sollb.getID());
+    sbp.setAbrechnungslaufId(Long.valueOf(abrl.getID()));
+    sbp.store();
+    sollb.setBetrag(sollb.getBetrag() + betrag);
+    sollb.updateForced();
+    monitor.setStatusText(MARKER + "Sollbuchung ausgeglichen");
   }
 
   private File getFile() throws Exception
