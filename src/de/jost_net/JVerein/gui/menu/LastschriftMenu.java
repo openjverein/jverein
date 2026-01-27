@@ -50,7 +50,6 @@ public class LastschriftMenu extends ContextMenu
         "text-x-generic.png"));
     addItem(new CheckedContextMenuItem("Versanddatum setzen",
         new VersandAction(), "office-calendar.png"));
-
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
