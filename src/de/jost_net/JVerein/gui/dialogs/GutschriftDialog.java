@@ -131,7 +131,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   }
 
   @Override
-  protected void paint(Composite parent) throws Exception
+  protected void paint(Composite parent) throws RemoteException
   {
     rechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
@@ -150,7 +150,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     // Nur anzeigen wenn Rechnungen aktiviert sind
     if (rechnungAnzeigen)
     {
-      group.addHeadline("Rechnungen");
+      group.addHeadline("Rechnung");
       group.addLabelPair("Rechnung zur Gutschrift erzeugen",
           getRechnungErzeugenInput());
       group.addLabelPair("Erstattung Formular", getFormularInput());
@@ -164,7 +164,9 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     group.addLabelPair("Erstattungsbetrag", getTeilbetragInput());
     group.addLabelPair("Buchungsart", getBuchungsartInput());
     if (buchungsklasseInBuchung)
+    {
       group.addLabelPair("Buchungsklasse", getBuchungsklasseInput());
+    }
     if (steuerInBuchung)
     {
       group.addLabelPair("Steuer", getSteuerInput());
@@ -205,6 +207,13 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
           && (boolean) teilbetragAbrechnenInput.getValue())
       {
         status.setValue("Bitte positiven Erstattungsbetrag eingeben");
+        status.setColor(Color.ERROR);
+        return;
+      }
+      if (buchungsartInput.getValue() == null
+          && (boolean) teilbetragAbrechnenInput.getValue())
+      {
+        status.setValue("Bitte Buchungsart eingeben");
         status.setColor(Color.ERROR);
         return;
       }
@@ -311,8 +320,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
             .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
         teilbetragInput
             .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
-        buchungsartInput
-            .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+        // Die Reihenfolge von mandatory und enabled ist abhängig von
+        // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+        if ((boolean) teilbetragAbrechnenInput.getValue())
+        {
+          buchungsartInput.setEnabled(true);
+          buchungsartInput.setMandatory(true);
+        }
+        else
+        {
+          buchungsartInput.setMandatory(false);
+          buchungsartInput.setEnabled(false);
+        }
         if (buchungsklasseInput != null)
         {
           buchungsklasseInput
@@ -397,6 +416,8 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         }
       }
     });
+    buchungsartInput
+        .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
     buchungsartInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
     return buchungsartInput;
   }
@@ -459,15 +480,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     zweck = (String) zweckInput.getValue();
     ausgabe = (UeberweisungAusgabe) ausgabeInput.getValue();
     teilbetragAbrechnen = (boolean) teilbetragAbrechnenInput.getValue();
-    teilbetrag = (Double) teilbetragInput.getValue();
-    buchungsart = (Buchungsart) buchungsartInput.getValue();
-    if (buchungsklasseInBuchung)
+    if (teilbetragAbrechnen)
     {
-      buchungsklasse = (Buchungsklasse) buchungsklasseInput.getValue();
-    }
-    if (steuerInBuchung)
-    {
-      steuer = (Steuer) steuerInput.getValue();
+      teilbetrag = (Double) teilbetragInput.getValue();
+      buchungsart = (Buchungsart) buchungsartInput.getValue();
+      if (buchungsklasseInBuchung)
+      {
+        buchungsklasse = (Buchungsklasse) buchungsklasseInput.getValue();
+      }
+      if (steuerInBuchung)
+      {
+        steuer = (Steuer) steuerInput.getValue();
+      }
     }
   }
 
@@ -501,21 +525,24 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       {
         settings.setAttribute("buchungsart", "");
       }
-      if (buchungsklasse != null)
+      if (teilbetragAbrechnen)
       {
-        settings.setAttribute("buchungsklasse", buchungsklasse.getID());
-      }
-      else
-      {
-        settings.setAttribute("buchungsklasse", "");
-      }
-      if (steuer != null)
-      {
-        settings.setAttribute("steuer", steuer.getID());
-      }
-      else
-      {
-        settings.setAttribute("steuer", "");
+        if (buchungsklasse != null)
+        {
+          settings.setAttribute("buchungsklasse", buchungsklasse.getID());
+        }
+        else
+        {
+          settings.setAttribute("buchungsklasse", "");
+        }
+        if (steuer != null)
+        {
+          settings.setAttribute("steuer", steuer.getID());
+        }
+        else
+        {
+          settings.setAttribute("steuer", "");
+        }
       }
     }
     catch (RemoteException ex)

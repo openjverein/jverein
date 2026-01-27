@@ -17,16 +17,16 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift, IBetrag, IVersand
@@ -433,10 +433,8 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException
+  public List<Buchung> getBuchungList() throws RemoteException
   {
-    // Lastschrift hat keine Sollbuchungspositionen
     return null;
   }
 

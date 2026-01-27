@@ -17,11 +17,11 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.List;
 
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
 public interface IGutschriftProvider extends JVereinDBObject
 {
@@ -33,6 +33,5 @@ public interface IGutschriftProvider extends JVereinDBObject
 
   public Double getIstSumme() throws RemoteException;
 
-  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
+  public List<Buchung> getBuchungList() throws RemoteException;
 }
