@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import org.kapott.hbci.sepa.SepaVersion;
 
@@ -28,6 +29,7 @@ import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
@@ -92,10 +94,13 @@ public class AbrechnungSEPAParam
 
   public Date voneingabedatum;
 
+  List<Zusatzbetrag> zusatzbetraegeList;
+
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR,
       SepaVersion sepaVersion, String pdffileRCUR)
       throws ApplicationException, RemoteException
   {
+    zusatzbetraegeList = ac.getZusatzbetraegeList();
     abbuchungsmodus = (Integer) ac.getAbbuchungsmodus().getValue();
     Monat monat = (Monat) ac.getAbrechnungsmonat().getValue();
     abrechnungsmonat = monat.getKey();

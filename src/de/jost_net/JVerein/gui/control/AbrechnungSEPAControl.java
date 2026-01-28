@@ -20,6 +20,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -29,6 +30,7 @@ import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -41,6 +43,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -112,6 +115,8 @@ public class AbrechnungSEPAControl extends AbstractControl
   private DateInput voneingabedatum;
 
   private CheckboxInput rechnungsdokumentspeichern;
+
+  private List<Zusatzbetrag> zusatzbetraegeList;
 
   public AbrechnungSEPAControl(AbstractView view)
   {
@@ -474,6 +479,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return button;
   }
 
+  public void startAbrechnung(List<Zusatzbetrag> zusatzbetraege)
+      throws RemoteException, ApplicationException
+  {
+    zusatzbetraegeList = zusatzbetraege;
+    doAbrechnung();
+  }
+
   private void doAbrechnung() throws ApplicationException, RemoteException
   {
     settings.setAttribute("modus", (Integer) modus.getValue());
@@ -495,8 +507,12 @@ public class AbrechnungSEPAControl extends AbstractControl
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
-      settings.setAttribute("rechnungsdokumentspeichern",
-          (Boolean) rechnungsdokumentspeichern.getValue());
+      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+          && JVereinPlugin.isArchiveServiceActive())
+      {
+        settings.setAttribute("rechnungsdokumentspeichern",
+            (Boolean) rechnungsdokumentspeichern.getValue());
+      }
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
       settings.setAttribute("rechnungsformular",
           rechnungsformular.getValue() == null ? null
@@ -710,5 +726,10 @@ public class AbrechnungSEPAControl extends AbstractControl
         sollbuchungenzusammenfassen.setValue(false);
       }
     }
+  }
+
+  public List<Zusatzbetrag> getZusatzbetraegeList()
+  {
+    return zusatzbetraegeList;
   }
 }
