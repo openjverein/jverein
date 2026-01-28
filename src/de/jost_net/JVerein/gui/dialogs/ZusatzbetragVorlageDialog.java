@@ -25,7 +25,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -35,8 +37,10 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
+import de.willuhn.logging.Logger;
 
 /**
  * Ein Dialog, zur Auswahl und Bearbeitung von Zusatzbetrag-Vorlagen
@@ -118,13 +122,6 @@ public class ZusatzbetragVorlageDialog
     tab.addColumn("Buchungstext", "buchungstext");
     tab.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-    {
-      tab.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-    }
-    tab.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     tab.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
     {
       @Override
@@ -137,6 +134,33 @@ public class ZusatzbetragVorlageDialog
         return new Zahlungsweg((Integer) o).getText();
       }
     });
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      tab.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+    tab.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      tab.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
+    }
+    tab.addColumn("Zahlt selbst", "mitgliedzahltselbst", new JaNeinFormatter(),
+        false, Column.ALIGN_LEFT);
     tab.setRememberColWidths(true);
     tab.setRememberOrder(true);
     tab.addFeature(new FeatureSummary());
