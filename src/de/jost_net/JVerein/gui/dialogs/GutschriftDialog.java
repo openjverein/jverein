@@ -275,7 +275,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     rechnungErzeugenInput = new CheckboxInput(
         settings.getBoolean("rechnungErzeugen", false));
     rechnungErzeugenInput.addListener(e -> {
-      formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
+      // Die Reihenfolge von mandatory und enabled ist abhängig von
+      // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+      if ((boolean) rechnungErzeugenInput.getValue())
+      {
+        formularInput.setEnabled(true);
+        formularInput.setMandatory(true);
+      }
+      else
+      {
+        formularInput.setMandatory(false);
+        formularInput.setEnabled(false);
+      }
       rechnungsDokumentSpeichernInput
           .setEnabled((boolean) rechnungErzeugenInput.getValue());
     });
@@ -287,6 +298,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   {
     formularInput = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("formular", ""));
+    formularInput.setMandatory((boolean) rechnungErzeugenInput.getValue());
     formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
     return formularInput;
   }
@@ -501,7 +513,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     {
       settings.setAttribute("ausgabe", ausgabe.getKey());
       settings.setAttribute("verwendungszweck", zweck);
-      if (rechnungAnzeigen)
+      if (rechnungErzeugen)
       {
         settings.setAttribute("formular", formular.getID());
         settings.setAttribute("rechnungErzeugen", rechnungErzeugen);

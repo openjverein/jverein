@@ -248,11 +248,11 @@ public class Gutschrift extends SEPASupport
             {
               skip++;
               monitor.setStatusText(
-                  SKIP + statustext + ": Der Betrag ist negtiv!");
+                  SKIP + statustext + ": Der Betrag ist negativ!");
               continue;
             }
 
-            // Keine Gutschrift bei Erstattungen und keiner Einzahlung
+            // Keine Gutschrift bei negativer Einzahlung
             if (provider.getIstSumme() < -0.005d)
             {
               skip++;
