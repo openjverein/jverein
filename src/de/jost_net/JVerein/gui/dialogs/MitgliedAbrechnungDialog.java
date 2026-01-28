@@ -170,7 +170,10 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
           zb.setStartdatum((Date) part.getStartdatum(true).getValue());
           zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
           zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
-          zb.setSteuer((Steuer) part.getSteuer().getValue());
+          if (part.isSteuerActive())
+          {
+            zb.setSteuer((Steuer) part.getSteuer().getValue());
+          }
           zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
           zb.setMitgliedzahltSelbst(
               (Boolean) part.getMitgliedzahltSelbst().getValue());
