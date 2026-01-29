@@ -32,6 +32,7 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
@@ -60,6 +61,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
   public MitgliedZusatzbetragZuordnungDialog(int position, Mitglied[] m)
   {
     super(position);
+    super.setSize(600, SWT.DEFAULT);
     setTitle("Zuordnung Zusatzbetrag");
     this.m = m;
   }
@@ -106,6 +108,10 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.setStartdatum((Date) part.getStartdatum(true).getValue());
             zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            if (part.isSteuerActive())
+            {
+              zb.setSteuer((Steuer) part.getSteuer().getValue());
+            }
             zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zb.setMitgliedzahltSelbst(
                 (Boolean) part.getMitgliedzahltSelbst().getValue());
@@ -133,6 +139,10 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             }
             zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            if (part.isSteuerActive())
+            {
+              zv.setSteuer((Steuer) part.getSteuer().getValue());
+            }
             zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zv.setMitgliedzahltSelbst(
                 (Boolean) part.getMitgliedzahltSelbst().getValue());
@@ -173,7 +183,6 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
       }
     }, null, false, "process-stop.png");
     buttons.paint(parent);
-    getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
 
   /**
