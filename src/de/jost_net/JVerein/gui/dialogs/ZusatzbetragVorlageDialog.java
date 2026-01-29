@@ -39,6 +39,7 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.logging.Logger;
 
 /**
  * Ein Dialog, zur Auswahl und Bearbeitung von Zusatzbetrag-Vorlagen
