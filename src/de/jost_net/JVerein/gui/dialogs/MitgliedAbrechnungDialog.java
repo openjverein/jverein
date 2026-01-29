@@ -32,7 +32,9 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
@@ -43,6 +45,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -76,6 +79,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   protected void paint(Composite parent) throws RemoteException
   {
     final AbrechnungSEPAControl control = new AbrechnungSEPAControl(null);
+    final ZusatzbetragControl zcontrol = new ZusatzbetragControl(null);
 
     LabelGroup group = new LabelGroup(parent, "");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
@@ -101,6 +105,8 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     }
     left.addLabelPair("Zahlungsweg", part.getZahlungsweg());
     left.addLabelPair("Mitglied zahlt selbst", part.getMitgliedzahltSelbst());
+    left.addHeadline("Vorlagen");
+    left.addLabelPair("Als Vorlage speichern", zcontrol.getVorlage());
 
     // Nicht angezeigte Parameter aus dem ZusatzbetragPart und Abrechnungslauf
     // View erzeugen
@@ -142,10 +148,8 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
       right.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
     }
 
-    boolean ohneLesefelder = !((String) part.getBuchungstext().getValue())
-        .contains(Einstellungen.LESEFELD_PRE);
     Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = MitgliedMap.getDummyMap(map, ohneLesefelder);
+    map = MitgliedMap.getDummyMap(map);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -153,7 +157,8 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         null, false, "bookmark.png");
-
+    buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
+        null, false, "view-refresh.png");
     buttons.addButton("Abrechnen", context -> {
       try
       {
@@ -178,6 +183,33 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
           zb.setMitgliedzahltSelbst(
               (Boolean) part.getMitgliedzahltSelbst().getValue());
           list.add(zb);
+        }
+        if (zcontrol.getVorlage().getValue()
+            .equals(ZusatzbetragControl.MITDATUM)
+            || zcontrol.getVorlage().getValue()
+                .equals(ZusatzbetragControl.OHNEDATUM))
+        {
+          ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
+              .getDBService().createObject(ZusatzbetragVorlage.class, null);
+          zv.setIntervall(IntervallZusatzzahlung.KEIN);
+          zv.setBuchungstext((String) part.getBuchungstext().getValue());
+          zv.setBetrag((Double) part.getBetrag().getValue());
+          if (zcontrol.getVorlage().getValue()
+              .equals(ZusatzbetragControl.MITDATUM))
+          {
+            zv.setFaelligkeit((Date) part.getStartdatum(true).getValue());
+            zv.setStartdatum((Date) part.getStartdatum(true).getValue());
+          }
+          zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+          zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+          if (part.isSteuerActive())
+          {
+            zv.setSteuer((Steuer) part.getSteuer().getValue());
+          }
+          zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+          zv.setMitgliedzahltSelbst(
+              (Boolean) part.getMitgliedzahltSelbst().getValue());
+          zv.store();
         }
 
         control.getFaelligkeit()
