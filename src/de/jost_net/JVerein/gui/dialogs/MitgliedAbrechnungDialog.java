@@ -120,7 +120,10 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     control.getZahlungsgrund();
     control.getZusatzbetrag().setValue(true);
     control.getKursteilnehmer().setValue(false);
-    control.getSollbuchungenZusammenfassen();
+
+    right.addHeadline("Sollbuchungen");
+    right.addLabelPair("Sollbuchung(en) zusammenfassen",
+        control.getSollbuchungenZusammenfassen());
 
     right.addHeadline("Lastschriften");
     right.addLabelPair("Kompakte Abbuchung(en)",
