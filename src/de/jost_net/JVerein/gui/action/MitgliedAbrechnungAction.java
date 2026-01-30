@@ -23,7 +23,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.util.ArrayList;
+
 import de.jost_net.JVerein.gui.dialogs.MitgliedAbrechnungDialog;
+import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -42,21 +45,44 @@ public class MitgliedAbrechnungAction implements Action
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context instanceof Mitglied)
-    {
-      mitglieder = new Mitglied[] { (Mitglied) context };
-    }
-    else if (context instanceof Mitglied[])
-    {
-      mitglieder = (Mitglied[]) context;
-    }
-    else
-    {
-      throw new ApplicationException("Keine Mitglieder ausgewählt!");
-    }
-
     try
     {
+
+      if (context instanceof Mitglied)
+      {
+        mitglieder = new Mitglied[] { (Mitglied) context };
+      }
+      else if (context instanceof Mitglied[])
+      {
+        mitglieder = (Mitglied[]) context;
+      }
+      else if (context instanceof Lehrgang)
+      {
+        mitglieder = new Mitglied[] { ((Lehrgang) context).getMitglied() };
+      }
+      else if (context instanceof Lehrgang[])
+      {
+        Lehrgang[] lge = (Lehrgang[]) context;
+        ArrayList<Mitglied> list = new ArrayList<>();
+        for (Lehrgang lg : lge)
+        {
+          list.add(lg.getMitglied());
+        }
+        if (list.size() > 0)
+        {
+          mitglieder = new Mitglied[list.size()];
+          list.toArray(mitglieder);
+        }
+        else
+        {
+          throw new ApplicationException("Keine Lehrgänge ausgewählt!");
+        }
+      }
+      else
+      {
+        throw new ApplicationException("Keine Mitglieder ausgewählt!");
+      }
+
       MitgliedAbrechnungDialog dialog = new MitgliedAbrechnungDialog(
           AbstractDialog.POSITION_CENTER, mitglieder);
       dialog.open();

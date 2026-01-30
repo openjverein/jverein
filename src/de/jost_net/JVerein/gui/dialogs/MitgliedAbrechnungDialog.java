@@ -122,8 +122,6 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     control.getKursteilnehmer().setValue(false);
     control.getSollbuchungenZusammenfassen();
 
-    // LabelGroup group1 = new LabelGroup(right.getComposite(),
-    // "Lastschriften");
     right.addHeadline("Lastschriften");
     right.addLabelPair("Kompakte Abbuchung(en)",
         control.getKompakteAbbuchung());
@@ -134,7 +132,6 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      // LabelGroup group2 = new LabelGroup(right.getComposite(), "Rechnungen");
       right.addHeadline("Rechnungen");
       right.addLabelPair("Rechnung(en) erstellen", control.getRechnung());
       if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
