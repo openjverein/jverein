@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -440,7 +441,7 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public List<SollbuchungPosition> getSollbuchungPositionList()
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException
   {
     return null;

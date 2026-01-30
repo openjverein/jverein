@@ -23,8 +23,6 @@ import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -338,32 +336,10 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       fixerBetragAbrechnenInput = new CheckboxInput(
           settings.getBoolean("fixerBetragAbrechnen", false));
       fixerBetragAbrechnenInput.addListener(e -> {
-        fixerBetragInput
-            .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
-        fixerBetragInput
-            .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
-        // Die Reihenfolge von mandatory und enabled ist abhängig von
-        // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-        if ((boolean) fixerBetragAbrechnenInput.getValue())
-        {
-          buchungsartInput.setEnabled(true);
-          buchungsartInput.setMandatory(true);
-        }
-        else
-        {
-          buchungsartInput.setMandatory(false);
-          buchungsartInput.setEnabled(false);
-        }
-        if (buchungsklasseInput != null)
-        {
-          buchungsklasseInput
-              .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
-        }
-        if (steuerInput != null)
-        {
-          steuerInput
-              .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
-        }
+        updateFixerBetragInput();
+        updateBuchungsartInput();
+        updateBuchungsklasseInput();
+        updateSteuerInput();
       });
     }
     fixerBetragAbrechnenInput.setName(
@@ -384,9 +360,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     {
       fixerBetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
     }
-    fixerBetragInput
-        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
-    fixerBetragInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    updateFixerBetragInput();
     return fixerBetragInput;
   }
 
@@ -410,41 +384,28 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         buchungsartInput, ba, buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    buchungsartInput.addListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
-      {
-        try
-        {
-          Buchungsart bua = (Buchungsart) buchungsartInput.getValue();
-          if (buchungsklasseInput != null
-              && buchungsklasseInput.getValue() == null && bua != null)
-            buchungsklasseInput.setValue(bua.getBuchungsklasse());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-      }
-    });
     buchungsartInput.addListener(e -> {
-      if (steuerInput != null && buchungsartInput.getValue() != null)
+      try
       {
-        try
+        if (buchungsklasseInput != null && buchungsartInput.getValue() != null)
         {
+          buchungsklasseInput.setValue(
+              ((Buchungsart) buchungsartInput.getValue()).getBuchungsklasse());
+        }
+        if (steuerInput != null && buchungsartInput.getValue() != null)
+        {
+
           steuerInput.setValue(
               ((Buchungsart) buchungsartInput.getValue()).getSteuer());
         }
-        catch (RemoteException e1)
-        {
-          Logger.error("Fehler", e1);
-        }
+
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
       }
     });
-    buchungsartInput
-        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
-    buchungsartInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    updateBuchungsartInput();
     return buchungsartInput;
   }
 
@@ -466,8 +427,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     }
     buchungsklasseInput = new BuchungsklasseInput()
         .getBuchungsklasseInput(buchungsklasseInput, bk);
-    buchungsklasseInput
-        .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    updateBuchungsklasseInput();
     return buchungsklasseInput;
   }
 
@@ -489,7 +449,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     }
     steuerInput = new SteuerInput(st);
     steuerInput.setPleaseChoose("Keine Steuer");
-    steuerInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    updateSteuerInput();
     return steuerInput;
   }
 
@@ -642,5 +602,55 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   public Steuer getSteuer()
   {
     return steuer;
+  }
+
+  private void updateFixerBetragInput()
+  {
+    fixerBetragInput
+        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
+    fixerBetragInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+  }
+
+  private void updateBuchungsartInput()
+  {
+    // Die Reihenfolge von mandatory und enabled ist abhängig von
+    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+    if ((boolean) fixerBetragAbrechnenInput.getValue())
+    {
+      buchungsartInput.setEnabled(true);
+      buchungsartInput.setMandatory(true);
+    }
+    else
+    {
+      buchungsartInput.setMandatory(false);
+      buchungsartInput.setEnabled(false);
+    }
+  }
+
+  private void updateBuchungsklasseInput()
+  {
+    if (buchungsklasseInput != null)
+    {
+      // Die Reihenfolge von mandatory und enabled ist abhängig von
+      // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+      if ((boolean) fixerBetragAbrechnenInput.getValue())
+      {
+        buchungsklasseInput.setEnabled(true);
+        buchungsklasseInput.setMandatory(true);
+      }
+      else
+      {
+        buchungsklasseInput.setMandatory(false);
+        buchungsklasseInput.setEnabled(false);
+      }
+    }
+  }
+
+  private void updateSteuerInput()
+  {
+    if (steuerInput != null)
+    {
+      steuerInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    }
   }
 }

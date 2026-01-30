@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.rmi.Buchung;
@@ -31,6 +32,6 @@ public interface IGutschriftProvider extends IMitglied, IBetrag
 
   public List<Buchung> getBuchungList() throws RemoteException;
 
-  public List<SollbuchungPosition> getSollbuchungPositionList()
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException;
 }

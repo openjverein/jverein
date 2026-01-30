@@ -1625,7 +1625,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   @Override
-  public List<SollbuchungPosition> getSollbuchungPositionList()
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
       throws RemoteException
   {
     return null;
