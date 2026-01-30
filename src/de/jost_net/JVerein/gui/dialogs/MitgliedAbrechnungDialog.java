@@ -30,6 +30,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
@@ -151,12 +152,19 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = MitgliedMap.getDummyMap(map);
 
+    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+    rmap = MitgliedMap.getDummyMap(rmap);
+    rmap = RechnungMap.getDummyMap(rmap);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINMAL_ABRECHNUNG, false, "question-circle.png");
 
-    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
-        null, false, "bookmark.png");
+    buttons.addButton("Buchungstext Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
+    buttons.addButton("Rechnung Text Variablen anzeigen",
+        new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
+
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton("Abrechnen", context -> {
