@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -92,13 +93,13 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput rechnungsDokumentSpeichernInput;
 
-  private boolean teilbetragAbrechnen;
+  private boolean fixerBetragAbrechnen;
 
-  private CheckboxInput teilbetragAbrechnenInput;
+  private CheckboxInput fixerBetragAbrechnenInput;
 
-  private Double teilbetrag;
+  private Double fixerBetrag;
 
-  private DecimalInput teilbetragInput;
+  private DecimalInput fixerBetragInput;
 
   private Buchungsart buchungsart;
 
@@ -118,6 +119,8 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
 
   private boolean steuerInBuchung = false;
 
+  private boolean speicherungAnzeigen = false;
+
   private Settings settings = null;
 
   public GutschriftDialog(boolean isMitglied)
@@ -135,6 +138,9 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   {
     rechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
+    speicherungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+        && JVereinPlugin.isArchiveServiceActive();
     buchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     steuerInBuchung = (Boolean) Einstellungen
@@ -154,14 +160,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       group.addLabelPair("Rechnung zur Gutschrift erzeugen",
           getRechnungErzeugenInput());
       group.addLabelPair("Erstattung Formular", getFormularInput());
-      group.addLabelPair("Rechnung als Buchungsdokument speichern",
-          getRechnungsDokumentSpeichernInput());
+      if (speicherungAnzeigen)
+      {
+        group.addLabelPair("Rechnung als Buchungsdokument speichern",
+            getRechnungsDokumentSpeichernInput());
+      }
     }
 
     // Fixen Betrag erstatten
     group.addHeadline("Fixer Betrag");
-    group.addLabelPair("Fixen Betrag erstatten", getTeilbetragAbrechnenInput());
-    group.addLabelPair("Erstattungsbetrag", getTeilbetragInput());
+    group.addLabelPair("Fixen Betrag erstatten",
+        getFixerBetragAbrechnenInput());
+    group.addLabelPair("Erstattungsbetrag", getFixerBetragInput());
     group.addLabelPair("Buchungsart", getBuchungsartInput());
     if (buchungsklasseInBuchung)
     {
@@ -202,16 +212,16 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         status.setColor(Color.ERROR);
         return;
       }
-      if ((teilbetragInput.getValue() == null
-          || ((Double) teilbetragInput.getValue()) < 0.005d)
-          && (boolean) teilbetragAbrechnenInput.getValue())
+      if ((fixerBetragInput.getValue() == null
+          || ((Double) fixerBetragInput.getValue()) < 0.005d)
+          && (boolean) fixerBetragAbrechnenInput.getValue())
       {
         status.setValue("Bitte positiven Erstattungsbetrag eingeben");
         status.setColor(Color.ERROR);
         return;
       }
       if (buchungsartInput.getValue() == null
-          && (boolean) teilbetragAbrechnenInput.getValue())
+          && (boolean) fixerBetragAbrechnenInput.getValue())
       {
         status.setValue("Bitte Buchungsart eingeben");
         status.setColor(Color.ERROR);
@@ -314,27 +324,27 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   }
 
   // Fixen Betrag erstatten
-  private CheckboxInput getTeilbetragAbrechnenInput()
+  private CheckboxInput getFixerBetragAbrechnenInput()
   {
     if (isMitglied)
     {
-      teilbetragAbrechnenInput = new CheckboxInput(true);
-      teilbetragAbrechnenInput.addListener(e -> {
-        teilbetragAbrechnenInput.setValue(true);
+      fixerBetragAbrechnenInput = new CheckboxInput(true);
+      fixerBetragAbrechnenInput.addListener(e -> {
+        fixerBetragAbrechnenInput.setValue(true);
       });
     }
     else
     {
-      teilbetragAbrechnenInput = new CheckboxInput(
-          settings.getBoolean("teilbetragAbrechnen", false));
-      teilbetragAbrechnenInput.addListener(e -> {
-        teilbetragInput
-            .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
-        teilbetragInput
-            .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+      fixerBetragAbrechnenInput = new CheckboxInput(
+          settings.getBoolean("fixerBetragAbrechnen", false));
+      fixerBetragAbrechnenInput.addListener(e -> {
+        fixerBetragInput
+            .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
+        fixerBetragInput
+            .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
         // Die Reihenfolge von mandatory und enabled ist abhängig von
         // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-        if ((boolean) teilbetragAbrechnenInput.getValue())
+        if ((boolean) fixerBetragAbrechnenInput.getValue())
         {
           buchungsartInput.setEnabled(true);
           buchungsartInput.setMandatory(true);
@@ -347,33 +357,37 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         if (buchungsklasseInput != null)
         {
           buchungsklasseInput
-              .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+              .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
         }
         if (steuerInput != null)
         {
-          steuerInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+          steuerInput
+              .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
         }
       });
     }
-    return teilbetragAbrechnenInput;
+    fixerBetragAbrechnenInput.setName(
+        " *sonst ganzen Betrag erstatten und bereits bezahlten Betrag überweisen");
+    return fixerBetragAbrechnenInput;
   }
 
   // Erstattungsbetrag
-  private DecimalInput getTeilbetragInput()
+  private DecimalInput getFixerBetragInput()
   {
-    String tmp = settings.getString("teilbetrag", "");
+    String tmp = settings.getString("fixerBetrag", "");
     if (tmp != null && !tmp.isEmpty())
     {
-      teilbetragInput = new DecimalInput(Double.parseDouble(tmp),
+      fixerBetragInput = new DecimalInput(Double.parseDouble(tmp),
           Einstellungen.DECIMALFORMAT);
     }
     else
     {
-      teilbetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
+      fixerBetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
     }
-    teilbetragInput.setMandatory((boolean) teilbetragAbrechnenInput.getValue());
-    teilbetragInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
-    return teilbetragInput;
+    fixerBetragInput
+        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
+    fixerBetragInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
+    return fixerBetragInput;
   }
 
   public AbstractInput getBuchungsartInput() throws RemoteException
@@ -429,8 +443,8 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
       }
     });
     buchungsartInput
-        .setMandatory((boolean) teilbetragAbrechnenInput.getValue());
-    buchungsartInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
+    buchungsartInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
     return buchungsartInput;
   }
 
@@ -453,7 +467,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     buchungsklasseInput = new BuchungsklasseInput()
         .getBuchungsklasseInput(buchungsklasseInput, bk);
     buchungsklasseInput
-        .setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+        .setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
     return buchungsklasseInput;
   }
 
@@ -475,7 +489,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     }
     steuerInput = new SteuerInput(st);
     steuerInput.setPleaseChoose("Keine Steuer");
-    steuerInput.setEnabled((boolean) teilbetragAbrechnenInput.getValue());
+    steuerInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
     return steuerInput;
   }
 
@@ -486,15 +500,18 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     {
       formular = (Formular) formularInput.getValue();
       rechnungErzeugen = (boolean) rechnungErzeugenInput.getValue();
-      rechnungsDokumentSpeichern = (boolean) rechnungsDokumentSpeichernInput
-          .getValue();
+      if (rechnungsDokumentSpeichernInput != null)
+      {
+        rechnungsDokumentSpeichern = (boolean) rechnungsDokumentSpeichernInput
+            .getValue();
+      }
     }
     zweck = (String) zweckInput.getValue();
     ausgabe = (UeberweisungAusgabe) ausgabeInput.getValue();
-    teilbetragAbrechnen = (boolean) teilbetragAbrechnenInput.getValue();
-    if (teilbetragAbrechnen)
+    fixerBetragAbrechnen = (boolean) fixerBetragAbrechnenInput.getValue();
+    if (fixerBetragAbrechnen)
     {
-      teilbetrag = (Double) teilbetragInput.getValue();
+      fixerBetrag = (Double) fixerBetragInput.getValue();
       buchungsart = (Buchungsart) buchungsartInput.getValue();
       if (buchungsklasseInBuchung)
       {
@@ -520,40 +537,43 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
         settings.setAttribute("rechnungsDokumentSpeichern",
             rechnungsDokumentSpeichern);
       }
-      settings.setAttribute("teilbetragAbrechnen", teilbetragAbrechnen);
-      if (teilbetragAbrechnen)
+      if (!isMitglied)
       {
-        if (teilbetrag != null)
+        settings.setAttribute("fixerBetragAbrechnen", fixerBetragAbrechnen);
+        if (fixerBetragAbrechnen)
         {
-          settings.setAttribute("teilbetrag", teilbetrag);
-        }
-        else
-        {
-          settings.setAttribute("teilbetrag", "");
-        }
-        if (buchungsart != null)
-        {
-          settings.setAttribute("buchungsart", buchungsart.getID());
-        }
-        else
-        {
-          settings.setAttribute("buchungsart", "");
-        }
-        if (buchungsklasse != null)
-        {
-          settings.setAttribute("buchungsklasse", buchungsklasse.getID());
-        }
-        else
-        {
-          settings.setAttribute("buchungsklasse", "");
-        }
-        if (steuer != null)
-        {
-          settings.setAttribute("steuer", steuer.getID());
-        }
-        else
-        {
-          settings.setAttribute("steuer", "");
+          if (fixerBetrag != null)
+          {
+            settings.setAttribute("fixerBetrag", fixerBetrag);
+          }
+          else
+          {
+            settings.setAttribute("fixerBetrag", "");
+          }
+          if (buchungsart != null)
+          {
+            settings.setAttribute("buchungsart", buchungsart.getID());
+          }
+          else
+          {
+            settings.setAttribute("buchungsart", "");
+          }
+          if (buchungsklasse != null)
+          {
+            settings.setAttribute("buchungsklasse", buchungsklasse.getID());
+          }
+          else
+          {
+            settings.setAttribute("buchungsklasse", "");
+          }
+          if (steuer != null)
+          {
+            settings.setAttribute("steuer", steuer.getID());
+          }
+          else
+          {
+            settings.setAttribute("steuer", "");
+          }
         }
       }
     }
@@ -599,14 +619,14 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     return ausgabe;
   }
 
-  public boolean getTeilbetragAbrechnen()
+  public boolean getFixerBetragAbrechnen()
   {
-    return teilbetragAbrechnen;
+    return fixerBetragAbrechnen;
   }
 
-  public Double getTeilbetrag()
+  public Double getFixerBetrag()
   {
-    return teilbetrag;
+    return fixerBetrag;
   }
 
   public Buchungsart getBuchungsart()

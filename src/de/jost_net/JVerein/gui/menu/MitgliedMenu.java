@@ -207,6 +207,11 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
+        new MitgliedLastschriftAction(), "lastschrift.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));
     addItem(new CheckedContextMenuItem("vCard-Datei",
@@ -223,10 +228,6 @@ public class MitgliedMenu extends ContextMenu
     }
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "file-invoice.png"));
-    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
-        new MitgliedLastschriftAction(), "lastschrift.png"));
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
-        new GutschriftAction(), "ueberweisung.png"));
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",

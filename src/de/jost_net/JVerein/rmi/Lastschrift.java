@@ -30,10 +30,6 @@ public interface Lastschrift
 
   public void setAbrechnungslauf(int abrechnungslauf) throws RemoteException;
 
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(int mitglied) throws RemoteException;
-
   public Kursteilnehmer getKursteilnehmer() throws RemoteException;
 
   public void setKursteilnehmer(int kursteilnehmer) throws RemoteException;
@@ -117,8 +113,6 @@ public interface Lastschrift
 
   public void setVerwendungszweck(String verwendungszweck)
       throws RemoteException;
-
-  public Double getBetrag() throws RemoteException;
 
   public void setBetrag(Double betrag) throws RemoteException;
 

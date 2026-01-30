@@ -61,7 +61,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
     setAttribute("mitglied", mitglied);
   }

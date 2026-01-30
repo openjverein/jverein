@@ -25,13 +25,8 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung
-    extends JVereinDBObject, IAdresse, IGutschriftProvider
+public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 {
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(int mitglied) throws RemoteException;
-
   public void setFormular(Formular formular) throws RemoteException;
 
   /**
@@ -43,8 +38,6 @@ public interface Rechnung
    */
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;
-
-  Double getBetrag() throws RemoteException;
 
   void setBetrag(double betrag) throws RemoteException;
 
@@ -128,9 +121,6 @@ public interface Rechnung
   public Zahlungsweg getZahlungsweg() throws RemoteException;
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
-
-  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
 
   public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException;
 

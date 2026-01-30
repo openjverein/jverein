@@ -41,6 +41,7 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -1610,10 +1611,23 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     return Double.valueOf(0d);
   }
 
+  // Für Gutschrift Support
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Hier sinnlos aber wegen IMitglied aus IGutschriftprovider nötig
+  }
+
   @Override
   public List<Buchung> getBuchungList() throws RemoteException
   {
     return null;
   }
 
+  @Override
+  public List<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    return null;
+  }
 }

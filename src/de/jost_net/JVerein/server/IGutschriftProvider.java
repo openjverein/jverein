@@ -20,18 +20,17 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
-public interface IGutschriftProvider extends JVereinDBObject
+public interface IGutschriftProvider extends IMitglied, IBetrag
 {
-  public Mitglied getMitglied() throws RemoteException;
-
   public Mitglied getGutschriftZahler() throws RemoteException;
-
-  public Double getBetrag() throws RemoteException;
 
   public Double getIstSumme() throws RemoteException;
 
   public List<Buchung> getBuchungList() throws RemoteException;
+
+  public List<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException;
 }

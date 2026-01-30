@@ -27,6 +27,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift, IBetrag, IVersand
@@ -110,9 +111,9 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -434,6 +435,13 @@ public class LastschriftImpl extends AbstractJVereinDBObject
 
   @Override
   public List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public List<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
   {
     return null;
   }

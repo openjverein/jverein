@@ -441,4 +441,10 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   {
     return getZahler();
   }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    setAttribute(MITGLIED, mitglied);
+  }
 }
