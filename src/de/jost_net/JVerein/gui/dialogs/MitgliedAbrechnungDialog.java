@@ -71,7 +71,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   public MitgliedAbrechnungDialog(int position, Mitglied[] m)
   {
     super(position);
-    super.setSize(900, SWT.DEFAULT);
+    super.setSize(950, SWT.DEFAULT);
     setTitle("Einmalige Abrechnung");
     this.mitglieder = m;
   }
