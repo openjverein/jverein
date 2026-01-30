@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -1582,4 +1583,37 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     setAttribute("ktoiname", "");
   }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Double getBetrag() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
+
 }

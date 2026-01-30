@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufAbschliessenAction;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.PreNotificationAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufSollbuchungListeView;
@@ -30,6 +31,7 @@ import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
 import de.willuhn.logging.Logger;
@@ -53,6 +55,8 @@ public class AbrechnungslaufMenu extends ContextMenu
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
+    addItem(new CheckedSingleContextMenuItem("Gutschrift(en) erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(new AbgeschlossenDisabledItem("Löschen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try

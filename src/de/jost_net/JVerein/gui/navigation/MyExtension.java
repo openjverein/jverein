@@ -242,7 +242,7 @@ public class MyExtension implements Extension
           new StartViewAction(AbrechnungslaufListeView.class),
           "calculator.png"));
       abrechnung.addChild(new MyItem(abrechnung, "Lastschriften",
-          new StartViewAction(LastschriftListeView.class), "file-invoice.png"));
+          new StartViewAction(LastschriftListeView.class), "lastschrift.png"));
       jverein.addChild(abrechnung);
 
       NavigationItem auswertung = new MyItem(jverein, "Auswertungen", null);

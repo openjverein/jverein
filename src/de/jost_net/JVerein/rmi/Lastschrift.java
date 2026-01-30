@@ -20,8 +20,10 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 
-public interface Lastschrift extends JVereinDBObject, IAdresse
+public interface Lastschrift
+    extends JVereinDBObject, IAdresse, IGutschriftProvider
 {
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;

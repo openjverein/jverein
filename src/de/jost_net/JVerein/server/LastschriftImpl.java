@@ -18,10 +18,12 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -414,6 +416,26 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Lastschriften";
+  }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getMitglied();
+  }
+
+  @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    return getBetrag();
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
   }
 
 }

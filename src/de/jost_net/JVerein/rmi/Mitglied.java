@@ -23,10 +23,12 @@ import java.util.Map;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.util.ApplicationException;
 
-public interface Mitglied extends JVereinDBObject, ILastschrift
+public interface Mitglied
+    extends JVereinDBObject, ILastschrift, IGutschriftProvider
 {
   public enum namenformat
   {
