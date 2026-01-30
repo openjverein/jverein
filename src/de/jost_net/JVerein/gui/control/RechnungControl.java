@@ -19,7 +19,9 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -901,5 +903,21 @@ public class RechnungControl extends DruckMailControl implements Savable
       text = ohneMail + " Rechnungen haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    Rechnung[] rechnungen = getRechnungen(this.view.getCurrentObject());
+    for (Rechnung r : rechnungen)
+    {
+      if (r.getZahler() != null)
+      {
+        map.put(r.getZahler(), r);
+      }
+    }
+    return map;
   }
 }

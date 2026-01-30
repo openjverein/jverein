@@ -25,7 +25,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -1134,6 +1136,22 @@ public class SpendenbescheinigungControl extends DruckMailControl
       text = getMailText(ohneMail, true) + getMitgliedText(ohneMitglied, false);
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    Spendenbescheinigung[] spbs = getSpbArray(this.view.getCurrentObject());
+    for (Spendenbescheinigung spb : spbs)
+    {
+      if (spb.getMitglied() != null)
+      {
+        map.put(spb.getMitglied(), spb);
+      }
+    }
+    return map;
   }
 
   private String getMailText(int ohneMail, boolean druck)
