@@ -83,7 +83,8 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
     }
     catch (OperationCanceledException oce)
     {
-      throw oce;
+      // Nichts tun um sie nicht an den MitgliedAbrechnungDialog weiter zu
+      // reichen
     }
     catch (Exception e)
     {

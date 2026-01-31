@@ -87,6 +87,7 @@ import de.jost_net.OBanToo.SEPA.Basislastschrift.Basislastschrift2Pdf;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.MandatSequence;
 import de.jost_net.OBanToo.SEPA.Basislastschrift.Zahler;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
@@ -647,18 +648,22 @@ public class AbrechnungSEPA
       Abrechnungslauf abrl, ProgressMonitor monitor) throws Exception
   {
     int count = 0;
-    DBIterator<Zusatzbetrag> list = Einstellungen.getDBService()
-        .createList(Zusatzbetrag.class);
-    // etwas vorfiltern um die Ergebnise zu reduzieren
-    list.addFilter("(intervall != 0 or ausfuehrung is null)");
-    list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
-    while (list.hasNext())
+    List<Zusatzbetrag> zusatzbetraege = param.zusatzbetraegeList;
+    if (zusatzbetraege == null)
+    {
+      DBIterator<Zusatzbetrag> list = Einstellungen.getDBService()
+          .createList(Zusatzbetrag.class);
+      // etwas vorfiltern um die Ergebnise zu reduzieren
+      list.addFilter("(intervall != 0 or ausfuehrung is null)");
+      list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
+      zusatzbetraege = PseudoIterator.asList(list);
+    }
+    for (Zusatzbetrag z : zusatzbetraege)
     {
       if (interrupt.isInterrupted())
       {
         throw new ApplicationException("Abrechnung abgebrochen");
       }
-      Zusatzbetrag z = list.next();
       if (z.isAktiv(param.stichtag))
       {
         Mitglied m = z.getMitglied();
@@ -770,7 +775,7 @@ public class AbrechnungSEPA
         }
         try
         {
-          if (abrl != null)
+          if (abrl != null && !z.isNewObject())
           {
             ZusatzbetragAbrechnungslauf za = (ZusatzbetragAbrechnungslauf) Einstellungen
                 .getDBService()
@@ -798,7 +803,7 @@ public class AbrechnungSEPA
                 m.getName(), m.getVorname()));
       }
       monitor.setPercentComplete(
-          (int) ((double) count++ / (double) list.size() * 100d));
+          (int) ((double) count++ / (double) zusatzbetraege.size() * 100d));
     }
 
   }
@@ -1376,5 +1381,4 @@ public class AbrechnungSEPA
       }
     }
   }
-
 }

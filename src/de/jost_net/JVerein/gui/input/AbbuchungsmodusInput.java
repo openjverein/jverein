@@ -90,14 +90,14 @@ public class AbbuchungsmodusInput extends SelectInput
   /**
    * Hilfs-Objekt zur Anzeige der Labels.
    */
-  private static class AbbuchungsmodusObject implements GenericObject
+  public static class AbbuchungsmodusObject implements GenericObject
   {
 
     public int abbuchungsmodus;
 
     private String label = null;
 
-    private AbbuchungsmodusObject(int abbuchungsmodus)
+    public AbbuchungsmodusObject(int abbuchungsmodus)
     {
       this.abbuchungsmodus = abbuchungsmodus;
       this.label = Abrechnungsmodi.get(abbuchungsmodus);
