@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -39,6 +40,7 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -47,6 +49,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -65,6 +68,10 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 
   private Mitglied[] mitglieder;
 
+  final AbrechnungSEPAControl control = new AbrechnungSEPAControl(null);
+
+  final ZusatzbetragControl zcontrol = new ZusatzbetragControl(null);
+
   /**
    * @param position
    */
@@ -77,11 +84,9 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   }
 
   @Override
-  protected void paint(Composite parent) throws RemoteException
+  protected void paint(Composite parent)
+      throws RemoteException, ApplicationException
   {
-    final AbrechnungSEPAControl control = new AbrechnungSEPAControl(null);
-    final ZusatzbetragControl zcontrol = new ZusatzbetragControl(null);
-
     LabelGroup group = new LabelGroup(parent, "");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
@@ -152,10 +157,6 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = MitgliedMap.getDummyMap(map);
 
-    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-    rmap = MitgliedMap.getDummyMap(rmap);
-    rmap = RechnungMap.getDummyMap(rmap);
-
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINMAL_ABRECHNUNG, false, "question-circle.png");
@@ -163,7 +164,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Buchungstext Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Rechnung Text Variablen anzeigen",
-        new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
+        new RechnungVariableDialogAction(part), null, false, "bookmark.png");
 
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
@@ -250,5 +251,41 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   protected Boolean getData() throws Exception
   {
     return fortfahren;
+  }
+
+  private class RechnungVariableDialogAction implements Action
+  {
+
+    private ZusatzbetragPart part;
+
+    public RechnungVariableDialogAction(ZusatzbetragPart part)
+    {
+      this.part = part;
+    }
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        control.getFaelligkeit()
+            .setValue((Date) part.getStartdatum(true).getValue());
+        control.getStichtag()
+            .setValue((Date) part.getStartdatum(true).getValue());
+        control.getZahlungsgrund()
+            .setValue((String) part.getBuchungstext().getValue());
+        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+        rmap = new AbrechnungsParameterMap()
+            .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
+        rmap = MitgliedMap.getDummyMap(rmap);
+        rmap = RechnungMap.getDummyMap(rmap);
+        new InsertVariableDialogAction(rmap).handleAction(null);
+      }
+      catch (RemoteException re)
+      {
+        //
+      }
+    }
+
   }
 }
