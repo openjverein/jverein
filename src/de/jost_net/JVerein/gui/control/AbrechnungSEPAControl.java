@@ -183,6 +183,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.stichtag.setTitle("Stichtag für die Abrechnung");
     this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
+    stichtag.setMandatory(true);
     return stichtag;
   }
 
@@ -210,6 +211,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         getStichtag().setValue(faelligkeit.getValue());
       }
     });
+    faelligkeit.setMandatory(true);
     return faelligkeit;
   }
 
@@ -531,12 +533,12 @@ public class AbrechnungSEPAControl extends AbstractControl
       if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER && vondatum == null
           && getVonEingabedatum().getValue() == null)
       {
-        throw new ApplicationException("von-Datum fehlt");
+        throw new ApplicationException("Von-Datum fehlt");
       }
       Date bisdatum = (Date) getBisdatum().getValue();
       if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER && bisdatum == null)
       {
-        throw new ApplicationException("bis-Datum fehlt");
+        throw new ApplicationException("Bis-Datum fehlt");
       }
     }
     File sepafilercur = null;
