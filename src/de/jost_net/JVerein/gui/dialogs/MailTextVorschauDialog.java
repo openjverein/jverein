@@ -81,8 +81,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     this.control = control;
     this.map = map;
     this.mitMitglied = mitMitglied;
-    setTitle("Mail-Text-Vorschau");
-    setSize(settings.getInt("width", 550), SWT.DEFAULT);
+    setTitle("Vorschau");
+    setSize(settings.getInt("width", 600), SWT.DEFAULT);
 
     try
     {
@@ -155,6 +155,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     {
       text = new TextAreaInput(em.evalText(textString));
       text.setEnabled(false);
+      text.setHeight(300);
       container.addLabelPair("Text", text);
     }
 
