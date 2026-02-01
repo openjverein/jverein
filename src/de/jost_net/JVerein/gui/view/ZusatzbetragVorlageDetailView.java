@@ -24,9 +24,11 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.willuhn.jameica.gui.GUI;
@@ -73,6 +75,9 @@ public class ZusatzbetragVorlageDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton("Buchungstext Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
+    buttons.addButton(
+        new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true),
+            control, false, "edit-copy.png"));
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(getParent());

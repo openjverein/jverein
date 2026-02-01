@@ -22,10 +22,12 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -60,6 +62,8 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton("Buchungstext Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
+    buttons.addButton(new ButtonRtoL("Vorschau",
+        new MailTextVorschauAction(map, true), part, false, "edit-copy.png"));
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton(new SaveButton(control));

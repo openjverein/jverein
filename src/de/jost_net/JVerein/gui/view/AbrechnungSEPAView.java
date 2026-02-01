@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -121,6 +122,8 @@ public class AbrechnungSEPAView extends AbstractView
     }, null, false, "bug.png");
     buttons.addButton("Rechnung Text Variablen anzeigen",
         new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    buttons.addButton("Vorschau", new RechnungVorschauDialogAction(), null,
+        false, "edit-copy.png");
     buttons.addButton(control.getStartButton());
     buttons.paint(this.getParent());
   }
@@ -133,17 +136,39 @@ public class AbrechnungSEPAView extends AbstractView
     {
       try
       {
-        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-        rmap = new AbrechnungsParameterMap()
-            .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
-        rmap = MitgliedMap.getDummyMap(rmap);
-        rmap = RechnungMap.getDummyMap(rmap);
-        new InsertVariableDialogAction(rmap).handleAction(null);
+        new InsertVariableDialogAction(getRmap()).handleAction(null);
       }
       catch (RemoteException re)
       {
         //
       }
     }
+  }
+
+  private class RechnungVorschauDialogAction implements Action
+  {
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        new MailTextVorschauAction(getRmap(), true).handleAction(control);
+      }
+      catch (RemoteException re)
+      {
+        //
+      }
+    }
+  }
+
+  private Map<String, Object> getRmap()
+      throws RemoteException, ApplicationException
+  {
+    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+    rmap = new AbrechnungsParameterMap()
+        .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
+    rmap = MitgliedMap.getDummyMap(rmap);
+    return RechnungMap.getDummyMap(rmap);
   }
 }

@@ -17,7 +17,9 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -25,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
@@ -49,7 +52,7 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ZusatzbetragPart implements Part
+public class ZusatzbetragPart implements Part, IMailControl
 {
   private Zusatzbetrag zusatzbetrag;
 
@@ -419,5 +422,33 @@ public class ZusatzbetragPart implements Part
     mitgliedZahltSelbst.setName(
         " *Für den Fall, dass ein abweichender Zahler konfiguriert ist.");
     return mitgliedZahltSelbst;
+  }
+
+  @Override
+  public String getBetreffString() throws RemoteException
+  {
+    if (buchungstext != null)
+    {
+      return (String) buchungstext.getValue();
+    }
+    return "";
+  }
+
+  @Override
+  public String getTxtString() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public List<Mitglied> getEmpfaengerList() throws RemoteException
+  {
+    if (getMitglied().getValue() != null)
+    {
+      List<Mitglied> list = new ArrayList<>();
+      list.add((Mitglied) getMitglied().getValue());
+      return list;
+    }
+    return null;
   }
 }
