@@ -1661,6 +1661,7 @@ public class MitgliedControl extends FilterControl implements Savable
     lehrgaengeList.setRememberOrder(true);
     lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+    lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
     lehrgaengeList.addColumn("Von/am", "von",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Bis", "bis",

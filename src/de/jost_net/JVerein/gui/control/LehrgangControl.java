@@ -68,6 +68,8 @@ public class LehrgangControl extends FilterControl implements Savable
 
   private AbstractInput mitglied;
 
+  private TextInput bezeichnung;
+
   public LehrgangControl(AbstractView view)
   {
     super(view);
@@ -175,6 +177,16 @@ public class LehrgangControl extends FilterControl implements Savable
     return ergebnis;
   }
 
+  public TextInput getBezeichnung() throws RemoteException
+  {
+    if (bezeichnung != null)
+    {
+      return bezeichnung;
+    }
+    bezeichnung = new TextInput(getLehrgang().getBezeichnung(), 30);
+    return bezeichnung;
+  }
+
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
@@ -189,6 +201,7 @@ public class LehrgangControl extends FilterControl implements Savable
     {
       l.setLehrgangsart(null);
     }
+    l.setBezeichnung((String) getBezeichnung().getValue());
     l.setVon((Date) getVon().getValue());
     l.setBis((Date) getBis().getValue());
     l.setVeranstalter((String) getVeranstalter().getValue());
@@ -264,6 +277,26 @@ public class LehrgangControl extends FilterControl implements Savable
             new Object[] { suchName, suchName });
       }
     }
+    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    {
+      String tmptext = (String) getSuchtext().getValue();
+      if (tmptext.length() > 0)
+      {
+        String suchText = "%" + tmptext.toLowerCase() + "%";
+        lehrgaenge.addFilter("lower(veranstalter) like ? ",
+            new Object[] { suchText });
+      }
+    }
+    if (isSuchbezeichnungAktiv() && getSuchbezeichnung().getValue() != null)
+    {
+      String tmptext = (String) getSuchbezeichnung().getValue();
+      if (tmptext.length() > 0)
+      {
+        // Kein lower case wegen besserem Match
+        String suchText = "%" + tmptext + "%";
+        lehrgaenge.addFilter("bezeichnung like ? ", new Object[] { suchText });
+      }
+    }
     if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)
     {
       Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
@@ -292,6 +325,7 @@ public class LehrgangControl extends FilterControl implements Savable
       lehrgaengeList.addColumn("Nr", "id-int");
       lehrgaengeList.addColumn("Name", "mitglied");
       lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+      lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
       lehrgaengeList.addColumn("Von/am", "von",
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       lehrgaengeList.addColumn("Bis", "bis",

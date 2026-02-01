@@ -180,6 +180,7 @@ public class LehrgangImpl extends AbstractJVereinDBObject
     {
       case "ergebnis":
       case "veranstalter":
+      case "bezeichnung":
         return "";
       default:
         return null;
@@ -196,6 +197,18 @@ public class LehrgangImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Lehrgänge";
+  }
+
+  @Override
+  public String getBezeichnung() throws RemoteException
+  {
+    return (String) getAttribute("bezeichnung");
+  }
+
+  @Override
+  public void setBezeichnung(String bezeichnung) throws RemoteException
+  {
+    setAttribute("bezeichnung", bezeichnung);
   }
 
 }

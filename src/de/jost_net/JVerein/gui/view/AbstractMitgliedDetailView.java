@@ -402,8 +402,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneLehrgaenge(Composite parentComposite)
       throws RemoteException
   {
-    if (isMitgliedDetail()
-        && (Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
 
