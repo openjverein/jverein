@@ -171,10 +171,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
         map = new MitgliedMap().getMap(m, map);
         em = new EvalMail(map);
         betreff.setValue(em.evalBetreff(betreffString));
-        if (textString != null)
-        {
-          text.setValue(em.evalText(textString));
-        }
+        text.setValue(em.evalText(textString));
       }
       catch (RemoteException e)
       {
