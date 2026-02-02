@@ -29,6 +29,8 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
@@ -97,7 +99,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     this.gcontrol = new GutschriftControl(null, isMitglied);
-    setSize(700, SWT.DEFAULT);
+    setSize(SWT.DEFAULT, SWT.DEFAULT);
   }
 
   @Override
@@ -183,15 +185,25 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       group.addLabelPair("Steuer", steuerInput);
     }
 
-    Map<String, Object> map = GutschriftMap.getDummyMap(null);
-    map = new AllgemeineMap().getMap(map);
-
     // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.GUTSCHRIFT, false, "question-circle.png");
-    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
-        null, false, "bookmark.png");
+
+    Map<String, Object> map = GutschriftMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+    buttons.addButton("Verwendungszweck Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
+
+    if (EinstellungRechnungAnzeigen)
+    {
+      Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+      rmap = MitgliedMap.getDummyMap(rmap);
+      rmap = RechnungMap.getDummyMap(rmap);
+      buttons.addButton("Rechnung Text Variablen anzeigen",
+          new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
+    }
+
     buttons.addButton("Gutschriften(en) erstellen", context -> {
       if (gcontrol.getZweckInput().getValue() == null
           || ((String) gcontrol.getZweckInput().getValue()).isEmpty())
