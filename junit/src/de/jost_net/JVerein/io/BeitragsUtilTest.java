@@ -43,7 +43,7 @@ public class BeitragsUtilTest
 {
 
   @Test
-  @DisplayName("Ein und Austritsdatum des Mitglieds testen")
+  @DisplayName("Ein- und Austrittsdatum des Mitglieds testen")
   void mitgliedAktivTest() throws RemoteException, ApplicationException
   {
     try (MockedStatic<Einstellungen> einstellungen = Mockito
