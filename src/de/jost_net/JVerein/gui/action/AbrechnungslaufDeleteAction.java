@@ -235,7 +235,6 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
         kt.store();
       }
     }
-
     object.delete();
   }
 
