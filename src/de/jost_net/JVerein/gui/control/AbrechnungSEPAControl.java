@@ -329,7 +329,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungsformular = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("rechnungsformular", ""));
-    rechnungsformular.setEnabled(settings.getBoolean("rechnung", false));
+    updateRechnungsformular();
     return rechnungsformular;
   }
 
@@ -341,7 +341,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
-    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
+    rechnungstext.setEnabled((boolean) rechnung.getValue());
     return rechnungstext;
   }
 
@@ -352,7 +352,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return rechnungsdatum;
     }
     rechnungsdatum = new DateInput(new Date());
-    rechnungsdatum.setEnabled(settings.getBoolean("rechnung", false));
+    rechnungsdatum.setMandatory((boolean) rechnung.getValue());
+    rechnungsdatum.setEnabled((boolean) rechnung.getValue());
     return rechnungsdatum;
   }
 
@@ -509,12 +510,26 @@ public class AbrechnungSEPAControl extends AbstractControl
       if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER && vondatum == null
           && getVonEingabedatum().getValue() == null)
       {
-        throw new ApplicationException("von-Datum fehlt");
+        throw new ApplicationException("Von-Datum fehlt");
       }
       Date bisdatum = (Date) getBisdatum().getValue();
       if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER && bisdatum == null)
       {
-        throw new ApplicationException("bis-Datum fehlt");
+        throw new ApplicationException("Bis-Datum fehlt");
+      }
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      if ((Boolean) rechnung.getValue())
+      {
+        if (rechnungsformular.getValue() == null)
+        {
+          throw new ApplicationException("Rechnung Formular fehlt");
+        }
+        if (rechnungsdatum.getValue() == null)
+        {
+          throw new ApplicationException("Rechnung Datum fehlt");
+        }
       }
     }
     File sepafilercur = null;
@@ -653,9 +668,26 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         return;
       }
-      rechnungsformular.setEnabled((boolean) rechnung.getValue());
+      updateRechnungsformular();
       rechnungstext.setEnabled((boolean) rechnung.getValue());
+      rechnungsdatum.setMandatory((boolean) rechnung.getValue());
       rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+    }
+  }
+
+  private void updateRechnungsformular()
+  {
+    // Die Reihenfolge von mandatory und enabled ist abhängig von
+    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+    if ((boolean) rechnung.getValue())
+    {
+      rechnungsformular.setEnabled(true);
+      rechnungsformular.setMandatory(true);
+    }
+    else
+    {
+      rechnungsformular.setMandatory(false);
+      rechnungsformular.setEnabled(false);
     }
   }
 
