@@ -136,17 +136,22 @@ public class AbrechnungSEPAView extends AbstractView
     {
       try
       {
-        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-        rmap = new AbrechnungsParameterMap()
-            .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
-        rmap = MitgliedMap.getDummyMap(rmap);
-        rmap = RechnungMap.getDummyMap(rmap);
-        new InsertVariableDialogAction(rmap).handleAction(null);
+        new InsertVariableDialogAction(getRmap()).handleAction(null);
       }
       catch (RemoteException re)
       {
         //
       }
     }
+  }
+
+  private Map<String, Object> getRmap()
+      throws RemoteException, ApplicationException
+  {
+    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+    rmap = new AbrechnungsParameterMap()
+        .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
+    rmap = MitgliedMap.getDummyMap(rmap);
+    return RechnungMap.getDummyMap(rmap);
   }
 }

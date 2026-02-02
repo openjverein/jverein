@@ -60,7 +60,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragVorlageControl extends VorZurueckControl
-    implements Savable
+    implements Savable, IMailControl
 {
 
   private de.willuhn.jameica.system.Settings settings;
@@ -468,5 +468,21 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     mitgliedZahltSelbst.setName(
         " *Für den Fall, dass ein abweichender Zahler konfiguriert ist.");
     return mitgliedZahltSelbst;
+  }
+
+  @Override
+  public String getBetreffString() throws RemoteException
+  {
+    if (buchungstext != null)
+    {
+      return (String) buchungstext.getValue();
+    }
+    return "";
+  }
+
+  @Override
+  public String getTxtString() throws RemoteException
+  {
+    return null;
   }
 }
