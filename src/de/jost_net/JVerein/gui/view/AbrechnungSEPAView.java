@@ -110,6 +110,11 @@ public class AbrechnungSEPAView extends AbstractView
         GUI.startView(SEPABugsView.class.getName(), null);
       }
     }, null, false, "bug.png");
+
+    buttons.addButton("Zahlungsgrund Variablen anzeigen",
+        new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    buttons.addButton("Rechnung Text Variablen anzeigen",
+        new RechnungVariableDialogAction(), null, false, "bookmark.png");
     buttons.addButton(control.getStartButton());
     buttons.paint(this.getParent());
   }
