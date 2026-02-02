@@ -122,6 +122,24 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     group.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
     group.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
 
+    // Fixen Betrag erstatten
+    group.addHeadline("Fixer Betrag");
+    group.addLabelPair("Fixen Betrag erstatten",
+        gcontrol.getFixerBetragAbrechnenInput());
+    group.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
+    buchungsartInput = gcontrol.getBuchungsartInput();
+    group.addLabelPair("Buchungsart", buchungsartInput);
+    if (EinstellungBuchungsklasseInBuchung)
+    {
+      buchungsklasseInput = gcontrol.getBuchungsklasseInput();
+      group.addLabelPair("Buchungsklasse", buchungsklasseInput);
+    }
+    if (EinstellungSteuerInBuchung)
+    {
+      steuerInput = gcontrol.getSteuerInput();
+      group.addLabelPair("Steuer", steuerInput);
+    }
+
     // Nur anzeigen wenn Rechnungen aktiviert sind
     if (EinstellungRechnungAnzeigen)
     {
@@ -165,24 +183,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       rechnungsDatumInput = scontrol.getRechnungsdatum();
       rechnungsDatumInput.setValue(new Date());
       group.addLabelPair("Rechnung Datum", rechnungsDatumInput);
-    }
-
-    // Fixen Betrag erstatten
-    group.addHeadline("Fixer Betrag");
-    group.addLabelPair("Fixen Betrag erstatten",
-        gcontrol.getFixerBetragAbrechnenInput());
-    group.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
-    buchungsartInput = gcontrol.getBuchungsartInput();
-    group.addLabelPair("Buchungsart", buchungsartInput);
-    if (EinstellungBuchungsklasseInBuchung)
-    {
-      buchungsklasseInput = gcontrol.getBuchungsklasseInput();
-      group.addLabelPair("Buchungsklasse", buchungsklasseInput);
-    }
-    if (EinstellungSteuerInBuchung)
-    {
-      steuerInput = gcontrol.getSteuerInput();
-      group.addLabelPair("Steuer", steuerInput);
     }
 
     // Buttons
