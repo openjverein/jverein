@@ -43,8 +43,8 @@ public class BeitragsUtilTest
 {
 
   @Test
-  @DisplayName("Ein und Austritsdatum des Mitglieds testen.")
-  void mitgliedActivTest() throws RemoteException, ApplicationException
+  @DisplayName("Ein und Austritsdatum des Mitglieds testen")
+  void mitgliedAktivTest() throws RemoteException, ApplicationException
   {
     try (MockedStatic<Einstellungen> einstellungen = Mockito
         .mockStatic(Einstellungen.class))
@@ -86,7 +86,7 @@ public class BeitragsUtilTest
   }
 
   @Test
-  @DisplayName("Beitrag Höhe testen.")
+  @DisplayName("Beitragshöhe testen")
   void testBeitrag() throws ApplicationException, RemoteException
   {
     try (MockedStatic<Einstellungen> einstellungen = Mockito
