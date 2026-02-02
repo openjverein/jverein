@@ -179,10 +179,10 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       group.addLabelPair("Erstattung Formular", formularInput);
       rechnungsTextInput = scontrol.getRechnungstext();
       rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
-      group.addLabelPair("Rechnung Text", rechnungsTextInput);
+      group.addLabelPair("Rechnungstext", rechnungsTextInput);
       rechnungsDatumInput = scontrol.getRechnungsdatum();
       rechnungsDatumInput.setValue(new Date());
-      group.addLabelPair("Rechnung Datum", rechnungsDatumInput);
+      group.addLabelPair("Rechnungsdatum", rechnungsDatumInput);
     }
 
     // Buttons
@@ -200,7 +200,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       Map<String, Object> rmap = new AllgemeineMap().getMap(null);
       rmap = MitgliedMap.getDummyMap(rmap);
       rmap = RechnungMap.getDummyMap(rmap);
-      buttons.addButton("Rechnung Text Variablen anzeigen",
+      buttons.addButton("Rechnungstext Variablen anzeigen",
           new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
     }
 
@@ -223,13 +223,13 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       {
         if (formularInput.getValue() == null)
         {
-          status.setValue("Bitte Formular auswählen");
+          status.setValue("Bitte Rechnungsformular auswählen");
           status.setColor(Color.ERROR);
           return;
         }
         if (rechnungsDatumInput.getValue() == null)
         {
-          status.setValue("Bitte Rechnung Datum auswählen");
+          status.setValue("Bitte Rechnungsdatum auswählen");
           status.setColor(Color.ERROR);
           return;
         }
