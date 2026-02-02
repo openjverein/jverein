@@ -230,6 +230,10 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
     boolean mode = (Integer) modus
         .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
+    {
+      vondatum.setValue(new Date());
+    }
     this.vondatum.setEnabled(mode);
     this.vondatum.addListener(event -> {
       if (vondatum.hasChanged())
@@ -251,6 +255,10 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.voneingabedatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     boolean mode = (Integer) modus
         .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
+    {
+      voneingabedatum.setValue(new Date());
+    }
     this.voneingabedatum.setMandatory(mode && this.vondatum.getValue() == null);
     this.voneingabedatum.setEnabled(mode);
     // Das kann erst gemacht werden wenn voneingabedatum existiert
@@ -555,11 +563,11 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         if (rechnungsformular.getValue() == null)
         {
-          throw new ApplicationException("Rechnung Formular fehlt");
+          throw new ApplicationException("Rechnungsformular fehlt");
         }
         if (rechnungsdatum.getValue() == null)
         {
-          throw new ApplicationException("Rechnung Datum fehlt");
+          throw new ApplicationException("Rechnungsdatum fehlt");
         }
       }
     }
