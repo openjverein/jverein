@@ -149,9 +149,9 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
         right.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      right.addLabelPair("Rechnung Formular", control.getRechnungFormular());
-      right.addLabelPair("Rechnung Text", control.getRechnungstext());
-      right.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+      right.addLabelPair("Rechnungsformular", control.getRechnungFormular());
+      right.addLabelPair("Rechnungstext", control.getRechnungstext());
+      right.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
     }
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
