@@ -292,9 +292,9 @@ public class LehrgangControl extends FilterControl implements Savable
       String tmptext = (String) getSuchbezeichnung().getValue();
       if (tmptext.length() > 0)
       {
-        // Kein lower case wegen besserem Match
-        String suchText = "%" + tmptext + "%";
-        lehrgaenge.addFilter("bezeichnung like ? ", new Object[] { suchText });
+        String suchText = "%" + tmptext.toLowerCase() + "%";
+        lehrgaenge.addFilter("lower(bezeichnung) like ? ",
+            new Object[] { suchText });
       }
     }
     if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)
