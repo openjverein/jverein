@@ -124,7 +124,7 @@ public class AbrechnungSEPAView extends AbstractView
         new RechnungVariableDialogAction(), null, false, "bookmark.png");
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      buttons.addButton("Rechnung Text Variablen anzeigen",
+      buttons.addButton("Rechnungstext Variablen anzeigen",
           new RechnungVariableDialogAction(), null, false, "bookmark.png");
     }
     buttons.addButton(control.getStartButton());
