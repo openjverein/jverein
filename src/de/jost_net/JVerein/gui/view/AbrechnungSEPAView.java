@@ -122,8 +122,11 @@ public class AbrechnungSEPAView extends AbstractView
 
     buttons.addButton("Zahlungsgrund Variablen anzeigen",
         new RechnungVariableDialogAction(), null, false, "bookmark.png");
-    buttons.addButton("Rechnung Text Variablen anzeigen",
-        new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      buttons.addButton("Rechnung Text Variablen anzeigen",
+          new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    }
     buttons.addButton(control.getStartButton());
     buttons.paint(this.getParent());
   }
