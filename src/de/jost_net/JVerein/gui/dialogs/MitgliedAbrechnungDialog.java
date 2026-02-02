@@ -163,7 +163,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 
     buttons.addButton("Buchungstext Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
-    buttons.addButton("Rechnung Text Variablen anzeigen",
+    buttons.addButton("Rechnungstext Variablen anzeigen",
         new RechnungVariableDialogAction(part), null, false, "bookmark.png");
 
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
