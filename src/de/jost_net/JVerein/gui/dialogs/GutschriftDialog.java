@@ -31,24 +31,20 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
-import de.jost_net.JVerein.gui.input.BuchungsartInput;
-import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.gui.input.SteuerInput;
-import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -58,68 +54,41 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
-public class GutschriftDialog extends AbstractDialog<Boolean>
+public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 {
-
-  private boolean isMitglied;
-
-  private FormularInput formularInput = null;
-
-  private DateInput datumInput;
-
-  private TextInput zweckInput;
-
-  private SelectInput ausgabeInput;
-
-  private Formular formular = null;
-
-  private Date datum;
-
-  private String zweck;
-
-  private UeberweisungAusgabe ausgabe;
+  private GutschriftParam params = null;
 
   private LabelInput status = null;
 
-  private boolean fortfahren = false;
-
-  private boolean rechnungErzeugen = false;
-
   private CheckboxInput rechnungErzeugenInput;
-
-  private boolean rechnungsDokumentSpeichern = false;
 
   private CheckboxInput rechnungsDokumentSpeichernInput;
 
-  private boolean fixerBetragAbrechnen;
+  private FormularInput formularInput;
 
-  private CheckboxInput fixerBetragAbrechnenInput;
+  private TextInput rechnungsTextInput;
 
-  private Double fixerBetrag;
-
-  private DecimalInput fixerBetragInput;
-
-  private Buchungsart buchungsart;
+  private DateInput rechnungsDatumInput;
 
   private AbstractInput buchungsartInput;
 
-  private Buchungsklasse buchungsklasse;
-
   private SelectInput buchungsklasseInput;
-
-  private Steuer steuer;
 
   private SelectInput steuerInput;
 
-  private boolean rechnungAnzeigen = false;
+  private boolean EinstellungRechnungAnzeigen = false;
 
-  private boolean buchungsklasseInBuchung = false;
+  private boolean EinstellungBuchungsklasseInBuchung = false;
 
-  private boolean steuerInBuchung = false;
+  private boolean EinstellungSteuerInBuchung = false;
 
-  private boolean speicherungAnzeigen = false;
+  private boolean EinstellungSpeicherungAnzeigen = false;
 
   private Settings settings = null;
+
+  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl(null);
+
+  private GutschriftControl gcontrol;
 
   public GutschriftDialog(boolean isMitglied)
   {
@@ -127,57 +96,91 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     setTitle("Gutschrift(en) erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.isMitglied = isMitglied;
+    this.gcontrol = new GutschriftControl(null, isMitglied);
     setSize(700, SWT.DEFAULT);
   }
 
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
-    rechnungAnzeigen = (Boolean) Einstellungen
+    EinstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    speicherungAnzeigen = (Boolean) Einstellungen
+    EinstellungSpeicherungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
         && JVereinPlugin.isArchiveServiceActive();
-    buchungsklasseInBuchung = (Boolean) Einstellungen
+    EinstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    steuerInBuchung = (Boolean) Einstellungen
+    EinstellungSteuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
 
     LabelGroup group = new LabelGroup(parent, "");
     group.addInput(getStatus());
     group.addHeadline("Überweisung");
-    group.addLabelPair("Ausgabe", getAusgabeInput());
-    group.addLabelPair("Ausführungsdatum", getDatumInput());
-    group.addLabelPair("Verwendungszweck", getZweckInput());
+    group.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
+    group.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
+    group.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
 
     // Nur anzeigen wenn Rechnungen aktiviert sind
-    if (rechnungAnzeigen)
+    if (EinstellungRechnungAnzeigen)
     {
+      // Settings hier speichern damit sie nicht mit Anrechnungslauf vermischt
+      // werden
       group.addHeadline("Rechnung");
+      rechnungErzeugenInput = scontrol.getRechnung();
+      rechnungErzeugenInput
+          .setValue(settings.getBoolean("rechnungErzeugen", false));
       group.addLabelPair("Rechnung zur Gutschrift erzeugen",
-          getRechnungErzeugenInput());
-      group.addLabelPair("Erstattung Formular", getFormularInput());
-      if (speicherungAnzeigen)
+          rechnungErzeugenInput);
+      if (EinstellungSpeicherungAnzeigen)
       {
+        rechnungsDokumentSpeichernInput = scontrol
+            .getRechnungsdokumentSpeichern();
+        rechnungsDokumentSpeichernInput
+            .setValue(settings.getBoolean("rechnungsDokumentSpeichern", false));
         group.addLabelPair("Rechnung als Buchungsdokument speichern",
-            getRechnungsDokumentSpeichernInput());
+            rechnungsDokumentSpeichernInput);
       }
+      formularInput = scontrol.getRechnungFormular();
+      Formular f = null;
+      try
+      {
+        String id = settings.getString("formular", "");
+        if (id != null && !id.isEmpty())
+        {
+          f = (Formular) Einstellungen.getDBService()
+              .createObject(Formular.class, id);
+        }
+      }
+      catch (Exception ex)
+      {
+        // Nicht gefunden, dann null
+      }
+      formularInput.setValue(f);
+      group.addLabelPair("Erstattung Formular", formularInput);
+      rechnungsTextInput = scontrol.getRechnungstext();
+      rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
+      group.addLabelPair("Rechnung Text", rechnungsTextInput);
+      rechnungsDatumInput = scontrol.getRechnungsdatum();
+      rechnungsDatumInput.setValue(new Date());
+      group.addLabelPair("Rechnung Datum", rechnungsDatumInput);
     }
 
     // Fixen Betrag erstatten
     group.addHeadline("Fixer Betrag");
     group.addLabelPair("Fixen Betrag erstatten",
-        getFixerBetragAbrechnenInput());
-    group.addLabelPair("Erstattungsbetrag", getFixerBetragInput());
-    group.addLabelPair("Buchungsart", getBuchungsartInput());
-    if (buchungsklasseInBuchung)
+        gcontrol.getFixerBetragAbrechnenInput());
+    group.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
+    buchungsartInput = gcontrol.getBuchungsartInput();
+    group.addLabelPair("Buchungsart", buchungsartInput);
+    if (EinstellungBuchungsklasseInBuchung)
     {
-      group.addLabelPair("Buchungsklasse", getBuchungsklasseInput());
+      buchungsklasseInput = gcontrol.getBuchungsklasseInput();
+      group.addLabelPair("Buchungsklasse", buchungsklasseInput);
     }
-    if (steuerInBuchung)
+    if (EinstellungSteuerInBuchung)
     {
-      group.addLabelPair("Steuer", getSteuerInput());
+      steuerInput = gcontrol.getSteuerInput();
+      group.addLabelPair("Steuer", steuerInput);
     }
 
     Map<String, Object> map = GutschriftMap.getDummyMap(null);
@@ -190,49 +193,65 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
         null, false, "bookmark.png");
     buttons.addButton("Gutschriften(en) erstellen", context -> {
-      if (zweckInput.getValue() == null
-          || ((String) zweckInput.getValue()).isEmpty())
+      if (gcontrol.getZweckInput().getValue() == null
+          || ((String) gcontrol.getZweckInput().getValue()).isEmpty())
       {
-        status.setValue("Bitte Zweck eingeben");
+        status.setValue("Bitte Verwendungszweck eingeben");
         status.setColor(Color.ERROR);
         return;
       }
-      if (datumInput.getValue() == null)
+      if (gcontrol.getDatumInput().getValue() == null)
       {
         status.setValue("Bitte Datum auswählen");
         status.setColor(Color.ERROR);
         return;
       }
-      if (rechnungAnzeigen && formularInput.getValue() == null
+      if (EinstellungRechnungAnzeigen
           && (boolean) rechnungErzeugenInput.getValue())
       {
-        status.setValue("Bitte Formular auswählen");
-        status.setColor(Color.ERROR);
-        return;
+        if (formularInput.getValue() == null)
+        {
+          status.setValue("Bitte Formular auswählen");
+          status.setColor(Color.ERROR);
+          return;
+        }
+        if (rechnungsDatumInput.getValue() == null)
+        {
+          status.setValue("Bitte Rechnung Datum auswählen");
+          status.setColor(Color.ERROR);
+          return;
+        }
       }
-      if ((fixerBetragInput.getValue() == null
-          || ((Double) fixerBetragInput.getValue()) < 0.005d)
-          && (boolean) fixerBetragAbrechnenInput.getValue())
+      if ((boolean) gcontrol.getFixerBetragAbrechnenInput().getValue())
       {
-        status.setValue("Bitte positiven Erstattungsbetrag eingeben");
-        status.setColor(Color.ERROR);
-        return;
-      }
-      if (buchungsartInput.getValue() == null
-          && (boolean) fixerBetragAbrechnenInput.getValue())
-      {
-        status.setValue("Bitte Buchungsart eingeben");
-        status.setColor(Color.ERROR);
-        return;
+        if (gcontrol.getFixerBetragInput().getValue() == null
+            || ((Double) gcontrol.getFixerBetragInput().getValue()) < 0.005d)
+        {
+          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
+          status.setColor(Color.ERROR);
+          return;
+        }
+        if (buchungsartInput.getValue() == null)
+        {
+          status.setValue("Bitte Buchungsart eingeben");
+          status.setColor(Color.ERROR);
+          return;
+        }
+        if (EinstellungBuchungsklasseInBuchung
+            && buchungsklasseInput.getValue() == null)
+        {
+          status.setValue("Bitte Buchungsklasse eingeben");
+          status.setColor(Color.ERROR);
+          return;
+        }
       }
       storeValues();
       saveSettings();
-      fortfahren = true;
+      gcontrol.saveSettings(params);
       close();
     }, null, false, "ok.png");
-    buttons.addButton("Abbrechen", context ->
-
-    close(), null, false, "process-stop.png");
+    buttons.addButton("Abbrechen", context -> close(), null, false,
+        "process-stop.png");
     buttons.paint(parent);
   }
 
@@ -246,240 +265,44 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     return status;
   }
 
-  // Ausgabe
-  private SelectInput getAusgabeInput()
-  {
-    UeberweisungAusgabe aus = UeberweisungAusgabe.getByKey(
-        settings.getInt("ausgabe", UeberweisungAusgabe.HIBISCUS.getKey()));
-    if (aus != UeberweisungAusgabe.SEPA_DATEI
-        && aus != UeberweisungAusgabe.HIBISCUS)
-    {
-      aus = UeberweisungAusgabe.HIBISCUS;
-    }
-    ausgabeInput = new SelectInput(UeberweisungAusgabe.values(), aus);
-    ausgabeInput.setMandatory(true);
-    return ausgabeInput;
-  }
-
-  // Ausführungsdatum
-  private DateInput getDatumInput()
-  {
-    datumInput = new DateInput(new Date());
-    datumInput.setMandatory(true);
-    return datumInput;
-  }
-
-  // Verwendungszweck
-  private TextInput getZweckInput()
-  {
-    zweckInput = new TextInput(settings.getString("verwendungszweck", ""));
-    zweckInput.setMandatory(true);
-    return zweckInput;
-  }
-
-  // Rechnung zur Gutschrift erzeugen
-  private CheckboxInput getRechnungErzeugenInput()
-  {
-    rechnungErzeugenInput = new CheckboxInput(
-        settings.getBoolean("rechnungErzeugen", false));
-    rechnungErzeugenInput.addListener(e -> {
-      // Die Reihenfolge von mandatory und enabled ist abhängig von
-      // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-      if ((boolean) rechnungErzeugenInput.getValue())
-      {
-        formularInput.setEnabled(true);
-        formularInput.setMandatory(true);
-      }
-      else
-      {
-        formularInput.setMandatory(false);
-        formularInput.setEnabled(false);
-      }
-      rechnungsDokumentSpeichernInput
-          .setEnabled((boolean) rechnungErzeugenInput.getValue());
-    });
-    return rechnungErzeugenInput;
-  }
-
-  // Erstattung Formular
-  private FormularInput getFormularInput() throws RemoteException
-  {
-    formularInput = new FormularInput(FormularArt.RECHNUNG,
-        settings.getString("formular", ""));
-    formularInput.setMandatory((boolean) rechnungErzeugenInput.getValue());
-    formularInput.setEnabled((boolean) rechnungErzeugenInput.getValue());
-    return formularInput;
-  }
-
-  // Rechnung als Buchungsdokument speichern
-  private CheckboxInput getRechnungsDokumentSpeichernInput()
-  {
-    rechnungsDokumentSpeichernInput = new CheckboxInput(
-        settings.getBoolean("rechnungsDokumentSpeichern", false));
-    rechnungsDokumentSpeichernInput
-        .setEnabled((boolean) rechnungErzeugenInput.getValue());
-    return rechnungsDokumentSpeichernInput;
-  }
-
-  // Fixen Betrag erstatten
-  private CheckboxInput getFixerBetragAbrechnenInput()
-  {
-    if (isMitglied)
-    {
-      fixerBetragAbrechnenInput = new CheckboxInput(true);
-      fixerBetragAbrechnenInput.addListener(e -> {
-        fixerBetragAbrechnenInput.setValue(true);
-      });
-    }
-    else
-    {
-      fixerBetragAbrechnenInput = new CheckboxInput(
-          settings.getBoolean("fixerBetragAbrechnen", false));
-      fixerBetragAbrechnenInput.addListener(e -> {
-        updateFixerBetragInput();
-        updateBuchungsartInput();
-        updateBuchungsklasseInput();
-        updateSteuerInput();
-      });
-    }
-    fixerBetragAbrechnenInput.setName(
-        " *sonst ganzen Betrag erstatten und bereits bezahlten Betrag überweisen");
-    return fixerBetragAbrechnenInput;
-  }
-
-  // Erstattungsbetrag
-  private DecimalInput getFixerBetragInput()
-  {
-    String tmp = settings.getString("fixerBetrag", "");
-    if (tmp != null && !tmp.isEmpty())
-    {
-      fixerBetragInput = new DecimalInput(Double.parseDouble(tmp),
-          Einstellungen.DECIMALFORMAT);
-    }
-    else
-    {
-      fixerBetragInput = new DecimalInput(Einstellungen.DECIMALFORMAT);
-    }
-    updateFixerBetragInput();
-    return fixerBetragInput;
-  }
-
-  public AbstractInput getBuchungsartInput() throws RemoteException
-  {
-    Buchungsart ba = null;
-    String buchungsart = settings.getString("buchungsart", "");
-    if (buchungsart.length() > 0)
-    {
-      try
-      {
-        ba = (Buchungsart) Einstellungen.getDBService()
-            .createObject(Buchungsart.class, buchungsart);
-      }
-      catch (ObjectNotFoundException e)
-      {
-        // Dann erste aus der Liste
-      }
-    }
-    buchungsartInput = new BuchungsartInput().getBuchungsartInput(
-        buchungsartInput, ba, buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
-            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    buchungsartInput.addListener(e -> {
-      try
-      {
-        if (buchungsklasseInput != null && buchungsartInput.getValue() != null)
-        {
-          buchungsklasseInput.setValue(
-              ((Buchungsart) buchungsartInput.getValue()).getBuchungsklasse());
-        }
-        if (steuerInput != null && buchungsartInput.getValue() != null)
-        {
-
-          steuerInput.setValue(
-              ((Buchungsart) buchungsartInput.getValue()).getSteuer());
-        }
-
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    });
-    updateBuchungsartInput();
-    return buchungsartInput;
-  }
-
-  public SelectInput getBuchungsklasseInput() throws RemoteException
-  {
-    Buchungsklasse bk = null;
-    String buchungskl = settings.getString("buchungsklasse", "");
-    if (buchungskl.length() > 0)
-    {
-      try
-      {
-        bk = (Buchungsklasse) Einstellungen.getDBService()
-            .createObject(Buchungsklasse.class, buchungskl);
-      }
-      catch (ObjectNotFoundException e)
-      {
-        // Dann erste aus der Liste
-      }
-    }
-    buchungsklasseInput = new BuchungsklasseInput()
-        .getBuchungsklasseInput(buchungsklasseInput, bk);
-    updateBuchungsklasseInput();
-    return buchungsklasseInput;
-  }
-
-  public SelectInput getSteuerInput() throws RemoteException
-  {
-    Steuer st = null;
-    String steuer = settings.getString("steuer", "");
-    if (steuer.length() > 0)
-    {
-      try
-      {
-        st = (Steuer) Einstellungen.getDBService().createObject(Steuer.class,
-            steuer);
-      }
-      catch (ObjectNotFoundException e)
-      {
-        // Dann erste aus der Liste
-      }
-    }
-    steuerInput = new SteuerInput(st);
-    steuerInput.setPleaseChoose("Keine Steuer");
-    updateSteuerInput();
-    return steuerInput;
-  }
-
   private void storeValues()
   {
-    datum = (Date) datumInput.getValue();
-    if (rechnungAnzeigen)
+    params = new GutschriftParam();
+    params.setAusgabe(
+        (UeberweisungAusgabe) gcontrol.getAusgabeInput().getValue());
+    params.setDatum((Date) gcontrol.getDatumInput().getValue());
+    params.setVerwendungszweck((String) gcontrol.getZweckInput().getValue());
+
+    // Rechnung
+    if (EinstellungRechnungAnzeigen)
     {
-      formular = (Formular) formularInput.getValue();
-      rechnungErzeugen = (boolean) rechnungErzeugenInput.getValue();
+      params.setRechnungErzeugen((boolean) rechnungErzeugenInput.getValue());
+      params.setFormular((Formular) formularInput.getValue());
       if (rechnungsDokumentSpeichernInput != null)
       {
-        rechnungsDokumentSpeichern = (boolean) rechnungsDokumentSpeichernInput
-            .getValue();
+        params.setRechnungsDokumentSpeichern(
+            (boolean) rechnungsDokumentSpeichernInput.getValue());
       }
+      params.setRechnungsText((String) rechnungsTextInput.getValue());
+      params.setRechnungsDatum((Date) rechnungsDatumInput.getValue());
     }
-    zweck = (String) zweckInput.getValue();
-    ausgabe = (UeberweisungAusgabe) ausgabeInput.getValue();
-    fixerBetragAbrechnen = (boolean) fixerBetragAbrechnenInput.getValue();
+
+    // Fixer Betrag
+    boolean fixerBetragAbrechnen = (boolean) gcontrol
+        .getFixerBetragAbrechnenInput().getValue();
     if (fixerBetragAbrechnen)
     {
-      fixerBetrag = (Double) fixerBetragInput.getValue();
-      buchungsart = (Buchungsart) buchungsartInput.getValue();
-      if (buchungsklasseInBuchung)
+      params.setFixerBetragAbrechnen(fixerBetragAbrechnen);
+      params.setFixerBetrag((Double) gcontrol.getFixerBetragInput().getValue());
+      params.setBuchungsart((Buchungsart) buchungsartInput.getValue());
+      if (buchungsklasseInput != null)
       {
-        buchungsklasse = (Buchungsklasse) buchungsklasseInput.getValue();
+        params
+            .setBuchungsklasse((Buchungsklasse) buchungsklasseInput.getValue());
       }
-      if (steuerInBuchung)
+      if (steuerInput != null)
       {
-        steuer = (Steuer) steuerInput.getValue();
+        params.setSteuer((Steuer) steuerInput.getValue());
       }
     }
   }
@@ -488,169 +311,27 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   {
     try
     {
-      settings.setAttribute("ausgabe", ausgabe.getKey());
-      settings.setAttribute("verwendungszweck", zweck);
-      if (rechnungErzeugen)
+      settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
+      if (params.isRechnungErzeugen())
       {
-        settings.setAttribute("formular", formular.getID());
-        settings.setAttribute("rechnungErzeugen", rechnungErzeugen);
-        settings.setAttribute("rechnungsDokumentSpeichern",
-            rechnungsDokumentSpeichern);
-      }
-      if (!isMitglied)
-      {
-        settings.setAttribute("fixerBetragAbrechnen", fixerBetragAbrechnen);
-        if (fixerBetragAbrechnen)
+        if (EinstellungSpeicherungAnzeigen)
         {
-          if (fixerBetrag != null)
-          {
-            settings.setAttribute("fixerBetrag", fixerBetrag);
-          }
-          else
-          {
-            settings.setAttribute("fixerBetrag", "");
-          }
-          if (buchungsart != null)
-          {
-            settings.setAttribute("buchungsart", buchungsart.getID());
-          }
-          else
-          {
-            settings.setAttribute("buchungsart", "");
-          }
-          if (buchungsklasse != null)
-          {
-            settings.setAttribute("buchungsklasse", buchungsklasse.getID());
-          }
-          else
-          {
-            settings.setAttribute("buchungsklasse", "");
-          }
-          if (steuer != null)
-          {
-            settings.setAttribute("steuer", steuer.getID());
-          }
-          else
-          {
-            settings.setAttribute("steuer", "");
-          }
+          settings.setAttribute("rechnungsDokumentSpeichern",
+              params.isRechnungsDokumentSpeichern());
         }
+        settings.setAttribute("formular", params.getFormular().getID());
+        settings.setAttribute("rechnungstext", params.getRechnungsText());
       }
     }
     catch (RemoteException ex)
     {
-      Logger.error("fehler beim Speichern der Settings", ex);
+      Logger.error("Fehler beim Speichern der Settings", ex);
     }
   }
 
   @Override
-  protected Boolean getData() throws Exception
+  protected GutschriftParam getData() throws Exception
   {
-    return fortfahren;
-  }
-
-  public Formular getFormular()
-  {
-    return formular;
-  }
-
-  public Date getDatum()
-  {
-    return datum;
-  }
-
-  public boolean getRechnungErzeugen()
-  {
-    return rechnungErzeugen;
-  }
-
-  public boolean getRechnungsDokumentSpeichern()
-  {
-    return rechnungsDokumentSpeichern;
-  }
-
-  public String getZweck()
-  {
-    return zweck;
-  }
-
-  public UeberweisungAusgabe getAusgabe()
-  {
-    return ausgabe;
-  }
-
-  public boolean getFixerBetragAbrechnen()
-  {
-    return fixerBetragAbrechnen;
-  }
-
-  public Double getFixerBetrag()
-  {
-    return fixerBetrag;
-  }
-
-  public Buchungsart getBuchungsart()
-  {
-    return buchungsart;
-  }
-
-  public Buchungsklasse getBuchungsklasse()
-  {
-    return buchungsklasse;
-  }
-
-  public Steuer getSteuer()
-  {
-    return steuer;
-  }
-
-  private void updateFixerBetragInput()
-  {
-    fixerBetragInput
-        .setMandatory((boolean) fixerBetragAbrechnenInput.getValue());
-    fixerBetragInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
-  }
-
-  private void updateBuchungsartInput()
-  {
-    // Die Reihenfolge von mandatory und enabled ist abhängig von
-    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-    if ((boolean) fixerBetragAbrechnenInput.getValue())
-    {
-      buchungsartInput.setEnabled(true);
-      buchungsartInput.setMandatory(true);
-    }
-    else
-    {
-      buchungsartInput.setMandatory(false);
-      buchungsartInput.setEnabled(false);
-    }
-  }
-
-  private void updateBuchungsklasseInput()
-  {
-    if (buchungsklasseInput != null)
-    {
-      // Die Reihenfolge von mandatory und enabled ist abhängig von
-      // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-      if ((boolean) fixerBetragAbrechnenInput.getValue())
-      {
-        buchungsklasseInput.setEnabled(true);
-        buchungsklasseInput.setMandatory(true);
-      }
-      else
-      {
-        buchungsklasseInput.setMandatory(false);
-        buchungsklasseInput.setEnabled(false);
-      }
-    }
-  }
-
-  private void updateSteuerInput()
-  {
-    if (steuerInput != null)
-    {
-      steuerInput.setEnabled((boolean) fixerBetragAbrechnenInput.getValue());
-    }
+    return params;
   }
 }

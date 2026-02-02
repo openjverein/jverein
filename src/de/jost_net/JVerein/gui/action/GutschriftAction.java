@@ -21,6 +21,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.io.Gutschrift;
+import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
@@ -117,11 +118,12 @@ public class GutschriftAction implements Action
 
       GutschriftDialog dialog = new GutschriftDialog(
           providerArray[0] instanceof Mitglied);
-      if (!dialog.open())
+      GutschriftParam params = dialog.open();
+      if (params == null)
       {
         return;
       }
-      new Gutschrift(dialog, providerArray);
+      new Gutschrift(params, providerArray);
     }
     catch (ApplicationException | OperationCanceledException ae)
     {
