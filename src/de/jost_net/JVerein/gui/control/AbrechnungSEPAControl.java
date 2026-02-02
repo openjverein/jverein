@@ -61,7 +61,6 @@ import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class AbrechnungSEPAControl extends AbstractControl
-    implements IMailControl
 {
 
   private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
@@ -713,21 +712,5 @@ public class AbrechnungSEPAControl extends AbstractControl
         sollbuchungenzusammenfassen.setValue(false);
       }
     }
-  }
-
-  @Override
-  public String getBetreffString() throws RemoteException
-  {
-    if (rechnungstext != null)
-    {
-      return (String) rechnungstext.getValue();
-    }
-    return "";
-  }
-
-  @Override
-  public String getTxtString() throws RemoteException
-  {
-    return null;
   }
 }

@@ -21,7 +21,6 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -29,11 +28,8 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.IMailControl;
-import de.jost_net.JVerein.gui.control.ZusatzbetragVorlageControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -81,8 +77,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     this.control = control;
     this.map = map;
     this.mitMitglied = mitMitglied;
-    setTitle("Vorschau");
-    setSize(settings.getInt("width", 600), SWT.DEFAULT);
+    setTitle("Mail-Text-Vorschau");
+    setSize(settings.getInt("width", 600), settings.getInt("height", 450));
 
     try
     {
@@ -134,30 +130,12 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       container.addLabelPair("Empfänger", mitglied);
     }
 
-    String bezeichner = "Betreff";
-    if (textString == null)
-    {
-      if (control instanceof AbrechnungSEPAControl)
-      {
-        bezeichner = "Rechnung Text";
-      }
-      else if (control instanceof ZusatzbetragPart
-          || control instanceof ZusatzbetragVorlageControl)
-      {
-        bezeichner = "Buchungstext";
-      }
-    }
     betreff = new TextInput(em.evalBetreff(betreffString));
     betreff.setEnabled(false);
-    container.addLabelPair(bezeichner, betreff);
-
-    if (textString != null)
-    {
-      text = new TextAreaInput(em.evalText(textString));
-      text.setEnabled(false);
-      text.setHeight(300);
-      container.addLabelPair("Text", text);
-    }
+    container.addLabelPair("Betreff", betreff);
+    text = new TextAreaInput(em.evalText(textString));
+    text.setEnabled(false);
+    container.addLabelPair("Text", text);
 
     ButtonArea b = new ButtonArea();
     b.addButton("Schließen", context -> close(), null, false,
