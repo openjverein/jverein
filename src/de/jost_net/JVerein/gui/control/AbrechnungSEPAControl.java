@@ -238,6 +238,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         voneingabedatum.setMandatory(vondatum.getValue() == null);
       }
     });
+    vondatum.hasChanged();
     return vondatum;
   }
 
@@ -261,6 +262,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         voneingabedatum.setMandatory(vondatum.getValue() == null);
       }
     });
+    voneingabedatum.hasChanged();
     return voneingabedatum;
   }
 
