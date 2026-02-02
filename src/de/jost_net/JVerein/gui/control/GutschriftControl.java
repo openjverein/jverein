@@ -125,7 +125,7 @@ public class GutschriftControl extends AbstractControl
       });
     }
     fixerBetragAbrechnenInput.setName(
-        " *Sonst ganzen Betrag erstatten und bereits bezahlten Betrag überweisen");
+        " *Sonst ganzen Betrag erstatten und bereits bezahlten Betrag überweisen.");
     return fixerBetragAbrechnenInput;
   }
 
