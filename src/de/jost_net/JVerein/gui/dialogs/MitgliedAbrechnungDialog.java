@@ -36,7 +36,6 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
-import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
@@ -52,6 +51,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -66,11 +66,11 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 {
   private boolean fortfahren = false;
 
+  private CheckboxInput vorlageSpeichernInput;
+
   private Mitglied[] mitglieder;
 
   final AbrechnungSEPAControl control = new AbrechnungSEPAControl(null);
-
-  final ZusatzbetragControl zcontrol = new ZusatzbetragControl(null);
 
   /**
    * @param position
@@ -79,7 +79,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   {
     super(position);
     super.setSize(950, SWT.DEFAULT);
-    setTitle("Einmalige Abrechnung");
+    setTitle("Forderung(en) erstellen");
     this.mitglieder = m;
   }
 
@@ -97,9 +97,9 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     zusatzb.setStartdatum(new Date());
     ZusatzbetragPart part = new ZusatzbetragPart(zusatzb, false);
 
-    left.addHeadline("Buchung");
-    left.addLabelPair("Fälligkeit ", part.getStartdatum(true));
-    left.addLabelPair("Buchungstext", part.getBuchungstext());
+    left.addHeadline("Forderung");
+    left.addLabelPair("Fälligkeit ", control.getFaelligkeit());
+    left.addLabelPair("Zahlungsgrund", part.getBuchungstext());
     left.addLabelPair("Betrag", part.getBetrag());
     left.addLabelPair("Buchungsart", part.getBuchungsart());
     if ((Boolean) Einstellungen
@@ -112,20 +112,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     left.addLabelPair("Zahlungsweg", part.getZahlungsweg());
     left.addLabelPair("Mitglied zahlt selbst", part.getMitgliedzahltSelbst());
     left.addHeadline("Vorlagen");
-    left.addLabelPair("Als Vorlage speichern", zcontrol.getVorlage());
-
-    // Nicht angezeigte Parameter aus dem ZusatzbetragPart und Abrechnungslauf
-    // View erzeugen
-    part.getFaelligkeit();
-    part.getIntervall();
-    part.getEndedatum();
-    control.getAbbuchungsmodus()
-        .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.KEINBEITRAG));
-    control.getFaelligkeit();
-    control.getStichtag();
-    control.getZahlungsgrund();
-    control.getZusatzbetrag().setValue(true);
-    control.getKursteilnehmer().setValue(false);
+    left.addLabelPair("Als Vorlage speichern", getVorlageSpeichern());
 
     right.addHeadline("Sollbuchungen");
     right.addLabelPair("Sollbuchung(en) zusammenfassen",
@@ -161,7 +148,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINMAL_ABRECHNUNG, false, "question-circle.png");
 
-    buttons.addButton("Buchungstext Variablen anzeigen",
+    buttons.addButton("Zahlungsgrund Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Rechnungstext Variablen anzeigen",
         new RechnungVariableDialogAction(part), null, false, "bookmark.png");
@@ -178,10 +165,10 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
               .createObject(Zusatzbetrag.class, null);
           zb.setBetrag((Double) part.getBetrag().getValue());
           zb.setBuchungstext((String) part.getBuchungstext().getValue());
-          zb.setFaelligkeit((Date) part.getStartdatum(true).getValue());
+          zb.setFaelligkeit((Date) control.getFaelligkeit().getValue());
           zb.setIntervall(IntervallZusatzzahlung.KEIN);
           zb.setMitglied(Integer.parseInt(mit.getID()));
-          zb.setStartdatum((Date) part.getStartdatum(true).getValue());
+          zb.setStartdatum((Date) control.getFaelligkeit().getValue());
           zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
           zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
           if (part.isSteuerActive())
@@ -193,22 +180,13 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
               (Boolean) part.getMitgliedzahltSelbst().getValue());
           list.add(zb);
         }
-        if (zcontrol.getVorlage().getValue()
-            .equals(ZusatzbetragControl.MITDATUM)
-            || zcontrol.getVorlage().getValue()
-                .equals(ZusatzbetragControl.OHNEDATUM))
+        if ((Boolean) getVorlageSpeichern().getValue())
         {
           ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
               .getDBService().createObject(ZusatzbetragVorlage.class, null);
           zv.setIntervall(IntervallZusatzzahlung.KEIN);
           zv.setBuchungstext((String) part.getBuchungstext().getValue());
           zv.setBetrag((Double) part.getBetrag().getValue());
-          if (zcontrol.getVorlage().getValue()
-              .equals(ZusatzbetragControl.MITDATUM))
-          {
-            zv.setFaelligkeit((Date) part.getStartdatum(true).getValue());
-            zv.setStartdatum((Date) part.getStartdatum(true).getValue());
-          }
           zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
           zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
           if (part.isSteuerActive())
@@ -221,13 +199,11 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
           zv.store();
         }
 
-        control.getFaelligkeit()
-            .setValue((Date) part.getStartdatum(true).getValue());
-        control.getStichtag()
-            .setValue((Date) part.getStartdatum(true).getValue());
         control.getZahlungsgrund()
             .setValue((String) part.getBuchungstext().getValue());
-        control.startAbrechnung(list);
+        control.getAbbuchungsmodus()
+            .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.FORDERUNG));
+        control.startZusatzbetragAbrechnung(list);
         fortfahren = true;
         close();
       }
@@ -255,7 +231,6 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 
   private class RechnungVariableDialogAction implements Action
   {
-
     private ZusatzbetragPart part;
 
     public RechnungVariableDialogAction(ZusatzbetragPart part)
@@ -268,12 +243,9 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     {
       try
       {
-        control.getFaelligkeit()
-            .setValue((Date) part.getStartdatum(true).getValue());
-        control.getStichtag()
-            .setValue((Date) part.getStartdatum(true).getValue());
         control.getZahlungsgrund()
             .setValue((String) part.getBuchungstext().getValue());
+
         Map<String, Object> rmap = new AllgemeineMap().getMap(null);
         rmap = new AbrechnungsParameterMap()
             .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
@@ -286,6 +258,15 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
         //
       }
     }
+  }
 
+  public CheckboxInput getVorlageSpeichern()
+  {
+    if (vorlageSpeichernInput != null)
+    {
+      return vorlageSpeichernInput;
+    }
+    vorlageSpeichernInput = new CheckboxInput(false);
+    return vorlageSpeichernInput;
   }
 }

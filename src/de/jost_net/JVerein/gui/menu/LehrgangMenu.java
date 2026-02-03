@@ -43,12 +43,12 @@ public class LehrgangMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedContextMenuItem("Einmalige Abrechnung",
-        new MitgliedAbrechnungAction(), "calculator.png"));
     if (part != null)
     {
       addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
           new MitgliedDetailAction(), "user-friends.png"));
     }
+    addItem(new CheckedContextMenuItem("Forderung(en) erstellen",
+        new MitgliedAbrechnungAction(), "lastschrift.png"));
   }
 }

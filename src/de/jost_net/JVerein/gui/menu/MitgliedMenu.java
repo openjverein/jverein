@@ -209,8 +209,8 @@ public class MitgliedMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "lastschrift.png"));
-    addItem(new CheckedContextMenuItem("Einmalige Abrechnung",
-        new MitgliedAbrechnungAction(), "calculator.png"));
+    addItem(new CheckedContextMenuItem("Forderung(en) erstellen",
+        new MitgliedAbrechnungAction(), "lastschrift.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));

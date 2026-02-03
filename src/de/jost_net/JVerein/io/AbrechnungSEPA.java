@@ -126,7 +126,7 @@ public class AbrechnungSEPA
     // Mitglieder abrechnen und zahlerMap füllen
     abrechnenMitglieder(param, monitor);
 
-    if (param.zusatzbetraege)
+    if (param.zusatzbetraege || param.zusatzbetraegeList != null)
     {
       // Zusatzbetraege abrechnen und zahlerMap füllen
       abbuchenZusatzbetraege(param, abrl, monitor);
@@ -375,7 +375,8 @@ public class AbrechnungSEPA
   private void abrechnenMitglieder(AbrechnungSEPAParam param,
       ProgressMonitor monitor) throws Exception
   {
-    if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG)
+    if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG
+        && param.abbuchungsmodus != Abrechnungsmodi.FORDERUNG)
     {
       // Alle Mitglieder lesen
       DBIterator<Mitglied> list = Einstellungen.getDBService()
@@ -655,7 +656,10 @@ public class AbrechnungSEPA
           .createList(Zusatzbetrag.class);
       // etwas vorfiltern um die Ergebnise zu reduzieren
       list.addFilter("(intervall != 0 or ausfuehrung is null)");
-      list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
+      if (param.stichtag != null)
+      {
+        list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
+      }
       zusatzbetraege = PseudoIterator.asList(list);
     }
     for (Zusatzbetrag z : zusatzbetraege)
@@ -664,7 +668,7 @@ public class AbrechnungSEPA
       {
         throw new ApplicationException("Abrechnung abgebrochen");
       }
-      if (z.isAktiv(param.stichtag))
+      if (param.stichtag == null || z.isAktiv(param.stichtag))
       {
         Mitglied m = z.getMitglied();
         Mitglied mZahler;
