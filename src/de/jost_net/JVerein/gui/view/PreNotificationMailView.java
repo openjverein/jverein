@@ -117,12 +117,17 @@ public class PreNotificationMailView extends AbstractView
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
     SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
 
+    Map<String, Object> ct1map = LastschriftMap.getDummyMap(null);
+    ct1map = new AllgemeineMap().getMap(ct1map);
+
     grtab2.addInput(control.getct1Ausgabe());
     grtab2.addInput(control.getAusfuehrungsdatum());
     grtab2.addInput(control.getVerwendungszweck());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons2.addButton("Verwendungszweck Variablen anzeigen",
+        new InsertVariableDialogAction(ct1map), control, false, "bookmark.png");
     buttons2.addButton(control.getDruckMailMitgliederButton(
         this.getCurrentObject(), TYP.CENT1.toString()));
     buttons2.addButton(
