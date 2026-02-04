@@ -192,52 +192,12 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
           return;
         }
         saveSettings(part);
-        List<Zusatzbetrag> list = new ArrayList<>();
-        for (Mitglied mit : mitglieder)
-        {
-          Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
-              .createObject(Zusatzbetrag.class, null);
-          zb.setBetrag((Double) part.getBetrag().getValue());
-          zb.setBuchungstext((String) part.getBuchungstext().getValue());
-          zb.setFaelligkeit((Date) control.getFaelligkeit().getValue());
-          zb.setIntervall(IntervallZusatzzahlung.KEIN);
-          zb.setMitglied(Integer.parseInt(mit.getID()));
-          zb.setStartdatum((Date) control.getFaelligkeit().getValue());
-          zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
-          zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
-          if (part.isSteuerActive())
-          {
-            zb.setSteuer((Steuer) part.getSteuer().getValue());
-          }
-          zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
-          zb.setMitgliedzahltSelbst(
-              (Boolean) part.getMitgliedzahltSelbst().getValue());
-          list.add(zb);
-        }
-        if ((Boolean) getVorlageSpeichern().getValue())
-        {
-          ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
-              .getDBService().createObject(ZusatzbetragVorlage.class, null);
-          zv.setIntervall(IntervallZusatzzahlung.KEIN);
-          zv.setBuchungstext((String) part.getBuchungstext().getValue());
-          zv.setBetrag((Double) part.getBetrag().getValue());
-          zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
-          zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
-          if (part.isSteuerActive())
-          {
-            zv.setSteuer((Steuer) part.getSteuer().getValue());
-          }
-          zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
-          zv.setMitgliedzahltSelbst(
-              (Boolean) part.getMitgliedzahltSelbst().getValue());
-          zv.store();
-        }
 
         control.getZahlungsgrund()
             .setValue((String) part.getBuchungstext().getValue());
         control.getAbbuchungsmodus()
             .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.FORDERUNG));
-        control.startZusatzbetragAbrechnung(list);
+        control.startZusatzbetragAbrechnung(getZusatzbetraegeList(part));
         fortfahren = true;
         close();
       }
@@ -478,6 +438,52 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     zusatzb.setMitgliedzahltSelbst(
         settings.getBoolean("mitgliedzahltselbst", false));
     return zusatzb;
+  }
+
+  private List<Zusatzbetrag> getZusatzbetraegeList(ZusatzbetragPart part)
+      throws RemoteException, ApplicationException
+  {
+    List<Zusatzbetrag> list = new ArrayList<>();
+    for (Mitglied mit : mitglieder)
+    {
+      Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
+          .createObject(Zusatzbetrag.class, null);
+      zb.setBetrag((Double) part.getBetrag().getValue());
+      zb.setBuchungstext((String) part.getBuchungstext().getValue());
+      zb.setFaelligkeit((Date) control.getFaelligkeit().getValue());
+      zb.setIntervall(IntervallZusatzzahlung.KEIN);
+      zb.setMitglied(Integer.parseInt(mit.getID()));
+      zb.setStartdatum((Date) control.getFaelligkeit().getValue());
+      zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+      zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+      if (part.isSteuerActive())
+      {
+        zb.setSteuer((Steuer) part.getSteuer().getValue());
+      }
+      zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+      zb.setMitgliedzahltSelbst(
+          (Boolean) part.getMitgliedzahltSelbst().getValue());
+      list.add(zb);
+    }
+    if ((Boolean) getVorlageSpeichern().getValue())
+    {
+      ZusatzbetragVorlage zv = (ZusatzbetragVorlage) Einstellungen
+          .getDBService().createObject(ZusatzbetragVorlage.class, null);
+      zv.setIntervall(IntervallZusatzzahlung.KEIN);
+      zv.setBuchungstext((String) part.getBuchungstext().getValue());
+      zv.setBetrag((Double) part.getBetrag().getValue());
+      zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
+      zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+      if (part.isSteuerActive())
+      {
+        zv.setSteuer((Steuer) part.getSteuer().getValue());
+      }
+      zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+      zv.setMitgliedzahltSelbst(
+          (Boolean) part.getMitgliedzahltSelbst().getValue());
+      zv.store();
+    }
+    return list;
   }
 
   private void saveSettings(ZusatzbetragPart part)
