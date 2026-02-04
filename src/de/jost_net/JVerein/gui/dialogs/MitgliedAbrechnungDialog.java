@@ -41,21 +41,27 @@ import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -66,9 +72,21 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
 {
   private boolean fortfahren = false;
 
+  private LabelInput status = null;
+
   private CheckboxInput vorlageSpeichernInput;
 
   private Mitglied[] mitglieder;
+
+  private boolean EinstellungRechnungAnzeigen = false;
+
+  private boolean EinstellungBuchungsklasseInBuchung = false;
+
+  private boolean EinstellungSteuerInBuchung = false;
+
+  private boolean EinstellungSpeicherungAnzeigen = false;
+
+  private Settings settings = null;
 
   final AbrechnungSEPAControl control = new AbrechnungSEPAControl(null);
 
@@ -80,6 +98,8 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     super(position);
     super.setSize(950, SWT.DEFAULT);
     setTitle("Forderung(en) erstellen");
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
     this.mitglieder = m;
   }
 
@@ -87,14 +107,23 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   protected void paint(Composite parent)
       throws RemoteException, ApplicationException
   {
+    EinstellungRechnungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.RECHNUNGENANZEIGEN);
+    EinstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+        && JVereinPlugin.isArchiveServiceActive();
+    EinstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
+    EinstellungSteuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
+
     LabelGroup group = new LabelGroup(parent, "");
+    group.addInput(getStatus());
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
-    Zusatzbetrag zusatzb = (Zusatzbetrag) Einstellungen.getDBService()
-        .createObject(Zusatzbetrag.class, null);
-    zusatzb.setStartdatum(new Date());
+    Zusatzbetrag zusatzb = getZusatzbetrag();
     ZusatzbetragPart part = new ZusatzbetragPart(zusatzb, false);
 
     left.addHeadline("Forderung");
@@ -102,10 +131,11 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     left.addLabelPair("Zahlungsgrund", part.getBuchungstext());
     left.addLabelPair("Betrag", part.getBetrag());
     left.addLabelPair("Buchungsart", part.getBuchungsart());
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    if (EinstellungBuchungsklasseInBuchung)
+    {
       left.addLabelPair("Buchungsklasse", part.getBuchungsklasse());
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    }
+    if (EinstellungSteuerInBuchung)
     {
       left.addLabelPair("Steuer", part.getSteuer());
     }
@@ -126,12 +156,11 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     right.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    if (EinstellungRechnungAnzeigen)
     {
       right.addHeadline("Rechnungen");
       right.addLabelPair("Rechnung(en) erstellen", control.getRechnung());
-      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-          && JVereinPlugin.isArchiveServiceActive())
+      if (EinstellungSpeicherungAnzeigen)
       {
         right.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
@@ -158,6 +187,11 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     buttons.addButton("Abrechnen", context -> {
       try
       {
+        if (!checkInput(part))
+        {
+          return;
+        }
+        saveSettings(part);
         List<Zusatzbetrag> list = new ArrayList<>();
         for (Mitglied mit : mitglieder)
         {
@@ -229,6 +263,16 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     return fortfahren;
   }
 
+  private LabelInput getStatus()
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new LabelInput("");
+    return status;
+  }
+
   private class RechnungVariableDialogAction implements Action
   {
     private ZusatzbetragPart part;
@@ -268,5 +312,237 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
     }
     vorlageSpeichernInput = new CheckboxInput(false);
     return vorlageSpeichernInput;
+  }
+
+  private boolean checkInput(ZusatzbetragPart part)
+  {
+    try
+    {
+      if (control.getFaelligkeit().getValue() == null)
+      {
+        status.setValue("Bitte Fälligkeit eingeben");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (part.getBuchungstext().getValue() == null
+          || ((String) part.getBuchungstext().getValue()).isEmpty())
+      {
+        status.setValue("Bitte Zahlungsgrund eingeben");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (part.getBetrag().getValue() == null
+          || ((Double) part.getBetrag().getValue()) < 0.005d)
+      {
+        status.setValue("Bitte positiven Betrag eingeben");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+
+      if (EinstellungSteuerInBuchung)
+      {
+        Buchungsart buchungsart = (Buchungsart) part.getBuchungsart()
+            .getValue();
+        Steuer steuer = (Steuer) part.getSteuer().getValue();
+        if (steuer != null && buchungsart != null)
+        {
+          if (buchungsart.getSpende() || buchungsart.getAbschreibung())
+          {
+            status.setValue(
+                "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+            status.setColor(Color.ERROR);
+            return false;
+          }
+          if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
+          {
+            switch (buchungsart.getArt())
+            {
+              case ArtBuchungsart.AUSGABE:
+                status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
+                status.setColor(Color.ERROR);
+                return false;
+              case ArtBuchungsart.EINNAHME:
+                status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
+                status.setColor(Color.ERROR);
+                return false;
+              // Umbuchung ist bei Anlagebuchungen möglich,
+              // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
+              // möglich
+              case ArtBuchungsart.UMBUCHUNG:
+                break;
+            }
+          }
+        }
+      }
+
+      if (EinstellungRechnungAnzeigen
+          && (boolean) control.getRechnung().getValue())
+      {
+        if (control.getRechnungFormular().getValue() == null)
+        {
+          status.setValue("Bitte Rechnungsformular auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (control.getRechnungsdatum().getValue() == null)
+        {
+          status.setValue("Bitte Rechnungsdatum auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+      }
+
+    }
+    catch (RemoteException re)
+    {
+      status.setValue("Fehler beim Auswerten der Eingabe!");
+      status.setColor(Color.ERROR);
+      return false;
+    }
+    return true;
+  }
+
+  private Zusatzbetrag getZusatzbetrag() throws RemoteException
+  {
+    Zusatzbetrag zusatzb = (Zusatzbetrag) Einstellungen.getDBService()
+        .createObject(Zusatzbetrag.class, null);
+    zusatzb.setStartdatum(new Date());
+    zusatzb.setBuchungstext(settings.getString("buchungstext", ""));
+    zusatzb.setBetrag(settings.getDouble("betrag", 0.0));
+
+    String buchungsart = settings.getString("buchungsart", "");
+    if (buchungsart.length() > 0)
+    {
+      try
+      {
+        Buchungsart ba = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, buchungsart);
+        zusatzb.setBuchungsart(ba);
+      }
+      catch (ObjectNotFoundException e)
+      {
+        //
+      }
+    }
+
+    if (EinstellungBuchungsklasseInBuchung)
+    {
+      String buchungsklasse = settings.getString("buchungsklasse", "");
+      if (buchungsklasse.length() > 0)
+      {
+        try
+        {
+          Buchungsklasse bk = (Buchungsklasse) Einstellungen.getDBService()
+              .createObject(Buchungsklasse.class, buchungsklasse);
+          zusatzb.setBuchungsklasseId(Long.valueOf(bk.getID()));
+        }
+        catch (ObjectNotFoundException e)
+        {
+          //
+        }
+      }
+    }
+
+    if (EinstellungSteuerInBuchung)
+    {
+      String steuer = settings.getString("steuer", "");
+      if (steuer.length() > 0)
+      {
+        try
+        {
+          Steuer st = (Steuer) Einstellungen.getDBService()
+              .createObject(Steuer.class, steuer);
+          zusatzb.setSteuer(st);
+        }
+        catch (ObjectNotFoundException e)
+        {
+          //
+        }
+      }
+    }
+
+    String zahlungsweg = settings.getString("zahlungsweg", "");
+    if (zahlungsweg.length() > 0)
+    {
+      try
+      {
+        Zahlungsweg weg = new Zahlungsweg(Integer.valueOf(zahlungsweg));
+        zusatzb.setZahlungsweg(weg);
+      }
+      catch (Exception e)
+      {
+        //
+      }
+    }
+
+    zusatzb.setMitgliedzahltSelbst(
+        settings.getBoolean("mitgliedzahltselbst", false));
+    return zusatzb;
+  }
+
+  private void saveSettings(ZusatzbetragPart part)
+  {
+    try
+    {
+      settings.setAttribute("buchungstext",
+          (String) part.getBuchungstext().getValue());
+      settings.setAttribute("betrag", (Double) part.getBetrag().getValue());
+      Buchungsart tmpba = (Buchungsart) part.getBuchungsart().getValue();
+      if (tmpba != null)
+      {
+        settings.setAttribute("buchungsart", tmpba.getID());
+      }
+      else
+      {
+        settings.setAttribute("buchungsart", "");
+      }
+      if (EinstellungBuchungsklasseInBuchung)
+      {
+        Buchungsklasse tmpbk = (Buchungsklasse) part.getBuchungsklasse()
+            .getValue();
+        if (tmpbk != null)
+        {
+          settings.setAttribute("buchungsklasse", tmpbk.getID());
+        }
+        else
+        {
+          settings.setAttribute("buchungsklasse", "");
+        }
+      }
+      if (EinstellungSteuerInBuchung)
+      {
+        Steuer tmpst = (Steuer) part.getSteuer().getValue();
+        if (tmpst != null)
+        {
+          settings.setAttribute("steuer", tmpst.getID());
+        }
+        else
+        {
+          settings.setAttribute("steuer", "");
+        }
+      }
+      Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
+      if (weg != null)
+      {
+        settings.setAttribute("zahlungsweg", weg.getKey());
+      }
+      else
+      {
+        settings.setAttribute("zahlungsweg", "");
+      }
+      Boolean tmp = (Boolean) part.getMitgliedzahltSelbst().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("mitgliedzahltselbst", tmp);
+      }
+      else
+      {
+        settings.setAttribute("mitgliedzahltselbst", "false");
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler", re);
+    }
   }
 }
