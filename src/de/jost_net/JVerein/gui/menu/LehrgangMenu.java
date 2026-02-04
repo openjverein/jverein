@@ -48,7 +48,7 @@ public class LehrgangMenu extends ContextMenu
       addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
           new MitgliedDetailAction(), "user-friends.png"));
     }
-    addItem(new CheckedContextMenuItem("Forderung(en) erstellen",
+    addItem(new CheckedContextMenuItem("Forderung erstellen",
         new MitgliedAbrechnungAction(), "lastschrift.png"));
   }
 }

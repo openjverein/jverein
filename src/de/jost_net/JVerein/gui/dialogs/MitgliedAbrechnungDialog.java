@@ -97,7 +97,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   {
     super(position);
     super.setSize(950, SWT.DEFAULT);
-    setTitle("Forderung(en) erstellen");
+    setTitle("Forderung erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     this.mitglieder = m;
