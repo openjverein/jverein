@@ -25,7 +25,7 @@ package de.jost_net.JVerein.gui.action;
 
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.dialogs.MitgliedAbrechnungDialog;
+import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
@@ -38,7 +38,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Nicht wiederkehrende einmalige Abrechnung
  */
-public class MitgliedAbrechnungAction implements Action
+public class ForderungAction implements Action
 {
   private Mitglied[] mitglieder = null;
 
@@ -83,7 +83,7 @@ public class MitgliedAbrechnungAction implements Action
         throw new ApplicationException("Keine Mitglieder ausgewählt!");
       }
 
-      MitgliedAbrechnungDialog dialog = new MitgliedAbrechnungDialog(
+      ForderungDialog dialog = new ForderungDialog(
           AbstractDialog.POSITION_CENTER, mitglieder);
       dialog.open();
     }

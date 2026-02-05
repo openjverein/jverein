@@ -25,7 +25,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.KontoauszugAction;
-import de.jost_net.JVerein.gui.action.MitgliedAbrechnungAction;
+import de.jost_net.JVerein.gui.action.ForderungAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -210,7 +210,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "lastschrift.png"));
     addItem(new CheckedContextMenuItem("Forderung erstellen",
-        new MitgliedAbrechnungAction(), "lastschrift.png"));
+        new ForderungAction(), "lastschrift.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));

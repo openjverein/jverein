@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.MitgliedAbrechnungAction;
+import de.jost_net.JVerein.gui.action.ForderungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
@@ -49,6 +49,6 @@ public class LehrgangMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
     }
     addItem(new CheckedContextMenuItem("Forderung erstellen",
-        new MitgliedAbrechnungAction(), "lastschrift.png"));
+        new ForderungAction(), "lastschrift.png"));
   }
 }

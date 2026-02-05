@@ -68,7 +68,7 @@ import de.willuhn.util.ApplicationException;
 /**
  * Dialog zur Zuordnung von Zusatzbeträgen
  */
-public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
+public class ForderungDialog extends AbstractDialog<Boolean>
 {
   private boolean fortfahren = false;
 
@@ -93,7 +93,7 @@ public class MitgliedAbrechnungDialog extends AbstractDialog<Boolean>
   /**
    * @param position
    */
-  public MitgliedAbrechnungDialog(int position, Mitglied[] m)
+  public ForderungDialog(int position, Mitglied[] m)
   {
     super(position);
     super.setSize(950, SWT.DEFAULT);
