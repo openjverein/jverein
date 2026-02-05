@@ -50,7 +50,7 @@ public class RechnungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new RechnungSendAction(), "document-print.png"));

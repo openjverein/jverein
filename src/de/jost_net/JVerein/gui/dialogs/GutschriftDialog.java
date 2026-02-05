@@ -95,7 +95,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
   public GutschriftDialog(boolean isMitglied)
   {
     super(SWT.CENTER);
-    setTitle("Gutschrift(en) erstellen");
+    setTitle("Gutschrift erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     this.gcontrol = new GutschriftControl(null, isMitglied);

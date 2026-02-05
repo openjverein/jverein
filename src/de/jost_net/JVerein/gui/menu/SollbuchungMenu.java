@@ -73,7 +73,7 @@ public class SollbuchungMenu extends ContextMenu
     {
       // Dann nicht anzeigen
     }
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
   }
 

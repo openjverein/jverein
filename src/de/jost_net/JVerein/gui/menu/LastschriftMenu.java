@@ -57,7 +57,7 @@ public class LastschriftMenu extends ContextMenu
         new MitgliedDetailAction(), "user-friends.png"));
     addItem(new CheckedContextMenuItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
   }
 

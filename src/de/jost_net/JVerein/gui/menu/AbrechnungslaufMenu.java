@@ -55,7 +55,7 @@ public class AbrechnungslaufMenu extends ContextMenu
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new PreNotificationAction(), "document-new.png"));
-    addItem(new CheckedSingleContextMenuItem("Gutschrift(en) erstellen",
+    addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
     addItem(new AbgeschlossenDisabledItem("Löschen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));

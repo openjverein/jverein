@@ -209,7 +209,7 @@ public class MitgliedMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "lastschrift.png"));
-    addItem(new CheckedContextMenuItem("Gutschrift(en) erstellen",
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
