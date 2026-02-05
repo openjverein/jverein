@@ -64,6 +64,23 @@ public class AltersgruppenParser
             "Fehler in den Altergruppen" + " " + e.getMessage());
       }
     }
+    for (int i = 0; i < 100; i++)
+    {
+      boolean found = false;
+      for (VonBis vb : elemente)
+      {
+        if (i >= vb.getVon() && i <= vb.getBis())
+        {
+          if (found)
+            throw new RuntimeException(
+                i + " Jahre ist in mehreren Altersstufen enthalten");
+          found = true;
+        }
+      }
+      if (!found)
+        throw new RuntimeException(
+            "Keine passende Altersstufe gefunden für " + i + " Jahre");
+    }
     iterator = elemente.iterator();
   }
 
