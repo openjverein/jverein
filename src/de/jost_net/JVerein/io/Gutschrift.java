@@ -456,15 +456,7 @@ public class Gutschrift extends SEPASupport
     map = new GutschriftMap().getMap(ls, map);
     try
     {
-      if (params.getRechnungsText() != null
-          && !params.getRechnungsText().isEmpty())
-      {
-        zweck = VelocityTool.eval(map, params.getRechnungsText());
-      }
-      else
-      {
-        zweck = VelocityTool.eval(map, params.getVerwendungszweck());
-      }
+      zweck = VelocityTool.eval(map, params.getVerwendungszweck());
       if (zweck.length() >= 140)
       {
         zweck = zweck.substring(0, 136) + "...";
@@ -590,6 +582,29 @@ public class Gutschrift extends SEPASupport
       rechnung.store();
       monitor.setStatusText(MARKER + "Rechnung erzeugt");
 
+      if (params.getRechnungsText().trim().length() > 0)
+      {
+        String rzweck = params.getRechnungsText();
+        boolean ohneLesefelder = !rzweck.contains(Einstellungen.LESEFELD_PRE);
+        Map<String, Object> map = new AllgemeineMap().getMap(null);
+        map = new MitgliedMap().getMap((Mitglied) sollbuchung.getZahler(), map,
+            ohneLesefelder);
+        map = new RechnungMap().getMap(rechnung, map);
+        try
+        {
+          rzweck = VelocityTool.eval(map, rzweck);
+          if (rzweck.length() >= 140)
+          {
+            rzweck = rzweck.substring(0, 136) + "...";
+          }
+        }
+        catch (IOException e)
+        {
+          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+        }
+
+        sollbuchung.setZweck1(rzweck);
+      }
       sollbuchung.setRechnung(rechnung);
       sollbuchung.updateForced();
     }
