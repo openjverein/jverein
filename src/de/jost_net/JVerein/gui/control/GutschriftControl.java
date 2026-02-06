@@ -106,22 +106,27 @@ public class GutschriftControl
     {
       return datumInput;
     }
-    Date d = null;
-    String tmp = settings.getString("datum", null);
+    Date d = getDatum("datum");
+    datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datumInput.setMandatory(true);
+    return datumInput;
+  }
+
+  public Date getDatum(String datum)
+  {
+    String tmp = settings.getString(datum, null);
     if (tmp != null)
     {
       try
       {
-        d = new JVDateFormatTTMMJJJJ().parse(tmp);
+        return new JVDateFormatTTMMJJJJ().parse(tmp);
       }
       catch (ParseException e)
       {
         //
       }
     }
-    datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    datumInput.setMandatory(true);
-    return datumInput;
+    return new Date();
   }
 
   // Verwendungszweck
@@ -349,6 +354,19 @@ public class GutschriftControl
       else
       {
         settings.setAttribute("datum", "");
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+      {
+        tmp = (Date) params.getRechnungsDatum();
+        if (tmp != null)
+        {
+          settings.setAttribute("rechnungsdatum",
+              new JVDateFormatTTMMJJJJ().format(tmp));
+        }
+        else
+        {
+          settings.setAttribute("rechnungsdatum", "");
+        }
       }
       settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
       settings.setAttribute("fixerBetragAbrechnen",

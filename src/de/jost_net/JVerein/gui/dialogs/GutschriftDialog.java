@@ -57,7 +57,9 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -109,7 +111,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     settings.setStoreWhenRead(true);
     this.gcontrol = new GutschriftControl(providerArray, isMitglied);
     this.isNewDialog = isNewDialog;
-    setSize(SWT.DEFAULT, SWT.DEFAULT);
+    setSize(950, SWT.DEFAULT);
   }
 
   @Override
@@ -127,31 +129,37 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 
     LabelGroup group = new LabelGroup(parent, "");
     group.addInput(getStatus());
-    group.addHeadline("Überweisung");
-    group.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
-    group.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
+    SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
+    ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
+    SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
+
+    left.addHeadline("Überweisung");
+    left.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
+    left.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
     if (isNewDialog)
     {
       gcontrol.getDatumInput().setValue(new Date());
     }
-    group.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
+    left.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
 
     // Fixen Betrag erstatten
-    group.addHeadline("Fixer Betrag");
-    group.addLabelPair("Fixen Betrag erstatten",
+    right.addHeadline("Fixer Betrag");
+    right.addLabelPair("Fixen Betrag erstatten",
         gcontrol.getFixerBetragAbrechnenInput());
-    group.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
+    right.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
     buchungsartInput = gcontrol.getBuchungsartInput();
-    group.addLabelPair("Buchungsart", buchungsartInput);
+    right.addLabelPair("Buchungsart", buchungsartInput);
     if (EinstellungBuchungsklasseInBuchung)
     {
       buchungsklasseInput = gcontrol.getBuchungsklasseInput();
-      group.addLabelPair("Buchungsklasse", buchungsklasseInput);
+      right.addLabelPair("Buchungsklasse", buchungsklasseInput);
     }
     if (EinstellungSteuerInBuchung)
     {
       steuerInput = gcontrol.getSteuerInput();
-      group.addLabelPair("Steuer", steuerInput);
+      right.addLabelPair("Steuer", steuerInput);
     }
 
     // Nur anzeigen wenn Rechnungen aktiviert sind
@@ -159,11 +167,11 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     {
       // Settings hier speichern damit sie nicht mit Anrechnungslauf vermischt
       // werden
-      group.addHeadline("Rechnung");
+      below.addHeadline("Rechnung");
       rechnungErzeugenInput = scontrol.getRechnung();
       rechnungErzeugenInput
           .setValue(settings.getBoolean("rechnungErzeugen", false));
-      group.addLabelPair("Rechnung zur Gutschrift erzeugen",
+      below.addLabelPair("Rechnung zur Gutschrift erzeugen",
           rechnungErzeugenInput);
       if (EinstellungSpeicherungAnzeigen)
       {
@@ -171,7 +179,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
             .getRechnungsdokumentSpeichern();
         rechnungsDokumentSpeichernInput
             .setValue(settings.getBoolean("rechnungsDokumentSpeichern", false));
-        group.addLabelPair("Rechnung als Buchungsdokument speichern",
+        below.addLabelPair("Rechnung als Buchungsdokument speichern",
             rechnungsDokumentSpeichernInput);
       }
       formularInput = scontrol.getRechnungFormular();
@@ -190,13 +198,16 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         // Nicht gefunden, dann null
       }
       formularInput.setValue(f);
-      group.addLabelPair("Erstattungsformular", formularInput);
+      below.addLabelPair("Erstattungsformular", formularInput);
       rechnungsTextInput = scontrol.getRechnungstext();
       rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
-      group.addLabelPair("Rechnungstext", rechnungsTextInput);
+      below.addLabelPair("Rechnungstext", rechnungsTextInput);
       rechnungsDatumInput = scontrol.getRechnungsdatum();
-      rechnungsDatumInput.setValue(new Date());
-      group.addLabelPair("Rechnungsdatum", rechnungsDatumInput);
+      if (!isNewDialog)
+      {
+        rechnungsDatumInput.setValue(gcontrol.getDatum("rechnungsdatum"));
+      }
+      below.addLabelPair("Rechnungsdatum", rechnungsDatumInput);
     }
 
     // Buttons

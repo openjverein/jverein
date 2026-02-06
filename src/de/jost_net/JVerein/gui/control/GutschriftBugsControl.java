@@ -166,6 +166,12 @@ public class GutschriftBugsControl extends AbstractControl
           bugs.add(new Bug(Bug.WARNING, provider,
               "Der Betrag der Sollbuchungspositionen ist nicht ausreichend!"));
         }
+
+        if (ausgleichsbetrag > 0)
+        {
+          bugs.add(new Bug(Bug.HINT, provider,
+              "Der Erstattungsbetrag wird mit offenen Forderungen verrechnet!"));
+        }
       }
     }
     return bugs;
