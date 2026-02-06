@@ -230,6 +230,10 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     }
 
     buttons.addButton("Fehler/Warnungen/Hinweise", context -> {
+      if (!checkInput())
+      {
+        return;
+      }
       storeValues();
       saveSettings();
       gcontrol.saveSettings();

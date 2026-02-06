@@ -174,6 +174,10 @@ public class GutschriftBugsControl extends AbstractControl
         }
       }
     }
+    if (bugs.isEmpty())
+    {
+      bugs.add(new Bug(Bug.HINT, null, "Es wurden keine Fehler gefunden!"));
+    }
     return bugs;
   }
 }

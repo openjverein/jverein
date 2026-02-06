@@ -166,8 +166,8 @@ public class GutschriftControl
         updateSteuerInput();
       });
     }
-    fixerBetragAbrechnenInput.setName(
-        " *Sonst ganzen Betrag erstatten und bereits bezahlten Betrag überweisen.");
+    fixerBetragAbrechnenInput
+        .setName(" *Sonst bereits bezahlten Betrag überweisen.");
     return fixerBetragAbrechnenInput;
   }
 
