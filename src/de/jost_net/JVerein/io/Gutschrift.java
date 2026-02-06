@@ -33,6 +33,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.HerkunftSpende;
@@ -71,7 +72,7 @@ public class Gutschrift extends SEPASupport
 
   private ArrayList<Lastschrift> lastschriften = new ArrayList<>();
 
-  GutschriftParam params = null;
+  private GutschriftParam params = null;
 
   private int erstellt = 0;
 
@@ -89,26 +90,16 @@ public class Gutschrift extends SEPASupport
 
   private File file = null;
 
-  private boolean buchungsklasseInBuchung = false;
-
-  private boolean steuerInBuchung = false;
-
   private Settings settings = null;
 
   private JVereinDBService service;
 
-  public Gutschrift(GutschriftParam params, IGutschriftProvider[] providerArray)
-      throws Exception
+  public Gutschrift(GutschriftControl gcontrol) throws Exception
   {
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     service = Einstellungen.getDBService();
-    this.params = params;
-
-    buchungsklasseInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    steuerInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.STEUERINBUCHUNG);
+    this.params = gcontrol.getParams();
 
     if (params.getDatum() == null || params.getVerwendungszweck() == null
         || params.getVerwendungszweck().isEmpty()
@@ -150,7 +141,7 @@ public class Gutschrift extends SEPASupport
         monitor.setStatusText("Starte die Generierung der Gutschriften");
         monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
 
-        for (IGutschriftProvider provider : providerArray)
+        for (IGutschriftProvider provider : gcontrol.getProviderArray())
         {
           if (isInterrupted())
           {
@@ -160,8 +151,8 @@ public class Gutschrift extends SEPASupport
             throw new OperationCanceledException();
           }
 
-          monitor.setPercentComplete(
-              100 * (erstellt + skip + error1) / providerArray.length);
+          monitor.setPercentComplete(100 * (erstellt + skip + error1)
+              / gcontrol.getProviderArray().length);
 
           String statustext = "";
           String name = "";
@@ -271,12 +262,12 @@ public class Gutschrift extends SEPASupport
                   continue;
                 }
               }
-              if (sollbFix != null
-                  && !checkVorhandenePosten(sollbFix, ausgleichsbetrag))
+              if (sollbFix != null && !gcontrol.checkVorhandenePosten(sollbFix,
+                  ausgleichsbetrag))
               {
                 skip++;
                 monitor.setStatusText(SKIP + statustext
-                    + ": Der Betrag der Sollbuchungspositionen nicht ausreichend!");
+                    + ": Der Betrag der Sollbuchungspositionen ist nicht ausreichend!");
                 continue;
               }
             }
@@ -803,51 +794,5 @@ public class Gutschrift extends SEPASupport
     ls.setMandatSequence(MandatSequence.RCUR.getTxt());
     ls.set(la);
     return ls;
-  }
-
-  private boolean checkVorhandenePosten(Sollbuchung sollb,
-      double ausgleichsbetrag) throws RemoteException
-  {
-    double summe = 0;
-    for (SollbuchungPosition pos : sollb.getSollbuchungPositionList())
-    {
-      if (!pos.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-          || (buchungsklasseInBuchung && !pos.getBuchungsklasse().getID()
-              .equals(params.getBuchungsklasse().getID()))
-          || (steuerInBuchung
-              && !pos.getSteuer().getID().equals(params.getSteuer().getID())))
-      {
-        continue;
-      }
-      summe += pos.getBetrag();
-    }
-    if (summe - params.getFixerBetrag() < -0.005d)
-    {
-      // Es gibt nicht genügend Betrag für die Erstattung
-      return false;
-    }
-    if (ausgleichsbetrag > 0)
-    {
-      // Der Position kann nicht mehr zugewiesen werden als noch frei ist
-      double zugewiesen = 0;
-      for (Buchung bu : sollb.getBuchungList())
-      {
-        if (!bu.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-            || (buchungsklasseInBuchung && !bu.getBuchungsklasse().getID()
-                .equals(params.getBuchungsklasse().getID()))
-            || (steuerInBuchung
-                && !bu.getSteuer().getID().equals(params.getSteuer().getID())))
-        {
-          continue;
-        }
-        zugewiesen += bu.getBetrag();
-      }
-      if (summe - zugewiesen - ausgleichsbetrag < -0.005d)
-      {
-        // Es gibt nicht genügend unausgeglichene Beträge für den Ausgleich
-        return false;
-      }
-    }
-    return true;
   }
 }

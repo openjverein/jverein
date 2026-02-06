@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
-import de.jost_net.JVerein.io.Gutschrift;
-import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
@@ -116,14 +114,9 @@ public class GutschriftAction implements Action
             "Keine Sollbuchung, Rechnung, Abrechnungslauf, Lastschrift oder Mitglied ausgewählt!");
       }
 
-      GutschriftDialog dialog = new GutschriftDialog(
-          providerArray[0] instanceof Mitglied);
-      GutschriftParam params = dialog.open();
-      if (params == null)
-      {
-        return;
-      }
-      new Gutschrift(params, providerArray);
+      GutschriftDialog dialog = new GutschriftDialog(providerArray,
+          providerArray[0] instanceof Mitglied, true);
+      dialog.open();
     }
     catch (ApplicationException | OperationCanceledException ae)
     {

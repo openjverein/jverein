@@ -25,6 +25,8 @@ public class Bug
 {
   private IAdresse object;
 
+  private IGutschriftProvider provider;
+
   private String meldung;
 
   private int klassifikation;
@@ -42,6 +44,13 @@ public class Bug
     this.klassifikation = klassifikation;
   }
 
+  public Bug(int klassifikation, IGutschriftProvider provider, String meldung)
+  {
+    this.provider = provider;
+    this.meldung = meldung;
+    this.klassifikation = klassifikation;
+  }
+
   public Object getObject()
   {
     return object;
@@ -49,7 +58,51 @@ public class Bug
 
   public String getName() throws RemoteException
   {
-    return Adressaufbereitung.getNameVorname(object);
+    if (object != null)
+    {
+      return Adressaufbereitung.getNameVorname(object);
+    }
+    return "";
+  }
+
+  public Object getProvider()
+  {
+    return provider;
+  }
+
+  public String getObjektName() throws RemoteException
+  {
+    if (provider != null)
+    {
+      return provider.getObjektName();
+    }
+    return "";
+  }
+
+  public String getZahlerName()
+  {
+    try
+    {
+      if (provider != null && provider.getGutschriftZahler() != null)
+      {
+        return Adressaufbereitung
+            .getNameVorname(provider.getGutschriftZahler());
+      }
+    }
+    catch (RemoteException e)
+    {
+      return "";
+    }
+    return "";
+  }
+
+  public String getObjektId() throws RemoteException
+  {
+    if (provider != null)
+    {
+      return provider.getID();
+    }
+    return "";
   }
 
   public String getMeldung()

@@ -37,12 +37,17 @@ import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.gui.view.GutschriftBugsView;
+import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.IGutschriftProvider;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -55,9 +60,12 @@ import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 {
+  private boolean isNewDialog;
+
   private GutschriftParam params = null;
 
   private LabelInput status = null;
@@ -92,13 +100,15 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 
   private GutschriftControl gcontrol;
 
-  public GutschriftDialog(boolean isMitglied)
+  public GutschriftDialog(IGutschriftProvider[] providerArray,
+      boolean isMitglied, boolean isNewDialog)
   {
     super(SWT.CENTER);
     setTitle("Gutschrift erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.gcontrol = new GutschriftControl(null, isMitglied);
+    this.gcontrol = new GutschriftControl(providerArray, isMitglied);
+    this.isNewDialog = isNewDialog;
     setSize(SWT.DEFAULT, SWT.DEFAULT);
   }
 
@@ -120,6 +130,10 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     group.addHeadline("Überweisung");
     group.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
     group.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
+    if (isNewDialog)
+    {
+      gcontrol.getDatumInput().setValue(new Date());
+    }
     group.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
 
     // Fixen Betrag erstatten
@@ -176,7 +190,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         // Nicht gefunden, dann null
       }
       formularInput.setValue(f);
-      group.addLabelPair("Erstattung Formular", formularInput);
+      group.addLabelPair("Erstattungsformular", formularInput);
       rechnungsTextInput = scontrol.getRechnungstext();
       rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
       group.addLabelPair("Rechnungstext", rechnungsTextInput);
@@ -204,66 +218,41 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
     }
 
-    buttons.addButton("Gutschriften(en) erstellen", context -> {
-      if (gcontrol.getZweckInput().getValue() == null
-          || ((String) gcontrol.getZweckInput().getValue()).isEmpty())
-      {
-        status.setValue("Bitte Verwendungszweck eingeben");
-        status.setColor(Color.ERROR);
-        return;
-      }
-      if (gcontrol.getDatumInput().getValue() == null)
-      {
-        status.setValue("Bitte Datum auswählen");
-        status.setColor(Color.ERROR);
-        return;
-      }
-      if (EinstellungRechnungAnzeigen
-          && (boolean) rechnungErzeugenInput.getValue())
-      {
-        if (formularInput.getValue() == null)
-        {
-          status.setValue("Bitte Rechnungsformular auswählen");
-          status.setColor(Color.ERROR);
-          return;
-        }
-        if (rechnungsDatumInput.getValue() == null)
-        {
-          status.setValue("Bitte Rechnungsdatum auswählen");
-          status.setColor(Color.ERROR);
-          return;
-        }
-      }
-      if ((boolean) gcontrol.getFixerBetragAbrechnenInput().getValue())
-      {
-        if (gcontrol.getFixerBetragInput().getValue() == null
-            || ((Double) gcontrol.getFixerBetragInput().getValue()) < 0.005d)
-        {
-          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
-          status.setColor(Color.ERROR);
-          return;
-        }
-        if (buchungsartInput.getValue() == null)
-        {
-          status.setValue("Bitte Buchungsart eingeben");
-          status.setColor(Color.ERROR);
-          return;
-        }
-        if (EinstellungBuchungsklasseInBuchung
-            && buchungsklasseInput.getValue() == null)
-        {
-          status.setValue("Bitte Buchungsklasse eingeben");
-          status.setColor(Color.ERROR);
-          return;
-        }
-      }
+    buttons.addButton("Fehler/Warnungen/Hinweise", context -> {
       storeValues();
       saveSettings();
-      gcontrol.saveSettings(params);
+      gcontrol.saveSettings();
       close();
+      GUI.startView(GutschriftBugsView.class, gcontrol);
+    }, null, false, "bug.png");
+
+    buttons.addButton("Gutschriften erstellen", context -> {
+      try
+      {
+        if (!checkInput())
+        {
+          return;
+        }
+        storeValues();
+        saveSettings();
+        gcontrol.saveSettings();
+        new Gutschrift(gcontrol);
+        close();
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+      catch (Exception e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+        Logger.error("Fehler", e);
+      }
     }, null, false, "ok.png");
-    buttons.addButton("Abbrechen", context -> close(), null, false,
-        "process-stop.png");
+    buttons.addButton("Abbrechen", context -> {
+      close();
+    }, null, false, "process-stop.png");
+
     buttons.paint(parent);
   }
 
@@ -317,6 +306,107 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         params.setSteuer((Steuer) steuerInput.getValue());
       }
     }
+    gcontrol.setParams(params);
+  }
+
+  private boolean checkInput()
+  {
+    try
+    {
+      if (gcontrol.getZweckInput().getValue() == null
+          || ((String) gcontrol.getZweckInput().getValue()).isEmpty())
+      {
+        status.setValue("Bitte Verwendungszweck eingeben");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (gcontrol.getDatumInput().getValue() == null)
+      {
+        status.setValue("Bitte Ausführungsdatum auswählen");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (EinstellungRechnungAnzeigen
+          && (boolean) rechnungErzeugenInput.getValue())
+      {
+        if (formularInput.getValue() == null)
+        {
+          status.setValue("Bitte Erstattungsformular auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (rechnungsDatumInput.getValue() == null)
+        {
+          status.setValue("Bitte Rechnungsdatum auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+      }
+      if ((boolean) gcontrol.getFixerBetragAbrechnenInput().getValue())
+      {
+        if (gcontrol.getFixerBetragInput().getValue() == null
+            || ((Double) gcontrol.getFixerBetragInput().getValue()) < 0.005d)
+        {
+          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (buchungsartInput.getValue() == null)
+        {
+          status.setValue("Bitte Buchungsart eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (EinstellungBuchungsklasseInBuchung
+            && buchungsklasseInput.getValue() == null)
+        {
+          status.setValue("Bitte Buchungsklasse eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (EinstellungSteuerInBuchung)
+        {
+          Buchungsart buchungsart = (Buchungsart) buchungsartInput.getValue();
+          Steuer steuer = (Steuer) steuerInput.getValue();
+          if (steuer != null && buchungsart != null)
+          {
+            if (buchungsart.getSpende() || buchungsart.getAbschreibung())
+            {
+              status.setValue(
+                  "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+              status.setColor(Color.ERROR);
+              return false;
+            }
+            if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
+            {
+              switch (buchungsart.getArt())
+              {
+                case ArtBuchungsart.AUSGABE:
+                  status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
+                  status.setColor(Color.ERROR);
+                  return false;
+                case ArtBuchungsart.EINNAHME:
+                  status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
+                  status.setColor(Color.ERROR);
+                  return false;
+                // Umbuchung ist bei Anlagebuchungen möglich,
+                // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
+                // möglich
+                case ArtBuchungsart.UMBUCHUNG:
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+    catch (RemoteException re)
+    {
+      status.setValue("Fehler beim Auswerten der Eingabe!");
+      status.setColor(Color.ERROR);
+      return false;
+    }
+    return true;
   }
 
   private void saveSettings()

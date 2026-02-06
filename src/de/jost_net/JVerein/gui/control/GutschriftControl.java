@@ -1,6 +1,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -11,12 +12,15 @@ import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.IGutschriftProvider;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -26,9 +30,13 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
-public class GutschriftControl extends AbstractControl
+public class GutschriftControl
 {
   private boolean isMitglied;
+
+  private IGutschriftProvider[] providerArray;
+
+  private GutschriftParam params;
 
   private SelectInput ausgabeInput;
 
@@ -48,12 +56,28 @@ public class GutschriftControl extends AbstractControl
 
   private Settings settings = null;
 
-  public GutschriftControl(AbstractView view, boolean isMitglied)
+  public GutschriftControl(IGutschriftProvider[] providerArray,
+      boolean isMitglied)
   {
-    super(view);
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     this.isMitglied = isMitglied;
+    this.providerArray = providerArray;
+  }
+
+  public IGutschriftProvider[] getProviderArray()
+  {
+    return providerArray;
+  }
+
+  public void setParams(GutschriftParam params)
+  {
+    this.params = params;
+  }
+
+  public GutschriftParam getParams()
+  {
+    return params;
   }
 
   // Ausgabe
@@ -82,7 +106,20 @@ public class GutschriftControl extends AbstractControl
     {
       return datumInput;
     }
-    datumInput = new DateInput(new Date());
+    Date d = null;
+    String tmp = settings.getString("datum", null);
+    if (tmp != null)
+    {
+      try
+      {
+        d = new JVDateFormatTTMMJJJJ().parse(tmp);
+      }
+      catch (ParseException e)
+      {
+        //
+      }
+    }
+    datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
     datumInput.setMandatory(true);
     return datumInput;
   }
@@ -299,52 +336,57 @@ public class GutschriftControl extends AbstractControl
     }
   }
 
-  public void saveSettings(GutschriftParam params)
+  public void saveSettings()
   {
     try
     {
       settings.setAttribute("ausgabe", params.getAusgabe().getKey());
-      settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
-      if (!isMitglied)
+      Date tmp = (Date) params.getDatum();
+      if (tmp != null)
       {
-        settings.setAttribute("fixerBetragAbrechnen",
-            params.isFixerBetragAbrechnen());
-        if (params.isFixerBetragAbrechnen())
+        settings.setAttribute("datum", new JVDateFormatTTMMJJJJ().format(tmp));
+      }
+      else
+      {
+        settings.setAttribute("datum", "");
+      }
+      settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
+      settings.setAttribute("fixerBetragAbrechnen",
+          params.isFixerBetragAbrechnen());
+      if (params.isFixerBetragAbrechnen())
+      {
+        if (params.getFixerBetrag() != null)
         {
-          if (params.getFixerBetrag() != null)
-          {
-            settings.setAttribute("fixerBetrag", params.getFixerBetrag());
-          }
-          else
-          {
-            settings.setAttribute("fixerBetrag", "");
-          }
-          if (params.getBuchungsart() != null)
-          {
-            settings.setAttribute("buchungsart",
-                params.getBuchungsart().getID());
-          }
-          else
-          {
-            settings.setAttribute("buchungsart", "");
-          }
-          if (params.getBuchungsklasse() != null)
-          {
-            settings.setAttribute("buchungsklasse",
-                params.getBuchungsklasse().getID());
-          }
-          else
-          {
-            settings.setAttribute("buchungsklasse", "");
-          }
-          if (params.getSteuer() != null)
-          {
-            settings.setAttribute("steuer", params.getSteuer().getID());
-          }
-          else
-          {
-            settings.setAttribute("steuer", "");
-          }
+          settings.setAttribute("fixerBetrag", params.getFixerBetrag());
+        }
+        else
+        {
+          settings.setAttribute("fixerBetrag", "");
+        }
+        if (params.getBuchungsart() != null)
+        {
+          settings.setAttribute("buchungsart", params.getBuchungsart().getID());
+        }
+        else
+        {
+          settings.setAttribute("buchungsart", "");
+        }
+        if (params.getBuchungsklasse() != null)
+        {
+          settings.setAttribute("buchungsklasse",
+              params.getBuchungsklasse().getID());
+        }
+        else
+        {
+          settings.setAttribute("buchungsklasse", "");
+        }
+        if (params.getSteuer() != null)
+        {
+          settings.setAttribute("steuer", params.getSteuer().getID());
+        }
+        else
+        {
+          settings.setAttribute("steuer", "");
         }
       }
     }
@@ -352,5 +394,56 @@ public class GutschriftControl extends AbstractControl
     {
       Logger.error("Fehler beim Speichern der Settings", ex);
     }
+  }
+
+  public boolean checkVorhandenePosten(Sollbuchung sollb,
+      double ausgleichsbetrag) throws RemoteException
+  {
+    boolean buchungsklasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
+
+    double summe = 0;
+    for (SollbuchungPosition pos : sollb.getSollbuchungPositionList())
+    {
+      if (!pos.getBuchungsart().getID().equals(params.getBuchungsart().getID())
+          || (buchungsklasseInBuchung && !pos.getBuchungsklasse().getID()
+              .equals(params.getBuchungsklasse().getID()))
+          || (steuerInBuchung
+              && !pos.getSteuer().getID().equals(params.getSteuer().getID())))
+      {
+        continue;
+      }
+      summe += pos.getBetrag();
+    }
+    if (summe - params.getFixerBetrag() < -0.005d)
+    {
+      // Es gibt nicht genügend Betrag für die Erstattung
+      return false;
+    }
+    if (ausgleichsbetrag > 0)
+    {
+      // Der Position kann nicht mehr zugewiesen werden als noch frei ist
+      double zugewiesen = 0;
+      for (Buchung bu : sollb.getBuchungList())
+      {
+        if (!bu.getBuchungsart().getID().equals(params.getBuchungsart().getID())
+            || (buchungsklasseInBuchung && !bu.getBuchungsklasse().getID()
+                .equals(params.getBuchungsklasse().getID()))
+            || (steuerInBuchung
+                && !bu.getSteuer().getID().equals(params.getSteuer().getID())))
+        {
+          continue;
+        }
+        zugewiesen += bu.getBetrag();
+      }
+      if (summe - zugewiesen - ausgleichsbetrag < -0.005d)
+      {
+        // Es gibt nicht genügend unausgeglichene Beträge für den Ausgleich
+        return false;
+      }
+    }
+    return true;
   }
 }
