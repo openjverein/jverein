@@ -450,80 +450,7 @@ public class SplitbuchungsContainer
 
     try
     {
-      for (SollbuchungPosition sp : spArray)
-      {
-        // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
-        if (sp.getBuchungsartId() == null)
-        {
-          throw new ApplicationException(
-              "Es haben nicht alle Sollbuchungspositionen eine Buchungsart.");
-        }
-        // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
-        // wenn steuerInBuchung gesetzt ist)
-        String key = sp.getBuchungsartId() + "-"
-            + (klasseInBuchung && sp.getBuchungsklasseId() != null
-                ? sp.getBuchungsklasseId()
-                : "")
-            + "#";
-        if (steuerInBuchung)
-        {
-          key += (sp.getSteuer() != null ? sp.getSteuer().getID() : "");
-        }
-
-        Double betrag = splitMap.getOrDefault(key, 0d);
-        if (Math.abs(sp.getBetrag()) < 0.01d)
-        {
-          continue;
-        }
-
-        splitMap.put(key, betrag + sp.getBetrag().doubleValue());
-        String zweck = splitZweckMap.get(key);
-        if (zweck == null)
-        {
-          zweck = sp.getZweck();
-        }
-        else
-        {
-          zweck = zweck + ", " + sp.getZweck();
-        }
-        splitZweckMap.put(key, zweck);
-      }
-      // ggf. bereits zugeordnete Buchungen holen und diese vom Soll abziehen
-      for (Buchung istBuchung : sollb.getBuchungList())
-      {
-        // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
-        // wenn steuerInBuchung gesetzt ist)
-        String key = istBuchung.getBuchungsartId() + "-"
-            + (klasseInBuchung && istBuchung.getBuchungsklasseId() != null
-                ? istBuchung.getBuchungsklasseId()
-                : "")
-            + "#";
-        if (steuerInBuchung)
-        {
-          key += (istBuchung.getSteuer() != null
-              ? istBuchung.getSteuer().getID()
-              : "");
-        }
-        Double sollBetrag = splitMap.get(key);
-        if (sollBetrag == null)
-        {
-          // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
-          // nicht, das ignorieren wir.
-        }
-        else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
-            || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
-        {
-          // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
-          // Soll diser Position ist, wir entfernen sie. Es bleibt eine
-          // Überzahlung erhalten.
-          splitMap.remove(key);
-        }
-        else
-        {
-          // Restbetrag in die Map schreiben
-          splitMap.put(key, sollBetrag - istBuchung.getBetrag());
-        }
-      }
+      positionenAbgleichen(sollb, splitMap, splitZweckMap);
 
       // Bei nur einem oder keinem Eintrag (kann bei Überzahlung passieren)
       // und gleichem Betrag ist kein Splitten nötig, wir können also die
@@ -737,5 +664,104 @@ public class SplitbuchungsContainer
   public static int getAnzahl()
   {
     return anzahl;
+  }
+
+  /**
+   * Gleicht die Sollbuchungspositionen der Sollbuchung mit den bereits
+   * zugewiesenen Buchungen ab. Die bereits zugewiesenen Beträge werden vom Soll
+   * abgezogen.
+   * 
+   * @param sollb
+   *          Sollbuchung deren Sollbuchungspositionen abgeglichen werden
+   *          sollen.
+   * @param splitMap
+   *          Map welche die Beträge der Sollbuchungspositionen enthält.
+   * @param splitZweckMap
+   *          Map welche die Zwecke der Sollbuchungspositionen enthält.
+   */
+  public static void positionenAbgleichen(Sollbuchung sollb,
+      HashMap<String, Double> splitMap, HashMap<String, String> splitZweckMap)
+      throws RemoteException, ApplicationException
+  {
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
+    boolean klasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
+
+    ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
+
+    for (SollbuchungPosition sp : spArray)
+    {
+      // Wenn eine Buchungsart fehlt können wir nicht automatisch splitten
+      if (sp.getBuchungsartId() == null)
+      {
+        throw new ApplicationException(
+            "Es haben nicht alle Sollbuchungspositionen eine Buchungsart.");
+      }
+      // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
+      // wenn steuerInBuchung gesetzt ist)
+      String key = sp.getBuchungsartId() + "-"
+          + (klasseInBuchung && sp.getBuchungsklasseId() != null
+              ? sp.getBuchungsklasseId()
+              : "")
+          + "#";
+      if (steuerInBuchung)
+      {
+        key += (sp.getSteuer() != null ? sp.getSteuer().getID() : "");
+      }
+
+      Double betrag = splitMap.getOrDefault(key, 0d);
+      if (Math.abs(sp.getBetrag()) < 0.01d)
+      {
+        continue;
+      }
+
+      splitMap.put(key, betrag + sp.getBetrag().doubleValue());
+      String zweck = splitZweckMap.get(key);
+      if (zweck == null)
+      {
+        zweck = sp.getZweck();
+      }
+      else
+      {
+        zweck = zweck + ", " + sp.getZweck();
+      }
+      splitZweckMap.put(key, zweck);
+    }
+    // ggf. bereits zugeordnete Buchungen holen und diese vom Soll abziehen
+    for (Buchung istBuchung : sollb.getBuchungList())
+    {
+      // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
+      // wenn steuerInBuchung gesetzt ist)
+      String key = istBuchung.getBuchungsartId() + "-"
+          + (klasseInBuchung && istBuchung.getBuchungsklasseId() != null
+              ? istBuchung.getBuchungsklasseId()
+              : "")
+          + "#";
+      if (steuerInBuchung)
+      {
+        key += (istBuchung.getSteuer() != null ? istBuchung.getSteuer().getID()
+            : "");
+      }
+      Double sollBetrag = splitMap.get(key);
+      if (sollBetrag == null)
+      {
+        // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
+        // nicht, das ignorieren wir.
+      }
+      else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
+          || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
+      {
+        // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
+        // Soll diser Position ist, wir entfernen sie. Es bleibt eine
+        // Überzahlung erhalten.
+        splitMap.remove(key);
+      }
+      else
+      {
+        // Restbetrag in die Map schreiben
+        splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+      }
+    }
   }
 }

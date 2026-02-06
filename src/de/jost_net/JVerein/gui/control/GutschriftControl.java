@@ -12,11 +12,8 @@ import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -412,73 +409,5 @@ public class GutschriftControl
     {
       Logger.error("Fehler beim Speichern der Settings", ex);
     }
-  }
-
-  public boolean checkVorhandenePosten(Sollbuchung sollb,
-      double ausgleichsbetrag) throws RemoteException
-  {
-    boolean buchungsklasseInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    boolean steuerInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.STEUERINBUCHUNG);
-
-    double summe = 0;
-    for (SollbuchungPosition pos : sollb.getSollbuchungPositionList())
-    {
-      if (pos.getBuchungsart() == null
-          || (buchungsklasseInBuchung && pos.getBuchungsklasse() == null))
-      {
-        continue;
-      }
-      String posSteuer = pos.getSteuer() != null ? pos.getSteuer().getID()
-          : "0";
-      String paramsSteuer = params.getSteuer() != null
-          ? params.getSteuer().getID()
-          : "0";
-      if (!pos.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-          || (buchungsklasseInBuchung && !pos.getBuchungsklasse().getID()
-              .equals(params.getBuchungsklasse().getID()))
-          || (steuerInBuchung && !posSteuer.equals(paramsSteuer)))
-      {
-        continue;
-      }
-      summe += pos.getBetrag();
-    }
-    if (summe - params.getFixerBetrag() < -0.005d)
-    {
-      // Es gibt nicht genügend Betrag für die Erstattung
-      return false;
-    }
-    if (ausgleichsbetrag > 0)
-    {
-      // Der Position kann nicht mehr zugewiesen werden als noch frei ist
-      double zugewiesen = 0;
-      for (Buchung bu : sollb.getBuchungList())
-      {
-        if (bu.getBuchungsart() == null
-            || (buchungsklasseInBuchung && bu.getBuchungsklasse() == null))
-        {
-          continue;
-        }
-        String buSteuer = bu.getSteuer() != null ? bu.getSteuer().getID() : "0";
-        String paramsSteuer = params.getSteuer() != null
-            ? params.getSteuer().getID()
-            : "0";
-        if (!bu.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-            || (buchungsklasseInBuchung && !bu.getBuchungsklasse().getID()
-                .equals(params.getBuchungsklasse().getID()))
-            || (steuerInBuchung && !buSteuer.equals(paramsSteuer)))
-        {
-          continue;
-        }
-        zugewiesen += bu.getBetrag();
-      }
-      if (summe - zugewiesen - ausgleichsbetrag < -0.005d)
-      {
-        // Es gibt nicht genügend unausgeglichene Beträge für den Ausgleich
-        return false;
-      }
-    }
-    return true;
   }
 }

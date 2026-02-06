@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.control.GutschriftBugsControl;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
@@ -161,66 +163,23 @@ public class Gutschrift extends SEPASupport
             statustext = provider.getObjektName() + " mit Nr. "
                 + provider.getID();
 
+            String bug = GutschriftBugsControl.doChecks(provider, params, null);
+            if (bug != null)
+            {
+              skip++;
+              monitor.setStatusText(SKIP + statustext + " " + bug);
+              continue;
+            }
+
             if (provider instanceof Lastschrift
                 && provider.getGutschriftZahler() == null)
             {
               name = Adressaufbereitung.getNameVorname((IAdresse) provider);
             }
-            else
+            else if (provider.getGutschriftZahler() != null)
             {
-              // Kein Zahler gesetzt
-              if (provider.getGutschriftZahler() == null)
-              {
-                skip++;
-                monitor.setStatusText(
-                    SKIP + statustext + ": Kein Zahler konfiguriert!");
-                continue;
-              }
               name = Adressaufbereitung
                   .getNameVorname(provider.getGutschriftZahler());
-            }
-
-            // Fixer Betrag bei Gesamtrechnung wird nicht unterstützt
-            // Bei welcher Sollbuchung soll man da die Erstattung ausgleichen?
-            if (params.isFixerBetragAbrechnen() && provider instanceof Rechnung
-                && ((Rechnung) provider).getSollbuchungList().size() > 1)
-            {
-              skip++;
-              monitor.setStatusText(SKIP + statustext
-                  + ": Fixer Betrag bei Gesamtrechnungen wird nicht unterstützt!");
-              continue;
-            }
-
-            // Bei Lastschrift ohne Zahler erstatten wir auf das gleiche Konto
-            // wie bei der Lastschrift
-            if (provider.getGutschriftZahler() != null)
-            {
-              String iban = provider.getGutschriftZahler().getIban();
-              if (iban == null || iban.isEmpty())
-              {
-                skip++;
-                monitor.setStatusText(SKIP + statustext
-                    + ": Bei dem Mitglied ist keine IBAN gesetzt!");
-                continue;
-              }
-            }
-
-            // Keine Gutschrift bei Erstattungen
-            if (provider.getBetrag() < -0.005d)
-            {
-              skip++;
-              monitor.setStatusText(
-                  SKIP + statustext + ": Der Betrag ist negativ!");
-              continue;
-            }
-
-            // Keine Gutschrift bei negativer Einzahlung
-            if (provider.getIstSumme() < -0.005d)
-            {
-              skip++;
-              monitor.setStatusText(SKIP + statustext
-                  + ": Der Zahlungseingang ist negativ, dadurch kann nichts erstattet werden!");
-              continue;
             }
 
             // Beträge bestimmen
@@ -238,46 +197,22 @@ public class Gutschrift extends SEPASupport
               ausgleichsbetrag = tmp > 0.005d ? tmp : 0;
             }
 
-            Sollbuchung sollbFix = null;
-            if (params.isFixerBetragAbrechnen())
-            {
-              if (provider instanceof Sollbuchung)
-              {
-                sollbFix = (Sollbuchung) provider;
-              }
-              else if (provider instanceof Rechnung)
-              {
-                // Keine Gesamtrechnung hier, wird oben abgefangen
-                List<Sollbuchung> list = ((Rechnung) provider)
-                    .getSollbuchungList();
-                if (list != null && list.size() > 0)
-                {
-                  sollbFix = ((Rechnung) provider).getSollbuchungList().get(0);
-                }
-                else
-                {
-                  skip++;
-                  monitor.setStatusText(SKIP + statustext
-                      + ": Die Rechnung hat keine Sollbuchungen!");
-                  continue;
-                }
-              }
-              if (sollbFix != null && !gcontrol.checkVorhandenePosten(sollbFix,
-                  ausgleichsbetrag))
-              {
-                skip++;
-                monitor.setStatusText(SKIP + statustext
-                    + ": Der Betrag der passenden Sollbuchungspositionen ist nicht ausreichend!");
-                continue;
-              }
-            }
-
             monitor.setStatusText("Generiere Gutschrift für " + statustext
                 + " und Zahler " + name + ".");
 
             // Bei fixem Betrag mit offenem Betrag verrechnen
             if (params.isFixerBetragAbrechnen())
             {
+              Sollbuchung sollbFix = null;
+              if (provider instanceof Sollbuchung)
+              {
+                sollbFix = (Sollbuchung) provider;
+              }
+              else if (provider instanceof Rechnung)
+              {
+                // Gesamtrechnung wird nicht unterstützt
+                sollbFix = ((Rechnung) provider).getSollbuchungList().get(0);
+              }
               if (ausgleichsbetrag > 0)
               {
                 // Sollbuchung ausgleichen
