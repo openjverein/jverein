@@ -425,11 +425,20 @@ public class GutschriftControl
     double summe = 0;
     for (SollbuchungPosition pos : sollb.getSollbuchungPositionList())
     {
+      if (pos.getBuchungsart() == null
+          || (buchungsklasseInBuchung && pos.getBuchungsklasse() == null))
+      {
+        continue;
+      }
+      String posSteuer = pos.getSteuer() != null ? pos.getSteuer().getID()
+          : "0";
+      String paramsSteuer = params.getSteuer() != null
+          ? params.getSteuer().getID()
+          : "0";
       if (!pos.getBuchungsart().getID().equals(params.getBuchungsart().getID())
           || (buchungsklasseInBuchung && !pos.getBuchungsklasse().getID()
               .equals(params.getBuchungsklasse().getID()))
-          || (steuerInBuchung
-              && !pos.getSteuer().getID().equals(params.getSteuer().getID())))
+          || (steuerInBuchung && !posSteuer.equals(paramsSteuer)))
       {
         continue;
       }
@@ -446,11 +455,19 @@ public class GutschriftControl
       double zugewiesen = 0;
       for (Buchung bu : sollb.getBuchungList())
       {
+        if (bu.getBuchungsart() == null
+            || (buchungsklasseInBuchung && bu.getBuchungsklasse() == null))
+        {
+          continue;
+        }
+        String buSteuer = bu.getSteuer() != null ? bu.getSteuer().getID() : "0";
+        String paramsSteuer = params.getSteuer() != null
+            ? params.getSteuer().getID()
+            : "0";
         if (!bu.getBuchungsart().getID().equals(params.getBuchungsart().getID())
             || (buchungsklasseInBuchung && !bu.getBuchungsklasse().getID()
                 .equals(params.getBuchungsklasse().getID()))
-            || (steuerInBuchung
-                && !bu.getSteuer().getID().equals(params.getSteuer().getID())))
+            || (steuerInBuchung && !buSteuer.equals(paramsSteuer)))
         {
           continue;
         }

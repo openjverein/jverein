@@ -267,7 +267,7 @@ public class Gutschrift extends SEPASupport
               {
                 skip++;
                 monitor.setStatusText(SKIP + statustext
-                    + ": Der Betrag der Sollbuchungspositionen ist nicht ausreichend!");
+                    + ": Der Betrag der passenden Sollbuchungspositionen ist nicht ausreichend!");
                 continue;
               }
             }

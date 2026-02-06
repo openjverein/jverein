@@ -164,7 +164,7 @@ public class GutschriftBugsControl extends AbstractControl
             && !gcontrol.checkVorhandenePosten(sollbFix, ausgleichsbetrag))
         {
           bugs.add(new Bug(Bug.WARNING, provider,
-              "Der Betrag der Sollbuchungspositionen ist nicht ausreichend!"));
+              "Der Betrag der passenden Sollbuchungspositionen ist nicht ausreichend!"));
         }
 
         if (ausgleichsbetrag > 0)
