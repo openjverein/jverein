@@ -19,6 +19,7 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.List;
 
 import org.kapott.hbci.sepa.SepaVersion;
 
@@ -28,6 +29,7 @@ import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.hbci.HBCI;
@@ -92,39 +94,62 @@ public class AbrechnungSEPAParam
 
   public Date voneingabedatum;
 
+  List<Zusatzbetrag> zusatzbetraegeList;
+
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR,
       SepaVersion sepaVersion, String pdffileRCUR)
       throws ApplicationException, RemoteException
   {
+    zusatzbetraegeList = ac.getZusatzbetraegeList();
     abbuchungsmodus = (Integer) ac.getAbbuchungsmodus().getValue();
     Monat monat = (Monat) ac.getAbrechnungsmonat().getValue();
-    abrechnungsmonat = monat.getKey();
-    faelligkeit = (Date) ac.getFaelligkeit().getValue();
-    stichtag = (Date) ac.getStichtag().getValue();
     abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
         .getValue();
-    vondatum = (Date) ac.getVondatum().getValue();
-    voneingabedatum = (Date) ac.getVonEingabedatum().getValue();
-    bisdatum = (Date) ac.getBisdatum().getValue();
+    abrechnungsmonat = monat.getKey();
+    faelligkeit = (Date) ac.getFaelligkeit().getValue();
+    stichtag = ac.isStichtagSupported() ? (Date) ac.getStichtag().getValue()
+        : null;
+    vondatum = ac.isVondatumSupported() ? (Date) ac.getVondatum().getValue()
+        : null;
+    voneingabedatum = ac.isVoneingabgedatumSupported()
+        ? (Date) ac.getVonEingabedatum().getValue()
+        : null;
+    bisdatum = ac.isBisdatumSupported() ? (Date) ac.getBisdatum().getValue()
+        : null;
     verwendungszweck = (String) ac.getZahlungsgrund().getValue();
-    zusatzbetraege = (Boolean) ac.getZusatzbetrag().getValue();
-    kursteilnehmer = (Boolean) ac.getKursteilnehmer().getValue();
+    zusatzbetraege = ac.isZusatzbetragSupported()
+        ? (Boolean) ac.getZusatzbetrag().getValue()
+        : false;
+    kursteilnehmer = ac.isKursteilnehmerSupported()
+        ? (Boolean) ac.getKursteilnehmer().getValue()
+        : false;
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
     sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen()
         .getValue();
-    rechnung = (Boolean) ac.getRechnung().getValue();
-    if (ac.istRechnungsdokumentActiv())
+    if (ac.isRechnungSupported())
     {
-      rechnungsdokumentSpeichern = (Boolean) ac.getRechnungsdokumentSpeichern()
-          .getValue();
+      rechnung = (Boolean) ac.getRechnung().getValue();
+      if (ac.isRechnungsdokumentSupported())
+      {
+        rechnungsdokumentSpeichern = (Boolean) ac
+            .getRechnungsdokumentSpeichern().getValue();
+      }
+      else
+      {
+        rechnungsdokumentSpeichern = false;
+      }
+      rechnungsformular = (Formular) ac.getRechnungFormular().getValue();
+      rechnungstext = (String) ac.getRechnungstext().getValue();
+      rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
     }
     else
     {
+      rechnung = false;
       rechnungsdokumentSpeichern = false;
+      rechnungsformular = null;
+      rechnungstext = null;
+      rechnungsdatum = null;
     }
-    rechnungsformular = (Formular) ac.getRechnungFormular().getValue();
-    rechnungstext = (String) ac.getRechnungstext().getValue();
-    rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
     sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
     this.pdffileRCUR = pdffileRCUR;
