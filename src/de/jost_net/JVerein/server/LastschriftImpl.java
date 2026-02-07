@@ -17,14 +17,18 @@
 package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift, IBetrag, IVersand
@@ -108,9 +112,9 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -414,6 +418,33 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Lastschriften";
+  }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getMitglied();
+  }
+
+  @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    return getBetrag();
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    return null;
   }
 
 }

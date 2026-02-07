@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
@@ -60,7 +61,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
     setAttribute("mitglied", mitglied);
   }
@@ -565,5 +566,24 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public String getMenueID()
   {
     return "Mitglieder.Rechnungen";
+  }
+
+  // Für Gutschrift Support
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getZahler();
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    ArrayList<Buchung> buchungen = new ArrayList<>();
+    ArrayList<Sollbuchung> sollbuchungen = getSollbuchungList();
+    for (Sollbuchung sollb : sollbuchungen)
+    {
+      buchungen.addAll(sollb.getBuchungList());
+    }
+    return buchungen;
   }
 }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -40,6 +41,7 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaft;
@@ -1581,5 +1583,51 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   public void clearKtoi() throws RemoteException
   {
     setAttribute("ktoiname", "");
+  }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Double getBetrag() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  @Override
+  public Double getIstSumme() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  // Für Gutschrift Support
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Hier sinnlos aber wegen IMitglied aus IGutschriftprovider nötig
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
+
+  @Override
+  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    return null;
   }
 }

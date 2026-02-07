@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GesamtrechnungNeuAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.RechnungNeuAction;
 import de.jost_net.JVerein.gui.action.SollbuchungRechnungAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -72,6 +73,8 @@ public class SollbuchungMenu extends ContextMenu
     {
       // Dann nicht anzeigen
     }
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
   }
 
   private static class OhneRechnungItem extends CheckedContextMenuItem
