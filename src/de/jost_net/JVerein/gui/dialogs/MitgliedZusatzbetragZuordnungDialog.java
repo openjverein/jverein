@@ -18,12 +18,16 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -78,9 +82,14 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     LabelGroup group = new LabelGroup(parent, "Vorlagen");
     group.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = MitgliedMap.getDummyMap(map);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton("Buchungstext Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
 

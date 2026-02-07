@@ -52,22 +52,39 @@ public class AbrechnungsParameterMap
         Abrechnungsmodi.get(param.abbuchungsmodus));
     map.put(AbrechnungsParameterVar.ABRECHNUNGSMONAT.getName(),
         Monat.getByKey(param.abrechnungsmonat));
-    map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(),
-        new JVDateFormatTTMMJJJJ().format(param.faelligkeit));
+    if (param.faelligkeit != null)
+    {
+      map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(),
+          new JVDateFormatTTMMJJJJ().format(param.faelligkeit));
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(), "");
+    }
     map.put(AbrechnungsParameterVar.KOMPAKTEABBUCHUNG.getName(),
         param.kompakteabbuchung ? "J" : "N");
     map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(),
         param.kursteilnehmer ? "J" : "N");
     map.put(AbrechnungsParameterVar.SEPAPRINT.getName(),
         param.sepaprint ? "J" : "N");
-    map.put(AbrechnungsParameterVar.STICHTAG.getName(),
-        new JVDateFormatTTMMJJJJ().format(param.stichtag));
-    map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(),
-        new JVDateFormatMM().format(param.stichtag));
-    map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(),
-        new JVDateFormatMMMM().format(param.stichtag));
-    map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(),
-        new JVDateFormatJJJJ().format(param.stichtag));
+    if (param.stichtag != null)
+    {
+      map.put(AbrechnungsParameterVar.STICHTAG.getName(),
+          new JVDateFormatTTMMJJJJ().format(param.stichtag));
+      map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(),
+          new JVDateFormatMM().format(param.stichtag));
+      map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(),
+          new JVDateFormatMMMM().format(param.stichtag));
+      map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(),
+          new JVDateFormatJJJJ().format(param.stichtag));
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.STICHTAG.getName(), "");
+      map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(), "");
+      map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(), "");
+      map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(), "");
+    }
     map.put(AbrechnungsParameterVar.VERWENDUNGSZWECK.getName(),
         param.verwendungszweck);
     if (param.vondatum != null)
@@ -75,10 +92,27 @@ public class AbrechnungsParameterMap
       map.put(AbrechnungsParameterVar.VONDATUM.getName(),
           new JVDateFormatTTMMJJJJ().format(param.vondatum));
     }
+    else
+    {
+      map.put(AbrechnungsParameterVar.VONDATUM.getName(), "");
+    }
+    if (param.voneingabedatum != null)
+    {
+      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(),
+          new JVDateFormatTTMMJJJJ().format(param.voneingabedatum));
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(), "");
+    }
     if (param.bisdatum != null)
     {
       map.put(AbrechnungsParameterVar.BISDATUM.getName(),
           new JVDateFormatTTMMJJJJ().format(param.bisdatum));
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.BISDATUM.getName(), "");
     }
     map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(),
         param.zusatzbetraege ? "J" : "N");

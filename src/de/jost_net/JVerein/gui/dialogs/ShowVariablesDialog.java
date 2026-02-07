@@ -58,7 +58,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
   {
     super(AbstractDialog.POSITION_CENTER);
     setTitle("Liste der Variablen");
-    setSize(400, 400);
+    setSize(600, 400);
     this.clipboard = new Clipboard(GUI.getDisplay());
     this.vars = vars;
     this.prependCopyText = prependCopyText;

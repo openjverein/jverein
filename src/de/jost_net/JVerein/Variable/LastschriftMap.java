@@ -152,7 +152,7 @@ public class LastschriftMap extends AbstractMap
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
     map.put(LastschriftVar.PERSONENART.getName(), "n");
     map.put(LastschriftVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
-    map.put(LastschriftVar.ANREDE.getName(), "Herrn");
+    map.put(LastschriftVar.ANREDE.getName(), "Herr");
     map.put(LastschriftVar.TITEL.getName(), "Dr. Dr.");
     map.put(LastschriftVar.NAME.getName(), "Wichtig");
     map.put(LastschriftVar.VORNAME.getName(), "Willi");

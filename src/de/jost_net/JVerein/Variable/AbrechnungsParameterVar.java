@@ -24,6 +24,7 @@ public enum AbrechnungsParameterVar
   FAELLIGKEIT("abrechnungsparameter_faelligkeit"), //
   STICHTAG("abrechnungsparameter_stichtag"), //
   VONDATUM("abrechnungsparameter_vondatum"), //
+  EINGABEVONDATUM("abrechnungsparameter_eingabe_vondatum"), //
   BISDATUM("abrechnungsparameter_bisdatum"), //
   STICHTAG_MONAT("abrechnungsparameter_stichtag_monat"), //
   STICHTAG_MONAT_TEXT("abrechnungsparameter_stichtag_monat_text"), //
