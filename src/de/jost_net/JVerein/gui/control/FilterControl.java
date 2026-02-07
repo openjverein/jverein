@@ -158,6 +158,8 @@ public abstract class FilterControl extends VorZurueckControl
 
   protected TextInput suchtext = null;
 
+  protected TextInput suchbezeichnung = null;
+
   protected SelectInput abrechnungslaufausw = null;
 
   protected IntegerNullInput integerausw = null;
@@ -1053,6 +1055,23 @@ public abstract class FilterControl extends VorZurueckControl
     return suchtext != null;
   }
 
+  public TextInput getSuchbezeichnung()
+  {
+    if (suchbezeichnung != null)
+    {
+      return suchbezeichnung;
+    }
+    this.suchbezeichnung = new TextInput(
+        settings.getString(settingsprefix + "suchbezeichnung", ""), 80);
+    suchbezeichnung.setName("Bezeichnung");
+    return suchbezeichnung;
+  }
+
+  public boolean isSuchbezeichnungAktiv()
+  {
+    return suchbezeichnung != null;
+  }
+
   public SelectInput getAbrechnungslaufAusw(int anzahl) throws RemoteException
   {
     if (abrechnungslaufausw != null)
@@ -1501,6 +1520,8 @@ public abstract class FilterControl extends VorZurueckControl
           abbuchungsdatumbis.setValue(null);
         if (suchtext != null)
           suchtext.setValue("");
+        if (suchbezeichnung != null)
+          suchbezeichnung.setValue("");
         if (integerausw != null)
           integerausw.setValue(null);
         if (suchspendenart != null)
@@ -1925,6 +1946,19 @@ public abstract class FilterControl extends VorZurueckControl
       else
       {
         settings.setAttribute(settingsprefix + "suchtext", "");
+      }
+    }
+
+    if (suchbezeichnung != null)
+    {
+      String tmp = (String) suchbezeichnung.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "suchbezeichnung", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchbezeichnung", "");
       }
     }
 

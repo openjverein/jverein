@@ -38,6 +38,7 @@ public class LehrgangDetailView extends AbstractDetailView
     LabelGroup group = new LabelGroup(getParent(), "Lehrgang");
     group.addLabelPair("Mitglied", control.getMitglied());
     group.addLabelPair("Lehrgangsart", control.getLehrgangsart());
+    group.addLabelPair("Bezeichnung", control.getBezeichnung());
     group.addLabelPair("Am/von", control.getVon());
     group.addLabelPair("Bis", control.getBis());
     group.addLabelPair("Veranstalter", control.getVeranstalter());

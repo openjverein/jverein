@@ -39,11 +39,15 @@ public class LehrgangListeView extends AbstractView
     final LehrgangControl control = new LehrgangControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     left.addInput(control.getSuchname());
     left.addInput(control.getSuchLehrgangsart());
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    middle.addInput(control.getSuchbezeichnung());
+    middle.addLabelPair("Veranstalter", control.getSuchtext());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     right.addInput(control.getDatumvon());

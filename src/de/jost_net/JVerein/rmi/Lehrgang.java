@@ -44,4 +44,8 @@ public interface Lehrgang extends JVereinDBObject
   public String getErgebnis() throws RemoteException;
 
   public void setErgebnis(String ergebnis) throws RemoteException;
+
+  public String getBezeichnung() throws RemoteException;
+
+  public void setBezeichnung(String bezeichnung) throws RemoteException;
 }
