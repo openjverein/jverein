@@ -356,6 +356,11 @@ public class Gutschrift extends SEPASupport
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new GutschriftMap().getMap(ls, map);
+    if (ls.getMitglied() != null)
+    {
+      boolean ohneLesefelder = !zweck.contains(Einstellungen.LESEFELD_PRE);
+      map = new MitgliedMap().getMap(ls.getMitglied(), map, ohneLesefelder);
+    }
     try
     {
       zweck = VelocityTool.eval(map, params.getVerwendungszweck());
@@ -383,15 +388,16 @@ public class Gutschrift extends SEPASupport
     if (params.isRechnungErzeugen() && sollbuchung != null
         && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      rechnung = generiereRechnung(sollbuchung, monitor);
+      rechnung = generiereRechnung(sollbuchung, ls.getBetrag(), monitor);
       if (params.getRechnungsText().trim().length() > 0)
       {
         zweck = params.getRechnungsText();
+        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+        rmap = new GutschriftMap().getMap(ls, rmap);
         boolean ohneLesefelder = !zweck.contains(Einstellungen.LESEFELD_PRE);
-        new AllgemeineMap().getMap(null);
-        map = new MitgliedMap().getMap((Mitglied) sollbuchung.getZahler(), map,
+        rmap = new MitgliedMap().getMap(sollbuchung.getZahler(), rmap,
             ohneLesefelder);
-        map = new RechnungMap().getMap(rechnung, map);
+        rmap = new RechnungMap().getMap(rechnung, rmap);
         try
         {
           zweck = VelocityTool.eval(map, zweck);
@@ -499,7 +505,8 @@ public class Gutschrift extends SEPASupport
   }
 
   private Rechnung generiereRechnung(Sollbuchung sollbuchung,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException
+      Double ueberweisungsbetrag, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException
   {
     Rechnung rechnung = null;
 
@@ -507,6 +514,7 @@ public class Gutschrift extends SEPASupport
     rechnung.setFormular(params.getFormular());
     rechnung.setDatum(params.getRechnungsDatum());
     rechnung.fill(sollbuchung);
+    rechnung.setKommentar(ueberweisungsbetrag.toString());
     rechnung.store();
     monitor.setStatusText(MARKER + "Rechnung erzeugt");
     return rechnung;

@@ -217,12 +217,14 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 
     Map<String, Object> map = GutschriftMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
+    map = MitgliedMap.getDummyMap(map);
     buttons.addButton("Verwendungszweck Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
 
     if (EinstellungRechnungAnzeigen)
     {
       Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+      rmap = GutschriftMap.getDummyMap(rmap);
       rmap = MitgliedMap.getDummyMap(rmap);
       rmap = RechnungMap.getDummyMap(rmap);
       buttons.addButton("Rechnungstext Variablen anzeigen",
