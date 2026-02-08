@@ -388,7 +388,7 @@ public class Gutschrift extends SEPASupport
     if (params.isRechnungErzeugen() && sollbuchung != null
         && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      rechnung = generiereRechnung(sollbuchung, ls.getBetrag(), monitor);
+      rechnung = generiereRechnung(sollbuchung, monitor);
       if (params.getRechnungsText().trim().length() > 0)
       {
         zweck = params.getRechnungsText();
@@ -505,8 +505,7 @@ public class Gutschrift extends SEPASupport
   }
 
   private Rechnung generiereRechnung(Sollbuchung sollbuchung,
-      Double ueberweisungsbetrag, ProgressMonitor monitor)
-      throws RemoteException, ApplicationException
+      ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     Rechnung rechnung = null;
 
@@ -514,7 +513,7 @@ public class Gutschrift extends SEPASupport
     rechnung.setFormular(params.getFormular());
     rechnung.setDatum(params.getRechnungsDatum());
     rechnung.fill(sollbuchung);
-    rechnung.setKommentar(ueberweisungsbetrag.toString());
+    rechnung.setKommentar(params.getRechnungsKommentar());
     rechnung.store();
     monitor.setStatusText(MARKER + "Rechnung erzeugt");
     return rechnung;

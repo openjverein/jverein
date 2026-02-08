@@ -6,14 +6,17 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -23,6 +26,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -30,6 +34,8 @@ import de.willuhn.logging.Logger;
 public class GutschriftControl
 {
   private boolean isMitglied;
+
+  private boolean isNewDialog;
 
   private IGutschriftProvider[] providerArray;
 
@@ -51,15 +57,48 @@ public class GutschriftControl
 
   private SelectInput steuerInput;
 
+  private TextAreaInput kommentarInput;
+
+  private CheckboxInput rechnungErzeugenInput;
+
+  private CheckboxInput rechnungsDokumentSpeichernInput;
+
+  private FormularInput formularInput;
+
+  private TextInput rechnungsTextInput;
+
+  private DateInput rechnungsDatumInput;
+
+  private Boolean EinstellungRechnungAnzeigen;
+
+  private Boolean EinstellungSpeicherungAnzeigen;
+
+  private Boolean EinstellungBuchungsklasseInBuchung;
+
+  private Boolean EinstellungSteuerInBuchung;
+
   private Settings settings = null;
 
+  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl(null);
+
   public GutschriftControl(IGutschriftProvider[] providerArray,
-      boolean isMitglied)
+      boolean isMitglied, boolean isNewDialog) throws RemoteException
   {
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     this.isMitglied = isMitglied;
     this.providerArray = providerArray;
+    this.isNewDialog = isNewDialog;
+
+    EinstellungRechnungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.RECHNUNGENANZEIGEN);
+    EinstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+        && JVereinPlugin.isArchiveServiceActive();
+    EinstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
+    EinstellungSteuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
   }
 
   public IGutschriftProvider[] getProviderArray()
@@ -103,7 +142,11 @@ public class GutschriftControl
     {
       return datumInput;
     }
-    Date d = getDatum("datum");
+    Date d = new Date();
+    if (!isNewDialog)
+    {
+      d = getDatum("datum");
+    }
     datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
     datumInput.setMandatory(true);
     return datumInput;
@@ -338,6 +381,140 @@ public class GutschriftControl
     }
   }
 
+  public TextAreaInput getRechnungKommentarInput() throws RemoteException
+  {
+    if (kommentarInput != null)
+    {
+      return kommentarInput;
+    }
+
+    kommentarInput = new TextAreaInput(settings.getString("kommentar", ""),
+        1024);
+    kommentarInput.setName("Kommentar");
+    kommentarInput.setHeight(50);
+    kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
+    return kommentarInput;
+  }
+
+  public CheckboxInput getRechnungErzeugenInput()
+  {
+    if (rechnungErzeugenInput != null)
+    {
+      return rechnungErzeugenInput;
+    }
+    rechnungErzeugenInput = scontrol.getRechnung();
+    rechnungErzeugenInput
+        .setValue(settings.getBoolean("rechnungErzeugen", false));
+    rechnungErzeugenInput.addListener(e -> {
+      kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
+    });
+    return rechnungErzeugenInput;
+  }
+
+  public CheckboxInput getRechnungsDokumentSpeichernInput()
+  {
+    if (rechnungsDokumentSpeichernInput != null)
+    {
+      return rechnungsDokumentSpeichernInput;
+    }
+    rechnungsDokumentSpeichernInput = scontrol.getRechnungsdokumentSpeichern();
+    rechnungsDokumentSpeichernInput
+        .setValue(settings.getBoolean("rechnungsDokumentSpeichern", false));
+    return rechnungsDokumentSpeichernInput;
+  }
+
+  public FormularInput getFormularInput() throws RemoteException
+  {
+    if (formularInput != null)
+    {
+      return formularInput;
+    }
+    formularInput = scontrol.getRechnungFormular();
+    Formular f = null;
+    try
+    {
+      String id = settings.getString("formular", "");
+      if (id != null && !id.isEmpty())
+      {
+        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
+            id);
+      }
+    }
+    catch (Exception ex)
+    {
+      // Nicht gefunden, dann null
+    }
+    formularInput.setValue(f);
+    return formularInput;
+  }
+
+  public TextInput getRechnungsTextInput()
+  {
+    if (rechnungsTextInput != null)
+    {
+      return rechnungsTextInput;
+    }
+    rechnungsTextInput = scontrol.getRechnungstext();
+    rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
+    return rechnungsTextInput;
+  }
+
+  public DateInput getRechnungsDatumInput()
+  {
+    if (rechnungsDatumInput != null)
+    {
+      return rechnungsDatumInput;
+    }
+    rechnungsDatumInput = scontrol.getRechnungsdatum();
+    if (!isNewDialog)
+    {
+      rechnungsDatumInput.setValue(getDatum("rechnungsdatum"));
+    }
+    return rechnungsDatumInput;
+  }
+
+  public void storeValues()
+  {
+    params = new GutschriftParam();
+    params.setAusgabe((UeberweisungAusgabe) ausgabeInput.getValue());
+    params.setDatum((Date) datumInput.getValue());
+    params.setVerwendungszweck((String) zweckInput.getValue());
+
+    // Fixer Betrag
+    boolean fixerBetragAbrechnen = (boolean) fixerBetragAbrechnenInput
+        .getValue();
+    if (fixerBetragAbrechnen)
+    {
+      params.setFixerBetragAbrechnen(fixerBetragAbrechnen);
+      params.setFixerBetrag((Double) fixerBetragInput.getValue());
+      params.setBuchungsart((Buchungsart) buchungsartInput.getValue());
+      if (buchungsklasseInput != null)
+      {
+        params
+            .setBuchungsklasse((Buchungsklasse) buchungsklasseInput.getValue());
+      }
+      if (steuerInput != null)
+      {
+        params.setSteuer((Steuer) steuerInput.getValue());
+      }
+    }
+
+    // Rechnung
+    if (EinstellungRechnungAnzeigen)
+    {
+      params.setRechnungErzeugen((boolean) rechnungErzeugenInput.getValue());
+      params.setFormular((Formular) formularInput.getValue());
+      if (rechnungsDokumentSpeichernInput != null)
+      {
+        params.setRechnungsDokumentSpeichern(
+            (boolean) rechnungsDokumentSpeichernInput.getValue());
+      }
+      params.setRechnungsText((String) rechnungsTextInput.getValue());
+      params.setRechnungsDatum((Date) rechnungsDatumInput.getValue());
+      params.setRechnungsKommentar((String) kommentarInput.getValue());
+    }
+  }
+
   public void saveSettings()
   {
     try
@@ -352,20 +529,9 @@ public class GutschriftControl
       {
         settings.setAttribute("datum", "");
       }
-      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-      {
-        tmp = (Date) params.getRechnungsDatum();
-        if (tmp != null)
-        {
-          settings.setAttribute("rechnungsdatum",
-              new JVDateFormatTTMMJJJJ().format(tmp));
-        }
-        else
-        {
-          settings.setAttribute("rechnungsdatum", "");
-        }
-      }
       settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
+
+      // Fixen Betrag erstatten
       settings.setAttribute("fixerBetragAbrechnen",
           params.isFixerBetragAbrechnen());
       if (params.isFixerBetragAbrechnen())
@@ -386,22 +552,54 @@ public class GutschriftControl
         {
           settings.setAttribute("buchungsart", "");
         }
-        if (params.getBuchungsklasse() != null)
+        if (EinstellungBuchungsklasseInBuchung)
         {
-          settings.setAttribute("buchungsklasse",
-              params.getBuchungsklasse().getID());
+          if (params.getBuchungsklasse() != null)
+          {
+            settings.setAttribute("buchungsklasse",
+                params.getBuchungsklasse().getID());
+          }
+          else
+          {
+            settings.setAttribute("buchungsklasse", "");
+          }
         }
-        else
+        if (EinstellungSteuerInBuchung)
         {
-          settings.setAttribute("buchungsklasse", "");
+          if (params.getSteuer() != null)
+          {
+            settings.setAttribute("steuer", params.getSteuer().getID());
+          }
+          else
+          {
+            settings.setAttribute("steuer", "");
+          }
         }
-        if (params.getSteuer() != null)
+      }
+
+      if (EinstellungRechnungAnzeigen)
+      {
+        settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
+        if (params.isRechnungErzeugen())
         {
-          settings.setAttribute("steuer", params.getSteuer().getID());
-        }
-        else
-        {
-          settings.setAttribute("steuer", "");
+          if (EinstellungSpeicherungAnzeigen)
+          {
+            settings.setAttribute("rechnungsDokumentSpeichern",
+                params.isRechnungsDokumentSpeichern());
+          }
+          tmp = (Date) params.getRechnungsDatum();
+          if (tmp != null)
+          {
+            settings.setAttribute("rechnungsdatum",
+                new JVDateFormatTTMMJJJJ().format(tmp));
+          }
+          else
+          {
+            settings.setAttribute("rechnungsdatum", "");
+          }
+          settings.setAttribute("formular", params.getFormular().getID());
+          settings.setAttribute("rechnungstext", params.getRechnungsText());
+          settings.setAttribute("kommentar", params.getRechnungsKommentar());
         }
       }
     }

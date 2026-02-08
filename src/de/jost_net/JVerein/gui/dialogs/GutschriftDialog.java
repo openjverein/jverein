@@ -18,7 +18,6 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
@@ -33,28 +32,18 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
-import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.GutschriftBugsView;
 import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.AbstractInput;
-import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.LabelInput;
-import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -66,27 +55,9 @@ import de.willuhn.util.ApplicationException;
 
 public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 {
-  private boolean isNewDialog;
-
   private GutschriftParam params = null;
 
   private LabelInput status = null;
-
-  private CheckboxInput rechnungErzeugenInput;
-
-  private CheckboxInput rechnungsDokumentSpeichernInput;
-
-  private FormularInput formularInput;
-
-  private TextInput rechnungsTextInput;
-
-  private DateInput rechnungsDatumInput;
-
-  private AbstractInput buchungsartInput;
-
-  private SelectInput buchungsklasseInput;
-
-  private SelectInput steuerInput;
 
   private boolean EinstellungRechnungAnzeigen = false;
 
@@ -98,19 +69,17 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
 
   private Settings settings = null;
 
-  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl(null);
-
   private GutschriftControl gcontrol;
 
   public GutschriftDialog(IGutschriftProvider[] providerArray,
-      boolean isMitglied, boolean isNewDialog)
+      boolean isMitglied, boolean isNewDialog) throws RemoteException
   {
     super(SWT.CENTER);
     setTitle("Gutschrift erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.gcontrol = new GutschriftControl(providerArray, isMitglied);
-    this.isNewDialog = isNewDialog;
+    this.gcontrol = new GutschriftControl(providerArray, isMitglied,
+        isNewDialog);
     setSize(950, SWT.DEFAULT);
   }
 
@@ -134,14 +103,14 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
     ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
     SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
+    below.addHeadline("Rechnung");
+    SimpleContainer bleft = new SimpleContainer(below.getComposite(), false, 2);
+    SimpleContainer bright = new SimpleContainer(below.getComposite(), false,
+        2);
 
     left.addHeadline("Überweisung");
     left.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
     left.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
-    if (isNewDialog)
-    {
-      gcontrol.getDatumInput().setValue(new Date());
-    }
     left.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
 
     // Fixen Betrag erstatten
@@ -149,65 +118,30 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     right.addLabelPair("Fixen Betrag erstatten",
         gcontrol.getFixerBetragAbrechnenInput());
     right.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
-    buchungsartInput = gcontrol.getBuchungsartInput();
-    right.addLabelPair("Buchungsart", buchungsartInput);
+    right.addLabelPair("Buchungsart", gcontrol.getBuchungsartInput());
     if (EinstellungBuchungsklasseInBuchung)
     {
-      buchungsklasseInput = gcontrol.getBuchungsklasseInput();
-      right.addLabelPair("Buchungsklasse", buchungsklasseInput);
+      right.addLabelPair("Buchungsklasse", gcontrol.getBuchungsklasseInput());
     }
     if (EinstellungSteuerInBuchung)
     {
-      steuerInput = gcontrol.getSteuerInput();
-      right.addLabelPair("Steuer", steuerInput);
+      right.addLabelPair("Steuer", gcontrol.getSteuerInput());
     }
 
     // Nur anzeigen wenn Rechnungen aktiviert sind
     if (EinstellungRechnungAnzeigen)
     {
-      // Settings hier speichern damit sie nicht mit Anrechnungslauf vermischt
-      // werden
-      below.addHeadline("Rechnung");
-      rechnungErzeugenInput = scontrol.getRechnung();
-      rechnungErzeugenInput
-          .setValue(settings.getBoolean("rechnungErzeugen", false));
-      below.addLabelPair("Rechnung zur Gutschrift erzeugen",
-          rechnungErzeugenInput);
+      bleft.addLabelPair("Rechnung zur Gutschrift erzeugen",
+          gcontrol.getRechnungErzeugenInput());
       if (EinstellungSpeicherungAnzeigen)
       {
-        rechnungsDokumentSpeichernInput = scontrol
-            .getRechnungsdokumentSpeichern();
-        rechnungsDokumentSpeichernInput
-            .setValue(settings.getBoolean("rechnungsDokumentSpeichern", false));
-        below.addLabelPair("Rechnung als Buchungsdokument speichern",
-            rechnungsDokumentSpeichernInput);
+        bleft.addLabelPair("Rechnung als Buchungsdokument speichern",
+            gcontrol.getRechnungsDokumentSpeichernInput());
       }
-      formularInput = scontrol.getRechnungFormular();
-      Formular f = null;
-      try
-      {
-        String id = settings.getString("formular", "");
-        if (id != null && !id.isEmpty())
-        {
-          f = (Formular) Einstellungen.getDBService()
-              .createObject(Formular.class, id);
-        }
-      }
-      catch (Exception ex)
-      {
-        // Nicht gefunden, dann null
-      }
-      formularInput.setValue(f);
-      below.addLabelPair("Erstattungsformular", formularInput);
-      rechnungsTextInput = scontrol.getRechnungstext();
-      rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
-      below.addLabelPair("Rechnungstext", rechnungsTextInput);
-      rechnungsDatumInput = scontrol.getRechnungsdatum();
-      if (!isNewDialog)
-      {
-        rechnungsDatumInput.setValue(gcontrol.getDatum("rechnungsdatum"));
-      }
-      below.addLabelPair("Rechnungsdatum", rechnungsDatumInput);
+      bleft.addLabelPair("Erstattungsformular", gcontrol.getFormularInput());
+      bright.addLabelPair("Rechnungstext", gcontrol.getRechnungsTextInput());
+      bleft.addLabelPair("Rechnungsdatum", gcontrol.getRechnungsDatumInput());
+      bright.addLabelPair("Kommentar", gcontrol.getRechnungKommentarInput());
     }
 
     // Buttons
@@ -236,8 +170,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       {
         return;
       }
-      storeValues();
-      saveSettings();
+      gcontrol.storeValues();
       gcontrol.saveSettings();
       close();
       GUI.startView(GutschriftBugsView.class, gcontrol);
@@ -250,8 +183,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         {
           return;
         }
-        storeValues();
-        saveSettings();
+        gcontrol.storeValues();
         gcontrol.saveSettings();
         new Gutschrift(gcontrol);
         close();
@@ -283,49 +215,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     return status;
   }
 
-  private void storeValues()
-  {
-    params = new GutschriftParam();
-    params.setAusgabe(
-        (UeberweisungAusgabe) gcontrol.getAusgabeInput().getValue());
-    params.setDatum((Date) gcontrol.getDatumInput().getValue());
-    params.setVerwendungszweck((String) gcontrol.getZweckInput().getValue());
-
-    // Rechnung
-    if (EinstellungRechnungAnzeigen)
-    {
-      params.setRechnungErzeugen((boolean) rechnungErzeugenInput.getValue());
-      params.setFormular((Formular) formularInput.getValue());
-      if (rechnungsDokumentSpeichernInput != null)
-      {
-        params.setRechnungsDokumentSpeichern(
-            (boolean) rechnungsDokumentSpeichernInput.getValue());
-      }
-      params.setRechnungsText((String) rechnungsTextInput.getValue());
-      params.setRechnungsDatum((Date) rechnungsDatumInput.getValue());
-    }
-
-    // Fixer Betrag
-    boolean fixerBetragAbrechnen = (boolean) gcontrol
-        .getFixerBetragAbrechnenInput().getValue();
-    if (fixerBetragAbrechnen)
-    {
-      params.setFixerBetragAbrechnen(fixerBetragAbrechnen);
-      params.setFixerBetrag((Double) gcontrol.getFixerBetragInput().getValue());
-      params.setBuchungsart((Buchungsart) buchungsartInput.getValue());
-      if (buchungsklasseInput != null)
-      {
-        params
-            .setBuchungsklasse((Buchungsklasse) buchungsklasseInput.getValue());
-      }
-      if (steuerInput != null)
-      {
-        params.setSteuer((Steuer) steuerInput.getValue());
-      }
-    }
-    gcontrol.setParams(params);
-  }
-
   private boolean checkInput()
   {
     try
@@ -344,15 +233,15 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         return false;
       }
       if (EinstellungRechnungAnzeigen
-          && (boolean) rechnungErzeugenInput.getValue())
+          && (boolean) gcontrol.getRechnungErzeugenInput().getValue())
       {
-        if (formularInput.getValue() == null)
+        if (gcontrol.getFormularInput().getValue() == null)
         {
           status.setValue("Bitte Erstattungsformular auswählen");
           status.setColor(Color.ERROR);
           return false;
         }
-        if (rechnungsDatumInput.getValue() == null)
+        if (gcontrol.getRechnungsDatumInput().getValue() == null)
         {
           status.setValue("Bitte Rechnungsdatum auswählen");
           status.setColor(Color.ERROR);
@@ -368,14 +257,14 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           status.setColor(Color.ERROR);
           return false;
         }
-        if (buchungsartInput.getValue() == null)
+        if (gcontrol.getBuchungsartInput().getValue() == null)
         {
           status.setValue("Bitte Buchungsart eingeben");
           status.setColor(Color.ERROR);
           return false;
         }
         if (EinstellungBuchungsklasseInBuchung
-            && buchungsklasseInput.getValue() == null)
+            && gcontrol.getBuchungsklasseInput().getValue() == null)
         {
           status.setValue("Bitte Buchungsklasse eingeben");
           status.setColor(Color.ERROR);
@@ -383,8 +272,9 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         }
         if (EinstellungSteuerInBuchung)
         {
-          Buchungsart buchungsart = (Buchungsart) buchungsartInput.getValue();
-          Steuer steuer = (Steuer) steuerInput.getValue();
+          Buchungsart buchungsart = (Buchungsart) gcontrol.getBuchungsartInput()
+              .getValue();
+          Steuer steuer = (Steuer) gcontrol.getSteuerInput().getValue();
           if (steuer != null && buchungsart != null)
           {
             if (buchungsart.getSpende() || buchungsart.getAbschreibung())
@@ -424,28 +314,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       return false;
     }
     return true;
-  }
-
-  private void saveSettings()
-  {
-    try
-    {
-      settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
-      if (params.isRechnungErzeugen())
-      {
-        if (EinstellungSpeicherungAnzeigen)
-        {
-          settings.setAttribute("rechnungsDokumentSpeichern",
-              params.isRechnungsDokumentSpeichern());
-        }
-        settings.setAttribute("formular", params.getFormular().getID());
-        settings.setAttribute("rechnungstext", params.getRechnungsText());
-      }
-    }
-    catch (RemoteException ex)
-    {
-      Logger.error("Fehler beim Speichern der Settings", ex);
-    }
   }
 
   @Override

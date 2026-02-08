@@ -28,6 +28,8 @@ public class GutschriftParam
 
   private Date rechnungsDatum;
 
+  private String rechnungsKommentar;
+
   // Fixer Betrag
   private boolean fixerBetragAbrechnen = false;
 
@@ -167,5 +169,15 @@ public class GutschriftParam
   public void setSteuer(Steuer steuer)
   {
     this.steuer = steuer;
+  }
+
+  public String getRechnungsKommentar()
+  {
+    return rechnungsKommentar;
+  }
+
+  public void setRechnungsKommentar(String kommentar)
+  {
+    this.rechnungsKommentar = kommentar;
   }
 }
