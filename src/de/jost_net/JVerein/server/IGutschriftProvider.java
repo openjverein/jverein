@@ -26,12 +26,24 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 
 public interface IGutschriftProvider extends IMitglied, IBetrag
 {
-  public Mitglied getGutschriftZahler() throws RemoteException;
+  default Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getMitglied();
+  }
 
-  public Double getIstSumme() throws RemoteException;
+  default Double getIstSumme() throws RemoteException
+  {
+    return getBetrag();
+  }
 
-  public List<Buchung> getBuchungList() throws RemoteException;
+  default List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
 
-  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
+  default ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    return null;
+  }
 }

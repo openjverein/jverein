@@ -22,14 +22,17 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
@@ -39,6 +42,7 @@ import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.HerkunftSpende;
+import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -105,7 +109,8 @@ public class Gutschrift extends SEPASupport
 
     if (params.getDatum() == null || params.getVerwendungszweck() == null
         || params.getVerwendungszweck().isEmpty()
-        || (params.isRechnungErzeugen() && params.getFormular() == null)
+        || (params.isRechnungErzeugen() && (params.getFormular() == null
+            || params.getRechnungsDatum() == null))
         || (params.isFixerBetragAbrechnen() && (params.getFixerBetrag() == null
             || params.getFixerBetrag() < 0.005d)))
     {
@@ -160,6 +165,7 @@ public class Gutschrift extends SEPASupport
           String name = "";
           try
           {
+            DBTransaction.starten();
             statustext = provider.getObjektName() + " mit Nr. "
                 + provider.getID();
 
@@ -200,57 +206,17 @@ public class Gutschrift extends SEPASupport
             monitor.setStatusText("Generiere Gutschrift für " + statustext
                 + " und Zahler " + name + ".");
 
-            // Bei fixem Betrag mit offenem Betrag verrechnen
-            if (params.isFixerBetragAbrechnen())
-            {
-              Sollbuchung sollbFix = null;
-              if (provider instanceof Sollbuchung)
-              {
-                sollbFix = (Sollbuchung) provider;
-              }
-              else if (provider instanceof Rechnung)
-              {
-                // Gesamtrechnung wird nicht unterstützt
-                sollbFix = ((Rechnung) provider).getSollbuchungList().get(0);
-              }
-              if (ausgleichsbetrag > 0)
-              {
-                // Sollbuchung ausgleichen
-                sollbuchungAusgleich(provider, sollbFix, ausgleichsbetrag,
-                    monitor);
-              }
-            }
-            else if (ausgleichsbetrag > 0)
-            {
-              // Erst Sollbuchungen ausgleichen wenn etwas offen ist
-              if (provider instanceof Sollbuchung)
-              {
-                Sollbuchung sollb = (Sollbuchung) provider;
-                sollbuchungAusgleich(provider, sollb, ausgleichsbetrag,
-                    monitor);
-              }
-              else if (provider instanceof Rechnung)
-              {
-                double ausgleich = 0;
-                for (Sollbuchung sollb : ((Rechnung) provider)
-                    .getSollbuchungList())
-                {
-                  tmp = provider.getBetrag() - provider.getIstSumme();
-                  ausgleich = tmp > 0.005d ? tmp : 0;
-                  if (ausgleich > 0)
-                  {
-                    sollbuchungAusgleich(provider, sollb, ausgleich, monitor);
-                  }
-                }
-              }
-            }
-
             // Sollbuchung, Buchungen und Lastschriften erzeugen
-            generiereGutschrift(provider, ueberweisungsbetrag, name, monitor);
+            Buchung buchung = generiereGutschrift(provider, ueberweisungsbetrag,
+                name, monitor);
+            sollbuchungenAusgleich(provider, ausgleichsbetrag, buchung,
+                monitor);
+            DBTransaction.commit();
             erstellt++;
           }
           catch (ApplicationException ae)
           {
+            DBTransaction.rollback();
             error1++;
             String text = ERROR + statustext + ": " + ae.getMessage();
             monitor.setStatusText(text);
@@ -258,6 +224,7 @@ public class Gutschrift extends SEPASupport
           }
           catch (Exception e)
           {
+            DBTransaction.rollback();
             error1++;
             String text = ERROR + statustext
                 + ": Fehler beim Datenbank Zugriff!";
@@ -351,7 +318,6 @@ public class Gutschrift extends SEPASupport
                   ? " " + error2 + " Fehler bei Gegenbuchung und SEPA Ausgabe."
                   : ""));
         }
-
       }
 
       @Override
@@ -370,7 +336,7 @@ public class Gutschrift extends SEPASupport
     Application.getController().start(t);
   }
 
-  private void generiereGutschrift(IGutschriftProvider prov,
+  private Buchung generiereGutschrift(IGutschriftProvider prov,
       double ueberweisungsbetrag, String name, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
@@ -385,6 +351,7 @@ public class Gutschrift extends SEPASupport
     {
       lastschriften.add(ls);
       summe += ueberweisungsbetrag;
+      monitor.setStatusText(MARKER + "Überweisung erzeugt");
     }
 
     Map<String, Object> map = new AllgemeineMap().getMap(null);
@@ -413,10 +380,39 @@ public class Gutschrift extends SEPASupport
       betrag = -prov.getBetrag();
     }
     sollbuchung = generiereSollbuchung(prov, betrag, zweck, monitor);
-    rechnung = generiereRechnung(sollbuchung, monitor);
-    buchung = generiereBuchung(prov, betrag, zweck, name, sollbuchung);
+    if (params.isRechnungErzeugen() && sollbuchung != null
+        && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      rechnung = generiereRechnung(sollbuchung, monitor);
+      if (params.getRechnungsText().trim().length() > 0)
+      {
+        zweck = params.getRechnungsText();
+        boolean ohneLesefelder = !zweck.contains(Einstellungen.LESEFELD_PRE);
+        new AllgemeineMap().getMap(null);
+        map = new MitgliedMap().getMap((Mitglied) sollbuchung.getZahler(), map,
+            ohneLesefelder);
+        map = new RechnungMap().getMap(rechnung, map);
+        try
+        {
+          zweck = VelocityTool.eval(map, zweck);
+          if (zweck.length() >= 140)
+          {
+            zweck = zweck.substring(0, 136) + "...";
+          }
+        }
+        catch (IOException e)
+        {
+          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+        }
+        sollbuchung.setZweck1(zweck);
+      }
+      sollbuchung.setRechnung(rechnung);
+      sollbuchung.updateForced();
+    }
+    buchung = generiereBuchung(prov, betrag, name, zweck, sollbuchung);
     monitor.setStatusText(MARKER + "Buchung erzeugt");
     generiereBuchungsdokument(prov, buchung, rechnung, monitor);
+    return (buchung);
   }
 
   private Lastschrift generiereLastschrift(IGutschriftProvider prov,
@@ -436,7 +432,6 @@ public class Gutschrift extends SEPASupport
     {
       ls = getLastschriftVonMitglied(prov.getGutschriftZahler(), zweck, betrag);
     }
-    monitor.setStatusText(MARKER + "Überweisung erzeugt");
     return ls;
   }
 
@@ -507,62 +502,22 @@ public class Gutschrift extends SEPASupport
       ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     Rechnung rechnung = null;
-    if (params.isRechnungErzeugen() && sollbuchung != null
-        && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-    {
-      rechnung = (Rechnung) service.createObject(Rechnung.class, null);
-      rechnung.setFormular(params.getFormular());
-      rechnung.setDatum(params.getRechnungsDatum());
-      rechnung.fill(sollbuchung);
-      rechnung.store();
-      monitor.setStatusText(MARKER + "Rechnung erzeugt");
 
-      if (params.getRechnungsText().trim().length() > 0)
-      {
-        String rzweck = params.getRechnungsText();
-        boolean ohneLesefelder = !rzweck.contains(Einstellungen.LESEFELD_PRE);
-        Map<String, Object> map = new AllgemeineMap().getMap(null);
-        map = new MitgliedMap().getMap((Mitglied) sollbuchung.getZahler(), map,
-            ohneLesefelder);
-        map = new RechnungMap().getMap(rechnung, map);
-        try
-        {
-          rzweck = VelocityTool.eval(map, rzweck);
-          if (rzweck.length() >= 140)
-          {
-            rzweck = rzweck.substring(0, 136) + "...";
-          }
-        }
-        catch (IOException e)
-        {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-        }
-
-        sollbuchung.setZweck1(rzweck);
-      }
-      sollbuchung.setRechnung(rechnung);
-      sollbuchung.updateForced();
-    }
+    rechnung = (Rechnung) service.createObject(Rechnung.class, null);
+    rechnung.setFormular(params.getFormular());
+    rechnung.setDatum(params.getRechnungsDatum());
+    rechnung.fill(sollbuchung);
+    rechnung.store();
+    monitor.setStatusText(MARKER + "Rechnung erzeugt");
     return rechnung;
   }
 
   private Buchung generiereBuchung(IGutschriftProvider prov, double betrag,
-      String zweck, String name, Sollbuchung sollbuchung)
+      String name, String zweck, Sollbuchung sollbuchung)
       throws RemoteException, ApplicationException
   {
     // Buchung erzeugen
-    String iban = "";
-    if (prov.getGutschriftZahler() == null)
-    {
-      // Dann muss es eine Lastschrift sein
-      iban = ((Lastschrift) prov).getIBAN();
-    }
-    else
-    {
-      iban = prov.getGutschriftZahler().getIban();
-    }
-    Buchung buchung = getBuchung(betrag, name, zweck, iban);
-    buchung.setSollbuchung(sollbuchung);
+    Buchung buchung = getBuchung(betrag, name, zweck, getIBAN(prov));
     if (params.isFixerBetragAbrechnen() || prov instanceof Lastschrift)
     {
       // Ist auch bei Mitgliedern
@@ -586,12 +541,18 @@ public class Gutschrift extends SEPASupport
         buchung.setSteuer(pos.getSteuer());
       }
     }
-    buchung.store();
+
     // Nicht splitten bei nur einer Position oder kompletter Erstattung
     if (!(params.isFixerBetragAbrechnen() || prov instanceof Lastschrift
         || prov.getIstSumme() < 0.005d))
     {
+      buchung.store();
       SplitbuchungsContainer.autoSplit(buchung, sollbuchung, false);
+    }
+    else
+    {
+      buchung.setSollbuchung(sollbuchung);
+      buchung.store();
     }
     return buchung;
   }
@@ -612,32 +573,135 @@ public class Gutschrift extends SEPASupport
     }
   }
 
-  private void sollbuchungAusgleich(IGutschriftProvider prov, Sollbuchung sollb,
-      double ausgleichsbetrag, ProgressMonitor monitor)
+  private void sollbuchungenAusgleich(IGutschriftProvider provider,
+      double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
-    if (ausgleichsbetrag == 0)
+    if (ausgleichsbetrag > 0)
     {
-      return;
+      // Bei fixem Betrag mit offenem Betrag verrechnen
+      if (params.isFixerBetragAbrechnen())
+      {
+        Sollbuchung sollbFix = null;
+        if (provider instanceof Sollbuchung)
+        {
+          sollbFix = (Sollbuchung) provider;
+        }
+        else if (provider instanceof Rechnung)
+        {
+          // Gesamtrechnung wird nicht unterstützt
+          sollbFix = ((Rechnung) provider).getSollbuchungList().get(0);
+        }
+        // Sollbuchung ausgleichen
+        sollbuchungAusgleich(provider, sollbFix, ausgleichsbetrag, buchung,
+            monitor);
+      }
+      else
+      {
+        // Sollbuchungen ausgleichen wenn etwas offen ist
+        if (provider instanceof Sollbuchung)
+        {
+          Sollbuchung sollb = (Sollbuchung) provider;
+          sollbuchungAusgleich(provider, sollb, ausgleichsbetrag, buchung,
+              monitor);
+        }
+        else if (provider instanceof Rechnung)
+        {
+          double ausgleich = 0;
+          for (Sollbuchung sollb : ((Rechnung) provider).getSollbuchungList())
+          {
+            double tmp = sollb.getBetrag() - sollb.getIstSumme();
+            ausgleich = tmp > 0.005d ? tmp : 0;
+            if (ausgleich > 0)
+            {
+              sollbuchungAusgleich(provider, sollb, ausgleich, buchung,
+                  monitor);
+            }
+          }
+        }
+      }
     }
+  }
+
+  private void sollbuchungAusgleich(IGutschriftProvider prov, Sollbuchung sollb,
+      double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException
+  {
     // Fixer Betrag und Sollbuchung
     if (params.isFixerBetragAbrechnen())
     {
       // Ausgleichsbuchung ohne splitten
-      generiereBuchung(prov, ausgleichsbetrag,
-          "Buchungsausgleich für Gutschrift", "JVerein", (Sollbuchung) prov);
-      monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
+      generiereBuchung(prov, ausgleichsbetrag, "JVerein",
+          "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), sollb);
     }
     else if (prov.getIstSumme() < 0.005d)
     {
       // Ausgleichsbuchung ohne splitten
-      generiereBuchung(prov, ausgleichsbetrag,
-          "Buchungsausgleich für Gutschrift", "JVerein", (Sollbuchung) prov);
-      monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
+      generiereBuchung(prov, ausgleichsbetrag, "JVerein",
+          "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), sollb);
     }
     else
     {
-      // TODO
+      // Fehlende Positionen berechnen
+      HashMap<String, Double> posMap = new HashMap<>();
+      HashMap<String, String> posZweckMap = new HashMap<>();
+      SplitbuchungsContainer.positionenAbgleichen(sollb, posMap, posZweckMap,
+          false);
+      Buchung bu = getBuchung(ausgleichsbetrag, "JVerein",
+          "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+
+      Iterator<Entry<String, Double>> iterator = posMap.entrySet().stream()
+          .sorted(Map.Entry.comparingByValue()).iterator();
+
+      if (posMap.size() == 1)
+      {
+        initBuchung(bu, iterator.next());
+        bu.setSollbuchung(sollb);
+        bu.store();
+      }
+      else if (posMap.size() > 1)
+      {
+        boolean first = true;
+        while (iterator.hasNext())
+        {
+          Entry<String, Double> entry = iterator.next();
+          if (first)
+          {
+            initBuchung(bu, entry);
+            bu.store();
+            bu.setSplitTyp(SplitbuchungTyp.HAUPT);
+            SplitbuchungsContainer.init(bu);
+            first = false;
+          }
+          Buchung buch = getBuchung(entry.getValue(), "JVerein",
+              "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+          initBuchung(buch, entry);
+          buch.setSollbuchung(sollb);
+          buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+          SplitbuchungsContainer.add(buch);
+        }
+        SplitbuchungsContainer.store();
+      }
+    }
+    monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
+  }
+
+  private void initBuchung(Buchung bu, Entry<String, Double> entry)
+      throws NumberFormatException, RemoteException
+  {
+    String buchungsart = entry.getKey().substring(0,
+        entry.getKey().indexOf("-"));
+    bu.setBuchungsartId(Long.parseLong(buchungsart));
+    String tmpKey = entry.getKey().substring(entry.getKey().indexOf("-") + 1);
+    String buchungsklasse = tmpKey.substring(0, tmpKey.indexOf("#"));
+    String steuer = tmpKey.substring(tmpKey.indexOf("#") + 1);
+    if (buchungsklasse.length() > 0)
+    {
+      bu.setBuchungsklasseId(Long.parseLong(buchungsklasse));
+    }
+    if (steuer.length() > 0)
+    {
+      bu.setSteuerId(Long.parseLong(steuer));
     }
   }
 
@@ -744,5 +808,18 @@ public class Gutschrift extends SEPASupport
     ls.setMandatSequence(MandatSequence.RCUR.getTxt());
     ls.set(la);
     return ls;
+  }
+
+  private String getIBAN(IGutschriftProvider prov) throws RemoteException
+  {
+    if (prov.getGutschriftZahler() == null)
+    {
+      // Dann muss es eine Lastschrift sein
+      return ((Lastschrift) prov).getIBAN();
+    }
+    else
+    {
+      return prov.getGutschriftZahler().getIban();
+    }
   }
 }

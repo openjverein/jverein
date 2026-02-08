@@ -188,14 +188,14 @@ public class SplitbuchungsContainer
         .multiply(BigDecimal.valueOf(-1));
     if (!getSumme(SplitbuchungTyp.HAUPT).equals(gegen))
     {
-      throw new RemoteException(
+      throw new ApplicationException(
           "Die Minusbuchung muss den gleichen Betrag mit umgekehrtem Vorzeichen wie die Hauptbuchung haben.");
     }
     BigDecimal differenz = getSumme(SplitbuchungTyp.HAUPT)
         .subtract(getSumme(SplitbuchungTyp.SPLIT));
     if (!differenz.equals(BigDecimal.valueOf(0).setScale(2)))
     {
-      throw new RemoteException(
+      throw new ApplicationException(
           "Differenz zwischen Hauptbuchung und Splitbuchungen: " + differenz);
     }
 
@@ -211,7 +211,8 @@ public class SplitbuchungsContainer
         ba_haupt = b.getBuchungsart();
         if (ba_haupt == null)
         {
-          throw new RemoteException("Buchungsart bei der Hauptbuchung fehlt");
+          throw new ApplicationException(
+              "Buchungsart bei der Hauptbuchung fehlt");
         }
         steuer_haupt = b.getSteuer();
       }
@@ -220,21 +221,22 @@ public class SplitbuchungsContainer
         ba_gegen = b.getBuchungsart();
         if (ba_gegen == null)
         {
-          throw new RemoteException("Buchungsart bei der Gegenbuchung fehlt");
+          throw new ApplicationException(
+              "Buchungsart bei der Gegenbuchung fehlt");
         }
         steuer_gegen = b.getSteuer();
       }
     }
     if (!ba_haupt.getNummer().equals(ba_gegen.getNummer()))
     {
-      throw new RemoteException(
+      throw new ApplicationException(
           "Buchungsarten bei Haupt- und Gegenbuchung müssen identisch sein");
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG)
         && ((steuer_haupt == null && steuer_gegen != null)
             || (steuer_haupt != null && !steuer_haupt.equals(steuer_gegen))))
     {
-      throw new RemoteException(
+      throw new ApplicationException(
           "Steuer bei Haupt- und Gegenbuchung müssen identisch sein");
     }
     try
@@ -450,7 +452,7 @@ public class SplitbuchungsContainer
 
     try
     {
-      positionenAbgleichen(sollb, splitMap, splitZweckMap);
+      positionenAbgleichen(sollb, splitMap, splitZweckMap, true);
 
       // Bei nur einem oder keinem Eintrag (kann bei Überzahlung passieren)
       // und gleichem Betrag ist kein Splitten nötig, wir können also die
@@ -678,10 +680,12 @@ public class SplitbuchungsContainer
    *          Map welche die Beträge der Sollbuchungspositionen enthält.
    * @param splitZweckMap
    *          Map welche die Zwecke der Sollbuchungspositionen enthält.
+   * @param ignore
+   *          Ignoriere Überzahlung und Buchungen ohne Match bei den Posten.
    */
   public static void positionenAbgleichen(Sollbuchung sollb,
-      HashMap<String, Double> splitMap, HashMap<String, String> splitZweckMap)
-      throws RemoteException, ApplicationException
+      HashMap<String, Double> splitMap, HashMap<String, String> splitZweckMap,
+      boolean ignore) throws RemoteException, ApplicationException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -744,22 +748,34 @@ public class SplitbuchungsContainer
             : "");
       }
       Double sollBetrag = splitMap.get(key);
-      if (sollBetrag == null)
+      if (ignore)
       {
-        // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
-        // nicht, das ignorieren wir.
-      }
-      else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
-          || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
-      {
-        // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
-        // Soll diser Position ist, wir entfernen sie. Es bleibt eine
-        // Überzahlung erhalten.
-        splitMap.remove(key);
+        if (sollBetrag == null)
+        {
+          // Diese Buchungsart/Steuer kombination existiert in der Sollbuchung
+          // nicht, das ignorieren wir.
+        }
+        else if ((sollBetrag > 0 && sollBetrag < istBuchung.getBetrag())
+            || (sollBetrag < 0 && sollBetrag > istBuchung.getBetrag()))
+        {
+          // Der Sollbuchung ist eine Istbuchung zugeordnet, die größer als das
+          // Soll dieser Position ist, wir entfernen sie. Es bleibt eine
+          // Überzahlung erhalten.
+          splitMap.remove(key);
+        }
+        else
+        {
+          // Restbetrag in die Map schreiben
+          splitMap.put(key, sollBetrag - istBuchung.getBetrag());
+        }
       }
       else
       {
-        // Restbetrag in die Map schreiben
+        if (sollBetrag == null)
+        {
+          sollBetrag = 0d;
+          splitZweckMap.put(key, istBuchung.getZweck());
+        }
         splitMap.put(key, sollBetrag - istBuchung.getBetrag());
       }
     }

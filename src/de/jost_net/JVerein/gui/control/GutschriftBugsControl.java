@@ -22,6 +22,7 @@ import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
@@ -79,6 +80,10 @@ public class GutschriftBugsControl extends AbstractControl
       if (object instanceof Sollbuchung)
       {
         GUI.startView(SollbuchungDetailView.class, object);
+      }
+      if (object instanceof Buchung)
+      {
+        GUI.startView(BuchungDetailView.class, object);
       }
     });
     bugsList.addColumn("Typ", "objektName");
@@ -296,25 +301,39 @@ public class GutschriftBugsControl extends AbstractControl
     }
     else
     {
-      boolean bug = false;
       for (SollbuchungPosition pos : posList)
       {
         if (pos.getBuchungsart() == null)
         {
-          bug = true;
+          meldung = "Es haben nicht alle Sollbuchungspositionen eine Buchungsart!";
+          if (bugs != null)
+          {
+            bugs.add(new Bug(Bug.WARNING, sollb, meldung));
+          }
+          else
+          {
+            return meldung;
+          }
           break;
         }
       }
-      if (bug)
+    }
+    List<Buchung> buList = sollb.getBuchungList();
+    if (buList != null && !buList.isEmpty())
+    {
+      for (Buchung bu : buList)
       {
-        meldung = "Es haben nicht alle Sollbuchungspositionen eine Buchungsart!";
-        if (bugs != null)
+        if (bu.getBuchungsart() == null)
         {
-          bugs.add(new Bug(Bug.WARNING, sollb, meldung));
-        }
-        else
-        {
-          return meldung;
+          meldung = "Die zugeordnete Buchung hat keine Buchungsart!";
+          if (bugs != null)
+          {
+            bugs.add(new Bug(Bug.WARNING, bu, meldung));
+          }
+          else
+          {
+            return meldung;
+          }
         }
       }
     }
