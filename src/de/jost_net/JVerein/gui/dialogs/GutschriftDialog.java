@@ -101,12 +101,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
-    ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
-    SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
-    below.addHeadline("Rechnung");
-    SimpleContainer bleft = new SimpleContainer(below.getComposite(), false, 2);
-    SimpleContainer bright = new SimpleContainer(below.getComposite(), false,
-        2);
 
     left.addHeadline("Überweisung");
     left.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
@@ -131,6 +125,14 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
     // Nur anzeigen wenn Rechnungen aktiviert sind
     if (EinstellungRechnungAnzeigen)
     {
+      ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
+      SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
+      below.addHeadline("Rechnung");
+      SimpleContainer bleft = new SimpleContainer(below.getComposite(), false,
+          2);
+      SimpleContainer bright = new SimpleContainer(below.getComposite(), false,
+          2);
+
       bleft.addLabelPair("Rechnung zur Gutschrift erzeugen",
           gcontrol.getRechnungErzeugenInput());
       if (EinstellungSpeicherungAnzeigen)

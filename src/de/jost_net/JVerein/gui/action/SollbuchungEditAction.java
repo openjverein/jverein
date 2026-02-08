@@ -66,7 +66,7 @@ public class SollbuchungEditAction implements Action
         else
         {
           throw new ApplicationException(
-              "Die Buchung ist keiner Sollbuchung zugeordenet");
+              "Die Buchung ist keiner Sollbuchung zugeordnet");
         }
       }
       catch (RemoteException e)
