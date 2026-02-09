@@ -10,6 +10,7 @@ import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.GrayableTextAreaInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -26,7 +27,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -57,7 +57,7 @@ public class GutschriftControl
 
   private SelectInput steuerInput;
 
-  private TextAreaInput kommentarInput;
+  private GrayableTextAreaInput kommentarInput;
 
   private CheckboxInput rechnungErzeugenInput;
 
@@ -381,16 +381,16 @@ public class GutschriftControl
     }
   }
 
-  public TextAreaInput getRechnungKommentarInput() throws RemoteException
+  public GrayableTextAreaInput getRechnungKommentarInput()
+      throws RemoteException
   {
     if (kommentarInput != null)
     {
       return kommentarInput;
     }
 
-    kommentarInput = new TextAreaInput(settings.getString("kommentar", ""),
-        1024);
-    kommentarInput.setName("Kommentar");
+    kommentarInput = new GrayableTextAreaInput(
+        settings.getString("kommentar", ""), 1024);
     kommentarInput.setHeight(50);
     kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
     return kommentarInput;

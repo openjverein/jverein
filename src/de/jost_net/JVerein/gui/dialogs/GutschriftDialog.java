@@ -141,8 +141,8 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
             gcontrol.getRechnungsDokumentSpeichernInput());
       }
       bleft.addLabelPair("Erstattungsformular", gcontrol.getFormularInput());
-      bright.addLabelPair("Rechnungstext", gcontrol.getRechnungsTextInput());
       bleft.addLabelPair("Rechnungsdatum", gcontrol.getRechnungsDatumInput());
+      bright.addLabelPair("Rechnungstext", gcontrol.getRechnungsTextInput());
       bright.addLabelPair("Kommentar", gcontrol.getRechnungKommentarInput());
     }
 
