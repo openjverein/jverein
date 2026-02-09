@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -82,6 +83,10 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
     LabelGroup lgBank = new LabelGroup(parent, "Bankverbindung");
     lgBank.addLabelPair("IBAN", control.getIban());
     lgBank.addLabelPair("BIC", control.getBic());
+
+    lgBank.addInput(control.getMandatDatum());
+    lgBank.addInput(control.getMandatID());
+    lgBank.addInput(control.getMandatVersion());
     LabelGroup lgZahlungsweg = new LabelGroup(parent, "Zahlungsweg");
     lgZahlungsweg.addLabelPair("Zahlungsweg", control.getZahlungsweg());
     // lgBank.addLabelPair("Kontoinhaber", control.getKontoinhaber());
@@ -106,6 +111,9 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           m.setLetzteAenderung();
           m.setIban(control.getIban().getValue().toString().replace(" ", ""));
           m.setBic(control.getBic().getValue().toString());
+          m.setMandatDatum((Date) control.getMandatDatum().getValue());
+          m.setMandatID((String) control.getMandatID().getValue());
+          m.setMandatVersion((Integer) control.getMandatVersion().getValue());
           m.setZahlungsweg(
               ((Zahlungsweg) control.getZahlungsweg().getValue()).getKey());
           m.store();

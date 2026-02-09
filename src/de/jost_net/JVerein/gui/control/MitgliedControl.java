@@ -628,7 +628,7 @@ public class MitgliedControl extends FilterControl implements Savable
       @Override
       public void handleEvent(Event event)
       {
-        if (event != null && event.type == SWT.Selection && mandatid != null)
+        if (event != null && event.type == SWT.Selection)
         {
           try
           {
