@@ -102,10 +102,9 @@ public class FamilienmitgliedEntfernenDialog extends AbstractDialog<String>
           Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppe(false)
               .getValue();
           m.setBeitragsgruppe(bg);
-          // m.setKontoinhaber((String) control.getKontoinhaber().getValue());
           m.setVollZahlerID(null);
           m.setLetzteAenderung();
-          m.setIban(control.getIban().getValue().toString());
+          m.setIban(control.getIban().getValue().toString().replace(" ", ""));
           m.setBic(control.getBic().getValue().toString());
           m.setZahlungsweg(
               ((Zahlungsweg) control.getZahlungsweg().getValue()).getKey());
