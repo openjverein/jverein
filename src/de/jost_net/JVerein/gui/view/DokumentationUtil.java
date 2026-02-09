@@ -86,7 +86,7 @@ public class DokumentationUtil
   public static final String ZUSATZBETRAEGEIMPORT = MITGLIEDER
       + "zusatzbetrage-importieren";
 
-  public static final String EINMAL_ABRECHNUNG = MITGLIEDER + "abrechnung";
+  public static final String FORDERUNG = MITGLIEDER + "forderung";
 
   // Buchführung
   public static final String ANFANGSBESTAENDE = BUCHF + "anfangsbestand";

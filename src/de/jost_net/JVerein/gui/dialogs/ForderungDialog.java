@@ -175,12 +175,15 @@ public class ForderungDialog extends AbstractDialog<Boolean>
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINMAL_ABRECHNUNG, false, "question-circle.png");
+        DokumentationUtil.FORDERUNG, false, "question-circle.png");
 
     buttons.addButton("Zahlungsgrund Variablen anzeigen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
-    buttons.addButton("Rechnungstext Variablen anzeigen",
-        new RechnungVariableDialogAction(part), null, false, "bookmark.png");
+    if (EinstellungRechnungAnzeigen)
+    {
+      buttons.addButton("Rechnungstext Variablen anzeigen",
+          new RechnungVariableDialogAction(part), null, false, "bookmark.png");
+    }
 
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
@@ -210,7 +213,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
         GUI.getStatusBar().setErrorText(e.getMessage());
         Logger.error("Fehler", e);
       }
-    }, null, false, "ok.png");
+    }, null, true, "ok.png");
 
     buttons.addButton("Abbrechen", context -> close(), null, false,
         "process-stop.png");
