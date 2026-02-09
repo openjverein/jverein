@@ -145,12 +145,11 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     left.addLabelPair("Als Vorlage speichern", getVorlageSpeichern());
 
     right.addHeadline("Sollbuchungen");
-    right.addLabelPair("Sollbuchung(en) zusammenfassen",
+    right.addLabelPair("Sollbuchungen zusammenfassen",
         control.getSollbuchungenZusammenfassen());
 
     right.addHeadline("Lastschriften");
-    right.addLabelPair("Kompakte Abbuchung(en)",
-        control.getKompakteAbbuchung());
+    right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     right.addLabelPair("SEPA-Check temporär deaktivieren",
         control.getSEPACheck());
     right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
@@ -159,7 +158,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     if (EinstellungRechnungAnzeigen)
     {
       right.addHeadline("Rechnungen");
-      right.addLabelPair("Rechnung(en) erstellen", control.getRechnung());
+      right.addLabelPair("Rechnung erstellen", control.getRechnung());
       if (EinstellungSpeicherungAnzeigen)
       {
         right.addLabelPair("Rechnung als Buchungsdokument speichern",
