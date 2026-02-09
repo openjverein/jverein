@@ -65,12 +65,11 @@ public class AbrechnungSEPAView extends AbstractView
     {
       left.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     }
-    left.addLabelPair("Sollbuchung(en) zusammenfassen",
+    left.addLabelPair("Sollbuchungen zusammenfassen",
         control.getSollbuchungenZusammenfassen());
 
     rigth.addHeadline("Lastschriften");
-    rigth.addLabelPair("Kompakte Abbuchung(en)",
-        control.getKompakteAbbuchung());
+    rigth.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     rigth.addLabelPair("SEPA-Check temporär deaktivieren",
         control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
@@ -79,7 +78,7 @@ public class AbrechnungSEPAView extends AbstractView
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       rigth.addHeadline("Rechnungen");
-      rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+      rigth.addLabelPair("Rechnung erstellen²", control.getRechnung());
       if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
           && JVereinPlugin.isArchiveServiceActive())
       {
