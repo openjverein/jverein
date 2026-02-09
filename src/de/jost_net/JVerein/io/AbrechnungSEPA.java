@@ -753,7 +753,7 @@ public class AbrechnungSEPA
         }
         catch (Exception e)
         {
-          Logger.error("Fehler beim abrechnen des Zusatzbetrags von: "
+          Logger.error("Fehler beim Abrechnen des Zusatzbetrags von: "
               + Adressaufbereitung.getNameVorname(m), e);
           throw new ApplicationException(
               Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
@@ -983,7 +983,7 @@ public class AbrechnungSEPA
     }
     catch (RemoteException e)
     {
-      Logger.error("Fehler beim erstellen der Hibiscus Lastschrift", e);
+      Logger.error("Fehler beim Erstellen der Hibiscus Lastschrift", e);
       throw new ApplicationException(e);
     }
     catch (SEPAException e)
