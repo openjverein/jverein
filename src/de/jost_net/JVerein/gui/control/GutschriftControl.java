@@ -513,6 +513,7 @@ public class GutschriftControl
       params.setRechnungsDatum((Date) rechnungsDatumInput.getValue());
       params.setRechnungsKommentar((String) kommentarInput.getValue());
     }
+    saveSettings();
   }
 
   public void saveSettings()
@@ -533,74 +534,72 @@ public class GutschriftControl
 
       // Fixen Betrag erstatten
       settings.setAttribute("fixerBetragAbrechnen",
-          params.isFixerBetragAbrechnen());
-      if (params.isFixerBetragAbrechnen())
+          (boolean) fixerBetragAbrechnenInput.getValue());
+
+      if (params.getFixerBetrag() != null)
       {
-        if (params.getFixerBetrag() != null)
+        settings.setAttribute("fixerBetrag",
+            (Double) fixerBetragInput.getValue());
+      }
+      else
+      {
+        settings.setAttribute("fixerBetrag", "");
+      }
+      if (params.getBuchungsart() != null)
+      {
+        settings.setAttribute("buchungsart",
+            ((Buchungsart) buchungsartInput.getValue()).getID());
+      }
+      else
+      {
+        settings.setAttribute("buchungsart", "");
+      }
+      if (EinstellungBuchungsklasseInBuchung)
+      {
+        if (params.getBuchungsklasse() != null)
         {
-          settings.setAttribute("fixerBetrag", params.getFixerBetrag());
+          settings.setAttribute("buchungsklasse",
+              ((Buchungsklasse) buchungsklasseInput.getValue()).getID());
         }
         else
         {
-          settings.setAttribute("fixerBetrag", "");
+          settings.setAttribute("buchungsklasse", "");
         }
-        if (params.getBuchungsart() != null)
+      }
+      if (EinstellungSteuerInBuchung)
+      {
+        if (params.getSteuer() != null)
         {
-          settings.setAttribute("buchungsart", params.getBuchungsart().getID());
+          settings.setAttribute("steuer",
+              ((Steuer) steuerInput.getValue()).getID());
         }
         else
         {
-          settings.setAttribute("buchungsart", "");
-        }
-        if (EinstellungBuchungsklasseInBuchung)
-        {
-          if (params.getBuchungsklasse() != null)
-          {
-            settings.setAttribute("buchungsklasse",
-                params.getBuchungsklasse().getID());
-          }
-          else
-          {
-            settings.setAttribute("buchungsklasse", "");
-          }
-        }
-        if (EinstellungSteuerInBuchung)
-        {
-          if (params.getSteuer() != null)
-          {
-            settings.setAttribute("steuer", params.getSteuer().getID());
-          }
-          else
-          {
-            settings.setAttribute("steuer", "");
-          }
+          settings.setAttribute("steuer", "");
         }
       }
 
       if (EinstellungRechnungAnzeigen)
       {
         settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
-        if (params.isRechnungErzeugen())
+        if (EinstellungSpeicherungAnzeigen)
         {
-          if (EinstellungSpeicherungAnzeigen)
-          {
-            settings.setAttribute("rechnungsDokumentSpeichern",
-                params.isRechnungsDokumentSpeichern());
-          }
-          tmp = (Date) params.getRechnungsDatum();
-          if (tmp != null)
-          {
-            settings.setAttribute("rechnungsdatum",
-                new JVDateFormatTTMMJJJJ().format(tmp));
-          }
-          else
-          {
-            settings.setAttribute("rechnungsdatum", "");
-          }
-          settings.setAttribute("formular", params.getFormular().getID());
-          settings.setAttribute("rechnungstext", params.getRechnungsText());
-          settings.setAttribute("kommentar", params.getRechnungsKommentar());
+          settings.setAttribute("rechnungsDokumentSpeichern",
+              params.isRechnungsDokumentSpeichern());
         }
+        tmp = (Date) params.getRechnungsDatum();
+        if (tmp != null)
+        {
+          settings.setAttribute("rechnungsdatum",
+              new JVDateFormatTTMMJJJJ().format(tmp));
+        }
+        else
+        {
+          settings.setAttribute("rechnungsdatum", "");
+        }
+        settings.setAttribute("formular", params.getFormular().getID());
+        settings.setAttribute("rechnungstext", params.getRechnungsText());
+        settings.setAttribute("kommentar", params.getRechnungsKommentar());
       }
     }
     catch (RemoteException ex)

@@ -173,7 +173,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
         return;
       }
       gcontrol.storeValues();
-      gcontrol.saveSettings();
       close();
       GUI.startView(GutschriftBugsView.class, gcontrol);
     }, null, false, "bug.png");
@@ -186,7 +185,6 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           return;
         }
         gcontrol.storeValues();
-        gcontrol.saveSettings();
         new Gutschrift(gcontrol);
         close();
       }
