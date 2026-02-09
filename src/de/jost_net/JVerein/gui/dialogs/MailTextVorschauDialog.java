@@ -143,7 +143,8 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       mitglied = new SelectInput(empfaenger, null);
       listener = new MitgliedListener();
       mitglied.addListener(listener);
-      if (empfaenger == null || empfaenger.isEmpty() || empfaenger.size() == 1)
+      // Bei keinem oder nur einem Eintrag kann man nichts auswählen
+      if (empfaenger == null || empfaenger.size() < 2)
       {
         mitglied.disable();
       }
@@ -190,7 +191,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
         // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
         // Falls es Anhänge gibt, dann auch deren Maps erzeugen, damit in der
-        // Mailtext Vorschau die Variablen Werte aus den Attachements verwendet
+        // Mail-Text-Vorschau die Variablen-Werte aus den Attachements verwendet
         // werden und nicht deren Dummy Maps
         if (objectslist != null)
         {
