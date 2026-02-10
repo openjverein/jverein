@@ -635,6 +635,8 @@ public class AbrechnungSEPA
     }
     catch (Exception e)
     {
+      Logger.error("Fehler beim Abrechnungslauf bei: "
+          + Adressaufbereitung.getNameVorname(m), e);
       throw new ApplicationException(
           Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
     }
@@ -757,6 +759,8 @@ public class AbrechnungSEPA
         }
         catch (Exception e)
         {
+          Logger.error("Fehler beim Abrechnen des Zusatzbetrags von: "
+              + Adressaufbereitung.getNameVorname(m), e);
           throw new ApplicationException(
               Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
         }
@@ -859,6 +863,8 @@ public class AbrechnungSEPA
       }
       catch (Exception e)
       {
+        Logger.error(
+            "Fehler beim Abrechnen des Kursteilnehmers " + kt.getName(), e);
         throw new ApplicationException(kt.getName() + ": " + e.getMessage());
       }
     }
@@ -983,6 +989,7 @@ public class AbrechnungSEPA
     }
     catch (RemoteException e)
     {
+      Logger.error("Fehler beim Erstellen der Hibiscus Lastschrift", e);
       throw new ApplicationException(e);
     }
     catch (SEPAException e)
