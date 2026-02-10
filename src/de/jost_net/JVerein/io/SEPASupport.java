@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -90,7 +92,7 @@ public class SEPASupport
             .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
         file.delete();
       }
-      catch (IOException e)
+      catch (IOException | DocumentException e)
       {
         Logger.error("Fehler beim Speichern der Rechnung als Buchungsdokument",
             e);

@@ -51,16 +51,17 @@ public class AbrechnungslaufMenu extends ContextMenu
     addItem(new ContextMenuItem("Bearbeiten",
         new EditAction(AbrechnungslaufDetailView.class, part),
         "text-x-generic.png"));
+    addItem(new AbgeschlossenDisabledItem("Löschen",
+        new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new ContextMenuItem("Sollbuchungen",
         new EditAction(AbrechnungslaufSollbuchungListeView.class),
         "calculator.png"));
+    addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
         new StartViewAction(PreNotificationMailView.class, true),
         "document-print.png"));
-    addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
-        new GutschriftAction(), "ueberweisung.png"));
-    addItem(new AbgeschlossenDisabledItem("Löschen",
-        new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     try
     {
       if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
