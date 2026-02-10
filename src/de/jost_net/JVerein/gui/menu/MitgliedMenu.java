@@ -224,7 +224,7 @@ public class MitgliedMenu extends ContextMenu
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
-          new SpendenbescheinigungNeuAction(), "document-print.png"));
+          new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
     addItem(new CheckedContextMenuItem("Kontoauszug",
         new StartViewAction(KontoauszugMailView.class, true),
