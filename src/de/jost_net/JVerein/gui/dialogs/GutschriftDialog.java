@@ -21,6 +21,8 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -34,7 +36,6 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.gui.view.GutschriftBugsView;
 import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -146,6 +147,15 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
       bright.addLabelPair("Kommentar", gcontrol.getRechnungKommentarInput());
     }
 
+    LabelGroup below2 = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
+        true);
+    below2.getComposite().setLayout(new GridLayout(1, false));
+    // below2.addHeadline("Fehler/Warnungen/Hinweise");
+    below2.addPart(gcontrol.getBugsList());
+    GridData gridData = new GridData(GridData.FILL_BOTH);
+    gridData.heightHint = 150;
+    below2.getComposite().setLayoutData(gridData);
+
     // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -167,14 +177,23 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
     }
 
-    buttons.addButton("Fehler/Warnungen/Hinweise", context -> {
+    buttons.addButton("Update Fehlerliste", context -> {
       if (!checkInput())
       {
         return;
       }
+      status.setValue("");
       gcontrol.storeValues();
-      close();
-      GUI.startView(GutschriftBugsView.class, gcontrol);
+      try
+      {
+        gcontrol.refreshBugsList();
+      }
+      catch (RemoteException e)
+      {
+        status.setValue("Interner Fehler beim Update der Fehlerliste");
+        status.setColor(Color.ERROR);
+        Logger.error("Fehler", e);
+      }
     }, null, false, "bug.png");
 
     buttons.addButton("Gutschriften erstellen", context -> {
@@ -320,5 +339,11 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
   protected GutschriftParam getData() throws Exception
   {
     return params;
+  }
+
+  @Override
+  protected boolean isModeless()
+  {
+    return true;
   }
 }
