@@ -24,9 +24,10 @@ import de.jost_net.JVerein.gui.action.AbrechnungslaufAbschliessenAction;
 import de.jost_net.JVerein.gui.action.AbrechnungslaufDeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GutschriftAction;
-import de.jost_net.JVerein.gui.action.PreNotificationAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufSollbuchungListeView;
+import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.willuhn.jameica.gui.Action;
@@ -54,7 +55,8 @@ public class AbrechnungslaufMenu extends ContextMenu
         new EditAction(AbrechnungslaufSollbuchungListeView.class),
         "calculator.png"));
     addItem(new AbgeschlossenDisabledItem("Pre-Notification",
-        new PreNotificationAction(), "document-new.png"));
+        new StartViewAction(PreNotificationMailView.class, true),
+        "document-print.png"));
     addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
     addItem(new AbgeschlossenDisabledItem("Löschen",

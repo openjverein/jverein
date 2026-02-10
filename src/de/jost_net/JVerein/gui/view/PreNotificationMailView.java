@@ -60,18 +60,27 @@ public class PreNotificationMailView extends AbstractView
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification.", null, null);
 
-    if (this.getCurrentObject() == null)
+    if (getCurrentObject() == null
+        || getCurrentObject() instanceof Abrechnungslauf)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control.getAbrechnungslaufAusw(10));
+      group.addInput(control.getMailauswahl());
+      if (getCurrentObject() == null)
+      {
+        group.addInput(control.getAbrechnungslaufAusw(10));
+      }
+      else
+      {
+        group.addInput(control
+            .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
+      }
       group.addInput(control.getSuchVersand());
     }
-    else if (this.getCurrentObject() instanceof Abrechnungslauf)
+    else
     {
-      LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control
-          .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
-      group.addInput(control.getSuchVersand());
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
     }
 
     TabFolder folder = control.getFolder(getParent());
@@ -82,13 +91,11 @@ public class PreNotificationMailView extends AbstractView
         tabMailPDF.getComposite(), true);
 
     grtabMailPDF.addHeadline("Parameter");
-    grtabMailPDF.addInput(control.getOutput());
-    grtabMailPDF.addInput(control.getPdfModus());
     grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));
+    grtabMailPDF.addInput(control.getAusgabeart());
 
     grtabMailPDF.addHeadline("Mail");
-
     grtabMailPDF.addInput(control.getBetreff());
     grtabMailPDF.addInput(control.getTxt());
 

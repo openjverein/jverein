@@ -19,12 +19,13 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.GutschriftAction;
-import de.jost_net.JVerein.gui.action.MahnungSendAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.RechnungSendAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -53,8 +54,10 @@ public class RechnungMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
-        new RechnungSendAction(), "document-print.png"));
+        new StartViewAction(RechnungMailView.class, true),
+        "document-print.png"));
     addItem(new CheckedContextMenuItem("Mahnung Druck und Mail",
-        new MahnungSendAction(), "document-print.png"));
+        new StartViewAction(MahnungMailView.class, true),
+        "document-print.png"));
   }
 }

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
@@ -55,11 +56,14 @@ import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
@@ -74,6 +78,7 @@ import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -91,6 +96,7 @@ import de.willuhn.jameica.hbci.rmi.SepaLastSequenceType;
 import de.willuhn.jameica.hbci.rmi.SepaLastType;
 import de.willuhn.jameica.hbci.rmi.SepaLastschrift;
 import de.willuhn.jameica.hbci.rmi.SepaSammelLastschrift;
+import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -1267,7 +1273,64 @@ public class AbrechnungSEPA extends SEPASupport
 
       if (re != null && param.rechnungsdokumentSpeichern)
       {
-        storeBuchungsDokument(re, buchung, datum, map);
+        FileInputStream fis = null;
+        try
+        {
+          // PDF erstellen
+          String dateiname = VorlageUtil.getName(
+              VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, re.getMitglied());
+          File file = File.createTempFile(dateiname, ".pdf");
+          FormularAufbereitung aufbereitung = new FormularAufbereitung(file,
+              false, true);
+          aufbereitung.writeForm(re.getFormular(), map);
+          aufbereitung.closeFormular();
+
+          fis = new FileInputStream(file);
+          if (fis.available() <= 0)
+          {
+            throw new ApplicationException("Datei ist leer");
+          }
+          AbstractDokument doc = Einstellungen.getDBService()
+              .createObject(BuchungDokument.class, null);
+          doc.setReferenz(Long.valueOf(buchung.getID()));
+
+          // Dokument speichern
+          String locverz = "buchungen" + doc.getReferenz();
+          QueryMessage qm = new QueryMessage(locverz, fis);
+          Application.getMessagingFactory()
+              .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
+
+          // Satz in die DB schreiben
+          doc.setBemerkung(
+              dateiname.length() > 50 ? dateiname.substring(0, 50) : dateiname);
+          String uuid = qm.getData().toString();
+          doc.setUUID(uuid);
+          doc.setDatum(datum);
+          doc.store();
+
+          // Zusätzliche Eigenschaft speichern
+          Map<String, String> filenameMap = new HashMap<>();
+          filenameMap.put("filename", file.getName());
+          qm = new QueryMessage(uuid, filenameMap);
+          Application.getMessagingFactory()
+              .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
+          file.delete();
+        }
+        catch (IOException | DocumentException e)
+        {
+          Logger.error(
+              "Fehler beim Speichern der Rechnung als Buchungsdokument", e);
+        }
+        finally
+        {
+          try
+          {
+            fis.close();
+          }
+          catch (IOException ignore)
+          {
+          }
+        }
       }
 
       if (sollb != null)
