@@ -78,7 +78,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
     this.map = map;
     this.mitMitglied = mitMitglied;
     setTitle("Mail-Text-Vorschau");
-    setSize(settings.getInt("width", 550), settings.getInt("height", 450));
+    setSize(settings.getInt("width", 600), settings.getInt("height", 450));
 
     try
     {

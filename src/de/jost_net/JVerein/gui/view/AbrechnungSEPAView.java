@@ -16,11 +16,20 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+import java.util.Map;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -29,17 +38,17 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.util.ApplicationException;
 
 public class AbrechnungSEPAView extends AbstractView
 {
+
+  final AbrechnungSEPAControl control = new AbrechnungSEPAControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Abrechnung");
-
-    final AbrechnungSEPAControl control = new AbrechnungSEPAControl(this);
-
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
@@ -65,12 +74,11 @@ public class AbrechnungSEPAView extends AbstractView
     {
       left.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
     }
-    left.addLabelPair("Sollbuchung(en) zusammenfassen",
+    left.addLabelPair("Sollbuchungen zusammenfassen",
         control.getSollbuchungenZusammenfassen());
 
     rigth.addHeadline("Lastschriften");
-    rigth.addLabelPair("Kompakte Abbuchung(en)",
-        control.getKompakteAbbuchung());
+    rigth.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     rigth.addLabelPair("SEPA-Check temporär deaktivieren",
         control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
@@ -79,7 +87,7 @@ public class AbrechnungSEPAView extends AbstractView
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       rigth.addHeadline("Rechnungen");
-      rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
+      rigth.addLabelPair("Rechnung erstellen²", control.getRechnung());
       if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
           && JVereinPlugin.isArchiveServiceActive())
       {
@@ -110,7 +118,42 @@ public class AbrechnungSEPAView extends AbstractView
         GUI.startView(SEPABugsView.class.getName(), null);
       }
     }, null, false, "bug.png");
+
+    buttons.addButton("Zahlungsgrund Variablen anzeigen",
+        new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      buttons.addButton("Rechnungstext Variablen anzeigen",
+          new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    }
     buttons.addButton(control.getStartButton());
     buttons.paint(this.getParent());
+  }
+
+  private class RechnungVariableDialogAction implements Action
+  {
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        new InsertVariableDialogAction(getRmap()).handleAction(null);
+      }
+      catch (RemoteException re)
+      {
+        //
+      }
+    }
+  }
+
+  private Map<String, Object> getRmap()
+      throws RemoteException, ApplicationException
+  {
+    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+    rmap = new AbrechnungsParameterMap()
+        .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
+    rmap = MitgliedMap.getDummyMap(rmap);
+    return RechnungMap.getDummyMap(rmap);
   }
 }

@@ -103,6 +103,15 @@ public class AbrechnungsParameterMap
     {
       map.put(AbrechnungsParameterVar.VONDATUM.getName(), "");
     }
+    if (param.voneingabedatum != null)
+    {
+      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(),
+          new JVDateFormatTTMMJJJJ().format(param.voneingabedatum));
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(), "");
+    }
     if (param.bisdatum != null)
     {
       map.put(AbrechnungsParameterVar.BISDATUM.getName(),

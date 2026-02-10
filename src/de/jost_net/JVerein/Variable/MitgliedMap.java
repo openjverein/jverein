@@ -482,19 +482,19 @@ public class MitgliedMap extends AbstractMap
       switch (fd.getDatentyp())
       {
         case Datentyp.DATUM:
-          map.put(Einstellungen.ZUSATZFELD_PRE + name, "31.12.2024");
+          map.put(name, "31.12.2024");
           break;
         case Datentyp.JANEIN:
-          map.put(Einstellungen.ZUSATZFELD_PRE + name, "X");
+          map.put(name, "X");
           break;
         case Datentyp.GANZZAHL:
-          map.put(Einstellungen.ZUSATZFELD_PRE + name, "22");
+          map.put(name, "22");
           break;
         case Datentyp.WAEHRUNG:
-          map.put(Einstellungen.ZUSATZFELD_PRE + name, "3.00");
+          map.put(name, "3.00");
           break;
         case Datentyp.ZEICHENFOLGE:
-          map.put(Einstellungen.ZUSATZFELD_PRE + name, "abcd");
+          map.put(name, "abcd");
           break;
       }
     }
