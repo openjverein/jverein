@@ -16,7 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Map;
+
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
@@ -44,12 +49,17 @@ public class ZusatzbetragDetailView extends AbstractDetailView
     LabelGroup group2 = new LabelGroup(getParent(), "Vorlagen");
     group2.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = MitgliedMap.getDummyMap(map);
+
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton("Buchungstext Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
     buttons.addButton(new SaveButton(control));
