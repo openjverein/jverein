@@ -17,144 +17,41 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
+import java.util.Map;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.control.DruckMailControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
-import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.datasource.rmi.DBObject;
 
 public class Kontoauszug extends AbstractAusgabe
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private Reporter rpt;
 
   private boolean first = true;
 
-  private Kontoauszug() throws IOException, DocumentException
+  private SollbuchungControl control;
+
+  public Kontoauszug(SollbuchungControl control) throws Exception
   {
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
+    this.control = control;
   }
 
-  public Kontoauszug(List<Mitglied> mitglieder, SollbuchungControl control,
-      String pdfMode) throws Exception
-  {
-    this();
-    boolean einzelnePdfs = pdfMode.equals(DruckMailControl.EINZELN)
-        && mitglieder.size() > 1;
-
-    Ausgabeart art = (Ausgabeart) control.getAusgabeart().getValue();
-    String extension = getExtension(art);
-    String dateiname = null;
-    if (mitglieder.size() == 1)
-    {
-      dateiname = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME,
-          null, mitglieder.get(0)) + "." + extension;
-    }
-    else
-    {
-      dateiname = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME) + "."
-          + extension;
-    }
-    file = getDateiAuswahl(extension, dateiname, einzelnePdfs, control,
-        settings);
-    if (file == null)
-    {
-      return;
-    }
-
-    switch ((Ausgabeart) control.getAusgabeart().getValue())
-    {
-      case DRUCK:
-        if (!einzelnePdfs)
-        {
-          rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40, false);
-          for (Mitglied mg : mitglieder)
-          {
-            generiereMitglied(mg, control);
-          }
-          rpt.close();
-          zeigeDokument();
-        }
-        else
-        {
-          for (Mitglied mg : mitglieder)
-          {
-            file = new File(
-                file.getParent() + File.separator
-                    + VorlageUtil.getName(
-                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null, mg)
-                    + ".pdf");
-            rpt = new Reporter(new FileOutputStream(file), 40, 20, 20, 40,
-                false);
-            generiereMitglied(mg, control);
-            rpt.close();
-          }
-          if (mitglieder.size() == 1)
-          {
-            zeigeDokument();
-          }
-          else
-          {
-            GUI.getStatusBar()
-                .setSuccessText("Die Kontoauszüge wurden erstellt und unter: "
-                    + file.getParent() + " gespeichert.");
-          }
-        }
-        break;
-      case MAIL:
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(file));
-        for (Mitglied mg : mitglieder)
-        {
-          if (mg.getEmail() == null || mg.getEmail().isEmpty())
-          {
-            continue;
-          }
-          File f = File.createTempFile(getDateiname(mg), ".pdf");
-          rpt = new Reporter(new FileOutputStream(f), 40, 20, 20, 40, false);
-          generiereMitglied(mg, control);
-          rpt.close();
-          zos.putNextEntry(new ZipEntry(getDateiname(mg) + ".pdf"));
-          FileInputStream in = new FileInputStream(f);
-          // buffer size
-          byte[] b = new byte[1024];
-          int count;
-          while ((count = in.read(b)) > 0)
-          {
-            zos.write(b, 0, count);
-          }
-          in.close();
-        }
-        zos.close();
-        new ZipMailer(file, (String) control.getBetreff().getValue(),
-            (String) control.getTxt().getValue());
-        break;
-    }
-  }
-
-  private void generiereMitglied(Mitglied m, SollbuchungControl control)
+  private void generiereMitglied(Mitglied m)
       throws RemoteException, DocumentException
   {
     MitgliedskontoNode node = new MitgliedskontoNode(m,
@@ -236,18 +133,62 @@ public class Kontoauszug extends AbstractAusgabe
     rpt.addColumn((Double) node.getAttribute("differenz"));
   }
 
-  private void zeigeDokument()
+  @Override
+  protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
+      File file, DBObject object) throws IOException, DocumentException
   {
-    GUI.getStatusBar().setSuccessText("Kontoauszug erstellt");
-    FileViewer.show(file);
+    if (rpt == null)
+    {
+      rpt = new Reporter(new FileOutputStream(file, true), 40, 20, 20, 40,
+          false);
+    }
+    generiereMitglied((Mitglied) object);
   }
 
-  String getDateiname(Mitglied m) throws RemoteException
+  @Override
+  protected void closeDocument(FormularAufbereitung formularaufbereitung,
+      DBObject object) throws IOException, DocumentException
   {
-    // MITGLIED-ID#ART#ART-ID#MAILADRESSE#DATEINAME.pdf
-    String filename = m.getID() + "#kontoauszug# #";
-    String email = StringTool.toNotNullString(m.getEmail());
-    filename += email + "#Kontoauszug";
+    rpt.close();
+    // auf null setzen, damit beim nächsten createPDF ein neues Dokument erzeugt
+    // wird
+    rpt = null;
+  }
+
+  @Override
+  protected String getZipDateiname(DBObject object) throws RemoteException
+  {
+    String filename = object.getID() + "#kontoauszug# #";
+    filename += StringTool.toNotNullString(((Mitglied) object).getEmail());
+    filename += "#Kontoauszug";
     return filename;
+  }
+
+  @Override
+  protected Map<String, Object> getMap(DBObject object)
+  {
+    // Brauchen wir nicht, da keinFormular aufbereitet wird
+    return null;
+  }
+
+  @Override
+  protected String getDateiname(DBObject object)
+  {
+    if (object != null)
+    {
+      return VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME,
+          null, (Mitglied) object);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_DATEINAME);
+    }
+  }
+
+  @Override
+  protected Formular getFormular(DBObject object)
+  {
+    // Es gibt kein Formular, nur den Report
+    return null;
   }
 }
