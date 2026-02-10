@@ -19,7 +19,8 @@ package de.jost_net.JVerein.keys;
 public enum Ausgabeart
 {
 
-  DRUCK(1, "Druck"),
+  PDF(1, "Eine PDF-Datei"),
+  PDF_EINZELN(3, "Einzelne PDF-Dateien"),
   MAIL(2, "Mail");
 
   private final String text;

@@ -1325,7 +1325,7 @@ public class AbrechnungSEPA
               .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
           file.delete();
         }
-        catch (IOException e)
+        catch (IOException | DocumentException e)
         {
           Logger.error(
               "Fehler beim Speichern der Rechnung als Buchungsdokument", e);

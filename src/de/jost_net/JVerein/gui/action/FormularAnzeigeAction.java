@@ -92,6 +92,7 @@ public class FormularAnzeigeAction implements Action
       }
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
       fab.writeForm(formular, map);
+      fab.closeFormular();
       fab.showFormular();
     }
     catch (RemoteException e)

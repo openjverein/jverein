@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.TreeSet;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.mail.MessagingException;
@@ -218,7 +217,10 @@ public class ZipMailer
                   break;
               }
               // Mitglied Map hinzufügen
-              map = new MitgliedMap().getMap(mitgliedMap, map);
+              if (mitgliedMap.getID() != null)
+              {
+                map = new MitgliedMap().getMap(mitgliedMap, map);
+              }
 
               VarTools.add(context, map);
 
@@ -234,51 +236,65 @@ public class ZipMailer
                 bos.write(b, 0, count);
               }
               in.close();
-              ma.setAnhang(bos.toByteArray());
 
-              String finaldateiname = "";
-              switch (art.toLowerCase().trim())
-              {
-                case "rechnung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                      + ".pdf";
-                  break;
-                case "mahnung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                      + ".pdf";
-                  break;
-                case "spendenbescheinigung":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "lastschrift":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "freiesformular":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-                      dateiname.substring(0, dateiname.lastIndexOf('.')),
-                      mitgliedMap) + ".pdf";
-                  break;
-                case "kontoauszug":
-                  finaldateiname = VorlageUtil.getName(
-                      VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
-                      mitgliedMap) + ".pdf";
-                  break;
-                default:
-                  StringWriter wdateiname = new StringWriter();
-                  Velocity.evaluate(context, wdateiname, "LOG", dateiname);
-                  finaldateiname = wdateiname.toString();
-                  break;
-              }
-              ma.setDateiname(finaldateiname);
+              // Wenn es kein Formular gibt ist die Datei leer
               TreeSet<MailAnhang> anhang = new TreeSet<>();
-              anhang.add(ma);
+              if (bos.size() > 0)
+              {
+                ma.setAnhang(bos.toByteArray());
+
+                String finaldateiname = "";
+                switch (art.toLowerCase().trim())
+                {
+                  case "rechnung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                        + ".pdf";
+                    break;
+                  case "mahnung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
+                        + ".pdf";
+                    break;
+                  case "spendenbescheinigung":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "freiesformular":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
+                        dateiname.substring(0, dateiname.lastIndexOf('.')),
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "kontoauszug":
+                    finaldateiname = VorlageUtil.getName(
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
+                        mitgliedMap) + ".pdf";
+                    break;
+                  case "lastschrift":
+                    if (mitgliedMap.getID() != null)
+                    {
+                      finaldateiname = VorlageUtil.getName(
+                          VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
+                          mitgliedMap) + ".pdf";
+                    }
+                    else
+                    {
+                      finaldateiname = VorlageUtil.getName(
+                          VorlageTyp.PRENOTIFICATION_KURSTEILNEHMER_DATEINAME,
+                          ls) + ".pdf";
+                    }
+                    break;
+                  default:
+                    StringWriter wdateiname = new StringWriter();
+                    Velocity.evaluate(context, wdateiname, "LOG", dateiname);
+                    finaldateiname = wdateiname.toString();
+                    break;
+                }
+                ma.setDateiname(finaldateiname);
+                anhang.add(ma);
+              }
 
               StringWriter wtext1 = new StringWriter();
               Velocity.evaluate(context, wtext1, "LOG", betreff);
@@ -303,25 +319,29 @@ public class ZipMailer
                 }
                 sentCount++;
 
-                Mail ml = (Mail) Einstellungen.getDBService()
-                    .createObject(Mail.class, null);
-                ml.setBetreff(wtext1.toString());
-                ml.setTxt(wtext2.toString());
-                ml.setBearbeitung(new Timestamp(new Date().getTime()));
-                ml.setVersand(new Timestamp(new Date().getTime()));
-                ml.store();
-
-                MailEmpfaenger me = (MailEmpfaenger) Einstellungen
-                    .getDBService().createObject(MailEmpfaenger.class, null);
-                me.setMitglied(mitgliedMail);
-                me.setMail(ml);
-                me.setVersand(new Timestamp(new Date().getTime()));
-                me.store();
-                if ((Boolean) Einstellungen
-                    .getEinstellung(Property.ANHANGSPEICHERN))
+                if (mitgliedMail.getID() != null)
                 {
-                  ma.setMail(ml);
-                  ma.store();
+                  Mail ml = (Mail) Einstellungen.getDBService()
+                      .createObject(Mail.class, null);
+                  ml.setBetreff(wtext1.toString());
+                  ml.setTxt(wtext2.toString());
+                  ml.setBearbeitung(new Timestamp(new Date().getTime()));
+                  ml.setVersand(new Timestamp(new Date().getTime()));
+                  ml.store();
+
+                  MailEmpfaenger me = (MailEmpfaenger) Einstellungen
+                      .getDBService().createObject(MailEmpfaenger.class, null);
+                  me.setMitglied(mitgliedMail);
+                  me.setMail(ml);
+                  me.setVersand(new Timestamp(new Date().getTime()));
+                  me.store();
+                  if ((Boolean) Einstellungen
+                      .getEinstellung(Property.ANHANGSPEICHERN)
+                      && ma.getDateiname() != null)
+                  {
+                    ma.setMail(ml);
+                    ma.store();
+                  }
                 }
 
                 // Als versendet markieren
@@ -350,18 +370,10 @@ public class ZipMailer
               "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
           GUI.getCurrentView().reload();
         }
-        catch (ZipException e)
-        {
-          e.printStackTrace();
-        }
         catch (IOException e)
         {
-          e.printStackTrace();
-        }
-        catch (Exception e)
-        {
-          e.printStackTrace();
-          throw new ApplicationException(e);
+          Logger.error("Fehler beim Mailversand", e);
+          throw new ApplicationException("Fehler beim Mailversand");
         }
 
         monitor.setPercentComplete(100);

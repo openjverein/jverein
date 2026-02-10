@@ -239,7 +239,7 @@ public class Ct1Ueberweisung
     return 1;
   }
 
-  public String eval(Lastschrift ls, String verwendungszweck)
+  private String eval(Lastschrift ls, String verwendungszweck)
       throws ParseErrorException, MethodInvocationException,
       ResourceNotFoundException, IOException
   {
