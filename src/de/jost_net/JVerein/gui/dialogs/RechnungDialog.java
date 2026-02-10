@@ -63,7 +63,7 @@ public class RechnungDialog extends AbstractDialog<Boolean>
   public RechnungDialog(boolean mitRechnung, boolean mitErstattung)
   {
     super(SWT.CENTER);
-    setTitle("Rechnung(en) erstellen");
+    setTitle("Rechnung erstellen");
     this.mitRechnung = mitRechnung;
     this.mitErstattung = mitErstattung;
   }
