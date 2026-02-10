@@ -56,6 +56,10 @@ public class ZusatzbetragVorlageAuswahlAction implements Action
         {
           part.getBuchungsklasse().setValue(zbv.getBuchungsklasse());
         }
+        if (part.isSteuerActive())
+        {
+          part.getSteuer().setValue(zbv.getSteuer());
+        }
         for (Object obj : part.getIntervall().getList())
         {
           IntervallZusatzzahlung ivz = (IntervallZusatzzahlung) obj;

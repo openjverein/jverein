@@ -63,7 +63,7 @@ public class SollbuchungMenu extends ContextMenu
       {
         addItem(new MitRechnungItem("Rechnung anzeigen",
             new SollbuchungRechnungAction(), "file-invoice.png"));
-        addItem(new OhneRechnungItem("Rechnung(en) erstellen",
+        addItem(new OhneRechnungItem("Rechnung erstellen",
             new RechnungNeuAction(), "file-invoice.png"));
         addItem(new MultiItem("Gesamtrechnung erstellen",
             new GesamtrechnungNeuAction(), "file-invoice.png"));

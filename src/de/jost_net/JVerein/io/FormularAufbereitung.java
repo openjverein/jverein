@@ -41,6 +41,7 @@ import org.mustangproject.Item;
 import org.mustangproject.Product;
 import org.mustangproject.TradeParty;
 import org.mustangproject.ZUGFeRD.IZUGFeRDExporter;
+import org.mustangproject.ZUGFeRD.TransactionCalculator;
 import org.mustangproject.ZUGFeRD.ZUGFeRDExporterFromPDFA;
 
 import com.google.zxing.BarcodeFormat;
@@ -87,6 +88,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
@@ -730,12 +732,30 @@ public class FormularAufbereitung
     for (SollbuchungPosition sp : re.getSollbuchungPositionList())
     {
       BigDecimal betrag = new BigDecimal(sp.getNettobetrag());
+
       invoice.addItem(new Item(new Product(sp.getZweck(), "", "LS", // LS =
                                                                     // pauschal
           new BigDecimal(sp.getSteuersatz()).setScale(2, RoundingMode.HALF_UP)),
           betrag.abs().setScale(4, RoundingMode.HALF_UP),
           new BigDecimal(betrag.signum())));
     }
+    // Summe der Rechnung mit der ZUGFeRD Summe vergleichen. Da wir für die
+    // Rechnung Brutto Beträge addieren, ZUGFeRD jedoch die Nettobeträge addiert
+    // und erst am Ende die Steuer berechnet, kann es zu Differenzen kommen.
+    // Diese fügen wir als Rundungsbetrag hinzu.
+    TransactionCalculator tc = new TransactionCalculator(invoice);
+
+    BigDecimal diff = new BigDecimal(re.getBetrag())
+        .subtract(tc.getGrandTotal());
+    if (diff.abs().doubleValue() >= .01d)
+    {
+      invoice.setRoundingAmount(diff);
+      if (diff.abs().doubleValue() > 0.1d)
+        Logger.warn(
+            "Differenz zwischen ZUGFeRD Summe (Netto-Berechnung) und Rechnungssumme (Brutto-Berechnung) größer als 10ct."
+                + " Füge Rundungsbetrag hinzu");
+    }
+
     ze.setTransaction(invoice);
     ze.export(f.getAbsolutePath());
     ze.close();

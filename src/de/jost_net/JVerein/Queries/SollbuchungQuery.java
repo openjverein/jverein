@@ -356,7 +356,7 @@ public class SollbuchungQuery
     sql.append(
         " GROUP BY " + Sollbuchung.TABLE_NAME_ID + ", " + Sollbuchung.T_BETRAG);
 
-    Double limit = Double.valueOf(0d);
+    Double limit = Double.valueOf(0.005d);
     if (control.isDoubleAuswAktiv()
         && control.getDoubleAusw().getValue() != null)
     {

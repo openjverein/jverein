@@ -338,7 +338,7 @@ public class RechnungControl extends DruckMailControl implements Savable
 
     if (isDifferenzAktiv() && getDifferenz().getValue() != DIFFERENZ.EGAL)
     {
-      Double limit = Double.valueOf(0d);
+      Double limit = Double.valueOf(0.005d);
       if (isDoubleAuswAktiv() && getDoubleAusw().getValue() != null)
       {
         // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
