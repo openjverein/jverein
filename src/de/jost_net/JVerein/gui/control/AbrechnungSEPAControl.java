@@ -684,7 +684,6 @@ public class AbrechnungSEPAControl extends AbstractControl
           catch (ApplicationException ae)
           {
             DBTransaction.rollback();
-            Logger.error("Fehler beim Abrechnungslauf: " + ae.getMessage(), ae);
             GUI.getStatusBar().setErrorText(ae.getMessage());
             throw ae;
           }
