@@ -281,7 +281,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.DATUM_F.getName(), "20251001");
     map.put(RechnungVar.NUMMER.getName(), StringTool.lpad("11",
         (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
-    map.put(RechnungVar.ANREDE.getName(), "Herrn");
+    map.put(RechnungVar.ANREDE.getName(), "Herr");
     map.put(RechnungVar.TITEL.getName(), "Dr. Dr.");
     map.put(RechnungVar.NAME.getName(), "Wichtig");
     map.put(RechnungVar.VORNAME.getName(), "Willi");

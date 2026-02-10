@@ -84,7 +84,6 @@ public class MahnungMailView extends AbstractView
 
     cont.addLabelPair("Formular", control.getFormular(FormularArt.MAHNUNG));
     cont.addInput(control.getAusgabeart());
-    cont.addInput(control.getPdfModus());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());

@@ -57,7 +57,7 @@ public class Einstellungen
 
   private static JVereinDBService db;
 
-  private static Settings settings = new Settings(Einstellungen.class);
+  private static Settings settings;
 
   /**
    * Verschlüsselte Datei für besonders sensible Daten (Passwörter)
@@ -109,24 +109,6 @@ public class Einstellungen
     NODATE.setTime(cal.getTimeInMillis());
     DECIMALFORMAT.setMinimumFractionDigits(2);
     DECIMALFORMAT.setMaximumFractionDigits(2);
-    try
-    {
-      loadEinstellungen();
-      try
-      {
-        // Wir nehmen EinstellungImpl.class da es vorher darin war, so ist keine
-        // Migration notwendig.
-        wallet = new Wallet(EinstellungImpl.class);
-      }
-      catch (Exception e)
-      {
-        Logger.error("Erstellen des Wallet-Objekts fehlgeschlagen");
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler beim laden der Einstellungen", e);
-    }
   }
 
   /**
@@ -139,6 +121,7 @@ public class Einstellungen
    */
   public static void setSettingBoolean(String key, boolean value)
   {
+    loadSettings();
     settings.setAttribute(key, value);
   }
 
@@ -152,6 +135,7 @@ public class Einstellungen
    */
   public static boolean getSettingBoolean(String key, boolean def)
   {
+    loadSettings();
     return settings.getBoolean(key, def);
   }
 
@@ -164,6 +148,7 @@ public class Einstellungen
    */
   public static void setSettingInt(String key, int value)
   {
+    loadSettings();
     settings.setAttribute(key, value);
   }
 
@@ -176,6 +161,7 @@ public class Einstellungen
    */
   public static int getSettingInt(String key, int def)
   {
+    loadSettings();
     return settings.getInt(key, def);
   }
 
@@ -290,8 +276,6 @@ public class Einstellungen
     MITGLIEDSBETRAEGE("mitgliedsbeitraege", Boolean.class, "0"),
     SPENDENBESCHEINIGUNGMINBETRAG("spendenbescheinigungminbetrag", Double.class,
         "0.01"),
-    SPENDENBESCHEINIGUNGVERZEICHNIS("spendenbescheinigungverzeichnis",
-        String.class, ""),
     SPENDENBESCHEINIGUNGPRINTBUCHUNGSART("spendenbescheinigungprintbuchungsart",
         Boolean.class, "0"),
     UNTERSCHRIFTDRUCKEN("unterschriftdrucken", Boolean.class, "0"),
@@ -485,6 +469,31 @@ public class Einstellungen
     }
   }
 
+  private static void loadSettings()
+  {
+    if (settings == null)
+    {
+      settings = new Settings(Einstellungen.class);
+    }
+  }
+
+  private static void loadWallet()
+  {
+    if (wallet == null)
+    {
+      try
+      {
+        // Wir nehmen EinstellungImpl.class da es vorher darin war, so ist keine
+        // Migration notwendig.
+        wallet = new Wallet(EinstellungImpl.class);
+      }
+      catch (Exception e)
+      {
+        Logger.error("Erstellen des Wallet-Objekts fehlgeschlagen");
+      }
+    }
+  }
+
   /**
    * Setzt die Einstellung und speichert sie direkt in der DB. Falls meherer
    * Einstellungen gespeicher werden, sollte eine Transaction verwendet werden.
@@ -596,6 +605,7 @@ public class Einstellungen
    */
   public static String getSmtpAuthPwd() throws RemoteException
   {
+    loadWallet();
     try
     {
       Serializable pwd = wallet.get("smtp_auth_pwd");
@@ -617,6 +627,7 @@ public class Einstellungen
    */
   public static void setSmtpAuthPwd(String pwd) throws RemoteException
   {
+    loadWallet();
     try
     {
       wallet.set("smtp_auth_pwd", pwd);
@@ -637,6 +648,7 @@ public class Einstellungen
    */
   public static String getImapAuthPwd() throws RemoteException
   {
+    loadWallet();
     try
     {
       Serializable pwd = wallet.get("imap_auth_pwd");
@@ -658,6 +670,7 @@ public class Einstellungen
    */
   public static void setImapAuthPwd(String pwd) throws RemoteException
   {
+    loadWallet();
     try
     {
       wallet.set("imap_auth_pwd", pwd);
@@ -747,6 +760,7 @@ public class Einstellungen
    */
   public static boolean getCheckDatabase()
   {
+    loadSettings();
     return settings.getBoolean("checkdatabase", true);
   }
 

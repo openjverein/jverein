@@ -18,12 +18,16 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
@@ -32,6 +36,7 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.willuhn.jameica.gui.Action;
@@ -60,6 +65,7 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
   public MitgliedZusatzbetragZuordnungDialog(int position, Mitglied[] m)
   {
     super(position);
+    super.setSize(600, SWT.DEFAULT);
     setTitle("Zuordnung Zusatzbetrag");
     this.m = m;
   }
@@ -76,9 +82,14 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
     LabelGroup group = new LabelGroup(parent, "Vorlagen");
     group.addLabelPair("Als Vorlage speichern", control.getVorlage());
 
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = MitgliedMap.getDummyMap(map);
+
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ZUSATZBETRAEGE, false, "question-circle.png");
+    buttons.addButton("Buchungstext Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
     buttons.addButton("Vorlagen", new ZusatzbetragVorlageAuswahlAction(part),
         null, false, "view-refresh.png");
 
@@ -106,6 +117,10 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             zb.setStartdatum((Date) part.getStartdatum(true).getValue());
             zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            if (part.isSteuerActive())
+            {
+              zb.setSteuer((Steuer) part.getSteuer().getValue());
+            }
             zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zb.setMitgliedzahltSelbst(
                 (Boolean) part.getMitgliedzahltSelbst().getValue());
@@ -133,6 +148,10 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
             }
             zv.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
             zv.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
+            if (part.isSteuerActive())
+            {
+              zv.setSteuer((Steuer) part.getSteuer().getValue());
+            }
             zv.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
             zv.setMitgliedzahltSelbst(
                 (Boolean) part.getMitgliedzahltSelbst().getValue());
@@ -173,7 +192,6 @@ public class MitgliedZusatzbetragZuordnungDialog extends AbstractDialog<String>
       }
     }, null, false, "process-stop.png");
     buttons.paint(parent);
-    getShell().setMinimumSize(getShell().computeSize(SWT.DEFAULT, SWT.DEFAULT));
   }
 
   /**

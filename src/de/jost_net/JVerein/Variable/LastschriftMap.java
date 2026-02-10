@@ -27,6 +27,8 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
+import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class LastschriftMap extends AbstractMap
 {
@@ -97,6 +99,22 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.BIC.getName(), ls.getBIC());
     map.put(LastschriftVar.IBAN.getName(),
         new IBANFormatter().format(ls.getIBAN()));
+    if (ls.getBIC() != null)
+    {
+      Bank bank = Banken.getBankByBIC(ls.getBIC());
+      if (bank != null)
+      {
+        String name = bank.getBezeichnung();
+        if (name != null)
+        {
+          map.put(LastschriftVar.BANKNAME.getName(), name.trim());
+        }
+      }
+    }
+    else
+    {
+      map.put(LastschriftVar.BANKNAME.getName(), null);
+    }
     map.put(LastschriftVar.IBANMASKIERT.getName(),
         VarTools.maskieren(ls.getIBAN()));
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
@@ -134,7 +152,7 @@ public class LastschriftMap extends AbstractMap
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
     map.put(LastschriftVar.PERSONENART.getName(), "n");
     map.put(LastschriftVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
-    map.put(LastschriftVar.ANREDE.getName(), "Herrn");
+    map.put(LastschriftVar.ANREDE.getName(), "Herr");
     map.put(LastschriftVar.TITEL.getName(), "Dr. Dr.");
     map.put(LastschriftVar.NAME.getName(), "Wichtig");
     map.put(LastschriftVar.VORNAME.getName(), "Willi");
@@ -149,6 +167,7 @@ public class LastschriftMap extends AbstractMap
     map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
     map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(LastschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
+    map.put(LastschriftVar.BANKNAME.getName(), "XY Bank");
     map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
     map.put(LastschriftVar.BETRAG.getName(), "23,80");

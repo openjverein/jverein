@@ -29,7 +29,6 @@ import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.keys.Ausrichtung;
-import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -230,33 +229,38 @@ public class FormularfeldControl extends FormularPartControl implements Savable
   public Map<String, Object> getMap() throws RemoteException
   {
     Map<String, Object> map = new AllgemeineMap().getMap(null);
-    if (formular.getArt() == FormularArt.SPENDENBESCHEINIGUNG
-        || formular.getArt() == FormularArt.SAMMELSPENDENBESCHEINIGUNG)
+    switch (formular.getArt())
     {
-      map = SpendenbescheinigungMap.getDummyMap(map);
-      map = MitgliedMap.getDummyMap(map);
-      // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier extra
-      // hinzugefügt und ist nicht in der DummyMap.
-      map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(),
-          "$" + SpendenbescheinigungVar.UNTERSCHRIFT.getName());
-    }
-    if (formular.getArt() == FormularArt.FREIESFORMULAR)
-    {
-      map = MitgliedMap.getDummyMap(map);
-    }
-    if (formular.getArt() == FormularArt.SEPA_PRENOTIFICATION)
-    {
-      map = LastschriftMap.getDummyMap(map);
-    }
-    if (formular.getArt() == FormularArt.RECHNUNG
-        || formular.getArt() == FormularArt.MAHNUNG)
-    {
-      map = MitgliedMap.getDummyMap(map);
-      map = RechnungMap.getDummyMap(map);
-      // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier extra
-      // hinzugefügt und ist nicht in der DummyMap.
-      map.put(RechnungVar.QRCODE_SUMME.getName(),
-          "$" + RechnungVar.QRCODE_SUMME.getName());
+      case SPENDENBESCHEINIGUNG:
+      case SAMMELSPENDENBESCHEINIGUNG:
+      case SACHSPENDENBESCHEINIGUNG:
+        map = SpendenbescheinigungMap.getDummyMap(map);
+        map = MitgliedMap.getDummyMap(map);
+
+        // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier
+        // extra hinzugefügt und ist nicht in der DummyMap.
+        map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(),
+            "$" + SpendenbescheinigungVar.UNTERSCHRIFT.getName());
+        break;
+      case FREIESFORMULAR:
+        map = MitgliedMap.getDummyMap(map);
+        break;
+      case SEPA_PRENOTIFICATION:
+        map = MitgliedMap.getDummyMap(map);
+        map = LastschriftMap.getDummyMap(map);
+        break;
+      case RECHNUNG:
+      case MAHNUNG:
+        map = MitgliedMap.getDummyMap(map);
+        map = RechnungMap.getDummyMap(map);
+
+        // Dieser Eintrag ist nur in Formularen möglich, daher wird er hier
+        // extra hinzugefügt und ist nicht in der DummyMap.
+        map.put(RechnungVar.QRCODE_SUMME.getName(),
+            "$" + RechnungVar.QRCODE_SUMME.getName());
+        break;
+      case HINTERGRUND:
+        break;
     }
     return map;
   }

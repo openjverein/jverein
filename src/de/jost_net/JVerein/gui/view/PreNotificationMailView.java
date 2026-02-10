@@ -60,18 +60,27 @@ public class PreNotificationMailView extends AbstractView
     final PreNotificationControl control = new PreNotificationControl(this);
     control.init("prenotification.", null, null);
 
-    if (this.getCurrentObject() == null)
+    if (getCurrentObject() == null
+        || getCurrentObject() instanceof Abrechnungslauf)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control.getAbrechnungslaufAusw(10));
+      group.addInput(control.getMailauswahl());
+      if (getCurrentObject() == null)
+      {
+        group.addInput(control.getAbrechnungslaufAusw(10));
+      }
+      else
+      {
+        group.addInput(control
+            .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
+      }
       group.addInput(control.getSuchVersand());
     }
-    else if (this.getCurrentObject() instanceof Abrechnungslauf)
+    else
     {
-      LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control
-          .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
-      group.addInput(control.getSuchVersand());
+      SimpleContainer cont1 = new SimpleContainer(getParent(), false);
+      cont1.addHeadline("Info");
+      cont1.addInput(control.getInfo());
     }
 
     TabFolder folder = control.getFolder(getParent());
@@ -82,13 +91,11 @@ public class PreNotificationMailView extends AbstractView
         tabMailPDF.getComposite(), true);
 
     grtabMailPDF.addHeadline("Parameter");
-    grtabMailPDF.addInput(control.getOutput());
-    grtabMailPDF.addInput(control.getPdfModus());
     grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));
+    grtabMailPDF.addInput(control.getAusgabeart());
 
     grtabMailPDF.addHeadline("Mail");
-
     grtabMailPDF.addInput(control.getBetreff());
     grtabMailPDF.addInput(control.getTxt());
 
@@ -117,12 +124,17 @@ public class PreNotificationMailView extends AbstractView
     TabGroup tab2 = new TabGroup(folder, "1 ct-Überweisung");
     SimpleContainer grtab2 = new SimpleContainer(tab2.getComposite(), true);
 
+    Map<String, Object> ct1map = LastschriftMap.getDummyMap(null);
+    ct1map = new AllgemeineMap().getMap(ct1map);
+
     grtab2.addInput(control.getct1Ausgabe());
     grtab2.addInput(control.getAusfuehrungsdatum());
     grtab2.addInput(control.getVerwendungszweck());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");
+    buttons2.addButton("Verwendungszweck Variablen anzeigen",
+        new InsertVariableDialogAction(ct1map), control, false, "bookmark.png");
     buttons2.addButton(control.getDruckMailMitgliederButton(
         this.getCurrentObject(), TYP.CENT1.toString()));
     buttons2.addButton(

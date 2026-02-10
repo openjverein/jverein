@@ -47,7 +47,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -129,8 +128,9 @@ public class Ct1Ueberweisung
       else if (ls.getKursteilnehmer() != null)
       {
         ls_properties.setProperty(SepaUtil.insertIndex("dst.name", counter),
-            StringUtils.trimToEmpty(Adressaufbereitung
-                .getNameVorname(ls.getKursteilnehmer()).toUpperCase()));
+            StringUtils.trimToEmpty(ls.getKursteilnehmer()
+                .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
+                .toUpperCase()));
       }
       ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
           (BigDecimal.valueOf(0.01)).toString());
@@ -239,7 +239,7 @@ public class Ct1Ueberweisung
     return 1;
   }
 
-  public String eval(Lastschrift ls, String verwendungszweck)
+  private String eval(Lastschrift ls, String verwendungszweck)
       throws ParseErrorException, MethodInvocationException,
       ResourceNotFoundException, IOException
   {

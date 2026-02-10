@@ -29,7 +29,7 @@
 	<classpathentry exported="true" kind="lib" path="/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/super-csv-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/itext-pdfa-5.5.13.4.jar"/>
--	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/itextpdf-5.5.13.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/itextpdf-5.5.13.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
@@ -41,6 +41,21 @@
 	<classpathentry kind="lib" path="lib/dom4j.jar"/>
 	<classpathentry kind="lib" path="lib/library.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/mockito-core.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/byte-buddy.jar">
+		<attributes>
+			<attribute name="test" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/byte-buddy-agent.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>

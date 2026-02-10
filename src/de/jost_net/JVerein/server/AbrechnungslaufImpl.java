@@ -255,7 +255,8 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   public String getIDText() throws RemoteException
   {
     return getID() + " " + "vom" + " "
-        + new JVDateFormatTTMMJJJJ().format(getDatum());
+        + new JVDateFormatTTMMJJJJ().format(getDatum()) + " ("
+        + getZahlungsgrund() + ")";
   }
 
   @Override

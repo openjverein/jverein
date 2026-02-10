@@ -635,6 +635,8 @@ public class AbrechnungSEPA
     }
     catch (Exception e)
     {
+      Logger.error("Fehler beim Abrechnungslauf bei: "
+          + Adressaufbereitung.getNameVorname(m), e);
       throw new ApplicationException(
           Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
     }
@@ -757,6 +759,8 @@ public class AbrechnungSEPA
         }
         catch (Exception e)
         {
+          Logger.error("Fehler beim Abrechnen des Zusatzbetrags von: "
+              + Adressaufbereitung.getNameVorname(m), e);
           throw new ApplicationException(
               Adressaufbereitung.getNameVorname(m) + ": " + e.getMessage());
         }
@@ -836,7 +840,7 @@ public class AbrechnungSEPA
         zahler.setMandatdatum(kt.getMandatDatum());
         zahler.setMandatsequence(MandatSequence.RCUR);
         zahler.setFaelligkeit(param.faelligkeit);
-        zahler.setName(kt.getName());
+        zahler.setName(kt.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
         zahler
             .setVerwendungszweck(getVerwendungszweckName(kt, kt.getVZweck1()));
         zahler.setZahlungsweg(new Zahlungsweg(Zahlungsweg.BASISLASTSCHRIFT));
@@ -859,6 +863,8 @@ public class AbrechnungSEPA
       }
       catch (Exception e)
       {
+        Logger.error(
+            "Fehler beim Abrechnen des Kursteilnehmers " + kt.getName(), e);
         throw new ApplicationException(kt.getName() + ": " + e.getMessage());
       }
     }
@@ -983,6 +989,7 @@ public class AbrechnungSEPA
     }
     catch (RemoteException e)
     {
+      Logger.error("Fehler beim Erstellen der Hibiscus Lastschrift", e);
       throw new ApplicationException(e);
     }
     catch (SEPAException e)
@@ -1309,7 +1316,7 @@ public class AbrechnungSEPA
               .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
           file.delete();
         }
-        catch (IOException e)
+        catch (IOException | DocumentException e)
         {
           Logger.error(
               "Fehler beim Speichern der Rechnung als Buchungsdokument", e);

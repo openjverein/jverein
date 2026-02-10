@@ -45,6 +45,7 @@ public class LastschriftDetailView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getMitglied());
     left.addInput(control.getPersonenart());
     left.addInput(control.getMitgliedstyp());
     left.addInput(control.getGeschlecht());
@@ -54,9 +55,9 @@ public class LastschriftDetailView extends AbstractView
     left.addInput(control.getVorname());
     left.addInput(control.getStrasse());
     left.addInput(control.getAdressierungszusatz());
-    left.addInput(control.getPLZ());
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getPLZ());
     right.addInput(control.getOrt());
     right.addInput(control.getStaat());
     right.addInput(control.getEmail());

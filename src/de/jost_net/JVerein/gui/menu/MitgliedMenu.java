@@ -24,7 +24,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.action.KontoauszugAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -38,7 +37,10 @@ import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
 import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
+import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
+import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -164,7 +166,9 @@ public class MitgliedMenu extends ContextMenu
                 {
                   Logger.error("Fehler", e);
                 }
-                m.setMitgliedstyp(Long.valueOf(Mitgliedstyp.SPENDER));
+                m.setMitgliedstyp(Long
+                    .valueOf(Einstellungen.getSettingInt("defaultmitgliedstyp",
+                        Integer.valueOf(Mitgliedstyp.SPENDER))));
                 m.setEingabedatum();
                 m.setBeitragsgruppe(null);
                 m.setExterneMitgliedsnummer(null);
@@ -210,28 +214,29 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedVCardDateiAction(), "address-card.png"));
     addItem(new CheckedSingleContextMenuItem("vCard QR-Code",
         new MitgliedVCardQRCodeAction(), "qr-code.png"));
-    addItem(new CheckedContextMenuItem("Kontoauszug", new KontoauszugAction(),
-        "file-invoice.png"));
     if ((Boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
       addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
           new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
-    addItem(new CheckedContextMenuItem("Personalbogen",
-        new PersonalbogenAction(), "file-invoice.png"));
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "file-invoice.png"));
+    addItem(new CheckedContextMenuItem("Kontoauszug",
+        new StartViewAction(KontoauszugMailView.class, true),
+        "document-print.png"));
+
+    addItem(new CheckedContextMenuItem("Personalbogen",
+        new PersonalbogenAction(), "document-print.png"));
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",
         new Object[] { FormularArt.FREIESFORMULAR.getKey() });
     if (it.hasNext())
     {
-      addItem(ContextMenuItem.SEPARATOR);
-      ContextMenu freieformularemenu = new FreieFormulareMenu(it);
-      freieformularemenu.setText("Freie Formulare");
-      addMenu(freieformularemenu);
+      addItem(new CheckedContextMenuItem("Freie Formulare",
+          new StartViewAction(FreiesFormularMailView.class, true),
+          "document-print.png"));
     }
   }
 }
