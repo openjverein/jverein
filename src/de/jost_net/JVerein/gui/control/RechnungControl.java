@@ -890,7 +890,8 @@ public class RechnungControl extends DruckMailControl implements Savable
       throws RemoteException, ApplicationException
   {
     Map<Mitglied, Object> map = new HashMap<>();
-    Rechnung[] rechnungen = getRechnungen(this.view.getCurrentObject());
+    ArrayList<Rechnung> rechnungen = getRechnungen(
+        this.view.getCurrentObject());
     for (Rechnung r : rechnungen)
     {
       if (r.getZahler() != null)

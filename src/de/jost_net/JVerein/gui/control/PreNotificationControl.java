@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -455,7 +457,7 @@ public class PreNotificationControl extends DruckMailControl
   {
     Map<Mitglied, Object> map = new HashMap<>();
     ArrayList<Lastschrift> lastschriften = getLastschriften(
-        this.view.getCurrentObject(), true);
+        this.view.getCurrentObject());
     for (Lastschrift l : lastschriften)
     {
       if (l.getMitglied() != null)
