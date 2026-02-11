@@ -815,12 +815,15 @@ public class SpendenbescheinigungControl extends DruckMailControl
         try
         {
           saveFilterSettings();
+          boolean v = ((String) versand.getValue())
+              .equals(DruckMailControl.VERSAND_SETZEN);
           new SpendenbescheinigungAusgabe((String) mailtext.getValue(),
               (Adressblatt) adressblatt.getValue()).aufbereiten(
                   getDruckMailSpendenbescheinigungen(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
                   getTxtString(), false, (Boolean) Einstellungen
-                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
+                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN),
+                  v);
         }
         catch (ApplicationException ae)
         {

@@ -29,11 +29,19 @@ public abstract class DruckMailControl extends FilterControl
     super(view);
   }
 
+  public final static String VERSAND_SETZEN = "Setzen";
+
+  public final static String VERSAND_NICHT_SETZEN = "Nicht setzen";
+
   protected TextAreaInput info = null;
 
   protected FormularInput formular = null;
 
   protected SelectInput ausgabeart = null;
+
+  protected SelectInput versand = null;
+
+  protected SelectInput ct1versand = null;
 
   protected SelectInput adressblatt = null;
 
@@ -81,7 +89,37 @@ public abstract class DruckMailControl extends FilterControl
     ausgabeart = new SelectInput(Ausgabeart.values(), Ausgabeart
         .getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
     ausgabeart.setName("Ausgabe");
+    ausgabeart.addListener(event -> {
+      versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+    });
     return ausgabeart;
+  }
+
+  public SelectInput getVersand()
+  {
+    if (versand != null)
+    {
+      return versand;
+    }
+    versand = new SelectInput(
+        new String[] { VERSAND_SETZEN, VERSAND_NICHT_SETZEN },
+        settings.getString(settingsprefix + "versand", VERSAND_NICHT_SETZEN));
+    versand.setName("Versanddatum");
+    versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+    return versand;
+  }
+
+  public SelectInput getCt1Versand()
+  {
+    if (ct1versand != null)
+    {
+      return ct1versand;
+    }
+    ct1versand = new SelectInput(
+        new String[] { VERSAND_SETZEN, VERSAND_NICHT_SETZEN },
+        settings.getString(settingsprefix + "ct1versand", VERSAND_SETZEN));
+    ct1versand.setName("Versanddatum");
+    return ct1versand;
   }
 
   public SelectInput getAdressblatt()
@@ -160,6 +198,30 @@ public abstract class DruckMailControl extends FilterControl
       Formular f = (Formular) getFormular(null).getValue();
       settings.setAttribute(settingsprefix + "formular.key",
           f == null ? "" : f.getID());
+    }
+    if (versand != null)
+    {
+      String tmp = (String) versand.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "versand", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "versand", "");
+      }
+    }
+    if (ct1versand != null)
+    {
+      String tmp = (String) ct1versand.getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute(settingsprefix + "ct1versand", tmp);
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "ct1versand", "");
+      }
     }
     super.saveFilterSettings();
   }

@@ -49,11 +49,12 @@ public class PreNotificationAusgabe extends AbstractAusgabe
 
   @Override
   public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
-      String betreff, String text, boolean pdfa, boolean encrypt)
+      String betreff, String text, boolean pdfa, boolean encrypt,
+      boolean versanddatum)
       throws IOException, ApplicationException, DocumentException
   {
     this.art = art;
-    super.aufbereiten(list, art, betreff, text, pdfa, encrypt);
+    super.aufbereiten(list, art, betreff, text, pdfa, encrypt, versanddatum);
   }
 
   @Override

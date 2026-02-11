@@ -82,6 +82,7 @@ public class RechnungMailView extends AbstractView
     cont.addHeadline("Parameter");
 
     cont.addInput(control.getAusgabeart());
+    cont.addInput(control.getVersand());
 
     cont.addHeadline("Mail");
     cont.addInput(control.getBetreff());
