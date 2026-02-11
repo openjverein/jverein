@@ -37,7 +37,6 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.gui.control.GutschriftBugsControl;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
@@ -169,7 +168,7 @@ public class Gutschrift extends SEPASupport
             statustext = provider.getObjektName() + " mit Nr. "
                 + provider.getID();
 
-            String bug = GutschriftBugsControl.doChecks(provider, params, null);
+            String bug = gcontrol.doChecks(provider, params, null);
             if (bug != null)
             {
               skip++;
@@ -634,12 +633,89 @@ public class Gutschrift extends SEPASupport
       double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
+    boolean steuerInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.STEUERINBUCHUNG);
+    boolean klasseInBuchung = (Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     // Fixer Betrag und Sollbuchung
     if (params.isFixerBetragAbrechnen())
     {
-      // Ausgleichsbuchung ohne splitten
-      generiereBuchung(prov, ausgleichsbetrag, "JVerein",
-          "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), sollb);
+      HashMap<String, Double> posMap = new HashMap<>();
+      HashMap<String, String> posZweckMap = new HashMap<>();
+      SplitbuchungsContainer.positionenAbgleichen(sollb, posMap, posZweckMap,
+          false);
+      // Key in der Form BuchungsartId-BuchungsklasseId#SteuerId (Steuer nur
+      // wenn steuerInBuchung gesetzt ist)
+      Long baId = Long.valueOf(params.getBuchungsart().getID());
+      Long bkId = params.getBuchungsklasse() != null
+          ? Long.valueOf(params.getBuchungsklasse().getID())
+          : null;
+      String key = baId + "-" + (klasseInBuchung && bkId != null ? bkId : "")
+          + "#";
+      if (steuerInBuchung)
+      {
+        key += (params.getSteuer() != null ? params.getSteuer().getID() : "");
+      }
+
+      // Prüfen ob genügend offener Betrag existiert
+      Double posOffenBetrag = posMap.getOrDefault(key, 0d);
+      if (posOffenBetrag - ausgleichsbetrag > -0.005)
+      {
+        // Ausgleichsbuchung ohne splitten
+        generiereBuchung(prov, ausgleichsbetrag, "JVerein",
+            "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), sollb);
+      }
+      else
+      {
+        // Es ist mehr auszugleichen als die Position hat. Darum verteilen wir
+        // den Ausgleichsbetrag auf andere Posten
+        Iterator<Entry<String, Double>> iterator = posMap.entrySet().stream()
+            .sorted(Map.Entry.comparingByValue()).iterator();
+
+        // Hauptbuchung erzeugen
+        Buchung bu = getBuchung(ausgleichsbetrag, "JVerein",
+            "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+        initBuchung(bu, null, key);
+        bu.store();
+        bu.setSplitTyp(SplitbuchungTyp.HAUPT);
+        SplitbuchungsContainer.init(bu);
+
+        // Die zu erstattende Buchung erzeugen mit dem offenen Betrag der
+        // Position
+        Buchung buch = getBuchung(posOffenBetrag, "JVerein",
+            "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+        initBuchung(buch, null, key);
+        buch.setSollbuchung(sollb);
+        buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+        SplitbuchungsContainer.add(buch);
+        Double restbetrag = ausgleichsbetrag - posOffenBetrag;
+
+        while (iterator.hasNext())
+        {
+          Entry<String, Double> entry = iterator.next();
+          if (entry.getKey().equals(key))
+          {
+            continue;
+          }
+          if (entry.getValue() > 0.005)
+          {
+            Double ausgleich = Math.min(entry.getValue(), restbetrag);
+            Buchung rbuch = getBuchung(ausgleich, "JVerein",
+                "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(),
+                null);
+            initBuchung(rbuch, entry, null);
+            rbuch.setSollbuchung(sollb);
+            rbuch.setSplitTyp(SplitbuchungTyp.SPLIT);
+            SplitbuchungsContainer.add(rbuch);
+            restbetrag = restbetrag - ausgleich;
+            if (restbetrag < 0.005)
+            {
+              break;
+            }
+          }
+        }
+        SplitbuchungsContainer.store();
+      }
     }
     else if (prov.getIstSumme() < 0.005d)
     {
@@ -662,7 +738,7 @@ public class Gutschrift extends SEPASupport
 
       if (posMap.size() == 1)
       {
-        initBuchung(bu, iterator.next());
+        initBuchung(bu, iterator.next(), null);
         bu.setSollbuchung(sollb);
         bu.store();
       }
@@ -674,7 +750,7 @@ public class Gutschrift extends SEPASupport
           Entry<String, Double> entry = iterator.next();
           if (first)
           {
-            initBuchung(bu, entry);
+            initBuchung(bu, entry, null);
             bu.store();
             bu.setSplitTyp(SplitbuchungTyp.HAUPT);
             SplitbuchungsContainer.init(bu);
@@ -682,7 +758,7 @@ public class Gutschrift extends SEPASupport
           }
           Buchung buch = getBuchung(entry.getValue(), "JVerein",
               "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
-          initBuchung(buch, entry);
+          initBuchung(buch, entry, null);
           buch.setSollbuchung(sollb);
           buch.setSplitTyp(SplitbuchungTyp.SPLIT);
           SplitbuchungsContainer.add(buch);
@@ -693,13 +769,17 @@ public class Gutschrift extends SEPASupport
     monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
   }
 
-  private void initBuchung(Buchung bu, Entry<String, Double> entry)
+  private void initBuchung(Buchung bu, Entry<String, Double> entry, String key)
       throws NumberFormatException, RemoteException
   {
-    String buchungsart = entry.getKey().substring(0,
-        entry.getKey().indexOf("-"));
+    String theKey = key;
+    if (key == null)
+    {
+      theKey = entry.getKey();
+    }
+    String buchungsart = theKey.substring(0, theKey.indexOf("-"));
     bu.setBuchungsartId(Long.parseLong(buchungsart));
-    String tmpKey = entry.getKey().substring(entry.getKey().indexOf("-") + 1);
+    String tmpKey = theKey.substring(theKey.indexOf("-") + 1);
     String buchungsklasse = tmpKey.substring(0, tmpKey.indexOf("#"));
     String steuer = tmpKey.substring(tmpKey.indexOf("#") + 1);
     if (buchungsklasse.length() > 0)

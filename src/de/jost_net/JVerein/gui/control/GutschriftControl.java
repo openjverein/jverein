@@ -226,7 +226,7 @@ public class GutschriftControl
       });
     }
     fixerBetragAbrechnenInput
-        .setName(" *Sonst bereits bezahlten Betrag überweisen.");
+        .setName(" *Sonst ganzen Betrag erstatten und Fehlbeträge verrechnen.");
     return fixerBetragAbrechnenInput;
   }
 
@@ -957,36 +957,6 @@ public class GutschriftControl
     {
       // Es gibt nicht genügend Betrag für die Erstattung
       return false;
-    }
-    if (ausgleichsbetrag > 0)
-    {
-      // Der Position kann nicht mehr zugewiesen werden als noch frei ist
-      double zugewiesen = 0;
-      for (Buchung bu : sollb.getBuchungList())
-      {
-        if (bu.getBuchungsart() == null
-            || (buchungsklasseInBuchung && bu.getBuchungsklasse() == null))
-        {
-          continue;
-        }
-        String buSteuer = bu.getSteuer() != null ? bu.getSteuer().getID() : "0";
-        String paramsSteuer = params.getSteuer() != null
-            ? params.getSteuer().getID()
-            : "0";
-        if (!bu.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-            || (buchungsklasseInBuchung && !bu.getBuchungsklasse().getID()
-                .equals(params.getBuchungsklasse().getID()))
-            || (steuerInBuchung && !buSteuer.equals(paramsSteuer)))
-        {
-          continue;
-        }
-        zugewiesen += bu.getBetrag();
-      }
-      if (summe - zugewiesen - ausgleichsbetrag < -0.005d)
-      {
-        // Es gibt nicht genügend unausgeglichene Beträge für den Ausgleich
-        return false;
-      }
     }
     return true;
   }
