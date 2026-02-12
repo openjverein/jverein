@@ -199,12 +199,10 @@ public class RechnungControl extends DruckMailControl implements Savable
         try
         {
           saveFilterSettings();
-          boolean v = ((String) versand.getValue())
-              .equals(DruckMailControl.VERSAND_SETZEN);
           new Rechnungsausgabe(TYP.RECHNUNG, null).aufbereiten(
               getRechnungen(currentObject),
               (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-              getTxtString(), true, false, v);
+              getTxtString(), true, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {

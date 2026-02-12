@@ -139,13 +139,11 @@ public class PreNotificationControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          boolean v = ((String) versand.getValue())
-              .equals(DruckMailControl.VERSAND_SETZEN);
           new PreNotificationAusgabe((Formular) PreNotificationControl.this
               .getFormular(null).getValue()).aufbereiten(
                   getLastschriften(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false, false, v);
+                  getTxtString(), false, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {
@@ -162,7 +160,7 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   @Override
-  public void saveFilterSettings() throws RemoteException
+  public void saveFilterSettings()
   {
     settings.setAttribute(settingsprefix + "tab.selection",
         folder.getSelectionIndex());
@@ -260,8 +258,7 @@ public class PreNotificationControl extends DruckMailControl
     int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
     GUI.getStatusBar().setSuccessText("Anzahl Überweisungen: " + anzahl);
-    if (((String) ct1versand.getValue())
-        .equals(DruckMailControl.VERSAND_SETZEN))
+    if ((Boolean) ct1versand.getValue())
     {
       for (Lastschrift la : lastschriften)
       {

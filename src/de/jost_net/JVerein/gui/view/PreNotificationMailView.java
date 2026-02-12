@@ -94,7 +94,7 @@ public class PreNotificationMailView extends AbstractView
     grtabMailPDF.addLabelPair("Formular",
         control.getFormular(FormularArt.SEPA_PRENOTIFICATION));
     grtabMailPDF.addInput(control.getAusgabeart());
-    grtabMailPDF.addInput(control.getVersand());
+    grtabMailPDF.addLabelPair("Versanddatum setzen", control.getVersand());
 
     grtabMailPDF.addHeadline("Mail");
     grtabMailPDF.addInput(control.getBetreff());
@@ -131,7 +131,7 @@ public class PreNotificationMailView extends AbstractView
     grtab2.addInput(control.getct1Ausgabe());
     grtab2.addInput(control.getAusfuehrungsdatum());
     grtab2.addInput(control.getVerwendungszweck());
-    grtab2.addInput(control.getCt1Versand());
+    grtab2.addLabelPair("Versanddatum setzen", control.getCt1Versand());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PRENOTIFICATION, false, "question-circle.png");

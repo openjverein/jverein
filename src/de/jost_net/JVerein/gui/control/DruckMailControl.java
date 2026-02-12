@@ -13,6 +13,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -39,9 +40,9 @@ public abstract class DruckMailControl extends FilterControl
 
   protected SelectInput ausgabeart = null;
 
-  protected SelectInput versand = null;
+  protected CheckboxInput versand = null;
 
-  protected SelectInput ct1versand = null;
+  protected CheckboxInput ct1versand = null;
 
   protected SelectInput adressblatt = null;
 
@@ -77,6 +78,7 @@ public abstract class DruckMailControl extends FilterControl
     {
       formular.setPleaseChoose("Kein Formular");
     }
+    formular.addListener(event -> saveFilterSettings());
     return formular;
   }
 
@@ -92,33 +94,28 @@ public abstract class DruckMailControl extends FilterControl
     ausgabeart.addListener(event -> {
       versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
     });
+    ausgabeart.addListener(event -> saveFilterSettings());
     return ausgabeart;
   }
 
-  public SelectInput getVersand()
+  public CheckboxInput getVersand()
   {
     if (versand != null)
     {
       return versand;
     }
-    versand = new SelectInput(
-        new String[] { VERSAND_SETZEN, VERSAND_NICHT_SETZEN },
-        settings.getString(settingsprefix + "versand", VERSAND_NICHT_SETZEN));
-    versand.setName("Versanddatum");
+    versand = getCheckboxAuswahl();
     versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
     return versand;
   }
 
-  public SelectInput getCt1Versand()
+  public CheckboxInput getCt1Versand()
   {
     if (ct1versand != null)
     {
       return ct1versand;
     }
-    ct1versand = new SelectInput(
-        new String[] { VERSAND_SETZEN, VERSAND_NICHT_SETZEN },
-        settings.getString(settingsprefix + "ct1versand", VERSAND_SETZEN));
-    ct1versand.setName("Versanddatum");
+    ct1versand = getOhneAbbucher();
     return ct1versand;
   }
 
@@ -131,6 +128,7 @@ public abstract class DruckMailControl extends FilterControl
     adressblatt = new SelectInput(Adressblatt.values(), Adressblatt
         .getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
     adressblatt.setName("Adressblatt");
+    adressblatt.addListener(event -> saveFilterSettings());
     return adressblatt;
   }
 
@@ -171,59 +169,42 @@ public abstract class DruckMailControl extends FilterControl
   }
 
   @Override
-  public void saveFilterSettings() throws RemoteException
+  public void saveFilterSettings()
   {
-    if (ausgabeart != null)
+    try
     {
-      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-      settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
-    }
-    if (adressblatt != null)
-    {
-      Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
-      settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
-    }
-    if (mailbetreff != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.betreff",
-          (String) getBetreff().getValue());
-    }
-    if (mailtext != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.text",
-          (String) getTxt().getValue());
-    }
-    if (formular != null)
-    {
-      Formular f = (Formular) getFormular(null).getValue();
-      settings.setAttribute(settingsprefix + "formular.key",
-          f == null ? "" : f.getID());
-    }
-    if (versand != null)
-    {
-      String tmp = (String) versand.getValue();
-      if (tmp != null)
+      if (ausgabeart != null)
       {
-        settings.setAttribute(settingsprefix + "versand", tmp);
+        Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
+        settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
       }
-      else
+      if (adressblatt != null)
       {
-        settings.setAttribute(settingsprefix + "versand", "");
+        Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
+        settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
       }
+      if (mailbetreff != null)
+      {
+        settings.setAttribute(settingsprefix + "mail.betreff",
+            (String) getBetreff().getValue());
+      }
+      if (mailtext != null)
+      {
+        settings.setAttribute(settingsprefix + "mail.text",
+            (String) getTxt().getValue());
+      }
+      if (formular != null)
+      {
+        Formular f = (Formular) getFormular(null).getValue();
+        settings.setAttribute(settingsprefix + "formular.key",
+            f == null ? "" : f.getID());
+      }
+      super.saveFilterSettings();
     }
-    if (ct1versand != null)
+    catch (RemoteException e)
     {
-      String tmp = (String) ct1versand.getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute(settingsprefix + "ct1versand", tmp);
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "ct1versand", "");
-      }
+      Logger.error("Fehler", e);
     }
-    super.saveFilterSettings();
   }
 
   abstract DruckMailEmpfaenger getDruckMailMitglieder(Object object,

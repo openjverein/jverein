@@ -82,7 +82,7 @@ public class SpendenbescheinigungMailView extends AbstractView
     cont2.addHeadline("Parameter");
     cont2.addInput(control.getAusgabeart());
     cont2.addInput(control.getAdressblatt());
-    cont2.addInput(control.getVersand());
+    cont2.addLabelPair("Versanddatum setzen", control.getVersand());
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Mail / Anschreiben");
