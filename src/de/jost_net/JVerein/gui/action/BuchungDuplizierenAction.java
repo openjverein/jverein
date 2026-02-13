@@ -50,6 +50,10 @@ public class BuchungDuplizierenAction implements Action
         bu.setBuchungsartId(b.getBuchungsartId());
       if (b.getBuchungsklasse() != null)
         bu.setBuchungsklasseId(b.getBuchungsklasseId());
+      if (b.getSteuer() != null)
+      {
+        bu.setSteuer(b.getSteuer());
+      }
       if (b.getProjekt() != null)
         bu.setProjektID(b.getProjektID());
       bu.setAuszugsnummer(b.getAuszugsnummer());
