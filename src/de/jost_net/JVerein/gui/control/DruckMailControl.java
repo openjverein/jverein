@@ -30,10 +30,6 @@ public abstract class DruckMailControl extends FilterControl
     super(view);
   }
 
-  public final static String VERSAND_SETZEN = "Setzen";
-
-  public final static String VERSAND_NICHT_SETZEN = "Nicht setzen";
-
   protected TextAreaInput info = null;
 
   protected FormularInput formular = null;
