@@ -659,7 +659,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           new Kontoauszug(SollbuchungControl.this).aufbereiten(
               getMitglieder(currentObject),
               (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-              getTxtString(), false, false);
+              getTxtString(), false, false, false);
         }
         catch (ApplicationException ae)
         {

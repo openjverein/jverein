@@ -13,6 +13,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -34,6 +35,10 @@ public abstract class DruckMailControl extends FilterControl
   protected FormularInput formular = null;
 
   protected SelectInput ausgabeart = null;
+
+  protected CheckboxInput versand = null;
+
+  protected CheckboxInput ct1versand = null;
 
   protected SelectInput adressblatt = null;
 
@@ -69,6 +74,7 @@ public abstract class DruckMailControl extends FilterControl
     {
       formular.setPleaseChoose("Kein Formular");
     }
+    formular.addListener(event -> saveFilterSettings());
     return formular;
   }
 
@@ -81,7 +87,32 @@ public abstract class DruckMailControl extends FilterControl
     ausgabeart = new SelectInput(Ausgabeart.values(), Ausgabeart
         .getByKey(settings.getInt(settingsprefix + "ausgabeart.key", 1)));
     ausgabeart.setName("Ausgabe");
+    ausgabeart.addListener(event -> {
+      versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+    });
+    ausgabeart.addListener(event -> saveFilterSettings());
     return ausgabeart;
+  }
+
+  public CheckboxInput getVersand()
+  {
+    if (versand != null)
+    {
+      return versand;
+    }
+    versand = getCheckboxAuswahl();
+    versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
+    return versand;
+  }
+
+  public CheckboxInput getCt1Versand()
+  {
+    if (ct1versand != null)
+    {
+      return ct1versand;
+    }
+    ct1versand = getOhneAbbucher();
+    return ct1versand;
   }
 
   public SelectInput getAdressblatt()
@@ -93,6 +124,7 @@ public abstract class DruckMailControl extends FilterControl
     adressblatt = new SelectInput(Adressblatt.values(), Adressblatt
         .getByKey(settings.getInt(settingsprefix + "adressblatt.key", 1)));
     adressblatt.setName("Adressblatt");
+    adressblatt.addListener(event -> saveFilterSettings());
     return adressblatt;
   }
 
@@ -133,35 +165,42 @@ public abstract class DruckMailControl extends FilterControl
   }
 
   @Override
-  public void saveFilterSettings() throws RemoteException
+  public void saveFilterSettings()
   {
-    if (ausgabeart != null)
+    try
     {
-      Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
-      settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
+      if (ausgabeart != null)
+      {
+        Ausgabeart aa = (Ausgabeart) getAusgabeart().getValue();
+        settings.setAttribute(settingsprefix + "ausgabeart.key", aa.getKey());
+      }
+      if (adressblatt != null)
+      {
+        Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
+        settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
+      }
+      if (mailbetreff != null)
+      {
+        settings.setAttribute(settingsprefix + "mail.betreff",
+            (String) getBetreff().getValue());
+      }
+      if (mailtext != null)
+      {
+        settings.setAttribute(settingsprefix + "mail.text",
+            (String) getTxt().getValue());
+      }
+      if (formular != null)
+      {
+        Formular f = (Formular) getFormular(null).getValue();
+        settings.setAttribute(settingsprefix + "formular.key",
+            f == null ? "" : f.getID());
+      }
+      super.saveFilterSettings();
     }
-    if (adressblatt != null)
+    catch (RemoteException e)
     {
-      Adressblatt ab = (Adressblatt) getAdressblatt().getValue();
-      settings.setAttribute(settingsprefix + "adressblatt.key", ab.getKey());
+      Logger.error("Fehler", e);
     }
-    if (mailbetreff != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.betreff",
-          (String) getBetreff().getValue());
-    }
-    if (mailtext != null)
-    {
-      settings.setAttribute(settingsprefix + "mail.text",
-          (String) getTxt().getValue());
-    }
-    if (formular != null)
-    {
-      Formular f = (Formular) getFormular(null).getValue();
-      settings.setAttribute(settingsprefix + "formular.key",
-          f == null ? "" : f.getID());
-    }
-    super.saveFilterSettings();
   }
 
   abstract DruckMailEmpfaenger getDruckMailMitglieder(Object object,

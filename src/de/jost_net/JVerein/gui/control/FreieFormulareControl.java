@@ -43,7 +43,7 @@ public class FreieFormulareControl extends DruckMailControl
               .getFormular(null).getValue()).aufbereiten(
                   getMitglieder(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false, false);
+                  getTxtString(), false, false, false);
         }
         catch (ApplicationException ae)
         {
