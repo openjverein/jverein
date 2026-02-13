@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.ForderungAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -208,6 +209,11 @@ public class MitgliedMenu extends ContextMenu
     addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
         "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
+        new MitgliedLastschriftAction(), "lastschrift.png"));
+    addItem(new CheckedContextMenuItem("Forderung erstellen",
+        new ForderungAction(), "lastschrift.png"));
+    addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));
     addItem(new CheckedContextMenuItem("vCard-Datei",
@@ -220,14 +226,12 @@ public class MitgliedMenu extends ContextMenu
       addItem(new CheckedSingleContextMenuItem("Spendenbescheinigung",
           new SpendenbescheinigungNeuAction(), "file-invoice.png"));
     }
-    addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
-        new MitgliedLastschriftAction(), "file-invoice.png"));
     addItem(new CheckedContextMenuItem("Kontoauszug",
         new StartViewAction(KontoauszugMailView.class, true),
         "document-print.png"));
-
     addItem(new CheckedContextMenuItem("Personalbogen",
         new PersonalbogenAction(), "document-print.png"));
+
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);
     it.addFilter("art = ?",

@@ -57,7 +57,7 @@ public class ZusatzbetragVorlageDialog
     super(AbstractDialog.POSITION_CENTER);
 
     setTitle("Zusatzbetrag-Vorlagen");
-    setSize(950, 450);
+    setSize(1100, 500);
   }
 
   @Override

@@ -364,9 +364,15 @@ public class MitgliedMap extends AbstractMap
     return map;
   }
 
-  @SuppressWarnings("deprecation")
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
       throws RemoteException
+  {
+    return getDummyMap(inMap, false);
+  }
+
+  @SuppressWarnings("deprecation")
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap,
+      boolean ohneLesefelder) throws RemoteException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -513,11 +519,14 @@ public class MitgliedMap extends AbstractMap
           "Eigenschaft1, Eigenschaft2");
     }
 
-    // Füge Lesefelder diesem Mitglied-Objekt hinzu.
-    LesefeldAuswerter l = new LesefeldAuswerter();
-    l.setLesefelderDefinitionsFromDatabase();
-    l.setMap(map);
-    map.putAll(l.getLesefelderMap());
+    if (!ohneLesefelder)
+    {
+      // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+      LesefeldAuswerter l = new LesefeldAuswerter();
+      l.setLesefelderDefinitionsFromDatabase();
+      l.setMap(map);
+      map.putAll(l.getLesefelderMap());
+    }
 
     return map;
   }

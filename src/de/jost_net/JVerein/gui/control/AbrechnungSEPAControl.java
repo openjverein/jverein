@@ -20,6 +20,7 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -29,6 +30,7 @@ import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -41,6 +43,7 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -112,6 +115,8 @@ public class AbrechnungSEPAControl extends AbstractControl
   private DateInput voneingabedatum;
 
   private CheckboxInput rechnungsdokumentspeichern;
+
+  private List<Zusatzbetrag> zusatzbetraegeList;
 
   public AbrechnungSEPAControl(AbstractView view)
   {
@@ -186,6 +191,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     return stichtag;
   }
 
+  public boolean isStichtagSupported()
+  {
+    return stichtag != null;
+  }
+
   public DateInput getFaelligkeit() throws RemoteException
   {
     if (faelligkeit != null)
@@ -204,7 +214,7 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         return;
       }
-      if (faelligkeit.getValue() != null && getStichtag() != null
+      if (faelligkeit.getValue() != null && stichtag != null
           && getStichtag().getValue() == null)
       {
         getStichtag().setValue(faelligkeit.getValue());
@@ -227,6 +237,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     return vondatum;
   }
 
+  public boolean isVondatumSupported()
+  {
+    return vondatum != null;
+  }
+
   public DateInput getVonEingabedatum()
   {
     if (voneingabedatum != null)
@@ -237,6 +252,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.voneingabedatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
     return voneingabedatum;
+  }
+
+  public boolean isVoneingabgedatumSupported()
+  {
+    return voneingabedatum != null;
   }
 
   public DateInput getBisdatum()
@@ -252,6 +272,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum.setEnabled(
         (Integer) modus.getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER);
     return bisdatum;
+  }
+
+  public boolean isBisdatumSupported()
+  {
+    return bisdatum != null;
   }
 
   public TextInput getZahlungsgrund()
@@ -277,6 +302,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     return zusatzbetrag;
   }
 
+  public boolean isZusatzbetragSupported()
+  {
+    return zusatzbetrag != null;
+  }
+
   public CheckboxInput getKursteilnehmer()
   {
     if (kursteilnehmer != null)
@@ -286,6 +316,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     kursteilnehmer = new CheckboxInput(
         settings.getBoolean("kursteilnehmer", false));
     return kursteilnehmer;
+  }
+
+  public boolean isKursteilnehmerSupported()
+  {
+    return kursteilnehmer != null;
   }
 
   public CheckboxInput getKompakteAbbuchung()
@@ -323,6 +358,11 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnung;
   }
 
+  public boolean isRechnungSupported()
+  {
+    return rechnung != null;
+  }
+
   public CheckboxInput getRechnungsdokumentSpeichern()
   {
     if (rechnungsdokumentspeichern != null)
@@ -336,7 +376,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnungsdokumentspeichern;
   }
 
-  public boolean istRechnungsdokumentActiv()
+  public boolean isRechnungsdokumentSupported()
   {
     return rechnungsdokumentspeichern != null;
   }
@@ -474,6 +514,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return button;
   }
 
+  public void startZusatzbetragAbrechnung(List<Zusatzbetrag> zusatzbetraege)
+      throws RemoteException, ApplicationException
+  {
+    zusatzbetraegeList = zusatzbetraege;
+    doAbrechnung();
+  }
+
   private void doAbrechnung() throws ApplicationException, RemoteException
   {
     settings.setAttribute("modus", (Integer) modus.getValue());
@@ -495,8 +542,12 @@ public class AbrechnungSEPAControl extends AbstractControl
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
       settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
-      settings.setAttribute("rechnungsdokumentspeichern",
-          (Boolean) rechnungsdokumentspeichern.getValue());
+      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+          && JVereinPlugin.isArchiveServiceActive())
+      {
+        settings.setAttribute("rechnungsdokumentspeichern",
+            (Boolean) rechnungsdokumentspeichern.getValue());
+      }
       settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
       settings.setAttribute("rechnungsformular",
           rechnungsformular.getValue() == null ? null
@@ -516,27 +567,28 @@ public class AbrechnungSEPAControl extends AbstractControl
       throw new ApplicationException(
           "Interner Fehler - kann Abrechnungsmodus nicht auslesen");
     }
-    if (faelligkeit.getValue() == null)
+    if (faelligkeit == null || faelligkeit.getValue() == null)
     {
       throw new ApplicationException("Fälligkeitsdatum fehlt");
     }
-    Date vondatum = null;
-    if (stichtag.getValue() == null)
+    if (stichtag != null && stichtag.getValue() == null)
     {
       throw new ApplicationException("Stichtag fehlt");
     }
-    if (modus != Abrechnungsmodi.KEINBEITRAG)
+    if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER)
     {
-      vondatum = (Date) getVondatum().getValue();
-      if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER && vondatum == null
-          && getVonEingabedatum().getValue() == null)
+      if (vondatum == null || voneingabedatum == null
+          || (vondatum.getValue() == null
+              && voneingabedatum.getValue() == null))
       {
-        throw new ApplicationException("von-Datum fehlt");
+        throw new ApplicationException("Von-Datum fehlt");
       }
-      Date bisdatum = (Date) getBisdatum().getValue();
-      if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER && bisdatum == null)
+    }
+    if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER)
+    {
+      if (bisdatum == null || bisdatum.getValue() == null)
       {
-        throw new ApplicationException("bis-Datum fehlt");
+        throw new ApplicationException("Bis-Datum fehlt");
       }
     }
     File sepafilercur = null;
@@ -710,5 +762,10 @@ public class AbrechnungSEPAControl extends AbstractControl
         sollbuchungenzusammenfassen.setValue(false);
       }
     }
+  }
+
+  public List<Zusatzbetrag> getZusatzbetraegeList()
+  {
+    return zusatzbetraegeList;
   }
 }
