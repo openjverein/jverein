@@ -26,6 +26,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -357,8 +359,11 @@ public class FormularAufbereitung
     sbEpc.append(EPC_EUR);
     // Ersetze das Dezimalkomma durch einen Punkt, um der Spezifikation zu
     // entsprechen
-    String betrag = getString(fieldsMap.get(RechnungVar.SUMME_OFFEN.getName()))
-        .replace(',', '.');
+
+    DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
+    otherSymbols.setDecimalSeparator('.');
+    String betrag = new DecimalFormat("#.##", otherSymbols)
+        .format(fieldsMap.get(RechnungVar.SUMME_OFFEN.getName()));
     sbEpc.append(betrag);
     sbEpc.append("\n");
     sbEpc.append("\n"); // currently purpose code not used here
