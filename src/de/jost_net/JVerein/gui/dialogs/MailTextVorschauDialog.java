@@ -18,6 +18,7 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +28,17 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.util.EvalMail;
+import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -39,6 +46,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
 /**
@@ -67,13 +75,15 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
   private MitgliedListener listener = null;
 
-  private final de.willuhn.jameica.system.Settings settings;
+  private final Settings settings;
+
+  private Map<Mitglied, Object> objectslist = null;
 
   public MailTextVorschauDialog(IMailControl control, Map<String, Object> map,
       int position, boolean mitMitglied)
   {
     super(position);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     this.control = control;
     this.map = map;
     this.mitMitglied = mitMitglied;
@@ -104,8 +114,10 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
 
     betreffString = control.getBetreffString();
     textString = control.getTxtString();
+    objectslist = control.getDruckMailList();
+    List<Mitglied> empfaengerlist = control.getEmpfaengerList();
 
-    if (mitMitglied && control.getEmpfaengerList() == null)
+    if (mitMitglied && empfaengerlist == null && objectslist == null)
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
           (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
@@ -117,13 +129,22 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       }
       container.addLabelPair("Mitglied", mitglied);
     }
-    else if (mitMitglied && control.getEmpfaengerList() != null)
+    else if (mitMitglied)
     {
-      List<Mitglied> empfaenger = control.getEmpfaengerList();
+      List<Mitglied> empfaenger = null;
+      if (empfaengerlist != null)
+      {
+        empfaenger = empfaengerlist;
+      }
+      else if (objectslist != null)
+      {
+        empfaenger = new ArrayList<>(objectslist.keySet());
+      }
       mitglied = new SelectInput(empfaenger, null);
       listener = new MitgliedListener();
       mitglied.addListener(listener);
-      if (empfaenger.isEmpty() || empfaenger.size() == 1)
+      // Bei keinem oder nur einem Eintrag kann man nichts auswählen
+      if (empfaenger == null || empfaenger.size() < 2)
       {
         mitglied.disable();
       }
@@ -169,6 +190,26 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       {
         // Mitglied (m) NULL ist, dann wird die Dummy geliefert
         map = new MitgliedMap().getMap(m, map);
+        // Falls es Anhänge gibt, dann auch deren Maps erzeugen, damit in der
+        // Mail-Text-Vorschau die Variablen-Werte aus den Attachements verwendet
+        // werden und nicht deren Dummy Maps
+        if (objectslist != null)
+        {
+          if (objectslist.get(m) instanceof Rechnung)
+          {
+            map = new RechnungMap().getMap((Rechnung) objectslist.get(m), map);
+          }
+          else if (objectslist.get(m) instanceof Lastschrift)
+          {
+            map = new LastschriftMap().getMap((Lastschrift) objectslist.get(m),
+                map);
+          }
+          else if (objectslist.get(m) instanceof Spendenbescheinigung)
+          {
+            map = new SpendenbescheinigungMap()
+                .getMap((Spendenbescheinigung) objectslist.get(m), map);
+          }
+        }
         em = new EvalMail(map);
         betreff.setValue(em.evalBetreff(betreffString));
         text.setValue(em.evalText(textString));
