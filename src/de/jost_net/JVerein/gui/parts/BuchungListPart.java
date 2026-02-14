@@ -22,6 +22,7 @@ import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -70,27 +71,39 @@ public class BuchungListPart extends BuchungListTablePart
         return s;
       }
     });
-    addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
     addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
-      addColumn("Steuer", "steuer", o -> {
-        if (o == null)
-        {
+      addColumn("Nettobetrag", "netto",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
           return "";
-        }
-        try
-        {
-          return ((Steuer) o).getName();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
-        return "";
-      }, false, Column.ALIGN_RIGHT);
+        }, false, Column.ALIGN_RIGHT);
+      }
     }
+    addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+
     addColumn("Mitglied", Buchung.SOLLBUCHUNG, new SollbuchungFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);

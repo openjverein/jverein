@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.menu;
 
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
@@ -50,6 +51,8 @@ public class RechnungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new StartViewAction(RechnungMailView.class, true),
         "document-print.png"));

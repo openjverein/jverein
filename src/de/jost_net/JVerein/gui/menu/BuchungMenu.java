@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
@@ -87,6 +88,8 @@ public class BuchungMenu extends ContextMenu
     {
       addItem(new MitgliedOeffnenItem("Mitglied anzeigen",
           new MitgliedDetailAction(), "user-friends.png"));
+      addItem(new MitgliedOeffnenItem("Sollbuchung anzeigen",
+          new SollbuchungEditAction(), "calculator.png"));
       addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
           new AnlagenkontoNeuAction(), "document-new.png"));
     }

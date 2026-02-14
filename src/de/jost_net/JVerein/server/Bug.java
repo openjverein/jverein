@@ -20,10 +20,14 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
 
 public class Bug
 {
   private IAdresse object;
+
+  private JVereinDBObject dbobject;
 
   private String meldung;
 
@@ -42,6 +46,13 @@ public class Bug
     this.klassifikation = klassifikation;
   }
 
+  public Bug(int klassifikation, JVereinDBObject provider, String meldung)
+  {
+    this.dbobject = provider;
+    this.meldung = meldung;
+    this.klassifikation = klassifikation;
+  }
+
   public Object getObject()
   {
     return object;
@@ -49,7 +60,55 @@ public class Bug
 
   public String getName() throws RemoteException
   {
-    return Adressaufbereitung.getNameVorname(object);
+    if (object != null)
+    {
+      return Adressaufbereitung.getNameVorname(object);
+    }
+    return "";
+  }
+
+  public Object getProvider()
+  {
+    return dbobject;
+  }
+
+  public String getObjektName() throws RemoteException
+  {
+    if (dbobject != null)
+    {
+      return dbobject.getObjektName();
+    }
+    return "";
+  }
+
+  public String getZahlerName()
+  {
+    try
+    {
+      if (dbobject != null && dbobject instanceof IGutschriftProvider)
+      {
+        Mitglied zahler = ((IGutschriftProvider) dbobject)
+            .getGutschriftZahler();
+        if (zahler != null)
+        {
+          return Adressaufbereitung.getNameVorname(zahler);
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      return "";
+    }
+    return "";
+  }
+
+  public String getObjektId() throws RemoteException
+  {
+    if (dbobject != null)
+    {
+      return dbobject.getID();
+    }
+    return "";
   }
 
   public String getMeldung()

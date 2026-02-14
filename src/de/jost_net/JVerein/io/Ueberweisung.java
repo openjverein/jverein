@@ -47,7 +47,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.VarTools;
-import de.jost_net.JVerein.keys.Ct1Ausgabe;
+import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -66,25 +66,27 @@ import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class Ct1Ueberweisung
+public class Ueberweisung
 {
+  private Double betrag = null;
 
-  public Ct1Ueberweisung()
+  public Ueberweisung(Double betrag)
   {
+    this.betrag = betrag;
   }
 
   public int write(ArrayList<Lastschrift> lastschriften, File file, Date faell,
-      Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
+      UeberweisungAusgabe ausgabe, String verwendungszweck) throws Exception
   {
     Velocity.init();
-    switch (ct1ausgabe)
+    switch (ausgabe)
     {
       case SEPA_DATEI:
-        return dateiausgabe(lastschriften, file, faell, ct1ausgabe,
+        return dateiausgabe(lastschriften, file, faell, ausgabe,
             verwendungszweck);
 
       case HIBISCUS:
-        return hibiscusausgabe(lastschriften, file, faell, ct1ausgabe,
+        return hibiscusausgabe(lastschriften, file, faell, ausgabe,
             verwendungszweck);
     }
     return -1;
@@ -92,7 +94,7 @@ public class Ct1Ueberweisung
 
   @SuppressWarnings("unchecked")
   private int dateiausgabe(ArrayList<Lastschrift> lastschriften, File file,
-      Date faell, Ct1Ausgabe ct1ausgabe, String verwendungszweck)
+      Date faell, UeberweisungAusgabe ausgabe, String verwendungszweck)
       throws Exception
   {
     SepaVersion sepaVersion = SepaVersion
@@ -132,12 +134,28 @@ public class Ct1Ueberweisung
                 .getKontoinhaber(Mitglied.namenformat.KONTOINHABER)
                 .toUpperCase()));
       }
-      ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
-          (BigDecimal.valueOf(0.01)).toString());
+      if (betrag != null)
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
+            (BigDecimal.valueOf(betrag)).toString());
+      }
+      else
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("btg.value", counter),
+            (BigDecimal.valueOf(ls.getBetrag())).toString());
+      }
       ls_properties.setProperty(SepaUtil.insertIndex("btg.curr", counter),
           HBCIProperties.CURRENCY_DEFAULT_DE);
-      ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
-          StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+      if (verwendungszweck != null)
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+            StringUtils.trimToEmpty(eval(ls, verwendungszweck)));
+      }
+      else
+      {
+        ls_properties.setProperty(SepaUtil.insertIndex("usage", counter),
+            StringUtils.trimToEmpty(ls.getVerwendungszweck()));
+      }
       ls_properties.setProperty(SepaUtil.insertIndex("endtoendid", counter),
           "NOTPROVIDED");
       ls_properties.setProperty(SepaUtil.insertIndex("mandateid", counter),
@@ -156,7 +174,7 @@ public class Ct1Ueberweisung
   }
 
   private int hibiscusausgabe(ArrayList<Lastschrift> lastschriften, File file,
-      Date faell, Ct1Ausgabe ct1ausgabe, String verwendungszweck)
+      Date faell, UeberweisungAusgabe ct1ausgabe, String verwendungszweck)
       throws Exception
   {
     try
@@ -195,7 +213,14 @@ public class Ct1Ueberweisung
 
         AuslandsUeberweisung ue = (AuslandsUeberweisung) service
             .createObject(AuslandsUeberweisung.class, null);
-        ue.setBetrag(0.01);
+        if (betrag != null)
+        {
+          ue.setBetrag(betrag);
+        }
+        else
+        {
+          ue.setBetrag(ls.getBetrag());
+        }
         HibiscusAddress ad = (HibiscusAddress) service
             .createObject(HibiscusAddress.class, null);
         ad.setBic(ls.getBIC());
@@ -219,8 +244,16 @@ public class Ct1Ueberweisung
                   255));
         }
         ue.setTermin(faell);
-        ue.setZweck(StringTool.getStringWithMaxLength(
-            Zeichen.convert(eval(ls, verwendungszweck)), 140));
+        if (verwendungszweck != null)
+        {
+          ue.setZweck(StringTool.getStringWithMaxLength(
+              Zeichen.convert(eval(ls, verwendungszweck)), 140));
+        }
+        else
+        {
+          ue.setZweck(StringTool.getStringWithMaxLength(
+              Zeichen.convert(ls.getVerwendungszweck()), 140));
+        }
         ue.setKonto(hibk);
         ueberweisungen[i] = ue;
         i++;
