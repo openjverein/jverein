@@ -177,7 +177,7 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
     }
 
-    buttons.addButton("Auf Fehler prüfen", context -> {
+    buttons.addButton("Auf Probleme prüfen", context -> {
       if (!checkInput())
       {
         return;

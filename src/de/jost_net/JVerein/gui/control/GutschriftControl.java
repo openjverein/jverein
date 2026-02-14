@@ -689,7 +689,7 @@ public class GutschriftControl
 
       if (bugs.isEmpty())
       {
-        bugs.add(new Bug(Bug.HINT, null, "Es wurden keine Probleme gefunden!"));
+        bugs.add(new Bug(Bug.HINT, null, "Es wurden keine Probleme gefunden."));
       }
     }
     return bugs;
