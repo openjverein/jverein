@@ -362,7 +362,7 @@ public class FormularAufbereitung
 
     DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols();
     otherSymbols.setDecimalSeparator('.');
-    String betrag = new DecimalFormat("#.##", otherSymbols)
+    String betrag = new DecimalFormat("0.00", otherSymbols)
         .format(fieldsMap.get(RechnungVar.SUMME_OFFEN.getName()));
     sbEpc.append(betrag);
     sbEpc.append("\n");

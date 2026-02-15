@@ -68,7 +68,7 @@ public class Einstellungen
    * Our decimal formatter.
    */
   public final static DecimalFormat DECIMALFORMAT = new DecimalFormat(
-      "###,###.##");
+      "###,##0.00");
 
   /**
    * Int formatter.
