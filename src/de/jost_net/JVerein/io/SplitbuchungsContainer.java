@@ -20,11 +20,11 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
@@ -531,15 +531,26 @@ public class SplitbuchungsContainer
           .getEinstellung(Property.SPLITPOSITIONZWECK);
       double zugeordnet = 0d;
       // Wir nehmen die kleinsten Beträge zuerst, so werden ggf. Guthaben als
-      // erstes ausgeglichen.
-      Iterator<Entry<String, Double>> iterator = splitMap.entrySet().stream()
-          .sorted(Map.Entry.comparingByValue()).iterator();
+      // erstes ausgeglichen. Bei negativem Betrag der Sollbuchung in
+      // umgekehrter Reihenfolge
+      Iterator<Entry<String, Double>> iterator;
+      if (buchung.getBetrag() > 0)
+      {
+        iterator = splitMap.entrySet().stream()
+            .sorted(Map.Entry.comparingByValue()).iterator();
+      }
+      else
+      {
+        iterator = splitMap.entrySet().stream()
+            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+            .iterator();
+      }
+
       while (iterator.hasNext())
       {
-        Entry<String, Double> entry = iterator.next();
-
         // Wenn der Restbetrag kleiner als der Fehlbetrag ist, nur den Rest
         // zuordnen.
+        Entry<String, Double> entry = iterator.next();
         double betragZuordnen = entry.getValue();
         if ((buchung.getBetrag() > 0
             && betragZuordnen > buchung.getBetrag() - zugeordnet)
