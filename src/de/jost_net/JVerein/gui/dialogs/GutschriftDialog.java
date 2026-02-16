@@ -18,8 +18,6 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -28,103 +26,93 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.GutschriftMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.io.Gutschrift;
-import de.jost_net.JVerein.io.GutschriftParam;
-import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.rmi.Buchungsart;
-import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
-public class GutschriftDialog extends AbstractDialog<GutschriftParam>
+public class GutschriftDialog extends AbstractDialog<Boolean>
 {
-  private GutschriftParam params = null;
+  private boolean einstellungRechnungAnzeigen = false;
 
-  private LabelInput status = null;
+  private boolean einstellungBuchungsklasseInBuchung = false;
 
-  private boolean EinstellungRechnungAnzeigen = false;
+  private boolean einstellungSteuerInBuchung = false;
 
-  private boolean EinstellungBuchungsklasseInBuchung = false;
+  private boolean einstellungSpeicherungAnzeigen = false;
 
-  private boolean EinstellungSteuerInBuchung = false;
-
-  private boolean EinstellungSpeicherungAnzeigen = false;
+  private boolean isMitglied = false;
 
   private Settings settings = null;
 
-  private GutschriftControl gcontrol;
+  private GutschriftControl control;
 
-  public GutschriftDialog(IGutschriftProvider[] providerArray,
-      boolean isMitglied, boolean isNewDialog) throws RemoteException
+  public GutschriftDialog(IGutschriftProvider[] providerArray)
+      throws RemoteException
   {
     super(SWT.CENTER);
     setTitle("Gutschrift erstellen");
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.gcontrol = new GutschriftControl(providerArray, isMitglied,
-        isNewDialog);
+    this.control = new GutschriftControl(providerArray);
+    this.isMitglied = providerArray[0] instanceof Mitglied;
     setSize(950, SWT.DEFAULT);
   }
 
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
-    EinstellungRechnungAnzeigen = (Boolean) Einstellungen
+    einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    EinstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+    einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
         && JVereinPlugin.isArchiveServiceActive();
-    EinstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
+    einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    EinstellungSteuerInBuchung = (Boolean) Einstellungen
+    einstellungSteuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
 
     LabelGroup group = new LabelGroup(parent, "");
-    group.addInput(getStatus());
+    group.addInput(control.getStatus());
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
     left.addHeadline("Überweisung");
-    left.addLabelPair("Ausgabe", gcontrol.getAusgabeInput());
-    left.addLabelPair("Ausführungsdatum", gcontrol.getDatumInput());
-    left.addLabelPair("Verwendungszweck", gcontrol.getZweckInput());
+    left.addLabelPair("Ausgabe", control.getAusgabeInput());
+    left.addLabelPair("Ausführungsdatum", control.getDatumInput());
+    left.addLabelPair("Verwendungszweck", control.getZweckInput());
 
     // Fixen Betrag erstatten
     right.addHeadline("Fixer Betrag");
-    right.addLabelPair("Fixen Betrag erstatten",
-        gcontrol.getFixerBetragAbrechnenInput());
-    right.addLabelPair("Erstattungsbetrag", gcontrol.getFixerBetragInput());
-    right.addLabelPair("Buchungsart", gcontrol.getBuchungsartInput());
-    if (EinstellungBuchungsklasseInBuchung)
+    if (!isMitglied)
     {
-      right.addLabelPair("Buchungsklasse", gcontrol.getBuchungsklasseInput());
+      right.addLabelPair("Fixen Betrag erstatten",
+          control.getFixerBetragAbrechnenInput());
     }
-    if (EinstellungSteuerInBuchung)
+    else
     {
-      right.addLabelPair("Steuer", gcontrol.getSteuerInput());
+      // Nicht anzeigen aber Wert auf true setzen
+      control.getFixerBetragAbrechnenInput();
+    }
+    right.addLabelPair("Erstattungsbetrag", control.getFixerBetragInput());
+    right.addLabelPair("Buchungsart", control.getBuchungsartInput());
+    if (einstellungBuchungsklasseInBuchung)
+    {
+      right.addLabelPair("Buchungsklasse", control.getBuchungsklasseInput());
+    }
+    if (einstellungSteuerInBuchung)
+    {
+      right.addLabelPair("Steuer", control.getSteuerInput());
     }
 
     // Nur anzeigen wenn Rechnungen aktiviert sind
-    if (EinstellungRechnungAnzeigen)
+    if (einstellungRechnungAnzeigen)
     {
       ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
       SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
@@ -135,210 +123,45 @@ public class GutschriftDialog extends AbstractDialog<GutschriftParam>
           2);
 
       bleft.addLabelPair("Rechnung zur Gutschrift erzeugen",
-          gcontrol.getRechnungErzeugenInput());
-      if (EinstellungSpeicherungAnzeigen)
+          control.getRechnungErzeugenInput());
+      if (einstellungSpeicherungAnzeigen)
       {
         bleft.addLabelPair("Rechnung als Buchungsdokument speichern",
-            gcontrol.getRechnungsDokumentSpeichernInput());
+            control.getRechnungsDokumentSpeichernInput());
       }
-      bleft.addLabelPair("Erstattungsformular", gcontrol.getFormularInput());
-      bleft.addLabelPair("Rechnungsdatum", gcontrol.getRechnungsDatumInput());
-      bright.addLabelPair("Rechnungstext", gcontrol.getRechnungsTextInput());
-      bright.addLabelPair("Kommentar", gcontrol.getRechnungKommentarInput());
+      bleft.addLabelPair("Erstattungsformular", control.getFormularInput());
+      bleft.addLabelPair("Rechnungsdatum", control.getRechnungsDatumInput());
+      bright.addLabelPair("Rechnungstext", control.getRechnungsTextInput());
+      bright.addLabelPair("Kommentar", control.getRechnungKommentarInput());
     }
 
     LabelGroup below2 = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
         true);
     below2.getComposite().setLayout(new GridLayout(1, false));
     // below2.addHeadline("Fehler/Warnungen/Hinweise");
-    below2.addPart(gcontrol.getBugsList());
+    below2.addPart(control.getBugsList());
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
     below2.getComposite().setLayoutData(gridData);
 
     // Buttons
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.GUTSCHRIFT, false, "question-circle.png");
-
-    Map<String, Object> map = GutschriftMap.getDummyMap(null);
-    map = new AllgemeineMap().getMap(map);
-    map = MitgliedMap.getDummyMap(map);
-    buttons.addButton("Verwendungszweck Variablen anzeigen",
-        new InsertVariableDialogAction(map), null, false, "bookmark.png");
-
-    if (EinstellungRechnungAnzeigen)
+    buttons.addButton(control.getHelpButton());
+    buttons.addButton(control.getVZweckVariablenButton());
+    if (einstellungRechnungAnzeigen)
     {
-      Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-      rmap = GutschriftMap.getDummyMap(rmap);
-      rmap = MitgliedMap.getDummyMap(rmap);
-      rmap = RechnungMap.getDummyMap(rmap);
-      buttons.addButton("Rechnungstext Variablen anzeigen",
-          new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
+      buttons.addButton(control.getRZweckVariablenButton());
     }
-
-    buttons.addButton("Auf Probleme prüfen", context -> {
-      if (!checkInput())
-      {
-        return;
-      }
-      status.setValue("");
-      gcontrol.storeValues();
-      try
-      {
-        gcontrol.refreshBugsList();
-      }
-      catch (RemoteException e)
-      {
-        status.setValue("Interner Fehler beim Update der Fehlerliste");
-        status.setColor(Color.ERROR);
-        Logger.error("Fehler", e);
-      }
-    }, null, false, "bug.png");
-
-    buttons.addButton("Gutschriften erstellen", context -> {
-      try
-      {
-        if (!checkInput())
-        {
-          return;
-        }
-        gcontrol.storeValues();
-        new Gutschrift(gcontrol);
-        close();
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-      catch (Exception e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-        Logger.error("Fehler", e);
-      }
-    }, null, false, "ok.png");
-    buttons.addButton("Abbrechen", context -> {
-      close();
-    }, null, false, "process-stop.png");
-
+    buttons.addButton(control.getPruefenButton());
+    buttons.addButton(control.getErstellenButton(this));
+    buttons.addButton(control.getAbbrechenButton(this));
     buttons.paint(parent);
   }
 
-  private LabelInput getStatus()
-  {
-    if (status != null)
-    {
-      return status;
-    }
-    status = new LabelInput("");
-    return status;
-  }
-
-  private boolean checkInput()
-  {
-    try
-    {
-      if (gcontrol.getZweckInput().getValue() == null
-          || ((String) gcontrol.getZweckInput().getValue()).isEmpty())
-      {
-        status.setValue("Bitte Verwendungszweck eingeben");
-        status.setColor(Color.ERROR);
-        return false;
-      }
-      if (gcontrol.getDatumInput().getValue() == null)
-      {
-        status.setValue("Bitte Ausführungsdatum auswählen");
-        status.setColor(Color.ERROR);
-        return false;
-      }
-      if (EinstellungRechnungAnzeigen
-          && (boolean) gcontrol.getRechnungErzeugenInput().getValue())
-      {
-        if (gcontrol.getFormularInput().getValue() == null)
-        {
-          status.setValue("Bitte Erstattungsformular auswählen");
-          status.setColor(Color.ERROR);
-          return false;
-        }
-        if (gcontrol.getRechnungsDatumInput().getValue() == null)
-        {
-          status.setValue("Bitte Rechnungsdatum auswählen");
-          status.setColor(Color.ERROR);
-          return false;
-        }
-      }
-      if ((boolean) gcontrol.getFixerBetragAbrechnenInput().getValue())
-      {
-        if (gcontrol.getFixerBetragInput().getValue() == null
-            || ((Double) gcontrol.getFixerBetragInput().getValue()) < 0.005d)
-        {
-          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
-          status.setColor(Color.ERROR);
-          return false;
-        }
-        if (gcontrol.getBuchungsartInput().getValue() == null)
-        {
-          status.setValue("Bitte Buchungsart eingeben");
-          status.setColor(Color.ERROR);
-          return false;
-        }
-        if (EinstellungBuchungsklasseInBuchung
-            && gcontrol.getBuchungsklasseInput().getValue() == null)
-        {
-          status.setValue("Bitte Buchungsklasse eingeben");
-          status.setColor(Color.ERROR);
-          return false;
-        }
-        if (EinstellungSteuerInBuchung)
-        {
-          Buchungsart buchungsart = (Buchungsart) gcontrol.getBuchungsartInput()
-              .getValue();
-          Steuer steuer = (Steuer) gcontrol.getSteuerInput().getValue();
-          if (steuer != null && buchungsart != null)
-          {
-            if (buchungsart.getSpende() || buchungsart.getAbschreibung())
-            {
-              status.setValue(
-                  "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
-              status.setColor(Color.ERROR);
-              return false;
-            }
-            if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
-            {
-              switch (buchungsart.getArt())
-              {
-                case ArtBuchungsart.AUSGABE:
-                  status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
-                  status.setColor(Color.ERROR);
-                  return false;
-                case ArtBuchungsart.EINNAHME:
-                  status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
-                  status.setColor(Color.ERROR);
-                  return false;
-                // Umbuchung ist bei Anlagebuchungen möglich,
-                // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
-                // möglich
-                case ArtBuchungsart.UMBUCHUNG:
-                  break;
-              }
-            }
-          }
-        }
-      }
-    }
-    catch (RemoteException re)
-    {
-      status.setValue("Fehler beim Auswerten der Eingabe!");
-      status.setColor(Color.ERROR);
-      return false;
-    }
-    return true;
-  }
-
   @Override
-  protected GutschriftParam getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return params;
+    return true;
   }
 
   @Override

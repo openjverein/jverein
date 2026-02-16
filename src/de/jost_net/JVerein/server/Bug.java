@@ -25,9 +25,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 
 public class Bug
 {
-  private IAdresse object;
-
-  private JVereinDBObject dbobject;
+  private JVereinDBObject object;
 
   private String meldung;
 
@@ -39,16 +37,9 @@ public class Bug
 
   public static final int HINT = 3;
 
-  public Bug(IAdresse object, String meldung, int klassifikation)
+  public Bug(JVereinDBObject object, String meldung, int klassifikation)
   {
     this.object = object;
-    this.meldung = meldung;
-    this.klassifikation = klassifikation;
-  }
-
-  public Bug(int klassifikation, JVereinDBObject provider, String meldung)
-  {
-    this.dbobject = provider;
     this.meldung = meldung;
     this.klassifikation = klassifikation;
   }
@@ -60,23 +51,18 @@ public class Bug
 
   public String getName() throws RemoteException
   {
-    if (object != null)
+    if (object != null && object instanceof IAdresse)
     {
-      return Adressaufbereitung.getNameVorname(object);
+      return Adressaufbereitung.getNameVorname((IAdresse) object);
     }
     return "";
   }
 
-  public Object getProvider()
-  {
-    return dbobject;
-  }
-
   public String getObjektName() throws RemoteException
   {
-    if (dbobject != null)
+    if (object != null)
     {
-      return dbobject.getObjektName();
+      return object.getObjektName();
     }
     return "";
   }
@@ -85,10 +71,9 @@ public class Bug
   {
     try
     {
-      if (dbobject != null && dbobject instanceof IGutschriftProvider)
+      if (object != null && object instanceof IGutschriftProvider)
       {
-        Mitglied zahler = ((IGutschriftProvider) dbobject)
-            .getGutschriftZahler();
+        Mitglied zahler = ((IGutschriftProvider) object).getGutschriftZahler();
         if (zahler != null)
         {
           return Adressaufbereitung.getNameVorname(zahler);
@@ -104,9 +89,9 @@ public class Bug
 
   public String getObjektId() throws RemoteException
   {
-    if (dbobject != null)
+    if (object != null)
     {
-      return dbobject.getID();
+      return object.getID();
     }
     return "";
   }

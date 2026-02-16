@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -140,53 +141,62 @@ public class SEPABugsControl extends AbstractControl
     return bugs;
   }
 
-  private void plausi(List<Bug> bugs, ILastschrift ls) throws RemoteException
+  private void plausi(List<Bug> bugs, JVereinDBObject object)
+      throws RemoteException
   {
-    if (ls.getMandatDatum().equals(Einstellungen.NODATE))
+    if (object instanceof ILastschrift)
     {
-      bugs.add(new Bug(ls,
-          "Für die Basislastschrift fehlt das Mandatsdatum. Keine Lastschrift",
-          Bug.HINT));
-    }
-    else if (ls.getMandatDatum().after(new Date()))
-    {
-      bugs.add(new Bug(ls,
-          "Das Mandatsdatum liegt in der Zukunft. Keine Lastschrift",
-          Bug.HINT));
-    }
+      ILastschrift ls = (ILastschrift) object;
+      if (ls.getMandatDatum().equals(Einstellungen.NODATE))
+      {
+        bugs.add(new Bug(object,
+            "Für die Basislastschrift fehlt das Mandatsdatum. Keine Lastschrift",
+            Bug.HINT));
+      }
+      else if (ls.getMandatDatum().after(new Date()))
+      {
+        bugs.add(new Bug(object,
+            "Das Mandatsdatum liegt in der Zukunft. Keine Lastschrift",
+            Bug.HINT));
+      }
 
-    try
-    {
-      new IBAN(ls.getIban());
+      try
+      {
+        new IBAN(ls.getIban());
+      }
+      catch (SEPAException e)
+      {
+        bugs.add(new Bug(object, "Ungültige IBAN " + ls.getIban(), Bug.ERROR));
+      }
+      try
+      {
+        new BIC(ls.getBic());
+      }
+      catch (Exception e)
+      {
+        bugs.add(new Bug(object, "Ungültige BIC " + ls.getBic(), Bug.ERROR));
+      }
+      // if (bic != null && iban != null)
+      // {
+      // String blz = iban.getBLZ();
+      // Bank b = Banken.getBankByBLZ(blz);
+      // if (!b.getBIC().equals(ls.getBic()))
+      // {
+      // bugs.add(new Bug(ls, "BIC passt nicht zur IBAN: " + ls.getBic() + ", "
+      // + ls.getIban(), Bug.ERROR));
+      // }
+      // }
+      if (ls.getLetzteLastschrift() != null
+          && ls.getLetzteLastschrift().before(sepagueltigkeit))
+      {
+        bugs.add(new Bug(object,
+            "Letzte Lastschrift ist älter als 36 Monate. Neues Mandat anfordern und eingeben.",
+            Bug.ERROR));
+      }
     }
-    catch (SEPAException e)
+    else
     {
-      bugs.add(new Bug(ls, "Ungültige IBAN " + ls.getIban(), Bug.ERROR));
-    }
-    try
-    {
-      new BIC(ls.getBic());
-    }
-    catch (Exception e)
-    {
-      bugs.add(new Bug(ls, "Ungültige BIC " + ls.getBic(), Bug.ERROR));
-    }
-    // if (bic != null && iban != null)
-    // {
-    // String blz = iban.getBLZ();
-    // Bank b = Banken.getBankByBLZ(blz);
-    // if (!b.getBIC().equals(ls.getBic()))
-    // {
-    // bugs.add(new Bug(ls, "BIC passt nicht zur IBAN: " + ls.getBic() + ", "
-    // + ls.getIban(), Bug.ERROR));
-    // }
-    // }
-    if (ls.getLetzteLastschrift() != null
-        && ls.getLetzteLastschrift().before(sepagueltigkeit))
-    {
-      bugs.add(new Bug(ls,
-          "Letzte Lastschrift ist älter als 36 Monate. Neues Mandat anfordern und eingeben.",
-          Bug.ERROR));
+      return;
     }
   }
 

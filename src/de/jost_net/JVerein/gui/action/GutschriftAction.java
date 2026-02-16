@@ -114,8 +114,7 @@ public class GutschriftAction implements Action
             "Keine Sollbuchung, Rechnung, Abrechnungslauf, Lastschrift oder Mitglied ausgewählt!");
       }
 
-      GutschriftDialog dialog = new GutschriftDialog(providerArray,
-          providerArray[0] instanceof Mitglied, true);
+      GutschriftDialog dialog = new GutschriftDialog(providerArray);
       dialog.open();
     }
     catch (ApplicationException | OperationCanceledException ae)

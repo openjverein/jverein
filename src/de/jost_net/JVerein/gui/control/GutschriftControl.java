@@ -1,26 +1,36 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.GutschriftMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GrayableTextAreaInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
+import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -42,11 +52,15 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class GutschriftControl
 {
@@ -54,9 +68,9 @@ public class GutschriftControl
 
   private boolean isMitglied;
 
-  private boolean isNewDialog;
-
   private IGutschriftProvider[] providerArray;
+
+  private LabelInput status;
 
   private GutschriftParam params;
 
@@ -88,35 +102,34 @@ public class GutschriftControl
 
   private DateInput rechnungsDatumInput;
 
-  private Boolean EinstellungRechnungAnzeigen;
+  private Boolean einstellungRechnungAnzeigen;
 
-  private Boolean EinstellungSpeicherungAnzeigen;
+  private Boolean einstellungSpeicherungAnzeigen;
 
-  private Boolean EinstellungBuchungsklasseInBuchung;
+  private Boolean einstellungBuchungsklasseInBuchung;
 
-  private Boolean EinstellungSteuerInBuchung;
+  private Boolean einstellungSteuerInBuchung;
 
   private Settings settings = null;
 
   final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl(null);
 
-  public GutschriftControl(IGutschriftProvider[] providerArray,
-      boolean isMitglied, boolean isNewDialog) throws RemoteException
+  public GutschriftControl(IGutschriftProvider[] providerArray)
+      throws RemoteException
   {
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    this.isMitglied = isMitglied;
+    this.isMitglied = providerArray[0] instanceof Mitglied;
     this.providerArray = providerArray;
-    this.isNewDialog = isNewDialog;
 
-    EinstellungRechnungAnzeigen = (Boolean) Einstellungen
+    einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    EinstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+    einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
         && JVereinPlugin.isArchiveServiceActive();
-    EinstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
+    einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    EinstellungSteuerInBuchung = (Boolean) Einstellungen
+    einstellungSteuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
   }
 
@@ -125,14 +138,19 @@ public class GutschriftControl
     return providerArray;
   }
 
-  public void setParams(GutschriftParam params)
-  {
-    this.params = params;
-  }
-
   public GutschriftParam getParams()
   {
     return params;
+  }
+
+  public LabelInput getStatus()
+  {
+    if (status != null)
+    {
+      return status;
+    }
+    status = new LabelInput("");
+    return status;
   }
 
   // Ausgabe
@@ -162,30 +180,9 @@ public class GutschriftControl
       return datumInput;
     }
     Date d = new Date();
-    if (!isNewDialog)
-    {
-      d = getDatum("datum");
-    }
     datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
     datumInput.setMandatory(true);
     return datumInput;
-  }
-
-  public Date getDatum(String datum)
-  {
-    String tmp = settings.getString(datum, null);
-    if (tmp != null)
-    {
-      try
-      {
-        return new JVDateFormatTTMMJJJJ().parse(tmp);
-      }
-      catch (ParseException e)
-      {
-        //
-      }
-    }
-    return new Date();
   }
 
   // Verwendungszweck
@@ -210,9 +207,6 @@ public class GutschriftControl
     if (isMitglied)
     {
       fixerBetragAbrechnenInput = new CheckboxInput(true);
-      fixerBetragAbrechnenInput.addListener(e -> {
-        fixerBetragAbrechnenInput.setValue(true);
-      });
     }
     else
     {
@@ -485,11 +479,92 @@ public class GutschriftControl
       return rechnungsDatumInput;
     }
     rechnungsDatumInput = scontrol.getRechnungsdatum();
-    if (!isNewDialog)
-    {
-      rechnungsDatumInput.setValue(getDatum("rechnungsdatum"));
-    }
     return rechnungsDatumInput;
+  }
+
+  public Button getHelpButton()
+  {
+    Button b = new Button("Hilfe", new DokumentationAction(),
+        DokumentationUtil.GUTSCHRIFT, false, "question-circle.png");
+    return b;
+  }
+
+  public Button getVZweckVariablenButton() throws RemoteException
+  {
+    Map<String, Object> map = GutschriftMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+    map = MitgliedMap.getDummyMap(map);
+    Button b = new Button("Verwendungszweck Variablen anzeigen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
+    return b;
+  }
+
+  public Button getRZweckVariablenButton() throws RemoteException
+  {
+    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+    rmap = GutschriftMap.getDummyMap(rmap);
+    rmap = MitgliedMap.getDummyMap(rmap);
+    rmap = RechnungMap.getDummyMap(rmap);
+    Button b = new Button("Rechnungstext Variablen anzeigen",
+        new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
+    return b;
+  }
+
+  public Button getPruefenButton()
+  {
+    Button b = new Button("Auf Probleme prüfen", context -> {
+      if (!checkInput())
+      {
+        return;
+      }
+      status.setValue("");
+      storeValues();
+      try
+      {
+        refreshBugsList();
+      }
+      catch (RemoteException e)
+      {
+        status.setValue("Interner Fehler beim Update der Fehlerliste");
+        status.setColor(Color.ERROR);
+        Logger.error("Fehler", e);
+      }
+    }, null, false, "bug.png");
+    return b;
+  }
+
+  public Button getErstellenButton(GutschriftDialog dialog)
+  {
+    Button b = new Button("Gutschriften erstellen", context -> {
+      try
+      {
+        if (!checkInput())
+        {
+          return;
+        }
+        storeValues();
+        new Gutschrift(this);
+        dialog.close();
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+      }
+      catch (Exception e)
+      {
+        GUI.getStatusBar().setErrorText(e.getMessage());
+        Logger.error("Fehler", e);
+      }
+    }, null, false, "ok.png");
+    return b;
+  }
+
+  public Button getAbbrechenButton(GutschriftDialog dialog)
+  {
+    Button b = new Button("Abbrechen", context -> {
+      dialog.close();
+    }, null, false, "process-stop.png");
+    return b;
   }
 
   public void storeValues()
@@ -519,7 +594,7 @@ public class GutschriftControl
     }
 
     // Rechnung
-    if (EinstellungRechnungAnzeigen)
+    if (einstellungRechnungAnzeigen)
     {
       params.setRechnungErzeugen((boolean) rechnungErzeugenInput.getValue());
       params.setFormular((Formular) formularInput.getValue());
@@ -540,15 +615,6 @@ public class GutschriftControl
     try
     {
       settings.setAttribute("ausgabe", params.getAusgabe().getKey());
-      Date tmp = (Date) params.getDatum();
-      if (tmp != null)
-      {
-        settings.setAttribute("datum", new JVDateFormatTTMMJJJJ().format(tmp));
-      }
-      else
-      {
-        settings.setAttribute("datum", "");
-      }
       settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
 
       // Fixen Betrag erstatten
@@ -573,7 +639,7 @@ public class GutschriftControl
       {
         settings.setAttribute("buchungsart", "");
       }
-      if (EinstellungBuchungsklasseInBuchung)
+      if (einstellungBuchungsklasseInBuchung)
       {
         if ((Buchungsklasse) buchungsklasseInput.getValue() != null)
         {
@@ -585,7 +651,7 @@ public class GutschriftControl
           settings.setAttribute("buchungsklasse", "");
         }
       }
-      if (EinstellungSteuerInBuchung)
+      if (einstellungSteuerInBuchung)
       {
         if ((Steuer) steuerInput.getValue() != null)
         {
@@ -598,23 +664,13 @@ public class GutschriftControl
         }
       }
 
-      if (EinstellungRechnungAnzeigen)
+      if (einstellungRechnungAnzeigen)
       {
         settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
-        if (EinstellungSpeicherungAnzeigen)
+        if (einstellungSpeicherungAnzeigen)
         {
           settings.setAttribute("rechnungsDokumentSpeichern",
               params.isRechnungsDokumentSpeichern());
-        }
-        tmp = (Date) params.getRechnungsDatum();
-        if (tmp != null)
-        {
-          settings.setAttribute("rechnungsdatum",
-              new JVDateFormatTTMMJJJJ().format(tmp));
-        }
-        else
-        {
-          settings.setAttribute("rechnungsdatum", "");
         }
         settings.setAttribute("formular", params.getFormular().getID());
         settings.setAttribute("rechnungstext", params.getRechnungsText());
@@ -627,6 +683,107 @@ public class GutschriftControl
     }
   }
 
+  public boolean checkInput()
+  {
+    try
+    {
+      if (getZweckInput().getValue() == null
+          || ((String) getZweckInput().getValue()).isEmpty())
+      {
+        status.setValue("Bitte Verwendungszweck eingeben");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (getDatumInput().getValue() == null)
+      {
+        status.setValue("Bitte Ausführungsdatum auswählen");
+        status.setColor(Color.ERROR);
+        return false;
+      }
+      if (einstellungRechnungAnzeigen
+          && (boolean) getRechnungErzeugenInput().getValue())
+      {
+        if (getFormularInput().getValue() == null)
+        {
+          status.setValue("Bitte Erstattungsformular auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (getRechnungsDatumInput().getValue() == null)
+        {
+          status.setValue("Bitte Rechnungsdatum auswählen");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+      }
+      if ((boolean) getFixerBetragAbrechnenInput().getValue())
+      {
+        if (getFixerBetragInput().getValue() == null
+            || ((Double) getFixerBetragInput().getValue()) < 0.005d)
+        {
+          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (getBuchungsartInput().getValue() == null)
+        {
+          status.setValue("Bitte Buchungsart eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (einstellungBuchungsklasseInBuchung
+            && getBuchungsklasseInput().getValue() == null)
+        {
+          status.setValue("Bitte Buchungsklasse eingeben");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+        if (einstellungSteuerInBuchung)
+        {
+          Buchungsart buchungsart = (Buchungsart) getBuchungsartInput()
+              .getValue();
+          Steuer steuer = (Steuer) getSteuerInput().getValue();
+          if (steuer != null && buchungsart != null)
+          {
+            if (buchungsart.getSpende() || buchungsart.getAbschreibung())
+            {
+              status.setValue(
+                  "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
+              status.setColor(Color.ERROR);
+              return false;
+            }
+            if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
+            {
+              switch (buchungsart.getArt())
+              {
+                case ArtBuchungsart.AUSGABE:
+                  status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
+                  status.setColor(Color.ERROR);
+                  return false;
+                case ArtBuchungsart.EINNAHME:
+                  status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
+                  status.setColor(Color.ERROR);
+                  return false;
+                // Umbuchung ist bei Anlagebuchungen möglich,
+                // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
+                // möglich
+                case ArtBuchungsart.UMBUCHUNG:
+                  break;
+              }
+            }
+          }
+        }
+      }
+    }
+    catch (RemoteException re)
+    {
+      status.setValue("Fehler beim Auswerten der Eingabe!");
+      status.setColor(Color.ERROR);
+      return false;
+    }
+    return true;
+  }
+
   public Part getBugsList() throws RemoteException
   {
     if (bugsList != null)
@@ -635,7 +792,7 @@ public class GutschriftControl
     }
     bugsList = new TablePart(getBugs(), context -> {
       Bug bug = (Bug) context;
-      Object object = bug.getProvider();
+      Object object = bug.getObject();
       if (object instanceof Mitglied)
       {
         GUI.startView(MitgliedDetailView.class, object);
@@ -689,7 +846,7 @@ public class GutschriftControl
 
       if (bugs.isEmpty())
       {
-        bugs.add(new Bug(Bug.HINT, null, "Es wurden keine Probleme gefunden."));
+        bugs.add(new Bug(null, "Es wurden keine Probleme gefunden.", Bug.HINT));
       }
     }
     return bugs;
@@ -706,7 +863,7 @@ public class GutschriftControl
       meldung = "Kein Zahler konfiguriert!";
       if (bugs != null)
       {
-        bugs.add(new Bug(Bug.WARNING, provider, meldung));
+        bugs.add(new Bug(provider, meldung, Bug.WARNING));
       }
       else
       {
@@ -725,7 +882,7 @@ public class GutschriftControl
         if (bugs != null)
         {
           bugs.add(
-              new Bug(Bug.WARNING, provider.getGutschriftZahler(), meldung));
+              new Bug(provider.getGutschriftZahler(), meldung, Bug.WARNING));
         }
         else
         {
@@ -740,7 +897,7 @@ public class GutschriftControl
       meldung = "Der Betrag ist negativ!";
       if (bugs != null)
       {
-        bugs.add(new Bug(Bug.WARNING, provider, meldung));
+        bugs.add(new Bug(provider, meldung, Bug.WARNING));
       }
       else
       {
@@ -754,7 +911,7 @@ public class GutschriftControl
       meldung = "Der Zahlungseingang ist negativ, dadurch kann nichts erstattet werden!";
       if (bugs != null)
       {
-        bugs.add(new Bug(Bug.WARNING, provider, meldung));
+        bugs.add(new Bug(provider, meldung, Bug.WARNING));
       }
       else
       {
@@ -780,7 +937,7 @@ public class GutschriftControl
         meldung = "Die Rechnung hat keine Sollbuchungen!";
         if (bugs != null)
         {
-          bugs.add(new Bug(Bug.WARNING, provider, meldung));
+          bugs.add(new Bug(provider, meldung, Bug.WARNING));
         }
         else
         {
@@ -820,7 +977,7 @@ public class GutschriftControl
           meldung = "Fixer Betrag bei Gesamtrechnungen wird nicht unterstützt!";
           if (bugs != null)
           {
-            bugs.add(new Bug(Bug.WARNING, provider, meldung));
+            bugs.add(new Bug(provider, meldung, Bug.WARNING));
           }
           else
           {
@@ -842,10 +999,10 @@ public class GutschriftControl
       if (sollbFix != null
           && !checkVorhandenePosten(sollbFix, params, ausgleichsbetrag))
       {
-        meldung = "Der Betrag der passenden Sollbuchungspositionen ist nicht ausreichend!";
+        meldung = "Der Betrag der Sollbuchungspositionen mit der gewählten Buchungsart, Buchungsklasse und Steuer ist nicht ausreichend!";
         if (bugs != null)
         {
-          bugs.add(new Bug(Bug.WARNING, provider, meldung));
+          bugs.add(new Bug(provider, meldung, Bug.WARNING));
         }
         else
         {
@@ -858,7 +1015,7 @@ public class GutschriftControl
         meldung = "Der Erstattungsbetrag wird mit offenen Forderungen verrechnet!";
         if (bugs != null)
         {
-          bugs.add(new Bug(Bug.HINT, provider, meldung));
+          bugs.add(new Bug(provider, meldung, Bug.WARNING));
         }
       }
     }
@@ -875,7 +1032,7 @@ public class GutschriftControl
       meldung = "Die Sollbuchung hat keine Sollbuchungspositionen!";
       if (bugs != null)
       {
-        bugs.add(new Bug(Bug.WARNING, sollb, meldung));
+        bugs.add(new Bug(sollb, meldung, Bug.WARNING));
       }
       else
       {
@@ -891,7 +1048,7 @@ public class GutschriftControl
           meldung = "Es haben nicht alle Sollbuchungspositionen eine Buchungsart!";
           if (bugs != null)
           {
-            bugs.add(new Bug(Bug.WARNING, sollb, meldung));
+            bugs.add(new Bug(sollb, meldung, Bug.WARNING));
           }
           else
           {
@@ -911,7 +1068,7 @@ public class GutschriftControl
           meldung = "Die zugeordnete Buchung hat keine Buchungsart!";
           if (bugs != null)
           {
-            bugs.add(new Bug(Bug.WARNING, bu, meldung));
+            bugs.add(new Bug(bu, meldung, Bug.WARNING));
           }
           else
           {
