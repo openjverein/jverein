@@ -138,7 +138,6 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     LabelGroup below2 = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
         true);
     below2.getComposite().setLayout(new GridLayout(1, false));
-    // below2.addHeadline("Fehler/Warnungen/Hinweise");
     below2.addPart(control.getBugsList());
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
