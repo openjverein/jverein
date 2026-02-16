@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
@@ -59,14 +60,15 @@ public class GutschriftMap extends AbstractMap
     Abrechnungslauf abrl = ls.getAbrechnungslauf();
 
     map.put(GutschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
-    map.put(GutschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
+    map.put(GutschriftVar.ABRECHNUNGSLAUF_DATUM.getName(),
+        new JVDateFormatTTMMJJJJ().format(abrl.getDatum()));
     // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
     // Abrechnungsläufe
     // korrekt erstellt werden, werden beide Felder verwendet.
     if (ls.getMandatSequence().equals("FRST"))
     {
       map.put(GutschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
-          abrl.getFaelligkeit());
+          new JVDateFormatTTMMJJJJ().format(abrl.getFaelligkeit()));
     }
     else
     {
@@ -75,7 +77,8 @@ public class GutschriftMap extends AbstractMap
       {
         d = Einstellungen.NODATE;
       }
-      map.put(GutschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(), d);
+      map.put(GutschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
+          new JVDateFormatTTMMJJJJ().format(d));
     }
     map.put(GutschriftVar.PERSONENART.getName(), ls.getPersonenart());
     map.put(GutschriftVar.GESCHLECHT.getName(), ls.getGeschlecht());
@@ -95,7 +98,8 @@ public class GutschriftMap extends AbstractMap
     map.put(GutschriftVar.STAAT.getName(), ls.getStaat());
     map.put(GutschriftVar.EMAIL.getName(), ls.getEmail());
     map.put(GutschriftVar.MANDATID.getName(), ls.getMandatID());
-    map.put(GutschriftVar.MANDATDATUM.getName(), ls.getMandatDatum());
+    map.put(GutschriftVar.MANDATDATUM.getName(),
+        new JVDateFormatTTMMJJJJ().format(ls.getMandatDatum()));
     map.put(GutschriftVar.BIC.getName(), ls.getBIC());
     map.put(GutschriftVar.IBAN.getName(),
         new IBANFormatter().format(ls.getIBAN()));
@@ -142,10 +146,8 @@ public class GutschriftMap extends AbstractMap
     }
 
     map.put(GutschriftVar.ABRECHNUNGSLAUF_NR.getName(), "99");
-    map.put(GutschriftVar.ABRECHNUNGSLAUF_DATUM.getName(),
-        toDate("01.01.2025"));
-    map.put(GutschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
-        toDate("10.01.2025"));
+    map.put(GutschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), "01.01.2025");
+    map.put(GutschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(), "10.01.2025");
     map.put(GutschriftVar.ANREDE_DU.getName(), "Hallo Willi,");
     map.put(GutschriftVar.ANREDE_FOERMLICH.getName(),
         "Sehr geehrter Herr Dr. Dr. Wichtig,");
@@ -163,7 +165,7 @@ public class GutschriftMap extends AbstractMap
     map.put(GutschriftVar.STAAT.getName(), "Deutschland");
     map.put(GutschriftVar.EMAIL.getName(), "willi.wichtig@email.de");
     map.put(GutschriftVar.MANDATID.getName(), "12345");
-    map.put(GutschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
+    map.put(GutschriftVar.MANDATDATUM.getName(), "01.01.2024");
     map.put(GutschriftVar.BIC.getName(), "XXXXXXXXXXX");
     map.put(GutschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
     map.put(GutschriftVar.BANKNAME.getName(), "XY Bank");
