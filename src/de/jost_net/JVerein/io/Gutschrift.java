@@ -527,7 +527,7 @@ public class Gutschrift extends SEPASupport
     rechnung.setDatum(params.getRechnungsDatum());
     rechnung.fill(sollbuchung);
     rechnung.setKommentar(params.getRechnungsKommentar());
-    rechnung.setErstattungsbetrag(-ueberweisungsbetrag);
+    rechnung.setErstattungsbetrag(ueberweisungsbetrag);
     if (prov instanceof Rechnung)
     {
       rechnung.setReferenzrechnungID(Long.valueOf(prov.getID()));
