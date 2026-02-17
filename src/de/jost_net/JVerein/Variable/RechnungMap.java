@@ -232,6 +232,12 @@ public class RechnungMap extends AbstractMap
     }
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
     map.put(RechnungVar.KOMMENTAR.getName(), re.getKommentar());
+    map.put(RechnungVar.RECHNUNGSTEXT.getName(), re.getRechnungstext());
+    map.put(RechnungVar.REFERENZRECHNUNG.getName(), re.getReferenzrechnungID());
+    map.put(RechnungVar.ERSTATTUNGSBETRAG.getName(),
+        re.getErstattungsbetrag() != null
+            ? Einstellungen.DECIMALFORMAT.format(re.getErstattungsbetrag())
+            : "");
 
     return map;
   }
@@ -307,6 +313,9 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(),
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
+    map.put(RechnungVar.RECHNUNGSTEXT.getName(), "Der Rechnungstext");
+    map.put(RechnungVar.REFERENZRECHNUNG.getName(), "333");
+    map.put(RechnungVar.ERSTATTUNGSBETRAG.getName(), "100,00");
     return map;
   }
 }

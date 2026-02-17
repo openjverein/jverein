@@ -139,4 +139,16 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
   public Mitglied getZahler() throws RemoteException;
 
   void setZahler(Mitglied zahler) throws RemoteException;
+
+  public void setRechnungstext(String value) throws RemoteException;
+
+  public String getRechnungstext() throws RemoteException;
+
+  public void setErstattungsbetrag(Double betrag) throws RemoteException;
+
+  public Double getErstattungsbetrag() throws RemoteException;
+
+  public Long getReferenzrechnungID() throws RemoteException;
+
+  void setReferenzrechnungID(Long referenz) throws RemoteException;
 }

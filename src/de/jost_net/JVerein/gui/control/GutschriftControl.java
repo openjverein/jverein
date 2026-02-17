@@ -19,7 +19,7 @@ import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.gui.input.GrayableTextAreaInput;
+import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
@@ -48,6 +48,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -64,6 +65,8 @@ import de.willuhn.util.ApplicationException;
 
 public class GutschriftControl
 {
+  private final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
+
   private TablePart bugsList;
 
   private boolean isMitglied;
@@ -90,7 +93,7 @@ public class GutschriftControl
 
   private SelectInput steuerInput;
 
-  private GrayableTextAreaInput kommentarInput;
+  private DisableTextAreaInput kommentarInput;
 
   private CheckboxInput rechnungErzeugenInput;
 
@@ -394,15 +397,14 @@ public class GutschriftControl
     }
   }
 
-  public GrayableTextAreaInput getRechnungKommentarInput()
-      throws RemoteException
+  public DisableTextAreaInput getRechnungKommentarInput() throws RemoteException
   {
     if (kommentarInput != null)
     {
       return kommentarInput;
     }
 
-    kommentarInput = new GrayableTextAreaInput(
+    kommentarInput = new DisableTextAreaInput(
         settings.getString("kommentar", ""), 1024);
     kommentarInput.setHeight(50);
     kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
@@ -469,6 +471,7 @@ public class GutschriftControl
     }
     rechnungsTextInput = scontrol.getRechnungstext();
     rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
+    rechnungsTextInput.setHint("Wenn leer Verwendungzweck");
     return rechnungsTextInput;
   }
 
@@ -513,34 +516,62 @@ public class GutschriftControl
   public Button getPruefenButton()
   {
     Button b = new Button("Auf Probleme prüfen", context -> {
-      if (!checkInput())
-      {
-        return;
-      }
-      status.setValue("");
-      storeValues();
-      try
-      {
-        refreshBugsList();
-      }
-      catch (RemoteException e)
-      {
-        status.setValue("Interner Fehler beim Update der Fehlerliste");
-        status.setColor(Color.ERROR);
-        Logger.error("Fehler", e);
-      }
+      updateBuglist();
     }, null, false, "bug.png");
     return b;
   }
 
+  public void updateBuglist()
+  {
+    if (!checkInput())
+    {
+      return;
+    }
+    status.setValue("");
+    storeValues();
+    try
+    {
+      refreshBugsList();
+    }
+    catch (RemoteException e)
+    {
+      status.setValue("Interner Fehler beim Update der Fehlerliste");
+      status.setColor(Color.ERROR);
+      Logger.error("Fehler", e);
+    }
+  }
+
   public Button getErstellenButton(GutschriftDialog dialog)
   {
-    Button b = new Button("Gutschriften erstellen", context -> {
+    Button b = new Button("Erstellen", context -> {
       try
       {
         if (!checkInput())
         {
           return;
+        }
+
+        // Prüfen ob Error oder Warning vorliegen
+        boolean error = false;
+        for (Bug bug : getBugs())
+        {
+          if (bug.getKlassifikation() != Bug.HINT)
+          {
+            error = true;
+            break;
+          }
+        }
+        if (error)
+        {
+          YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          d.setTitle("Warnungen/Fehler");
+          d.setText(
+              "Es Existieren Warnungen/Fehler.\nWenn fortgefahren wird, werden betroffene Einträge übersprungen.\nForfahren?");
+          Boolean choice = (Boolean) d.open();
+          if (!choice.booleanValue())
+          {
+            return;
+          }
         }
         storeValues();
         new Gutschrift(this);
@@ -555,7 +586,7 @@ public class GutschriftControl
         GUI.getStatusBar().setErrorText(e.getMessage());
         Logger.error("Fehler", e);
       }
-    }, null, false, "ok.png");
+    }, null, true, "ok.png");
     return b;
   }
 
@@ -621,15 +652,19 @@ public class GutschriftControl
       settings.setAttribute("fixerBetragAbrechnen",
           (boolean) fixerBetragAbrechnenInput.getValue());
 
-      if ((Double) fixerBetragInput.getValue() != null)
+      if (!isMitglied)
       {
-        settings.setAttribute("fixerBetrag",
-            (Double) fixerBetragInput.getValue());
+        if ((Double) fixerBetragInput.getValue() != null)
+        {
+          settings.setAttribute("fixerBetrag",
+              (Double) fixerBetragInput.getValue());
+        }
+        else
+        {
+          settings.setAttribute("fixerBetrag", "");
+        }
       }
-      else
-      {
-        settings.setAttribute("fixerBetrag", "");
-      }
+
       if ((Buchungsart) buchungsartInput.getValue() != null)
       {
         settings.setAttribute("buchungsart",
@@ -846,7 +881,7 @@ public class GutschriftControl
 
       if (bugs.isEmpty())
       {
-        bugs.add(new Bug(null, "Es wurden keine Probleme gefunden.", Bug.HINT));
+        bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
       }
     }
     return bugs;
@@ -1015,7 +1050,7 @@ public class GutschriftControl
         meldung = "Der Erstattungsbetrag wird mit offenen Forderungen verrechnet!";
         if (bugs != null)
         {
-          bugs.add(new Bug(provider, meldung, Bug.WARNING));
+          bugs.add(new Bug(provider, meldung, Bug.HINT));
         }
       }
     }

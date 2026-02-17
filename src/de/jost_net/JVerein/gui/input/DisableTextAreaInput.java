@@ -9,19 +9,19 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
  * das Editieren des Textes unterbunden wird. Das Textfeld wird aber nicht
  * "disabled" (ausgegraut). Das soll erlauben, dass man noch scrollen kann.
  * 
- * Der GrayableTextAreaInput setzt bei "disabled" auch das Textfeld auf
- * "disabled" wodurch es ausgegraut wird. Scrollen geht dann nicht!
+ * Der DisableTextAreaInput setzt bei "disabled" auch das Textfeld auf
+ * "disabled". Scrollen geht dann nicht!
  * 
  */
-public class GrayableTextAreaInput extends TextAreaInput
+public class DisableTextAreaInput extends TextAreaInput
 {
 
-  public GrayableTextAreaInput(String value, int maxLength)
+  public DisableTextAreaInput(String value, int maxLength)
   {
     super(value, maxLength);
   }
 
-  public GrayableTextAreaInput(String value)
+  public DisableTextAreaInput(String value)
   {
     super(value);
   }

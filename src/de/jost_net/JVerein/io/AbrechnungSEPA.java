@@ -1235,6 +1235,11 @@ public class AbrechnungSEPA extends SEPASupport
         sollb.setZweck1(zweck);
       }
       sollb.updateForced();
+      if (re != null)
+      {
+        re.setRechnungstext(zweck);
+        re.store();
+      }
     }
     if (spArray != null && adress != null && adress instanceof Kursteilnehmer)
     {

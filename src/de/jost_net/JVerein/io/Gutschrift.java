@@ -188,10 +188,18 @@ public class Gutschrift extends SEPASupport
             }
 
             // Beträge bestimmen
-            double ueberweisungsbetrag = provider.getIstSumme() > 0.005d
-                ? provider.getIstSumme()
-                : 0;
+            double ueberweisungsbetrag;
             double tmp = provider.getBetrag() - provider.getIstSumme();
+            if (tmp < 0.005)
+            {
+              ueberweisungsbetrag = provider.getBetrag();
+            }
+            else
+            {
+              ueberweisungsbetrag = provider.getIstSumme() > 0.005d
+                  ? provider.getIstSumme()
+                  : 0;
+            }
             double offenbetrag = tmp > 0.005d ? tmp : 0;
             double ausgleichsbetrag = offenbetrag;
             if (params.isFixerBetragAbrechnen())
@@ -387,7 +395,8 @@ public class Gutschrift extends SEPASupport
     if (params.isRechnungErzeugen() && sollbuchung != null
         && (Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      rechnung = generiereRechnung(sollbuchung, monitor);
+      rechnung = generiereRechnung(prov, ueberweisungsbetrag, sollbuchung,
+          monitor);
       if (params.getRechnungsText().trim().length() > 0)
       {
         zweck = params.getRechnungsText();
@@ -399,7 +408,7 @@ public class Gutschrift extends SEPASupport
         rmap = new RechnungMap().getMap(rechnung, rmap);
         try
         {
-          zweck = VelocityTool.eval(map, zweck);
+          zweck = VelocityTool.eval(rmap, zweck);
           if (zweck.length() >= 140)
           {
             zweck = zweck.substring(0, 136) + "...";
@@ -413,7 +422,11 @@ public class Gutschrift extends SEPASupport
       }
       sollbuchung.setRechnung(rechnung);
       sollbuchung.updateForced();
+
+      rechnung.setRechnungstext(zweck);
+      rechnung.store();
     }
+
     buchung = generiereBuchung(prov, betrag, name, zweck, sollbuchung);
     monitor.setStatusText(MARKER + "Buchung erzeugt");
     generiereBuchungsdokument(prov, buchung, rechnung, monitor);
@@ -503,7 +516,8 @@ public class Gutschrift extends SEPASupport
     return sollbuchung;
   }
 
-  private Rechnung generiereRechnung(Sollbuchung sollbuchung,
+  private Rechnung generiereRechnung(IGutschriftProvider prov,
+      double ueberweisungsbetrag, Sollbuchung sollbuchung,
       ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     Rechnung rechnung = null;
@@ -513,6 +527,11 @@ public class Gutschrift extends SEPASupport
     rechnung.setDatum(params.getRechnungsDatum());
     rechnung.fill(sollbuchung);
     rechnung.setKommentar(params.getRechnungsKommentar());
+    rechnung.setErstattungsbetrag(-ueberweisungsbetrag);
+    if (prov instanceof Rechnung)
+    {
+      rechnung.setReferenzrechnungID(Long.valueOf(prov.getID()));
+    }
     rechnung.store();
     monitor.setStatusText(MARKER + "Rechnung erzeugt");
     return rechnung;
@@ -583,7 +602,7 @@ public class Gutschrift extends SEPASupport
       double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
       throws RemoteException, ApplicationException
   {
-    if (ausgleichsbetrag > 0)
+    if (ausgleichsbetrag > 0.005)
     {
       // Bei fixem Betrag mit offenem Betrag verrechnen
       if (params.isFixerBetragAbrechnen())
@@ -616,9 +635,8 @@ public class Gutschrift extends SEPASupport
           double ausgleich = 0;
           for (Sollbuchung sollb : ((Rechnung) provider).getSollbuchungList())
           {
-            double tmp = sollb.getBetrag() - sollb.getIstSumme();
-            ausgleich = tmp > 0.005d ? tmp : 0;
-            if (ausgleich > 0)
+            ausgleich = sollb.getBetrag() - sollb.getIstSumme();
+            if (ausgleich > 0.005d)
             {
               sollbuchungAusgleich(provider, sollb, ausgleich, buchung,
                   monitor);
@@ -697,7 +715,7 @@ public class Gutschrift extends SEPASupport
           {
             continue;
           }
-          if (entry.getValue() > 0.005)
+          if (entry.getValue() > 0.005 && restbetrag > 0.005)
           {
             Double ausgleich = Math.min(entry.getValue(), restbetrag);
             Buchung rbuch = getBuchung(ausgleich, "JVerein",

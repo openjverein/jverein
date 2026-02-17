@@ -524,6 +524,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
       case "mandatid":
       case "staat":
       case "anrede":
+      case "rechnungstext":
         return "";
       default:
         return null;
@@ -586,5 +587,41 @@ public class RechnungImpl extends AbstractJVereinDBObject
       buchungen.addAll(sollb.getBuchungList());
     }
     return buchungen;
+  }
+
+  @Override
+  public void setRechnungstext(String value) throws RemoteException
+  {
+    setAttribute("rechnungstext", value);
+  }
+
+  @Override
+  public String getRechnungstext() throws RemoteException
+  {
+    return (String) getAttribute("rechnungstext");
+  }
+
+  @Override
+  public void setErstattungsbetrag(Double betrag) throws RemoteException
+  {
+    setAttribute("erstattungsbetrag", betrag);
+  }
+
+  @Override
+  public Double getErstattungsbetrag() throws RemoteException
+  {
+    return (Double) getAttribute("erstattungsbetrag");
+  }
+
+  @Override
+  public Long getReferenzrechnungID() throws RemoteException
+  {
+    return (Long) getAttribute("refrechnung");
+  }
+
+  @Override
+  public void setReferenzrechnungID(Long referenz) throws RemoteException
+  {
+    setAttribute("refrechnung", referenz);
   }
 }

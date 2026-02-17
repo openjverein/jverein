@@ -38,14 +38,6 @@ import de.willuhn.jameica.system.Settings;
 
 public class GutschriftDialog extends AbstractDialog<Boolean>
 {
-  private boolean einstellungRechnungAnzeigen = false;
-
-  private boolean einstellungBuchungsklasseInBuchung = false;
-
-  private boolean einstellungSteuerInBuchung = false;
-
-  private boolean einstellungSpeicherungAnzeigen = false;
-
   private boolean isMitglied = false;
 
   private Settings settings = null;
@@ -67,14 +59,14 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
-    einstellungRechnungAnzeigen = (Boolean) Einstellungen
+    boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+    boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
         && JVereinPlugin.isArchiveServiceActive();
-    einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
+    boolean einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    einstellungSteuerInBuchung = (Boolean) Einstellungen
+    boolean einstellungSteuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
 
     LabelGroup group = new LabelGroup(parent, "");
@@ -142,6 +134,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
     below2.getComposite().setLayoutData(gridData);
+    control.updateBuglist();
 
     // Buttons
     ButtonArea buttons = new ButtonArea();
