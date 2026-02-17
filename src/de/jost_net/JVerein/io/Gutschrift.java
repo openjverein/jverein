@@ -743,46 +743,43 @@ public class Gutschrift extends SEPASupport
     }
     else
     {
-      // Fehlende Positionen berechnen
-      HashMap<String, Double> posMap = new HashMap<>();
-      HashMap<String, String> posZweckMap = new HashMap<>();
-      SplitbuchungsContainer.positionenAbgleichen(sollb, posMap, posZweckMap,
-          false);
       Buchung bu = getBuchung(ausgleichsbetrag, "JVerein",
           "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
 
-      Iterator<Entry<String, Double>> iterator = posMap.entrySet().stream()
-          .sorted(Map.Entry.comparingByValue()).iterator();
+      List<SollbuchungPosition> positionen = sollb.getSollbuchungPositionList();
+      SollbuchungPosition pos = positionen.get(0);
+      bu.setBuchungsartId(pos.getBuchungsartId());
+      bu.setBuchungsklasseId(pos.getBuchungsklasseId());
+      bu.setSteuer(pos.getSteuer());
+      bu.store();
+      bu.setSplitTyp(SplitbuchungTyp.HAUPT);
+      SplitbuchungsContainer.init(bu);
 
-      if (posMap.size() == 1)
+      // Buchung neutralisieren
+      for (SollbuchungPosition position : positionen)
       {
-        initBuchung(bu, iterator.next(), null);
-        bu.setSollbuchung(sollb);
-        bu.store();
+        Buchung buch = getBuchung(position.getBetrag(), "JVerein",
+            "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+        buch.setBuchungsartId(position.getBuchungsartId());
+        buch.setBuchungsklasseId(position.getBuchungsklasseId());
+        buch.setSteuer(position.getSteuer());
+        buch.setSollbuchung(sollb);
+        buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+        SplitbuchungsContainer.add(buch);
       }
-      else if (posMap.size() > 1)
+
+      for (Buchung b : sollb.getBuchungList())
       {
-        boolean first = true;
-        while (iterator.hasNext())
-        {
-          Entry<String, Double> entry = iterator.next();
-          if (first)
-          {
-            initBuchung(bu, entry, null);
-            bu.store();
-            bu.setSplitTyp(SplitbuchungTyp.HAUPT);
-            SplitbuchungsContainer.init(bu);
-            first = false;
-          }
-          Buchung buch = getBuchung(entry.getValue(), "JVerein",
-              "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
-          initBuchung(buch, entry, null);
-          buch.setSollbuchung(sollb);
-          buch.setSplitTyp(SplitbuchungTyp.SPLIT);
-          SplitbuchungsContainer.add(buch);
-        }
-        SplitbuchungsContainer.store();
+        Buchung buch = getBuchung(-b.getBetrag(), "JVerein",
+            "Erstattung für Gutschrift Nr. " + buchung.getID(), null);
+        buch.setBuchungsartId(b.getBuchungsartId());
+        buch.setBuchungsklasseId(b.getBuchungsklasseId());
+        buch.setSteuer(b.getSteuer());
+        buch.setSollbuchung(sollb);
+        buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+        SplitbuchungsContainer.add(buch);
       }
+      SplitbuchungsContainer.store();
     }
     monitor.setStatusText(MARKER + "Ausgleichsbuchung erzeugt");
   }
