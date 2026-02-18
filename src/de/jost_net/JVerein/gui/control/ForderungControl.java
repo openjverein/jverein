@@ -44,6 +44,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Color;
@@ -62,6 +63,8 @@ public class ForderungControl
   private TablePart bugsList;
 
   private CheckboxInput vorlageSpeichernInput;
+
+  private TextInput rechnungsTextInput;
 
   private boolean einstellungRechnungAnzeigen = false;
 
@@ -133,6 +136,17 @@ public class ForderungControl
     Button b = new Button("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORDERUNG, false, "question-circle.png");
     return b;
+  }
+
+  public TextInput getRechnungsTextInput()
+  {
+    if (rechnungsTextInput != null)
+    {
+      return rechnungsTextInput;
+    }
+    rechnungsTextInput = sepaControl.getRechnungstext();
+    rechnungsTextInput.setHint("Wenn leer Zahlungsgrund");
+    return rechnungsTextInput;
   }
 
   public Button getZahlungsgrundVariablenButton() throws RemoteException

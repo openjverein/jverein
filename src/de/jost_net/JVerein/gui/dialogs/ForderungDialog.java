@@ -121,8 +121,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
       }
       right.addLabelPair("Rechnungsformular",
           control.getSepaControl().getRechnungFormular());
-      right.addLabelPair("Rechnungstext",
-          control.getSepaControl().getRechnungstext());
+      right.addLabelPair("Rechnungstext", control.getRechnungsTextInput());
       right.addLabelPair("Rechnungsdatum",
           control.getSepaControl().getRechnungsdatum());
     }
