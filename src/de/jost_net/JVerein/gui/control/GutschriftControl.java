@@ -497,7 +497,7 @@ public class GutschriftControl
     Map<String, Object> map = GutschriftMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
     map = MitgliedMap.getDummyMap(map);
-    Button b = new Button("Verwendungszweck Variablen anzeigen",
+    Button b = new Button("Verwendungszweck Variablen",
         new InsertVariableDialogAction(map), null, false, "bookmark.png");
     return b;
   }
@@ -508,7 +508,7 @@ public class GutschriftControl
     rmap = GutschriftMap.getDummyMap(rmap);
     rmap = MitgliedMap.getDummyMap(rmap);
     rmap = RechnungMap.getDummyMap(rmap);
-    Button b = new Button("Rechnungstext Variablen anzeigen",
+    Button b = new Button("Rechnungstext Variablen",
         new InsertVariableDialogAction(rmap), null, false, "bookmark.png");
     return b;
   }
