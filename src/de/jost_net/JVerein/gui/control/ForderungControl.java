@@ -176,9 +176,9 @@ public class ForderungControl
     return b;
   }
 
-  public Button getAbrechnenButton(ForderungDialog dialog)
+  public Button getErstellenButton(ForderungDialog dialog)
   {
-    Button b = new Button("Abrechnen", context -> {
+    Button b = new Button("Erstellen", context -> {
       try
       {
         if (!checkInput(part))
