@@ -233,7 +233,17 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.ZAHLUNGSWEGTEXT.getName(), zahlungsweg);
     map.put(RechnungVar.KOMMENTAR.getName(), re.getKommentar());
     map.put(RechnungVar.RECHNUNGSTEXT.getName(), re.getRechnungstext());
-    map.put(RechnungVar.REFERENZRECHNUNG.getName(), re.getReferenzrechnungID());
+    if (re.getReferenzrechnungID() != null)
+    {
+      map.put(RechnungVar.REFERENZRECHNUNG.getName(),
+          StringTool.lpad(re.getReferenzrechnungID().toString(),
+              (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
+              "0"));
+    }
+    else
+    {
+      map.put(RechnungVar.REFERENZRECHNUNG.getName(), "");
+    }
     map.put(RechnungVar.ERSTATTUNGSBETRAG.getName(),
         re.getErstattungsbetrag() != null
             ? Einstellungen.DECIMALFORMAT.format(re.getErstattungsbetrag())
@@ -314,7 +324,7 @@ public class RechnungMap extends AbstractMap
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     map.put(RechnungVar.RECHNUNGSTEXT.getName(), "Der Rechnungstext");
-    map.put(RechnungVar.REFERENZRECHNUNG.getName(), "333");
+    map.put(RechnungVar.REFERENZRECHNUNG.getName(), "RE00333");
     map.put(RechnungVar.ERSTATTUNGSBETRAG.getName(), "100,00");
     return map;
   }
