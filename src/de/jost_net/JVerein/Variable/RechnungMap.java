@@ -324,7 +324,7 @@ public class RechnungMap extends AbstractMap
         "Bitte überweisen Sie den Betrag auf das angegebene Konto.");
     map.put(RechnungVar.KOMMENTAR.getName(), "Der Rechnungskommentar");
     map.put(RechnungVar.RECHNUNGSTEXT.getName(), "Der Rechnungstext");
-    map.put(RechnungVar.REFERENZRECHNUNG.getName(), "RE00333");
+    map.put(RechnungVar.REFERENZRECHNUNG.getName(), "00333");
     map.put(RechnungVar.ERSTATTUNGSBETRAG.getName(), "100,00");
     return map;
   }

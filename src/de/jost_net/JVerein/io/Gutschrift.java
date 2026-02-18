@@ -677,7 +677,8 @@ public class Gutschrift extends SEPASupport
 
       // Prüfen ob genügend offener Betrag existiert
       Double posOffenBetrag = posMap.getOrDefault(key, 0d);
-      if (posOffenBetrag - ausgleichsbetrag > -0.005)
+      if (posOffenBetrag - ausgleichsbetrag > -0.005
+          && ueberweisungsbetrag < 0.005)
       {
         // Ausgleichsbuchung ohne splitten
         generiereBuchung(prov, ausgleichsbetrag, "JVerein",
