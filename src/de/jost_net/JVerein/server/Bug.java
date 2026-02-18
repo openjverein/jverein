@@ -49,7 +49,11 @@ public class Bug
 
   public String getName() throws RemoteException
   {
-    return Adressaufbereitung.getNameVorname(object);
+    if (object != null && object instanceof IAdresse)
+    {
+      return Adressaufbereitung.getNameVorname((IAdresse) object);
+    }
+    return "";
   }
 
   public String getMeldung()
