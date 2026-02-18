@@ -45,17 +45,17 @@
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/mockito-core.jar">
+	<classpathentry kind="lib" path="lib.test/mockito-core.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/byte-buddy.jar">
+	<classpathentry kind="lib" path="lib.test/byte-buddy.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/nils/git/jverein/lib.test/byte-buddy-agent.jar">
+	<classpathentry kind="lib" path="lib.test/byte-buddy-agent.jar">
 		<attributes>
 			<attribute name="test" value="true"/>
 		</attributes>

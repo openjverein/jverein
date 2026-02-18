@@ -58,6 +58,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.io.Zeichen;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Lastschrift;
@@ -522,7 +523,8 @@ public class VorlageUtil
       str = str.replaceAll("\\'\\#\\'", "-");
       if (dateiname)
       {
-        str = str.replaceAll("[^a-zA-Z0-9äöüÄÖÜß_\\-\\. ]", "_");
+        str = Zeichen.convert(str);
+        str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
       }
       return str;
     }
