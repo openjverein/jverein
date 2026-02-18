@@ -216,8 +216,8 @@ public class Gutschrift extends SEPASupport
             // Sollbuchung, Buchungen und Lastschriften erzeugen
             Buchung buchung = generiereGutschrift(provider, ueberweisungsbetrag,
                 name, monitor);
-            sollbuchungenAusgleich(provider, ausgleichsbetrag, buchung,
-                monitor);
+            sollbuchungenAusgleich(provider, ausgleichsbetrag,
+                ueberweisungsbetrag, buchung, monitor);
             DBTransaction.commit();
             erstellt++;
           }
@@ -599,8 +599,8 @@ public class Gutschrift extends SEPASupport
   }
 
   private void sollbuchungenAusgleich(IGutschriftProvider provider,
-      double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
-      throws RemoteException, ApplicationException
+      double ausgleichsbetrag, double ueberweisungsbetrag, Buchung buchung,
+      ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     if (ausgleichsbetrag > 0.005)
     {
@@ -618,8 +618,8 @@ public class Gutschrift extends SEPASupport
           sollbFix = ((Rechnung) provider).getSollbuchungList().get(0);
         }
         // Sollbuchung ausgleichen
-        sollbuchungAusgleich(provider, sollbFix, ausgleichsbetrag, buchung,
-            monitor);
+        sollbuchungAusgleich(provider, sollbFix, ausgleichsbetrag,
+            ueberweisungsbetrag, buchung, monitor);
       }
       else
       {
@@ -627,8 +627,8 @@ public class Gutschrift extends SEPASupport
         if (provider instanceof Sollbuchung)
         {
           Sollbuchung sollb = (Sollbuchung) provider;
-          sollbuchungAusgleich(provider, sollb, ausgleichsbetrag, buchung,
-              monitor);
+          sollbuchungAusgleich(provider, sollb, ausgleichsbetrag,
+              ueberweisungsbetrag, buchung, monitor);
         }
         else if (provider instanceof Rechnung)
         {
@@ -638,8 +638,8 @@ public class Gutschrift extends SEPASupport
             ausgleich = sollb.getBetrag() - sollb.getIstSumme();
             if (ausgleich > 0.005d)
             {
-              sollbuchungAusgleich(provider, sollb, ausgleich, buchung,
-                  monitor);
+              sollbuchungAusgleich(provider, sollb, ausgleich,
+                  ueberweisungsbetrag, buchung, monitor);
             }
           }
         }
@@ -648,8 +648,8 @@ public class Gutschrift extends SEPASupport
   }
 
   private void sollbuchungAusgleich(IGutschriftProvider prov, Sollbuchung sollb,
-      double ausgleichsbetrag, Buchung buchung, ProgressMonitor monitor)
-      throws RemoteException, ApplicationException
+      double ausgleichsbetrag, double ueberweisungsbetrag, Buchung buchung,
+      ProgressMonitor monitor) throws RemoteException, ApplicationException
   {
     boolean steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
@@ -697,38 +697,68 @@ public class Gutschrift extends SEPASupport
         bu.store();
         bu.setSplitTyp(SplitbuchungTyp.HAUPT);
         SplitbuchungsContainer.init(bu);
+        Long splitId = Long.valueOf(bu.getID());
 
-        // Die zu erstattende Buchung erzeugen mit dem offenen Betrag der
-        // Position
-        Buchung buch = getBuchung(posOffenBetrag, "JVerein",
-            "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
-        initBuchung(buch, null, key);
-        buch.setSollbuchung(sollb);
-        buch.setSplitTyp(SplitbuchungTyp.SPLIT);
-        SplitbuchungsContainer.add(buch);
-        Double restbetrag = ausgleichsbetrag - posOffenBetrag;
-
-        while (iterator.hasNext())
+        // Falls etwas erstattet wird, dann Erstattungsbuchung erzeugen
+        if (ueberweisungsbetrag > 0.005)
         {
-          Entry<String, Double> entry = iterator.next();
-          if (entry.getKey().equals(key))
+          Buchung buch = getBuchung(-ueberweisungsbetrag, "JVerein",
+              "Erstattung für Gutschrift Nr. " + buchung.getID(), null);
+          buch.setBuchungsartId(params.getBuchungsart() != null
+              ? Long.valueOf(params.getBuchungsart().getID())
+              : null);
+          buch.setBuchungsklasseId(params.getBuchungsklasse() != null
+              ? Long.valueOf(params.getBuchungsklasse().getID())
+              : null);
+          buch.setSteuer(params.getSteuer());
+          buch.setSollbuchung(sollb);
+          buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+          buch.setSplitId(splitId);
+          SplitbuchungsContainer.add(buch);
+        }
+
+        // Der Ausgleichsbetrag wird um den Überweisungsbetrag erhöht wegen der
+        // Erstattungsbuchung
+        double ausgleichen = Math.min(posOffenBetrag, ausgleichsbetrag)
+            + ueberweisungsbetrag;
+        if (ausgleichen > 0.005)
+        {
+          Buchung buch1 = getBuchung(ausgleichen, "JVerein",
+              "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(), null);
+          initBuchung(buch1, null, key);
+          buch1.setSollbuchung(sollb);
+          buch1.setSplitTyp(SplitbuchungTyp.SPLIT);
+          buch1.setSplitId(splitId);
+          SplitbuchungsContainer.add(buch1);
+        }
+        double restbetrag = ausgleichsbetrag
+            - Math.min(posOffenBetrag, ausgleichsbetrag);
+
+        if (restbetrag > 0.005)
+        {
+          while (iterator.hasNext())
           {
-            continue;
-          }
-          if (entry.getValue() > 0.005 && restbetrag > 0.005)
-          {
-            Double ausgleich = Math.min(entry.getValue(), restbetrag);
-            Buchung rbuch = getBuchung(ausgleich, "JVerein",
-                "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(),
-                null);
-            initBuchung(rbuch, entry, null);
-            rbuch.setSollbuchung(sollb);
-            rbuch.setSplitTyp(SplitbuchungTyp.SPLIT);
-            SplitbuchungsContainer.add(rbuch);
-            restbetrag = restbetrag - ausgleich;
-            if (restbetrag < 0.005)
+            Entry<String, Double> entry = iterator.next();
+            if (entry.getKey().equals(key))
             {
-              break;
+              continue;
+            }
+            if (entry.getValue() > 0.005)
+            {
+              double ausgleich = Math.min(entry.getValue(), restbetrag);
+              Buchung rbuch = getBuchung(ausgleich, "JVerein",
+                  "Buchungsausgleich für Gutschrift Nr. " + buchung.getID(),
+                  null);
+              initBuchung(rbuch, entry, null);
+              rbuch.setSollbuchung(sollb);
+              rbuch.setSplitTyp(SplitbuchungTyp.SPLIT);
+              rbuch.setSplitId(splitId);
+              SplitbuchungsContainer.add(rbuch);
+              restbetrag = restbetrag - ausgleich;
+              if (restbetrag < 0.005)
+              {
+                break;
+              }
             }
           }
         }
@@ -754,8 +784,9 @@ public class Gutschrift extends SEPASupport
       bu.store();
       bu.setSplitTyp(SplitbuchungTyp.HAUPT);
       SplitbuchungsContainer.init(bu);
+      Long splitId = Long.valueOf(bu.getID());
 
-      // Buchung neutralisieren
+      // Sollbuchungsposten ausgleichen
       for (SollbuchungPosition position : positionen)
       {
         Buchung buch = getBuchung(position.getBetrag(), "JVerein",
@@ -765,9 +796,11 @@ public class Gutschrift extends SEPASupport
         buch.setSteuer(position.getSteuer());
         buch.setSollbuchung(sollb);
         buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+        buch.setSplitId(splitId);
         SplitbuchungsContainer.add(buch);
       }
 
+      // Einzahlungen erstatten
       for (Buchung b : sollb.getBuchungList())
       {
         Buchung buch = getBuchung(-b.getBetrag(), "JVerein",
@@ -777,6 +810,7 @@ public class Gutschrift extends SEPASupport
         buch.setSteuer(b.getSteuer());
         buch.setSollbuchung(sollb);
         buch.setSplitTyp(SplitbuchungTyp.SPLIT);
+        buch.setSplitId(splitId);
         SplitbuchungsContainer.add(buch);
       }
       SplitbuchungsContainer.store();
