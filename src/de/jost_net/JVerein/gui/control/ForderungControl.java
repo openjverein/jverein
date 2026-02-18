@@ -29,6 +29,7 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Steuer;
@@ -199,6 +200,24 @@ public class ForderungControl
         {
           return;
         }
+
+        // Prüfen ob Error oder Warning vorliegen
+        boolean error = false;
+        for (Bug bug : getBugs())
+        {
+          if (bug.getKlassifikation() != Bug.HINT)
+          {
+            error = true;
+            break;
+          }
+        }
+        if (error)
+        {
+          status.setValue("Es Existieren Warnungen/Fehler, bitte beheben!");
+          status.setColor(Color.ERROR);
+          return;
+        }
+
         saveSettings(part);
 
         sepaControl.getZahlungsgrund()
@@ -212,7 +231,7 @@ public class ForderungControl
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
       }
-      catch (RemoteException e)
+      catch (Exception e)
       {
         GUI.getStatusBar().setErrorText(e.getMessage());
         Logger.error("Fehler", e);
@@ -282,6 +301,7 @@ public class ForderungControl
   private List<Bug> getBugs() throws RemoteException
   {
     ArrayList<Bug> bugs = new ArrayList<>();
+    boolean global = true;
 
     for (Mitglied m : mitglieder)
     {
@@ -289,6 +309,12 @@ public class ForderungControl
       if ((weg == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
           || (weg != null && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT))
       {
+        if (global)
+        {
+          checkGlobal(bugs);
+          global = false;
+        }
+
         if (m.getMandatDatum().equals(Einstellungen.NODATE))
         {
           bugs.add(new Bug(m,
@@ -354,6 +380,68 @@ public class ForderungControl
       bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
     }
     return bugs;
+  }
+
+  private void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
+  {
+    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
+    {
+      bugs.add(new Bug(null,
+          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        Konto k = Einstellungen.getDBService().createObject(Konto.class,
+            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
+                .toString());
+        if (k == null)
+        {
+          bugs.add(new Bug(null,
+              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+              Bug.ERROR));
+        }
+      }
+      catch (ObjectNotFoundException ex)
+      {
+        bugs.add(new Bug(null,
+            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+            Bug.ERROR));
+      }
+    }
+
+    if (Einstellungen.getEinstellung(Property.NAME) == null
+        || ((String) Einstellungen.getEinstellung(Property.NAME)).length() == 0
+        || Einstellungen.getEinstellung(Property.IBAN) == null
+        || ((String) Einstellungen.getEinstellung(Property.IBAN)).length() == 0
+        || Einstellungen.getEinstellung(Property.BIC) == null
+        || ((String) Einstellungen.getEinstellung(Property.BIC)).length() == 0)
+    {
+      bugs.add(new Bug(null,
+          "Name des Vereins oder Bankverbindung fehlt. Unter "
+              + "Administration->Einstellungen->Allgemein erfassen.",
+          Bug.ERROR));
+    }
+
+    if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
+        || ((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID))
+            .length() == 0)
+    {
+      bugs.add(new Bug(null,
+          "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ beantragen\n"
+              + " und unter Administration->Einstellungen->Allgemein eintragen.\n"
+              + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.",
+          Bug.ERROR));
+    }
+
+    if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
+    {
+      bugs.add(new Bug(null,
+          "Fälligkeit muss bei Lastschriften in der Zukunft liegen!",
+          Bug.ERROR));
+    }
   }
 
   private Zusatzbetrag getZusatzbetrag() throws RemoteException
@@ -490,6 +578,19 @@ public class ForderungControl
         status.setColor(Color.ERROR);
         return false;
       }
+      Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
+      if (sepaControl.getFaelligkeit().getValue() != null && weg != null
+          && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT)
+      {
+        if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
+        {
+          status.setValue(
+              "Fälligkeit muss bei Lastschriften in der Zukunft liegen!");
+          status.setColor(Color.ERROR);
+          return false;
+        }
+      }
+
       if (part.getBuchungstext().getValue() == null
           || ((String) part.getBuchungstext().getValue()).isEmpty())
       {
