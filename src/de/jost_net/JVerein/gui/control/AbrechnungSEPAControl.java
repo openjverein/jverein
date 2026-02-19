@@ -401,6 +401,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
     rechnungstext.setEnabled((boolean) rechnung.getValue());
+    rechnungstext.setHint("Wenn leer Zahlungsgrund für Beiträge");
     return rechnungstext;
   }
 
