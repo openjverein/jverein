@@ -36,6 +36,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -45,6 +46,9 @@ import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.OBanToo.SEPA.BIC;
+import de.jost_net.OBanToo.SEPA.IBAN;
+import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
@@ -551,22 +555,34 @@ public class GutschriftControl
           return;
         }
 
-        // Prüfen ob Error oder Warning vorliegen
-        boolean error = false;
-        for (Bug bug : getBugs())
+        // Prüfen ob Error oder Warning vorliegen. Bei Error nicht weiter
+        // machen.
+        List<Bug> bugs = getBugs();
+        for (Bug bug : bugs)
         {
-          if (bug.getKlassifikation() != Bug.HINT)
+          if (bug.getKlassifikation() == Bug.ERROR)
           {
-            error = true;
+            status.setValue("Es existieren Fehler, bitte beheben!");
+            status.setColor(Color.ERROR);
+            return;
+          }
+        }
+
+        boolean warning = false;
+        for (Bug bug : bugs)
+        {
+          if (bug.getKlassifikation() == Bug.WARNING)
+          {
+            warning = true;
             break;
           }
         }
-        if (error)
+        if (warning)
         {
           YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-          d.setTitle("Warnungen/Fehler");
+          d.setTitle("Warnungen");
           d.setText(
-              "Es Existieren Warnungen/Fehler.\nWenn fortgefahren wird, werden betroffene Einträge übersprungen.\nForfahren?");
+              "Es existieren Warnungen.\nWenn fortgefahren wird, werden betroffene Einträge übersprungen.\nFortfahren?");
           Boolean choice = (Boolean) d.open();
           if (!choice.booleanValue())
           {
@@ -874,6 +890,7 @@ public class GutschriftControl
     ArrayList<Bug> bugs = new ArrayList<>();
     if (getParams() != null)
     {
+      checkGlobal(bugs);
       for (IGutschriftProvider provider : getProviderArray())
       {
         doChecks(provider, getParams(), bugs);
@@ -885,6 +902,90 @@ public class GutschriftControl
       }
     }
     return bugs;
+  }
+
+  private void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
+  {
+    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
+    {
+      bugs.add(new Bug(null,
+          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        Konto k = Einstellungen.getDBService().createObject(Konto.class,
+            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
+                .toString());
+        if (k == null)
+        {
+          bugs.add(new Bug(null,
+              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+              Bug.ERROR));
+        }
+      }
+      catch (ObjectNotFoundException ex)
+      {
+        bugs.add(new Bug(null,
+            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+            Bug.ERROR));
+      }
+    }
+
+    if (Einstellungen.getEinstellung(Property.NAME) == null
+        || ((String) Einstellungen.getEinstellung(Property.NAME)).isEmpty())
+    {
+      bugs.add(new Bug(null,
+          "Name des Vereins fehlt. Unter "
+              + "Administration->Einstellungen->Allgemein erfassen.",
+          Bug.ERROR));
+    }
+
+    if (Einstellungen.getEinstellung(Property.IBAN) == null
+        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isEmpty())
+    {
+      bugs.add(new Bug(null,
+          "Die IBAN des Vereins fehlt. Unter "
+              + "Administration->Einstellungen->Allgemein erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        new IBAN((String) Einstellungen.getEinstellung(Property.IBAN));
+      }
+      catch (SEPAException e)
+      {
+        bugs.add(new Bug(null,
+            "Ungültige IBAN des Vereins. Unter "
+                + "Administration->Einstellungen->Allgemein korrigieren.",
+            Bug.ERROR));
+      }
+    }
+
+    if (Einstellungen.getEinstellung(Property.BIC) == null
+        || ((String) Einstellungen.getEinstellung(Property.BIC)).isEmpty())
+    {
+      bugs.add(new Bug(null, "Die BIC des Vereins ist nicht eingetragen.",
+          Bug.HINT));
+    }
+    else
+    {
+      try
+      {
+        new BIC((String) Einstellungen.getEinstellung(Property.BIC));
+      }
+      catch (SEPAException e)
+      {
+        bugs.add(new Bug(null,
+            "Ungültige BIC des Vereins. Unter "
+                + "Administration->Einstellungen->Allgemein korrigieren.",
+            Bug.ERROR));
+      }
+    }
   }
 
   public String doChecks(IGutschriftProvider provider, GutschriftParam params,
@@ -922,6 +1023,55 @@ public class GutschriftControl
         else
         {
           return meldung;
+        }
+      }
+      else
+      {
+        try
+        {
+          new IBAN(iban);
+        }
+        catch (SEPAException e)
+        {
+          meldung = "Ungültige IBAN des Mitglieds!";
+          if (bugs != null)
+          {
+            bugs.add(
+                new Bug(provider.getGutschriftZahler(), meldung, Bug.WARNING));
+          }
+          else
+          {
+            return meldung;
+          }
+        }
+      }
+      String bic = provider.getGutschriftZahler().getBic();
+      if (bic == null || bic.isEmpty())
+      {
+        meldung = "Bei dem Mitglied ist keine BIC gesetzt.";
+        if (bugs != null)
+        {
+          bugs.add(new Bug(provider.getGutschriftZahler(), meldung, Bug.HINT));
+        }
+      }
+      else
+      {
+        try
+        {
+          new BIC(bic);
+        }
+        catch (SEPAException e)
+        {
+          meldung = "Ungültige BIC des Mitglieds!";
+          if (bugs != null)
+          {
+            bugs.add(
+                new Bug(provider.getGutschriftZahler(), meldung, Bug.WARNING));
+          }
+          else
+          {
+            return meldung;
+          }
         }
       }
     }
