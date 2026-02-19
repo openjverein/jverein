@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -39,6 +40,7 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
@@ -846,7 +848,24 @@ public class GutschriftControl
       Object object = bug.getObject();
       if (object instanceof Mitglied)
       {
-        GUI.startView(MitgliedDetailView.class, object);
+        Mitglied m = (Mitglied) object;
+        try
+        {
+          if (m.getMitgliedstyp() == null
+              || m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
+          {
+            GUI.startView(new MitgliedDetailView(), m);
+          }
+          else
+          {
+            GUI.startView(new NichtMitgliedDetailView(), m);
+          }
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(
+              "Fehler beim Anzeigen eines Mitgliedes", e);
+        }
       }
       if (object instanceof Lastschrift)
       {
