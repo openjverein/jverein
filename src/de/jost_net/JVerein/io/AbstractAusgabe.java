@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Settings;
@@ -61,7 +63,8 @@ public abstract class AbstractAusgabe
    * @throws DocumentException
    */
   public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
-      String betreff, String text, boolean pdfa, boolean encrypt)
+      String betreff, String text, boolean pdfa, boolean encrypt,
+      boolean versanddatum)
       throws IOException, ApplicationException, DocumentException
   {
     String extension = "";
@@ -102,6 +105,12 @@ public abstract class AbstractAusgabe
         for (DBObject object : list)
         {
           createPDF(getFormular(object), formularaufbereitung, file, object);
+          if (versanddatum && object instanceof IVersand)
+          {
+            IVersand versand = (IVersand) object;
+            versand.setVersanddatum(new Date());
+            versand.store();
+          }
         }
         closeDocument(formularaufbereitung, null);
         formularaufbereitung.showFormular();
@@ -114,6 +123,12 @@ public abstract class AbstractAusgabe
           formularaufbereitung = new FormularAufbereitung(fx, pdfa, encrypt);
           createPDF(getFormular(object), formularaufbereitung, fx, object);
           closeDocument(formularaufbereitung, object);
+          if (versanddatum && object instanceof IVersand)
+          {
+            IVersand versand = (IVersand) object;
+            versand.setVersanddatum(new Date());
+            versand.store();
+          }
         }
         GUI.getStatusBar()
             .setSuccessText("Die Dokumente wurden erstellt und unter: "

@@ -819,8 +819,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
               (Adressblatt) adressblatt.getValue()).aufbereiten(
                   getDruckMailSpendenbescheinigungen(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false, (Boolean) Einstellungen
-                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN));
+                  getTxtString(), false,
+                  (Boolean) Einstellungen
+                      .getEinstellung(Property.UNTERSCHRIFTDRUCKEN),
+                  (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {

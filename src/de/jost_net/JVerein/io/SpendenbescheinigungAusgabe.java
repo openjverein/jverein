@@ -86,9 +86,9 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
 
   @Override
   public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
-      String betreff, String text, boolean pdfa, boolean encrypt)
-      throws IOException, ApplicationException, PdfAConformanceException,
-      DocumentException
+      String betreff, String text, boolean pdfa, boolean encrypt,
+      boolean versanddatum) throws IOException, ApplicationException,
+      PdfAConformanceException, DocumentException
   {
     GregorianCalendar gc = new GregorianCalendar();
     boolean standard = false;
@@ -117,7 +117,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
             "PDF mit Standard und individuellen Spendenbescheinigungen wird nicht unterstützt!");
       }
     }
-    super.aufbereiten(list, art, betreff, text, pdfa, encrypt);
+    super.aufbereiten(list, art, betreff, text, pdfa, encrypt, versanddatum);
   }
 
   /**
