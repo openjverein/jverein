@@ -153,26 +153,32 @@ public class AbrechnungSEPAControl extends AbstractControl
         if (m.intValue() != Abrechnungsmodi.EINGETRETENEMITGLIEDER)
         {
           vondatum.setValue(null);
+          vondatum.setMandatory(false);
           vondatum.setEnabled(false);
           voneingabedatum.setValue(null);
+          voneingabedatum.setMandatory(false);
           voneingabedatum.setEnabled(false);
         }
         else
         {
-          vondatum.setEnabled(true);
           vondatum.setValue(new Date());
+          vondatum.setEnabled(true);
+          vondatum.setMandatory(voneingabedatum.getValue() == null);
           voneingabedatum.setValue(new Date());
           voneingabedatum.setEnabled(true);
+          voneingabedatum.setMandatory(vondatum.getValue() == null);
         }
         if (m.intValue() != Abrechnungsmodi.ABGEMELDETEMITGLIEDER)
         {
           bisdatum.setValue(null);
+          bisdatum.setMandatory(false);
           bisdatum.setEnabled(false);
         }
         else
         {
-          bisdatum.setEnabled(true);
           bisdatum.setValue(new Date());
+          bisdatum.setEnabled(true);
+          bisdatum.setMandatory(true);
         }
       }
     });
@@ -188,6 +194,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.stichtag.setTitle("Stichtag für die Abrechnung");
     this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
+    stichtag.setMandatory(true);
     return stichtag;
   }
 
@@ -220,6 +227,7 @@ public class AbrechnungSEPAControl extends AbstractControl
         getStichtag().setValue(faelligkeit.getValue());
       }
     });
+    faelligkeit.setMandatory(true);
     return faelligkeit;
   }
 
@@ -232,8 +240,21 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
     this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
-    this.vondatum.setEnabled(
-        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
+    {
+      vondatum.setValue(new Date());
+    }
+    this.vondatum.setEnabled(mode);
+    this.vondatum.addListener(event -> {
+      if (vondatum.hasChanged())
+      {
+        vondatum.setMandatory(voneingabedatum.getValue() == null);
+        voneingabedatum.setMandatory(vondatum.getValue() == null);
+      }
+    });
+    vondatum.hasChanged();
     return vondatum;
   }
 
@@ -249,8 +270,24 @@ public class AbrechnungSEPAControl extends AbstractControl
       return voneingabedatum;
     }
     this.voneingabedatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
-    this.voneingabedatum.setEnabled(
-        (Integer) modus.getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER);
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
+    {
+      voneingabedatum.setValue(new Date());
+    }
+    this.voneingabedatum.setMandatory(mode && this.vondatum.getValue() == null);
+    this.voneingabedatum.setEnabled(mode);
+    // Das kann erst gemacht werden wenn voneingabedatum existiert
+    this.vondatum.setMandatory(mode && this.voneingabedatum.getValue() == null);
+    this.voneingabedatum.addListener(event -> {
+      if (voneingabedatum.hasChanged())
+      {
+        vondatum.setMandatory(voneingabedatum.getValue() == null);
+        voneingabedatum.setMandatory(vondatum.getValue() == null);
+      }
+    });
+    voneingabedatum.hasChanged();
     return voneingabedatum;
   }
 
@@ -269,8 +306,10 @@ public class AbrechnungSEPAControl extends AbstractControl
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
         .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
-    this.bisdatum.setEnabled(
-        (Integer) modus.getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER);
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER;
+    this.bisdatum.setMandatory(mode);
+    this.bisdatum.setEnabled(mode);
     return bisdatum;
   }
 
@@ -389,7 +428,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungsformular = new FormularInput(FormularArt.RECHNUNG,
         settings.getString("rechnungsformular", ""));
-    rechnungsformular.setEnabled(settings.getBoolean("rechnung", false));
+    updateRechnungsformular();
     return rechnungsformular;
   }
 
@@ -401,7 +440,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
-    rechnungstext.setEnabled(settings.getBoolean("rechnung", false));
+    rechnungstext.setEnabled((boolean) rechnung.getValue());
     return rechnungstext;
   }
 
@@ -412,7 +451,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return rechnungsdatum;
     }
     rechnungsdatum = new DateInput(new Date());
-    rechnungsdatum.setEnabled(settings.getBoolean("rechnung", false));
+    rechnungsdatum.setMandatory((boolean) rechnung.getValue());
+    rechnungsdatum.setEnabled((boolean) rechnung.getValue());
     return rechnungsdatum;
   }
 
@@ -591,6 +631,20 @@ public class AbrechnungSEPAControl extends AbstractControl
         throw new ApplicationException("Bis-Datum fehlt");
       }
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      if ((Boolean) rechnung.getValue())
+      {
+        if (rechnungsformular.getValue() == null)
+        {
+          throw new ApplicationException("Rechnungsformular fehlt");
+        }
+        if (rechnungsdatum.getValue() == null)
+        {
+          throw new ApplicationException("Rechnungsdatum fehlt");
+        }
+      }
+    }
     File sepafilercur = null;
     SepaVersion sepaVersion = null;
     if (aa == Abrechnungsausgabe.SEPA_DATEI)
@@ -722,13 +776,30 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         return;
       }
-      rechnungsformular.setEnabled((boolean) rechnung.getValue());
+      updateRechnungsformular();
       rechnungstext.setEnabled((boolean) rechnung.getValue());
+      rechnungsdatum.setMandatory((boolean) rechnung.getValue());
       rechnungsdatum.setEnabled((boolean) rechnung.getValue());
       if (rechnungsdokumentspeichern != null)
       {
         rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
       }
+    }
+  }
+
+  private void updateRechnungsformular()
+  {
+    // Die Reihenfolge von mandatory und enabled ist abhängig von
+    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+    if ((boolean) rechnung.getValue())
+    {
+      rechnungsformular.setEnabled(true);
+      rechnungsformular.setMandatory(true);
+    }
+    else
+    {
+      rechnungsformular.setMandatory(false);
+      rechnungsformular.setEnabled(false);
     }
   }
 
