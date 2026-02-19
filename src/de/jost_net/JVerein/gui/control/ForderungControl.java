@@ -326,7 +326,7 @@ public class ForderungControl
               new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
         }
 
-        if (m.getIban() == null || m.getIban().isEmpty())
+        if (m.getIban() == null || m.getIban().isBlank())
         {
           bugs.add(new Bug(m, "Für die Basislastschrift fehlt die IBAN!",
               Bug.ERROR));
@@ -341,6 +341,15 @@ public class ForderungControl
           {
             bugs.add(new Bug(m, "Ungültige IBAN " + m.getIban(), Bug.ERROR));
           }
+        }
+
+        if (m.getBic() == null || m.getBic().isBlank())
+        {
+          bugs.add(
+              new Bug(m, "Für die Basislastschrift fehlt die BIC!", Bug.ERROR));
+        }
+        else
+        {
           try
           {
             new BIC(m.getBic());
@@ -413,16 +422,58 @@ public class ForderungControl
     }
 
     if (Einstellungen.getEinstellung(Property.NAME) == null
-        || ((String) Einstellungen.getEinstellung(Property.NAME)).length() == 0
-        || Einstellungen.getEinstellung(Property.IBAN) == null
-        || ((String) Einstellungen.getEinstellung(Property.IBAN)).length() == 0
-        || Einstellungen.getEinstellung(Property.BIC) == null
-        || ((String) Einstellungen.getEinstellung(Property.BIC)).length() == 0)
+        || ((String) Einstellungen.getEinstellung(Property.NAME)).length() == 0)
     {
       bugs.add(new Bug(null,
-          "Name des Vereins oder Bankverbindung fehlt. Unter "
+          "Name des Vereins fehlt. Unter "
               + "Administration->Einstellungen->Allgemein erfassen.",
           Bug.ERROR));
+    }
+
+    if (Einstellungen.getEinstellung(Property.IBAN) == null
+        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isBlank())
+    {
+      bugs.add(new Bug(null,
+          "Die IBAN des Vereins fehlt. Unter "
+              + "Administration->Einstellungen->Allgemein erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        new IBAN((String) Einstellungen.getEinstellung(Property.IBAN));
+      }
+      catch (SEPAException e)
+      {
+        bugs.add(new Bug(null,
+            "Ungültige IBAN des Vereins. Unter "
+                + "Administration->Einstellungen->Allgemein erfassen.",
+            Bug.ERROR));
+      }
+    }
+
+    if (Einstellungen.getEinstellung(Property.BIC) == null
+        || ((String) Einstellungen.getEinstellung(Property.BIC)).isBlank())
+    {
+      bugs.add(new Bug(null,
+          "Die BIC des Vereins fehlt. Unter "
+              + "Administration->Einstellungen->Allgemein erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        new BIC((String) Einstellungen.getEinstellung(Property.BIC));
+      }
+      catch (SEPAException e)
+      {
+        bugs.add(new Bug(null,
+            "Ungültige BIC des Vereins. Unter "
+                + "Administration->Einstellungen->Allgemein erfassen.",
+            Bug.ERROR));
+      }
     }
 
     if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
