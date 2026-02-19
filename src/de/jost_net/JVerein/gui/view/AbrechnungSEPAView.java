@@ -79,9 +79,9 @@ public class AbrechnungSEPAView extends AbstractView
     {
       rigth.addHeadline("Rechnungen");
       rigth.addLabelPair("Rechnung(en) erstellen²", control.getRechnung());
-      rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
-      rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
-      rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+      rigth.addLabelPair("Rechnungsformular", control.getRechnungFormular());
+      rigth.addLabelPair("Rechnungstext", control.getRechnungstext());
+      rigth.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
     }
 
     group.addSeparator();
