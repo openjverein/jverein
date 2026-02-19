@@ -119,6 +119,12 @@ public class FreieFormulareControl extends DruckMailControl
   }
 
   @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
+  }
+
   public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;

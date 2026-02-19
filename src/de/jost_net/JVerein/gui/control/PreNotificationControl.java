@@ -20,7 +20,10 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -453,6 +456,23 @@ public class PreNotificationControl extends DruckMailControl
       text = ohneMail + " Lastschriften haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    ArrayList<Lastschrift> lastschriften = getLastschriften(
+        this.view.getCurrentObject());
+    for (Lastschrift l : lastschriften)
+    {
+      if (l.getMitglied() != null)
+      {
+        map.put(l.getMitglied(), l);
+      }
+    }
+    return map;
   }
 
   public TextInput getAbrechnungslauf(AbrechnungslaufImpl lauf)
