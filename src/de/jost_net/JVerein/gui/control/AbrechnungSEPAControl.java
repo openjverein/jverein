@@ -401,6 +401,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
     rechnungstext.setEnabled((boolean) rechnung.getValue());
+    rechnungstext.setHint("Wenn leer Zahlungsgrund für Beiträge");
     return rechnungstext;
   }
 
@@ -732,22 +733,6 @@ public class AbrechnungSEPAControl extends AbstractControl
       {
         rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
       }
-    }
-  }
-
-  private void updateRechnungsformular()
-  {
-    // Die Reihenfolge von mandatory und enabled ist abhängig von
-    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-    if ((boolean) rechnung.getValue())
-    {
-      rechnungsformular.setEnabled(true);
-      rechnungsformular.setMandatory(true);
-    }
-    else
-    {
-      rechnungsformular.setMandatory(false);
-      rechnungsformular.setEnabled(false);
     }
   }
 
