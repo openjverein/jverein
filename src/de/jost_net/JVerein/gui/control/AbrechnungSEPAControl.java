@@ -751,6 +751,22 @@ public class AbrechnungSEPAControl extends AbstractControl
     }
   }
 
+  private void updateRechnungsformular()
+  {
+    // Die Reihenfolge von mandatory und enabled ist abhängig von
+    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+    if ((boolean) rechnung.getValue())
+    {
+      rechnungsformular.setEnabled(true);
+      rechnungsformular.setMandatory(true);
+    }
+    else
+    {
+      rechnungsformular.setMandatory(false);
+      rechnungsformular.setEnabled(false);
+    }
+  }
+
   public class ZusammenfassenListener implements Listener
   {
     @Override

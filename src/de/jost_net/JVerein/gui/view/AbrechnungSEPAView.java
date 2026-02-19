@@ -94,9 +94,9 @@ public class AbrechnungSEPAView extends AbstractView
         rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      rigth.addLabelPair("Rechnung Formular", control.getRechnungFormular());
-      rigth.addLabelPair("Rechnung Text", control.getRechnungstext());
-      rigth.addLabelPair("Rechnung Datum", control.getRechnungsdatum());
+      rigth.addLabelPair("Rechnungsformular", control.getRechnungFormular());
+      rigth.addLabelPair("Rechnungstext", control.getRechnungstext());
+      rigth.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
     }
 
     group.addSeparator();
