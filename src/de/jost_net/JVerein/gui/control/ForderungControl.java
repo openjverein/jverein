@@ -326,7 +326,7 @@ public class ForderungControl
               new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
         }
 
-        if (m.getIban() == null || m.getIban().isBlank())
+        if (m.getIban() == null || m.getIban().isEmpty())
         {
           bugs.add(new Bug(m, "Für die Basislastschrift fehlt die IBAN!",
               Bug.ERROR));
@@ -343,10 +343,10 @@ public class ForderungControl
           }
         }
 
-        if (m.getBic() == null || m.getBic().isBlank())
+        if (m.getBic() == null || m.getBic().isEmpty())
         {
           bugs.add(
-              new Bug(m, "Für die Basislastschrift fehlt die BIC!", Bug.ERROR));
+              new Bug(m, "Für die Basislastschrift fehlt die BIC!", Bug.HINT));
         }
         else
         {
@@ -422,7 +422,7 @@ public class ForderungControl
     }
 
     if (Einstellungen.getEinstellung(Property.NAME) == null
-        || ((String) Einstellungen.getEinstellung(Property.NAME)).length() == 0)
+        || ((String) Einstellungen.getEinstellung(Property.NAME)).isEmpty())
     {
       bugs.add(new Bug(null,
           "Name des Vereins fehlt. Unter "
@@ -431,7 +431,7 @@ public class ForderungControl
     }
 
     if (Einstellungen.getEinstellung(Property.IBAN) == null
-        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isBlank())
+        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isEmpty())
     {
       bugs.add(new Bug(null,
           "Die IBAN des Vereins fehlt. Unter "
@@ -454,12 +454,12 @@ public class ForderungControl
     }
 
     if (Einstellungen.getEinstellung(Property.BIC) == null
-        || ((String) Einstellungen.getEinstellung(Property.BIC)).isBlank())
+        || ((String) Einstellungen.getEinstellung(Property.BIC)).isEmpty())
     {
       bugs.add(new Bug(null,
           "Die BIC des Vereins fehlt. Unter "
               + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.ERROR));
+          Bug.HINT));
     }
     else
     {
