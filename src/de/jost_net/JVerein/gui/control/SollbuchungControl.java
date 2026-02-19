@@ -659,7 +659,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           new Kontoauszug(SollbuchungControl.this).aufbereiten(
               getMitglieder(currentObject),
               (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-              getTxtString(), false, false);
+              getTxtString(), false, false, false);
         }
         catch (ApplicationException ae)
         {
@@ -991,6 +991,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       text = ohneMail + " Mitglieder haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
   }
 
   /**

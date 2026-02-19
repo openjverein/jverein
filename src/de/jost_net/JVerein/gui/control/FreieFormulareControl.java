@@ -43,7 +43,7 @@ public class FreieFormulareControl extends DruckMailControl
               .getFormular(null).getValue()).aufbereiten(
                   getMitglieder(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false, false);
+                  getTxtString(), false, false, false);
         }
         catch (ApplicationException ae)
         {
@@ -119,6 +119,12 @@ public class FreieFormulareControl extends DruckMailControl
   }
 
   @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
+  }
+
   public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;

@@ -20,7 +20,10 @@ import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -141,12 +144,11 @@ public class PreNotificationControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-
           new PreNotificationAusgabe((Formular) PreNotificationControl.this
               .getFormular(null).getValue()).aufbereiten(
                   getLastschriften(currentObject),
                   (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
-                  getTxtString(), false, false);
+                  getTxtString(), false, false, (Boolean) versand.getValue());
         }
         catch (ApplicationException ae)
         {
@@ -163,7 +165,7 @@ public class PreNotificationControl extends DruckMailControl
   }
 
   @Override
-  public void saveFilterSettings() throws RemoteException
+  public void saveFilterSettings()
   {
     settings.setAttribute(settingsprefix + "tab.selection",
         folder.getSelectionIndex());
@@ -263,6 +265,14 @@ public class PreNotificationControl extends DruckMailControl
     int anzahl = ct1ueberweisung.write(lastschriften, file, faell, ct1ausgabe,
         verwendungszweck);
     GUI.getStatusBar().setSuccessText("Anzahl Überweisungen: " + anzahl);
+    if ((Boolean) ct1versand.getValue())
+    {
+      for (Lastschrift la : lastschriften)
+      {
+        la.setVersanddatum(new Date());
+        la.store();
+      }
+    }
   }
 
   @Override
@@ -450,6 +460,23 @@ public class PreNotificationControl extends DruckMailControl
       text = ohneMail + " Lastschriften haben keine Mail Adresse.";
     }
     return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    ArrayList<Lastschrift> lastschriften = getLastschriften(
+        this.view.getCurrentObject());
+    for (Lastschrift l : lastschriften)
+    {
+      if (l.getMitglied() != null)
+      {
+        map.put(l.getMitglied(), l);
+      }
+    }
+    return map;
   }
 
   public TextInput getAbrechnungslauf(AbrechnungslaufImpl lauf)
