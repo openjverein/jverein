@@ -84,6 +84,10 @@ public class GutschriftAction implements Action
           providerArray = new IGutschriftProvider[] { Einstellungen
               .getDBService().createObject(Sollbuchung.class, mkn.getID()) };
         }
+        if (providerArray == null)
+        {
+          throw new ApplicationException("Keine Sollbuchung ausgewählt!");
+        }
       }
       else if (context instanceof MitgliedskontoNode[])
       {

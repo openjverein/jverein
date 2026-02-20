@@ -71,8 +71,8 @@ public class MitgliedskontoMenu extends ContextMenu
     {
       // Dann nicht anzeigen
     }
-    addItem(new MultiItem("Gutschrift erstellen", new GutschriftAction(),
-        "ueberweisung.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new SollMitIstItem("Istbuchung bearbeiten",
         new IstbuchungEditAction(), "text-x-generic.png"));

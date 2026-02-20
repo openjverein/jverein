@@ -1203,7 +1203,8 @@ public class GutschriftControl
       if (sollbFix != null
           && !checkVorhandenePosten(sollbFix, params, ausgleichsbetrag))
       {
-        meldung = "Der Betrag der Sollbuchungspositionen mit der gewählten Buchungsart, Buchungsklasse und Steuer ist nicht ausreichend!";
+        meldung = "Der Betrag der Sollbuchungspositionen mit der gewählten Buchungsart,\n"
+            + "Buchungsklasse und Steuer ist nicht ausreichend!";
         if (bugs != null)
         {
           bugs.add(new Bug(provider, meldung, Bug.WARNING));
