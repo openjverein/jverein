@@ -74,7 +74,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -139,6 +138,10 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private TextInput zahler;
 
+  private TextInput rechnungstext;
+
+  private DecimalInput erstattungsbetrag;
+
   public enum TYP
   {
     RECHNUNG,
@@ -175,10 +178,10 @@ public class RechnungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     rechnungList.addColumn("Zahlungsweg", "zahlungsweg",
         new ZahlungswegFormatter());
-    // Dummy Spalte, damit Zahlungsweg nicht am rechten Rand klebt
-    rechnungList.addColumn(" ", " ",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-        Column.ALIGN_LEFT);
+    rechnungList.addColumn("Rechnungstext", "rechnungstext");
+    rechnungList.addColumn("Referenz Rechnung", "refrechnung");
+    rechnungList.addColumn("Erstattungsbetrag", "erstattungsbetrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
 
     rechnungList.setRememberColWidths(true);
     rechnungList.setContextMenu(new RechnungMenu(rechnungList));
@@ -782,6 +785,32 @@ public class RechnungControl extends DruckMailControl implements Savable
     zahler.setName("Zahler");
     zahler.disable();
     return zahler;
+  }
+
+  public TextInput getRechnungstext() throws RemoteException
+  {
+    if (rechnungstext != null)
+    {
+      return rechnungstext;
+    }
+    rechnungstext = new TextInput(getRechnung().getRechnungstext());
+    rechnungstext.setName("Rechnungstext");
+    rechnungstext.disable();
+    return rechnungstext;
+  }
+
+  public DecimalInput getErstattungsbetrag() throws RemoteException
+  {
+    if (erstattungsbetrag != null)
+    {
+      return erstattungsbetrag;
+    }
+
+    erstattungsbetrag = new DecimalInput(getRechnung().getErstattungsbetrag(),
+        Einstellungen.DECIMALFORMAT);
+    erstattungsbetrag.setName("Erstattungsbetrag");
+    erstattungsbetrag.disable();
+    return erstattungsbetrag;
   }
 
   public ButtonRtoL getRechnungDruckUndMailButton()

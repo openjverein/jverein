@@ -22,14 +22,11 @@ import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung extends JVereinDBObject, IAdresse
+public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 {
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(int mitglied) throws RemoteException;
-
   public void setFormular(Formular formular) throws RemoteException;
 
   /**
@@ -41,8 +38,6 @@ public interface Rechnung extends JVereinDBObject, IAdresse
    */
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;
-
-  Double getBetrag() throws RemoteException;
 
   void setBetrag(double betrag) throws RemoteException;
 
@@ -127,9 +122,6 @@ public interface Rechnung extends JVereinDBObject, IAdresse
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
-  public ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
-
   public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException;
 
   public String getLeitwegID() throws RemoteException;
@@ -147,4 +139,16 @@ public interface Rechnung extends JVereinDBObject, IAdresse
   public Mitglied getZahler() throws RemoteException;
 
   void setZahler(Mitglied zahler) throws RemoteException;
+
+  public void setRechnungstext(String value) throws RemoteException;
+
+  public String getRechnungstext() throws RemoteException;
+
+  public void setErstattungsbetrag(Double betrag) throws RemoteException;
+
+  public Double getErstattungsbetrag() throws RemoteException;
+
+  public Long getReferenzrechnungID() throws RemoteException;
+
+  void setReferenzrechnungID(Long referenz) throws RemoteException;
 }

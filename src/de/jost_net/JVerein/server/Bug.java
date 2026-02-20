@@ -20,10 +20,12 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
 
 public class Bug
 {
-  private IAdresse object;
+  private JVereinDBObject object;
 
   private String meldung;
 
@@ -35,7 +37,7 @@ public class Bug
 
   public static final int HINT = 3;
 
-  public Bug(IAdresse object, String meldung, int klassifikation)
+  public Bug(JVereinDBObject object, String meldung, int klassifikation)
   {
     this.object = object;
     this.meldung = meldung;
@@ -49,7 +51,49 @@ public class Bug
 
   public String getName() throws RemoteException
   {
-    return Adressaufbereitung.getNameVorname(object);
+    if (object != null && object instanceof IAdresse)
+    {
+      return Adressaufbereitung.getNameVorname((IAdresse) object);
+    }
+    return "";
+  }
+
+  public String getObjektName() throws RemoteException
+  {
+    if (object != null)
+    {
+      return object.getObjektName();
+    }
+    return "";
+  }
+
+  public String getZahlerName()
+  {
+    try
+    {
+      if (object != null && object instanceof IGutschriftProvider)
+      {
+        Mitglied zahler = ((IGutschriftProvider) object).getGutschriftZahler();
+        if (zahler != null)
+        {
+          return Adressaufbereitung.getNameVorname(zahler);
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      return "";
+    }
+    return "";
+  }
+
+  public String getObjektId() throws RemoteException
+  {
+    if (object != null)
+    {
+      return object.getID();
+    }
+    return "";
   }
 
   public String getMeldung()

@@ -21,6 +21,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.IAdresse;
@@ -60,7 +61,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
     setAttribute("mitglied", mitglied);
   }
@@ -523,6 +524,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
       case "mandatid":
       case "staat":
       case "anrede":
+      case "rechnungstext":
         return "";
       default:
         return null;
@@ -565,5 +567,61 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public String getMenueID()
   {
     return "Mitglieder.Rechnungen";
+  }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getZahler();
+  }
+
+  @Override
+  public List<Buchung> getBuchungList() throws RemoteException
+  {
+    ArrayList<Buchung> buchungen = new ArrayList<>();
+    ArrayList<Sollbuchung> sollbuchungen = getSollbuchungList();
+    for (Sollbuchung sollb : sollbuchungen)
+    {
+      buchungen.addAll(sollb.getBuchungList());
+    }
+    return buchungen;
+  }
+
+  @Override
+  public void setRechnungstext(String value) throws RemoteException
+  {
+    setAttribute("rechnungstext", value);
+  }
+
+  @Override
+  public String getRechnungstext() throws RemoteException
+  {
+    return (String) getAttribute("rechnungstext");
+  }
+
+  @Override
+  public void setErstattungsbetrag(Double betrag) throws RemoteException
+  {
+    setAttribute("erstattungsbetrag", betrag);
+  }
+
+  @Override
+  public Double getErstattungsbetrag() throws RemoteException
+  {
+    return (Double) getAttribute("erstattungsbetrag");
+  }
+
+  @Override
+  public Long getReferenzrechnungID() throws RemoteException
+  {
+    return (Long) getAttribute("refrechnung");
+  }
+
+  @Override
+  public void setReferenzrechnungID(Long referenz) throws RemoteException
+  {
+    setAttribute("refrechnung", referenz);
   }
 }

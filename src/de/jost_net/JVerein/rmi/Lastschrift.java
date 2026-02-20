@@ -20,17 +20,15 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 
-public interface Lastschrift extends JVereinDBObject, IAdresse
+public interface Lastschrift
+    extends JVereinDBObject, IAdresse, IGutschriftProvider
 {
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public void setAbrechnungslauf(int abrechnungslauf) throws RemoteException;
-
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(int mitglied) throws RemoteException;
 
   public Kursteilnehmer getKursteilnehmer() throws RemoteException;
 
@@ -115,8 +113,6 @@ public interface Lastschrift extends JVereinDBObject, IAdresse
 
   public void setVerwendungszweck(String verwendungszweck)
       throws RemoteException;
-
-  public Double getBetrag() throws RemoteException;
 
   public void setBetrag(Double betrag) throws RemoteException;
 

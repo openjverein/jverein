@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -51,6 +52,26 @@ public class SollbuchungEditAction implements Action
       {
         throw new ApplicationException(
             "Fehler beim Editieren einer Sollbuchung");
+      }
+    }
+    else if ((context instanceof Buchung))
+    {
+      Buchung buchung = (Buchung) context;
+      try
+      {
+        if (buchung.getSollbuchung() != null)
+        {
+          sollb = ((Buchung) context).getSollbuchung();
+        }
+        else
+        {
+          throw new ApplicationException(
+              "Die Buchung ist keiner Sollbuchung zugeordnet");
+        }
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler beim Öffnen einer Sollbuchung");
       }
     }
     else

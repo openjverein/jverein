@@ -1582,4 +1582,25 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     setAttribute("ktoiname", "");
   }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Double getBetrag() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Hier sinnlos aber wegen IMitglied aus IGutschriftprovider nötig
+  }
+
 }
