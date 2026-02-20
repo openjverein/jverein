@@ -24,7 +24,7 @@ public class DokumentationUtil
 
   // private static final String ALLGEMEIN = "allgemein/";
 
-  private static final String FUNKTIONEN = PRE + "v/4.0/";
+  private static final String FUNKTIONEN = PRE + "v/4.1/";
 
   private static final String AUSWERTUNGEN = FUNKTIONEN + "auswertungen/";
 
