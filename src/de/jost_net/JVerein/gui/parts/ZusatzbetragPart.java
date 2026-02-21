@@ -416,8 +416,8 @@ public class ZusatzbetragPart implements Part
     }
     mitgliedZahltSelbst = new CheckboxInput(
         zusatzbetrag.getMitgliedzahltSelbst());
-    mitgliedZahltSelbst.setName(
-        " *Für den Fall, dass ein abweichender Zahler konfiguriert ist.");
+    mitgliedZahltSelbst
+        .setName(" *Falls ein abweichender Zahler konfiguriert ist.");
     return mitgliedZahltSelbst;
   }
 }

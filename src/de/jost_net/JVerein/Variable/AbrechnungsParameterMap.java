@@ -63,8 +63,15 @@ public class AbrechnungsParameterMap
     }
     map.put(AbrechnungsParameterVar.KOMPAKTEABBUCHUNG.getName(),
         param.kompakteabbuchung ? "J" : "N");
-    map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(),
-        param.kursteilnehmer ? "J" : "N");
+    if (param.kursteilnehmer != null)
+    {
+      map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(),
+          param.kursteilnehmer ? "J" : "N");
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(), "");
+    }
     map.put(AbrechnungsParameterVar.SEPAPRINT.getName(),
         param.sepaprint ? "J" : "N");
     if (param.stichtag != null)
@@ -114,8 +121,15 @@ public class AbrechnungsParameterMap
     {
       map.put(AbrechnungsParameterVar.BISDATUM.getName(), "");
     }
-    map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(),
-        param.zusatzbetraege ? "J" : "N");
+    if (param.zusatzbetraege != null)
+    {
+      map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(),
+          param.zusatzbetraege ? "J" : "N");
+    }
+    else
+    {
+      map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(), "");
+    }
     return map;
   }
 }
