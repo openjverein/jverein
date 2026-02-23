@@ -1631,6 +1631,7 @@ public class MitgliedControl extends FilterControl implements Savable
     mailList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "betreff");
+    mailList.addColumn("Anhänge", "anhaenge");
     mailList.setContextMenu(new MailMenu(null));
     return mailList;
   }

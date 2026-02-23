@@ -30,6 +30,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
@@ -222,23 +223,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     {
       return anhang;
     }
-    if (!getMail().isNewObject() && getMail().getAnhang() == null)
-    {
-      DBIterator<MailAnhang> it = Einstellungen.getDBService()
-          .createList(MailAnhang.class);
-      it.addFilter("mail = ?", new Object[] { getMail().getID() });
-      TreeSet<MailAnhang> anh = new TreeSet<>();
-      while (it.hasNext())
-      {
-        MailAnhang an = it.next();
-        anh.add(an);
-      }
-      getMail().setAnhang(anh);
-    }
-    else if (getMail().getAnhang() == null)
-    {
-      getMail().setAnhang(new TreeSet<MailAnhang>());
-    }
     // Umwandeln in ArrayList
     ArrayList<MailAnhang> anhang2 = new ArrayList<>();
     for (MailAnhang ma : getMail().getAnhang())
@@ -248,7 +232,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     this.mailDeleteConsumer = new MailDeleteMessageConsumer();
     Application.getMessagingFactory()
         .registerMessageConsumer(this.mailDeleteConsumer);
-    anhang = new TablePart(anhang2, null);
+    anhang = new TablePart(anhang2, new MailAnhangAnzeigeAction());
     anhang.addColumn("Dateiname", "dateiname");
     anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));
@@ -646,6 +630,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
+    mailsList.addColumn("Anhänge", "anhaenge");
     mailsList.setRememberColWidths(true);
     mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
