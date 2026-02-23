@@ -189,8 +189,7 @@ public class RechnungMap extends AbstractMap
     }
     map.put(RechnungVar.IBAN.getName(),
         new IBANFormatter().format(re.getIBAN()));
-    map.put(RechnungVar.IBANMASKIERT.getName(),
-        VarTools.maskieren(re.getIBAN()));
+    map.put(RechnungVar.IBANMASKIERT.getName(), maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
 

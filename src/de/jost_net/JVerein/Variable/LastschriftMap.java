@@ -115,8 +115,7 @@ public class LastschriftMap extends AbstractMap
     {
       map.put(LastschriftVar.BANKNAME.getName(), null);
     }
-    map.put(LastschriftVar.IBANMASKIERT.getName(),
-        VarTools.maskieren(ls.getIBAN()));
+    map.put(LastschriftVar.IBANMASKIERT.getName(), maskieren(ls.getIBAN()));
     map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
         ls.getVerwendungszweck());
     map.put(LastschriftVar.BETRAG.getName(),

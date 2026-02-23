@@ -17,7 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.rmi.RemoteException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.gui.control.IMailControl;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
-import de.jost_net.JVerein.gui.util.EvalMail;
+import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -66,8 +66,6 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
   private TextInput betreff;
 
   private TextAreaInput text;
-
-  private EvalMail em;
 
   private String betreffString;
 
@@ -110,7 +108,6 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
   protected void paint(Composite parent) throws Exception
   {
     SimpleContainer container = new SimpleContainer(parent, true, 2);
-    em = new EvalMail(map);
 
     betreffString = control.getBetreffString();
     textString = control.getTxtString();
@@ -151,10 +148,10 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       container.addLabelPair("Empfänger", mitglied);
     }
 
-    betreff = new TextInput(em.evalBetreff(betreffString));
+    betreff = new TextInput(VelocityTool.eval(map, betreffString));
     betreff.setEnabled(false);
     container.addLabelPair("Betreff", betreff);
-    text = new TextAreaInput(em.evalText(textString));
+    text = new TextAreaInput(VelocityTool.eval(map, textString));
     text.setEnabled(false);
     container.addLabelPair("Text", text);
 
@@ -210,11 +207,10 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
                 .getMap((Spendenbescheinigung) objectslist.get(m), map);
           }
         }
-        em = new EvalMail(map);
-        betreff.setValue(em.evalBetreff(betreffString));
-        text.setValue(em.evalText(textString));
+        betreff.setValue(VelocityTool.eval(map, betreffString));
+        text.setValue(VelocityTool.eval(map, textString));
       }
-      catch (RemoteException e)
+      catch (IOException e)
       {
         Logger.error("Fehler", e);
       }

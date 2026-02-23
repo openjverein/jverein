@@ -149,8 +149,7 @@ public class MitgliedMap extends AbstractMap
         fromDate(mitglied.getGeburtsdatum()));
     map.put(MitgliedVar.GESCHLECHT.getName(), mitglied.getGeschlecht());
     map.put(MitgliedVar.HANDY.getName(), mitglied.getHandy());
-    map.put(MitgliedVar.IBANMASKIERT.getName(),
-        VarTools.maskieren(mitglied.getIban()));
+    map.put(MitgliedVar.IBANMASKIERT.getName(), maskieren(mitglied.getIban()));
     map.put(MitgliedVar.IBAN.getName(),
         new IBANFormatter().format(mitglied.getIban()));
     map.put(MitgliedVar.ID.getName(), mitglied.getID());

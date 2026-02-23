@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeSet;
 
 import org.apache.velocity.app.Velocity;
@@ -29,6 +30,8 @@ import org.apache.velocity.app.Velocity;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MailDeleteMessage;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
@@ -36,9 +39,9 @@ import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.util.EvalMail;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
+import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -481,13 +484,18 @@ public class MailControl extends FilterControl implements IMailControl, Savable
             }
             try
             {
-              EvalMail em = new EvalMail(empf);
               if (erneutSenden || empf.getVersand() == null)
               {
+                Map<String, Object> map = new MitgliedMap().getMap(
+                    empf.getMitglied(), new AllgemeineMap().getMap(null));
+                map.put("email", empf.getMitglied().getEmail());
+                map.put("empf", empf.getMitglied());
+
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(), em.evalBetreff(betr),
-                      em.evalText(txt), getMail().getAnhang());
+                  sender.sendMail(empf.getMailAdresse(),
+                      VelocityTool.eval(map, betr), VelocityTool.eval(map, txt),
+                      getMail().getAnhang());
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
