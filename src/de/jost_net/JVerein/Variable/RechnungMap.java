@@ -223,8 +223,10 @@ public class RechnungMap extends AbstractMap
     }
     try
     {
-      zahlungsweg = VelocityTool.eval(new AllgemeineMap().getMap(map),
-          zahlungsweg);
+      Map<String, Object> zwMap = new MitgliedMap().getMap(re.getMitglied(),
+          null);
+      new AllgemeineMap().getMap(zwMap);
+      zahlungsweg = VelocityTool.eval(zwMap, zahlungsweg);
     }
     catch (IOException e)
     {
