@@ -468,6 +468,14 @@ public class FormularAufbereitung
         if (s.replace("$", "")
             .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
         {
+          // QR Code nur bei Zahlungsweg "Überweisung" anzeigen
+          if (map.get(RechnungVar.ZAHLUNGSWEG.getName()) != null
+              && Zahlungsweg.ÜBERWEISUNG != (int) map
+                  .get(RechnungVar.ZAHLUNGSWEG.getName()))
+          {
+            continue;
+          }
+
           com.itextpdf.text.Image i = com.itextpdf.text.Image
               .getInstance(getPaymentQRCode(map), Color.BLACK);
           float sz = mm2point(
