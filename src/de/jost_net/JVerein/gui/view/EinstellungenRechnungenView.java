@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import java.util.Map;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
@@ -64,7 +64,7 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Beschreibungstext für QR-Code",
         control.getQRCodeIntro());
 
-    Map<String, Object> map = MitgliedMap.getDummyMap(null);
+    Map<String, Object> map = RechnungMap.getDummyMap(null);
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();

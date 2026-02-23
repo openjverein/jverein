@@ -104,7 +104,6 @@ public enum MitgliedVar
   ZAHLUNGSRHYTHMUS("mitglied_zahlungsrhythmus"), //
   ZAHLUNGSTERMIN("mitglied_zahlungstermin"), //
   ZAHLUNGSWEG("mitglied_zahlungsweg"), //
-  ZAHLUNGSWEGTEXT("mitglied_zahlungsweg_text"), //
   ZAHLERID("mitglied_zahlerid"),
   ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid");
 
