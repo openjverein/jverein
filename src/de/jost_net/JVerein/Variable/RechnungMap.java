@@ -129,12 +129,17 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.MK_BETRAG.getName(), String.join("\n", betrag));
 
     Double ist = re.getIstSumme();
-    map.put(RechnungVar.SUMME.getName(), summe);
-    map.put(RechnungVar.IST.getName(), ist);
-    map.put(RechnungVar.MK_SUMME_OFFEN.getName(), summe - ist);
-    map.put(RechnungVar.SUMME_OFFEN.getName(), summe - ist);
-    map.put(RechnungVar.MK_STAND.getName(), ist - summe);
-    map.put(RechnungVar.STAND.getName(), ist - summe);
+    map.put(RechnungVar.SUMME.getName(),
+        Einstellungen.DECIMALFORMAT.format(summe));
+    map.put(RechnungVar.IST.getName(), Einstellungen.DECIMALFORMAT.format(ist));
+    map.put(RechnungVar.MK_SUMME_OFFEN.getName(),
+        Einstellungen.DECIMALFORMAT.format(summe - ist));
+    map.put(RechnungVar.SUMME_OFFEN.getName(),
+        Einstellungen.DECIMALFORMAT.format(summe - ist));
+    map.put(RechnungVar.MK_STAND.getName(),
+        Einstellungen.DECIMALFORMAT.format(ist - summe));
+    map.put(RechnungVar.STAND.getName(),
+        Einstellungen.DECIMALFORMAT.format(ist - summe));
 
     // Deise Felder gibt es nicht mehr in der Form, damit bei alten
     // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
@@ -270,10 +275,10 @@ public class RechnungMap extends AbstractMap
       map.put(RechnungVar.BETRAG.getName(), "10,00\n13,80\n\n23,80");
     }
 
-    map.put(RechnungVar.SUMME.getName(), Double.valueOf("23.80"));
-    map.put(RechnungVar.IST.getName(), Double.valueOf("10.00"));
-    map.put(RechnungVar.STAND.getName(), Double.valueOf("-13.80"));
-    map.put(RechnungVar.SUMME_OFFEN.getName(), Double.valueOf("13.80"));
+    map.put(RechnungVar.SUMME.getName(), "23.80");
+    map.put(RechnungVar.IST.getName(), "10.00");
+    map.put(RechnungVar.STAND.getName(), "-13.80");
+    map.put(RechnungVar.SUMME_OFFEN.getName(), "13.80");
     map.put(RechnungVar.QRCODE_INTRO.getName(),
         "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.");
     map.put(RechnungVar.DATUM.getName(), toDate("10.01.2025"));

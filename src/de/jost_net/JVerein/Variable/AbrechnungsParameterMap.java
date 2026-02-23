@@ -51,7 +51,7 @@ public class AbrechnungsParameterMap
     map.put(AbrechnungsParameterVar.ABBUCHUNGSMODUS.getName(),
         Abrechnungsmodi.get(param.abbuchungsmodus));
     map.put(AbrechnungsParameterVar.ABRECHNUNGSMONAT.getName(),
-        Monat.getByKey(param.abrechnungsmonat));
+        Monat.getByKey(param.abrechnungsmonat).getText());
     if (param.faelligkeit != null)
     {
       map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(),

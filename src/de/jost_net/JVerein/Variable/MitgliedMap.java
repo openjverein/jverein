@@ -227,9 +227,12 @@ public class MitgliedMap extends AbstractMap
     map.put(MitgliedVar.VORNAME.getName(), mitglied.getVorname());
     map.put(MitgliedVar.VORNAMENAME.getName(),
         Adressaufbereitung.getVornameName(mitglied));
-    map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getVollZahlerID());
+    map.put(MitgliedVar.ZAHLERID.getName(),
+        mitglied.getVollZahlerID() == null ? ""
+            : mitglied.getVollZahlerID().toString());
     map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(),
-        mitglied.getAbweichenderZahlerID());
+        mitglied.getAbweichenderZahlerID() == null ? ""
+            : mitglied.getAbweichenderZahlerID().toString());
     map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
         mitglied.getZahlungsrhythmus() + "");
     map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),

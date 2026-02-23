@@ -94,13 +94,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.ZEILE6.getName(), spb.getZeile6());
     map.put(SpendenbescheinigungVar.ZEILE7.getName(), spb.getZeile7());
     Double dWert = spb.getBetrag();
-    // Hier keinen String, sondern ein Double-Objekt in die Map stellen,
-    // damit eine rechtsbündige Ausrichtung des Betrages in der Formular-
-    // aufbereitung.getString() erfolgt.
-    // Dies ist der Zustand vor Version 2.0
-    // map.put(SpendenbescheinigungVar.BETRAG.getName(),
-    // Einstellungen.DECIMALFORMAT.format(spb.getBetrag()));
-    map.put(SpendenbescheinigungVar.BETRAG.getName(), dWert);
+    map.put(SpendenbescheinigungVar.BETRAG.getName(),
+        Einstellungen.DECIMALFORMAT.format(dWert));
     try
     {
       String betraginworten = GermanNumber.toString(dWert.longValue());
@@ -445,7 +440,7 @@ public class SpendenbescheinigungMap extends AbstractMap
     map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herr Willi Wichtig");
     map.put(SpendenbescheinigungVar.EMPFAENGER.getName(),
         "Herr\nWilli Wichtig\nBahnhofstr. 22\n12345 Testenhausen");
-    map.put(SpendenbescheinigungVar.BETRAG.getName(), Double.valueOf("300.00"));
+    map.put(SpendenbescheinigungVar.BETRAG.getName(), "300.00");
     map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
     map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(), "20251001");

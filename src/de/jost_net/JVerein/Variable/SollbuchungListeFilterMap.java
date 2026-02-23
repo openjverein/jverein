@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 
 public class SollbuchungListeFilterMap extends AbstractMap
@@ -55,7 +56,8 @@ public class SollbuchungListeFilterMap extends AbstractMap
     Double limit = (Double) control.getDoubleAusw().getValue();
     if (limit != null)
     {
-      map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(), limit);
+      map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(),
+          Einstellungen.DECIMALFORMAT.format(limit));
     }
     else
     {
