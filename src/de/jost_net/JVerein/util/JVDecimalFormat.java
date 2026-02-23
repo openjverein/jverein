@@ -16,16 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
-import java.text.SimpleDateFormat;
+import java.text.DecimalFormat;
 
-public class JVDateFormatTTMMJJJJ extends SimpleDateFormat
+/**
+ * Decimal Format, bei dem auch ein String übergeben werden kann. Dieser wird
+ * direkt wieder zurückgegeben. So kann der Formatter aufgerufen werden, auch
+ * wenn die Zahl bereits formatiert ist.
+ */
+public class JVDecimalFormat extends DecimalFormat
 {
-  private static final long serialVersionUID = 4017644423840096050L;
-
-  public JVDateFormatTTMMJJJJ()
-  {
-    super("dd.MM.yyyy");
-  }
+  private static final long serialVersionUID = 5948836553985834880L;
 
   public String format(String str)
   {

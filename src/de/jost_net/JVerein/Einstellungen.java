@@ -37,6 +37,7 @@ import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.EinstellungImpl;
 import de.jost_net.JVerein.server.Util;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.JVDecimalFormat;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
@@ -67,8 +68,7 @@ public class Einstellungen
   /**
    * Our decimal formatter.
    */
-  public final static DecimalFormat DECIMALFORMAT = new DecimalFormat(
-      "###,##0.00");
+  public final static JVDecimalFormat DECIMALFORMAT = new JVDecimalFormat();
 
   /**
    * Int formatter.
