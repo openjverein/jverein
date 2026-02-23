@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.velocity.exception.ParseErrorException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -39,6 +40,7 @@ import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -151,12 +153,21 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       container.addLabelPair("Empfänger", mitglied);
     }
 
-    betreff = new TextInput(em.evalBetreff(betreffString));
-    betreff.setEnabled(false);
-    container.addLabelPair("Betreff", betreff);
-    text = new TextAreaInput(em.evalText(textString));
-    text.setEnabled(false);
-    container.addLabelPair("Text", text);
+    try
+    {
+      betreff = new TextInput(em.evalBetreff(betreffString));
+      betreff.setEnabled(false);
+      container.addLabelPair("Betreff", betreff);
+      text = new TextAreaInput(em.evalText(textString));
+      text.setEnabled(false);
+      container.addLabelPair("Text", text);
+    }
+    catch (ParseErrorException e)
+    {
+      // erste Zeile der Fehlermeldung ausgeben
+      GUI.getStatusBar().setErrorText(
+          "Fehler beim parsen des Textes: " + e.getMessage().split("\n")[0]);
+    }
 
     ButtonArea b = new ButtonArea();
     b.addButton("Schließen", context -> close(), null, false,
