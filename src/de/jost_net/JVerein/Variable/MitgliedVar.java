@@ -102,9 +102,10 @@ public enum MitgliedVar
   ZAHLUNGSRHYTHMUS("mitglied_zahlungsrhythmus"), //
   ZAHLUNGSTERMIN("mitglied_zahlungstermin"), //
   ZAHLUNGSWEG("mitglied_zahlungsweg"), //
-  ZAHLUNGSWEGTEXT("mitglied_zahlungsweg_text"), //
   ZAHLERID("mitglied_zahlerid"),
-  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid");
+  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid"),
+  // Muss der letzte Eintrag sein, da hier die map selbst genutzt wird
+  ZAHLUNGSWEGTEXT("mitglied_zahlungsweg_text");
 
   private String name;
 
