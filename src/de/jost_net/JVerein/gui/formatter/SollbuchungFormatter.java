@@ -37,11 +37,13 @@ public class SollbuchungFormatter implements Formatter
         if ((Boolean) Einstellungen
             .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
         {
-          return Adressaufbereitung.getIdNameVorname(sollb.getMitglied());
+          return Adressaufbereitung.getIdNameVorname(sollb.getMitglied())
+              + " - " + sollb.getID();
         }
         else
         {
-          return Adressaufbereitung.getNameVorname(sollb.getMitglied());
+          return Adressaufbereitung.getNameVorname(sollb.getMitglied()) + " - "
+              + sollb.getID();
         }
       }
       catch (RemoteException e)

@@ -91,7 +91,8 @@ public class BuchungListPart extends BuchungListTablePart
         return "";
       }, false, Column.ALIGN_RIGHT);
     }
-    addColumn("Mitglied", Buchung.SOLLBUCHUNG, new SollbuchungFormatter());
+    addColumn("Mitglied - Sollbuchung", Buchung.SOLLBUCHUNG,
+        new SollbuchungFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);
     setRememberColWidths(true);
