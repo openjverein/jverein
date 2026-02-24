@@ -24,4 +24,6 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 public interface IVersand extends JVereinDBObject
 {
   public void setVersanddatum(Date datum) throws RemoteException;
+
+  public Date getVersanddatum() throws RemoteException;
 }

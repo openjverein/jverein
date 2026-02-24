@@ -37,7 +37,10 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractAusgabe
@@ -84,6 +87,42 @@ public abstract class AbstractAusgabe
     {
       art = Ausgabeart.PDF;
     }
+
+    for (DBObject o : list)
+    {
+      if (!(o instanceof IVersand))
+      {
+        break;
+      }
+      IVersand v = (IVersand) o;
+      if (v.getVersanddatum() != null)
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle(
+            "Erneut " + (art == Ausgabeart.MAIL ? "senden" : "drucken"));
+        dialog.setText(
+            "Mindestens ein Dokument wurde bereits versendet.\nSoll erneut "
+                + (art == Ausgabeart.MAIL ? "versendet" : "gedruckt")
+                + " werden?");
+        try
+        {
+          if (!(boolean) dialog.open())
+          {
+            throw new OperationCanceledException();
+          }
+        }
+        catch (OperationCanceledException oce)
+        {
+          return;
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim nochmals-Versenden Dialog", e);
+        }
+        break;
+      }
+    }
+
     DBObject dateinameContext = null;
     if (list.size() == 1)
     {
