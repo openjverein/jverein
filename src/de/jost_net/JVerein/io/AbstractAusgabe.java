@@ -88,39 +88,9 @@ public abstract class AbstractAusgabe
       art = Ausgabeart.PDF;
     }
 
-    for (DBObject o : list)
+    if (!checkVersendet(list, art))
     {
-      if (!(o instanceof IVersand))
-      {
-        break;
-      }
-      IVersand v = (IVersand) o;
-      if (v.getVersanddatum() != null)
-      {
-        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-        dialog.setTitle(
-            "Erneut " + (art == Ausgabeart.MAIL ? "senden" : "drucken"));
-        dialog.setText(
-            "Mindestens ein Dokument wurde bereits versendet.\nSoll erneut "
-                + (art == Ausgabeart.MAIL ? "versendet" : "gedruckt")
-                + " werden?");
-        try
-        {
-          if (!(boolean) dialog.open())
-          {
-            throw new OperationCanceledException();
-          }
-        }
-        catch (OperationCanceledException oce)
-        {
-          return;
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim nochmals-Versenden Dialog", e);
-        }
-        break;
-      }
+      return;
     }
 
     DBObject dateinameContext = null;
@@ -201,6 +171,54 @@ public abstract class AbstractAusgabe
         new ZipMailer(file, betreff, text);
         break;
     }
+  }
+
+  /**
+   * Prüft, ob das Dokument bereits versendet wurde und fragt ggf. nach, ob
+   * nochmal gesendet werden soll
+   * 
+   * @param list
+   *          Liste der Object
+   * @param art
+   *          Ausgabeart
+   * @return wenn false zurückgegeben wird, soll die Ausführung abgebrochen
+   *         werden
+   * @throws RemoteException
+   */
+  protected boolean checkVersendet(ArrayList<? extends DBObject> list,
+      Ausgabeart art) throws RemoteException
+  {
+    for (DBObject o : list)
+    {
+      if (!(o instanceof IVersand))
+      {
+        return true;
+      }
+      IVersand v = (IVersand) o;
+      if (v.getVersanddatum() != null)
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle(
+            "Erneut " + (art == Ausgabeart.MAIL ? "senden" : "drucken"));
+        dialog.setText(
+            "Mindestens ein Dokument wurde bereits versendet.\nSoll erneut "
+                + (art == Ausgabeart.MAIL ? "versendet" : "gedruckt")
+                + " werden?");
+        try
+        {
+          return (boolean) dialog.open();
+        }
+        catch (OperationCanceledException oce)
+        {
+          return false;
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim nochmals-Versenden Dialog", e);
+        }
+      }
+    }
+    return true;
   }
 
   /**

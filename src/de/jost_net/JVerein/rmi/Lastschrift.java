@@ -20,8 +20,9 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.server.IVersand;
 
-public interface Lastschrift extends JVereinDBObject, IAdresse
+public interface Lastschrift extends JVereinDBObject, IAdresse, IVersand
 {
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
@@ -126,8 +127,4 @@ public interface Lastschrift extends JVereinDBObject, IAdresse
   public void setGeschlecht(String geschlecht) throws RemoteException;
 
   public void set(IAdresse adr) throws RemoteException;
-
-  public Date getVersanddatum() throws RemoteException;
-
-  public void setVersanddatum(Date datum) throws RemoteException;
 }
