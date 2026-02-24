@@ -197,6 +197,7 @@ public class RechnungMap extends AbstractMap
     map.put(RechnungVar.IBANMASKIERT.getName(), maskieren(re.getIBAN()));
     map.put(RechnungVar.EMPFAENGER.getName(),
         Adressaufbereitung.getAdressfeld(re));
+    map.put(RechnungVar.ZAHLUNGSWEG.getName(), re.getZahlungsweg().getKey());
 
     String zahlungsweg = "";
     switch (re.getZahlungsweg().getKey())

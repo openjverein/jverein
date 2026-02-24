@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.system.Settings;
 
 public class RechnungDialog extends AbstractDialog<Boolean>
 {
@@ -60,12 +62,16 @@ public class RechnungDialog extends AbstractDialog<Boolean>
 
   private boolean mitErstattung = false;
 
+  private Settings settings;
+
   public RechnungDialog(boolean mitRechnung, boolean mitErstattung)
   {
     super(SWT.CENTER);
     setTitle("Rechnung erstellen");
     this.mitRechnung = mitRechnung;
     this.mitErstattung = mitErstattung;
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
   }
 
   @Override
@@ -121,12 +127,14 @@ public class RechnungDialog extends AbstractDialog<Boolean>
     group.addInput(getStatus());
     if (mitRechnung)
     {
-      formularRechnungInput = new FormularInput(FormularArt.RECHNUNG);
+      formularRechnungInput = new FormularInput(FormularArt.RECHNUNG,
+          settings.getString("formular", null));
       group.addLabelPair("Rechnungsformular", formularRechnungInput);
     }
     if (mitErstattung)
     {
-      formularErstattungInput = new FormularInput(FormularArt.RECHNUNG);
+      formularErstattungInput = new FormularInput(FormularArt.RECHNUNG,
+          settings.getString("formular_erstattung", null));
       group.addLabelPair("Erstattungsformular", formularErstattungInput);
     }
 
@@ -164,17 +172,34 @@ public class RechnungDialog extends AbstractDialog<Boolean>
       if (mitRechnung)
       {
         formularRechnung = (Formular) formularRechnungInput.getValue();
+        try
+        {
+          settings.setAttribute("formular", formularRechnung.getID());
+        }
+        catch (RemoteException e1)
+        {
+          // Ignore
+        }
       }
       if (mitErstattung)
       {
         formularErstattung = (Formular) formularErstattungInput.getValue();
+        try
+        {
+          settings.setAttribute("formular_erstattung",
+              formularErstattung.getID());
+        }
+        catch (RemoteException e1)
+        {
+          // Ignore
+        }
       }
 
       datum = (Date) datumInput.getValue();
       sollbuchungsdatum = (boolean) sollbuchungsdatumInput.getValue();
       fortfahren = true;
       close();
-    }, null, false, "ok.png");
+    }, null, true, "ok.png");
     buttons.addButton("Abbrechen", context -> close(), null, false,
         "process-stop.png");
     buttons.paint(parent);

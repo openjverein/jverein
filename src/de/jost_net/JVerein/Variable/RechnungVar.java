@@ -79,6 +79,7 @@ public enum RechnungVar
   BANKNAME("rechnung_bankname"), //
   EMPFAENGER("rechnung_empfaenger"),
   ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text"),
+  ZAHLUNGSWEG("rechnung_zahlungsweg"),
   KOMMENTAR("rechnung_kommentar");
 
   private String name;

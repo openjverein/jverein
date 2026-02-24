@@ -20,9 +20,11 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.TreeSet;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -111,8 +113,25 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public TreeSet<MailAnhang> getAnhang()
+  public TreeSet<MailAnhang> getAnhang() throws RemoteException
   {
+    if (anhang != null)
+    {
+      return anhang;
+    }
+    if (isNewObject())
+    {
+      return new TreeSet<>();
+    }
+    DBIterator<MailAnhang> it = Einstellungen.getDBService()
+        .createList(MailAnhang.class);
+    it.addFilter("mail = ?", getID());
+    anhang = new TreeSet<>();
+    while (it.hasNext())
+    {
+      MailAnhang an = it.next();
+      anhang.add(an);
+    }
     return anhang;
   }
 
@@ -162,6 +181,16 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   public Timestamp getVersand() throws RemoteException
   {
     return (Timestamp) getAttribute("versand");
+  }
+
+  @Override
+  public Object getAttribute(String fieldName) throws RemoteException
+  {
+    if ("anhaenge".equals(fieldName))
+    {
+      return getAnhang().size();
+    }
+    return super.getAttribute(fieldName);
   }
 
   @Override

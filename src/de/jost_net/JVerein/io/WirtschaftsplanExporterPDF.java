@@ -306,6 +306,10 @@ public class WirtschaftsplanExporterPDF implements Exporter
       int l = -1;
       for (Double[] sollist : summenRuecklagen)
       {
+        if (sollist[0] == null)
+        {
+          continue;
+        }
         l++;
         reporter.addColumn(sollist[0], BaseColor.LIGHT_GRAY);
         if (hatIst.contains(wirtschaftsplaene[l]))
