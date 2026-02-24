@@ -22,10 +22,9 @@ import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.server.IVersand;
 import de.willuhn.util.ApplicationException;
 
-public interface Rechnung extends JVereinDBObject, IAdresse, IVersand
+public interface Rechnung extends JVereinDBObject, IAdresse
 {
   public Mitglied getMitglied() throws RemoteException;
 
@@ -140,6 +139,10 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IVersand
   public void setKommentar(String value) throws RemoteException;
 
   public String getKommentar() throws RemoteException;
+
+  public Date getVersanddatum() throws RemoteException;
+
+  public void setVersanddatum(Date datum) throws RemoteException;
 
   public Mitglied getZahler() throws RemoteException;
 
