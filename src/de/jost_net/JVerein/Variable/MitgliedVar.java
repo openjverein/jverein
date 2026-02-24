@@ -34,7 +34,6 @@ public enum MitgliedVar
   MANDATDATUM_F("mitglied_mandatdatum_f"), //
   MANDATID("mitglied_mandatid"), //
   BIC("mitglied_bic"), //
-  BLZ("mitglied_blz"), //
   EINTRITT("mitglied_eintritt"), //
   EINTRITT_F("mitglied_eintritt_f"), //
   EINGABEDATUM("mitglied_eingabedatum"), //
@@ -50,7 +49,6 @@ public enum MitgliedVar
   IBANMASKIERT("mitglied_iban_maskiert"), //
   ID("mitglied_id"), //
   INDIVIDUELLERBEITRAG("mitglied_individuellerbeitrag"), //
-  KONTO("mitglied_konto"), //
   BANKNAME("mitglied_bankname"), //
   KONTO_KONTOINHABER("mitglied_konto_kontoinhaber"), //
   KONTOINHABER("mitglied_kontoinhaber"), //
