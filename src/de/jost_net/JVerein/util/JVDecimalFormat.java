@@ -27,6 +27,11 @@ public class JVDecimalFormat extends DecimalFormat
 {
   private static final long serialVersionUID = 5948836553985834880L;
 
+  public JVDecimalFormat(String pattern)
+  {
+    super(pattern);
+  }
+
   public String format(String str)
   {
     return str;

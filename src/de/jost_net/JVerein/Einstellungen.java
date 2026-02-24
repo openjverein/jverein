@@ -68,7 +68,8 @@ public class Einstellungen
   /**
    * Our decimal formatter.
    */
-  public final static JVDecimalFormat DECIMALFORMAT = new JVDecimalFormat();
+  public final static JVDecimalFormat DECIMALFORMAT = new JVDecimalFormat(
+      "###,##0.00");
 
   /**
    * Int formatter.
