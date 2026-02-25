@@ -57,25 +57,8 @@ public class SpendenbescheinigungMap extends AbstractMap
     }
     if (spb.getID() == null)
     {
-      spb.setBescheinigungsdatum(new Date());
-      spb.setBetrag(1234.56);
-      spb.setBezeichnungSachzuwendung("Buch");
-      spb.setHerkunftSpende(1);
-      spb.setSpendedatum(new Date());
-      spb.setSpendenart(Spendenart.GELDSPENDE);
-      spb.setUnterlagenWertermittlung(true);
-      spb.setZeile1("Herr");
-      spb.setZeile2("Dr. Willi Wichtig");
-      spb.setZeile3("Hinterm Bahnhof 1");
-      spb.setZeile4("12345 Testenhausen");
-      spb.setZeile5(null);
-      spb.setZeile6(null);
-      spb.setZeile7(null);
+      return getDummyMap(inMap);
     }
-    String empfaenger = spb.getZeile1() + newLineStr + spb.getZeile2()
-        + newLineStr + spb.getZeile3() + newLineStr + spb.getZeile4()
-        + newLineStr + spb.getZeile5() + newLineStr + spb.getZeile6()
-        + newLineStr + spb.getZeile7() + newLineStr;
 
     boolean ersatz = false;
     // Geldspende und keine Sammelbestätigung
@@ -97,7 +80,10 @@ public class SpendenbescheinigungMap extends AbstractMap
       switch (var)
       {
         case EMPFAENGER:
-          value = empfaenger;
+          value = spb.getZeile1() + newLineStr + spb.getZeile2() + newLineStr
+              + spb.getZeile3() + newLineStr + spb.getZeile4() + newLineStr
+              + spb.getZeile5() + newLineStr + spb.getZeile6() + newLineStr
+              + spb.getZeile7() + newLineStr;
           break;
         case ANREDE:
           value = (spb.getZeile1().length() > 0)
