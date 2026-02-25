@@ -197,18 +197,14 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
     {
       rpt.addColumn(
           "Wert der Zuwendung -in Ziffern-\n" + "-"
-              + Einstellungen.DECIMALFORMAT.format(
-                  map.get(SpendenbescheinigungVar.BETRAG.getName()))
-              + "-",
+              + map.get(SpendenbescheinigungVar.BETRAG.getName()) + "-",
           Element.ALIGN_CENTER, (BaseColor) null);
     }
     else
     {
       rpt.addColumn(
           "Betrag der Zuwendung -in Ziffern-\n" + "-"
-              + Einstellungen.DECIMALFORMAT.format(
-                  map.get(SpendenbescheinigungVar.BETRAG.getName()))
-              + "-",
+              + map.get(SpendenbescheinigungVar.BETRAG.getName()) + "-",
           Element.ALIGN_CENTER, (BaseColor) null);
     }
     rpt.addColumn("-in Buchstaben-\n"
@@ -604,14 +600,10 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
       }
 
       /* Summenzeile */
-      // String sumString =
-      // Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
       rpt.addColumn("Gesamtsumme", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
       rpt.addColumn("", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
       rpt.addColumn("", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
       rpt.addColumn(Double.valueOf(spb.getBetrag()));
-      // rpt.addColumn(sumString, Element.ALIGN_RIGHT,
-      // BaseColor.LIGHT_GRAY);
 
       rpt.closeTable();
     }

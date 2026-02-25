@@ -42,11 +42,6 @@ import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
 public class SpendenbescheinigungMap extends AbstractMap
 {
 
-  public SpendenbescheinigungMap()
-  {
-    super();
-  }
-
   public Map<String, Object> getMap(Spendenbescheinigung spb,
       Map<String, Object> inMap) throws RemoteException
   {
@@ -81,86 +76,6 @@ public class SpendenbescheinigungMap extends AbstractMap
         + newLineStr + spb.getZeile3() + newLineStr + spb.getZeile4()
         + newLineStr + spb.getZeile5() + newLineStr + spb.getZeile6()
         + newLineStr + spb.getZeile7() + newLineStr;
-    map.put(SpendenbescheinigungVar.EMPFAENGER.getName(), empfaenger);
-    String anrede = (spb.getZeile1().length() > 0)
-        ? spb.getZeile1() + " " + spb.getZeile2()
-        : spb.getZeile2();
-    map.put(SpendenbescheinigungVar.ANREDE.getName(), anrede);
-    map.put(SpendenbescheinigungVar.ZEILE1.getName(), spb.getZeile1());
-    map.put(SpendenbescheinigungVar.ZEILE2.getName(), spb.getZeile2());
-    map.put(SpendenbescheinigungVar.ZEILE3.getName(), spb.getZeile3());
-    map.put(SpendenbescheinigungVar.ZEILE4.getName(), spb.getZeile4());
-    map.put(SpendenbescheinigungVar.ZEILE5.getName(), spb.getZeile5());
-    map.put(SpendenbescheinigungVar.ZEILE6.getName(), spb.getZeile6());
-    map.put(SpendenbescheinigungVar.ZEILE7.getName(), spb.getZeile7());
-    Double dWert = spb.getBetrag();
-    map.put(SpendenbescheinigungVar.BETRAG.getName(),
-        Einstellungen.DECIMALFORMAT.format(dWert));
-    try
-    {
-      String betraginworten = GermanNumber.toString(dWert.longValue());
-      map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(),
-          "-" + betraginworten + "-");
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-      throw new RemoteException(
-          "Fehler bei der Aufbereitung des Betrages in Worten");
-    }
-    // Calendar für Alt/Neu
-    GregorianCalendar gc = new GregorianCalendar();
-    gc.setTime(spb.getBescheinigungsdatum());
-
-    String bescheinigungsdatum = new JVDateFormatTTMMJJJJ()
-        .format(spb.getBescheinigungsdatum());
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(),
-        bescheinigungsdatum);
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(),
-        fromDate((Date) spb.getBescheinigungsdatum()));
-    switch (spb.getSpendenart())
-    {
-      case Spendenart.GELDSPENDE:
-        String art = "Geldzuwendungen";
-        if ((Boolean) Einstellungen.getEinstellung(Property.MITGLIEDSBETRAEGE))
-        {
-          art += "/Mitgliedsbeitrag";
-        }
-        map.put(SpendenbescheinigungVar.SPENDEART.getName(), art);
-        break;
-      case Spendenart.SACHSPENDE:
-        map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Sachzuwendungen");
-        break;
-    }
-    String spendedatum = new JVDateFormatTTMMJJJJ()
-        .format(spb.getSpendedatum());
-    boolean printBuchungsart = (Boolean) Einstellungen
-        .getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART);
-    map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
-        spb.getBezeichnungSachzuwendung());
-    map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(),
-        spb.getUnterlagenWertermittlung()
-            ? "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor."
-            : "");
-
-    // ab 2013
-    switch (spb.getHerkunftSpende())
-    {
-      case HerkunftSpende.BETRIEBSVERMOEGEN:
-        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
-                + newLineStr
-                + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.");
-        break;
-      case HerkunftSpende.PRIVATVERMOEGEN:
-        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-            "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.");
-        break;
-      case HerkunftSpende.KEINEANGABEN:
-        map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-            "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.");
-        break;
-    }
 
     boolean ersatz = false;
     // Geldspende und keine Sammelbestätigung
@@ -169,259 +84,454 @@ public class SpendenbescheinigungMap extends AbstractMap
     {
       ersatz = spb.getBuchungen().get(0).getVerzicht().booleanValue();
     }
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(),
-        (ersatz ? "Ja" : "Nein"));
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(),
-        (ersatz ? "X" : " "));
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(),
-        (ersatz ? " " : "X"));
 
-    // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
-    if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
+    // Calendar für Alt/Neu
+    GregorianCalendar gc = new GregorianCalendar();
+    gc.setTime(spb.getBescheinigungsdatum());
+
+    boolean spendenbescheinigungAb2013 = gc.get(GregorianCalendar.YEAR) > 2012;
+
+    for (SpendenbescheinigungVar var : SpendenbescheinigungVar.values())
     {
-      String zeitraumende = new JVDateFormatTTMMJJJJ()
-          .format(spb.getZeitraumBis());
-      map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
-      map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
-          String.format("%s bis %s", spendedatum, zeitraumende));
-      StringBuilder bl = new StringBuilder();
-      StringBuilder bl_daten = new StringBuilder();
-      StringBuilder bl_art = new StringBuilder();
-      StringBuilder bl_verzicht = new StringBuilder();
-      StringBuilder bl_betrag = new StringBuilder();
-      if (gc.get(GregorianCalendar.YEAR) <= 2012)
+      Object value = null;
+      switch (var)
       {
-        bl.append(StringTool.rpad("Datum", 10));
-        bl.append("  ");
-        bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), 11));
-        bl.append("  ");
-        bl.append("Verwendung");
-        bl.append(newLineStr);
-
-        bl.append("----------");
-        bl.append("  ");
-        bl.append("-----------");
-        bl.append("  ");
-        bl.append("-----------------------------------------");
-        bl.append(newLineStr);
-        for (Buchung b : spb.getBuchungen())
-        {
-          bl.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
-          bl.append("  ");
-          String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
-          bl.append(StringTool.lpad(str, 11));
-          bl.append("  ");
-          if (printBuchungsart)
+        case EMPFAENGER:
+          value = empfaenger;
+          break;
+        case ANREDE:
+          value = (spb.getZeile1().length() > 0)
+              ? spb.getZeile1() + " " + spb.getZeile2()
+              : spb.getZeile2();
+          break;
+        case ZEILE1:
+          value = spb.getZeile1();
+          break;
+        case ZEILE2:
+          value = spb.getZeile2();
+          break;
+        case ZEILE3:
+          value = spb.getZeile3();
+          break;
+        case ZEILE4:
+          value = spb.getZeile4();
+          break;
+        case ZEILE5:
+          value = spb.getZeile5();
+          break;
+        case ZEILE6:
+          value = spb.getZeile6();
+          break;
+        case ZEILE7:
+          value = spb.getZeile7();
+          break;
+        case BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+          break;
+        case BETRAGINWORTEN:
+          try
           {
-            bl.append(b.getBuchungsart().getBezeichnung());
+            value = "-" + GermanNumber.toString(spb.getBetrag().longValue())
+                + "-";
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler", e);
+            throw new RemoteException(
+                "Fehler bei der Aufbereitung des Betrages in Worten");
+          }
+          break;
+        case BESCHEINIGUNGDATUM:
+          value = new JVDateFormatTTMMJJJJ()
+              .format(spb.getBescheinigungsdatum());
+          break;
+        case BESCHEINIGUNGDATUM_F:
+          value = fromDate((Date) spb.getBescheinigungsdatum());
+          break;
+        case SPENDEART:
+          switch (spb.getSpendenart())
+          {
+            case Spendenart.GELDSPENDE:
+              value = "Geldzuwendungen";
+              if ((Boolean) Einstellungen
+                  .getEinstellung(Property.MITGLIEDSBETRAEGE))
+              {
+                value += "/Mitgliedsbeitrag";
+              }
+              break;
+            case Spendenart.SACHSPENDE:
+              value = "Sachzuwendungen";
+              break;
+          }
+          break;
+        case BEZEICHNUNGSACHZUWENDUNG:
+          value = spb.getBezeichnungSachzuwendung();
+          break;
+        case UNTERLAGENWERTERMITTUNG:
+          value = spb.getUnterlagenWertermittlung()
+              ? "Geeignete Unterlagen, die zur Wertermittlung gedient haben, z. B. Rechnung, Gutachten, liegen vor."
+              : "";
+          break;
+        case HERKUNFTSACHZUWENDUNG:
+          // ab 2013
+          switch (spb.getHerkunftSpende())
+          {
+            case HerkunftSpende.BETRIEBSVERMOEGEN:
+              value = "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Betriebsvermögen und ist"
+                  + newLineStr
+                  + "mit dem Entnahmewert (ggf. mit dem niedrigeren gemeinen Wert) bewertet.";
+              break;
+            case HerkunftSpende.PRIVATVERMOEGEN:
+              value = "Die Sachzuwendung stammt nach den Angaben des Zuwendenden aus dem Privatvermögen.";
+              break;
+            case HerkunftSpende.KEINEANGABEN:
+              value = "Der Zuwendende hat trotz Aufforderung keine Angaben zur Herkunft der Sachzuwendung gemacht.";
+              break;
+          }
+          break;
+        case ERSATZAUFWENDUNGEN:
+          value = ersatz ? "Ja" : "Nein";
+          break;
+        case ERSATZAUFWENDUNGEN_JA:
+          value = ersatz ? "X" : " ";
+          break;
+        case ERSATZAUFWENDUNGEN_NEIN:
+          value = ersatz ? " " : "X";
+          break;
+        case SPENDEDATUM:
+          // bei Sammelbestätigungen ein Zeitraum und "siehe Anlage"
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
+          {
+            value = "s. Anlage";
           }
           else
           {
-            bl.append(b.getZweck());
+            value = new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum());
           }
-          bl.append(" ");
-          bl.append((b.getVerzicht() ? "(b)" : "(a)"));
-          bl.append(newLineStr);
-        }
-        bl.append(newLineStr);
-        bl.append("----------");
-        bl.append("  ");
-        bl.append("-----------");
-        bl.append("  ");
-        bl.append("-----------------------------------------");
-        bl.append(newLineStr);
-        bl.append(StringTool.rpad("Summe:", 10));
-        bl.append("  ");
-        String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
-        bl.append(StringTool.lpad(str, 11));
-        bl.append(newLineStr);
-        bl.append(newLineStr);
-        bl.append(newLineStr);
-        bl.append("Legende:");
-        bl.append(newLineStr);
-        bl.append(
-            "(a): Es handelt sich nicht um den Verzicht auf Erstattung von Aufwendungen");
-        bl.append(newLineStr);
-        bl.append(
-            "(b): Es handelt sich um den Verzicht auf Erstattung von Aufwendungen");
-        bl.append(newLineStr);
+          break;
+        case SPENDENZEITRAUM:
+          value = String.format("%s bis %s",
+              new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum()),
+              new JVDateFormatTTMMJJJJ().format(spb.getZeitraumBis()));
+          break;
+
+        case BUCHUNGSLISTE:
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1)
+          {
+            if (spendenbescheinigungAb2013)
+            {
+              value = getBuchungslisteAb2013(spb);
+            }
+            else
+            {
+              value = getBuchungslisteBis2012(spb);
+            }
+          }
+          break;
+        case BUCHUNGSLISTE_DATEN:
+          // bei Sammelbestätigungen Daten für Buchungslite
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1
+              && spendenbescheinigungAb2013)
+          {
+            StringBuilder bl_daten = new StringBuilder();
+            for (Buchung b : spb.getBuchungen())
+            {
+              bl_daten.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
+              bl_daten.append(newLineStr);
+            }
+            value = bl_daten.toString();
+          }
+          break;
+        case BUCHUNGSLISTE_ART:
+          // bei Sammelbestätigungen Art für Buchungsliste
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1
+              && spendenbescheinigungAb2013
+              && (Boolean) Einstellungen.getEinstellung(
+                  Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART))
+          {
+            StringBuilder bl_art = new StringBuilder();
+            for (Buchung b : spb.getBuchungen())
+            {
+              bl_art.append(b.getBuchungsart().getBezeichnung());
+              bl_art.append(newLineStr);
+            }
+            value = bl_art.toString();
+          }
+          break;
+        case BUCHUNGSLISTE_VERZICHT:
+          // bei Sammelbestätigungen Verzicht für Buchungsliste
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1
+              && spendenbescheinigungAb2013)
+          {
+            StringBuilder bl_verzicht = new StringBuilder();
+            for (Buchung b : spb.getBuchungen())
+            {
+              bl_verzicht.append(b.getVerzicht() ? "ja" : "nein");
+              bl_verzicht.append(newLineStr);
+            }
+            value = bl_verzicht.toString();
+          }
+          break;
+        case BUCHUNGSLISTE_BETRAG:
+          // bei Sammelbestätigungen Betrag für Buchungsliste
+          if (spb.getBuchungen() != null && spb.getBuchungen().size() > 1
+              && spendenbescheinigungAb2013)
+          {
+            final int colBetragLen = 11;
+
+            StringBuilder bl_betrag = new StringBuilder();
+            for (Buchung b : spb.getBuchungen())
+            {
+              bl_betrag.append(StringTool.lpad(
+                  Einstellungen.DECIMALFORMAT.format(b.getBetrag()),
+                  colBetragLen));
+              bl_betrag.append(newLineStr);
+            }
+            value = bl_betrag.toString();
+          }
+          break;
+        case SPENDEDATUM_ERSTES:
+          value = new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum());
+          break;
+        case SPENDEDATUM_ERSTES_F:
+          value = fromDate((Date) spb.getSpendedatum());
+          break;
+        case FINANZAMT:
+          value = (String) Einstellungen.getEinstellung(Property.FINANZAMT);
+          break;
+        case STEUER_NR:
+          value = (String) Einstellungen.getEinstellung(Property.STEUERNUMMER);
+          break;
+        case DATUM_BESCHEID:
+          value = new JVDateFormatTTMMJJJJ().format(
+              (Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
+          break;
+        case DATUM_BESCHEID_F:
+          value = fromDate(
+              (Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
+          break;
+        case VERANLAGUNGSZEITRAUM:
+          Calendar cal = Calendar.getInstance();
+          if (!(Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG))
+          {
+            cal.setTime(
+                (Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
+            String start = "" + cal.get(Calendar.YEAR);
+            cal.setTime(
+                (Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS));
+            value = String.format("%s bis %s", start,
+                "" + cal.get(Calendar.YEAR));
+          }
+          break;
+        case ZWECK:
+          value = (String) Einstellungen
+              .getEinstellung(Property.BEGUENSTIGTERZWECK);
+          break;
+        case UNTERSCHRIFT:
+          String unterschrift = (String) Einstellungen
+              .getEinstellung(Property.UNTERSCHRIFT);
+          if (spb.isEchteGeldspende()
+              && (Boolean) Einstellungen
+                  .getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
+              && unterschrift != null && !unterschrift.isBlank())
+          {
+            try
+            {
+              Image i = Image.getInstance(Base64.decode(unterschrift));
+              int width = 400;
+              int height = 55;
+              float w = i.getWidth() / width;
+              float h = i.getHeight() / height;
+              if (w > h)
+              {
+                h = i.getHeight() / w;
+                w = width;
+              }
+              else
+              {
+                w = i.getWidth() / h;
+                h = height;
+              }
+              i.scaleToFit(w, h);
+              value = i;
+            }
+            catch (BadElementException | IOException e)
+            {
+              // Dann drucken wir halt keine Unterschrift
+            }
+          }
+          break;
+      }
+      map.put(var.getName(), value);
+    }
+    return map;
+
+  }
+
+  private String getBuchungslisteBis2012(Spendenbescheinigung spb)
+      throws RemoteException
+  {
+    final String newLineStr = "\n";
+    StringBuilder bl = new StringBuilder();
+
+    boolean printBuchungsart = (Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART);
+
+    bl.append(StringTool.rpad("Datum", 10));
+    bl.append("  ");
+    bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), 11));
+    bl.append("  ");
+    bl.append("Verwendung");
+    bl.append(newLineStr);
+
+    bl.append("----------");
+    bl.append("  ");
+    bl.append("-----------");
+    bl.append("  ");
+    bl.append("-----------------------------------------");
+    bl.append(newLineStr);
+    for (Buchung b : spb.getBuchungen())
+    {
+      bl.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
+      bl.append("  ");
+      String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
+      bl.append(StringTool.lpad(str, 11));
+      bl.append("  ");
+      if (printBuchungsart)
+      {
+        bl.append(b.getBuchungsart().getBezeichnung());
       }
       else
       {
-        final int colDatumLen = 10;
-        final int colArtLen = 27;
-        final int colVerzichtLen = 17;
-        final int colBetragLen = 11;
-        bl.append(StringTool.rpad(" ", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Verzicht auf", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Datum der ", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Art der", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("die Erstattung", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(" ", colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Zuwendung", colDatumLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("Zuwendung", colArtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad("von Aufwendungen", colVerzichtLen));
-        bl.append("  ");
-        bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), colBetragLen));
-        bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("-", colDatumLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colArtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        bl.append(newLineStr);
-
-        for (Buchung b : spb.getBuchungen())
-        {
-          bl.append(StringTool.rpad(
-              new JVDateFormatTTMMJJJJ().format(b.getDatum()), colDatumLen));
-          bl_daten.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
-          bl_daten.append(newLineStr);
-          bl.append("  ");
-          if (printBuchungsart)
-          {
-            bl.append(StringTool.rpad(b.getBuchungsart().getBezeichnung(),
-                colArtLen));
-            bl_art.append(b.getBuchungsart().getBezeichnung());
-            bl_art.append(newLineStr);
-          }
-          else
-          {
-            bl.append(StringTool.rpad(b.getZweck(), colArtLen));
-          }
-          bl.append("  ");
-          if (b.getVerzicht().booleanValue())
-          {
-            bl.append(StringTool.rpad(
-                StringTool.lpad("ja", colVerzichtLen / 2 - 2), colVerzichtLen));
-            bl_verzicht.append("ja");
-          }
-          else
-          {
-            bl.append(
-                StringTool.rpad(StringTool.lpad("nein", colVerzichtLen / 2 - 2),
-                    colVerzichtLen));
-            bl_verzicht.append("nein");
-          }
-          bl_verzicht.append(newLineStr);
-          bl.append("  ");
-          String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
-          bl.append(StringTool.lpad(str, colBetragLen));
-          bl_betrag.append(StringTool.lpad(str, colBetragLen));
-          bl_betrag.append(newLineStr);
-          bl.append(newLineStr);
-        }
-
-        bl.append(StringTool.rpad("-", colDatumLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colArtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
-        bl.append("  ");
-        bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        bl.append(newLineStr);
-        // bl.append(StringTool.rpad("-",
-        // colDatumLen+2+colArtLen+2+colVerzichtLen, "-"));
-        // bl.append(" ");
-        // bl.append(StringTool.rpad("-", colBetragLen, "-"));
-        // bl.append(newLineStr);
-
-        bl.append(StringTool.rpad("Gesamtsumme:",
-            colDatumLen + 2 + colArtLen + 2 + colVerzichtLen));
-        bl.append("  ");
-        String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
-        bl.append(StringTool.lpad(str, colBetragLen));
-        bl.append(newLineStr);
+        bl.append(b.getZweck());
       }
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), bl.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(),
-          bl_daten.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(),
-          bl_art.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(),
-          bl_verzicht.toString());
-      map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(),
-          bl_betrag.toString());
+      bl.append(" ");
+      bl.append((b.getVerzicht() ? "(b)" : "(a)"));
+      bl.append(newLineStr);
     }
-    else
-    {
-      map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), spendedatum);
-    }
-    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), spendedatum);
-    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(),
-        fromDate((Date) spb.getSpendedatum()));
+    bl.append(newLineStr);
+    bl.append("----------");
+    bl.append("  ");
+    bl.append("-----------");
+    bl.append("  ");
+    bl.append("-----------------------------------------");
+    bl.append(newLineStr);
+    bl.append(StringTool.rpad("Summe:", 10));
+    bl.append("  ");
+    String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+    bl.append(StringTool.lpad(str, 11));
+    bl.append(newLineStr);
+    bl.append(newLineStr);
+    bl.append(newLineStr);
+    bl.append("Legende:");
+    bl.append(newLineStr);
+    bl.append(
+        "(a): Es handelt sich nicht um den Verzicht auf Erstattung von Aufwendungen");
+    bl.append(newLineStr);
+    bl.append(
+        "(b): Es handelt sich um den Verzicht auf Erstattung von Aufwendungen");
+    bl.append(newLineStr);
 
-    map.put(SpendenbescheinigungVar.FINANZAMT.getName(),
-        (String) Einstellungen.getEinstellung(Property.FINANZAMT));
-    map.put(SpendenbescheinigungVar.STEUER_NR.getName(),
-        (String) Einstellungen.getEinstellung(Property.STEUERNUMMER));
-    String bescheiddatum = new JVDateFormatTTMMJJJJ()
-        .format((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
-    map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), bescheiddatum);
-    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(),
-        fromDate((Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM)));
-    Calendar cal = Calendar.getInstance();
-    if (!((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG)))
-    {
-      cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGVON));
-      String start = "" + cal.get(Calendar.YEAR);
-      cal.setTime((Date) Einstellungen.getEinstellung(Property.VERANLAGUNGBIS));
-      map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
-          String.format("%s bis %s", start, "" + cal.get(Calendar.YEAR)));
-    }
-    map.put(SpendenbescheinigungVar.ZWECK.getName(),
-        (String) Einstellungen.getEinstellung(Property.BEGUENSTIGTERZWECK));
+    return bl.toString();
+  }
 
-    String unterschrift = (String) Einstellungen
-        .getEinstellung(Property.UNTERSCHRIFT);
-    if (spb.isEchteGeldspende()
-        && (Boolean) Einstellungen.getEinstellung(Property.UNTERSCHRIFTDRUCKEN)
-        && unterschrift != null && !unterschrift.isBlank())
+  private String getBuchungslisteAb2013(Spendenbescheinigung spb)
+      throws RemoteException
+  {
+    final String newLineStr = "\n";
+    StringBuilder bl = new StringBuilder();
+
+    boolean printBuchungsart = (Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGPRINTBUCHUNGSART);
+
+    final int colDatumLen = 10;
+    final int colArtLen = 27;
+    final int colVerzichtLen = 17;
+    final int colBetragLen = 11;
+    bl.append(StringTool.rpad(" ", colDatumLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad(" ", colArtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad("Verzicht auf", colVerzichtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad(" ", colBetragLen));
+    bl.append(newLineStr);
+
+    bl.append(StringTool.rpad("Datum der ", colDatumLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad("Art der", colArtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad("die Erstattung", colVerzichtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad(" ", colBetragLen));
+    bl.append(newLineStr);
+
+    bl.append(StringTool.rpad("Zuwendung", colDatumLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad("Zuwendung", colArtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad("von Aufwendungen", colVerzichtLen));
+    bl.append("  ");
+    bl.append(StringTool.rpad(StringTool.lpad("Betrag", 8), colBetragLen));
+    bl.append(newLineStr);
+
+    bl.append(StringTool.rpad("-", colDatumLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colArtLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colBetragLen, "-"));
+    bl.append(newLineStr);
+
+    for (Buchung b : spb.getBuchungen())
     {
-      Image i;
-      try
+      bl.append(StringTool.rpad(new JVDateFormatTTMMJJJJ().format(b.getDatum()),
+          colDatumLen));
+      bl.append("  ");
+      if (printBuchungsart)
       {
-        i = Image.getInstance(Base64.decode(unterschrift));
-        int width = 400;
-        int height = 55;
-        float w = i.getWidth() / width;
-        float h = i.getHeight() / height;
-        if (w > h)
-        {
-          h = i.getHeight() / w;
-          w = width;
-        }
-        else
-        {
-          w = i.getWidth() / h;
-          h = height;
-        }
-        i.scaleToFit(w, h);
-        map.put(SpendenbescheinigungVar.UNTERSCHRIFT.getName(), i);
+        bl.append(
+            StringTool.rpad(b.getBuchungsart().getBezeichnung(), colArtLen));
       }
-      catch (BadElementException | IOException e)
+      else
       {
-        // Dann drucken wir halt keine Unterschrift
+        bl.append(StringTool.rpad(b.getZweck(), colArtLen));
       }
+      bl.append("  ");
+      if (b.getVerzicht().booleanValue())
+      {
+        bl.append(StringTool.rpad(StringTool.lpad("ja", colVerzichtLen / 2 - 2),
+            colVerzichtLen));
+      }
+      else
+      {
+        bl.append(StringTool.rpad(
+            StringTool.lpad("nein", colVerzichtLen / 2 - 2), colVerzichtLen));
+      }
+      bl.append("  ");
+      String str = Einstellungen.DECIMALFORMAT.format(b.getBetrag());
+      bl.append(StringTool.lpad(str, colBetragLen));
+      bl.append(newLineStr);
     }
-    return map;
+
+    bl.append(StringTool.rpad("-", colDatumLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colArtLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colVerzichtLen, "-"));
+    bl.append("  ");
+    bl.append(StringTool.rpad("-", colBetragLen, "-"));
+    bl.append(newLineStr);
+
+    bl.append(StringTool.rpad("Gesamtsumme:",
+        colDatumLen + 2 + colArtLen + 2 + colVerzichtLen));
+    bl.append("  ");
+    String str = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
+    bl.append(StringTool.lpad(str, colBetragLen));
+    bl.append(newLineStr);
+
+    return bl.toString();
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
@@ -437,51 +547,123 @@ public class SpendenbescheinigungMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(SpendenbescheinigungVar.ANREDE.getName(), "Herr Willi Wichtig");
-    map.put(SpendenbescheinigungVar.EMPFAENGER.getName(),
-        "Herr\nWilli Wichtig\nBahnhofstr. 22\n12345 Testenhausen");
-    map.put(SpendenbescheinigungVar.BETRAG.getName(), "300.00");
-    map.put(SpendenbescheinigungVar.BETRAGINWORTEN.getName(), "dreihundert");
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM.getName(), "10.01.2025");
-    map.put(SpendenbescheinigungVar.BESCHEINIGUNGDATUM_F.getName(), "20251001");
-    map.put(SpendenbescheinigungVar.SPENDEART.getName(), "Geldspende");
-    map.put(SpendenbescheinigungVar.SPENDEDATUM.getName(), "s. Anlage");
-    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES.getName(), "01.01.2025");
-    map.put(SpendenbescheinigungVar.SPENDEDATUM_ERSTES_F.getName(), "20250101");
-    map.put(SpendenbescheinigungVar.SPENDENZEITRAUM.getName(),
-        "01.01.2025 bis 01.03.2025");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN.getName(), "Nein");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_JA.getName(), "X");
-    map.put(SpendenbescheinigungVar.ERSATZAUFWENDUNGEN_NEIN.getName(), "X");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE.getName(), "Liste");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_DATEN.getName(), "Daten");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_ART.getName(), "Spende");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_VERZICHT.getName(), "nein");
-    map.put(SpendenbescheinigungVar.BUCHUNGSLISTE_BETRAG.getName(), "300.00");
-    map.put(SpendenbescheinigungVar.BEZEICHNUNGSACHZUWENDUNG.getName(),
-        "Waschmaschine");
-    map.put(SpendenbescheinigungVar.HERKUNFTSACHZUWENDUNG.getName(),
-        "Privatvermögen");
-    map.put(SpendenbescheinigungVar.UNTERLAGENWERTERMITTUNG.getName(), "X");
-    map.put(SpendenbescheinigungVar.FINANZAMT.getName(), "Testhausen");
-    map.put(SpendenbescheinigungVar.STEUER_NR.getName(), "14/814/70099");
-    map.put(SpendenbescheinigungVar.DATUM_BESCHEID.getName(), "01.06.2025");
-    map.put(SpendenbescheinigungVar.DATUM_BESCHEID_F.getName(), "20250601");
-    if (!((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG)))
+    for (SpendenbescheinigungVar var : SpendenbescheinigungVar.values())
     {
-      map.put(SpendenbescheinigungVar.VERANLAGUNGSZEITRAUM.getName(),
-          "2022 bis 2024");
+      Object value = null;
+      switch (var)
+      {
+        case ANREDE:
+          value = "Herr Willi Wichtig";
+          break;
+        case EMPFAENGER:
+          value = "Herr\nWilli Wichtig\nBahnhofstr. 22\n12345 Testenhausen";
+          break;
+        case BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(300);
+          break;
+        case BETRAGINWORTEN:
+          value = "dreihundert";
+          break;
+        case BESCHEINIGUNGDATUM:
+          value = "10.01.2025";
+          break;
+        case BESCHEINIGUNGDATUM_F:
+          value = "20251001";
+          break;
+        case SPENDEART:
+          value = "Geldspende";
+          break;
+        case SPENDEDATUM:
+          value = "s. Anlage";
+          break;
+        case SPENDEDATUM_ERSTES:
+          value = "01.01.2025";
+          break;
+        case SPENDEDATUM_ERSTES_F:
+          value = "20250101";
+          break;
+        case SPENDENZEITRAUM:
+          value = "01.01.2025 bis 01.03.2025";
+          break;
+        case ERSATZAUFWENDUNGEN:
+          value = "Nein";
+          break;
+        case ERSATZAUFWENDUNGEN_JA:
+          value = "X";
+          break;
+        case ERSATZAUFWENDUNGEN_NEIN:
+          value = "X";
+          break;
+        case BUCHUNGSLISTE:
+          value = "Liste";
+          break;
+        case BUCHUNGSLISTE_DATEN:
+          value = "Daten";
+          break;
+        case BUCHUNGSLISTE_ART:
+          value = "Spende";
+          break;
+        case BUCHUNGSLISTE_VERZICHT:
+          value = "nein";
+          break;
+        case BUCHUNGSLISTE_BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(300.00);
+          break;
+        case BEZEICHNUNGSACHZUWENDUNG:
+          value = "Waschmaschine";
+          break;
+        case HERKUNFTSACHZUWENDUNG:
+          value = "Privatvermögen";
+          break;
+        case UNTERLAGENWERTERMITTUNG:
+          value = "X";
+          break;
+        case FINANZAMT:
+          value = "Testhausen";
+          break;
+        case STEUER_NR:
+          value = "14/814/70099";
+          break;
+        case DATUM_BESCHEID:
+          value = "01.06.2025";
+          break;
+        case DATUM_BESCHEID_F:
+          value = "20250601";
+          break;
+        case VERANLAGUNGSZEITRAUM:
+          if (!((Boolean) Einstellungen.getEinstellung(Property.VORLAEUFIG)))
+          {
+            value = "2022 bis 2024";
+          }
+        case ZWECK:
+          value = "Spende";
+          break;
+        case ZEILE1:
+          value = "Herr";
+          break;
+        case ZEILE2:
+          value = "Willi Wichtig";
+          break;
+        case ZEILE3:
+          value = "Bahnhofstr. 22";
+          break;
+        case ZEILE4:
+          value = "12345 Testenhausen";
+          break;
+        case ZEILE5:
+          value = "";
+          break;
+        case ZEILE6:
+          value = "";
+          break;
+        case ZEILE7:
+          value = "";
+          break;
+        case UNTERSCHRIFT:
+          break;
+      }
+      map.put(var.getName(), value);
     }
-    map.put(SpendenbescheinigungVar.ZWECK.getName(), "Spende");
-
-    map.put(SpendenbescheinigungVar.ZEILE1.getName(), "Herr");
-    map.put(SpendenbescheinigungVar.ZEILE2.getName(), "Willi Wichtig");
-    map.put(SpendenbescheinigungVar.ZEILE3.getName(), "Bahnhofstr. 22");
-    map.put(SpendenbescheinigungVar.ZEILE4.getName(), "12345 Testenhausen");
-    map.put(SpendenbescheinigungVar.ZEILE5.getName(), "");
-    map.put(SpendenbescheinigungVar.ZEILE6.getName(), "");
-    map.put(SpendenbescheinigungVar.ZEILE7.getName(), "");
-
     return map;
   }
 }
