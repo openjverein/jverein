@@ -145,6 +145,9 @@ public class AllgemeineMap extends AbstractMap
         case STEUER_NR:
           value = (String) Einstellungen.getEinstellung(Property.STEUERNUMMER);
           break;
+        case ZAEHLER:
+          // Wird in FormularAufbereitung gesetzt
+          break;
       }
       map.put(var.getName(), value);
     }
