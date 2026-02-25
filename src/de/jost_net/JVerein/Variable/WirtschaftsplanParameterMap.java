@@ -25,12 +25,6 @@ import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 
 public class WirtschaftsplanParameterMap extends AbstractMap
 {
-
-  public WirtschaftsplanParameterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(WirtschaftsplanControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,13 +38,23 @@ public class WirtschaftsplanParameterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(WirtschaftsplanParameterVar.PARAMETER_BEZEICHNUNG.getName(),
-        control.getWirtschaftsplan().getBezeichung());
-    map.put(WirtschaftsplanParameterVar.DATUM_VON_F.getName(),
-        fromDate((Date) control.getWirtschaftsplan().getDatumVon()));
-    map.put(WirtschaftsplanParameterVar.DATUM_BIS_F.getName(),
-        fromDate((Date) control.getWirtschaftsplan().getDatumBis()));
-
+    for (WirtschaftsplanParameterVar var : WirtschaftsplanParameterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case PARAMETER_BEZEICHNUNG:
+          value = control.getWirtschaftsplan().getBezeichung();
+          break;
+        case DATUM_VON_F:
+          value = fromDate((Date) control.getWirtschaftsplan().getDatumVon());
+          break;
+        case DATUM_BIS_F:
+          value = fromDate((Date) control.getWirtschaftsplan().getDatumBis());
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -65,12 +69,23 @@ public class WirtschaftsplanParameterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(WirtschaftsplanParameterVar.PARAMETER_BEZEICHNUNG.getName(),
-        "Wirtschaftsplan 2025");
-    map.put(WirtschaftsplanParameterVar.DATUM_VON_F.getName(), "20250101");
-    map.put(WirtschaftsplanParameterVar.DATUM_BIS_F.getName(), "20251231");
-
+    for (WirtschaftsplanParameterVar var : WirtschaftsplanParameterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case PARAMETER_BEZEICHNUNG:
+          value = "Wirtschaftsplan 2025";
+          break;
+        case DATUM_VON_F:
+          value = "20250101";
+          break;
+        case DATUM_BIS_F:
+          value = "20251231";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

@@ -32,12 +32,6 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class AllgemeineMap extends AbstractMap
 {
-
-  public AllgemeineMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(Map<String, Object> inma)
       throws RemoteException
   {
@@ -50,79 +44,110 @@ public class AllgemeineMap extends AbstractMap
     {
       map = inma;
     }
-    map.put(AllgemeineVar.AKTUELLESDATUM.getName(),
-        new SimpleDateFormat("yyyyMMdd").format(new Date()));
-    map.put(AllgemeineVar.AKTUELLEZEIT.getName(),
-        new SimpleDateFormat("HHmmss").format(new Date()));
-    map.put(AllgemeineVar.TAGESDATUM.getName(), ttmmjjjj.format(new Date()));
-    map.put(AllgemeineVar.TAGESDATUMTT.getName(), tt.format(new Date()));
-    map.put(AllgemeineVar.TAGESDATUMMM.getName(), mm.format(new Date()));
-    map.put(AllgemeineVar.TAGESDATUMJJJJ.getName(), jjjj.format(new Date()));
-    map.put(AllgemeineVar.AKTUELLESJAHR.getName(), jjjj.format(new Date()));
-    map.put(AllgemeineVar.AKTUELLERMONAT.getName(), mmjjjj.format(new Date()));
-
-    Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.MONTH, 1);
-    map.put(AllgemeineVar.FOLGEMONAT.getName(),
-        mmjjjj.format(calendar.getTime()));
-
-    calendar = Calendar.getInstance();
-    calendar.add(Calendar.MONTH, -1);
-    map.put(AllgemeineVar.VORMONAT.getName(),
-        mmjjjj.format(calendar.getTime()));
-
-    calendar = Calendar.getInstance();
-    calendar.add(Calendar.YEAR, 1);
-    map.put(AllgemeineVar.FOLGEJAHR.getName(), jjjj.format(calendar.getTime()));
-
-    calendar = Calendar.getInstance();
-    calendar.add(Calendar.YEAR, -1);
-    map.put(AllgemeineVar.VORJAHR.getName(), jjjj.format(calendar.getTime()));
-
-    map.put(AllgemeineVar.AKTUELLERMONAT.getName(), mmjjjj.format(new Date()));
-
-    map.put(AllgemeineVar.NAME.getName(),
-        (String) Einstellungen.getEinstellung(Property.NAME));
-    map.put(AllgemeineVar.STRASSE.getName(),
-        (String) Einstellungen.getEinstellung(Property.STRASSE));
-    map.put(AllgemeineVar.PLZ.getName(),
-        (String) Einstellungen.getEinstellung(Property.PLZ));
-    map.put(AllgemeineVar.ORT.getName(),
-        (String) Einstellungen.getEinstellung(Property.ORT));
-    map.put(AllgemeineVar.ABSENDER.getName(),
-        (String) Einstellungen.getEinstellung(Property.NAME) + ", "
-            + (String) Einstellungen.getEinstellung(Property.STRASSE) + ", "
-            + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
-            + (String) Einstellungen.getEinstellung(Property.ORT));
-    map.put(AllgemeineVar.STAAT.getName(),
-        Staat.getByKey((String) Einstellungen.getEinstellung(Property.STAAT))
-            .getText());
-    map.put(AllgemeineVar.IBAN.getName(), new IBANFormatter()
-        .format((String) Einstellungen.getEinstellung(Property.IBAN)));
-    String bic = (String) Einstellungen.getEinstellung(Property.BIC);
-    map.put(AllgemeineVar.BIC.getName(), bic);
-    if (!bic.isEmpty())
+    for (AllgemeineVar var : AllgemeineVar.values())
     {
-      Bank b = Banken.getBankByBIC(bic.toUpperCase());
-      if (b != null)
+      Calendar calendar;
+      Object value = null;
+      switch (var)
       {
-        map.put(AllgemeineVar.BANK_NAME.getName(), b.getBezeichnung());
+        case AKTUELLESDATUM:
+          value = new SimpleDateFormat("yyyyMMdd").format(new Date());
+          break;
+        case AKTUELLEZEIT:
+          value = new SimpleDateFormat("HHmmss").format(new Date());
+          break;
+        case TAGESDATUM:
+          value = ttmmjjjj.format(new Date());
+          break;
+        case TAGESDATUMTT:
+          value = tt.format(new Date());
+          break;
+        case TAGESDATUMMM:
+          value = mm.format(new Date());
+          break;
+        case TAGESDATUMJJJJ:
+          value = jjjj.format(new Date());
+          break;
+        case AKTUELLESJAHR:
+          value = jjjj.format(new Date());
+          break;
+        case AKTUELLERMONAT:
+          value = mmjjjj.format(new Date());
+          break;
+        case FOLGEMONAT:
+          calendar = Calendar.getInstance();
+          calendar.add(Calendar.MONTH, 1);
+          value = mmjjjj.format(calendar.getTime());
+          break;
+        case VORMONAT:
+          calendar = Calendar.getInstance();
+          calendar.add(Calendar.MONTH, -1);
+          value = mmjjjj.format(calendar.getTime());
+          break;
+        case FOLGEJAHR:
+          calendar = Calendar.getInstance();
+          calendar.add(Calendar.YEAR, 1);
+          value = jjjj.format(calendar.getTime());
+          break;
+        case VORJAHR:
+          calendar = Calendar.getInstance();
+          calendar.add(Calendar.YEAR, -1);
+          value = jjjj.format(calendar.getTime());
+          break;
+        case NAME:
+          value = (String) Einstellungen.getEinstellung(Property.NAME);
+          break;
+        case STRASSE:
+          value = (String) Einstellungen.getEinstellung(Property.STRASSE);
+          break;
+        case PLZ:
+          value = (String) Einstellungen.getEinstellung(Property.PLZ);
+          break;
+        case ORT:
+          value = (String) Einstellungen.getEinstellung(Property.ORT);
+          break;
+        case ABSENDER:
+          value = (String) Einstellungen.getEinstellung(Property.NAME) + ", "
+              + (String) Einstellungen.getEinstellung(Property.STRASSE) + ", "
+              + (String) Einstellungen.getEinstellung(Property.PLZ) + " "
+              + (String) Einstellungen.getEinstellung(Property.ORT);
+          break;
+        case STAAT:
+          value = Staat
+              .getByKey((String) Einstellungen.getEinstellung(Property.STAAT))
+              .getText();
+          break;
+        case IBAN:
+          value = new IBANFormatter()
+              .format((String) Einstellungen.getEinstellung(Property.IBAN));
+          break;
+        case BIC:
+          value = (String) Einstellungen.getEinstellung(Property.BIC);
+          break;
+        case BANK_NAME:
+          String bic = (String) Einstellungen.getEinstellung(Property.BIC);
+          value = "";
+          if (!bic.isEmpty())
+          {
+            Bank b = Banken.getBankByBIC(bic.toUpperCase());
+            if (b != null)
+            {
+              value = b.getBezeichnung();
+            }
+          }
+          break;
+        case GLAEUBIGER_ID:
+          value = (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID);
+          break;
+        case UST_ID:
+          value = (String) Einstellungen.getEinstellung(Property.USTID);
+          break;
+        case STEUER_NR:
+          value = (String) Einstellungen.getEinstellung(Property.STEUERNUMMER);
+          break;
       }
-      else
-      {
-        map.put(AllgemeineVar.BANK_NAME.getName(), "");
-      }
+      map.put(var.getName(), value);
     }
-    else
-    {
-      map.put(AllgemeineVar.BANK_NAME.getName(), "");
-    }
-    map.put(AllgemeineVar.GLAEUBIGER_ID.getName(),
-        (String) Einstellungen.getEinstellung(Property.GLAEUBIGERID));
-    map.put(AllgemeineVar.UST_ID.getName(),
-        (String) Einstellungen.getEinstellung(Property.USTID));
-    map.put(AllgemeineVar.STEUER_NR.getName(),
-        (String) Einstellungen.getEinstellung(Property.STEUERNUMMER));
     return map;
   }
 }

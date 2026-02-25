@@ -44,13 +44,23 @@ public class SaldoFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(SaldoFilterVar.DATUM_VON_F.getName(),
-        fromDate(toDate((String) control.getDatumvon().getValue())));
-    map.put(SaldoFilterVar.DATUM_BIS_F.getName(),
-        fromDate(toDate((String) control.getDatumbis().getValue())));
-    map.put(SaldoFilterVar.JAHR.getName(),
-        control.getGeschaeftsjahr().getValue().toString());
-
+    for (SaldoFilterVar var : SaldoFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_VON_F:
+          value = fromDate(toDate((String) control.getDatumvon().getValue()));
+          break;
+        case DATUM_BIS_F:
+          value = fromDate(toDate((String) control.getDatumbis().getValue()));
+          break;
+        case JAHR:
+          value = control.getGeschaeftsjahr().getValue().toString();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -65,11 +75,23 @@ public class SaldoFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(SaldoFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(SaldoFilterVar.DATUM_BIS_F.getName(), "20241231");
-    map.put(SaldoFilterVar.JAHR.getName(), "2024");
-
+    for (SaldoFilterVar var : SaldoFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BIS_F:
+          value = "20241231";
+          break;
+        case JAHR:
+          value = "2024";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

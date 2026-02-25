@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 public class AuswertungKursteilnehmerFilterMap extends AbstractMap
 {
 
-  public AuswertungKursteilnehmerFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,11 +39,21 @@ public class AuswertungKursteilnehmerFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_F.getName(),
-        fromDate((Date) control.getAbbuchungsdatumvon().getValue()));
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_F.getName(),
-        fromDate((Date) control.getAbbuchungsdatumbis().getValue()));
-
+    for (AuswertungKursteilnehmerFilterVar var : AuswertungKursteilnehmerFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_ABBUCHUNG_VON_F:
+          value = fromDate((Date) control.getAbbuchungsdatumvon().getValue());
+          break;
+        case DATUM_ABBUCHUNG_BIS_F:
+          value = fromDate((Date) control.getAbbuchungsdatumbis().getValue());
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -63,12 +68,21 @@ public class AuswertungKursteilnehmerFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_VON_F.getName(),
-        "20240101");
-    map.put(AuswertungKursteilnehmerFilterVar.DATUM_ABBUCHUNG_BIS_F.getName(),
-        "20241231");
-
+    for (AuswertungKursteilnehmerFilterVar var : AuswertungKursteilnehmerFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_ABBUCHUNG_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_ABBUCHUNG_BIS_F:
+          value = "20241231";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

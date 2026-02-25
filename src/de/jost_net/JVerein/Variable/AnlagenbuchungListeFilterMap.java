@@ -48,36 +48,62 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
     }
 
     Konto k = (Konto) control.getSuchKonto().getValue();
-    if (k != null)
-    {
-      map.put(AnlagenbuchungListeFilterVar.KONTO_NR.getName(), k.getNummer());
-      map.put(AnlagenbuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(),
-          k.getBezeichnung());
-    }
-    else
-    {
-      map.put(AnlagenbuchungListeFilterVar.KONTO_NR.getName(), "");
-      map.put(AnlagenbuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(), "");
-    }
-    map.put(AnlagenbuchungListeFilterVar.BUCHUNGSART.getName(),
-        control.getSuchBuchungsart().getText());
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
-    {
-      map.put(AnlagenbuchungListeFilterVar.PROJEKT.getName(),
-          control.getSuchProjekt().getText());
-    }
-    map.put(AnlagenbuchungListeFilterVar.SPLITBUCHUNG.getName(),
-        control.getSuchSplibuchung().getText());
-    map.put(AnlagenbuchungListeFilterVar.BETRAG.getName(),
-        control.getSuchBetrag().getValue().toString());
-    map.put(AnlagenbuchungListeFilterVar.DATUM_VON_F.getName(),
-        fromDate((Date) control.getVondatum().getValue()));
-    map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_F.getName(),
-        fromDate((Date) control.getBisdatum().getValue()));
-    map.put(AnlagenbuchungListeFilterVar.ENTHALTENER_TEXT.getName(),
-        control.getSuchtext().getValue().toString());
 
+    for (AnlagenbuchungListeFilterVar var : AnlagenbuchungListeFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case KONTO_NR:
+          if (k != null)
+          {
+            value = k.getNummer();
+          }
+          else
+          {
+            value = "";
+          }
+          break;
+        case KONTO_BEZEICHNUNG:
+          if (k != null)
+          {
+            value = k.getBezeichnung();
+          }
+          else
+          {
+            value = "";
+          }
+          break;
+        case BUCHUNGSART:
+          value = control.getSuchBuchungsart().getText();
+          break;
+        case PROJEKT:
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = control.getSuchProjekt().getText();
+          }
+          break;
+        case SPLITBUCHUNG:
+          value = control.getSuchSplibuchung().getText();
+          break;
+        case BETRAG:
+          value = control.getSuchBetrag().getValue().toString();
+          break;
+        case DATUM_VON_F:
+          value = fromDate((Date) control.getVondatum().getValue());
+          break;
+        case DATUM_BIS_F:
+          value = fromDate((Date) control.getBisdatum().getValue());
+          break;
+        case ENTHALTENER_TEXT:
+          value = control.getSuchtext().getValue().toString();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
+
   }
 
   public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
@@ -92,20 +118,44 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AnlagenbuchungListeFilterVar.KONTO_NR.getName(), "888999");
-    map.put(AnlagenbuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(), "Giro");
-    map.put(AnlagenbuchungListeFilterVar.BUCHUNGSART.getName(), "Beitrag");
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    for (AnlagenbuchungListeFilterVar var : AnlagenbuchungListeFilterVar
+        .values())
     {
-      map.put(AnlagenbuchungListeFilterVar.PROJEKT.getName(), "Projekt1");
+      Object value = null;
+      switch (var)
+      {
+        case KONTO_NR:
+          value = "888999";
+          break;
+        case KONTO_BEZEICHNUNG:
+          value = "Giro";
+          break;
+        case BUCHUNGSART:
+          value = "Beitrag";
+        case PROJEKT:
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = "Projekt1";
+          }
+          break;
+        case SPLITBUCHUNG:
+          value = "Alle";
+          break;
+        case BETRAG:
+          value = "100";
+          break;
+        case DATUM_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BIS_F:
+          value = "20241231";
+          break;
+        case ENTHALTENER_TEXT:
+          value = "Text";
+          break;
+      }
+      map.put(var.getName(), value);
     }
-    map.put(AnlagenbuchungListeFilterVar.SPLITBUCHUNG.getName(), "Alle");
-    map.put(AnlagenbuchungListeFilterVar.BETRAG.getName(), "100");
-    map.put(AnlagenbuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(AnlagenbuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
-    map.put(AnlagenbuchungListeFilterVar.ENTHALTENER_TEXT.getName(), "Text");
-
     return map;
   }
 }

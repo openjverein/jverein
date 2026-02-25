@@ -26,12 +26,6 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl;
 
 public class SollbuchungListeFilterMap extends AbstractMap
 {
-
-  public SollbuchungListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(SollbuchungControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -45,31 +39,47 @@ public class SollbuchungListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(SollbuchungListeFilterVar.ZAHLER.getName(),
-        control.getSuchname().getValue().toString());
-    map.put(SollbuchungListeFilterVar.MITGLIED.getName(),
-        control.getSuchtext().getValue().toString());
-    map.put(SollbuchungListeFilterVar.ZAHLER_MAIL.getName(),
-        control.getMailauswahl().getText());
-    map.put(SollbuchungListeFilterVar.DIFFERENZ.getName(),
-        control.getDifferenz().getText());
-    Double limit = (Double) control.getDoubleAusw().getValue();
-    if (limit != null)
+    for (SollbuchungListeFilterVar var : SollbuchungListeFilterVar.values())
     {
-      map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(),
-          Einstellungen.DECIMALFORMAT.format(limit));
+      Object value = null;
+      switch (var)
+      {
+        case ZAHLER:
+          value = control.getSuchname().getValue().toString();
+          break;
+        case MITGLIED:
+          value = control.getSuchtext().getValue().toString();
+          break;
+        case ZAHLER_MAIL:
+          value = control.getMailauswahl().getText();
+          break;
+        case DIFFERENZ:
+          value = control.getDifferenz().getText();
+          break;
+        case DIFFERENZ_LIMIT:
+          Double limit = (Double) control.getDoubleAusw().getValue();
+          if (limit != null)
+          {
+            value = Einstellungen.DECIMALFORMAT.format(limit);
+          }
+          else
+          {
+            value = "";
+          }
+          break;
+        case OHNE_ABBUCHER:
+          value = (Boolean) control.getOhneAbbucher().getValue() ? "Ja"
+              : "Nein";
+          break;
+        case DATUM_VON_F:
+          value = fromDate((Date) control.getDatumvon().getValue());
+          break;
+        case DATUM_BIS_F:
+          value = fromDate((Date) control.getDatumbis().getValue());
+          break;
+      }
+      map.put(var.getName(), value);
     }
-    else
-    {
-      map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(), "");
-    }
-    String o = (Boolean) control.getOhneAbbucher().getValue() ? "Ja" : "Nein";
-    map.put(SollbuchungListeFilterVar.OHNE_ABBUCHER.getName(), o);
-    map.put(SollbuchungListeFilterVar.DATUM_VON_F.getName(),
-        fromDate((Date) control.getDatumvon().getValue()));
-    map.put(SollbuchungListeFilterVar.DATUM_BIS_F.getName(),
-        fromDate((Date) control.getDatumbis().getValue()));
-
     return map;
   }
 
@@ -85,16 +95,38 @@ public class SollbuchungListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(SollbuchungListeFilterVar.ZAHLER.getName(), "Willi");
-    map.put(SollbuchungListeFilterVar.MITGLIED.getName(), "Otto");
-    map.put(SollbuchungListeFilterVar.ZAHLER_MAIL.getName(), "Alle");
-    map.put(SollbuchungListeFilterVar.DIFFERENZ.getName(), "Egal");
-    map.put(SollbuchungListeFilterVar.DIFFERENZ_LIMIT.getName(), "100");
-    map.put(SollbuchungListeFilterVar.OHNE_ABBUCHER.getName(), "Nein");
-    map.put(SollbuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(SollbuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
-
+    for (SollbuchungListeFilterVar var : SollbuchungListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case ZAHLER:
+          value = "Willi";
+          break;
+        case MITGLIED:
+          value = "Otto";
+          break;
+        case ZAHLER_MAIL:
+          value = "Alle";
+          break;
+        case DIFFERENZ:
+          value = "Egal";
+          break;
+        case DIFFERENZ_LIMIT:
+          value = "100";
+          break;
+        case OHNE_ABBUCHER:
+          value = "Nein";
+          break;
+        case DATUM_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BIS_F:
+          value = "20241231";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

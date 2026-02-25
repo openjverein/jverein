@@ -25,11 +25,6 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 
 public class SollbuchungMap extends AbstractMap
 {
-
-  public SollbuchungMap()
-  {
-  }
-
   public Map<String, Object> getMap(Sollbuchung sollb, Map<String, Object> inma)
       throws RemoteException
   {
@@ -42,14 +37,32 @@ public class SollbuchungMap extends AbstractMap
     {
       map = inma;
     }
-    map.put(SollbuchungVar.BUCHUNGSDATUM.getName(), sollb.getDatum());
-    map.put(SollbuchungVar.BUCHUNGSDATUM_F.getName(),
-        fromDate((Date) sollb.getDatum()));
-    map.put(SollbuchungVar.ZAHLUNGSGRUND.getName(), sollb.getZweck1());
-    map.put(SollbuchungVar.BETRAG.getName(), sollb.getBetrag());
-    map.put(SollbuchungVar.IST.getName(), sollb.getIstSumme());
-    map.put(SollbuchungVar.DIFFERENZ.getName(),
-        sollb.getBetrag() - sollb.getIstSumme());
+    for (SollbuchungVar var : SollbuchungVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case BUCHUNGSDATUM:
+          value = sollb.getDatum();
+          break;
+        case BUCHUNGSDATUM_F:
+          value = fromDate((Date) sollb.getDatum());
+          break;
+        case ZAHLUNGSGRUND:
+          value = sollb.getZweck1();
+          break;
+        case BETRAG:
+          value = sollb.getBetrag();
+          break;
+        case IST:
+          value = sollb.getIstSumme();
+          break;
+        case DIFFERENZ:
+          value = sollb.getBetrag() - sollb.getIstSumme();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }
