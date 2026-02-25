@@ -22,6 +22,7 @@ import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -54,7 +55,7 @@ public class MitgliedskontoNode implements GenericObjectNode
 
   private String zweck1 = null;
 
-  private Integer zahlungsweg = null;
+  private String zahlungsweg = null;
 
   private Double soll = null;
 
@@ -74,7 +75,7 @@ public class MitgliedskontoNode implements GenericObjectNode
   {
     type = MITGLIED;
     this.mitglied = m;
-    this.zahlungsweg = m.getZahlungsweg();
+    this.zahlungsweg = Zahlungsweg.get(m.getZahlungsweg());
     this.name = Adressaufbereitung.getNameVorname(m);
     this.soll = Double.valueOf(0);
     this.ist = Double.valueOf(0);
@@ -116,7 +117,7 @@ public class MitgliedskontoNode implements GenericObjectNode
     this.parent = parent;
     this.id = sollb.getID();
     this.mitglied = sollb.getMitglied();
-    this.zahlungsweg = sollb.getZahlungsweg();
+    this.zahlungsweg = Zahlungsweg.get(sollb.getZahlungsweg());
     this.datum = sollb.getDatum();
     this.zweck1 = sollb.getZweck1();
     this.soll = sollb.getBetrag();
@@ -148,7 +149,7 @@ public class MitgliedskontoNode implements GenericObjectNode
     this.parent = parent;
     this.id = bist.getID();
     this.mitglied = mk.getMitglied();
-    this.zahlungsweg = mk.getZahlungsweg();
+    this.zahlungsweg = bist.getArt();
     this.datum = bist.getDatum();
     this.zweck1 = bist.getZweck();
     this.ist = bist.getBetrag();

@@ -1734,9 +1734,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
       }
       if (geldkonto)
-        buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied",
-            new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
-            Column.SORT_BY_DISPLAY));
+        buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG,
+            "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
+            Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {
         buchungsList.addColumn("Projekt", "projekt");
@@ -1833,7 +1833,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           }, false, Column.ALIGN_RIGHT);
         }
       }
-      splitbuchungsList.addColumn("Mitglied", Buchung.SOLLBUCHUNG,
+      splitbuchungsList.addColumn("Mitglied - Sollbuchung", Buchung.SOLLBUCHUNG,
           new SollbuchungFormatter());
       if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
       {

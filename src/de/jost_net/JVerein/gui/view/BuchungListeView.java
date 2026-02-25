@@ -79,7 +79,7 @@ public class BuchungListeView extends AbstractView
     center.addLabelPair("Datum bis", control.getBisdatum());
     center.addLabelPair("Nur ungeprüfte", control.getUngeprueft());
     right.addLabelPair("Enthaltener Text", control.getSuchtext());
-    right.addLabelPair("Mitglied zugeordnet?",
+    right.addLabelPair("Mitglied zugeordnet",
         control.getSuchMitgliedZugeordnet());
     right.addLabelPair("Mitglied Name", control.getMitglied());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))

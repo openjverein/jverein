@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import java.util.Map;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
@@ -66,7 +65,6 @@ public class EinstellungenRechnungenView extends AbstractView
         control.getQRCodeIntro());
 
     Map<String, Object> map = RechnungMap.getDummyMap(null);
-    map = MitgliedMap.getDummyMap(map);
     map = new AllgemeineMap().getMap(map);
 
     ButtonArea buttons = new ButtonArea();

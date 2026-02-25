@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,13 +27,11 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.BeitragsUtil;
-import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
@@ -314,39 +311,6 @@ public class MitgliedMap extends AbstractMap
           break;
         case ZAHLUNGSWEG:
           value = mitglied.getZahlungsweg() + "";
-          break;
-        case ZAHLUNGSWEGTEXT:
-          String zahlungsweg = "";
-          switch (mitglied.getZahlungsweg())
-          {
-            case Zahlungsweg.BASISLASTSCHRIFT:
-              zahlungsweg = (String) Einstellungen
-                  .getEinstellung(Property.RECHNUNGTEXTABBUCHUNG);
-              zahlungsweg = zahlungsweg.replaceAll("\\$\\{BIC\\}",
-                  mitglied.getBic());
-              zahlungsweg = zahlungsweg.replaceAll("\\$\\{IBAN\\}",
-                  mitglied.getIban());
-              zahlungsweg = zahlungsweg.replaceAll("\\$\\{MANDATID\\}",
-                  mitglied.getMandatID());
-              break;
-            case Zahlungsweg.BARZAHLUNG:
-              zahlungsweg = (String) Einstellungen
-                  .getEinstellung(Property.RECHNUNGTEXTBAR);
-              break;
-            case Zahlungsweg.ÜBERWEISUNG:
-              zahlungsweg = (String) Einstellungen
-                  .getEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG);
-              break;
-          }
-          try
-          {
-            value = VelocityTool.eval(map, zahlungsweg);
-          }
-          catch (IOException e)
-          {
-            e.printStackTrace();
-            value = zahlungsweg;
-          }
           break;
       }
       map.put(var.getName(), value);
@@ -644,9 +608,6 @@ public class MitgliedMap extends AbstractMap
           break;
         case ZAHLUNGSWEG:
           value = "2";
-          break;
-        case ZAHLUNGSWEGTEXT:
-          value = "Bitte überweisen Sie den Betrag auf das angegebene Konto.";
           break;
         case ZAHLERID:
           value = "123456";

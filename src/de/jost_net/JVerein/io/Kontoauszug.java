@@ -30,7 +30,6 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.StringTool;
@@ -119,7 +118,7 @@ public class Kontoauszug extends AbstractAusgabe
     }
     rpt.addColumn((Date) node.getAttribute("datum"), Element.ALIGN_CENTER);
     rpt.addColumn((String) node.getAttribute("zweck1"), Element.ALIGN_LEFT);
-    rpt.addColumn(Zahlungsweg.get((Integer) node.getAttribute("zahlungsweg")),
+    rpt.addColumn((String) node.getAttribute("zahlungsweg"),
         Element.ALIGN_LEFT);
     rpt.addColumn((Double) node.getAttribute("soll"));
     if (node.getType() != MitgliedskontoNode.SOLL)

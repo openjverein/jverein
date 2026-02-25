@@ -34,7 +34,6 @@ import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
@@ -405,8 +404,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     mitgliedskontoTree.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     mitgliedskontoTree.addColumn("Zweck1", "zweck1");
-    mitgliedskontoTree.addColumn("Zahlungsweg", "zahlungsweg",
-        new ZahlungswegFormatter());
+    mitgliedskontoTree.addColumn("Zahlungsweg", "zahlungsweg");
     mitgliedskontoTree.addColumn("Soll", "soll",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.addColumn("Ist", "ist",

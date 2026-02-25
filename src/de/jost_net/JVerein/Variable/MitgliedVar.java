@@ -103,9 +103,7 @@ public enum MitgliedVar
   ZAHLUNGSTERMIN("mitglied_zahlungstermin"), //
   ZAHLUNGSWEG("mitglied_zahlungsweg"), //
   ZAHLERID("mitglied_zahlerid"),
-  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid"),
-  // Muss der letzte Eintrag sein, da hier die map selbst genutzt wird
-  ZAHLUNGSWEGTEXT("mitglied_zahlungsweg_text");
+  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid");
 
   private String name;
 
