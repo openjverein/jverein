@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
 {
 
-  public AuswertungArbeitseinsatzFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(ArbeitseinsatzControl control,
       Map<String, Object> inma) throws RemoteException
   {

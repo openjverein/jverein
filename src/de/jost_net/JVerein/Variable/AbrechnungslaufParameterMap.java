@@ -29,11 +29,6 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 public class AbrechnungslaufParameterMap extends AbstractMap
 {
 
-  public AbrechnungslaufParameterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(AbrechnungSEPAControl control,
       Map<String, Object> inma) throws RemoteException
   {

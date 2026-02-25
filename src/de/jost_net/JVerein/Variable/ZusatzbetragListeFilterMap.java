@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 public class ZusatzbetragListeFilterMap extends AbstractMap
 {
 
-  public ZusatzbetragListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(ZusatzbetragControl control,
       Map<String, Object> inma) throws RemoteException
   {

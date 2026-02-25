@@ -52,11 +52,6 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedMap extends AbstractMap
 {
-  public MitgliedMap()
-  {
-    super();
-  }
-
   public Map<String, Object> getMap(Mitglied m, Map<String, Object> inma)
       throws RemoteException
   {
@@ -506,7 +501,7 @@ public class MitgliedMap extends AbstractMap
           value = "Beitrag";
           break;
         case BEITRAGSGRUPPE_BETRAG:
-          value = "300,00";
+          value = Einstellungen.DECIMALFORMAT.format(300d);
           break;
         case BEITRAGSGRUPPE_ID:
           value = "1";
@@ -569,7 +564,7 @@ public class MitgliedMap extends AbstractMap
           value = "15";
           break;
         case INDIVIDUELLERBEITRAG:
-          value = "123,45";
+          value = Einstellungen.DECIMALFORMAT.format(123.45);
           break;
         case BANKNAME:
           value = "XY Bank";
@@ -681,7 +676,7 @@ public class MitgliedMap extends AbstractMap
           map.put(name, "22");
           break;
         case Datentyp.WAEHRUNG:
-          map.put(name, "3.00");
+          map.put(name, Einstellungen.DECIMALFORMAT.format(3d));
           break;
         case Datentyp.ZEICHENFOLGE:
           map.put(name, "abcd");

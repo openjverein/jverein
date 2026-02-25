@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 public class SpendenbescheinigungListeFilterMap extends AbstractMap
 {
 
-  public SpendenbescheinigungListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {

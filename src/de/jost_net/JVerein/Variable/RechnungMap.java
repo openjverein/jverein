@@ -40,12 +40,6 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class RechnungMap extends AbstractMap
 {
-
-  public RechnungMap()
-  {
-    super();
-  }
-
   @SuppressWarnings("deprecation")
   public Map<String, Object> getMap(Rechnung re, Map<String, Object> inMap)
       throws RemoteException
@@ -344,11 +338,13 @@ public class RechnungMap extends AbstractMap
         case NETTOBETRAG:
           if (optiert)
           {
-            value = "8,40\n13,80";
+            value = Einstellungen.DECIMALFORMAT.format(8.4) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(13.8);
           }
           else
           {
-            value = "10,00\n13,80";
+            value = Einstellungen.DECIMALFORMAT.format(10d) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(13.8);
           }
           break;
         case STEUERSATZ:
@@ -364,34 +360,41 @@ public class RechnungMap extends AbstractMap
         case STEUERBETRAG:
           if (optiert)
           {
-            value = "1,60\n0,00";
+            value = Einstellungen.DECIMALFORMAT.format(1.6) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(0d);
           }
           else
           {
-            value = "0,00\n0,00";
+            value = Einstellungen.DECIMALFORMAT.format(0d) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(0d);
           }
           break;
         case BETRAG:
           if (optiert)
           {
-            value = "10,00\n13,80\n\n1,60\n23,80";
+            value = Einstellungen.DECIMALFORMAT.format(10d) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(13.8) + "\n\n"
+                + Einstellungen.DECIMALFORMAT.format(1.6) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(23.8);
           }
           else
           {
-            value = "10,00\n13,80\n\n23,80";
+            value = Einstellungen.DECIMALFORMAT.format(10d) + "\n"
+                + Einstellungen.DECIMALFORMAT.format(13.8) + "\n\n"
+                + Einstellungen.DECIMALFORMAT.format(23.8);
           }
           break;
         case SUMME:
-          value = "23.80";
+          value = Einstellungen.DECIMALFORMAT.format(23.8);
           break;
         case IST:
-          value = "10.00";
+          value = Einstellungen.DECIMALFORMAT.format(10d);
           break;
         case STAND:
-          value = "-13.80";
+          value = Einstellungen.DECIMALFORMAT.format(-13.8);
           break;
         case SUMME_OFFEN:
-          value = "13.80";
+          value = Einstellungen.DECIMALFORMAT.format(13.8);
           break;
         case QRCODE_INTRO:
           value = "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";

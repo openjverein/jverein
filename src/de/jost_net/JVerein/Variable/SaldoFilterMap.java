@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 public class SaldoFilterMap extends AbstractMap
 {
 
-  public SaldoFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(AbstractSaldoControl control,
       Map<String, Object> inma) throws RemoteException
   {

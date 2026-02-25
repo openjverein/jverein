@@ -29,11 +29,6 @@ import de.jost_net.JVerein.rmi.Konto;
 public class AnlagenbuchungListeFilterMap extends AbstractMap
 {
 
-  public AnlagenbuchungListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(BuchungsControl control,
       Map<String, Object> inma) throws RemoteException
   {
