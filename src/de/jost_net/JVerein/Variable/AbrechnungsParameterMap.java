@@ -25,9 +25,8 @@ import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
 import de.jost_net.JVerein.util.JVDateFormatMMMM;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
-public class AbrechnungsParameterMap
+public class AbrechnungsParameterMap extends AbstractMap
 {
 
   public Map<String, Object> getMap(AbrechnungSEPAParam param,
@@ -42,7 +41,6 @@ public class AbrechnungsParameterMap
     {
       map = inma;
     }
-    JVDateFormatTTMMJJJJ dateformatTTMMJJJJ = new JVDateFormatTTMMJJJJ();
     for (AbrechnungsParameterVar var : AbrechnungsParameterVar.values())
     {
       Object value = null;
@@ -58,7 +56,7 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.faelligkeit != null)
           {
-            value = dateformatTTMMJJJJ.format(param.faelligkeit);
+            value = formatDate(param.faelligkeit);
           }
           break;
         case KOMPAKTEABBUCHUNG:
@@ -78,7 +76,7 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.stichtag != null)
           {
-            value = dateformatTTMMJJJJ.format(param.stichtag);
+            value = formatDate(param.stichtag);
           }
           break;
         case STICHTAG_MONAT:
@@ -109,21 +107,21 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.vondatum != null)
           {
-            value = dateformatTTMMJJJJ.format(param.vondatum);
+            value = formatDate(param.vondatum);
           }
           break;
         case EINGABEVONDATUM:
           value = "";
           if (param.voneingabedatum != null)
           {
-            value = dateformatTTMMJJJJ.format(param.voneingabedatum);
+            value = formatDate(param.voneingabedatum);
           }
           break;
         case BISDATUM:
           value = "";
           if (param.bisdatum != null)
           {
-            value = dateformatTTMMJJJJ.format(param.bisdatum);
+            value = formatDate(param.bisdatum);
           }
           break;
         case ZUSATZBETRAEGE:

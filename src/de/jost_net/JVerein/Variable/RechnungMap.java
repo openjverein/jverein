@@ -163,7 +163,7 @@ public class RechnungMap extends AbstractMap
           value = Einstellungen.getEinstellung(Property.QRCODEINTRO);
           break;
         case DATUM:
-          value = re.getDatum();
+          value = formatDate(re.getDatum());
           break;
         case DATUM_F:
           value = fromDate(re.getDatum());
@@ -216,7 +216,7 @@ public class RechnungMap extends AbstractMap
           value = re.getMandatID();
           break;
         case MANDATDATUM:
-          value = re.getMandatDatum();
+          value = formatDate(re.getMandatDatum());
           break;
         case MANDATDATUM_F:
           value = fromDate(re.getMandatDatum());

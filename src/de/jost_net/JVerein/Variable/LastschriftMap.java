@@ -61,7 +61,7 @@ public class LastschriftMap extends AbstractMap
           value = abrl.getID();
           break;
         case ABRECHNUNGSLAUF_DATUM:
-          value = abrl.getDatum();
+          value = formatDate(abrl.getDatum());
           break;
         case ABRECHNUNGSLAUF_FAELLIGKEIT:
           // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
@@ -69,7 +69,7 @@ public class LastschriftMap extends AbstractMap
           // verwendet.
           if (ls.getMandatSequence().equals("FRST"))
           {
-            value = abrl.getFaelligkeit();
+            value = formatDate(abrl.getFaelligkeit());
           }
           else
           {
@@ -78,7 +78,7 @@ public class LastschriftMap extends AbstractMap
             {
               d = Einstellungen.NODATE;
             }
-            value = d;
+            value = formatDate(d);
           }
           break;
         case PERSONENART:
@@ -127,7 +127,7 @@ public class LastschriftMap extends AbstractMap
           value = ls.getMandatID();
           break;
         case MANDATDATUM:
-          value = ls.getMandatDatum();
+          value = formatDate(ls.getMandatDatum());
           break;
         case BIC:
           value = ls.getBIC();
