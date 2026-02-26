@@ -60,6 +60,7 @@ public class SpendenbescheinigungMap extends AbstractMap
       return getDummyMap(inMap);
     }
 
+    JVDateFormatTTMMJJJJ dateformatTTMMJJJJ = new JVDateFormatTTMMJJJJ();
     boolean ersatz = false;
     // Geldspende und keine Sammelbestätigung
     if (spb.getBuchungen() != null && spb.getBuchungen().size() == 1
@@ -128,8 +129,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           }
           break;
         case BESCHEINIGUNGDATUM:
-          value = new JVDateFormatTTMMJJJJ()
-              .format(spb.getBescheinigungsdatum());
+          value = dateformatTTMMJJJJ.format(spb.getBescheinigungsdatum());
           break;
         case BESCHEINIGUNGDATUM_F:
           value = fromDate((Date) spb.getBescheinigungsdatum());
@@ -197,8 +197,8 @@ public class SpendenbescheinigungMap extends AbstractMap
           break;
         case SPENDENZEITRAUM:
           value = String.format("%s bis %s",
-              new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum()),
-              new JVDateFormatTTMMJJJJ().format(spb.getZeitraumBis()));
+              dateformatTTMMJJJJ.format(spb.getSpendedatum()),
+              dateformatTTMMJJJJ.format(spb.getZeitraumBis()));
           break;
 
         case BUCHUNGSLISTE:
@@ -222,7 +222,7 @@ public class SpendenbescheinigungMap extends AbstractMap
             StringBuilder bl_daten = new StringBuilder();
             for (Buchung b : spb.getBuchungen())
             {
-              bl_daten.append(new JVDateFormatTTMMJJJJ().format(b.getDatum()));
+              bl_daten.append(dateformatTTMMJJJJ.format(b.getDatum()));
               bl_daten.append(newLineStr);
             }
             value = bl_daten.toString();
@@ -277,7 +277,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           }
           break;
         case SPENDEDATUM_ERSTES:
-          value = new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum());
+          value = dateformatTTMMJJJJ.format(spb.getSpendedatum());
           break;
         case SPENDEDATUM_ERSTES_F:
           value = fromDate((Date) spb.getSpendedatum());
@@ -289,7 +289,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           value = (String) Einstellungen.getEinstellung(Property.STEUERNUMMER);
           break;
         case DATUM_BESCHEID:
-          value = new JVDateFormatTTMMJJJJ().format(
+          value = dateformatTTMMJJJJ.format(
               (Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
           break;
         case DATUM_BESCHEID_F:
