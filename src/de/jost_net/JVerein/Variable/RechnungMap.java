@@ -401,7 +401,7 @@ public class RechnungMap extends AbstractMap
           value = "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
           break;
         case DATUM:
-          value = toDate("10.01.2025");
+          value = new JVDateFormatTTMMJJJJ().format(toDate("10.01.2025"));
           break;
         case DATUM_F:
           value = "20251001";
@@ -454,7 +454,7 @@ public class RechnungMap extends AbstractMap
           value = "12345";
           break;
         case MANDATDATUM:
-          value = toDate("01.01.2024");
+          value = new JVDateFormatTTMMJJJJ().format(toDate("01.01.2024"));
           break;
         case MANDATDATUM_F:
           value = "20240101";

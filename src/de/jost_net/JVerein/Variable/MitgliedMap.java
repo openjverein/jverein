@@ -39,6 +39,7 @@ import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
@@ -143,7 +144,7 @@ public class MitgliedMap extends AbstractMap
               : "";
           break;
         case MANDATDATUM:
-          value = mitglied.getMandatDatum();
+          value = new JVDateFormatTTMMJJJJ().format(mitglied.getMandatDatum());
           break;
         case MANDATDATUM_F:
           value = fromDate(mitglied.getMandatDatum());
@@ -468,7 +469,7 @@ public class MitgliedMap extends AbstractMap
           value = "1";
           break;
         case MANDATDATUM:
-          value = toDate("01.01.2024");
+          value = new JVDateFormatTTMMJJJJ().format(toDate("01.01.2024"));
           break;
         case MANDATDATUM_F:
           value = "20240101";
