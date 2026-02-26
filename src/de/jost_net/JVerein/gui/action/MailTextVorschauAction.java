@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.gui.control.IMailControl;
@@ -33,7 +34,7 @@ public class MailTextVorschauAction implements Action
   public MailTextVorschauAction(Map<String, Object> map, boolean mitMitglied)
   {
     super();
-    this.map = map;
+    this.map = new HashMap<String, Object>(map);
     this.mitMitglied = mitMitglied;
   }
 
