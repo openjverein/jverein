@@ -71,7 +71,6 @@ public class MitgliedMap extends AbstractMap
     for (MitgliedVar var : MitgliedVar.values())
     {
       Object value = null;
-
       switch (var)
       {
         case ADRESSIERUNGSZUSATZ:
@@ -385,7 +384,7 @@ public class MitgliedMap extends AbstractMap
         .getDBService().createList(EigenschaftGruppe.class);
     while (eigenschaftGruppeIt.hasNext())
     {
-      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+      EigenschaftGruppe eg = eigenschaftGruppeIt.next();
 
       String key = "eigenschaften_" + eg.getName();
       map.put("mitglied_" + key, mitglied.getAttribute(key));
@@ -433,14 +432,12 @@ public class MitgliedMap extends AbstractMap
       switch (var)
       {
         case ADRESSIERUNGSZUSATZ:
-        case KONTOINHABER_ADRESSIERUNGSZUSATZ:
           value = "Hinterhof bei Müller";
           break;
         case MITGLIEDSTYP:
           value = "1";
           break;
         case ANREDE:
-        case KONTOINHABER_ANREDE:
           value = "Herr";
           break;
         case ANREDE_DU:
@@ -495,11 +492,9 @@ public class MitgliedMap extends AbstractMap
           value = "20100201";
           break;
         case EMPFAENGER:
-        case KONTOINHABER_EMPFAENGER:
           value = "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland";
           break;
         case EMAIL:
-        case KONTOINHABER_EMAIL:
           value = "willi.wichtig@jverein.de";
           break;
         case EXTERNE_MITGLIEDSNUMMER:
@@ -512,7 +507,6 @@ public class MitgliedMap extends AbstractMap
           value = "19800302";
           break;
         case GESCHLECHT:
-        case KONTOINHABER_GESCHLECHT:
           value = GeschlechtInput.MAENNLICH;
           break;
         case HANDY:
@@ -546,33 +540,27 @@ public class MitgliedMap extends AbstractMap
           value = "01.11.2024";
           break;
         case NAME:
-        case KONTOINHABER_NAME:
           value = "Wichtig";
           break;
         case NAMEVORNAME:
           value = "Wichtig, Dr. Dr. Willi";
           break;
         case ORT:
-        case KONTOINHABER_ORT:
           value = "Testenhausen";
           break;
         case PERSONENART:
-        case KONTOINHABER_PERSONENART:
           value = "n";
           break;
         case PLZ:
-        case KONTOINHABER_PLZ:
           value = "12345";
           break;
         case STAAT:
-        case KONTOINHABER_STAAT:
           value = "Deutschland";
           break;
         case STERBETAG:
           value = "31.12.2024";
           break;
         case STRASSE:
-        case KONTOINHABER_STRASSE:
           value = "Bahnhofstr. 22";
           break;
         case TELEFONDIENSTLICH:
@@ -582,7 +570,6 @@ public class MitgliedMap extends AbstractMap
           value = "011/123456";
           break;
         case TITEL:
-        case KONTOINHABER_TITEL:
           value = "Dr. Dr.";
           break;
         case VERMERK1:
@@ -592,14 +579,11 @@ public class MitgliedMap extends AbstractMap
           value = "Vermerk 2";
           break;
         case VORNAME:
-        case KONTOINHABER_VORNAME:
           value = "Willi";
           break;
         case VORNAMENAME:
-        case KONTOINHABER_VORNAMENAME:
           value = "Dr. Dr. Willi Wichtig";
           break;
-        case ZAHLUNGSRHYTMUS:
         case ZAHLUNGSRHYTHMUS:
           value = Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH);
           break;
@@ -614,6 +598,24 @@ public class MitgliedMap extends AbstractMap
           break;
         case ALTERNATIVER_ZAHLER:
           value = "123456";
+        case KONTOINHABER_ADRESSIERUNGSZUSATZ:
+        case KONTOINHABER_ANREDE:
+        case KONTOINHABER_EMAIL:
+        case KONTOINHABER_EMPFAENGER:
+        case KONTOINHABER_GESCHLECHT:
+        case KONTOINHABER_NAME:
+        case KONTOINHABER_ORT:
+        case KONTOINHABER_PERSONENART:
+        case KONTOINHABER_PLZ:
+        case KONTOINHABER_STAAT:
+        case KONTOINHABER_STRASSE:
+        case KONTOINHABER_TITEL:
+        case KONTOINHABER_VORNAME:
+        case KONTOINHABER_VORNAMENAME:
+        case ZAHLUNGSRHYTMUS:
+          // Deprecated Einträg nicht in der DummyMap, damit sie nicht für neue
+          // Formulare etc. verwendet werden
+          continue;
       }
       map.put(var.getName(), value);
     }
@@ -659,7 +661,7 @@ public class MitgliedMap extends AbstractMap
         .getDBService().createList(EigenschaftGruppe.class);
     while (eigenschaftGruppeIt.hasNext())
     {
-      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+      EigenschaftGruppe eg = eigenschaftGruppeIt.next();
 
       map.put("mitglied_eigenschaften_" + eg.getName(),
           "Eigenschaft1, Eigenschaft2");

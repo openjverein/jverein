@@ -40,6 +40,7 @@ import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class RechnungMap extends AbstractMap
 {
+
   @SuppressWarnings("deprecation")
   public Map<String, Object> getMap(Rechnung re, Map<String, Object> inMap)
       throws RemoteException
@@ -159,7 +160,7 @@ public class RechnungMap extends AbstractMap
           value = "";
           break;
         case QRCODE_INTRO:
-          value = (String) Einstellungen.getEinstellung(Property.QRCODEINTRO);
+          value = Einstellungen.getEinstellung(Property.QRCODEINTRO);
           break;
         case DATUM:
           value = re.getDatum();
@@ -496,7 +497,9 @@ public class RechnungMap extends AbstractMap
         case MK_ZAHLUNGSGRUND:
         case ZAHLUNGSGRUND1:
         case ZAHLUNGSGRUND2:
-          break;
+          // Deprecated Einträg nicht in der DummyMap, damit sie nicht für neue
+          // Formulare etc. verwendet werden
+          continue;
       }
       map.put(var.getName(), value);
     }
