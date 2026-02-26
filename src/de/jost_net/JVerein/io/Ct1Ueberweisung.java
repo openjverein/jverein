@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -72,7 +71,6 @@ public class Ct1Ueberweisung
   public int write(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    Velocity.init();
     switch (ct1ausgabe)
     {
       case SEPA_DATEI:

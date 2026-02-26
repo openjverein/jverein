@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.apache.velocity.app.Velocity;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MailDeleteMessage;
@@ -451,8 +449,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
               (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG),
               Einstellungen.getImapCopyData());
 
-          Velocity.init();
-          Logger.debug("preparing velocity context");
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
           int zae = 0;
