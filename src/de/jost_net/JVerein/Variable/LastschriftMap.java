@@ -150,7 +150,7 @@ public class LastschriftMap extends AbstractMap
           }
           break;
         case IBANMASKIERT:
-          value = maskieren(ls.getIBAN());
+          value = ibanMaskieren(ls.getIBAN());
           break;
         case VERWENDUNGSZWECK:
           value = ls.getVerwendungszweck();

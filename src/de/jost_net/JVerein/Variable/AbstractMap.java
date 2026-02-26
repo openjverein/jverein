@@ -81,13 +81,14 @@ public abstract class AbstractMap
     return d;
   }
 
-  protected static String maskieren(String wert)
+  protected static String ibanMaskieren(String s)
   {
-    StringBuffer sb = new StringBuffer(wert);
-    for (int i = 0; i < wert.length() - 4; i++)
-    {
-      sb.replace(i, i + 1, "X");
-    }
-    return sb.toString();
+    if (s == null)
+      return null;
+    int n = s.length();
+    if (n <= 4)
+      return s;
+    return "X".repeat(n - 4) + s.substring(n - 4);
   }
+
 }

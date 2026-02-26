@@ -187,7 +187,7 @@ public class MitgliedMap extends AbstractMap
           value = mitglied.getHandy();
           break;
         case IBANMASKIERT:
-          value = maskieren(mitglied.getIban());
+          value = ibanMaskieren(mitglied.getIban());
           break;
         case IBAN:
           value = new IBANFormatter().format(mitglied.getIban());

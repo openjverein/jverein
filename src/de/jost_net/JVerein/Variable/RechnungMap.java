@@ -242,7 +242,7 @@ public class RechnungMap extends AbstractMap
           value = new IBANFormatter().format(re.getIBAN());
           break;
         case IBANMASKIERT:
-          value = maskieren(re.getIBAN());
+          value = ibanMaskieren(re.getIBAN());
           break;
         case EMPFAENGER:
           value = Adressaufbereitung.getAdressfeld(re);
