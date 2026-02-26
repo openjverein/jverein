@@ -621,19 +621,31 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         return "";
       }, false, Column.ALIGN_RIGHT);
     }
-    beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
-        new JaNeinFormatter());
-    beitragsgruppeList.addColumn("Sekundär", "sekundaer",
-        new JaNeinFormatter());
-    beitragsgruppeList.addColumn("Beitragsart", "beitragsart", new Formatter()
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) != Beitragsmodel.FLEXIBEL.getKey()
+        && (Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
     {
-
-      @Override
-      public String format(Object o)
+      beitragsgruppeList.addColumn("Altersstaffel", "altersstaffel",
+          new JaNeinFormatter());
+    }
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
+    {
+      beitragsgruppeList.addColumn("Sekundär", "sekundaer",
+          new JaNeinFormatter());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
+    {
+      beitragsgruppeList.addColumn("Beitragsart", "beitragsart", new Formatter()
       {
-        return ArtBeitragsart.getByKey((Integer) o).getText();
-      }
-    });
+
+        @Override
+        public String format(Object o)
+        {
+          return ArtBeitragsart.getByKey((Integer) o).getText();
+        }
+      });
+    }
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
     beitragsgruppeList
         .setContextMenu(new BeitragsgruppeMenu(beitragsgruppeList));
