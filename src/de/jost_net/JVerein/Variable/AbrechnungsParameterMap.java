@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class AbrechnungsParameterMap
 {
 
   public Map<String, Object> getMap(AbrechnungSEPAParam param,
-      Map<String, Object> inma) throws RemoteException
+      Map<String, Object> inma)
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -43,6 +42,7 @@ public class AbrechnungsParameterMap
     {
       map = inma;
     }
+    JVDateFormatTTMMJJJJ dateformatTTMMJJJJ = new JVDateFormatTTMMJJJJ();
     for (AbrechnungsParameterVar var : AbrechnungsParameterVar.values())
     {
       Object value = null;
@@ -58,7 +58,7 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.faelligkeit != null)
           {
-            value = new JVDateFormatTTMMJJJJ().format(param.faelligkeit);
+            value = dateformatTTMMJJJJ.format(param.faelligkeit);
           }
           break;
         case KOMPAKTEABBUCHUNG:
@@ -78,7 +78,7 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.stichtag != null)
           {
-            value = new JVDateFormatTTMMJJJJ().format(param.stichtag);
+            value = dateformatTTMMJJJJ.format(param.stichtag);
           }
           break;
         case STICHTAG_MONAT:
@@ -109,21 +109,21 @@ public class AbrechnungsParameterMap
           value = "";
           if (param.vondatum != null)
           {
-            value = new JVDateFormatTTMMJJJJ().format(param.vondatum);
+            value = dateformatTTMMJJJJ.format(param.vondatum);
           }
           break;
         case EINGABEVONDATUM:
           value = "";
           if (param.voneingabedatum != null)
           {
-            value = new JVDateFormatTTMMJJJJ().format(param.voneingabedatum);
+            value = dateformatTTMMJJJJ.format(param.voneingabedatum);
           }
           break;
         case BISDATUM:
           value = "";
           if (param.bisdatum != null)
           {
-            value = new JVDateFormatTTMMJJJJ().format(param.bisdatum);
+            value = dateformatTTMMJJJJ.format(param.bisdatum);
           }
           break;
         case ZUSATZBETRAEGE:
