@@ -27,7 +27,6 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
@@ -191,10 +190,10 @@ public class LastschriftMap extends AbstractMap
           value = "99";
           break;
         case ABRECHNUNGSLAUF_DATUM:
-          value = new JVDateFormatTTMMJJJJ().format(toDate("01.01.2025"));
+          value = formatDate(toDate("01.01.2025"));
           break;
         case ABRECHNUNGSLAUF_FAELLIGKEIT:
-          value = new JVDateFormatTTMMJJJJ().format(toDate("10.01.2025"));
+          value = formatDate(toDate("10.01.2025"));
           break;
         case ANREDE_DU:
           value = "Hallo Willi,";
@@ -242,7 +241,7 @@ public class LastschriftMap extends AbstractMap
           value = "12345";
           break;
         case MANDATDATUM:
-          value = new JVDateFormatTTMMJJJJ().format(toDate("01.01.2024"));
+          value = formatDate(toDate("01.01.2024"));
           break;
         case BIC:
           value = "XXXXXXXXXXX";

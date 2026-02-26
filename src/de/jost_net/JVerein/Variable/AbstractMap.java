@@ -55,6 +55,18 @@ public abstract class AbstractMap
     return d;
   }
 
+  protected static String formatDate(Date datum)
+  {
+    try
+    {
+      return new JVDateFormatTTMMJJJJ().format(datum);
+    }
+    catch (Exception ignored)
+    {
+    }
+    return "";
+  }
+
   protected static String fromDate(Date date)
   {
     String d = "";
