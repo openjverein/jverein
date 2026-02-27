@@ -51,7 +51,7 @@ public class SollbuchungMap extends AbstractMap
           value = fromDate((Date) sollb.getDatum());
           break;
         case ZAHLUNGSGRUND:
-          value = Einstellungen.DECIMALFORMAT.format(sollb.getZweck1());
+          value = sollb.getZweck1();
           break;
         case BETRAG:
           value = Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
