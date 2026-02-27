@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
@@ -61,7 +62,7 @@ public class LastschriftMap extends AbstractMap
           value = abrl.getID();
           break;
         case ABRECHNUNGSLAUF_DATUM:
-          value = formatDate(abrl.getDatum());
+          value = Datum.formatDate(abrl.getDatum());
           break;
         case ABRECHNUNGSLAUF_FAELLIGKEIT:
           // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
@@ -69,7 +70,7 @@ public class LastschriftMap extends AbstractMap
           // verwendet.
           if (ls.getMandatSequence().equals("FRST"))
           {
-            value = formatDate(abrl.getFaelligkeit());
+            value = Datum.formatDate(abrl.getFaelligkeit());
           }
           else
           {
@@ -78,7 +79,7 @@ public class LastschriftMap extends AbstractMap
             {
               d = Einstellungen.NODATE;
             }
-            value = formatDate(d);
+            value = Datum.formatDate(d);
           }
           break;
         case PERSONENART:
@@ -127,7 +128,7 @@ public class LastschriftMap extends AbstractMap
           value = ls.getMandatID();
           break;
         case MANDATDATUM:
-          value = formatDate(ls.getMandatDatum());
+          value = Datum.formatDate(ls.getMandatDatum());
           break;
         case BIC:
           value = ls.getBIC();
@@ -190,10 +191,10 @@ public class LastschriftMap extends AbstractMap
           value = "99";
           break;
         case ABRECHNUNGSLAUF_DATUM:
-          value = formatDate(toDate("01.01.2025"));
+          value = Datum.formatDate(toDate("01.01.2025"));
           break;
         case ABRECHNUNGSLAUF_FAELLIGKEIT:
-          value = formatDate(toDate("10.01.2025"));
+          value = Datum.formatDate(toDate("10.01.2025"));
           break;
         case ANREDE_DU:
           value = "Hallo Willi,";
@@ -241,7 +242,7 @@ public class LastschriftMap extends AbstractMap
           value = "12345";
           break;
         case MANDATDATUM:
-          value = formatDate(toDate("01.01.2024"));
+          value = Datum.formatDate(toDate("01.01.2024"));
           break;
         case BIC:
           value = "XXXXXXXXXXX";

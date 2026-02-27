@@ -22,6 +22,7 @@ import java.util.Map;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
 import de.jost_net.JVerein.util.JVDateFormatMMMM;
@@ -56,7 +57,7 @@ public class AbrechnungsParameterMap extends AbstractMap
           value = "";
           if (param.faelligkeit != null)
           {
-            value = formatDate(param.faelligkeit);
+            value = Datum.formatDate(param.faelligkeit);
           }
           break;
         case KOMPAKTEABBUCHUNG:
@@ -76,7 +77,7 @@ public class AbrechnungsParameterMap extends AbstractMap
           value = "";
           if (param.stichtag != null)
           {
-            value = formatDate(param.stichtag);
+            value = Datum.formatDate(param.stichtag);
           }
           break;
         case STICHTAG_MONAT:
@@ -107,21 +108,21 @@ public class AbrechnungsParameterMap extends AbstractMap
           value = "";
           if (param.vondatum != null)
           {
-            value = formatDate(param.vondatum);
+            value = Datum.formatDate(param.vondatum);
           }
           break;
         case EINGABEVONDATUM:
           value = "";
           if (param.voneingabedatum != null)
           {
-            value = formatDate(param.voneingabedatum);
+            value = Datum.formatDate(param.voneingabedatum);
           }
           break;
         case BISDATUM:
           value = "";
           if (param.bisdatum != null)
           {
-            value = formatDate(param.bisdatum);
+            value = Datum.formatDate(param.bisdatum);
           }
           break;
         case ZUSATZBETRAEGE:

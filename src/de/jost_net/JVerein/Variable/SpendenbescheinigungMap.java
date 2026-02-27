@@ -33,6 +33,7 @@ import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.logging.Logger;
@@ -128,7 +129,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           }
           break;
         case BESCHEINIGUNGDATUM:
-          value = formatDate(spb.getBescheinigungsdatum());
+          value = Datum.formatDate(spb.getBescheinigungsdatum());
           break;
         case BESCHEINIGUNGDATUM_F:
           value = fromDate((Date) spb.getBescheinigungsdatum());
@@ -195,8 +196,9 @@ public class SpendenbescheinigungMap extends AbstractMap
           }
           break;
         case SPENDENZEITRAUM:
-          value = String.format("%s bis %s", formatDate(spb.getSpendedatum()),
-              formatDate(spb.getZeitraumBis()));
+          value = String.format("%s bis %s",
+              Datum.formatDate(spb.getSpendedatum()),
+              Datum.formatDate(spb.getZeitraumBis()));
           break;
 
         case BUCHUNGSLISTE:
@@ -220,7 +222,7 @@ public class SpendenbescheinigungMap extends AbstractMap
             StringBuilder bl_daten = new StringBuilder();
             for (Buchung b : spb.getBuchungen())
             {
-              bl_daten.append(formatDate(b.getDatum()));
+              bl_daten.append(Datum.formatDate(b.getDatum()));
               bl_daten.append(newLineStr);
             }
             value = bl_daten.toString();
@@ -275,7 +277,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           }
           break;
         case SPENDEDATUM_ERSTES:
-          value = formatDate(spb.getSpendedatum());
+          value = Datum.formatDate(spb.getSpendedatum());
           break;
         case SPENDEDATUM_ERSTES_F:
           value = fromDate((Date) spb.getSpendedatum());
@@ -287,7 +289,7 @@ public class SpendenbescheinigungMap extends AbstractMap
           value = (String) Einstellungen.getEinstellung(Property.STEUERNUMMER);
           break;
         case DATUM_BESCHEID:
-          value = formatDate(
+          value = Datum.formatDate(
               (Date) Einstellungen.getEinstellung(Property.BESCHEIDDATUM));
           break;
         case DATUM_BESCHEID_F:

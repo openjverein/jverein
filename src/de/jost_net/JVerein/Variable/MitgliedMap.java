@@ -143,7 +143,7 @@ public class MitgliedMap extends AbstractMap
               : "";
           break;
         case MANDATDATUM:
-          value = formatDate(mitglied.getMandatDatum());
+          value = Datum.formatDate(mitglied.getMandatDatum());
           break;
         case MANDATDATUM_F:
           value = fromDate(mitglied.getMandatDatum());
@@ -468,7 +468,7 @@ public class MitgliedMap extends AbstractMap
           value = "1";
           break;
         case MANDATDATUM:
-          value = formatDate(toDate("01.01.2024"));
+          value = Datum.formatDate(toDate("01.01.2024"));
           break;
         case MANDATDATUM_F:
           value = "20240101";

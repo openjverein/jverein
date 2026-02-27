@@ -33,6 +33,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
@@ -163,7 +164,7 @@ public class RechnungMap extends AbstractMap
           value = Einstellungen.getEinstellung(Property.QRCODEINTRO);
           break;
         case DATUM:
-          value = formatDate(re.getDatum());
+          value = Datum.formatDate(re.getDatum());
           break;
         case DATUM_F:
           value = fromDate(re.getDatum());
@@ -216,7 +217,7 @@ public class RechnungMap extends AbstractMap
           value = re.getMandatID();
           break;
         case MANDATDATUM:
-          value = formatDate(re.getMandatDatum());
+          value = Datum.formatDate(re.getMandatDatum());
           break;
         case MANDATDATUM_F:
           value = fromDate(re.getMandatDatum());
@@ -324,7 +325,8 @@ public class RechnungMap extends AbstractMap
       switch (var)
       {
         case BUCHUNGSDATUM:
-          value = formatDate(new Date()) + "\n" + formatDate(new Date());
+          value = Datum.formatDate(new Date()) + "\n"
+              + Datum.formatDate(new Date());
         case ZAHLUNGSGRUND:
           if (optiert)
           {
@@ -400,7 +402,7 @@ public class RechnungMap extends AbstractMap
           value = "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
           break;
         case DATUM:
-          value = formatDate(toDate("10.01.2025"));
+          value = Datum.formatDate(toDate("10.01.2025"));
           break;
         case DATUM_F:
           value = "20251001";
@@ -453,7 +455,7 @@ public class RechnungMap extends AbstractMap
           value = "12345";
           break;
         case MANDATDATUM:
-          value = formatDate(toDate("01.01.2024"));
+          value = Datum.formatDate(toDate("01.01.2024"));
           break;
         case MANDATDATUM_F:
           value = "20240101";
