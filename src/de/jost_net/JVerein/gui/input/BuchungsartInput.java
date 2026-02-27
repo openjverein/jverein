@@ -71,7 +71,7 @@ public class BuchungsartInput
             sql += "AND (konto.aufloesung IS NULL OR "
                 + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
             sql += "AND buchungsart.status = ?) OR buchungsart.status = ?) ";
-            sql += "AND (buchungsart.abschreibung = FALSE) ";
+            sql += "AND (buchungsart.abschreibung IS NOT TRUE) ";
           }
           else if (art == buchungsarttyp.AFAART)
           {
@@ -80,7 +80,7 @@ public class BuchungsartInput
             sql += "AND (konto.aufloesung IS NULL OR "
                 + "(konto.aufloesung >= ? AND konto.aufloesung <= ?)) ";
             sql += "AND buchungsart.status = ?) OR buchungsart.status = ?) ";
-            sql += "AND (buchungsart.abschreibung = TRUE) ";
+            sql += "AND (buchungsart.abschreibung IS TRUE) ";
           }
           else
           {
@@ -129,11 +129,11 @@ public class BuchungsartInput
           it.addFilter("buchungsart.status != ?", StatusBuchungsart.INACTIVE);
           if (art == buchungsarttyp.ANLAGENART)
           {
-            it.addFilter("buchungsart.abschreibung = FALSE");
+            it.addFilter("buchungsart.abschreibung IS NOT TRUE");
           }
           else if (art == buchungsarttyp.AFAART)
           {
-            it.addFilter("buchungsart.abschreibung = TRUE");
+            it.addFilter("buchungsart.abschreibung IS TRUE");
           }
 
           if ((Integer) Einstellungen.getEinstellung(

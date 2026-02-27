@@ -429,7 +429,7 @@ public class JahresabschlussControl extends KontensaldoControl
           Double betrag = 0d;
           it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
           it.addFilter("konto = ?", konto.getID());
-          it.addFilter("buchungsart.abschreibung = FALSE");
+          it.addFilter("buchungsart.abschreibung IS NOT TRUE");
           it.addFilter("datum <= ?", bisgj);
           it.addColumn("sum(buchung.betrag) as summe");
           PseudoDBObject o = it.next();
