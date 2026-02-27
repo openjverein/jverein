@@ -78,6 +78,7 @@ import de.jost_net.JVerein.gui.view.MitgliedstypListeView;
 import de.jost_net.JVerein.gui.view.MittelverwendungReportView;
 import de.jost_net.JVerein.gui.view.MittelverwendungSaldoView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
+import de.jost_net.JVerein.gui.view.PersonalbogenMailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.gui.view.ProjektListeView;
 import de.jost_net.JVerein.gui.view.ProjektSaldoView;
@@ -288,6 +289,9 @@ public class MyExtension implements Extension
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Freie Formulare",
           new StartViewAction(FreiesFormularMailView.class),
+          "document-print.png"));
+      mail.addChild(new MyItem(mail, "Personalbogen",
+          new StartViewAction(PersonalbogenMailView.class),
           "document-print.png"));
       mail.addChild(new MyItem(mail, "Pre-Notification",
           new StartViewAction(PreNotificationMailView.class),

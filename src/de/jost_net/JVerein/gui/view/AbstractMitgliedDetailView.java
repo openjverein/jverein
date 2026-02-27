@@ -35,7 +35,6 @@ import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
@@ -249,9 +248,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
     if (isMitgliedDetail())
     {
-      buttons
-          .addButton(new ButtonRtoL("Personalbogen", new PersonalbogenAction(),
-              control.getCurrentObject(), false, "document-print.png"));
+      buttons.addButton(new ButtonRtoL("Personalbogen",
+          new StartViewAction(PersonalbogenMailView.class, true),
+          control.getCurrentObject(), false, "document-print.png"));
       // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
       // können
       buttons.addButton(

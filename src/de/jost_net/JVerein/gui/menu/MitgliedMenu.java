@@ -36,7 +36,6 @@ import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardDateiAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
-import de.jost_net.JVerein.gui.action.PersonalbogenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -44,6 +43,7 @@ import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.PersonalbogenMailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -230,7 +230,8 @@ public class MitgliedMenu extends ContextMenu
         new StartViewAction(KontoauszugMailView.class, true),
         "document-print.png"));
     addItem(new CheckedContextMenuItem("Personalbogen",
-        new PersonalbogenAction(), "document-print.png"));
+        new StartViewAction(PersonalbogenMailView.class, true),
+        "document-print.png"));
 
     DBIterator<Formular> it = Einstellungen.getDBService()
         .createList(Formular.class);

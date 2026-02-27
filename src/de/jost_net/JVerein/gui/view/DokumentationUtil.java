@@ -159,6 +159,8 @@ public class DokumentationUtil
 
   public static final String FREIESFORMULAR = DRUCKMAIL + "freiesformular";
 
+  public static final String PERSONALBOGEN = DRUCKMAIL + "personalbogen";
+
   public static final String SPENDENBESCHEINIGUNGMAIL = DRUCKMAIL
       + "spendenbescheinigungen";
 
