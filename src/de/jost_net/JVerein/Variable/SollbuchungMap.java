@@ -21,7 +21,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.util.Datum;
 
 public class SollbuchungMap extends AbstractMap
 {
@@ -43,22 +45,23 @@ public class SollbuchungMap extends AbstractMap
       switch (var)
       {
         case BUCHUNGSDATUM:
-          value = sollb.getDatum();
+          value = Datum.formatDate(sollb.getDatum());
           break;
         case BUCHUNGSDATUM_F:
           value = fromDate((Date) sollb.getDatum());
           break;
         case ZAHLUNGSGRUND:
-          value = sollb.getZweck1();
+          value = Einstellungen.DECIMALFORMAT.format(sollb.getZweck1());
           break;
         case BETRAG:
-          value = sollb.getBetrag();
+          value = Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
           break;
         case IST:
-          value = sollb.getIstSumme();
+          value = Einstellungen.DECIMALFORMAT.format(sollb.getIstSumme());
           break;
         case DIFFERENZ:
-          value = sollb.getBetrag() - sollb.getIstSumme();
+          value = Einstellungen.DECIMALFORMAT
+              .format(sollb.getBetrag() - sollb.getIstSumme());
           break;
       }
       map.put(var.getName(), value);
