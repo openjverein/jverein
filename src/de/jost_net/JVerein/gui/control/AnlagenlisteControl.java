@@ -270,8 +270,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         PseudoDBObject saldo = new PseudoDBObject();
         saldo.setAttribute(ART, ART_SALDOFOOTER);
         saldo.setAttribute(GRUPPE, "Saldo " + klasseAlt);
-        saldo.setAttribute(EINNAHMEN, summeStartwert);
-        saldo.setAttribute(AUSGABEN, summeZugang);
+        saldo.setAttribute(STARTWERT, summeStartwert);
+        saldo.setAttribute(ZUGANG, summeZugang);
         saldo.setAttribute(ABSCHREIBUNG, summeAbschreibung);
         saldo.setAttribute(ABGANG, summeAbgang);
         saldo.setAttribute(ENDWERT, summeEndwert);
