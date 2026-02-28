@@ -47,7 +47,7 @@ public class PersonalbogenMailView extends AbstractView
     GUI.getView().setTitle("Personalbogen");
 
     final PersonalbogenControl control = new PersonalbogenControl(this);
-    control.init("spenden.", null, null);
+    control.init("personalbogen.", null, null);
 
     if (this.getCurrentObject() == null)
     {
