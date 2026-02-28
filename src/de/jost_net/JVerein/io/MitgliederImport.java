@@ -322,7 +322,7 @@ public class MitgliederImport implements Importer
             DBIterator<Beitragsgruppe> it = Einstellungen.getDBService()
                 .createList(Beitragsgruppe.class);
             it.addFilter("bezeichnung = ?", beitragsgruppe);
-            it.addFilter("sekundaer IS NOT TRUE");
+            it.addFilter("IFNULL(sekundaer, 0) IS FALSE");
             if (!it.hasNext())
               throw new ApplicationException("Zeile " + anz
                   + ": Beitragsgruppe nicht gefunden: " + beitragsgruppe);
