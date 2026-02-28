@@ -111,15 +111,19 @@ public class BuchungPart implements Part
     grBuchungsinfos.addLabelPair("Sollbuchung", control.getSollbuchungInput());
     grBuchungsinfos.addLabelPair("Geprüft", control.getGeprueft());
 
-    SimpleContainer grSpendeninfos = grBuchungsinfos;
-    grSpendeninfos.addHeadline("Geldspende");
-    grSpendeninfos.addLabelPair("Erstattungsverzicht", control.getVerzicht());
-    grSpendeninfos.addHeadline("Sachspende");
-    grSpendeninfos.addLabelPair("Bezeichnung Sachzuwendung",
-        control.getBezeichnungSachzuwendung());
-    grSpendeninfos.addLabelPair("Herkunft", control.getHerkunftSpende());
-    grSpendeninfos.addLabelPair("Unterlagen Wertermittlung",
-        control.getUnterlagenWertermittlung());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+    {
+      SimpleContainer grSpendeninfos = grBuchungsinfos;
+      grSpendeninfos.addHeadline("Geldspende");
+      grSpendeninfos.addLabelPair("Erstattungsverzicht", control.getVerzicht());
+      grSpendeninfos.addHeadline("Sachspende");
+      grSpendeninfos.addLabelPair("Bezeichnung Sachzuwendung",
+          control.getBezeichnungSachzuwendung());
+      grSpendeninfos.addLabelPair("Herkunft", control.getHerkunftSpende());
+      grSpendeninfos.addLabelPair("Unterlagen Wertermittlung",
+          control.getUnterlagenWertermittlung());
+    }
 
     if (JVereinPlugin.isArchiveServiceActive())
     {

@@ -355,7 +355,10 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     b.setZweck((String) getZweck().getValue());
     b.setDatum((Date) getDatum().getValue());
     b.setArt((String) getArt().getValue());
-    b.setVerzicht((Boolean) getVerzicht().getValue());
+    if (verzicht != null)
+    {
+      b.setVerzicht((Boolean) getVerzicht().getValue());
+    }
     b.setKommentar((String) getKommentar().getValue());
     b.setSollbuchung((Sollbuchung) getSollbuchungInput().getValue());
     b.setGeprueft((Boolean) getGeprueft().getValue());
@@ -363,12 +366,21 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       b.setSteuer((Steuer) getSteuer().getValue());
     }
-    b.setBezeichnungSachzuwendung(
-        (String) getBezeichnungSachzuwendung().getValue());
-    HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
-    b.setHerkunftSpende(hsp.getKey());
-    b.setUnterlagenWertermittlung(
-        (Boolean) getUnterlagenWertermittlung().getValue());
+    if (bezeichnungsachzuwendung != null)
+    {
+      b.setBezeichnungSachzuwendung(
+          (String) getBezeichnungSachzuwendung().getValue());
+    }
+    if (herkunftspende != null)
+    {
+      HerkunftSpende hsp = (HerkunftSpende) getHerkunftSpende().getValue();
+      b.setHerkunftSpende(hsp.getKey());
+    }
+    if (unterlagenwertermittlung != null)
+    {
+      b.setUnterlagenWertermittlung(
+          (Boolean) getUnterlagenWertermittlung().getValue());
+    }
     return b;
   }
 
