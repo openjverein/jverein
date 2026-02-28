@@ -303,7 +303,7 @@ public class KontoControl extends FilterControl implements Savable
     {
       String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 

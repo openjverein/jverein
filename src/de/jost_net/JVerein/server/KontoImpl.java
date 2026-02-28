@@ -87,23 +87,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   protected void insertCheck() throws ApplicationException
   {
-    try
-    {
-      plausi();
-      DBIterator<Konto> it = Einstellungen.getDBService()
-          .createList(Konto.class);
-      it.addFilter("nummer = ?", new Object[] { getNummer() });
-      if (it.size() > 0)
-      {
-        throw new ApplicationException("Konto existiert bereits");
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("insert check of konto failed", e);
-      throw new ApplicationException(
-          "Konto kann nicht gespeichert werden. Siehe system log");
-    }
+    plausi();
   }
 
   @Override
@@ -168,6 +152,18 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
             throw new ApplicationException("Bitte Afa Folgejahre eingeben");
           }
         }
+      }
+      DBIterator<Konto> it = Einstellungen.getDBService()
+          .createList(Konto.class);
+      it.addFilter("nummer = ?", getNummer());
+      if (getID() != null)
+      {
+        it.addFilter("id != ?", getID());
+      }
+      if (it.size() > 0)
+      {
+        throw new ApplicationException(
+            "Konto mit dieser Nummer existiert bereits");
       }
     }
     catch (RemoteException e)
