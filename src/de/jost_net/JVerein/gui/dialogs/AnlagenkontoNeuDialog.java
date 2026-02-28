@@ -17,9 +17,6 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -41,18 +38,14 @@ import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
-import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -73,8 +66,6 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
   private AbstractInput afaart;
 
   private IntegerNullInput nutzungsdauer;
-
-  private LabelInput message = null;
 
   private Konto konto = null;
 
@@ -104,7 +95,6 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     group.addLabelPair("Anlagen Buchungsart", getAnlagenart());
     group.addLabelPair("AfA Buchungsart", getAfaart());
     group.addLabelPair("Nutzungsdauer", getNutzungsdauer());
-    group.addLabelPair("", getMessage());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Übernehmen", new Action()
@@ -310,38 +300,6 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
       Logger.error(meldung, ex);
       throw new ApplicationException(meldung, ex);
     }
-  }
-
-  private LabelInput getMessage() throws RemoteException
-  {
-    if (message != null)
-    {
-      return message;
-    }
-    DBService service = Einstellungen.getDBService();
-    String sql = "SELECT DISTINCT konto.id from konto "
-        + "WHERE (kontoart = ?) ";
-    boolean exist = (boolean) service.execute(sql,
-        new Object[] { Kontoart.ANLAGE.getKey() }, new ResultSetExtractor()
-        {
-          @Override
-          public Object extract(ResultSet rs)
-              throws RemoteException, SQLException
-          {
-            if (rs.next())
-            {
-              return true;
-            }
-            return false;
-          }
-        });
-    if (!exist)
-      message = new LabelInput(
-          " *Beim ersten Anlagenkonto bitte JVerein neu starten um die Änderungen anzuwenden");
-    else
-      message = new LabelInput("");
-    message.setColor(Color.ERROR);
-    return message;
   }
 
   public IntegerNullInput getNutzungsdauer() throws RemoteException
