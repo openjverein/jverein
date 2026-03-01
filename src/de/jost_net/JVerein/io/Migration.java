@@ -311,6 +311,8 @@ public class Migration
       {
         Eigenschaft eigenschaftneu = (Eigenschaft) Einstellungen.getDBService()
             .createObject(Eigenschaft.class, null);
+        eigenschaftneu
+            .setName(eigenschaft.toLowerCase().replaceAll("[^a-z0-9_]", "_"));
         eigenschaftneu.setBezeichnung(eigenschaft);
         String id = HM_eigenschaftsgruppen.get(groupName);
         if (id != null) // no entry for this groupName
@@ -465,6 +467,7 @@ public class Migration
       /* create a default property group */
       eigenschaftgruppe = (EigenschaftGruppe) Einstellungen.getDBService()
           .createObject(EigenschaftGruppe.class, null);
+      eigenschaftgruppe.setName("noch_nicht_zugeordnet");
       eigenschaftgruppe.setBezeichnung("Noch nicht zugeordnet");
       eigenschaftgruppe.store();
 
@@ -489,6 +492,8 @@ public class Migration
 
           eigenschaftgruppe = (EigenschaftGruppe) Einstellungen.getDBService()
               .createObject(EigenschaftGruppe.class, null);
+          eigenschaftgruppe
+              .setName(groupName.toLowerCase().replaceAll("[^a-z0-9_]", "_"));
           eigenschaftgruppe.setBezeichnung(groupName);
           eigenschaftgruppe.store();
           HM_eigenschaftsgruppen.put(groupName, eigenschaftgruppe.getID());
