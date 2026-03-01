@@ -87,7 +87,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   protected String getZipDateiname(DBObject object) throws RemoteException
   {
     Mitglied m = (Mitglied) object;
-    String filename = m.getID() + "# #" + object.getID() + "#";
+    String filename = m.getID() + "#personalbogen# #";
     String email = StringTool.toNotNullString(m.getEmail());
     if (email.length() > 0)
     {

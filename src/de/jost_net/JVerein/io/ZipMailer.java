@@ -209,6 +209,7 @@ public class ZipMailer
                   break;
                 case "":
                 case "freiesformular":
+                case "personalbogen":
                 case "kontoauszug":
                   // Keine eigene Map verwendet
                   break;
