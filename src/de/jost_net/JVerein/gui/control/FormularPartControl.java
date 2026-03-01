@@ -21,19 +21,18 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 
 public abstract class FormularPartControl extends VorZurueckControl
 {
-  protected TablePart formularfelderList;
+  protected JVereinTablePart formularfelderList;
 
   protected Formular formular;
 
@@ -43,7 +42,7 @@ public abstract class FormularPartControl extends VorZurueckControl
     this.formular = formular;
   }
 
-  public Part getFormularfeldList() throws RemoteException
+  public JVereinTablePart getFormularfeldList() throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Formularfeld> formularfelder = service
@@ -51,7 +50,7 @@ public abstract class FormularPartControl extends VorZurueckControl
     formularfelder.addFilter("formular = ?", new Object[] { formular.getID() });
     formularfelder.setOrder("ORDER BY seite, x, y");
 
-    formularfelderList = new TablePart(formularfelder,
+    formularfelderList = new JVereinTablePart(formularfelder,
         new EditAction(FormularfeldDetailView.class));
     formularfelderList.addColumn("Name", "name", o -> {
       String s = (String) o;

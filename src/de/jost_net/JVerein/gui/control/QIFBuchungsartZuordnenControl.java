@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.QIFImportPos;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -36,7 +37,6 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
@@ -45,7 +45,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.logging.Logger;
@@ -54,9 +53,9 @@ import de.willuhn.util.ApplicationException;
 public class QIFBuchungsartZuordnenControl extends AbstractControl
 {
 
-  private TablePart distinctBuchartListTable;
+  private JVereinTablePart distinctBuchartListTable;
 
-  private TablePart posBeispielListTable;
+  private JVereinTablePart posBeispielListTable;
 
   private SelectInput buchungsartInput;
 
@@ -162,11 +161,12 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
     getExterneBuchungsartInput().setValue("");
   }
 
-  public Part getPositionsListe() throws RemoteException
+  public JVereinTablePart getPositionsListe() throws RemoteException
   {
     if (null == posBeispielListTable)
     {
-      posBeispielListTable = new TablePart(iteratorQIFImportPosList, null);
+      posBeispielListTable = new JVereinTablePart(iteratorQIFImportPosList,
+          null);
       posBeispielListTable.addColumn("Datum", QIFImportPos.COL_DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       posBeispielListTable.addColumn("Beleg", QIFImportPos.COL_BELEG);
@@ -370,12 +370,12 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
     return PseudoIterator.fromArray(l.toArray(new QIFImportPos[l.size()]));
   }
 
-  public Part getBuchartListe() throws RemoteException
+  public JVereinTablePart getBuchartListe() throws RemoteException
   {
     if (null == distinctBuchartListTable)
     {
-      distinctBuchartListTable = new TablePart(getDistinctQIFBuchartList(),
-          null);
+      distinctBuchartListTable = new JVereinTablePart(
+          getDistinctQIFBuchartList(), null);
       distinctBuchartListTable.addColumn("Externe Buchungsart",
           QIFImportPos.COL_QIF_BUCHART);
       distinctBuchartListTable.addColumn("Status", "Status");

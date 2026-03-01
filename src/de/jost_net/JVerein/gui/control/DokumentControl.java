@@ -39,6 +39,7 @@ import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
 import de.jost_net.JVerein.gui.parts.DokumentPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -53,7 +54,6 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.messaging.QueryMessage;
@@ -71,7 +71,7 @@ public class DokumentControl extends AbstractControl
 
   private FileInput datei;
 
-  private TablePart docsList;
+  private JVereinTablePart docsList;
 
   private Button neuButton;
 
@@ -226,7 +226,7 @@ public class DokumentControl extends AbstractControl
     docs.addFilter("referenz = ?", new Object[] { doc.getReferenz() });
     docs.setOrder("ORDER BY datum desc");
 
-    docsList = new TablePart(docs, new DokumentShowAction());
+    docsList = new JVereinTablePart(docs, new DokumentShowAction());
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");

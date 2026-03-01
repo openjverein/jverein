@@ -24,6 +24,7 @@ import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -40,8 +41,6 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 
 public class SEPABugsControl extends AbstractControl
@@ -49,7 +48,7 @@ public class SEPABugsControl extends AbstractControl
 
   private Settings settings = null;
 
-  private TablePart bugsList;
+  private JVereinTablePart bugsList;
 
   private Date sepagueltigkeit;
 
@@ -63,9 +62,9 @@ public class SEPABugsControl extends AbstractControl
     sepagueltigkeit = cal.getTime();
   }
 
-  public Part getBugsList() throws RemoteException
+  public JVereinTablePart getBugsList() throws RemoteException
   {
-    bugsList = new TablePart(getBugs(), new Action()
+    bugsList = new JVereinTablePart(getBugs(), new Action()
     {
 
       @Override

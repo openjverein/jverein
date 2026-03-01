@@ -60,6 +60,7 @@ import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -113,7 +114,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -134,7 +134,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private BuchungListTablePart buchungsList;
 
   /* Split-Buchnungen */
-  private TablePart splitbuchungsList;
+  private JVereinTablePart splitbuchungsList;
 
   /* Controls */
   private Input id;

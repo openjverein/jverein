@@ -57,7 +57,6 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -76,9 +75,9 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   private TextAreaInput txt;
 
-  private TablePart anhang;
+  private JVereinTablePart anhang;
 
-  private TablePart mitgliedmitmail;
+  private JVereinTablePart mitgliedmitmail;
 
   private Mail mail;
 
@@ -175,7 +174,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     getMail().getAnhang().remove(ma);
   }
 
-  public TablePart getMitgliedMitMail() throws RemoteException
+  public JVereinTablePart getMitgliedMitMail() throws RemoteException
   {
     if (mitgliedmitmail != null && mitgliedmitmail.size() > 0)
     {
@@ -184,7 +183,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("email is not null and length(email) > 0");
-    mitgliedmitmail = new TablePart(it, null);
+    mitgliedmitmail = new JVereinTablePart(it, null);
     mitgliedmitmail.addColumn("EMail", "email");
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
@@ -217,7 +216,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     return txt;
   }
 
-  public TablePart getAnhang() throws RemoteException
+  public JVereinTablePart getAnhang() throws RemoteException
   {
     if (anhang != null)
     {
@@ -232,7 +231,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     this.mailDeleteConsumer = new MailDeleteMessageConsumer();
     Application.getMessagingFactory()
         .registerMessageConsumer(this.mailDeleteConsumer);
-    anhang = new TablePart(anhang2, new MailAnhangAnzeigeAction());
+    anhang = new JVereinTablePart(anhang2, new MailAnhangAnzeigeAction());
     anhang.addColumn("Dateiname", "dateiname");
     anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));

@@ -18,6 +18,7 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
@@ -47,7 +48,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -61,7 +61,7 @@ public class ForderungControl
 
   private Mitglied[] mitglieder;
 
-  private TablePart bugsList;
+  private JVereinTablePart bugsList;
 
   private CheckboxInput vorlageSpeichernInput;
 
@@ -255,7 +255,7 @@ public class ForderungControl
     {
       return bugsList;
     }
-    bugsList = new TablePart(getBugs(), context -> {
+    bugsList = new JVereinTablePart(getBugs(), context -> {
       Bug bug = (Bug) context;
       Object object = bug.getObject();
       if (object instanceof Mitglied)

@@ -27,11 +27,11 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
@@ -46,7 +46,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
 
   private final String prependCopyText, appendCopyText;
 
-  TablePart tab;
+  JVereinTablePart tab;
 
   public ShowVariablesDialog(Map<String, Object> vars)
   {
@@ -90,7 +90,7 @@ public class ShowVariablesDialog extends AbstractDialog<Object>
     {
       list.add(new Var(entry));
     }
-    tab = new TablePart(list, getCopyAction());
+    tab = new JVereinTablePart(list, getCopyAction());
     tab.addColumn("Name", "name");
     tab.addColumn("Wert", "wert");
     tab.setRememberOrder(true);

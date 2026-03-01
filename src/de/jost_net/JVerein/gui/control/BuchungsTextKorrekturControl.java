@@ -21,23 +21,22 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.BuchungsZweckKorrektur;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsTextKorrekturControl extends AbstractControl
 {
 
-  private TablePart buchungsList;
+  private JVereinTablePart buchungsList;
 
   private BuchungsKorrekturQuery query;
 
@@ -52,13 +51,14 @@ public class BuchungsTextKorrekturControl extends AbstractControl
         "walking.png");
   }
 
-  public Part getBuchungsList() throws RemoteException
+  public JVereinTablePart getBuchungsList() throws RemoteException
   {
     // Buchungen holen
     query = new BuchungsKorrekturQuery();
     if (buchungsList == null)
     {
-      buchungsList = new TablePart(query.get(), new BuchungAction(false));
+      buchungsList = new JVereinTablePart(query.get(),
+          new BuchungAction(false));
       buchungsList.addColumn("Nr", "id-int");
       buchungsList.addColumn("S", "splitid", o -> {
         return (o != null ? "S" : " ");
