@@ -159,8 +159,6 @@ public class BuchungMap extends AbstractMap
         case ZWECK1:
           value = StringTool.toNotNullString(bu.getZweck());
           break;
-        default:
-          break;
       }
       map.put(var.getName(), value);
     }
