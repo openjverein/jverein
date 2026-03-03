@@ -48,11 +48,15 @@ public class BuchungMap extends AbstractMap
               : "";
           break;
         case BETRAGNETTO:
-          value = "";
-          if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT)
-              && bu.getNetto() != null)
+          if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
-            value = Einstellungen.DECIMALFORMAT.format(bu.getNetto());
+            value = bu.getNetto() != null
+                ? Einstellungen.DECIMALFORMAT.format(bu.getNetto())
+                : "";
+          }
+          else
+          {
+            continue;
           }
           break;
         case BLATTNUMMER:
@@ -128,19 +132,40 @@ public class BuchungMap extends AbstractMap
           value = bu.getName();
           break;
         case PROJEKTBEZEICHNUNG:
-          value = bu.getProjekt() != null ? bu.getProjekt().getBezeichnung()
-              : "";
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = bu.getProjekt() != null ? bu.getProjekt().getBezeichnung()
+                : "";
+          }
+          else
+          {
+            continue;
+          }
           break;
         case PROJEKTNUMMER:
-          value = bu.getProjekt() != null ? bu.getProjektID() : "";
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = bu.getProjekt() != null ? bu.getProjektID() : "";
+          }
+          else
+          {
+            continue;
+          }
           break;
         case SPENDENBESCHEINIGUNG:
-          value = bu.getSpendenbescheinigung() != null
-              ? bu.getSpendenbescheinigung().getID()
-              : "";
+          if ((Boolean) Einstellungen
+              .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+          {
+            value = bu.getSpendenbescheinigung() != null
+                ? bu.getSpendenbescheinigung().getID()
+                : "";
+          }
+          else
+          {
+            continue;
+          }
           break;
         case STEUER:
-          value = "";
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
           {
             if ((Boolean) Einstellungen
@@ -154,6 +179,10 @@ public class BuchungMap extends AbstractMap
                   || bu.getBuchungsart().getSteuer() == null ? 0d
                       : bu.getBuchungsart().getSteuer().getSatz();
             }
+          }
+          else
+          {
+            continue;
           }
           break;
         case ZWECK1:
