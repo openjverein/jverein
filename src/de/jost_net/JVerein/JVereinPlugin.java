@@ -118,23 +118,28 @@ public class JVereinPlugin extends AbstractPlugin
   @Override
   public void update(final Version oldVersion) throws ApplicationException
   {
+    final Version newVersion = getManifest().getVersion();
     call(new ServiceCall()
     {
 
       @Override
       public void call(JVereinDBService service) throws RemoteException
       {
-        service.update(oldVersion, getManifest().getVersion());
+        service.update(oldVersion, newVersion);
       }
     });
-    BootMessage msg = new BootMessage(
-        "Es wurde eine neue JVerein-Version installiert."
-            + " Alle Änderungen sind auf folgender Seite zu finden:");
-    msg.setTitle("Neue JVerein-Version");
-    msg.setIcon("gtk-info.png");
-    msg.setUrl(DokumentationUtil.CHANGELOG);
-    Application.getMessagingFactory().getMessagingQueue("jameica.boot")
-        .queueMessage(msg);
+    if (newVersion.getMajor() > oldVersion.getMajor()
+        || newVersion.getMinor() > oldVersion.getMinor())
+    {
+      BootMessage msg = new BootMessage(
+          "Es wurde eine neue JVerein-Version installiert."
+              + " Alle Änderungen sind auf folgender Seite zu finden:");
+      msg.setTitle("Neue JVerein-Version");
+      msg.setIcon("gtk-info.png");
+      msg.setUrl(DokumentationUtil.CHANGELOG);
+      Application.getMessagingFactory().getMessagingQueue("jameica.boot")
+          .queueMessage(msg);
+    }
   }
 
   /**
