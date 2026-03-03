@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 public class SpendenbescheinigungListeFilterMap extends AbstractMap
 {
 
-  public SpendenbescheinigungListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,25 +39,39 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_F.getName(),
-        fromDate((Date) control.getDatumvon().getValue()));
-    map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_F.getName(),
-        fromDate((Date) control.getDatumbis().getValue()));
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_F.getName(),
-        fromDate((Date) control.getEingabedatumvon().getValue()));
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_F.getName(),
-        fromDate((Date) control.getEingabedatumbis().getValue()));
-    map.put(SpendenbescheinigungListeFilterVar.ZEILE2.getName(),
-        control.getSuchname().getValue().toString());
-    map.put(SpendenbescheinigungListeFilterVar.MAIL.getName(),
-        control.getMailauswahl().getText());
-    map.put(SpendenbescheinigungListeFilterVar.SPENDENART.getName(),
-        control.getSuchSpendenart().getText());
-    map.put(SpendenbescheinigungListeFilterVar.VERSAND.getName(),
-        control.getSuchVersand().getText());
-
+    for (SpendenbescheinigungListeFilterVar var : SpendenbescheinigungListeFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_BESCHEINIGUNG_VON_F:
+          value = fromDate((Date) control.getDatumvon().getValue());
+          break;
+        case DATUM_BESCHEINIGUNG_BIS_F:
+          value = fromDate((Date) control.getDatumbis().getValue());
+          break;
+        case DATUM_SPENDE_VON_F:
+          value = fromDate((Date) control.getEingabedatumvon().getValue());
+          break;
+        case DATUM_SPENDE_BIS_F:
+          value = fromDate((Date) control.getEingabedatumbis().getValue());
+          break;
+        case ZEILE2:
+          value = control.getSuchname().getValue().toString();
+          break;
+        case MAIL:
+          value = control.getMailauswahl().getText();
+          break;
+        case SPENDENART:
+          value = control.getSuchSpendenart().getText();
+          break;
+        case VERSAND:
+          value = control.getSuchVersand().getText();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -77,22 +86,39 @@ public class SpendenbescheinigungListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_VON_F.getName(),
-        "20240101");
-    map.put(
-        SpendenbescheinigungListeFilterVar.DATUM_BESCHEINIGUNG_BIS_F.getName(),
-        "20241231");
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_VON_F.getName(),
-        "20240101");
-    map.put(SpendenbescheinigungListeFilterVar.DATUM_SPENDE_BIS_F.getName(),
-        "20241231");
-    map.put(SpendenbescheinigungListeFilterVar.ZEILE2.getName(), "Zeile2");
-    map.put(SpendenbescheinigungListeFilterVar.MAIL.getName(), "Alle");
-    map.put(SpendenbescheinigungListeFilterVar.SPENDENART.getName(), "Alle");
-    map.put(SpendenbescheinigungListeFilterVar.VERSAND.getName(), "Alle");
-
+    for (SpendenbescheinigungListeFilterVar var : SpendenbescheinigungListeFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_BESCHEINIGUNG_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BESCHEINIGUNG_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_SPENDE_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_SPENDE_BIS_F:
+          value = "20241231";
+          break;
+        case ZEILE2:
+          value = "Zeile2";
+          break;
+        case MAIL:
+          value = "Alle";
+          break;
+        case SPENDENART:
+          value = "Alle";
+          break;
+        case VERSAND:
+          value = "Alle";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

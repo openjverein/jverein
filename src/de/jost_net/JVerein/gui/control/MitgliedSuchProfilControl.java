@@ -25,6 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.SuchprofilMessage;
 import de.jost_net.JVerein.gui.action.SuchprofilLadenAction;
 import de.jost_net.JVerein.gui.menu.SuchprofilMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Suchprofil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -35,7 +36,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.TextDialog;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
@@ -46,7 +46,7 @@ import de.willuhn.logging.Logger;
 public class MitgliedSuchProfilControl extends AbstractControl
 {
 
-  private TablePart profillist;
+  private JVereinTablePart profillist;
 
   private TextInput profilname;
 
@@ -80,7 +80,7 @@ public class MitgliedSuchProfilControl extends AbstractControl
     DBIterator<Suchprofil> profile = service.createList(Suchprofil.class);
     profile.setOrder("ORDER BY bezeichnung");
 
-    profillist = new TablePart(profile, new SuchprofilLadenAction());
+    profillist = new JVereinTablePart(profile, new SuchprofilLadenAction());
     profillist.addColumn("Bezeichnung", "bezeichnung");
     profillist.setRememberColWidths(true);
     profillist.setRememberOrder(true);

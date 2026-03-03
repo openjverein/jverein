@@ -14,33 +14,26 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.Variable;
+package de.jost_net.JVerein.util;
 
-import java.util.Map;
+import java.text.DecimalFormat;
 
-import org.apache.velocity.VelocityContext;
-
-public class VarTools
+/**
+ * Decimal Format, bei dem auch ein String übergeben werden kann. Dieser wird
+ * direkt wieder zurückgegeben. So kann der Formatter aufgerufen werden, auch
+ * wenn die Zahl bereits formatiert ist.
+ */
+public class JVDecimalFormat extends DecimalFormat
 {
-  /**
-   * Übertragung einer Map<String, Object> in einen VelocityContext
-   */
-  public static void add(VelocityContext context, Map<String, Object> map)
+  private static final long serialVersionUID = 5948836553985834880L;
+
+  public JVDecimalFormat(String pattern)
   {
-    for (String key : map.keySet())
-    {
-      context.put(key, map.get(key));
-    }
+    super(pattern);
   }
 
-  public static String maskieren(String wert)
+  public String format(String str)
   {
-    StringBuffer sb = new StringBuffer(wert);
-    for (int i = 0; i < wert.length() - 4; i++)
-    {
-      sb.replace(i, i + 1, "X");
-    }
-    return sb.toString();
+    return str;
   }
-
 }

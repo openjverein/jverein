@@ -29,6 +29,7 @@ import org.apache.velocity.exception.ResourceNotFoundException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.UniversalDateFormat;
 import de.willuhn.logging.Logger;
 
 public class VelocityTool
@@ -53,6 +54,8 @@ public class VelocityTool
         new HashMap<String, Object>(map));
     context.put("dateformat", new JVDateFormatTTMMJJJJ());
     context.put("decimalformat", Einstellungen.DECIMALFORMAT);
+    context.put("udateformat", new UniversalDateFormat());
+
     StringWriter wtext = new StringWriter();
     Velocity.evaluate(context, wtext, "LOG", text);
     return wtext.getBuffer().toString();

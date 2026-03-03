@@ -4367,8 +4367,6 @@ public class JVereinUpdateProvider
         + sql1 + MitgliedVar.ZAHLUNGSRHYTMUS.getName() + sql2 + ZAHLUNGSRHYTMUS
         + sql3 //
         + sql1 + MitgliedVar.ZAHLUNGSWEG.getName() + sql2 + ZAHLUNGSWEG + sql3 //
-        + sql1 + MitgliedVar.BLZ.getName() + sql2 + BLZ + sql3 //
-        + sql1 + MitgliedVar.KONTO.getName() + sql2 + KONTO + sql3 //
         + sql1 + MitgliedVar.KONTOINHABER.getName() + sql2 + KONTOINHABER + sql3 //
         + sql1 + MitgliedVar.GEBURTSDATUM.getName() + sql2 + GEBURTSDATUM + sql3 //
         + sql1 + MitgliedVar.GESCHLECHT.getName() + sql2 + GESCHLECHT + sql3 //

@@ -22,10 +22,10 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.DruckMailControl.DruckMailEmpfaengerEntry;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 /**
@@ -54,7 +54,7 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
     LabelInput textFeld = new LabelInput(text);
     group.addLabelPair("", textFeld);
 
-    TablePart empfaenger = new TablePart(liste, null);
+    JVereinTablePart empfaenger = new JVereinTablePart(liste, null);
     empfaenger.addColumn("Dokument", "dokument");
     empfaenger.addColumn("Mail", "email");
     empfaenger.addColumn("Name", "name");

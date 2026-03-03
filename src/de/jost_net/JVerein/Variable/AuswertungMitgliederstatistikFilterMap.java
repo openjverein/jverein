@@ -25,12 +25,6 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 
 public class AuswertungMitgliederstatistikFilterMap extends AbstractMap
 {
-
-  public AuswertungMitgliederstatistikFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,9 +38,18 @@ public class AuswertungMitgliederstatistikFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_F.getName(),
-        fromDate((Date) control.getStichtag(true).getValue()));
-
+    for (AuswertungMitgliederstatistikFilterVar var : AuswertungMitgliederstatistikFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_STICHTAG_F:
+          value = fromDate((Date) control.getStichtag(true).getValue());
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -61,10 +64,18 @@ public class AuswertungMitgliederstatistikFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungMitgliederstatistikFilterVar.DATUM_STICHTAG_F.getName(),
-        "20241231");
-
+    for (AuswertungMitgliederstatistikFilterVar var : AuswertungMitgliederstatistikFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_STICHTAG_F:
+          value = "20241231";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.rmi.RemoteException;
@@ -32,8 +31,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.exception.ParseErrorException;
 import org.apache.velocity.exception.ResourceNotFoundException;
@@ -46,11 +43,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.Ct1Ausgabe;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.jost_net.OBanToo.StringLatin.Zeichen;
@@ -76,7 +71,6 @@ public class Ct1Ueberweisung
   public int write(ArrayList<Lastschrift> lastschriften, File file, Date faell,
       Ct1Ausgabe ct1ausgabe, String verwendungszweck) throws Exception
   {
-    Velocity.init();
     switch (ct1ausgabe)
     {
       case SEPA_DATEI:
@@ -243,15 +237,9 @@ public class Ct1Ueberweisung
       throws ParseErrorException, MethodInvocationException,
       ResourceNotFoundException, IOException
   {
-    VelocityContext context = new VelocityContext();
-    context.put("dateformat", new JVDateFormatTTMMJJJJ());
-    context.put("decimalformat", Einstellungen.DECIMALFORMAT);
     Map<String, Object> map = new LastschriftMap().getMap(ls, null);
     map = new AllgemeineMap().getMap(map);
-    VarTools.add(context, map);
-    StringWriter vzweck = new StringWriter();
-    Velocity.evaluate(context, vzweck, "LOG", verwendungszweck);
-    return vzweck.getBuffer().toString().toUpperCase();
+    return VelocityTool.eval(map, verwendungszweck).toUpperCase();
   }
 
 }

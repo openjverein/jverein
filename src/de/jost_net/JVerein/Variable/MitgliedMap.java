@@ -49,11 +49,6 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedMap extends AbstractMap
 {
-  public MitgliedMap()
-  {
-    super();
-  }
-
   public Map<String, Object> getMap(Mitglied m, Map<String, Object> inma)
       throws RemoteException
   {
@@ -72,171 +67,253 @@ public class MitgliedMap extends AbstractMap
     {
       return getDummyMap(map);
     }
-    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(),
-        StringTool.toNotNullString(mitglied.getAdressierungszusatz()));
-    map.put(MitgliedVar.MITGLIEDSTYP.getName(),
-        StringTool.toNotNullString(mitglied.getMitgliedstyp().getID()));
-    map.put(MitgliedVar.ANREDE.getName(),
-        StringTool.toNotNullString(mitglied.getAnrede()));
-    map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
-        Adressaufbereitung.getAnredeFoermlich(mitglied));
-    map.put(MitgliedVar.ANREDE_DU.getName(),
-        Adressaufbereitung.getAnredeDu(mitglied));
-    map.put(MitgliedVar.AUSTRITT.getName(),
-        Datum.formatDate(mitglied.getAustritt()));
-    map.put(MitgliedVar.AUSTRITT_F.getName(), fromDate(mitglied.getAustritt()));
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(),
-        mitglied.getBeitragsgruppe() != null
-            && mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag() != null
-                ? Einstellungen.DECIMALFORMAT.format(
-                    mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
-                : "");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(),
-        mitglied.getBeitragsgruppe() != null
-            && mitglied.getBeitragsgruppe().getArbeitseinsatzStunden() != null
-                ? Einstellungen.DECIMALFORMAT.format(
-                    mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
-                : "");
-    try
+
+    for (MitgliedVar var : MitgliedVar.values())
     {
-      map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(),
-          mitglied.getBeitragsgruppe() != null
-              ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
-                  Beitragsmodel.getByKey((Integer) Einstellungen
-                      .getEinstellung(Property.BEITRAGSMODEL)),
-                  mitglied.getZahlungstermin(), mitglied.getZahlungsrhythmus(),
-                  mitglied.getBeitragsgruppe(), new Date(), mitglied))
-              : "");
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("AplicationException:" + e.getMessage());
-    }
-    catch (NullPointerException e)
-    {
-      Logger.error("NullPointerException:" + mitglied.getName());
-    }
-    map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(),
-        mitglied.getBeitragsgruppe() != null
-            ? mitglied.getBeitragsgruppe().getBezeichnung()
-            : "");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(),
-        mitglied.getBeitragsgruppe() != null
-            ? mitglied.getBeitragsgruppe().getID()
-            : "");
-    map.put(MitgliedVar.MANDATDATUM.getName(), mitglied.getMandatDatum());
-    map.put(MitgliedVar.MANDATDATUM_F.getName(),
-        fromDate(mitglied.getMandatDatum()));
-    map.put(MitgliedVar.MANDATID.getName(), mitglied.getMandatID());
-    map.put(MitgliedVar.EINGABEDATUM.getName(),
-        Datum.formatDate(mitglied.getEingabedatum()));
-    map.put(MitgliedVar.EINGABEDATUM_F.getName(),
-        fromDate(mitglied.getEingabedatum()));
-    map.put(MitgliedVar.EINTRITT.getName(),
-        Datum.formatDate(mitglied.getEintritt()));
-    map.put(MitgliedVar.EINTRITT_F.getName(), fromDate(mitglied.getEintritt()));
-    map.put(MitgliedVar.EMAIL.getName(), mitglied.getEmail());
-    map.put(MitgliedVar.EMPFAENGER.getName(),
-        Adressaufbereitung.getAdressfeld(mitglied));
-    map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(),
-        mitglied.getExterneMitgliedsnummer());
-    map.put(MitgliedVar.GEBURTSDATUM.getName(),
-        Datum.formatDate(mitglied.getGeburtsdatum()));
-    map.put(MitgliedVar.GEBURTSDATUM_F.getName(),
-        fromDate(mitglied.getGeburtsdatum()));
-    map.put(MitgliedVar.GESCHLECHT.getName(), mitglied.getGeschlecht());
-    map.put(MitgliedVar.HANDY.getName(), mitglied.getHandy());
-    map.put(MitgliedVar.IBANMASKIERT.getName(),
-        VarTools.maskieren(mitglied.getIban()));
-    map.put(MitgliedVar.IBAN.getName(),
-        new IBANFormatter().format(mitglied.getIban()));
-    map.put(MitgliedVar.ID.getName(), mitglied.getID());
-    if (mitglied.getIndividuellerBeitrag() != null)
-    {
-      map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(),
-          Einstellungen.DECIMALFORMAT
-              .format(mitglied.getIndividuellerBeitrag()));
-    }
-    else
-    {
-      map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), null);
-    }
-    String bic = mitglied.getBic();
-    map.put(MitgliedVar.BIC.getName(), bic);
-    if (bic != null)
-    {
-      Bank bank = Banken.getBankByBIC(bic);
-      if (bank != null)
+      Object value = null;
+      switch (var)
       {
-        String name = bank.getBezeichnung();
-        if (name != null)
-        {
-          map.put(MitgliedVar.BANKNAME.getName(), name.trim());
-        }
+        case ADRESSIERUNGSZUSATZ:
+        case KONTOINHABER_ADRESSIERUNGSZUSATZ:
+          value = StringTool.toNotNullString(mitglied.getAdressierungszusatz());
+          break;
+        case MITGLIEDSTYP:
+          value = StringTool
+              .toNotNullString(mitglied.getMitgliedstyp().getID());
+          break;
+        case ANREDE:
+        case KONTOINHABER_ANREDE:
+          value = StringTool.toNotNullString(mitglied.getAnrede());
+          break;
+        case ANREDE_FOERMLICH:
+          value = Adressaufbereitung.getAnredeFoermlich(mitglied);
+          break;
+        case ANREDE_DU:
+          value = Adressaufbereitung.getAnredeDu(mitglied);
+          break;
+        case AUSTRITT:
+          value = Datum.formatDate(mitglied.getAustritt());
+          break;
+        case AUSTRITT_F:
+          value = fromDate(mitglied.getAustritt());
+          break;
+        case BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG:
+          value = mitglied.getBeitragsgruppe() != null
+              && mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag() != null
+                  ? Einstellungen.DECIMALFORMAT.format(
+                      mitglied.getBeitragsgruppe().getArbeitseinsatzBetrag())
+                  : "";
+          break;
+        case BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN:
+          value = mitglied.getBeitragsgruppe() != null
+              && mitglied.getBeitragsgruppe().getArbeitseinsatzStunden() != null
+                  ? Einstellungen.DECIMALFORMAT.format(
+                      mitglied.getBeitragsgruppe().getArbeitseinsatzStunden())
+                  : "";
+          break;
+        case BEITRAGSGRUPPE_BETRAG:
+          try
+          {
+            value = mitglied.getBeitragsgruppe() != null
+                ? Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
+                    Beitragsmodel.getByKey((Integer) Einstellungen
+                        .getEinstellung(Property.BEITRAGSMODEL)),
+                    mitglied.getZahlungstermin(),
+                    mitglied.getZahlungsrhythmus(),
+                    mitglied.getBeitragsgruppe(), new Date(), mitglied))
+                : "";
+          }
+          catch (ApplicationException e)
+          {
+            Logger.error("AplicationException:" + e.getMessage());
+          }
+          catch (NullPointerException e)
+          {
+            Logger.error("NullPointerException:" + mitglied.getName());
+          }
+          break;
+        case BEITRAGSGRUPPE_BEZEICHNUNG:
+          value = mitglied.getBeitragsgruppe() != null
+              ? mitglied.getBeitragsgruppe().getBezeichnung()
+              : "";
+          break;
+        case BEITRAGSGRUPPE_ID:
+          value = mitglied.getBeitragsgruppe() != null
+              ? mitglied.getBeitragsgruppe().getID()
+              : "";
+          break;
+        case MANDATDATUM:
+          value = Datum.formatDate(mitglied.getMandatDatum());
+          break;
+        case MANDATDATUM_F:
+          value = fromDate(mitglied.getMandatDatum());
+          break;
+        case MANDATID:
+          value = mitglied.getMandatID();
+          break;
+        case EINGABEDATUM:
+          value = Datum.formatDate(mitglied.getEingabedatum());
+          break;
+        case EINGABEDATUM_F:
+          value = fromDate(mitglied.getEingabedatum());
+          break;
+        case EINTRITT:
+          value = Datum.formatDate(mitglied.getEintritt());
+          break;
+        case EINTRITT_F:
+          value = fromDate(mitglied.getEintritt());
+          break;
+        case EMAIL:
+        case KONTOINHABER_EMAIL:
+          value = mitglied.getEmail();
+          break;
+        case EMPFAENGER:
+          value = Adressaufbereitung.getAdressfeld(mitglied);
+          break;
+        case EXTERNE_MITGLIEDSNUMMER:
+          value = mitglied.getExterneMitgliedsnummer();
+          break;
+        case GEBURTSDATUM:
+          value = Datum.formatDate(mitglied.getGeburtsdatum());
+          break;
+        case GEBURTSDATUM_F:
+          value = fromDate(mitglied.getGeburtsdatum());
+          break;
+        case GESCHLECHT:
+        case KONTOINHABER_GESCHLECHT:
+          value = mitglied.getGeschlecht();
+          break;
+        case HANDY:
+          value = mitglied.getHandy();
+          break;
+        case IBANMASKIERT:
+          value = ibanMaskieren(mitglied.getIban());
+          break;
+        case IBAN:
+          value = new IBANFormatter().format(mitglied.getIban());
+          break;
+        case ID:
+          value = mitglied.getID();
+          break;
+        case INDIVIDUELLERBEITRAG:
+          if (mitglied.getIndividuellerBeitrag() != null)
+          {
+            value = Einstellungen.DECIMALFORMAT
+                .format(mitglied.getIndividuellerBeitrag());
+          }
+          break;
+        case BIC:
+          value = mitglied.getBic();
+          break;
+        case BANKNAME:
+          String bic = mitglied.getBic();
+          if (bic != null)
+          {
+            Bank bank = Banken.getBankByBIC(bic);
+            if (bank != null)
+            {
+              String name = bank.getBezeichnung();
+              if (name != null)
+              {
+                value = name.trim();
+              }
+            }
+          }
+          break;
+        case KONTO_KONTOINHABER:
+          value = mitglied.getKontoinhaber();
+          break;
+        case KONTOINHABER:
+          value = mitglied.getKontoinhaber(Mitglied.namenformat.KONTOINHABER);
+          break;
+        case KONTOINHABER_VORNAMENAME:
+          value = mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME);
+          break;
+        case KONTOINHABER_EMPFAENGER:
+          value = mitglied.getKontoinhaber(Mitglied.namenformat.ADRESSE);
+          break;
+        case KUENDIGUNG:
+          value = Datum.formatDate(mitglied.getKuendigung());
+          break;
+        case LETZTEAENDERUNG:
+          value = Datum.formatDate(mitglied.getLetzteAenderung());
+          break;
+        case NAME:
+        case KONTOINHABER_NAME:
+          value = mitglied.getName();
+          break;
+        case NAMEVORNAME:
+          value = Adressaufbereitung.getNameVorname(mitglied);
+          break;
+        case ORT:
+        case KONTOINHABER_ORT:
+          value = mitglied.getOrt();
+          break;
+        case PERSONENART:
+        case KONTOINHABER_PERSONENART:
+          value = mitglied.getPersonenart();
+          break;
+        case PLZ:
+        case KONTOINHABER_PLZ:
+          value = mitglied.getPlz();
+          break;
+        case STAAT:
+        case KONTOINHABER_STAAT:
+          value = mitglied.getStaat();
+          break;
+        case STERBETAG:
+          value = Datum.formatDate(mitglied.getSterbetag());
+          break;
+        case STRASSE:
+        case KONTOINHABER_STRASSE:
+          value = mitglied.getStrasse();
+          break;
+        case TELEFONDIENSTLICH:
+          value = mitglied.getTelefondienstlich();
+          break;
+        case TELEFONPRIVAT:
+          value = mitglied.getTelefonprivat();
+          break;
+        case TITEL:
+        case KONTOINHABER_TITEL:
+          value = mitglied.getTitel();
+          break;
+        case VERMERK1:
+          value = mitglied.getVermerk1();
+          break;
+        case VERMERK2:
+          value = mitglied.getVermerk2();
+          break;
+        case VORNAME:
+        case KONTOINHABER_VORNAME:
+          value = mitglied.getVorname();
+          break;
+        case VORNAMENAME:
+          value = Adressaufbereitung.getVornameName(mitglied);
+          break;
+        case ZAHLERID:
+          value = mitglied.getVollZahlerID() == null ? ""
+              : mitglied.getVollZahlerID().toString();
+          break;
+        case ALTERNATIVER_ZAHLER:
+          value = mitglied.getAbweichenderZahlerID() == null ? ""
+              : mitglied.getAbweichenderZahlerID().toString();
+          break;
+        case ZAHLUNGSRHYTMUS:
+        case ZAHLUNGSRHYTHMUS:
+          value = mitglied.getZahlungsrhythmus() + "";
+          break;
+        case ZAHLUNGSTERMIN:
+          value = mitglied.getZahlungstermin() != null
+              ? mitglied.getZahlungstermin().getText()
+              : "";
+          break;
+        case ZAHLUNGSWEG:
+          value = mitglied.getZahlungsweg() + "";
+          break;
       }
+      map.put(var.getName(), value);
     }
-    else
-    {
-      map.put(MitgliedVar.BANKNAME.getName(), null);
-    }
-    map.put(MitgliedVar.KONTO_KONTOINHABER.getName(),
-        mitglied.getKontoinhaber());
-    map.put(MitgliedVar.KONTOINHABER.getName(),
-        mitglied.getKontoinhaber(Mitglied.namenformat.KONTOINHABER));
-    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-        mitglied.getKontoinhaber(Mitglied.namenformat.VORNAME_NAME));
-    map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
-        mitglied.getKontoinhaber(Mitglied.namenformat.ADRESSE));
-    map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
-        mitglied.getAdressierungszusatz());
-    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), mitglied.getAnrede());
-    map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(), mitglied.getEmail());
-    map.put(MitgliedVar.KONTOINHABER_NAME.getName(), mitglied.getName());
-    map.put(MitgliedVar.KONTOINHABER_ORT.getName(), mitglied.getOrt());
-    map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(),
-        mitglied.getPersonenart());
-    map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), mitglied.getPlz());
-    map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), mitglied.getStaat());
-    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), mitglied.getStrasse());
-    map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), mitglied.getTitel());
-    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), mitglied.getVorname());
-    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
-        mitglied.getGeschlecht());
-    map.put(MitgliedVar.KUENDIGUNG.getName(),
-        Datum.formatDate(mitglied.getKuendigung()));
-    map.put(MitgliedVar.LETZTEAENDERUNG.getName(),
-        Datum.formatDate(mitglied.getLetzteAenderung()));
-    map.put(MitgliedVar.NAME.getName(), mitglied.getName());
-    map.put(MitgliedVar.NAMEVORNAME.getName(),
-        Adressaufbereitung.getNameVorname(mitglied));
-    map.put(MitgliedVar.ORT.getName(), mitglied.getOrt());
-    map.put(MitgliedVar.PERSONENART.getName(), mitglied.getPersonenart());
-    map.put(MitgliedVar.PLZ.getName(), mitglied.getPlz());
-    map.put(MitgliedVar.STAAT.getName(), mitglied.getStaat());
-    map.put(MitgliedVar.STERBETAG.getName(),
-        Datum.formatDate(mitglied.getSterbetag()));
-    map.put(MitgliedVar.STRASSE.getName(), mitglied.getStrasse());
-    map.put(MitgliedVar.TELEFONDIENSTLICH.getName(),
-        mitglied.getTelefondienstlich());
-    map.put(MitgliedVar.TELEFONPRIVAT.getName(), mitglied.getTelefonprivat());
-    map.put(MitgliedVar.TITEL.getName(), mitglied.getTitel());
-    map.put(MitgliedVar.VERMERK1.getName(), mitglied.getVermerk1());
-    map.put(MitgliedVar.VERMERK2.getName(), mitglied.getVermerk2());
-    map.put(MitgliedVar.VORNAME.getName(), mitglied.getVorname());
-    map.put(MitgliedVar.VORNAMENAME.getName(),
-        Adressaufbereitung.getVornameName(mitglied));
-    map.put(MitgliedVar.ZAHLERID.getName(), mitglied.getVollZahlerID());
-    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(),
-        mitglied.getAbweichenderZahlerID());
-    map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
-        mitglied.getZahlungsrhythmus() + "");
-    map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
-        mitglied.getZahlungsrhythmus() + "");
-    map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
-        mitglied.getZahlungstermin() != null
-            ? mitglied.getZahlungstermin().getText()
-            : "");
-    map.put(MitgliedVar.ZAHLUNGSWEG.getName(), mitglied.getZahlungsweg() + "");
 
     DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
         .createList(Felddefinition.class);
@@ -307,7 +384,7 @@ public class MitgliedMap extends AbstractMap
         .getDBService().createList(EigenschaftGruppe.class);
     while (eigenschaftGruppeIt.hasNext())
     {
-      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+      EigenschaftGruppe eg = eigenschaftGruppeIt.next();
 
       String key = "eigenschaften_" + eg.getName();
       map.put("mitglied_" + key, mitglied.getAttribute(key));
@@ -326,7 +403,6 @@ public class MitgliedMap extends AbstractMap
       l.setMap(map);
       map.putAll(l.getLesefelderMap());
     }
-
     return map;
   }
 
@@ -350,91 +426,199 @@ public class MitgliedMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(MitgliedVar.ADRESSIERUNGSZUSATZ.getName(), "Hinterhof bei Müller");
-    map.put(MitgliedVar.MITGLIEDSTYP.getName(), "1");
-    map.put(MitgliedVar.ANREDE.getName(), "Herr");
-    map.put(MitgliedVar.ANREDE_DU.getName(), "Hallo Willi,");
-    map.put(MitgliedVar.ANREDE_FOERMLICH.getName(),
-        "Sehr geehrter Herr Dr. Dr. Wichtig,");
-    map.put(MitgliedVar.AUSTRITT.getName(), "01.01.2025");
-    map.put(MitgliedVar.AUSTRITT_F.getName(), "20250101");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG.getName(), "50");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN.getName(), "10");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_BEZEICHNUNG.getName(), "Beitrag");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_BETRAG.getName(), "300,00");
-    map.put(MitgliedVar.BEITRAGSGRUPPE_ID.getName(), "1");
-    map.put(MitgliedVar.MANDATDATUM.getName(), toDate("01.01.2024"));
-    map.put(MitgliedVar.MANDATDATUM_F.getName(), "20240101");
-    map.put(MitgliedVar.MANDATID.getName(), "12345");
-    map.put(MitgliedVar.BIC.getName(), "BICXXXXXXXX");
-    map.put(MitgliedVar.BLZ.getName(), "");
-    map.put(MitgliedVar.EINTRITT.getName(), "01.01.2010");
-    map.put(MitgliedVar.EINTRITT_F.getName(), "20100101");
-    map.put(MitgliedVar.EINGABEDATUM.getName(), "01.02.2010");
-    map.put(MitgliedVar.EINGABEDATUM_F.getName(), "20100201");
-    map.put(MitgliedVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
-    map.put(MitgliedVar.EMAIL.getName(), "willi.wichtig@jverein.de");
-    map.put(MitgliedVar.EXTERNE_MITGLIEDSNUMMER.getName(), "123456");
-    map.put(MitgliedVar.GEBURTSDATUM.getName(), "02.03.1980");
-    map.put(MitgliedVar.GEBURTSDATUM_F.getName(), "19800302");
-    map.put(MitgliedVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
-    map.put(MitgliedVar.HANDY.getName(), "0152778899");
-    map.put(MitgliedVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
-    map.put(MitgliedVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
-    map.put(MitgliedVar.ID.getName(), "15");
-    map.put(MitgliedVar.INDIVIDUELLERBEITRAG.getName(), "123,45");
-    map.put(MitgliedVar.KONTO.getName(), "");
-    map.put(MitgliedVar.BANKNAME.getName(), "XY Bank");
-    map.put(MitgliedVar.KONTO_KONTOINHABER.getName(),
-        "Gemeinschaftskonto Willi und Else Müller");
-    map.put(MitgliedVar.KONTOINHABER.getName(),
-        "Gemeinschaftskonto Willi und Else Müller");
-    map.put(MitgliedVar.KONTOINHABER_VORNAMENAME.getName(),
-        "Dr. Dr. Willi Wichtig");
-    map.put(MitgliedVar.KONTOINHABER_EMPFAENGER.getName(),
-        "Herr\\nDr. Dr. Willi Wichtig\\nHinterhof bei Müller\\nBahnhofstr. 22\\n12345 Testenhausen\\nDeutschland");
-    map.put(MitgliedVar.KONTOINHABER_PERSONENART.getName(), "n");
-    map.put(MitgliedVar.KONTOINHABER_ANREDE.getName(), "Herr");
-    map.put(MitgliedVar.KONTOINHABER_TITEL.getName(), "Dr. Dr.");
-    map.put(MitgliedVar.KONTOINHABER_NAME.getName(), "Wichtig");
-    map.put(MitgliedVar.KONTOINHABER_VORNAME.getName(), "Willi");
-    map.put(MitgliedVar.KONTOINHABER_STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(MitgliedVar.KONTOINHABER_ADRESSIERUNGSZUSATZ.getName(),
-        "Hinterhof bei Müller");
-    map.put(MitgliedVar.KONTOINHABER_PLZ.getName(), "12345");
-    map.put(MitgliedVar.KONTOINHABER_ORT.getName(), "Testenhausen");
-    map.put(MitgliedVar.KONTOINHABER_STAAT.getName(), "Deutschland");
-    map.put(MitgliedVar.KONTOINHABER_EMAIL.getName(),
-        "willi.wichtig@jverein.de");
-    map.put(MitgliedVar.KONTOINHABER_GESCHLECHT.getName(),
-        GeschlechtInput.MAENNLICH);
-    map.put(MitgliedVar.KUENDIGUNG.getName(), "01.11.2024");
-    map.put(MitgliedVar.LETZTEAENDERUNG.getName(), "01.11.2024");
-    map.put(MitgliedVar.NAME.getName(), "Wichtig");
-    map.put(MitgliedVar.NAMEVORNAME.getName(), "Wichtig, Dr. Dr. Willi");
-    map.put(MitgliedVar.ORT.getName(), "Testenhausen");
-    map.put(MitgliedVar.PERSONENART.getName(), "n");
-    map.put(MitgliedVar.PLZ.getName(), "12345");
-    map.put(MitgliedVar.STAAT.getName(), "Deutschland");
-    map.put(MitgliedVar.STERBETAG.getName(), "31.12.2024");
-    map.put(MitgliedVar.STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(MitgliedVar.TELEFONDIENSTLICH.getName(), "011/123456789");
-    map.put(MitgliedVar.TELEFONPRIVAT.getName(), "011/123456");
-    map.put(MitgliedVar.TITEL.getName(), "Dr. Dr.");
-    map.put(MitgliedVar.VERMERK1.getName(), "Vermerk 1");
-    map.put(MitgliedVar.VERMERK2.getName(), "Vermerk 2");
-    map.put(MitgliedVar.VORNAME.getName(), "Willi");
-    map.put(MitgliedVar.VORNAMENAME.getName(), "Dr. Dr. Willi Wichtig");
-    map.put(MitgliedVar.ZAHLUNGSRHYTMUS.getName(),
-        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
-    map.put(MitgliedVar.ZAHLUNGSRHYTHMUS.getName(),
-        Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH));
-    map.put(MitgliedVar.ZAHLUNGSTERMIN.getName(),
-        Zahlungstermin.HALBJAEHRLICH4.toString());
-    map.put(MitgliedVar.ZAHLUNGSWEG.getName(), "2");
-    map.put(MitgliedVar.ZAHLERID.getName(), "123456");
-    map.put(MitgliedVar.ALTERNATIVER_ZAHLER.getName(), "123456");
+    for (MitgliedVar var : MitgliedVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case ADRESSIERUNGSZUSATZ:
+          value = "Hinterhof bei Müller";
+          break;
+        case MITGLIEDSTYP:
+          value = "1";
+          break;
+        case ANREDE:
+          value = "Herr";
+          break;
+        case ANREDE_DU:
+          value = "Hallo Willi,";
+          break;
+        case ANREDE_FOERMLICH:
+          value = "Sehr geehrter Herr Dr. Dr. Wichtig,";
+          break;
+        case AUSTRITT:
+          value = "01.01.2025";
+          break;
+        case AUSTRITT_F:
+          value = "20250101";
+          break;
+        case BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG:
+          value = "50";
+          break;
+        case BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN:
+          value = "10";
+          break;
+        case BEITRAGSGRUPPE_BEZEICHNUNG:
+          value = "Beitrag";
+          break;
+        case BEITRAGSGRUPPE_BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(300d);
+          break;
+        case BEITRAGSGRUPPE_ID:
+          value = "1";
+          break;
+        case MANDATDATUM:
+          value = Datum.formatDate(toDate("01.01.2024"));
+          break;
+        case MANDATDATUM_F:
+          value = "20240101";
+          break;
+        case MANDATID:
+          value = "12345";
+          break;
+        case BIC:
+          value = "BICXXXXXXXX";
+          break;
+        case EINTRITT:
+          value = "01.01.2010";
+          break;
+        case EINTRITT_F:
+          value = "20100101";
+          break;
+        case EINGABEDATUM:
+          value = "01.02.2010";
+          break;
+        case EINGABEDATUM_F:
+          value = "20100201";
+          break;
+        case EMPFAENGER:
+          value = "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland";
+          break;
+        case EMAIL:
+          value = "willi.wichtig@jverein.de";
+          break;
+        case EXTERNE_MITGLIEDSNUMMER:
+          value = "123456";
+          break;
+        case GEBURTSDATUM:
+          value = "02.03.1980";
+          break;
+        case GEBURTSDATUM_F:
+          value = "19800302";
+          break;
+        case GESCHLECHT:
+          value = GeschlechtInput.MAENNLICH;
+          break;
+        case HANDY:
+          value = "0152778899";
+          break;
+        case IBAN:
+          value = "DE89 3704 0044 0532 0130 00";
+          break;
+        case IBANMASKIERT:
+          value = "XXXXXXXXXXXXXXX3000";
+          break;
+        case ID:
+          value = "15";
+          break;
+        case INDIVIDUELLERBEITRAG:
+          value = Einstellungen.DECIMALFORMAT.format(123.45);
+          break;
+        case BANKNAME:
+          value = "XY Bank";
+          break;
+        case KONTO_KONTOINHABER:
+          value = "Gemeinschaftskonto Willi und Else Müller";
+          break;
+        case KONTOINHABER:
+          value = "Gemeinschaftskonto Willi und Else Müller";
+          break;
+        case KUENDIGUNG:
+          value = "01.11.2024";
+          break;
+        case LETZTEAENDERUNG:
+          value = "01.11.2024";
+          break;
+        case NAME:
+          value = "Wichtig";
+          break;
+        case NAMEVORNAME:
+          value = "Wichtig, Dr. Dr. Willi";
+          break;
+        case ORT:
+          value = "Testenhausen";
+          break;
+        case PERSONENART:
+          value = "n";
+          break;
+        case PLZ:
+          value = "12345";
+          break;
+        case STAAT:
+          value = "Deutschland";
+          break;
+        case STERBETAG:
+          value = "31.12.2024";
+          break;
+        case STRASSE:
+          value = "Bahnhofstr. 22";
+          break;
+        case TELEFONDIENSTLICH:
+          value = "011/123456789";
+          break;
+        case TELEFONPRIVAT:
+          value = "011/123456";
+          break;
+        case TITEL:
+          value = "Dr. Dr.";
+          break;
+        case VERMERK1:
+          value = "Vermerk 1";
+          break;
+        case VERMERK2:
+          value = "Vermerk 2";
+          break;
+        case VORNAME:
+          value = "Willi";
+          break;
+        case VORNAMENAME:
+          value = "Dr. Dr. Willi Wichtig";
+          break;
+        case ZAHLUNGSRHYTHMUS:
+          value = Zahlungsrhythmus.get(Zahlungsrhythmus.HALBJAEHRLICH);
+          break;
+        case ZAHLUNGSTERMIN:
+          value = Zahlungstermin.HALBJAEHRLICH4.toString();
+          break;
+        case ZAHLUNGSWEG:
+          value = "2";
+          break;
+        case ZAHLERID:
+          value = "123456";
+          break;
+        case ALTERNATIVER_ZAHLER:
+          value = "123456";
+        case KONTOINHABER_ADRESSIERUNGSZUSATZ:
+        case KONTOINHABER_ANREDE:
+        case KONTOINHABER_EMAIL:
+        case KONTOINHABER_EMPFAENGER:
+        case KONTOINHABER_GESCHLECHT:
+        case KONTOINHABER_NAME:
+        case KONTOINHABER_ORT:
+        case KONTOINHABER_PERSONENART:
+        case KONTOINHABER_PLZ:
+        case KONTOINHABER_STAAT:
+        case KONTOINHABER_STRASSE:
+        case KONTOINHABER_TITEL:
+        case KONTOINHABER_VORNAME:
+        case KONTOINHABER_VORNAMENAME:
+        case ZAHLUNGSRHYTMUS:
+          // Deprecated Einträg nicht in der DummyMap, damit sie nicht für neue
+          // Formulare etc. verwendet werden
+          continue;
+      }
+      map.put(var.getName(), value);
+    }
 
     // Liste der Felddefinitionen
     DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
@@ -455,7 +639,7 @@ public class MitgliedMap extends AbstractMap
           map.put(name, "22");
           break;
         case Datentyp.WAEHRUNG:
-          map.put(name, "3.00");
+          map.put(name, Einstellungen.DECIMALFORMAT.format(3d));
           break;
         case Datentyp.ZEICHENFOLGE:
           map.put(name, "abcd");
@@ -477,7 +661,7 @@ public class MitgliedMap extends AbstractMap
         .getDBService().createList(EigenschaftGruppe.class);
     while (eigenschaftGruppeIt.hasNext())
     {
-      EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeIt.next();
+      EigenschaftGruppe eg = eigenschaftGruppeIt.next();
 
       map.put("mitglied_eigenschaften_" + eg.getName(),
           "Eigenschaft1, Eigenschaft2");

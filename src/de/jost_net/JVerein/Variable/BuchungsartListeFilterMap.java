@@ -24,12 +24,6 @@ import de.jost_net.JVerein.gui.control.BuchungsartControl;
 
 public class BuchungsartListeFilterMap extends AbstractMap
 {
-
-  public BuchungsartListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(BuchungsartControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -43,17 +37,29 @@ public class BuchungsartListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(BuchungsartListeFilterVar.NUMMER.getName(),
-        control.getSuchname().getValue().toString());
-    map.put(BuchungsartListeFilterVar.BEZEICHNUNG.getName(),
-        control.getSuchtext().getValue().toString());
-    map.put(BuchungsartListeFilterVar.BUCHUNGSKLASSE.getName(),
-        control.getSuchBuchungsklasse().getText());
-    map.put(BuchungsartListeFilterVar.ART.getName(),
-        control.getSuchBuchungsartArt().getText());
-    map.put(BuchungsartListeFilterVar.STATUS.getName(),
-        control.getSuchStatus("Ohne Deaktiviert").getText());
-
+    for (BuchungsartListeFilterVar var : BuchungsartListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case NUMMER:
+          value = control.getSuchname().getValue().toString();
+          break;
+        case BEZEICHNUNG:
+          value = control.getSuchtext().getValue().toString();
+          break;
+        case BUCHUNGSKLASSE:
+          value = control.getSuchBuchungsklasse().getText();
+          break;
+        case ART:
+          value = control.getSuchBuchungsartArt().getText();
+          break;
+        case STATUS:
+          value = control.getSuchStatus("Ohne Deaktiviert").getText();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -69,13 +75,29 @@ public class BuchungsartListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(BuchungsartListeFilterVar.NUMMER.getName(), "1");
-    map.put(BuchungsartListeFilterVar.BEZEICHNUNG.getName(), "Beiträge");
-    map.put(BuchungsartListeFilterVar.BUCHUNGSKLASSE.getName(), "Alle");
-    map.put(BuchungsartListeFilterVar.ART.getName(), "Alle");
-    map.put(BuchungsartListeFilterVar.STATUS.getName(), "Alle");
-
+    for (BuchungsartListeFilterVar var : BuchungsartListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case NUMMER:
+          value = "1";
+          break;
+        case BEZEICHNUNG:
+          value = "Beiträge";
+          break;
+        case BUCHUNGSKLASSE:
+          value = "Alle";
+          break;
+        case ART:
+          value = "Alle";
+          break;
+        case STATUS:
+          value = "Alle";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

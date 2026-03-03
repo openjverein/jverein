@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 public class ZusatzbetragListeFilterMap extends AbstractMap
 {
 
-  public ZusatzbetragListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(ZusatzbetragControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,9 +39,17 @@ public class ZusatzbetragListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(ZusatzbetragListeFilterVar.FILTER_AUSFUEHRUNGSTAG.getName(),
-        control.getAusfuehrungSuch().getText());
-
+    for (ZusatzbetragListeFilterVar var : ZusatzbetragListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_AUSFUEHRUNGSTAG:
+          value = control.getAusfuehrungSuch().getText();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -61,9 +64,17 @@ public class ZusatzbetragListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(ZusatzbetragListeFilterVar.FILTER_AUSFUEHRUNGSTAG.getName(), "ALLE");
-
+    for (ZusatzbetragListeFilterVar var : ZusatzbetragListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_AUSFUEHRUNGSTAG:
+          value = "ALLE";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

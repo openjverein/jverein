@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.TabItem;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -40,7 +41,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -59,9 +59,9 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
 
   private SollbuchungControl control;
 
-  private TablePart sollbuchunglist = null;
+  private JVereinTablePart sollbuchunglist = null;
 
-  private TablePart mitgliedlist = null;
+  private JVereinTablePart mitgliedlist = null;
 
   private Buchung buchung;
 

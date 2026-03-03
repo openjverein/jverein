@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
@@ -37,7 +38,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -143,7 +143,7 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    * @return der TablePart
    * @throws ApplicationException
    */
-  public abstract TablePart getSaldoList() throws ApplicationException;
+  public abstract JVereinTablePart getSaldoList() throws ApplicationException;
 
   /**
    * Liefert die Liste

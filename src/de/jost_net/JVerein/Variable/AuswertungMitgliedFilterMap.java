@@ -27,12 +27,6 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 
 public class AuswertungMitgliedFilterMap extends AbstractMap
 {
-
-  public AuswertungMitgliedFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(MitgliedControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -46,79 +40,104 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungMitgliedFilterVar.MITGLIEDSCHAFT.getName(),
-        control.getMitgliedStatus().getText());
-    try
+    for (AuswertungMitgliedFilterVar var : AuswertungMitgliedFilterVar.values())
     {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      Object value = null;
+      switch (var)
       {
-        map.put(AuswertungMitgliedFilterVar.EXT_MITGLIEDSNUMMER.getName(),
-            control.getSuchExterneMitgliedsnummer().getValue().toString());
+        case MITGLIEDSCHAFT:
+          value = control.getMitgliedStatus().getText();
+          break;
+        case EXT_MITGLIEDSNUMMER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+            {
+              value = control.getSuchExterneMitgliedsnummer().getValue()
+                  .toString();
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case EIGENSCHAFTEN:
+          value = control.getEigenschaftenAuswahl().getText();
+          break;
+        case BEITRAGSGRUPPE:
+          value = control.getBeitragsgruppeAusw().getText();
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = control.getZusatzfelderAuswahl().getText();
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case MAIL:
+          value = control.getMailauswahl().getText();
+          break;
+        case GESCHLECHT:
+          value = control.getSuchGeschlecht().getText();
+          break;
+        case STICHTAG_F:
+          value = fromDate((Date) control.getStichtag(false).getValue());
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = fromDate((Date) control.getGeburtsdatumvon().getValue());
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = fromDate((Date) control.getGeburtsdatumbis().getValue());
+          break;
+        case DATUM_EINTRITT_VON_F:
+          value = fromDate((Date) control.getEintrittvon().getValue());
+          break;
+        case DATUM_EINTRITT_BIS_F:
+          value = fromDate((Date) control.getEintrittbis().getValue());
+          break;
+        case DATUM_AUSTRITT_VON_F:
+          value = fromDate((Date) control.getAustrittvon().getValue());
+          break;
+        case DATUM_AUSTRITT_BIS_F:
+          value = fromDate((Date) control.getAustrittbis().getValue());
+          break;
+        case DATUM_STERBE_VON_F:
+          if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
+          {
+            value = fromDate((Date) control.getSterbedatumvon().getValue());
+          }
+          break;
+        case DATUM_STERBE_BIS_F:
+          if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
+          {
+            value = fromDate((Date) control.getSterbedatumbis().getValue());
+          }
+        case SORTIERUNG:
+          value = control.getSortierung().getText();
+          break;
+        case UEBERSCHRIFT:
+          value = control.getAuswertungUeberschrift().getValue().toString();
+          break;
+        case AUSGABE:
+          String ausgabe = control.getAusgabe().getText();
+          if (ausgabe.startsWith("Vorlage CSV:"))
+          {
+            ausgabe = ausgabe.substring(13);
+          }
+          value = ausgabe;
+          break;
       }
+      map.put(var.getName(), value);
     }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungMitgliedFilterVar.EIGENSCHAFTEN.getName(),
-        control.getEigenschaftenAuswahl().getText());
-    map.put(AuswertungMitgliedFilterVar.BEITRAGSGRUPPE.getName(),
-        control.getBeitragsgruppeAusw().getText());
-    try
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
-      {
-        map.put(AuswertungMitgliedFilterVar.ZUSATZFELDER.getName(),
-            control.getZusatzfelderAuswahl().getText());
-      }
-    }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungMitgliedFilterVar.MAIL.getName(),
-        control.getMailauswahl().getText());
-    map.put(AuswertungMitgliedFilterVar.GESCHLECHT.getName(),
-        control.getSuchGeschlecht().getText());
-
-    map.put(AuswertungMitgliedFilterVar.STICHTAG_F.getName(),
-        fromDate((Date) control.getStichtag(false).getValue()));
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
-        fromDate((Date) control.getGeburtsdatumvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
-        fromDate((Date) control.getGeburtsdatumbis().getValue()));
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_F.getName(),
-        fromDate((Date) control.getEintrittvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_F.getName(),
-        fromDate((Date) control.getEintrittbis().getValue()));
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_F.getName(),
-        fromDate((Date) control.getAustrittvon().getValue()));
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_F.getName(),
-        fromDate((Date) control.getAustrittbis().getValue()));
-
-    if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
-    {
-      map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_F.getName(),
-          fromDate((Date) control.getSterbedatumvon().getValue()));
-      map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_F.getName(),
-          fromDate((Date) control.getSterbedatumbis().getValue()));
-    }
-
-    map.put(AuswertungMitgliedFilterVar.SORTIERUNG.getName(),
-        control.getSortierung().getText());
-    map.put(AuswertungMitgliedFilterVar.UEBERSCHRIFT.getName(),
-        control.getAuswertungUeberschrift().getValue().toString());
-    String ausgabe = control.getAusgabe().getText();
-    if (ausgabe.startsWith("Vorlage CSV:"))
-    {
-      ausgabe = ausgabe.substring(13);
-    }
-    map.put(AuswertungMitgliedFilterVar.AUSGABE.getName(), ausgabe);
-
     return map;
   }
 
@@ -133,76 +152,113 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungMitgliedFilterVar.MITGLIEDSCHAFT.getName(), "Angemeldet");
-    try
+    for (AuswertungMitgliedFilterVar var : AuswertungMitgliedFilterVar.values())
     {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      Object value = null;
+      switch (var)
       {
-        map.put(AuswertungMitgliedFilterVar.EXT_MITGLIEDSNUMMER.getName(),
-            "Ext45");
+        case MITGLIEDSCHAFT:
+          value = "Angemeldet";
+          break;
+        case EXT_MITGLIEDSNUMMER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+            {
+              value = "Ext45";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case EIGENSCHAFTEN:
+          value = "+Eigenschaft";
+          break;
+        case BEITRAGSGRUPPE:
+          value = "Alle";
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = "Kein Feld ausgewählt";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case MAIL:
+          value = "Alle";
+          break;
+        case GESCHLECHT:
+          value = "Alle";
+          break;
+        case STICHTAG_F:
+          value = "20240101";
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = "20000101";
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_EINTRITT_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_EINTRITT_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_AUSTRITT_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_AUSTRITT_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_STERBE_VON_F:
+          try
+          {
+            if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
+            {
+              value = "20240101";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case DATUM_STERBE_BIS_F:
+          try
+          {
+            if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
+            {
+              value = "20241231";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+
+        case SORTIERUNG:
+          value = "Name, Vorname";
+          break;
+        case UEBERSCHRIFT:
+          value = "Überschrift";
+          break;
+        case AUSGABE:
+          value = "Mitgliederliste PDF";
+          break;
       }
+      map.put(var.getName(), value);
     }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungMitgliedFilterVar.EIGENSCHAFTEN.getName(),
-        "+Eigenschaft");
-    map.put(AuswertungMitgliedFilterVar.BEITRAGSGRUPPE.getName(), "Alle");
-    try
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
-      {
-        map.put(AuswertungMitgliedFilterVar.ZUSATZFELDER.getName(),
-            "Kein Feld ausgewählt");
-      }
-    }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungMitgliedFilterVar.MAIL.getName(), "Alle");
-    map.put(AuswertungMitgliedFilterVar.GESCHLECHT.getName(), "Alle");
-
-    map.put(AuswertungMitgliedFilterVar.STICHTAG_F.getName(), "20240101");
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
-        "20000101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
-        "20241231");
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_VON_F.getName(),
-        "20240101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_EINTRITT_BIS_F.getName(),
-        "20241231");
-
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_VON_F.getName(),
-        "20240101");
-    map.put(AuswertungMitgliedFilterVar.DATUM_AUSTRITT_BIS_F.getName(),
-        "20241231");
-
-    try
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
-      {
-        map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_VON_F.getName(),
-            "20240101");
-        map.put(AuswertungMitgliedFilterVar.DATUM_STERBE_BIS_F.getName(),
-            "20241231");
-      }
-    }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-
-    map.put(AuswertungMitgliedFilterVar.SORTIERUNG.getName(), "Name, Vorname");
-    map.put(AuswertungMitgliedFilterVar.UEBERSCHRIFT.getName(), "Überschrift");
-    map.put(AuswertungMitgliedFilterVar.AUSGABE.getName(),
-        "Mitgliederliste PDF");
-
     return map;
   }
 }

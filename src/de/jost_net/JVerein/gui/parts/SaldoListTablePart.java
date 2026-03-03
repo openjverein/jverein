@@ -26,14 +26,13 @@ import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
 import de.jost_net.JVerein.gui.control.UmsatzsteuerSaldoControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.gui.parts.table.Feature.Event;
 
-public class SaldoListTablePart extends TablePart
+public class SaldoListTablePart extends JVereinTablePart
 {
 
   private Context ctx;

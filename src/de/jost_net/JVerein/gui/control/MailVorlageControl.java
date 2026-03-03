@@ -31,7 +31,6 @@ import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -127,7 +126,8 @@ public class MailVorlageControl extends VorZurueckControl
     }
   }
 
-  public TablePart getMailVorlageTable(Action action) throws RemoteException
+  public JVereinTablePart getMailVorlageTable(Action action)
+      throws RemoteException
   {
     if (mailvorlageList != null)
     {

@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.TablePart;
@@ -33,7 +34,7 @@ public abstract class Spaltenauswahl
 
   private String tabelle;
 
-  private TablePart spaltendefinitionList;
+  private JVereinTablePart spaltendefinitionList;
 
   private ArrayList<Spalte> spalten;
 
@@ -83,14 +84,14 @@ public abstract class Spaltenauswahl
     return spalten;
   }
 
-  public TablePart paintSpaltenpaintSpaltendefinitionTable()
+  public JVereinTablePart paintSpaltenpaintSpaltendefinitionTable()
       throws RemoteException
   {
     if (spaltendefinitionList != null)
     {
       return spaltendefinitionList;
     }
-    spaltendefinitionList = new TablePart(new ArrayList<Spalte>(), null);
+    spaltendefinitionList = new JVereinTablePart(new ArrayList<Spalte>(), null);
     spaltendefinitionList.addColumn("Spalte", "spaltenbezeichnung");
     spaltendefinitionList.setCheckable(true);
     spaltendefinitionList.setMulti(true);

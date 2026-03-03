@@ -29,11 +29,6 @@ import de.jost_net.JVerein.keys.Beitragsmodel;
 public class AbrechnungslaufParameterMap extends AbstractMap
 {
 
-  public AbrechnungslaufParameterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(AbrechnungSEPAControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -47,27 +42,42 @@ public class AbrechnungslaufParameterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_F.getName(),
-        fromDate((Date) control.getFaelligkeit().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_F.getName(),
-        fromDate((Date) control.getStichtag().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_F.getName(),
-        fromDate((Date) control.getVondatum().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_F.getName(),
-        fromDate((Date) control.getVonEingabedatum().getValue()));
-    map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_F.getName(),
-        fromDate((Date) control.getBisdatum().getValue()));
-    map.put(AbrechnungslaufParameterVar.ZAHLUNGSGRUND.getName(),
-        control.getZahlungsgrund().getValue().toString());
-    map.put(AbrechnungslaufParameterVar.MODUS.getName(),
-        control.getAbbuchungsmodus().getText());
-    if ((Integer) Einstellungen.getEinstellung(
-        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+    for (AbrechnungslaufParameterVar var : AbrechnungslaufParameterVar.values())
     {
-      map.put(AbrechnungslaufParameterVar.ABREACHNUNGSMONAT.getName(),
-          control.getAbrechnungsmonat().getText());
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_FAELLIGKEIT_F:
+          value = fromDate((Date) control.getFaelligkeit().getValue());
+          break;
+        case DATUM_STICHTAG_F:
+          value = fromDate((Date) control.getStichtag().getValue());
+          break;
+        case DATUM_EINTRITT_F:
+          value = fromDate((Date) control.getVondatum().getValue());
+          break;
+        case DATUM_EINGABE_F:
+          value = fromDate((Date) control.getVonEingabedatum().getValue());
+          break;
+        case DATUM_AUSTRITT_F:
+          value = fromDate((Date) control.getBisdatum().getValue());
+          break;
+        case ZAHLUNGSGRUND:
+          value = control.getZahlungsgrund().getValue().toString();
+          break;
+        case MODUS:
+          value = control.getAbbuchungsmodus().getText();
+          break;
+        case ABREACHNUNGSMONAT:
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+          {
+            value = control.getAbrechnungsmonat().getText();
+          }
+          break;
+      }
+      map.put(var.getName(), value);
     }
-
     return map;
   }
 
@@ -83,21 +93,41 @@ public class AbrechnungslaufParameterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AbrechnungslaufParameterVar.DATUM_FAELLIGKEIT_F.getName(),
-        "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_STICHTAG_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_EINTRITT_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_EINGABE_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.DATUM_AUSTRITT_F.getName(), "20240101");
-    map.put(AbrechnungslaufParameterVar.ZAHLUNGSGRUND.getName(),
-        "Zahlungsgrund");
-    map.put(AbrechnungslaufParameterVar.MODUS.getName(), "Alle");
-    if ((Integer) Einstellungen.getEinstellung(
-        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+    for (AbrechnungslaufParameterVar var : AbrechnungslaufParameterVar.values())
     {
-      map.put(AbrechnungslaufParameterVar.ABREACHNUNGSMONAT.getName(),
-          "Januar");
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_FAELLIGKEIT_F:
+          value = "20240101";
+          break;
+        case DATUM_STICHTAG_F:
+          value = "20240101";
+          break;
+        case DATUM_EINTRITT_F:
+          value = "20240101";
+          break;
+        case DATUM_EINGABE_F:
+          value = "20240101";
+          break;
+        case DATUM_AUSTRITT_F:
+          value = "20240101";
+          break;
+        case ZAHLUNGSGRUND:
+          value = "Zahlungsgrund";
+          break;
+        case MODUS:
+          value = "Alle";
+          break;
+        case ABREACHNUNGSMONAT:
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+          {
+            value = "Januar";
+          }
+          break;
+      }
+      map.put(var.getName(), value);
     }
 
     return map;

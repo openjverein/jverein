@@ -23,19 +23,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 public class BuchungsuebernahmeControl
 {
 
-  private TablePart kontenlist = null;
+  private JVereinTablePart kontenlist = null;
 
-  public TablePart getKontenList() throws RemoteException
+  public JVereinTablePart getKontenList() throws RemoteException
   {
     List<Uebernahmekonto> ueko = new ArrayList<>();
     DBService service = Einstellungen.getDBService();
@@ -123,7 +123,7 @@ public class BuchungsuebernahmeControl
       ueko.add(ue);
     }
 
-    kontenlist = new TablePart(ueko, null);
+    kontenlist = new JVereinTablePart(ueko, null);
     kontenlist.addColumn("Nummer", "nummer");
     kontenlist.addColumn("JVerein max. Buchungsnummer", "jVereinMaxBuchungID");
     kontenlist.addColumn("Hibiscus-Kontonummer", "hibiscusKontonummer");

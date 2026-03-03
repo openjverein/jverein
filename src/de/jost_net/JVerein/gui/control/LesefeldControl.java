@@ -45,7 +45,6 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -56,7 +55,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
 
   private JVereinTablePart lesefeldList;
 
-  private TablePart lesefeldMitgliedList;
+  private JVereinTablePart lesefeldMitgliedList;
 
   private Lesefeld lesefeld = null;
 
@@ -485,7 +484,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     }
     // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
     // evaluierte Ausgabe gesetzt ist
-    lesefeldMitgliedList = new TablePart(lesefeldAuswerter.getLesefelder(),
+    lesefeldMitgliedList = new JVereinTablePart(
+        lesefeldAuswerter.getLesefelder(),
         new EditAction(LesefeldDetailView.class));
     lesefeldMitgliedList.addColumn("Skript-Name", "bezeichnung");
     lesefeldMitgliedList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");

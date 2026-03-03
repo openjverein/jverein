@@ -19,13 +19,13 @@ package de.jost_net.JVerein.gui.view;
 import java.rmi.RemoteException;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
@@ -84,6 +84,16 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   private DokumentControl dcontrol;
 
+  private Container containerMitgliedschaft;
+
+  private boolean sizeComputed = false;
+
+  private Container containerStammdaten;
+
+  private Container containerZahlung;
+
+  private Container containerZusatzfelder;
+
   @Override
   public void bind() throws Exception
   {
@@ -104,6 +114,38 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         1);
 
     final TabFolder folder = new TabFolder(scrolled.getComposite(), SWT.NONE);
+
+    scrolled.getComposite().addPaintListener(e -> {
+      if (sizeComputed)
+      {
+        return;
+      }
+      sizeComputed = true;
+
+      ScrolledComposite comp = ((ScrolledComposite) scrolled.getComposite()
+          .getParent());
+      comp.setExpandVertical(true);
+
+      // Mindesthöhe
+      int hoeheTab = 170;
+
+      // Höchsten Tab berechnen
+      // Alle anderen sind Listen, für die reicht die Mindeshöhe
+      hoeheTab = Math.max(hoeheTab,
+          getComputetTabHeight(containerMitgliedschaft));
+      hoeheTab = Math.max(hoeheTab, getComputetTabHeight(containerStammdaten));
+      hoeheTab = Math.max(hoeheTab, getComputetTabHeight(containerZahlung));
+      hoeheTab = Math.max(hoeheTab,
+          getComputetTabHeight(containerZusatzfelder));
+
+      // Sollhöhe berechnen:
+      // Höhe scrolled - Höhe Tab + berechente mindest Höhe Tab
+      // +35 für Buttons, Tabkarten etc.
+      comp.setMinHeight(
+          scrolled.getComposite().computeSize(SWT.DEFAULT, SWT.DEFAULT).y
+              - folder.computeSize(SWT.DEFAULT, SWT.DEFAULT).y + hoeheTab + 35);
+    });
+
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
     folder.setBackground(Color.BACKGROUND.getSWTColor());
 
@@ -202,6 +244,15 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     zeichneButtonArea(getParent());
 
+  }
+
+  private int getComputetTabHeight(Container container)
+  {
+    if (container == null || !(container instanceof TabGroup))
+    {
+      return 0;
+    }
+    return container.getComposite().computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
   }
 
   /**
@@ -422,9 +473,10 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     Input[] zusatzfelder = control.getZusatzfelder();
     if (zusatzfelder != null)
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Zusatzfelder");
+      containerZusatzfelder = getTabOrLabelContainer(parentComposite,
+          "Zusatzfelder");
       SimpleVerticalContainer svc = new SimpleVerticalContainer(
-          cont.getComposite(), true, spaltenanzahl);
+          containerZusatzfelder.getComposite(), true, spaltenanzahl);
       for (Input inp : zusatzfelder)
       {
         svc.addInput(inp);
@@ -436,12 +488,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneEigenschaften(Composite parentComposite)
       throws RemoteException
   {
-    // if (isMitgliedDetail())
-    // {
     Container cont = getTabOrLabelContainer(parentComposite, "Eigenschaften");
     cont.getComposite().setLayout(new GridLayout(1, true));
     control.getEigenschaftenTree().paint(cont.getComposite());
-    // }
   }
 
   private void zeichneWiedervorlage(Composite parentComposite)
@@ -540,11 +589,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneZahlung(Composite parentComposite, int spaltenanzahl)
       throws RemoteException
   {
-    Container container = getTabOrLabelContainer(parentComposite, "Zahlung");
+    containerZahlung = getTabOrLabelContainer(parentComposite, "Zahlung");
     GridLayout layout = new GridLayout(1, false);
-    container.getComposite().setLayout(layout);
+    containerZahlung.getComposite().setLayout(layout);
 
-    LabelGroup zahlungsweg = new LabelGroup(container.getComposite(),
+    LabelGroup zahlungsweg = new LabelGroup(containerZahlung.getComposite(),
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
     ButtonArea buttons1 = new ButtonArea();
@@ -574,7 +623,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols1.arrangeVertically();
 
     LabelGroup bankverbindung = control
-        .getBankverbindungLabelGroup(container.getComposite());
+        .getBankverbindungLabelGroup(containerZahlung.getComposite());
     bankverbindung.getComposite().setLayout(new GridLayout(1, false));
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton(control.getKontoDatenLoeschenButton());
@@ -625,11 +674,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (isMitgliedDetail())
     {
-      Container container = getTabOrLabelContainer(parentComposite,
+      containerMitgliedschaft = getTabOrLabelContainer(parentComposite,
           "Mitgliedschaft");
 
       SimpleVerticalContainer cols = new SimpleVerticalContainer(
-          container.getComposite(), false, spaltenanzahl);
+          containerMitgliedschaft.getComposite(), false, spaltenanzahl);
 
       if ((Boolean) Einstellungen
           .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
@@ -658,18 +707,19 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
       {
-        container.addPart(control.getMitgliedSekundaereBeitragsgruppeView());
+        containerMitgliedschaft
+            .addPart(control.getMitgliedSekundaereBeitragsgruppeView());
       }
 
       if ((Boolean) Einstellungen
           .getEinstellung(Property.ZUKUENFTIGEBEITRAGSGRUPPEN))
       {
-        container.addPart(control.getZukuenftigeBeitraegeView());
+        containerMitgliedschaft.addPart(control.getZukuenftigeBeitraegeView());
       }
 
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
-        container.addPart(control.getFamilienverband());
+        containerMitgliedschaft.addPart(control.getFamilienverband());
       }
     }
   }
@@ -685,9 +735,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeicheStammdaten(Composite parentComposite, int spaltenanzahl)
       throws RemoteException
   {
-    Container container = getTabOrLabelContainer(parentComposite, "Stammdaten");
+    containerStammdaten = getTabOrLabelContainer(parentComposite, "Stammdaten");
     SimpleVerticalContainer cols = new SimpleVerticalContainer(
-        container.getComposite(), true, spaltenanzahl);
+        containerStammdaten.getComposite(), true, spaltenanzahl);
 
     if (!isMitgliedDetail())
     {

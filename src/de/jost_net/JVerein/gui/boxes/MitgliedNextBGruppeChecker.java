@@ -24,6 +24,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -38,7 +39,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -50,7 +50,7 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
 {
   private boolean isAktiv;
 
-  private TablePart aenderungsListenPart;
+  private JVereinTablePart aenderungsListenPart;
 
   private DBObject transaktionObjekt;
 
@@ -140,11 +140,11 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
     labelGroup.addButtonArea(buttonArea);
   }
 
-  private TablePart getListeZuAendern() throws RemoteException
+  private JVereinTablePart getListeZuAendern() throws RemoteException
   {
     if (null == aenderungsListenPart)
     {
-      aenderungsListenPart = new TablePart(null);
+      aenderungsListenPart = new JVereinTablePart(null);
       aenderungsListenPart.addColumn("Datum", MitgliedNextBGruppe.COL_AB_DATUM,
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       aenderungsListenPart.addColumn("Mitglied",

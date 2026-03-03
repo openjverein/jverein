@@ -16,12 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.util.Map;
-
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Einstellungen;
@@ -43,7 +39,6 @@ import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SollbuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungListeFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
@@ -58,6 +53,7 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
@@ -510,16 +506,9 @@ public class VorlageUtil
   {
     try
     {
-      Velocity.init();
-      VelocityContext context = new VelocityContext();
-      context.put("dateformat", new JVDateFormatTTMMJJJJ());
-      context.put("udateformat", new UniversalDateFormat());
-      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-      VarTools.add(context, map);
-      StringWriter wdateiname = new StringWriter();
+
       String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
-      Velocity.evaluate(context, wdateiname, "LOG", in);
-      String str = wdateiname.toString();
+      String str = VelocityTool.eval(map, in);
       str = str.replaceAll("\\'\\#\\'", "-");
       if (dateiname)
       {
