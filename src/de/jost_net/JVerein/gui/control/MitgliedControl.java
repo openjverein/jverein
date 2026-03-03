@@ -127,7 +127,6 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -147,7 +146,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SWTUtil;
@@ -282,21 +280,21 @@ public class MitgliedControl extends FilterControl implements Savable
   private AutoUpdateTablePart wiedervorlageList;
 
   // Liste der Mails
-  private TablePart mailList;
+  private JVereinTablePart mailList;
 
   // Liste der Arbeitseinsätze
-  private TablePart arbeitseinsatzList;
+  private JVereinTablePart arbeitseinsatzList;
 
   // Liste der Lehrgänge
-  private TablePart lehrgaengeList;
+  private JVereinTablePart lehrgaengeList;
 
-  private TablePart familienangehoerige;
+  private JVereinTablePart familienangehoerige;
 
   private ImageInput foto;
 
   private int jjahr = 0;
 
-  private TablePart beitragsTabelle;
+  private JVereinTablePart beitragsTabelle;
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
 
@@ -1495,14 +1493,14 @@ public class MitgliedControl extends FilterControl implements Savable
     familienangehoerige.sort();
   }
 
-  public Part getFamilienangehoerigenTable() throws RemoteException
+  public JVereinTablePart getFamilienangehoerigenTable() throws RemoteException
   {
     if (familienangehoerige != null)
     {
       return familienangehoerige;
     }
 
-    familienangehoerige = new TablePart(new MitgliedDetailAction());
+    familienangehoerige = new JVereinTablePart(new MitgliedDetailAction());
     familienangehoerige.setRememberColWidths(true);
     familienangehoerige.setRememberOrder(true);
     refreshFamilienangehoerigeTable();
@@ -1527,7 +1525,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return familienangehoerige;
   }
 
-  public Part getZusatzbetraegeTable() throws RemoteException
+  public JVereinTablePart getZusatzbetraegeTable() throws RemoteException
   {
     if (zusatzbetraegeList != null)
     {
@@ -1586,7 +1584,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public Part getWiedervorlageTable() throws RemoteException
+  public JVereinTablePart getWiedervorlageTable() throws RemoteException
   {
     if (wiedervorlageList != null)
     {
@@ -1611,7 +1609,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return wiedervorlageList;
   }
 
-  public TablePart getMailTable() throws RemoteException
+  public JVereinTablePart getMailTable() throws RemoteException
   {
     if (mailList != null)
     {
@@ -1622,7 +1620,7 @@ public class MitgliedControl extends FilterControl implements Savable
     me.join("mailempfaenger");
     me.addFilter("mailempfaenger.mail = mail.id");
     me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
-    mailList = new TablePart(me, new EditAction(MailDetailView.class));
+    mailList = new JVereinTablePart(me, new EditAction(MailDetailView.class));
     mailList.setRememberColWidths(true);
     mailList.setRememberOrder(true);
     mailList.setMulti(true);
@@ -1636,7 +1634,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return mailList;
   }
 
-  public Part getArbeitseinsatzTable() throws RemoteException
+  public JVereinTablePart getArbeitseinsatzTable() throws RemoteException
   {
     if (arbeitseinsatzList != null)
     {
@@ -1647,7 +1645,7 @@ public class MitgliedControl extends FilterControl implements Savable
         .createList(Arbeitseinsatz.class);
     arbeitseinsaetze.addFilter("mitglied = " + getMitglied().getID());
     arbeitseinsaetze.setOrder("ORDER by datum desc");
-    arbeitseinsatzList = new TablePart(arbeitseinsaetze,
+    arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze,
         new EditAction(ArbeitseinsatzDetailView.class));
     arbeitseinsatzList.setRememberColWidths(true);
     arbeitseinsatzList.setRememberOrder(true);
@@ -1663,7 +1661,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return arbeitseinsatzList;
   }
 
-  public Part getLehrgaengeTable() throws RemoteException
+  public JVereinTablePart getLehrgaengeTable() throws RemoteException
   {
     if (lehrgaengeList != null)
     {
@@ -1672,7 +1670,7 @@ public class MitgliedControl extends FilterControl implements Savable
     DBService service = Einstellungen.getDBService();
     DBIterator<Lehrgang> lehrgaenge = service.createList(Lehrgang.class);
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
-    lehrgaengeList = new TablePart(lehrgaenge,
+    lehrgaengeList = new JVereinTablePart(lehrgaenge,
         new EditAction(LehrgangDetailView.class));
     lehrgaengeList.setRememberColWidths(true);
     lehrgaengeList.setRememberOrder(true);
@@ -2124,7 +2122,7 @@ public class MitgliedControl extends FilterControl implements Savable
         null, false, "document-new.png");
   }
 
-  public TablePart getMitgliedTable(int atyp, Action detailaction)
+  public JVereinTablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
     part = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
@@ -2146,7 +2144,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return part;
   }
 
-  public TablePart refreshMitgliedTable(int atyp) throws RemoteException
+  public JVereinTablePart refreshMitgliedTable(int atyp) throws RemoteException
   {
     if (System.currentTimeMillis() - lastrefresh < 500)
     {
@@ -2873,7 +2871,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  public Part getMitgliedBeitraegeTabelle() throws RemoteException
+  public JVereinTablePart getMitgliedBeitraegeTabelle() throws RemoteException
   {
     if (beitragsTabelle != null)
     {
@@ -2881,7 +2879,7 @@ public class MitgliedControl extends FilterControl implements Savable
       return beitragsTabelle;
     }
 
-    beitragsTabelle = new TablePart(
+    beitragsTabelle = new JVereinTablePart(
         new EditAction(MitgliedNextBGruppeView.class));
     beitragsTabelle.setRememberColWidths(true);
     beitragsTabelle.setRememberOrder(true);

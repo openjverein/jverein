@@ -22,8 +22,6 @@ public enum AllgemeineVar
   AKTUELLEZEIT("aktuellezeit"), //
   AKTUELLERMONAT("aktuellermonat"), //
   AKTUELLESJAHR("aktuellesjahr"), //
-  NURMONAT("nurmonat"), //
-  NURTAG("nurtag"), //
   FOLGEJAHR("folgejahr"), //
   FOLGEMONAT("folgemonat"), //
   TAGESDATUM("tagesdatum"), //

@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.navigation.MyItem;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -85,7 +86,6 @@ import de.willuhn.jameica.gui.input.ScaleInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -1683,7 +1683,7 @@ public class EinstellungControl extends AbstractControl
     return jubilarStartAlter;
   }
 
-  public TablePart getSpaltendefinitionTable() throws RemoteException
+  public JVereinTablePart getSpaltendefinitionTable() throws RemoteException
   {
     if (spalten == null)
     {

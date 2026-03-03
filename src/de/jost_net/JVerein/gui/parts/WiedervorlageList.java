@@ -34,9 +34,8 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.parts.TablePart;
 
-public class WiedervorlageList extends TablePart implements Part
+public class WiedervorlageList extends JVereinTablePart
 {
 
   private AutoUpdateTablePart wiedervorlageList;

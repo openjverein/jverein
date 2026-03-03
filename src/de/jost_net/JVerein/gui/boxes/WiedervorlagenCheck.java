@@ -26,13 +26,13 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.boxes.AbstractBox;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.logging.Logger;
 
@@ -82,7 +82,7 @@ public class WiedervorlagenCheck extends AbstractBox
     labelGroup.addPart(getListe());
   }
 
-  private TablePart getListe() throws RemoteException
+  private JVereinTablePart getListe() throws RemoteException
   {
     DBIterator<Wiedervorlage> dbIterator = Einstellungen.getDBService()
         .createList(Wiedervorlage.class);

@@ -64,7 +64,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -555,7 +554,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     }
   }
 
-  public TablePart getBeitragsgruppeTable() throws RemoteException
+  public JVereinTablePart getBeitragsgruppeTable() throws RemoteException
   {
     if (beitragsgruppeList != null)
     {

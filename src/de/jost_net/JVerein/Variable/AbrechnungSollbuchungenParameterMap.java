@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.AbrechnungslaufBuchungenControl;
 public class AbrechnungSollbuchungenParameterMap extends AbstractMap
 {
 
-  public AbrechnungSollbuchungenParameterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(AbrechnungslaufBuchungenControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,15 +39,27 @@ public class AbrechnungSollbuchungenParameterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AbrechnungSollbuchungenParameterVar.DATUM_F.getName(),
-        fromDate((Date) control.getDatum(false).getValue()));
-    map.put(AbrechnungSollbuchungenParameterVar.ZAHLUNGSGRUND.getName(),
-        control.getZahlungsgrund().getValue().toString());
-    map.put(AbrechnungSollbuchungenParameterVar.LAUF.getName(),
-        control.getLauf().getValue().toString());
-    map.put(AbrechnungSollbuchungenParameterVar.BEMERKUNG.getName(),
-        control.getBemerkung().getValue().toString());
-
+    for (AbrechnungSollbuchungenParameterVar var : AbrechnungSollbuchungenParameterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_F:
+          value = fromDate((Date) control.getDatum(false).getValue());
+          break;
+        case ZAHLUNGSGRUND:
+          value = control.getZahlungsgrund().getValue().toString();
+          break;
+        case LAUF:
+          value = control.getLauf().getValue().toString();
+          break;
+        case BEMERKUNG:
+          value = control.getBemerkung().getValue().toString();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -68,14 +75,27 @@ public class AbrechnungSollbuchungenParameterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AbrechnungSollbuchungenParameterVar.DATUM_F.getName(), "20240101");
-    map.put(AbrechnungSollbuchungenParameterVar.ZAHLUNGSGRUND.getName(),
-        "Zahlungsgrund");
-    map.put(AbrechnungSollbuchungenParameterVar.LAUF.getName(), "33");
-    map.put(AbrechnungSollbuchungenParameterVar.BEMERKUNG.getName(),
-        "Bemerkung");
-
+    for (AbrechnungSollbuchungenParameterVar var : AbrechnungSollbuchungenParameterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_F:
+          value = "20240101";
+          break;
+        case ZAHLUNGSGRUND:
+          value = "Zahlungsgrund";
+          break;
+        case LAUF:
+          value = "33";
+          break;
+        case BEMERKUNG:
+          value = "Bemerkung";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

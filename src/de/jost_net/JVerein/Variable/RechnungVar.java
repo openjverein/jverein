@@ -78,12 +78,13 @@ public enum RechnungVar
   IBANMASKIERT("rechnung_ibanmaskiert"), //
   BANKNAME("rechnung_bankname"), //
   EMPFAENGER("rechnung_empfaenger"),
-  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text"),
-  KOMMENTAR("rechnung_kommentar"),
   RECHNUNGSTEXT("rechnung_rechnungstext"),
   REFERENZRECHNUNG("rechnung_referenz_nummer"),
   ERSTATTUNGSBETRAG("rechnung_erstattungsbetrag"),
-  ZAHLUNGSWEG("rechnung_zahlungsweg");
+  ZAHLUNGSWEG("rechnung_zahlungsweg"),
+  KOMMENTAR("rechnung_kommentar"),
+  // Muss der letzt Eintrag sein, da hier die Map selbst verwendet wird
+  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text");
 
   private String name;
 

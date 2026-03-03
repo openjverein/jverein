@@ -29,11 +29,6 @@ import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 public class AuswertungNichtMitgliedFilterMap extends AbstractMap
 {
 
-  public AuswertungNichtMitgliedFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(MitgliedControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -47,43 +42,61 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungNichtMitgliedFilterVar.MITGLIEDSTYP.getName(),
-        control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getText());
-    map.put(AuswertungNichtMitgliedFilterVar.EIGENSCHAFTEN.getName(),
-        control.getEigenschaftenAuswahl().getText());
-    try
+    for (AuswertungNichtMitgliedFilterVar var : AuswertungNichtMitgliedFilterVar
+        .values())
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+      Object value = null;
+      switch (var)
       {
-        map.put(AuswertungNichtMitgliedFilterVar.ZUSATZFELDER.getName(),
-            control.getZusatzfelderAuswahl().getText());
+        case MITGLIEDSTYP:
+          value = control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED)
+              .getText();
+          break;
+        case EIGENSCHAFTEN:
+          value = control.getEigenschaftenAuswahl().getText();
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = control.getZusatzfelderAuswahl().getText();
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+        case MAIL:
+          value = control.getMailauswahl().getText();
+          break;
+        case GESCHLECHT:
+          value = control.getSuchGeschlecht().getText();
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = fromDate((Date) control.getGeburtsdatumvon().getValue());
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = fromDate((Date) control.getGeburtsdatumbis().getValue());
+          break;
+        case SORTIERUNG:
+          value = control.getSortierung().getText();
+          break;
+        case UEBERSCHRIFT:
+          value = control.getAuswertungUeberschrift().getValue().toString();
+          break;
+        case AUSGABE:
+          String ausgabe = control.getAusgabe().getText();
+          if (ausgabe.startsWith("Vorlage CSV:"))
+          {
+            ausgabe = ausgabe.substring(13);
+          }
+          value = ausgabe;
+          break;
       }
+      map.put(var.getName(), value);
     }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungNichtMitgliedFilterVar.MAIL.getName(),
-        control.getMailauswahl().getText());
-    map.put(AuswertungNichtMitgliedFilterVar.GESCHLECHT.getName(),
-        control.getSuchGeschlecht().getText());
-
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
-        fromDate((Date) control.getGeburtsdatumvon().getValue()));
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
-        fromDate((Date) control.getGeburtsdatumbis().getValue()));
-
-    map.put(AuswertungNichtMitgliedFilterVar.SORTIERUNG.getName(),
-        control.getSortierung().getText());
-    map.put(AuswertungNichtMitgliedFilterVar.UEBERSCHRIFT.getName(),
-        control.getAuswertungUeberschrift().getValue().toString());
-    String ausgabe = control.getAusgabe().getText();
-    if (ausgabe.startsWith("Vorlage CSV:"))
-    {
-      ausgabe = ausgabe.substring(13);
-    }
-    map.put(AuswertungNichtMitgliedFilterVar.AUSGABE.getName(), ausgabe);
-
     return map;
   }
 
@@ -98,38 +111,56 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungNichtMitgliedFilterVar.MITGLIEDSTYP.getName(),
-        "Spender/in");
-    map.put(AuswertungNichtMitgliedFilterVar.EIGENSCHAFTEN.getName(),
-        "+Eigenschaft");
-    try
+    for (AuswertungNichtMitgliedFilterVar var : AuswertungNichtMitgliedFilterVar
+        .values())
     {
-      if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+      Object value = null;
+      switch (var)
       {
-        map.put(AuswertungNichtMitgliedFilterVar.ZUSATZFELDER.getName(),
-            "Kein Feld ausgewählt");
+        case MITGLIEDSTYP:
+          value = "Spender/in";
+          break;
+        case EIGENSCHAFTEN:
+          value = "+Eigenschaft";
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = "Kein Feld ausgewählt";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+        case MAIL:
+          value = "Alle";
+          break;
+        case GESCHLECHT:
+          value = "Alle";
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = "20000101";
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = "20241231";
+          break;
+        case SORTIERUNG:
+          value = "Name, Vorname";
+          break;
+        case UEBERSCHRIFT:
+          value = "Überschrift";
+          break;
+        case AUSGABE:
+          value = "Mitgliederliste PDF";
+          break;
       }
+      map.put(var.getName(), value);
     }
-    catch (RemoteException e)
-    {
-      // Keine unterstützen
-    }
-    map.put(AuswertungNichtMitgliedFilterVar.MAIL.getName(), "Alle");
-    map.put(AuswertungNichtMitgliedFilterVar.GESCHLECHT.getName(), "Alle");
-
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_VON_F.getName(),
-        "20000101");
-    map.put(AuswertungNichtMitgliedFilterVar.DATUM_GEBURT_BIS_F.getName(),
-        "20241231");
-
-    map.put(AuswertungNichtMitgliedFilterVar.SORTIERUNG.getName(),
-        "Name, Vorname");
-    map.put(AuswertungNichtMitgliedFilterVar.UEBERSCHRIFT.getName(),
-        "Überschrift");
-    map.put(AuswertungNichtMitgliedFilterVar.AUSGABE.getName(),
-        "Mitgliederliste PDF");
-
     return map;
   }
 }

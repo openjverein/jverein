@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
 {
 
-  public AuswertungArbeitseinsatzFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(ArbeitseinsatzControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,11 +39,21 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungArbeitseinsatzFilterVar.FILTER_AUSWERTUNG.getName(),
-        control.getAuswertungSchluessel().getText());
-    map.put(AuswertungArbeitseinsatzFilterVar.FILTER_JAHR.getName(),
-        control.getSuchJahr().getText());
-
+    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_AUSWERTUNG:
+          value = control.getAuswertungSchluessel().getText();
+          break;
+        case FILTER_JAHR:
+          value = control.getSuchJahr().getText();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -63,10 +68,21 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungArbeitseinsatzFilterVar.FILTER_AUSWERTUNG.getName(),
-        "ALLE");
-    map.put(AuswertungArbeitseinsatzFilterVar.FILTER_JAHR.getName(), "2024");
+    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+        .values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_AUSWERTUNG:
+          value = "ALLE";
+          break;
+        case FILTER_JAHR:
+          value = "2024";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
 
     return map;
   }

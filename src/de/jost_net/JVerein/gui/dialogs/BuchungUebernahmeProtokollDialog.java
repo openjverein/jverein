@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -35,7 +36,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
 /**
@@ -65,7 +65,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   {
     // LabelGroup group = new LabelGroup(parent, "Übernommene Buchungen");
 
-    final TablePart bu = new TablePart(buchungen, null);
+    final JVereinTablePart bu = new JVereinTablePart(buchungen, null);
     bu.addColumn("Nr", "id-int");
     bu.addColumn("Konto", "konto");
     bu.addColumn("Datum", "datum",

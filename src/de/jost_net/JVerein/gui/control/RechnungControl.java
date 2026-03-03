@@ -39,6 +39,7 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
@@ -74,7 +75,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -92,7 +92,7 @@ public class RechnungControl extends DruckMailControl implements Savable
 
   private DecimalInput betrag;
 
-  private TablePart buchungList;
+  private JVereinTablePart buchungList;
 
   private TextInput anrede;
 
@@ -736,7 +736,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     return versanddatum;
   }
 
-  public Part getSollbuchungPositionListPart() throws RemoteException
+  public JVereinTablePart getSollbuchungPositionListPart()
+      throws RemoteException
   {
     if (buchungList != null)
     {

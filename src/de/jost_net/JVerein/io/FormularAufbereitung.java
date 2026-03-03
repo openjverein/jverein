@@ -21,7 +21,6 @@ import java.awt.Image;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -33,8 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.mustangproject.BankDetails;
 import org.mustangproject.Contact;
 import org.mustangproject.DirectDebit;
@@ -75,7 +72,6 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -447,14 +443,7 @@ public class FormularAufbereitung
     else
     {
       // Felder mit Text und Variablen
-      VelocityContext context = new VelocityContext();
-      context.put("dateformat", new JVDateFormatTTMMJJJJ());
-      context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-      VarTools.add(context, map);
-
-      StringWriter wtext = new StringWriter();
-      Velocity.evaluate(context, wtext, "LOG", inhalt);
-      val = wtext.toString();
+      val = VelocityTool.eval(map, inhalt);
     }
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
@@ -600,18 +589,13 @@ public class FormularAufbereitung
       Paragraph p = null;
       if (m != null)
       {
-        VelocityContext context = new VelocityContext();
-        context.put("dateformat", new JVDateFormatTTMMJJJJ());
-        context.put("decimalformat", Einstellungen.DECIMALFORMAT);
-        if (m.getEmail() != null)
-          context.put("email", m.getEmail());
         Map<String, Object> mmap = new MitgliedMap().getMap(m, null);
         mmap = new AllgemeineMap().getMap(mmap);
         mmap = new SpendenbescheinigungMap().getMap(spb, mmap);
-        VarTools.add(context, mmap);
-        StringWriter wtext = new StringWriter();
-        Velocity.evaluate(context, wtext, "LOG", text);
-        p = new Paragraph(wtext.getBuffer().toString(),
+        if (m.getEmail() != null)
+          mmap.put("email", m.getEmail());
+
+        p = new Paragraph(VelocityTool.eval(mmap, text),
             Reporter.getFreeSans(10));
       }
       else
@@ -621,7 +605,7 @@ public class FormularAufbereitung
       p.setIndentationLeft(40);
       doc.add(p);
     }
-    catch (DocumentException e)
+    catch (DocumentException | IOException e)
     {
       throw new RemoteException("Fehler", e);
     }

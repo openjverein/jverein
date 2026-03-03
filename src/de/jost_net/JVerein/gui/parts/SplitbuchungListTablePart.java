@@ -25,12 +25,11 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 
-public class SplitbuchungListTablePart extends TablePart
+public class SplitbuchungListTablePart extends JVereinTablePart
 {
 
   public SplitbuchungListTablePart(Action action)

@@ -32,13 +32,12 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
 
-public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
+public class ArbeitseinsatzUeberpruefungList extends JVereinTablePart
 {
 
-  private TablePart arbeitseinsatzueberpruefungList;
+  private JVereinTablePart arbeitseinsatzueberpruefungList;
 
   private int jahr;
 
@@ -61,7 +60,7 @@ public class ArbeitseinsatzUeberpruefungList extends TablePart implements Part
 
       if (arbeitseinsatzueberpruefungList == null)
       {
-        arbeitseinsatzueberpruefungList = new TablePart(zeile,
+        arbeitseinsatzueberpruefungList = new JVereinTablePart(zeile,
             new MitgliedDetailAction());
         arbeitseinsatzueberpruefungList.addColumn("Name", "mitglied");
         arbeitseinsatzueberpruefungList.addColumn("Sollstunden", "soll",

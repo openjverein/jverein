@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Messaging.QIFImportHeaderMessage;
 import de.jost_net.JVerein.gui.input.JVereinKontoInput;
 import de.jost_net.JVerein.gui.input.QIFExternKontenInput;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -55,7 +56,6 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -66,7 +66,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -106,7 +105,7 @@ public class QIFBuchungsImportControl extends AbstractControl
 
   private TextInput processDatum;
 
-  private TablePart qifImportPosList;
+  private JVereinTablePart qifImportPosList;
 
   private QIFImportHeaderMessageConsumer headerMessageConsumer;
 
@@ -264,9 +263,10 @@ public class QIFBuchungsImportControl extends AbstractControl
 
   }
 
-  public Part getImportKontoPosList(Action action) throws RemoteException
+  public JVereinTablePart getImportKontoPosList(Action action)
+      throws RemoteException
   {
-    qifImportPosList = new TablePart(getIterator(), action);
+    qifImportPosList = new JVereinTablePart(getIterator(), action);
     qifImportPosList.addColumn("ID", QIFImportPos.COL_POSID, null, false,
         Column.ALIGN_RIGHT);
     qifImportPosList.addColumn("Datum", QIFImportPos.COL_DATUM,

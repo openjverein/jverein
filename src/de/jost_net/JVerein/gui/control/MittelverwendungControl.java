@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.MittelverwendungDialog;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
@@ -48,16 +49,15 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.util.ApplicationException;
 
 public class MittelverwendungControl extends AbstractSaldoControl
 {
-  private TablePart zuflussList;
+  private JVereinTablePart zuflussList;
 
-  private TablePart saldoList;
+  private JVereinTablePart saldoList;
 
   public final static int FLOW_REPORT = 0;
 
@@ -274,7 +274,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  public TablePart getSaldoList() throws ApplicationException
+  public JVereinTablePart getSaldoList() throws ApplicationException
   {
     switch (selectedTab)
     {
@@ -294,7 +294,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * @return TablePart
    * @throws ApplicationException
    */
-  public TablePart getMittelverwendungSaldoTable() throws ApplicationException
+  public JVereinTablePart getMittelverwendungSaldoTable()
+      throws ApplicationException
   {
     try
     {
@@ -302,7 +303,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new TablePart(getMittelverwendungSaldoList(), null)
+      saldoList = new JVereinTablePart(getMittelverwendungSaldoList(), null)
       {
         @Override
         protected void orderBy(int index)
@@ -337,7 +338,8 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * @return TablePart
    * @throws ApplicationException
    */
-  public TablePart getMittelverwendungFlowTable() throws ApplicationException
+  public JVereinTablePart getMittelverwendungFlowTable()
+      throws ApplicationException
   {
     try
     {
@@ -345,7 +347,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       {
         return zuflussList;
       }
-      zuflussList = new TablePart(getMittelverwendungFlowList(
+      zuflussList = new JVereinTablePart(getMittelverwendungFlowList(
           getDatumvon().getDate(), getDatumbis().getDate()), null)
       {
         @Override

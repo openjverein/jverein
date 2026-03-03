@@ -41,7 +41,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -154,7 +153,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     }
   }
 
-  public TablePart getFelddefinitionTable() throws RemoteException
+  public JVereinTablePart getFelddefinitionTable() throws RemoteException
   {
     if (felddefinitionList != null)
     {
@@ -419,8 +418,7 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     {
       case 1:
         throw new RemoteException(
-            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: "
-                + wert);
+            "Typkonvertierung kann nicht durchgeführt werden. Inhalt: " + wert);
       case 2:
         throw new RemoteException(
             "Die Konvertierung der Datentypen ist nicht vorgesehen. Ggfls. zunächst in Zeichenfolge umwandeln.");

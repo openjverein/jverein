@@ -18,9 +18,14 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.util.List;
 
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.table.Feature;
+import de.willuhn.jameica.gui.parts.table.Feature.Context;
 
 public class JVereinTablePart extends TablePart
 {
@@ -67,6 +72,31 @@ public class JVereinTablePart extends TablePart
   public void setAction(Action action)
   {
     this.action = action;
+  }
+
+  @Override
+  protected Context createFeatureEventContext(Feature.Event e, Object data)
+  {
+    Context ctx = super.createFeatureEventContext(e, data);
+
+    if (!e.equals(Feature.Event.PAINT))
+    {
+      return ctx;
+    }
+    Table table = (Table) ctx.control;
+
+    // Die letzte Spalte packen wir nach Titelbreite, falls diese kleiner als
+    // der gespeicherte Wert ist. So wird ggf. verhindert, dass eine horizontale
+    // Scrollbar angezeigt wird, wenn es gar nicht nötig ist.
+    TableColumn c = table.getColumn(table.getColumnCount() - 1);
+    int widthOld = c.getWidth();
+    c.pack();
+    if (c.getWidth() > widthOld)
+    {
+      c.setWidth(widthOld);
+    }
+
+    return ctx;
   }
 
 }

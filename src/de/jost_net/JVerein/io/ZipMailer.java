@@ -20,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -31,8 +30,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.mail.MessagingException;
-import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -41,7 +38,6 @@ import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.VarTools;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
@@ -51,7 +47,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.server.IVersand;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.Application;
@@ -123,8 +118,6 @@ public class ZipMailer
               (Integer) Einstellungen.getEinstellung(Property.MAILVERZOEGERUNG),
               Einstellungen.getImapCopyData());
 
-          Velocity.init();
-          Logger.debug("preparing velocity context");
           monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
           monitor.setPercentComplete(0);
           int sentCount = 0;
@@ -145,9 +138,6 @@ public class ZipMailer
             String currentEntry = entry.getName();
             if (currentEntry.indexOf("@") > 0)
             {
-              VelocityContext context = new VelocityContext();
-              context.put("dateformat", new JVDateFormatTTMMJJJJ());
-              context.put("decimalformat", Einstellungen.DECIMALFORMAT);
               Map<String, Object> map = new AllgemeineMap().getMap(null);
 
               // Dateiname muss das Format
@@ -209,6 +199,7 @@ public class ZipMailer
                   break;
                 case "":
                 case "freiesformular":
+                case "personalbogen":
                 case "kontoauszug":
                   // Keine eigene Map verwendet
                   break;
@@ -221,8 +212,6 @@ public class ZipMailer
               {
                 map = new MitgliedMap().getMap(mitgliedMap, map);
               }
-
-              VarTools.add(context, map);
 
               MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
                   .createObject(MailAnhang.class, null);
@@ -287,28 +276,21 @@ public class ZipMailer
                     }
                     break;
                   default:
-                    StringWriter wdateiname = new StringWriter();
-                    Velocity.evaluate(context, wdateiname, "LOG", dateiname);
-                    finaldateiname = wdateiname.toString();
+                    finaldateiname = VelocityTool.eval(map, dateiname);
                     break;
                 }
                 ma.setDateiname(finaldateiname);
                 anhang.add(ma);
               }
-
-              StringWriter wtext1 = new StringWriter();
-              Velocity.evaluate(context, wtext1, "LOG", betreff);
-
-              StringWriter wtext2 = new StringWriter();
-              Velocity.evaluate(context, wtext2, "LOG", txt);
+              String betr = VelocityTool.eval(map, betreff);
+              String text = VelocityTool.eval(map, txt);
 
               monitor.log("Versende an " + mail);
               try
               {
                 try
                 {
-                  sender.sendMail(mail, wtext1.toString(), wtext2.toString(),
-                      anhang);
+                  sender.sendMail(mail, betr, text, anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mail erfolgreich versendet, erst danach trat ein Fehler auf.
@@ -323,8 +305,8 @@ public class ZipMailer
                 {
                   Mail ml = (Mail) Einstellungen.getDBService()
                       .createObject(Mail.class, null);
-                  ml.setBetreff(wtext1.toString());
-                  ml.setTxt(wtext2.toString());
+                  ml.setBetreff(betr);
+                  ml.setTxt(text);
                   ml.setBearbeitung(new Timestamp(new Date().getTime()));
                   ml.setVersand(new Timestamp(new Date().getTime()));
                   ml.store();

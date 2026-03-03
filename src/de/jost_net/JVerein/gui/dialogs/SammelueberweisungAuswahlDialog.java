@@ -23,6 +23,7 @@ import java.util.Calendar;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -31,7 +32,6 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.system.OperationCanceledException;
 
@@ -45,7 +45,7 @@ public class SammelueberweisungAuswahlDialog
 
   private SepaSammelUeberweisung selected = null;
 
-  private TablePart sammelueberweisung;
+  private JVereinTablePart sammelueberweisung;
 
   private Buchung master;
 
@@ -91,7 +91,7 @@ public class SammelueberweisungAuswahlDialog
     return this.selected;
   }
 
-  private TablePart getSammelueberweisungen() throws RemoteException
+  private JVereinTablePart getSammelueberweisungen() throws RemoteException
   {
     if (this.sammelueberweisung != null)
     {
@@ -104,7 +104,7 @@ public class SammelueberweisungAuswahlDialog
     cal.add(Calendar.WEEK_OF_YEAR, -2);
     sue.addFilter("ausgefuehrt_am > ?", cal.getTime());
     sue.setOrder("order by termin");
-    this.sammelueberweisung = new TablePart(sue, new Action()
+    this.sammelueberweisung = new JVereinTablePart(sue, new Action()
     {
       @Override
       public void handleAction(Object context)

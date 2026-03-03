@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
@@ -38,7 +39,6 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 /**
@@ -50,7 +50,7 @@ public class ZusatzbetragVorlageDialog
 
   private ZusatzbetragVorlage selected = null;
 
-  private TablePart tab;
+  private JVereinTablePart tab;
 
   public ZusatzbetragVorlageDialog()
   {
@@ -93,7 +93,7 @@ public class ZusatzbetragVorlageDialog
     return this.selected;
   }
 
-  private TablePart getZusatzbetragVorlagen() throws RemoteException
+  private JVereinTablePart getZusatzbetragVorlagen() throws RemoteException
   {
     if (this.tab != null)
     {
@@ -102,7 +102,7 @@ public class ZusatzbetragVorlageDialog
     DBIterator<ZusatzbetragVorlage> dbi = Einstellungen.getDBService()
         .createList(ZusatzbetragVorlage.class);
     dbi.setOrder("order by buchungstext");
-    this.tab = new TablePart(dbi, new Action()
+    this.tab = new JVereinTablePart(dbi, new Action()
     {
       @Override
       public void handleAction(Object context)

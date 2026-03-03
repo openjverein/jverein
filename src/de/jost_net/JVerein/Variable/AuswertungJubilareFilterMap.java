@@ -26,11 +26,6 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 public class AuswertungJubilareFilterMap extends AbstractMap
 {
 
-  public AuswertungJubilareFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(MitgliedControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -44,9 +39,17 @@ public class AuswertungJubilareFilterMap extends AbstractMap
       map = inma;
     }
 
-    map.put(AuswertungJubilareFilterVar.FILTER_JAHR.getName(),
-        control.getJubeljahr().getText());
-
+    for (AuswertungJubilareFilterVar var : AuswertungJubilareFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_JAHR:
+          value = control.getJubeljahr().getText();
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 
@@ -61,9 +64,17 @@ public class AuswertungJubilareFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(AuswertungJubilareFilterVar.FILTER_JAHR.getName(), "2024");
-
+    for (AuswertungJubilareFilterVar var : AuswertungJubilareFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case FILTER_JAHR:
+          value = "2024";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

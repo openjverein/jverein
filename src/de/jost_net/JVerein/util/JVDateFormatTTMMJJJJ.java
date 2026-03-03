@@ -26,4 +26,9 @@ public class JVDateFormatTTMMJJJJ extends SimpleDateFormat
   {
     super("dd.MM.yyyy");
   }
+
+  public String format(String str)
+  {
+    return str;
+  }
 }

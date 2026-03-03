@@ -41,11 +41,6 @@ public abstract class AbstractMap
 
   protected JVDateFormatJJJJ jjjj = new JVDateFormatJJJJ();
 
-  public AbstractMap()
-  {
-    //
-  }
-
   protected static Date toDate(String datum)
   {
     Date d = null;

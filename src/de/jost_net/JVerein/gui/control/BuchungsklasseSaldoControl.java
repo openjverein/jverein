@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
@@ -38,7 +39,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseSaldoControl extends AbstractSaldoControl
@@ -85,7 +85,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public TablePart getSaldoList() throws ApplicationException
+  public JVereinTablePart getSaldoList() throws ApplicationException
   {
     try
     {

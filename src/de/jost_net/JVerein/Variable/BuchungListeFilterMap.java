@@ -28,12 +28,6 @@ import de.jost_net.JVerein.rmi.Konto;
 
 public class BuchungListeFilterMap extends AbstractMap
 {
-
-  public BuchungListeFilterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(BuchungsControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -48,44 +42,63 @@ public class BuchungListeFilterMap extends AbstractMap
     }
 
     Konto k = (Konto) control.getSuchKonto().getValue();
-    if (k != null)
+    for (BuchungListeFilterVar var : BuchungListeFilterVar.values())
     {
-      map.put(BuchungListeFilterVar.KONTO_NR.getName(), k.getNummer());
-      map.put(BuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(),
-          k.getBezeichnung());
-    }
-    else
-    {
-      map.put(BuchungListeFilterVar.KONTO_NR.getName(), "");
-      map.put(BuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(), "");
-    }
-    map.put(BuchungListeFilterVar.BUCHUNGSART.getName(),
-        control.getSuchBuchungsart().getText());
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
-    {
-      map.put(BuchungListeFilterVar.PROJEKT.getName(),
-          control.getSuchProjekt().getText());
-    }
-    map.put(BuchungListeFilterVar.SPLITBUCHUNG.getName(),
-        control.getSuchSplibuchung().getText());
-    map.put(BuchungListeFilterVar.BETRAG.getName(),
-        control.getSuchBetrag().getValue().toString());
-    map.put(BuchungListeFilterVar.DATUM_VON_F.getName(),
-        fromDate((Date) control.getVondatum().getValue()));
-    map.put(BuchungListeFilterVar.DATUM_BIS_F.getName(),
-        fromDate((Date) control.getBisdatum().getValue()));
-    String u = (Boolean) control.getUngeprueft().getValue() ? "Ja" : "Nein";
-    map.put(BuchungListeFilterVar.UNGEPRUEFT.getName(), u);
-    map.put(BuchungListeFilterVar.ENTHALTENER_TEXT.getName(),
-        control.getSuchtext().getValue().toString());
-    map.put(BuchungListeFilterVar.MITGLIED_ZUGEORDNET.getName(),
-        control.getSuchMitgliedZugeordnet().getText());
-    map.put(BuchungListeFilterVar.MITGLIED_NAME.getName(),
-        control.getMitglied().getValue().toString());
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-    {
-      map.put(BuchungListeFilterVar.STEUER.getName(),
-          control.getSuchSteuer().getText());
+      Object value = null;
+      switch (var)
+      {
+        case KONTO_NR:
+          if (k != null)
+          {
+            value = k.getNummer();
+          }
+          break;
+        case KONTO_BEZEICHNUNG:
+          if (k != null)
+          {
+            value = k.getBezeichnung();
+          }
+          break;
+        case BUCHUNGSART:
+          value = control.getSuchBuchungsart().getText();
+          break;
+        case PROJEKT:
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = control.getSuchProjekt().getText();
+          }
+        case SPLITBUCHUNG:
+          value = control.getSuchSplibuchung().getText();
+          break;
+        case BETRAG:
+          value = control.getSuchBetrag().getValue().toString();
+          break;
+        case DATUM_VON_F:
+          value = fromDate((Date) control.getVondatum().getValue());
+          break;
+        case DATUM_BIS_F:
+          value = fromDate((Date) control.getBisdatum().getValue());
+          break;
+        case UNGEPRUEFT:
+          value = (Boolean) control.getUngeprueft().getValue() ? "Ja" : "Nein";
+          break;
+        case ENTHALTENER_TEXT:
+          value = control.getSuchtext().getValue().toString();
+          break;
+        case MITGLIED_ZUGEORDNET:
+          value = control.getSuchMitgliedZugeordnet().getText();
+          break;
+        case MITGLIED_NAME:
+          value = control.getMitglied().getValue().toString();
+          break;
+        case STEUER:
+          if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+          {
+            value = control.getSuchSteuer().getText();
+          }
+          break;
+      }
+      map.put(var.getName(), value);
     }
 
     return map;
@@ -103,25 +116,56 @@ public class BuchungListeFilterMap extends AbstractMap
     {
       map = inMap;
     }
-
-    map.put(BuchungListeFilterVar.KONTO_NR.getName(), "888999");
-    map.put(BuchungListeFilterVar.KONTO_BEZEICHNUNG.getName(), "Giro");
-    map.put(BuchungListeFilterVar.BUCHUNGSART.getName(), "Beitrag");
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    for (BuchungListeFilterVar var : BuchungListeFilterVar.values())
     {
-      map.put(BuchungListeFilterVar.PROJEKT.getName(), "Projekt1");
-    }
-    map.put(BuchungListeFilterVar.SPLITBUCHUNG.getName(), "Alle");
-    map.put(BuchungListeFilterVar.BETRAG.getName(), "100");
-    map.put(BuchungListeFilterVar.DATUM_VON_F.getName(), "20240101");
-    map.put(BuchungListeFilterVar.DATUM_BIS_F.getName(), "20241231");
-    map.put(BuchungListeFilterVar.UNGEPRUEFT.getName(), "Nein");
-    map.put(BuchungListeFilterVar.ENTHALTENER_TEXT.getName(), "Text");
-    map.put(BuchungListeFilterVar.MITGLIED_ZUGEORDNET.getName(), "Beide");
-    map.put(BuchungListeFilterVar.MITGLIED_NAME.getName(), "Willi");
-    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-    {
-      map.put(BuchungListeFilterVar.STEUER.getName(), "Alle");
+      Object value = null;
+      switch (var)
+      {
+        case KONTO_NR:
+          value = "888999";
+          break;
+        case KONTO_BEZEICHNUNG:
+          value = "Giro";
+          break;
+        case BUCHUNGSART:
+          value = "Beitrag";
+          break;
+        case PROJEKT:
+          if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+          {
+            value = "Projekt1";
+          }
+        case SPLITBUCHUNG:
+          value = "Alle";
+          break;
+        case BETRAG:
+          value = "100";
+          break;
+        case DATUM_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BIS_F:
+          value = "20241231";
+          break;
+        case UNGEPRUEFT:
+          value = "Nein";
+          break;
+        case ENTHALTENER_TEXT:
+          value = "Text";
+          break;
+        case MITGLIED_ZUGEORDNET:
+          value = "Beide";
+          break;
+        case MITGLIED_NAME:
+          value = "Willi";
+        case STEUER:
+          if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+          {
+            value = "Alle";
+          }
+          break;
+      }
+      map.put(var.getName(), value);
     }
 
     return map;

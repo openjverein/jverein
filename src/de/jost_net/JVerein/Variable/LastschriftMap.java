@@ -27,17 +27,12 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
 public class LastschriftMap extends AbstractMap
 {
-
-  public LastschriftMap()
-  {
-    super();
-  }
-
   public Map<String, Object> getMap(Lastschrift ls, Map<String, Object> inma)
       throws RemoteException
   {
@@ -58,75 +53,120 @@ public class LastschriftMap extends AbstractMap
 
     Abrechnungslauf abrl = ls.getAbrechnungslauf();
 
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), abrl.getID());
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(), abrl.getDatum());
-    // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
-    // Abrechnungsläufe
-    // korrekt erstellt werden, werden beide Felder verwendet.
-    if (ls.getMandatSequence().equals("FRST"))
+    for (LastschriftVar var : LastschriftVar.values())
     {
-      map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
-          abrl.getFaelligkeit());
-    }
-    else
-    {
-      Date d = (Date) abrl.getAttribute("faelligkeit2");
-      if (d == null)
+      Object value = null;
+      switch (var)
       {
-        d = Einstellungen.NODATE;
+        case ABRECHNUNGSLAUF_NR:
+          value = abrl.getID();
+          break;
+        case ABRECHNUNGSLAUF_DATUM:
+          value = Datum.formatDate(abrl.getDatum());
+          break;
+        case ABRECHNUNGSLAUF_FAELLIGKEIT:
+          // Damit Pre-Notifications für mit Versionen bis 2.8.18 erstellte
+          // Abrechnungsläufe korrekt erstellt werden, werden beide Felder
+          // verwendet.
+          if (ls.getMandatSequence().equals("FRST"))
+          {
+            value = Datum.formatDate(abrl.getFaelligkeit());
+          }
+          else
+          {
+            Date d = (Date) abrl.getAttribute("faelligkeit2");
+            if (d == null)
+            {
+              d = Einstellungen.NODATE;
+            }
+            value = Datum.formatDate(d);
+          }
+          break;
+        case PERSONENART:
+          value = ls.getPersonenart();
+          break;
+        case GESCHLECHT:
+          value = ls.getGeschlecht();
+          break;
+        case ANREDE:
+          value = ls.getAnrede();
+          break;
+        case ANREDE_DU:
+          value = Adressaufbereitung.getAnredeDu(ls);
+          break;
+        case ANREDE_FOERMLICH:
+          value = Adressaufbereitung.getAnredeFoermlich(ls);
+          break;
+        case TITEL:
+          value = ls.getTitel();
+          break;
+        case NAME:
+          value = ls.getName();
+          break;
+        case VORNAME:
+          value = ls.getVorname();
+          break;
+        case STRASSE:
+          value = ls.getStrasse();
+          break;
+        case ADRESSSIERUNGSZUSATZ:
+          value = ls.getAdressierungszusatz();
+          break;
+        case PLZ:
+          value = ls.getPlz();
+          break;
+        case ORT:
+          value = ls.getOrt();
+          break;
+        case STAAT:
+          value = ls.getStaat();
+          break;
+        case EMAIL:
+          value = ls.getEmail();
+          break;
+        case MANDATID:
+          value = ls.getMandatID();
+          break;
+        case MANDATDATUM:
+          value = Datum.formatDate(ls.getMandatDatum());
+          break;
+        case BIC:
+          value = ls.getBic();
+          break;
+        case IBAN:
+          value = new IBANFormatter().format(ls.getIban());
+          break;
+        case BANKNAME:
+          if (ls.getBic() != null)
+          {
+            Bank bank = Banken.getBankByBIC(ls.getBic());
+            if (bank != null)
+            {
+              String name = bank.getBezeichnung();
+              if (name != null)
+              {
+                value = name.trim();
+              }
+            }
+          }
+          break;
+        case IBANMASKIERT:
+          value = ibanMaskieren(ls.getIban());
+          break;
+        case VERWENDUNGSZWECK:
+          value = ls.getVerwendungszweck();
+          break;
+        case BETRAG:
+          value = ls.getBetrag() != null
+              ? Einstellungen.DECIMALFORMAT.format(ls.getBetrag())
+              : "";
+          break;
+        case EMPFAENGER:
+          value = Adressaufbereitung.getAdressfeld(ls);
+          break;
       }
-      map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(), d);
+      map.put(var.getName(), value);
     }
-    map.put(LastschriftVar.PERSONENART.getName(), ls.getPersonenart());
-    map.put(LastschriftVar.GESCHLECHT.getName(), ls.getGeschlecht());
-    map.put(LastschriftVar.ANREDE.getName(), ls.getAnrede());
-    map.put(LastschriftVar.ANREDE_DU.getName(),
-        Adressaufbereitung.getAnredeDu(ls));
-    map.put(LastschriftVar.ANREDE_FOERMLICH.getName(),
-        Adressaufbereitung.getAnredeFoermlich(ls));
-    map.put(LastschriftVar.TITEL.getName(), ls.getTitel());
-    map.put(LastschriftVar.NAME.getName(), ls.getName());
-    map.put(LastschriftVar.VORNAME.getName(), ls.getVorname());
-    map.put(LastschriftVar.STRASSE.getName(), ls.getStrasse());
-    map.put(LastschriftVar.ADRESSSIERUNGSZUSATZ.getName(),
-        ls.getAdressierungszusatz());
-    map.put(LastschriftVar.PLZ.getName(), ls.getPlz());
-    map.put(LastschriftVar.ORT.getName(), ls.getOrt());
-    map.put(LastschriftVar.STAAT.getName(), ls.getStaat());
-    map.put(LastschriftVar.EMAIL.getName(), ls.getEmail());
-    map.put(LastschriftVar.MANDATID.getName(), ls.getMandatID());
-    map.put(LastschriftVar.MANDATDATUM.getName(), ls.getMandatDatum());
-    map.put(LastschriftVar.BIC.getName(), ls.getBic());
-    map.put(LastschriftVar.IBAN.getName(),
-        new IBANFormatter().format(ls.getIban()));
-    if (ls.getBic() != null)
-    {
-      Bank bank = Banken.getBankByBIC(ls.getBic());
-      if (bank != null)
-      {
-        String name = bank.getBezeichnung();
-        if (name != null)
-        {
-          map.put(LastschriftVar.BANKNAME.getName(), name.trim());
-        }
-      }
-    }
-    else
-    {
-      map.put(LastschriftVar.BANKNAME.getName(), null);
-    }
-    map.put(LastschriftVar.IBANMASKIERT.getName(),
-        VarTools.maskieren(ls.getIban()));
-    map.put(LastschriftVar.VERWENDUNGSZWECK.getName(),
-        ls.getVerwendungszweck());
-    map.put(LastschriftVar.BETRAG.getName(),
-        ls.getBetrag() != null
-            ? Einstellungen.DECIMALFORMAT.format(ls.getBetrag())
-            : "");
-
-    map.put(LastschriftVar.EMPFAENGER.getName(),
-        Adressaufbereitung.getAdressfeld(ls));
-
     return map;
   }
 
@@ -142,37 +182,92 @@ public class LastschriftMap extends AbstractMap
       map = inMap;
     }
 
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_NR.getName(), "99");
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_DATUM.getName(),
-        toDate("01.01.2025"));
-    map.put(LastschriftVar.ABRECHNUNGSLAUF_FAELLIGKEIT.getName(),
-        toDate("10.01.2025"));
-    map.put(LastschriftVar.ANREDE_DU.getName(), "Hallo Willi,");
-    map.put(LastschriftVar.ANREDE_FOERMLICH.getName(),
-        "Sehr geehrter Herr Dr. Dr. Wichtig,");
-    map.put(LastschriftVar.PERSONENART.getName(), "n");
-    map.put(LastschriftVar.GESCHLECHT.getName(), GeschlechtInput.MAENNLICH);
-    map.put(LastschriftVar.ANREDE.getName(), "Herr");
-    map.put(LastschriftVar.TITEL.getName(), "Dr. Dr.");
-    map.put(LastschriftVar.NAME.getName(), "Wichtig");
-    map.put(LastschriftVar.VORNAME.getName(), "Willi");
-    map.put(LastschriftVar.STRASSE.getName(), "Bahnhofstr. 22");
-    map.put(LastschriftVar.ADRESSSIERUNGSZUSATZ.getName(),
-        "Hinterhof bei Müller");
-    map.put(LastschriftVar.PLZ.getName(), "12345");
-    map.put(LastschriftVar.ORT.getName(), "Testenhausen");
-    map.put(LastschriftVar.STAAT.getName(), "Deutschland");
-    map.put(LastschriftVar.EMAIL.getName(), "willi.wichtig@email.de");
-    map.put(LastschriftVar.MANDATID.getName(), "12345");
-    map.put(LastschriftVar.MANDATDATUM.getName(), toDate("01.01.2024"));
-    map.put(LastschriftVar.BIC.getName(), "XXXXXXXXXXX");
-    map.put(LastschriftVar.IBAN.getName(), "DE89 3704 0044 0532 0130 00");
-    map.put(LastschriftVar.BANKNAME.getName(), "XY Bank");
-    map.put(LastschriftVar.IBANMASKIERT.getName(), "XXXXXXXXXXXXXXX3000");
-    map.put(LastschriftVar.VERWENDUNGSZWECK.getName(), "Zweck");
-    map.put(LastschriftVar.BETRAG.getName(), "23,80");
-    map.put(LastschriftVar.EMPFAENGER.getName(),
-        "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland");
+    for (LastschriftVar var : LastschriftVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case ABRECHNUNGSLAUF_NR:
+          value = "99";
+          break;
+        case ABRECHNUNGSLAUF_DATUM:
+          value = Datum.formatDate(toDate("01.01.2025"));
+          break;
+        case ABRECHNUNGSLAUF_FAELLIGKEIT:
+          value = Datum.formatDate(toDate("10.01.2025"));
+          break;
+        case ANREDE_DU:
+          value = "Hallo Willi,";
+          break;
+        case ANREDE_FOERMLICH:
+          value = "Sehr geehrter Herr Dr. Dr. Wichtig,";
+          break;
+        case PERSONENART:
+          value = "n";
+          break;
+        case GESCHLECHT:
+          value = GeschlechtInput.MAENNLICH;
+          break;
+        case ANREDE:
+          value = "Herr";
+          break;
+        case TITEL:
+          value = "Dr. Dr.";
+          break;
+        case NAME:
+          value = "Wichtig";
+          break;
+        case VORNAME:
+          value = "Willi";
+          break;
+        case STRASSE:
+          value = "Bahnhofstr. 22";
+          break;
+        case ADRESSSIERUNGSZUSATZ:
+          value = "Hinterhof bei Müller";
+          break;
+        case PLZ:
+          value = "12345";
+          break;
+        case ORT:
+          value = "Testenhausen";
+          break;
+        case STAAT:
+          value = "Deutschland";
+          break;
+        case EMAIL:
+          value = "willi.wichtig@email.de";
+          break;
+        case MANDATID:
+          value = "12345";
+          break;
+        case MANDATDATUM:
+          value = Datum.formatDate(toDate("01.01.2024"));
+          break;
+        case BIC:
+          value = "XXXXXXXXXXX";
+          break;
+        case IBAN:
+          value = "DE89 3704 0044 0532 0130 00";
+          break;
+        case BANKNAME:
+          value = "XY Bank";
+          break;
+        case IBANMASKIERT:
+          value = "XXXXXXXXXXXXXXX3000";
+          break;
+        case VERWENDUNGSZWECK:
+          value = "Zweck";
+          break;
+        case BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(23.8);
+          break;
+        case EMPFAENGER:
+          value = "Herr\nDr. Dr. Willi Wichtig\nHinterhof bei Müller\nBahnhofstr. 22\n12345 Testenhausen\nDeutschland";
+          break;
+      }
+      map.put(var.getName(), value);
+    }
     return map;
   }
 }

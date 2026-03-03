@@ -16,28 +16,22 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatMM;
 import de.jost_net.JVerein.util.JVDateFormatMMMM;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 
-public class AbrechnungsParameterMap
+public class AbrechnungsParameterMap extends AbstractMap
 {
 
-  public AbrechnungsParameterMap()
-  {
-
-  }
-
   public Map<String, Object> getMap(AbrechnungSEPAParam param,
-      Map<String, Object> inma) throws RemoteException
+      Map<String, Object> inma)
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -48,87 +42,98 @@ public class AbrechnungsParameterMap
     {
       map = inma;
     }
-    map.put(AbrechnungsParameterVar.ABBUCHUNGSMODUS.getName(),
-        Abrechnungsmodi.get(param.abbuchungsmodus));
-    map.put(AbrechnungsParameterVar.ABRECHNUNGSMONAT.getName(),
-        Monat.getByKey(param.abrechnungsmonat));
-    if (param.faelligkeit != null)
+    for (AbrechnungsParameterVar var : AbrechnungsParameterVar.values())
     {
-      map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(),
-          new JVDateFormatTTMMJJJJ().format(param.faelligkeit));
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.FAELLIGKEIT.getName(), "");
-    }
-    map.put(AbrechnungsParameterVar.KOMPAKTEABBUCHUNG.getName(),
-        param.kompakteabbuchung ? "J" : "N");
-    if (param.kursteilnehmer != null)
-    {
-      map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(),
-          param.kursteilnehmer ? "J" : "N");
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.KURSTEILNEHMER.getName(), "");
-    }
-    map.put(AbrechnungsParameterVar.SEPAPRINT.getName(),
-        param.sepaprint ? "J" : "N");
-    if (param.stichtag != null)
-    {
-      map.put(AbrechnungsParameterVar.STICHTAG.getName(),
-          new JVDateFormatTTMMJJJJ().format(param.stichtag));
-      map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(),
-          new JVDateFormatMM().format(param.stichtag));
-      map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(),
-          new JVDateFormatMMMM().format(param.stichtag));
-      map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(),
-          new JVDateFormatJJJJ().format(param.stichtag));
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.STICHTAG.getName(), "");
-      map.put(AbrechnungsParameterVar.STICHTAG_MONAT.getName(), "");
-      map.put(AbrechnungsParameterVar.STICHTAG_MONAT_TEXT.getName(), "");
-      map.put(AbrechnungsParameterVar.STICHTAG_JAHR.getName(), "");
-    }
-    map.put(AbrechnungsParameterVar.VERWENDUNGSZWECK.getName(),
-        param.verwendungszweck);
-    if (param.vondatum != null)
-    {
-      map.put(AbrechnungsParameterVar.VONDATUM.getName(),
-          new JVDateFormatTTMMJJJJ().format(param.vondatum));
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.VONDATUM.getName(), "");
-    }
-    if (param.voneingabedatum != null)
-    {
-      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(),
-          new JVDateFormatTTMMJJJJ().format(param.voneingabedatum));
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.EINGABEVONDATUM.getName(), "");
-    }
-    if (param.bisdatum != null)
-    {
-      map.put(AbrechnungsParameterVar.BISDATUM.getName(),
-          new JVDateFormatTTMMJJJJ().format(param.bisdatum));
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.BISDATUM.getName(), "");
-    }
-    if (param.zusatzbetraege != null)
-    {
-      map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(),
-          param.zusatzbetraege ? "J" : "N");
-    }
-    else
-    {
-      map.put(AbrechnungsParameterVar.ZUSATZBETRAEGE.getName(), "");
+      Object value = null;
+      switch (var)
+      {
+        case ABBUCHUNGSMODUS:
+          value = Abrechnungsmodi.get(param.abbuchungsmodus);
+          break;
+        case ABRECHNUNGSMONAT:
+          value = Monat.getByKey(param.abrechnungsmonat).getText();
+          break;
+        case FAELLIGKEIT:
+          value = "";
+          if (param.faelligkeit != null)
+          {
+            value = Datum.formatDate(param.faelligkeit);
+          }
+          break;
+        case KOMPAKTEABBUCHUNG:
+          value = param.kompakteabbuchung ? "J" : "N";
+          break;
+        case KURSTEILNEHMER:
+          value = "";
+          if (param.kursteilnehmer != null)
+          {
+            value = param.kursteilnehmer ? "J" : "N";
+          }
+          break;
+        case SEPAPRINT:
+          value = param.sepaprint ? "J" : "N";
+          break;
+        case STICHTAG:
+          value = "";
+          if (param.stichtag != null)
+          {
+            value = Datum.formatDate(param.stichtag);
+          }
+          break;
+        case STICHTAG_MONAT:
+          value = "";
+          if (param.stichtag != null)
+          {
+            value = new JVDateFormatMM().format(param.stichtag);
+          }
+          break;
+        case STICHTAG_MONAT_TEXT:
+          value = "";
+          if (param.stichtag != null)
+          {
+            value = new JVDateFormatMMMM().format(param.stichtag);
+          }
+          break;
+        case STICHTAG_JAHR:
+          value = "";
+          if (param.stichtag != null)
+          {
+            value = new JVDateFormatJJJJ().format(param.stichtag);
+          }
+          break;
+        case VERWENDUNGSZWECK:
+          value = param.verwendungszweck;
+          break;
+        case VONDATUM:
+          value = "";
+          if (param.vondatum != null)
+          {
+            value = Datum.formatDate(param.vondatum);
+          }
+          break;
+        case EINGABEVONDATUM:
+          value = "";
+          if (param.voneingabedatum != null)
+          {
+            value = Datum.formatDate(param.voneingabedatum);
+          }
+          break;
+        case BISDATUM:
+          value = "";
+          if (param.bisdatum != null)
+          {
+            value = Datum.formatDate(param.bisdatum);
+          }
+          break;
+        case ZUSATZBETRAEGE:
+          value = "";
+          if (param.zusatzbetraege != null)
+          {
+            value = param.zusatzbetraege ? "J" : "N";
+          }
+          break;
+      }
+      map.put(var.getName(), value);
     }
     return map;
   }

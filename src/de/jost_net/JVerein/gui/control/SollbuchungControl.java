@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
@@ -75,7 +76,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -137,7 +137,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   // SollbuchungListeView, SollbuchungAuswahldialog
   private BetragSummaryTablePart sollbuchungenList;
 
-  private TablePart mitgliederList;
+  private JVereinTablePart mitgliederList;
 
   private TextInput suchname2 = null;
 
@@ -147,7 +147,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private boolean umwandeln;
 
-  private TablePart buchungList;
+  private JVereinTablePart buchungList;
 
   private BuchungListPart istbuchungList;
 
@@ -421,7 +421,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return mitgliedskontoTree;
   }
 
-  public TablePart getSollbuchungenList(Action action, boolean umwandeln,
+  public JVereinTablePart getSollbuchungenList(Action action, boolean umwandeln,
       boolean multi) throws RemoteException, ApplicationException
   {
     this.umwandeln = umwandeln;
@@ -488,13 +488,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return sollbuchungenList;
   }
 
-  public TablePart getMitgliederList(Action action, ContextMenu menu)
+  public JVereinTablePart getMitgliederList(Action action, ContextMenu menu)
       throws RemoteException
   {
     GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
     if (mitgliederList == null)
     {
-      mitgliederList = new TablePart(mitglieder, action);
+      mitgliederList = new JVereinTablePart(mitglieder, action);
       mitgliederList.addColumn("Name", "name");
       mitgliederList.addColumn("Vorname", "vorname");
       mitgliederList.setContextMenu(menu);

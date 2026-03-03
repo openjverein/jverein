@@ -14,7 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.action;
+package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,9 +26,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
+import java.util.Map;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -37,11 +35,11 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.io.BeitragsUtil;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -50,189 +48,170 @@ import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
-public class PersonalbogenAction implements Action
+public class PersonalbogenAusgabe extends AbstractAusgabe
 {
+  private FileOutputStream fos;
 
-  private de.willuhn.jameica.system.Settings settings;
+  private Reporter rpt;
 
   @Override
-  public void handleAction(Object context) throws ApplicationException
+  public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
+      String betreff, String text, boolean pdfa, boolean encrypt,
+      boolean versanddatum)
+      throws IOException, ApplicationException, DocumentException
   {
-    Mitglied[] m = null;
-    if (context != null
-        && (context instanceof Mitglied || context instanceof Mitglied[]))
+    super.aufbereiten(list, art, betreff, text, pdfa, encrypt, versanddatum);
+  }
+
+  @Override
+  protected String getZipDateiname(DBObject object) throws RemoteException
+  {
+    Mitglied m = (Mitglied) object;
+    String filename = m.getID() + "#personalbogen# #";
+    String email = StringTool.toNotNullString(m.getEmail());
+    if (email.length() > 0)
     {
-      if (context instanceof Mitglied)
-      {
-        m = new Mitglied[] { (Mitglied) context };
-      }
-      else if (context instanceof Mitglied[])
-      {
-        m = (Mitglied[]) context;
-      }
-      try
-      {
-        generierePersonalbogen(m);
-      }
-      catch (IOException e)
-      {
-        Logger.error("Fehler", e);
-        throw new ApplicationException("Fehler bei der Aufbereitung", e);
-      }
+      filename += email;
     }
     else
     {
-      throw new ApplicationException("Kein Mitglied ausgewählt");
+      filename += m.getName() + m.getVorname();
+    }
+    return filename + "#Personalbogen";
+  }
+
+  @Override
+  protected Map<String, Object> getMap(DBObject object) throws RemoteException
+  {
+    Mitglied m = (Mitglied) object;
+    Map<String, Object> map = new MitgliedMap().getMap(m, null);
+    return new AllgemeineMap().getMap(map);
+  }
+
+  @Override
+  protected String getDateiname(DBObject object) throws RemoteException
+  {
+    if (object != null)
+    {
+      return VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME,
+          object, (Mitglied) object);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_DATEINAME);
     }
   }
 
-  private void generierePersonalbogen(Mitglied[] m) throws IOException
+  @Override
+  protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
+      File file, DBObject object)
+      throws IOException, DocumentException, ApplicationException
   {
-    final Mitglied[] mitglied = m;
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
+    generierePersonalbogen(file, (Mitglied) object);
+  }
 
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    if (m.length == 1)
-    {
-      fd.setFileName(VorlageUtil
-          .getName(VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME, null, m[0]));
-    }
-    else
-    {
-      fd.setFileName(VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_DATEINAME));
-    }
-    fd.setFilterExtensions(new String[] { "*.pdf" });
+  @Override
+  protected void closeDocument(FormularAufbereitung formularaufbereitung,
+      DBObject object) throws IOException, DocumentException
+  {
+    rpt.close();
+    fos.close();
+    rpt = null;
+    fos = null;
+  }
 
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
-    BackgroundTask t = new BackgroundTask()
-    {
+  @Override
+  protected Formular getFormular(DBObject object)
+  {
+    // Hier gibt es kein Formular
+    return null;
+  }
 
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
+  private void generierePersonalbogen(File file, Mitglied m)
+      throws IOException, ApplicationException
+  {
+    try
+    {
+      if (fos == null)
       {
-        try
-        {
-          Reporter rpt = new Reporter(new FileOutputStream(file), "", "",
-              mitglied.length);
-
-          GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          GUI.getCurrentView().reload();
-
-          boolean first = true;
-
-          for (Mitglied m : mitglied)
-          {
-            if (!first)
-            {
-              rpt.newPage();
-            }
-            first = false;
-
-            String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL,
-                null, m);
-            String subtitle = VorlageUtil
-                .getName(VorlageTyp.PERSONALBOGEN_SUBTITEL, null, m);
-            Paragraph pTitle = new Paragraph(title,
-                Reporter.getFreeSansBold(13));
-            pTitle.setAlignment(Element.ALIGN_CENTER);
-            rpt.add(pTitle);
-            Paragraph psubTitle = new Paragraph(subtitle,
-                Reporter.getFreeSansBold(10));
-            psubTitle.setAlignment(Element.ALIGN_CENTER);
-            rpt.add(psubTitle);
-
-            generiereMitglied(rpt, m);
-
-            if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
-            {
-              generiereZusatzbetrag(rpt, m);
-            }
-            generiereMitgliedskonto(rpt, m);
-            if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE)
-                && ((m.getVermerk1() != null && m.getVermerk1().length() > 0)
-                    || (m.getVermerk2() != null
-                        && m.getVermerk2().length() > 0)))
-            {
-              generiereVermerke(rpt, m);
-            }
-            if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
-            {
-              generiereWiedervorlagen(rpt, m);
-            }
-            if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
-            {
-              generiereLehrgaenge(rpt, m);
-            }
-            generiereZusatzfelder(rpt, m);
-            generiereEigenschaften(rpt, m);
-            if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
-            {
-              generiereArbeitseinsaetze(rpt, m);
-            }
-          }
-          rpt.close();
-          FileViewer.show(file);
-        }
-        catch (Exception re)
-        {
-          Logger.error("Fehler", re);
-          GUI.getStatusBar().setErrorText(re.getMessage());
-          throw new ApplicationException(re);
-        }
+        fos = new FileOutputStream(file);
       }
 
-      @Override
-      public void interrupt()
+      if (rpt == null)
       {
-        //
+        rpt = new Reporter(fos, "", "", 1);
+      }
+      else
+      {
+        rpt.newPage();
       }
 
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
+      String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL, null,
+          m);
+      String subtitle = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_SUBTITEL,
+          null, m);
+      Paragraph pTitle = new Paragraph(title, Reporter.getFreeSansBold(13));
+      pTitle.setAlignment(Element.ALIGN_CENTER);
+      rpt.add(pTitle);
+      Paragraph psubTitle = new Paragraph(subtitle,
+          Reporter.getFreeSansBold(10));
+      psubTitle.setAlignment(Element.ALIGN_CENTER);
+      rpt.add(psubTitle);
 
+      generiereMitglied(rpt, m);
+
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+      {
+        generiereZusatzbetrag(rpt, m);
+      }
+      generiereMitgliedskonto(rpt, m);
+      if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE)
+          && ((m.getVermerk1() != null && m.getVermerk1().length() > 0)
+              || (m.getVermerk2() != null && m.getVermerk2().length() > 0)))
+      {
+        generiereVermerke(rpt, m);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
+      {
+        generiereWiedervorlagen(rpt, m);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+      {
+        generiereLehrgaenge(rpt, m);
+      }
+      generiereZusatzfelder(rpt, m);
+      generiereEigenschaften(rpt, m);
+      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
+      {
+        generiereArbeitseinsaetze(rpt, m);
+      }
+    }
+    catch (Exception re)
+    {
+      Logger.error("Fehler", re);
+      GUI.getStatusBar().setErrorText(re.getMessage());
+      throw new ApplicationException(re);
+    }
   }
 
   private void generiereMitglied(Reporter rpt, Mitglied m)
