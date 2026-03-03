@@ -23,6 +23,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BugListMenu;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.Gutschrift;
 import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -48,7 +49,6 @@ import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -58,7 +58,6 @@ import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -70,7 +69,7 @@ public class GutschriftControl
 
   private final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
 
-  private TablePart bugsList;
+  private JVereinTablePart bugsList;
 
   private boolean isMitglied;
 
@@ -835,13 +834,13 @@ public class GutschriftControl
     return true;
   }
 
-  public Part getBugsList() throws RemoteException
+  public JVereinTablePart getBugsList() throws RemoteException
   {
     if (bugsList != null)
     {
       return bugsList;
     }
-    bugsList = new TablePart(getBugs(), new BugObjektEditAction());
+    bugsList = new JVereinTablePart(getBugs(), new BugObjektEditAction());
     bugsList.addColumn("Typ", "objektName");
     bugsList.addColumn("ID", "objektId");
     bugsList.addColumn("Zahler", "zahlerName");
