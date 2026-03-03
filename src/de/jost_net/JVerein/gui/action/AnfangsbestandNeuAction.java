@@ -24,6 +24,8 @@ import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Konto;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -69,7 +71,18 @@ public class AnfangsbestandNeuAction implements Action
         {
           Logger.error("error while choosing konto", e);
           GUI.getStatusBar().setErrorText("Fehler bei der Auswahl des Kontos.");
+          throw new ApplicationException("Fehler bei der Auswahl des Kontos.");
         }
+      }
+      // Wenn noch kein Anfangsbestand für dieses Konto existiert,
+      // Eröffnungsdatum des Kontos verwenden
+      DBIterator<DBObject> it = Einstellungen.getDBService()
+          .createList(Anfangsbestand.class);
+      it.addFilter("konto = ?", k.getID());
+      if (!it.hasNext())
+      {
+        anf.setDatum(k.getEroeffnung());
+        anf.setBetrag(0d);
       }
       GUI.startView(AnfangsbestandDetailView.class, anf);
     }
