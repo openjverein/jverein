@@ -2970,7 +2970,7 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getZeigeMitgliedschaftInTabCheckbox().getValue());
       Einstellungen.setSettingBoolean("ZeigeZahlungInTab",
           (Boolean) getZeigeZahlungInTabCheckbox().getValue());
-      Einstellungen.setSettingBoolean("ZeigeZusatzbetrageInTab",
+      Einstellungen.setSettingBoolean("ZeigeZusatzbetraegeInTab",
           (Boolean) getZeigeZusatzbetrageInTabCheckbox().getValue());
       Einstellungen.setSettingBoolean("ZeigeMitgliedskontoInTab",
           (Boolean) getZeigeMitgliedskontoInTabCheckbox().getValue());
@@ -2980,7 +2980,7 @@ public class EinstellungControl extends AbstractControl
           (Boolean) getZeigeWiedervorlageInTabCheckbox().getValue());
       Einstellungen.setSettingBoolean("ZeigeMailsInTab",
           (Boolean) getZeigeMailsInTabCheckbox().getValue());
-      Einstellungen.setSettingBoolean("ZeigeEigentschaftenInTab",
+      Einstellungen.setSettingBoolean("ZeigeEigenschaftenInTab",
           (Boolean) getZeigeEigenschaftenInTabCheckbox().getValue());
       Einstellungen.setSettingBoolean("ZeigeZusatzfelderInTab",
           (Boolean) getZeigeZusatzfelderInTabCheckbox().getValue());
