@@ -113,6 +113,10 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
       {
         throw new ApplicationException("Bitte Nummer eingeben");
       }
+      if (getEroeffnung() == null)
+      {
+        throw new ApplicationException("Bitte Eröffnungsdatum eingeben");
+      }
       if (getKontoArt() == Kontoart.ANLAGE)
       {
         if (getBetrag() != null && getBetrag() < 0.0)
