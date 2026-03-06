@@ -2,7 +2,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -16,13 +15,9 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
-import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -30,38 +25,24 @@ import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.server.Bug;
-import de.jost_net.OBanToo.SEPA.BIC;
-import de.jost_net.OBanToo.SEPA.IBAN;
-import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class ForderungControl
+public class ForderungControl extends AbstractAbrechnungControl
 {
-  private final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
-
-  private LabelInput status = null;
 
   private Mitglied[] mitglieder;
-
-  private JVereinTablePart bugsList;
 
   private CheckboxInput vorlageSpeichernInput;
 
@@ -73,7 +54,7 @@ public class ForderungControl
 
   private boolean einstellungSteuerInBuchung = false;
 
-  final AbrechnungSEPAControl sepaControl = new AbrechnungSEPAControl(null);
+  final AbrechnungSEPAControl sepaControl = new AbrechnungSEPAControl();
 
   private Settings settings = null;
 
@@ -81,15 +62,11 @@ public class ForderungControl
 
   private ZusatzbetragPart part;
 
-  private Date sepagueltigkeit;
-
   public ForderungControl(Mitglied[] mitglieder) throws RemoteException
   {
+    super();
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    Calendar cal = Calendar.getInstance();
-    cal.add(Calendar.MONTH, -36);
-    sepagueltigkeit = cal.getTime();
 
     einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
@@ -110,16 +87,6 @@ public class ForderungControl
   public AbrechnungSEPAControl getSepaControl()
   {
     return sepaControl;
-  }
-
-  public LabelInput getStatus()
-  {
-    if (status != null)
-    {
-      return status;
-    }
-    status = new LabelInput("");
-    return status;
   }
 
   public CheckboxInput getVorlageSpeichernInput()
@@ -174,325 +141,56 @@ public class ForderungControl
     return b;
   }
 
-  public Button getPruefenButton()
+  @Override
+  protected void handleStart() throws RemoteException, ApplicationException
   {
-    Button b = new Button("Auf Probleme prüfen", context -> {
-      try
-      {
-        refreshBugsList();
-      }
-      catch (RemoteException e)
-      {
-        status.setValue("Interner Fehler beim Update der Fehlerliste");
-        status.setColor(Color.ERROR);
-        Logger.error("Fehler", e);
-      }
-    }, null, false, "bug.png");
-    return b;
+    saveSettings(part);
+    sepaControl.getZahlungsgrund()
+        .setValue((String) part.getBuchungstext().getValue());
+    sepaControl.getAbbuchungsmodus()
+        .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.FORDERUNG));
+    sepaControl.startZusatzbetragAbrechnung(getZusatzbetraegeList(part));
   }
 
-  public Button getErstellenButton(ForderungDialog dialog)
-  {
-    Button b = new Button("Erstellen", context -> {
-      try
-      {
-        if (!checkInput(part))
-        {
-          return;
-        }
-
-        // Prüfen ob Error oder Warning vorliegen
-        boolean error = false;
-        for (Bug bug : getBugs())
-        {
-          if (bug.getKlassifikation() != Bug.HINT)
-          {
-            error = true;
-            break;
-          }
-        }
-        if (error)
-        {
-          status.setValue("Es Existieren Warnungen/Fehler, bitte beheben!");
-          status.setColor(Color.ERROR);
-          return;
-        }
-
-        saveSettings(part);
-
-        sepaControl.getZahlungsgrund()
-            .setValue((String) part.getBuchungstext().getValue());
-        sepaControl.getAbbuchungsmodus()
-            .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.FORDERUNG));
-        sepaControl.startZusatzbetragAbrechnung(getZusatzbetraegeList(part));
-        dialog.close();
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
-      catch (Exception e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-        Logger.error("Fehler", e);
-      }
-    }, null, true, "ok.png");
-    return b;
-  }
-
-  public Button getAbbrechenButton(ForderungDialog dialog)
-      throws RemoteException
-  {
-    Button b = new Button("Abbrechen", context -> {
-      dialog.close();
-    }, null, false, "process-stop.png");
-    return b;
-  }
-
-  public Part getBugsList() throws RemoteException
-  {
-    if (bugsList != null)
-    {
-      return bugsList;
-    }
-    bugsList = new JVereinTablePart(getBugs(), context -> {
-      Bug bug = (Bug) context;
-      Object object = bug.getObject();
-      if (object instanceof Mitglied)
-      {
-        Mitglied m = (Mitglied) object;
-        try
-        {
-          if (m.getMitgliedstyp() == null
-              || m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
-          {
-            GUI.startView(new MitgliedDetailView(), m);
-          }
-          else
-          {
-            GUI.startView(new NichtMitgliedDetailView(), m);
-          }
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(
-              "Fehler beim Anzeigen eines Mitgliedes", e);
-        }
-      }
-    });
-    bugsList.addColumn("Name", "name");
-    bugsList.addColumn("Meldung", "meldung");
-    bugsList.addColumn("Klassifikation", "klassifikationText");
-    bugsList.setRememberColWidths(true);
-    bugsList.setRememberOrder(true);
-    return bugsList;
-  }
-
-  public void refreshBugsList() throws RemoteException
-  {
-    bugsList.removeAll();
-    for (Bug bug : getBugs())
-    {
-      bugsList.addItem(bug);
-    }
-    bugsList.sort();
-  }
-
-  private List<Bug> getBugs() throws RemoteException
+  @Override
+  public List<Bug> getBugs()
   {
     ArrayList<Bug> bugs = new ArrayList<>();
     boolean global = true;
-
-    for (Mitglied m : mitglieder)
+    try
     {
-      Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
-      if ((weg == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
-          || (weg != null && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT))
+      for (Mitglied m : mitglieder)
       {
-        if (global)
+        Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
+        if ((weg == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+            || (weg != null && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT))
         {
-          checkGlobal(bugs);
-          global = false;
-        }
-
-        if (m.getMandatDatum().equals(Einstellungen.NODATE))
-        {
-          bugs.add(new Bug(m,
-              "Für die Basislastschrift fehlt das Mandatsdatum!", Bug.ERROR));
-        }
-        else if (m.getMandatDatum().after(new Date()))
-        {
-          bugs.add(
-              new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
-        }
-
-        if (m.getIban() == null || m.getIban().isEmpty())
-        {
-          bugs.add(new Bug(m, "Für die Basislastschrift fehlt die IBAN!",
-              Bug.ERROR));
-        }
-        else
-        {
-          try
+          if (global)
           {
-            new IBAN(m.getIban());
+            checkGlobal(bugs);
+            checkFaelligkeit((Date) sepaControl.getFaelligkeit().getValue(),
+                bugs);
+            global = false;
           }
-          catch (SEPAException e)
+          checkMitgliedKontodaten(m, bugs);
+          if (!(Boolean) sepaControl.getSEPACheck().getValue())
           {
-            bugs.add(new Bug(m, "Ungültige IBAN " + m.getIban(), Bug.ERROR));
-          }
-        }
-
-        if (m.getBic() == null || m.getBic().isEmpty())
-        {
-          bugs.add(
-              new Bug(m, "Für die Basislastschrift fehlt die BIC!", Bug.HINT));
-        }
-        else
-        {
-          try
-          {
-            new BIC(m.getBic());
-          }
-          catch (Exception e)
-          {
-            bugs.add(new Bug(m, "Ungültige BIC " + m.getBic(), Bug.ERROR));
-          }
-        }
-
-        if (!(Boolean) sepaControl.getSEPACheck().getValue()
-            && !m.getMandatDatum().equals(Einstellungen.NODATE))
-        {
-          if (m.getLetzteLastschrift() == null
-              && m.getMandatDatum().before(sepagueltigkeit))
-          {
-            bugs.add(new Bug(m,
-                "Das Mandat ist älter als 36 Monate und es existiert noch keine Lastschrift in JVerein.\n"
-                    + "Neues Mandat anfordern und eingeben oder den SEPA-Check temporär deaktivieren.",
-                Bug.ERROR));
-          }
-
-          if (m.getLetzteLastschrift() != null
-              && m.getLetzteLastschrift().before(sepagueltigkeit)
-              && m.getMandatDatum().before(sepagueltigkeit))
-          {
-            bugs.add(new Bug(m,
-                "Letzte Lastschrift und das Mandat sind älter als 36 Monate.\nNeues Mandat anfordern und eingeben.",
-                Bug.ERROR));
+            checkSEPA(m, bugs);
           }
         }
       }
+
+      if (bugs.isEmpty())
+      {
+        bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
+      }
+    }
+    catch (Exception ex)
+    {
+      bugs.add(new Bug(null, ex.getMessage(), Bug.ERROR));
     }
 
-    if (bugs.isEmpty())
-    {
-      bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
-    }
     return bugs;
-  }
-
-  private void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
-  {
-    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
-    {
-      bugs.add(new Bug(null,
-          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
-          Bug.ERROR));
-    }
-    else
-    {
-      try
-      {
-        Konto k = Einstellungen.getDBService().createObject(Konto.class,
-            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
-                .toString());
-        if (k == null)
-        {
-          bugs.add(new Bug(null,
-              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-              Bug.ERROR));
-        }
-      }
-      catch (ObjectNotFoundException ex)
-      {
-        bugs.add(new Bug(null,
-            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-            Bug.ERROR));
-      }
-    }
-
-    if (Einstellungen.getEinstellung(Property.NAME) == null
-        || ((String) Einstellungen.getEinstellung(Property.NAME)).isEmpty())
-    {
-      bugs.add(new Bug(null,
-          "Name des Vereins fehlt. Unter "
-              + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.ERROR));
-    }
-
-    if (Einstellungen.getEinstellung(Property.IBAN) == null
-        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isEmpty())
-    {
-      bugs.add(new Bug(null,
-          "Die IBAN des Vereins fehlt. Unter "
-              + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.ERROR));
-    }
-    else
-    {
-      try
-      {
-        new IBAN((String) Einstellungen.getEinstellung(Property.IBAN));
-      }
-      catch (SEPAException e)
-      {
-        bugs.add(new Bug(null,
-            "Ungültige IBAN des Vereins. Unter "
-                + "Administration->Einstellungen->Allgemein erfassen.",
-            Bug.ERROR));
-      }
-    }
-
-    if (Einstellungen.getEinstellung(Property.BIC) == null
-        || ((String) Einstellungen.getEinstellung(Property.BIC)).isEmpty())
-    {
-      bugs.add(new Bug(null,
-          "Die BIC des Vereins fehlt. Unter "
-              + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.HINT));
-    }
-    else
-    {
-      try
-      {
-        new BIC((String) Einstellungen.getEinstellung(Property.BIC));
-      }
-      catch (SEPAException e)
-      {
-        bugs.add(new Bug(null,
-            "Ungültige BIC des Vereins. Unter "
-                + "Administration->Einstellungen->Allgemein erfassen.",
-            Bug.ERROR));
-      }
-    }
-
-    if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
-        || ((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID))
-            .length() == 0)
-    {
-      bugs.add(new Bug(null,
-          "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ beantragen\n"
-              + " und unter Administration->Einstellungen->Allgemein eintragen.\n"
-              + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.",
-          Bug.ERROR));
-    }
-
-    if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
-    {
-      bugs.add(new Bug(null,
-          "Fälligkeit muss bei Lastschriften in der Zukunft liegen!",
-          Bug.ERROR));
-    }
   }
 
   private Zusatzbetrag getZusatzbetrag() throws RemoteException
@@ -619,15 +317,14 @@ public class ForderungControl
     return list;
   }
 
-  private boolean checkInput(ZusatzbetragPart part)
+  @Override
+  protected String checkInput()
   {
     try
     {
       if (sepaControl.getFaelligkeit().getValue() == null)
       {
-        status.setValue("Bitte Fälligkeit eingeben");
-        status.setColor(Color.ERROR);
-        return false;
+        return ("Bitte Fälligkeit eingeben");
       }
       Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
       if (sepaControl.getFaelligkeit().getValue() != null && weg != null
@@ -635,26 +332,19 @@ public class ForderungControl
       {
         if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
         {
-          status.setValue(
-              "Fälligkeit muss bei Lastschriften in der Zukunft liegen!");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Fälligkeit muss bei Lastschriften in der Zukunft liegen!");
         }
       }
 
       if (part.getBuchungstext().getValue() == null
           || ((String) part.getBuchungstext().getValue()).isEmpty())
       {
-        status.setValue("Bitte Zahlungsgrund eingeben");
-        status.setColor(Color.ERROR);
-        return false;
+        return ("Bitte Zahlungsgrund eingeben");
       }
       if (part.getBetrag().getValue() == null
           || ((Double) part.getBetrag().getValue()) < 0.005d)
       {
-        status.setValue("Bitte positiven Betrag eingeben");
-        status.setColor(Color.ERROR);
-        return false;
+        return ("Bitte positiven Betrag eingeben");
       }
 
       if (einstellungSteuerInBuchung)
@@ -666,23 +356,16 @@ public class ForderungControl
         {
           if (buchungsart.getSpende() || buchungsart.getAbschreibung())
           {
-            status.setValue(
-                "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
-            status.setColor(Color.ERROR);
-            return false;
+            return ("Bei Spenden und Abschreibungen ist keine Steuer möglich.");
           }
           if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
           {
             switch (buchungsart.getArt())
             {
               case ArtBuchungsart.AUSGABE:
-                status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
-                status.setColor(Color.ERROR);
-                return false;
+                return ("Umsatzsteuer statt Vorsteuer gewählt!");
               case ArtBuchungsart.EINNAHME:
-                status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
-                status.setColor(Color.ERROR);
-                return false;
+                return ("Vorsteuer statt Umsatzsteuer gewählt!");
               // Umbuchung ist bei Anlagebuchungen möglich,
               // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
               // möglich
@@ -698,26 +381,20 @@ public class ForderungControl
       {
         if (sepaControl.getRechnungFormular().getValue() == null)
         {
-          status.setValue("Bitte Rechnungsformular auswählen");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Rechnungsformular auswählen");
         }
         if (sepaControl.getRechnungsdatum().getValue() == null)
         {
-          status.setValue("Bitte Rechnungsdatum auswählen");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Rechnungsdatum auswählen");
         }
       }
 
     }
     catch (RemoteException re)
     {
-      status.setValue("Fehler beim Auswerten der Eingabe!");
-      status.setColor(Color.ERROR);
-      return false;
+      return ("Fehler beim Auswerten der Eingabe!");
     }
-    return true;
+    return null;
   }
 
   private void saveSettings(ZusatzbetragPart part)

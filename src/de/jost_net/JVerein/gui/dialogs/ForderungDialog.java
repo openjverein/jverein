@@ -143,7 +143,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     }
     buttons.addButton(control.getVorlagenButton());
     buttons.addButton(control.getPruefenButton());
-    buttons.addButton(control.getErstellenButton(this));
+    buttons.addButton(control.getStartButton(this));
     buttons.addButton(control.getAbbrechenButton(this));
     buttons.paint(parent);
   }

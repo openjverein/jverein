@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.gui.action.AbrechnungAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
@@ -64,8 +64,8 @@ public class AbrechnungslaufListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
-    buttons.addButton("Neu", new StartViewAction(AbrechnungSEPAView.class),
-        null, false, "document-new.png");
+    buttons.addButton("Neu", new AbrechnungAction(), null, false,
+        "document-new.png");
     buttons.paint(this.getParent());
   }
 }

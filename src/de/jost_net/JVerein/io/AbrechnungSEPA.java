@@ -274,38 +274,6 @@ public class AbrechnungSEPA
     {
       monitor.setStatusText("Lastschriften erstellen");
 
-      if (Einstellungen.getEinstellung(Property.NAME) == null
-          || ((String) Einstellungen.getEinstellung(Property.NAME))
-              .length() == 0
-          || Einstellungen.getEinstellung(Property.IBAN) == null
-          || ((String) Einstellungen.getEinstellung(Property.IBAN))
-              .length() == 0
-          || Einstellungen.getEinstellung(Property.BIC) == null
-          || ((String) Einstellungen.getEinstellung(Property.BIC))
-              .length() == 0)
-      {
-        throw new ApplicationException(
-            "Name des Vereins oder Bankverbindung fehlt. Bitte unter "
-                + "Administration|Einstellungen|Allgemein erfassen.");
-      }
-
-      if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
-          || ((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID))
-              .length() == 0)
-      {
-        throw new ApplicationException(
-            "Gläubiger-ID fehlt. Gfls. unter https://extranet.bundesbank.de/scp/ oder"
-                + " http://www.oenb.at/idakilz/cid?lang=de beantragen und unter"
-                + " Administration|Einstellungen|Allgemein eintragen.\n"
-                + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.");
-      }
-
-      if (param.faelligkeit.before(new Date()))
-      {
-        throw new ApplicationException(
-            "Fälligkeit muss bei Lastschriften in der Zukunft liegen");
-      }
-
       Basislastschrift lastschrift = new Basislastschrift();
       // Vorbereitung: Allgemeine Informationen einstellen
       lastschrift.setBIC((String) Einstellungen.getEinstellung(Property.BIC));
@@ -378,85 +346,7 @@ public class AbrechnungSEPA
     if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG
         && param.abbuchungsmodus != Abrechnungsmodi.FORDERUNG)
     {
-      // Alle Mitglieder lesen
-      DBIterator<Mitglied> list = Einstellungen.getDBService()
-          .createList(Mitglied.class);
-      MitgliedUtils.setMitglied(list);
-
-      // Das Mitglied muss bereits eingetreten sein
-      list.addFilter("(eintritt <= ? or eintritt is null) ",
-          new java.sql.Date(param.stichtag.getTime()));
-      // Das Mitglied darf noch nicht ausgetreten sein
-      list.addFilter("(austritt is null or austritt > ?)",
-          new java.sql.Date(param.stichtag.getTime()));
-      // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berücksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
-      if (param.bisdatum != null)
-      {
-        list.addFilter("(austritt <= ?)",
-            new java.sql.Date(param.bisdatum.getTime()));
-      }
-      // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
-      // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
-      if (param.vondatum != null)
-      {
-        list.addFilter("eintritt >= ?",
-            new java.sql.Date(param.vondatum.getTime()));
-      }
-      if (param.voneingabedatum != null)
-      {
-        list.addFilter("eingabedatum >= ?",
-            new java.sql.Date(param.voneingabedatum.getTime()));
-      }
-      if ((Integer) Einstellungen.getEinstellung(
-          Property.BEITRAGSMODEL) == Beitragsmodel.MONATLICH12631.getKey())
-      {
-        if (param.abbuchungsmodus == Abrechnungsmodi.HAVIMO)
-        {
-          list.addFilter(
-              "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH),
-              Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
-              Integer.valueOf(Zahlungsrhythmus.MONATLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.JAVIMO)
-        {
-          list.addFilter(
-              "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              Integer.valueOf(Zahlungsrhythmus.JAEHRLICH),
-              Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
-              Integer.valueOf(Zahlungsrhythmus.MONATLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.VIMO)
-        {
-          list.addFilter("(zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
-              Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
-              Integer.valueOf(Zahlungsrhythmus.MONATLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.MO)
-        {
-          list.addFilter("zahlungsrhytmus = ?",
-              Integer.valueOf(Zahlungsrhythmus.MONATLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.VI)
-        {
-          list.addFilter("zahlungsrhytmus = ?",
-              Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.HA)
-        {
-          list.addFilter("zahlungsrhytmus = ?",
-              Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH));
-        }
-        if (param.abbuchungsmodus == Abrechnungsmodi.JA)
-        {
-          list.addFilter("zahlungsrhytmus = ?",
-              Integer.valueOf(Zahlungsrhythmus.JAEHRLICH));
-        }
-      }
-
-      list.setOrder("ORDER BY zahlungsweg, name, vorname");
-
+      DBIterator<Mitglied> list = getAbrechnenMitgliederIt(param);
       // Sätze im Resultset
       int count = 0;
       while (list.hasNext())
@@ -654,15 +544,7 @@ public class AbrechnungSEPA
     List<Zusatzbetrag> zusatzbetraege = param.zusatzbetraegeList;
     if (zusatzbetraege == null)
     {
-      DBIterator<Zusatzbetrag> list = Einstellungen.getDBService()
-          .createList(Zusatzbetrag.class);
-      // etwas vorfiltern um die Ergebnise zu reduzieren
-      list.addFilter("(intervall != 0 or ausfuehrung is null)");
-      if (param.stichtag != null)
-      {
-        list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
-      }
-      zusatzbetraege = PseudoIterator.asList(list);
+      zusatzbetraege = getAbrechnenZusatzbetragList(param);
     }
     for (Zusatzbetrag z : zusatzbetraege)
     {
@@ -822,9 +704,7 @@ public class AbrechnungSEPA
   {
     ArrayList<JVereinZahler> zahlerarray = new ArrayList<>();
     int count = 0;
-    DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
-        .createList(Kursteilnehmer.class);
-    list.addFilter("abbudatum is null");
+    DBIterator<Kursteilnehmer> list = getAbrechnenKursteilnehmerIt(param);
     while (list.hasNext())
     {
       if (interrupt.isInterrupted())
@@ -1391,5 +1271,115 @@ public class AbrechnungSEPA
         throw new ApplicationException(errortext);
       }
     }
+  }
+
+  public static DBIterator<Mitglied> getAbrechnenMitgliederIt(
+      AbrechnungSEPAParam param) throws RemoteException
+  {
+    // Alle Mitglieder lesen
+    DBIterator<Mitglied> list = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    MitgliedUtils.setMitglied(list);
+
+    // Das Mitglied muss bereits eingetreten sein
+    // Im Dialog ist für den Bug Test der Stichtag nicht gesetzt
+    Date stichtag = param.stichtag != null ? param.stichtag : new Date();
+    list.addFilter("(eintritt <= ? or eintritt is null) ",
+        new java.sql.Date(stichtag.getTime()));
+    // Das Mitglied darf noch nicht ausgetreten sein
+    list.addFilter("(austritt is null or austritt > ?)",
+        new java.sql.Date(stichtag.getTime()));
+    // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
+    // berücksichtigt, die bis zu einem bestimmten Zeitpunkt ausgetreten sind.
+    if (param.bisdatum != null)
+    {
+      list.addFilter("(austritt <= ?)",
+          new java.sql.Date(param.bisdatum.getTime()));
+    }
+    // Bei Abbuchungen im Laufe des Jahres werden nur die Mitglieder
+    // berücksichtigt, die ab einem bestimmten Zeitpunkt eingetreten sind.
+    if (param.vondatum != null)
+    {
+      list.addFilter("eintritt >= ?",
+          new java.sql.Date(param.vondatum.getTime()));
+    }
+    if (param.voneingabedatum != null)
+    {
+      list.addFilter("eingabedatum >= ?",
+          new java.sql.Date(param.voneingabedatum.getTime()));
+    }
+    if ((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) == Beitragsmodel.MONATLICH12631.getKey())
+    {
+      if (param.abbuchungsmodus == Abrechnungsmodi.HAVIMO)
+      {
+        list.addFilter(
+            "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
+            Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH),
+            Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+            Integer.valueOf(Zahlungsrhythmus.MONATLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.JAVIMO)
+      {
+        list.addFilter(
+            "(zahlungsrhytmus = ? or zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
+            Integer.valueOf(Zahlungsrhythmus.JAEHRLICH),
+            Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+            Integer.valueOf(Zahlungsrhythmus.MONATLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.VIMO)
+      {
+        list.addFilter("(zahlungsrhytmus = ? or zahlungsrhytmus = ?)",
+            Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH),
+            Integer.valueOf(Zahlungsrhythmus.MONATLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.MO)
+      {
+        list.addFilter("zahlungsrhytmus = ?",
+            Integer.valueOf(Zahlungsrhythmus.MONATLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.VI)
+      {
+        list.addFilter("zahlungsrhytmus = ?",
+            Integer.valueOf(Zahlungsrhythmus.VIERTELJAEHRLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.HA)
+      {
+        list.addFilter("zahlungsrhytmus = ?",
+            Integer.valueOf(Zahlungsrhythmus.HALBJAEHRLICH));
+      }
+      if (param.abbuchungsmodus == Abrechnungsmodi.JA)
+      {
+        list.addFilter("zahlungsrhytmus = ?",
+            Integer.valueOf(Zahlungsrhythmus.JAEHRLICH));
+      }
+    }
+
+    list.setOrder("ORDER BY zahlungsweg, name, vorname");
+    return list;
+  }
+
+  @SuppressWarnings("unchecked")
+  public static List<Zusatzbetrag> getAbrechnenZusatzbetragList(
+      AbrechnungSEPAParam param) throws RemoteException
+  {
+    DBIterator<Zusatzbetrag> list = Einstellungen.getDBService()
+        .createList(Zusatzbetrag.class);
+    // etwas vorfiltern um die Ergebnise zu reduzieren
+    list.addFilter("(intervall != 0 or ausfuehrung is null)");
+    if (param.stichtag != null)
+    {
+      list.addFilter("(endedatum is null or endedatum >= ?)", param.stichtag);
+    }
+    return PseudoIterator.asList(list);
+  }
+
+  public static DBIterator<Kursteilnehmer> getAbrechnenKursteilnehmerIt(
+      AbrechnungSEPAParam param) throws RemoteException
+  {
+    DBIterator<Kursteilnehmer> list = Einstellungen.getDBService()
+        .createList(Kursteilnehmer.class);
+    list.addFilter("abbudatum is null");
+    return list;
   }
 }
