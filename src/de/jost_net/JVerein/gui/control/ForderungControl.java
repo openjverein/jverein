@@ -119,17 +119,15 @@ public class ForderungControl extends AbstractAbrechnungControl
 
   public Button getZahlungsgrundVariablenButton() throws RemoteException
   {
-    Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = MitgliedMap.getDummyMap(map);
     Button b = new Button("Zahlungsgrund Variablen",
-        new InsertVariableDialogAction(map), null, false, "bookmark.png");
+        new ZahlungsgrundVariableDialogAction(), null, false, "bookmark.png");
     return b;
   }
 
   public Button getRechnungstextVariablenButton() throws RemoteException
   {
     Button b = new Button("Rechnungstext Variablen",
-        new RechnungVariableDialogAction(part), null, false, "bookmark.png");
+        new RechnungVariableDialogAction(), null, false, "bookmark.png");
     return b;
   }
 
@@ -463,14 +461,32 @@ public class ForderungControl extends AbstractAbrechnungControl
     }
   }
 
+  private class ZahlungsgrundVariableDialogAction implements Action
+  {
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        sepaControl.getZahlungsgrund()
+            .setValue((String) part.getBuchungstext().getValue());
+
+        Map<String, Object> map = new AllgemeineMap().getMap(null);
+        map = new AbrechnungsParameterMap().getMap(
+            new AbrechnungSEPAParam(sepaControl, null, null, null), map);
+        map = MitgliedMap.getDummyMap(map);
+        new InsertVariableDialogAction(map).handleAction(null);
+      }
+      catch (RemoteException re)
+      {
+        //
+      }
+    }
+  }
+
   private class RechnungVariableDialogAction implements Action
   {
-    private ZusatzbetragPart part;
-
-    public RechnungVariableDialogAction(ZusatzbetragPart part)
-    {
-      this.part = part;
-    }
 
     @Override
     public void handleAction(Object context) throws ApplicationException

@@ -697,7 +697,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
     return bugs;
   }
 
-  protected class ZahlungsgrundVariableDialogAction implements Action
+  private class ZahlungsgrundVariableDialogAction implements Action
   {
 
     @Override
@@ -723,7 +723,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
     return MitgliedMap.getDummyMap(rmap);
   }
 
-  protected class RechnungVariableDialogAction implements Action
+  private class RechnungVariableDialogAction implements Action
   {
 
     @Override
