@@ -156,11 +156,13 @@ public class AbstractAbrechnungControl
     return button;
   }
 
+  // Checks müssen in den abgeleiteten Klassen implementiert werden
   protected String checkInput()
   {
     return null;
   }
 
+  // Die Ausgabe muss in den abgeleiteten Klassen implementiert werden
   protected void handleStart() throws RemoteException, ApplicationException
   {
     //
@@ -224,11 +226,19 @@ public class AbstractAbrechnungControl
     bugsList.sort();
   }
 
+  // die Liste muss in den abgeleiteten Klassen implementiert werden
   public List<Bug> getBugs()
   {
     return new ArrayList<Bug>();
   }
 
+  /**
+   * Prüfung der Vereinsdaten und des Verrechnungskontos.
+   * 
+   * @param bugs
+   *          Die Bugliste
+   * @throws RemoteException
+   */
   public void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
   {
     if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
@@ -326,6 +336,14 @@ public class AbstractAbrechnungControl
     }
   }
 
+  /**
+   * Prüft den Fälligkeitstermin.
+   * 
+   * @param faelligkeit
+   *          Fälligkeit der Forderungen
+   * @param bugs
+   *          Die Bugliste
+   */
   public void checkFaelligkeit(Date faelligkeit, ArrayList<Bug> bugs)
   {
     if (faelligkeit.before(new Date()))
@@ -336,6 +354,19 @@ public class AbstractAbrechnungControl
     }
   }
 
+  /**
+   * Prüft ob die Beiträge konfiguriert sind. Falls Beiträge abgebucht werden
+   * sollen wird optional das SEPA Mandat überprüft.
+   * 
+   * @param m
+   *          Das Mitglied dessen Daten geprüft werden
+   * @param sepacheck
+   *          Bestimmt ob der SEPA Mandat überprüft werden soll
+   * @param bugs
+   *          Die Bugliste
+   * @return Sagt, ob eine Lastschrift durchgeführt wird
+   * @throws RemoteException
+   */
   public boolean checkMitgliedBeitraege(Mitglied m, boolean sepacheck,
       ArrayList<Bug> bugs) throws RemoteException
   {
@@ -344,9 +375,12 @@ public class AbstractAbrechnungControl
     boolean isLastschrift = false;
     if (individuelleBetraege && m.getIndividuellerBeitrag() != null)
     {
-      if (sepacheck && zahlunswegLastschrift && m.getIndividuellerBeitrag() > 0)
+      if (zahlunswegLastschrift && m.getIndividuellerBeitrag() > 0)
       {
-        checkSEPA(m.getZahler(), bugs);
+        if (sepacheck)
+        {
+          checkSEPA(m.getZahler(), bugs);
+        }
         isLastschrift = true;
       }
     }
@@ -362,9 +396,12 @@ public class AbstractAbrechnungControl
             bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
                 Bug.ERROR));
           }
-          else if (sepacheck && zahlunswegLastschrift && betrag > 0)
+          else if (zahlunswegLastschrift && betrag > 0)
           {
-            checkSEPA(m.getZahler(), bugs);
+            if (sepacheck)
+            {
+              checkSEPA(m.getZahler(), bugs);
+            }
             isLastschrift = true;
           }
           break;
@@ -377,13 +414,16 @@ public class AbstractAbrechnungControl
             bugs.add(new Bug(m, "Beträge in Beitragsgruppe sind nicht gesetzt!",
                 Bug.ERROR));
           }
-          else if (sepacheck && zahlunswegLastschrift
+          else if (zahlunswegLastschrift
               && (m.getBeitragsgruppe().getBetragMonatlich() > 0
                   || m.getBeitragsgruppe().getBetragVierteljaehrlich() > 0
                   || m.getBeitragsgruppe().getBetragHalbjaehrlich() > 0
                   || m.getBeitragsgruppe().getBetragJaehrlich() > 0))
           {
-            checkSEPA(m.getZahler(), bugs);
+            if (sepacheck)
+            {
+              checkSEPA(m.getZahler(), bugs);
+            }
             isLastschrift = true;
           }
           break;
@@ -392,6 +432,15 @@ public class AbstractAbrechnungControl
     return isLastschrift;
   }
 
+  /**
+   * Prüft für eine Lastschrift auf gültige Kontodaten des Mitglieds.
+   * 
+   * @param m
+   *          Das Mitglied dessen Daten geprüft werden
+   * @param bugs
+   *          Die Bugliste
+   * @throws RemoteException
+   */
   public void checkMitgliedKontodaten(Mitglied m, ArrayList<Bug> bugs)
       throws RemoteException
   {
@@ -439,6 +488,15 @@ public class AbstractAbrechnungControl
     }
   }
 
+  /**
+   * Prüft das SEPA Mandat des Mitglieds auf Gültigkeit.
+   * 
+   * @param m
+   *          Das Mitglied dessen Daten geprüft werden
+   * @param bugs
+   *          Die Bugliste
+   * @throws RemoteException
+   */
   public void checkSEPA(Mitglied m, ArrayList<Bug> bugs) throws RemoteException
   {
     if (!m.getMandatDatum().equals(Einstellungen.NODATE))
