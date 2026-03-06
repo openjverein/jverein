@@ -23,6 +23,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.TabFolder;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -30,9 +36,12 @@ import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.TabGroup;
 
 public class AbrechnungslaufDetailView extends AbstractDetailView
 {
+  // Statische Variable, die den zuletzt ausgewählten Tab speichert.
+  private static int tabindex = -1;
 
   private AbrechnungslaufControl control;
 
@@ -55,18 +64,41 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     group.addInput(control.getZusatzAbrechnungen());
     group.addInput(control.getBemerkung());
 
-    group = new LabelGroup(getParent(), "Statistikdaten");
-    group.addInput(control.getStatistikBuchungen());
-    group.addInput(control.getStatistikLastschriften());
+    TabFolder folder = new TabFolder(getParent(), SWT.BORDER);
+    folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-    /*
-     * FormTextPart text = new FormTextPart(); text.setText("<form>" +
-     * "<p><b>Statistikdaten</b></p>" +
-     * "<p>Hier fehlen noch die Statistikdaten des Abrechnungslaufs.</p>" +
-     * "<p>Anzahl Buchungen, Offene Posten, etc.</p>" +
-     * "<table><tr><td>Tst</td></tr></table>" + "</form>");
-     * text.paint(getParent());
-     */
+    TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
+    control.getBuchungList().paint(tabBuchung.getComposite());
+
+    TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
+    control.getSollbuchungList().paint(tabSollbuchung.getComposite());
+
+    TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
+    control.getLastschriftList().paint(tabLastschriften.getComposite());
+
+    TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true, 1);
+    control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
+
+    // Aktiver zuletzt ausgewählter Tab.
+    if (tabindex != -1)
+    {
+      folder.setSelection(tabindex);
+    }
+    folder.addSelectionListener(new SelectionListener()
+    {
+      @Override
+      public void widgetSelected(SelectionEvent evt)
+      {
+        tabindex = folder.getSelectionIndex();
+      }
+
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e)
+      {
+
+      }
+
+    });
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -74,6 +106,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton(control.getStartListeButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
