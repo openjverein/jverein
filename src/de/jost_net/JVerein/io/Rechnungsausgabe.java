@@ -18,6 +18,7 @@ package de.jost_net.JVerein.io;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
@@ -27,13 +28,18 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.server.IVersand;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 
 public class Rechnungsausgabe extends AbstractAusgabe
 {
@@ -45,6 +51,49 @@ public class Rechnungsausgabe extends AbstractAusgabe
   {
     this.typ = typ;
     this.formular = formular;
+  }
+
+  @Override
+  protected boolean checkVersendet(ArrayList<? extends DBObject> list,
+      Ausgabeart art) throws RemoteException
+  {
+    // Mahnungen dürfen nur versendet werden, wenn die Rechnung schon verschickt
+    // wurde
+    if (typ == TYP.MAHNUNG)
+    {
+
+      for (DBObject o : list)
+      {
+        IVersand v = (IVersand) o;
+        if (v.getVersanddatum() == null)
+        {
+          YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          dialog.setTitle("Rechnung nicht  "
+              + (art == Ausgabeart.MAIL ? "gesendet" : "gedruckt"));
+          dialog.setText(
+              "Mindestens eine Rechnung wurde noch nicht als versendet markiert.\nSoll trotzdem eine Mahnung "
+                  + (art == Ausgabeart.MAIL ? "versendet" : "gedruckt")
+                  + " werden?");
+          try
+          {
+            return (boolean) dialog.open();
+          }
+          catch (OperationCanceledException oce)
+          {
+            return false;
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim trotzdem-Versenden Dialog", e);
+          }
+        }
+      }
+      return true;
+    }
+    else
+    {
+      return super.checkVersendet(list, art);
+    }
   }
 
   @Override
