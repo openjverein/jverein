@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -179,6 +181,7 @@ public class KontoControl extends FilterControl implements Savable
     }
     eroeffnung = new DateInput(getKonto().getEroeffnung(),
         new JVDateFormatTTMMJJJJ());
+    eroeffnung.setMandatory(true);
     return eroeffnung;
   }
 
@@ -297,10 +300,30 @@ public class KontoControl extends FilterControl implements Savable
   {
     try
     {
-      prepareStore().store();
+      DBTransaction.starten();
+
+      Konto konto = (Konto) prepareStore();
+      boolean neu = konto.isNewObject();
+      konto.store();
+
+      // Bei neuem Konto Anfangsbestand anlegen
+      if (neu && konto.getEroeffnung() != null)
+      {
+        Anfangsbestand ab = Einstellungen.getDBService()
+            .createObject(Anfangsbestand.class, null);
+        ab.setKonto(konto);
+        ab.setDatum(konto.getEroeffnung());
+        ab.setBetrag(0d);
+        ab.store();
+        Logger.info("Anfangsbestand für neues Konto " + konto.getBezeichnung()
+            + " gespeichert");
+      }
+      konto.store();
+      DBTransaction.commit();
     }
     catch (RemoteException e)
     {
+      DBTransaction.rollback();
       String fehler = "Fehler beim Speichern des Kontos";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
