@@ -14,58 +14,68 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.util.Map;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
-import de.jost_net.JVerein.io.AbrechnungSEPAParam;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Beitragsmodel;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungSEPAView extends AbstractView
+/**
+ * Dialog für den Abrechnungslauf
+ */
+public class AbrechnungDialog extends AbstractDialog<Boolean>
 {
 
-  final AbrechnungSEPAControl control = new AbrechnungSEPAControl(this);
+  /**
+   * @param position
+   */
+  public AbrechnungDialog(int position)
+  {
+    super(position);
+    super.setSize(950, SWT.DEFAULT);
+    setTitle("Abrechnung");
+  }
 
   @Override
-  public void bind() throws Exception
+  protected void paint(Composite parent)
+      throws RemoteException, ApplicationException
   {
-    GUI.getView().setTitle("Abrechnung");
-    LabelGroup group = new LabelGroup(getParent(), "Parameter");
+    final AbrechnungSEPAControl control = new AbrechnungSEPAControl();
+
+    LabelGroup group = new LabelGroup(parent, "");
+    group.addInput(control.getStatus());
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
 
-    left.addLabelPair("Modus", control.getAbbuchungsmodus());
-    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
+    left.addHeadline("Parameter");
+    left.addInput(control.getAbbuchungsmodus());
+    left.addInput(control.getFaelligkeit());
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
-      left.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
+      left.addInput(control.getAbrechnungsmonat());
     }
-    left.addLabelPair("Stichtag¹", control.getStichtag());
-    left.addLabelPair("Von Eintrittsdatum", control.getVondatum());
-    left.addLabelPair("Von Eingabedatum", control.getVonEingabedatum());
-    left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
-    left.addLabelPair("Zahlungsgrund für Beiträge", control.getZahlungsgrund());
+    left.addInput(control.getStichtag());
+    left.addInput(control.getVondatum());
+    left.addInput(control.getVonEingabedatum());
+    left.addInput(control.getBisdatum());
+    left.addInput(control.getZahlungsgrund());
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
@@ -82,7 +92,7 @@ public class AbrechnungSEPAView extends AbstractView
     rigth.addLabelPair("SEPA-Check temporär deaktivieren",
         control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
-    rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
+    rigth.addInput(control.getAbbuchungsausgabe());
 
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
@@ -94,9 +104,9 @@ public class AbrechnungSEPAView extends AbstractView
         rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      rigth.addLabelPair("Rechnungsformular", control.getRechnungFormular());
-      rigth.addLabelPair("Rechnungstext", control.getRechnungstext());
-      rigth.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
+      rigth.addInput(control.getRechnungFormular());
+      rigth.addInput(control.getRechnungstext());
+      rigth.addInput(control.getRechnungsdatum());
     }
 
     group.addSeparator();
@@ -106,54 +116,36 @@ public class AbrechnungSEPAView extends AbstractView
             + "²) Es wird für jede (zusammengefasste) Sollbuchung eine separate Rechnung erstellt.",
         true);
 
+    LabelGroup below = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
+        true);
+    below.getComposite().setLayout(new GridLayout(1, false));
+    below.addPart(control.getBugsList());
+    GridData gridData = new GridData(GridData.FILL_BOTH);
+    gridData.heightHint = 150;
+    below.getComposite().setLayoutData(gridData);
+
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ABRECHNUNG, false, "question-circle.png");
-    buttons.addButton("Fehler/Warnungen/Hinweise", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        GUI.startView(SEPABugsView.class.getName(), null);
-      }
-    }, null, false, "bug.png");
-
-    buttons.addButton("Zahlungsgrund Variablen anzeigen",
-        new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    buttons.addButton(control.getHelpButton(DokumentationUtil.ABRECHNUNG));
+    buttons.addButton(control.getZahlungsgrundVariablenButton());
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      buttons.addButton("Rechnungstext Variablen anzeigen",
-          new RechnungVariableDialogAction(), null, false, "bookmark.png");
+      buttons.addButton(control.getRechnungstextVariablenButton());
     }
-    buttons.addButton(control.getStartButton());
-    buttons.paint(this.getParent());
+    buttons.addButton(control.getPruefenButton());
+    buttons.addButton(control.getStartButton(this));
+    buttons.addButton(control.getAbbrechenButton(this));
+    buttons.paint(parent);
   }
 
-  private class RechnungVariableDialogAction implements Action
+  @Override
+  protected Boolean getData() throws Exception
   {
-
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      try
-      {
-        new InsertVariableDialogAction(getRmap()).handleAction(null);
-      }
-      catch (RemoteException re)
-      {
-        //
-      }
-    }
+    return true;
   }
 
-  private Map<String, Object> getRmap()
-      throws RemoteException, ApplicationException
+  @Override
+  protected boolean isModeless()
   {
-    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-    rmap = new AbrechnungsParameterMap()
-        .getMap(new AbrechnungSEPAParam(control, null, null, null), rmap);
-    rmap = MitgliedMap.getDummyMap(rmap);
-    return RechnungMap.getDummyMap(rmap);
+    return true;
   }
 }
