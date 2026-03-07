@@ -721,6 +721,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       {
         containerMitgliedschaft.addPart(control.getFamilienverband());
       }
+
+      if (control.isZahltFuerVisible())
+      {
+        LabelGroup cont = new LabelGroup(containerMitgliedschaft.getComposite(),
+            "Zahlt Beiträge und Zusatzbeträge für");
+        control.getZahltFuer().paint(cont.getComposite());
+      }
     }
   }
 
