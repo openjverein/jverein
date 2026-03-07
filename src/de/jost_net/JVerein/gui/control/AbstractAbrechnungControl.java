@@ -806,6 +806,16 @@ public abstract class AbstractAbrechnungControl
   public void checkMitgliedKontodaten(Mitglied m, ArrayList<Bug> bugs)
       throws RemoteException
   {
+    if (m.getMandatDatum().equals(Einstellungen.NODATE))
+    {
+      bugs.add(new Bug(m, "Für die Basislastschrift fehlt das Mandatsdatum!",
+          Bug.ERROR));
+    }
+    else if (m.getMandatDatum().after(new Date()))
+    {
+      bugs.add(new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
+    }
+
     if (m.getIban() == null || m.getIban().isEmpty())
     {
       bugs.add(
@@ -851,32 +861,25 @@ public abstract class AbstractAbrechnungControl
    */
   public void checkSEPA(Mitglied m, ArrayList<Bug> bugs) throws RemoteException
   {
-    if (m.getMandatDatum().equals(Einstellungen.NODATE))
+    if (!m.getMandatDatum().equals(Einstellungen.NODATE))
     {
-      bugs.add(new Bug(m, "Für die Basislastschrift fehlt das Mandatsdatum!",
-          Bug.ERROR));
-    }
-    else if (m.getMandatDatum().after(new Date()))
-    {
-      bugs.add(new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
-    }
+      if (m.getLetzteLastschrift() == null
+          && m.getMandatDatum().before(sepagueltigkeit))
+      {
+        bugs.add(new Bug(m,
+            "Das Mandat ist älter als 36 Monate und es existiert noch keine Lastschrift in JVerein.\n"
+                + "Neues Mandat anfordern und eingeben oder den SEPA-Check temporär deaktivieren.",
+            Bug.ERROR));
+      }
 
-    if (m.getLetzteLastschrift() == null
-        && m.getMandatDatum().before(sepagueltigkeit))
-    {
-      bugs.add(new Bug(m,
-          "Das Mandat ist älter als 36 Monate und es existiert noch keine Lastschrift in JVerein.\n"
-              + "Neues Mandat anfordern und eingeben oder den SEPA-Check temporär deaktivieren.",
-          Bug.ERROR));
-    }
-
-    if (m.getLetzteLastschrift() != null
-        && m.getLetzteLastschrift().before(sepagueltigkeit)
-        && m.getMandatDatum().before(sepagueltigkeit))
-    {
-      bugs.add(new Bug(m,
-          "Letzte Lastschrift und das Mandat sind älter als 36 Monate.\nNeues Mandat anfordern und eingeben.",
-          Bug.ERROR));
+      if (m.getLetzteLastschrift() != null
+          && m.getLetzteLastschrift().before(sepagueltigkeit)
+          && m.getMandatDatum().before(sepagueltigkeit))
+      {
+        bugs.add(new Bug(m,
+            "Letzte Lastschrift und das Mandat sind älter als 36 Monate.\nNeues Mandat anfordern und eingeben.",
+            Bug.ERROR));
+      }
     }
   }
 
