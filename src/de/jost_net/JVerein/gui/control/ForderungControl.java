@@ -13,16 +13,16 @@ import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.action.BugObjektEditAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.dialogs.ForderungDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
+import de.jost_net.JVerein.gui.menu.BugListMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -32,7 +32,6 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
@@ -43,7 +42,6 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -249,42 +247,19 @@ public class ForderungControl
     return b;
   }
 
-  public Part getBugsList() throws RemoteException
+  public JVereinTablePart getBugsList() throws RemoteException
   {
     if (bugsList != null)
     {
       return bugsList;
     }
-    bugsList = new JVereinTablePart(getBugs(), context -> {
-      Bug bug = (Bug) context;
-      Object object = bug.getObject();
-      if (object instanceof Mitglied)
-      {
-        Mitglied m = (Mitglied) object;
-        try
-        {
-          if (m.getMitgliedstyp() == null
-              || m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
-          {
-            GUI.startView(new MitgliedDetailView(), m);
-          }
-          else
-          {
-            GUI.startView(new NichtMitgliedDetailView(), m);
-          }
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(
-              "Fehler beim Anzeigen eines Mitgliedes", e);
-        }
-      }
-    });
+    bugsList = new JVereinTablePart(getBugs(), new BugObjektEditAction());
     bugsList.addColumn("Name", "name");
     bugsList.addColumn("Meldung", "meldung");
     bugsList.addColumn("Klassifikation", "klassifikationText");
     bugsList.setRememberColWidths(true);
     bugsList.setRememberOrder(true);
+    bugsList.setContextMenu(new BugListMenu());
     return bugsList;
   }
 

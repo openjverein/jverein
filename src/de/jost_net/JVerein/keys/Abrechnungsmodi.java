@@ -45,6 +45,8 @@ public class Abrechnungsmodi
 
   public static final int ABGEMELDETEMITGLIEDER = 100;
 
+  public static final int GUTSCHRIFT = 200;
+
   public static final int FORDERUNG = 201;
 
   private int abrechnungsmodus;
@@ -92,6 +94,8 @@ public class Abrechnungsmodi
         return "Eingetretene Mitglieder";
       case ABGEMELDETEMITGLIEDER:
         return "Abgemeldete Mitglieder";
+      case GUTSCHRIFT:
+        return "Gutschrift";
       case FORDERUNG:
         return "Forderung";
       default:

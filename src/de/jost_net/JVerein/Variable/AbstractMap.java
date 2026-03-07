@@ -78,5 +78,4 @@ public abstract class AbstractMap
       return s;
     return "X".repeat(n - 4) + s.substring(n - 4);
   }
-
 }

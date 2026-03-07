@@ -183,6 +183,8 @@ public class EinstellungControl extends AbstractControl
 
   private TextInput rechnungtextbar;
 
+  private TextInput rechnungtextgutschrift;
+
   private IntegerInput zaehlerlaenge;
 
   private CheckboxInput externemitgliedsnummer;
@@ -958,6 +960,18 @@ public class EinstellungControl extends AbstractControl
     rechnungtextbar = new TextInput(
         (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTBAR), 500);
     return rechnungtextbar;
+  }
+
+  public TextInput getRechnungTextGutschrift() throws RemoteException
+  {
+    if (rechnungtextgutschrift != null)
+    {
+      return rechnungtextgutschrift;
+    }
+    rechnungtextgutschrift = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGTEXTGUTSCHRIFT),
+        500);
+    return rechnungtextgutschrift;
   }
 
   public IntegerInput getZaehlerLaenge() throws RemoteException

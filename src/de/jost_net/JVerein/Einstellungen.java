@@ -308,6 +308,8 @@ public class Einstellungen
         "Bitte überweisen Sie den Betrag auf das angegebene Konto."),
     RECHNUNGTEXTBAR("rechnungtextbar", String.class,
         "Bitte zahlen Sie den Betrag auf das angegebene Konto ein."),
+    RECHNUNGTEXTGUTSCHRIFT("rechnungtextgutschrift", String.class,
+        "Der Erstattungsbetrag wird auf das angegebene Konto überwiesen."),
     ZAEHLERLAENGE("zaehlerlaenge", Integer.class, "5"),
     QRCODESIZEINMM("qrcodesizemm", Integer.class, "20"),
     QRCODETEXT("qrcodetext", String.class, "Mitgliedsbeitrag"),

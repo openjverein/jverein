@@ -16,19 +16,26 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.RechnungReferenzAnzeigenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.VersandAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
 
 /**
  * Kontext-Menu zu den Rechnungen.
@@ -50,11 +57,42 @@ public class RechnungMenu extends ContextMenu
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
         new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new RechnungAnzeigenMenuItem("Referenzrechnung anzeigen",
+        new RechnungReferenzAnzeigenAction(), "file-invoice.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(new CheckedContextMenuItem("Druck und Mail",
         new StartViewAction(RechnungMailView.class, true),
         "document-print.png"));
     addItem(new CheckedContextMenuItem("Mahnung Druck und Mail",
         new StartViewAction(MahnungMailView.class, true),
         "document-print.png"));
+  }
+
+  private static class RechnungAnzeigenMenuItem
+      extends CheckedSingleContextMenuItem
+  {
+    private RechnungAnzeigenMenuItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Rechnung)
+      {
+        Rechnung re = (Rechnung) o;
+        try
+        {
+          return re.getReferenzrechnungID() != null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
   }
 }

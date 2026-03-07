@@ -14,39 +14,21 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.gui.menu;
 
-package de.jost_net.JVerein.io;
+import de.jost_net.JVerein.gui.action.BugObjektEditAction;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import java.rmi.RemoteException;
-
-public interface IAdresse
+/**
+ * Kontext-Menu zu Mailanhängen.
+ */
+public class BugListMenu extends ContextMenu
 {
-  /**
-   * N = Natürliche Person, J = Juristische Person
-   */
-  public String getPersonenart() throws RemoteException;
 
-  public String getAnrede() throws RemoteException;
-
-  public String getTitel() throws RemoteException;
-
-  public String getName() throws RemoteException;
-
-  public String getVorname() throws RemoteException;
-
-  public String getStrasse() throws RemoteException;
-
-  public String getAdressierungszusatz() throws RemoteException;
-
-  public String getPlz() throws RemoteException;
-
-  public String getOrt() throws RemoteException;
-
-  public String getStaat() throws RemoteException;
-
-  public String getGeschlecht() throws RemoteException;
-
-  public String getStaatCode() throws RemoteException;
-
-  public String getEmail() throws RemoteException;
+  public BugListMenu()
+  {
+    addItem(new CheckedSingleContextMenuItem("Objekt bearbeiten",
+        new BugObjektEditAction(), "text-x-generic.png"));
+  }
 }

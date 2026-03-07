@@ -33,7 +33,7 @@ class AdressaufbereitungTest
   {
     IAdresse adr = getAdresse("n", "Herrn", "Dr.", "Willi", "Wichtig",
         "bei Lieschen Müller", "Bahnhofstr. 1", "12345", "Testenhausen",
-        "Deutschland", GeschlechtInput.MAENNLICH);
+        "Deutschland", GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals(
         "Herrn\nDr. Willi Wichtig\nbei Lieschen Müller\nBahnhofstr. 1\n12345 Testenhausen\nDeutschland",
         Adressaufbereitung.getAdressfeld(adr));
@@ -49,7 +49,7 @@ class AdressaufbereitungTest
   {
     IAdresse adr = getAdresse("n", "Herrn", "Dr.", "Willi", "Wichtig", null,
         "Bahnhofstr. 1", "12345", "Testenhausen", null,
-        GeschlechtInput.MAENNLICH);
+        GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Herrn\nDr. Willi Wichtig\nBahnhofstr. 1\n12345 Testenhausen",
         Adressaufbereitung.getAdressfeld(adr));
     assertEquals("Bahnhofstr. 1, 12345 Testenhausen",
@@ -63,7 +63,7 @@ class AdressaufbereitungTest
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null,
         "Bahnhofstr. 1", "12345", "Testenhausen", null,
-        GeschlechtInput.MAENNLICH);
+        GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Willi Wichtig\nBahnhofstr. 1\n12345 Testenhausen",
         Adressaufbereitung.getAdressfeld(adr));
     assertEquals("Bahnhofstr. 1, 12345 Testenhausen",
@@ -76,7 +76,7 @@ class AdressaufbereitungTest
   void test04() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null, null,
-        null, null, null, GeschlechtInput.MAENNLICH);
+        null, null, null, GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Willi Wichtig\n", Adressaufbereitung.getAdressfeld(adr));
     assertEquals("", Adressaufbereitung.getAnschrift(adr));
     assertEquals("Wichtig, Willi", Adressaufbereitung.getNameVorname(adr));
@@ -87,7 +87,7 @@ class AdressaufbereitungTest
   void test05() throws RemoteException
   {
     IAdresse adr = getAdresse("n", "", "", "Willi", "Wichtig", "", "", "", "",
-        "", GeschlechtInput.MAENNLICH);
+        "", GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Willi Wichtig\n", Adressaufbereitung.getAdressfeld(adr));
     assertEquals("", Adressaufbereitung.getAnschrift(adr));
     assertEquals("Wichtig, Willi", Adressaufbereitung.getNameVorname(adr));
@@ -98,7 +98,7 @@ class AdressaufbereitungTest
   void test06() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Willi", "Wichtig", null, null,
-        null, null, null, GeschlechtInput.MAENNLICH);
+        null, null, null, GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Sehr geehrter Herr Wichtig,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Willi,", Adressaufbereitung.getAnredeDu(adr));
@@ -108,7 +108,7 @@ class AdressaufbereitungTest
   void test07() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Luise", "Lustig", null, null,
-        null, null, null, GeschlechtInput.WEIBLICH);
+        null, null, null, GeschlechtInput.WEIBLICH, "willi.wichtig@dot.com");
     assertEquals("Sehr geehrte Frau Lustig,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Luise,", Adressaufbereitung.getAnredeDu(adr));
@@ -118,7 +118,7 @@ class AdressaufbereitungTest
   void test08() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, null, "Neutrum", "Neutral", null, null,
-        null, null, null, GeschlechtInput.OHNEANGABE);
+        null, null, null, GeschlechtInput.OHNEANGABE, "willi.wichtig@dot.com");
     assertEquals("Guten Tag Neutrum Neutral,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Neutrum,", Adressaufbereitung.getAnredeDu(adr));
@@ -128,7 +128,7 @@ class AdressaufbereitungTest
   void test09() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Willi", "Wichtig", null, null,
-        null, null, null, GeschlechtInput.MAENNLICH);
+        null, null, null, GeschlechtInput.MAENNLICH, "willi.wichtig@dot.com");
     assertEquals("Sehr geehrter Herr Dr. Wichtig,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Willi,", Adressaufbereitung.getAnredeDu(adr));
@@ -138,7 +138,7 @@ class AdressaufbereitungTest
   void test10() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Luise", "Lustig", null, null,
-        null, null, null, GeschlechtInput.WEIBLICH);
+        null, null, null, GeschlechtInput.WEIBLICH, "willi.wichtig@dot.com");
     assertEquals("Sehr geehrte Frau Dr. Lustig,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Luise,", Adressaufbereitung.getAnredeDu(adr));
@@ -148,7 +148,8 @@ class AdressaufbereitungTest
   void test11() throws RemoteException
   {
     IAdresse adr = getAdresse("n", null, "Dr.", "Neutrum", "Neutral", null,
-        null, null, null, null, GeschlechtInput.OHNEANGABE);
+        null, null, null, null, GeschlechtInput.OHNEANGABE,
+        "willi.wichtig@dot.com");
     assertEquals("Guten Tag Dr. Neutrum Neutral,",
         Adressaufbereitung.getAnredeFoermlich(adr));
     assertEquals("Hallo Neutrum,", Adressaufbereitung.getAnredeDu(adr));
@@ -158,7 +159,7 @@ class AdressaufbereitungTest
       final String anrede, final String titel, final String vorname,
       final String name, final String adressierungszusatz, final String strasse,
       final String plz, final String ort, final String staat,
-      final String geschlecht)
+      final String geschlecht, final String email)
   {
     return new IAdresse()
     {
@@ -232,6 +233,12 @@ class AdressaufbereitungTest
       public String getGeschlecht() throws RemoteException
       {
         return geschlecht;
+      }
+
+      @Override
+      public String getEmail() throws RemoteException
+      {
+        return email;
       }
 
     };

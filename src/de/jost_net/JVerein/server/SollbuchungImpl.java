@@ -434,4 +434,17 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
   {
     return "Mitglieder.Sollbuchungen";
   }
+
+  // Für Gutschrift Support
+  @Override
+  public Mitglied getGutschriftZahler() throws RemoteException
+  {
+    return getZahler();
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    setAttribute(MITGLIED, mitglied);
+  }
 }

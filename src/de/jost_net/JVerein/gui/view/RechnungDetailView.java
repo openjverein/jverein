@@ -64,14 +64,16 @@ public class RechnungDetailView extends AbstractDetailView
     middle.addInput(control.getOrt());
     middle.addInput(control.getStaat());
 
-    SimpleContainer rigth = new SimpleContainer(cl.getComposite());
-    rigth.addInput(control.getIban());
-    rigth.addInput(control.getBic());
-    rigth.addInput(control.getMandatdatum());
-    rigth.addInput(control.getMandatid());
-    rigth.addInput(control.getZahlungsweg());
-    rigth.addInput(control.getLeitwegID());
-    rigth.addInput(control.getKommentar());
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getIban());
+    right.addInput(control.getBic());
+    right.addInput(control.getMandatdatum());
+    right.addInput(control.getMandatid());
+    right.addInput(control.getZahlungsweg());
+    right.addInput(control.getLeitwegID());
+    right.addInput(control.getKommentar());
+    right.addInput(control.getRechnungstext());
+    right.addInput(control.getErstattungsbetrag());
 
     LabelGroup cont = new LabelGroup(getParent(), "Rechnungspositionen", true);
     cont.addPart(control.getSollbuchungPositionListPart());

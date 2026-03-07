@@ -14,39 +14,52 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.keys;
 
-package de.jost_net.JVerein.io;
-
-import java.rmi.RemoteException;
-
-public interface IAdresse
+/**
+ * Abrechnungsausgabe
+ */
+public enum UeberweisungAusgabe
 {
-  /**
-   * N = Natürliche Person, J = Juristische Person
-   */
-  public String getPersonenart() throws RemoteException;
 
-  public String getAnrede() throws RemoteException;
+  SEPA_DATEI(1, "Datei"),
+  HIBISCUS(2, "Hibiscus");
 
-  public String getTitel() throws RemoteException;
+  private final String text;
 
-  public String getName() throws RemoteException;
+  private final int key;
 
-  public String getVorname() throws RemoteException;
+  UeberweisungAusgabe(int key, String text)
+  {
+    this.key = key;
+    this.text = text;
+  }
 
-  public String getStrasse() throws RemoteException;
+  public int getKey()
+  {
+    return key;
+  }
 
-  public String getAdressierungszusatz() throws RemoteException;
+  public String getText()
+  {
+    return text;
+  }
 
-  public String getPlz() throws RemoteException;
+  public static UeberweisungAusgabe getByKey(int key)
+  {
+    for (UeberweisungAusgabe ara : UeberweisungAusgabe.values())
+    {
+      if (ara.getKey() == key)
+      {
+        return ara;
+      }
+    }
+    return null;
+  }
 
-  public String getOrt() throws RemoteException;
-
-  public String getStaat() throws RemoteException;
-
-  public String getGeschlecht() throws RemoteException;
-
-  public String getStaatCode() throws RemoteException;
-
-  public String getEmail() throws RemoteException;
+  @Override
+  public String toString()
+  {
+    return getText();
+  }
 }
