@@ -47,7 +47,6 @@ import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -116,8 +115,6 @@ public abstract class AbstractAbrechnungControl
 
   private Date sepagueltigkeit;
 
-  private Boolean individuelleBetraege;
-
   private Beitragsmodel beitragsmodel;
 
   protected Settings settings = null;
@@ -126,13 +123,9 @@ public abstract class AbstractAbrechnungControl
   {
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MONTH, -36);
     sepagueltigkeit = cal.getTime();
-
-    individuelleBetraege = (Boolean) Einstellungen
-        .getEinstellung(Property.INDIVIDUELLEBEITRAEGE);
     beitragsmodel = Beitragsmodel.getByKey(
         (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL));
   }
@@ -592,7 +585,45 @@ public abstract class AbstractAbrechnungControl
   }
 
   /**
-   * Prüfung der Vereinsdaten und des Verrechnungskontos.
+   * Prüfung des Verrechnungskontos.
+   * 
+   * @param bugs
+   *          Die Bugliste
+   * @throws RemoteException
+   */
+  public void checkVerrechnungskonto(ArrayList<Bug> bugs) throws RemoteException
+  {
+    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
+    {
+      bugs.add(new Bug(null,
+          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
+          Bug.ERROR));
+    }
+    else
+    {
+      try
+      {
+        Konto k = Einstellungen.getDBService().createObject(Konto.class,
+            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
+                .toString());
+        if (k == null)
+        {
+          bugs.add(new Bug(null,
+              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+              Bug.ERROR));
+        }
+      }
+      catch (ObjectNotFoundException ex)
+      {
+        bugs.add(new Bug(null,
+            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
+            Bug.ERROR));
+      }
+    }
+  }
+
+  /**
+   * Prüfung der Vereinsdaten.
    * 
    * @param bugs
    *          Die Bugliste
@@ -714,84 +745,62 @@ public abstract class AbstractAbrechnungControl
   }
 
   /**
-   * Prüft ob die Beiträge konfiguriert sind. Falls Beiträge abgebucht werden
-   * sollen wird optional das SEPA Mandat überprüft.
+   * Prüft ob die nötigen Eingabeparameter des Mitglieds gesetzt sind.
    * 
    * @param m
    *          Das Mitglied dessen Daten geprüft werden
-   * @param sepacheck
-   *          Bestimmt ob der SEPA Mandat überprüft werden soll
    * @param bugs
    *          Die Bugliste
-   * @return Sagt, ob eine Lastschrift durchgeführt wird
+   * @return Sagt, ob ein Fehler erkannt wurde
    * @throws RemoteException
    */
-  public boolean checkMitgliedBeitraege(Mitglied m, boolean sepacheck,
-      ArrayList<Bug> bugs) throws RemoteException
+  public boolean checkMitgliedBeitraege(Mitglied m, ArrayList<Bug> bugs)
+      throws RemoteException
   {
-    boolean zahlunswegLastschrift = m.getZahler()
-        .getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT;
-    boolean isLastschrift = false;
-    if (individuelleBetraege && m.getIndividuellerBeitrag() != null)
+    boolean result = true;
+
+    if (m.getZahler().getZahlungsweg() == null)
     {
-      if (zahlunswegLastschrift && m.getIndividuellerBeitrag() > 0)
-      {
-        checkMitgliedKontodaten(m.getZahler(), bugs);
-        if (sepacheck)
+      bugs.add(
+          new Bug(m.getZahler(), "Zahlungsweg ist nicht gesetzt!", Bug.ERROR));
+      result = false;
+    }
+
+    switch (beitragsmodel)
+    {
+      case MONATLICH12631:
+        if (m.getZahlungsrhythmus() == null)
         {
-          checkSEPA(m.getZahler(), bugs);
+          bugs.add(new Bug(m, "Zahlungsrythmus ist nicht gesetzt!", Bug.ERROR));
+          result = false;
         }
-        isLastschrift = true;
-      }
+      case GLEICHERTERMINFUERALLE:
+        Double betrag = m.getBeitragsgruppe().getBetrag();
+        if (betrag == null)
+        {
+          bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
+              Bug.ERROR));
+          result = false;
+        }
+        break;
+      case FLEXIBEL:
+        if (m.getBeitragsgruppe().getBetragMonatlich() == null
+            || m.getBeitragsgruppe().getBetragVierteljaehrlich() == null
+            || m.getBeitragsgruppe().getBetragHalbjaehrlich() == null
+            || m.getBeitragsgruppe().getBetragJaehrlich() == null)
+        {
+          bugs.add(new Bug(m, "Beträge in Beitragsgruppe sind nicht gesetzt!",
+              Bug.ERROR));
+          result = false;
+        }
+        if (m.getZahlungstermin() == null)
+        {
+          bugs.add(new Bug(m, "Zahlungstermin ist nicht gesetzt!", Bug.ERROR));
+          result = false;
+        }
+        break;
     }
-    else
-    {
-      switch (beitragsmodel)
-      {
-        case GLEICHERTERMINFUERALLE:
-        case MONATLICH12631:
-          Double betrag = m.getBeitragsgruppe().getBetrag();
-          if (betrag == null)
-          {
-            bugs.add(new Bug(m, "Betrag in Beitragsgruppe ist nicht gesetzt!",
-                Bug.ERROR));
-          }
-          else if (zahlunswegLastschrift && betrag > 0)
-          {
-            checkMitgliedKontodaten(m.getZahler(), bugs);
-            if (sepacheck)
-            {
-              checkSEPA(m.getZahler(), bugs);
-            }
-            isLastschrift = true;
-          }
-          break;
-        case FLEXIBEL:
-          if (m.getBeitragsgruppe().getBetragMonatlich() == null
-              || m.getBeitragsgruppe().getBetragVierteljaehrlich() == null
-              || m.getBeitragsgruppe().getBetragHalbjaehrlich() == null
-              || m.getBeitragsgruppe().getBetragJaehrlich() == null)
-          {
-            bugs.add(new Bug(m, "Beträge in Beitragsgruppe sind nicht gesetzt!",
-                Bug.ERROR));
-          }
-          else if (zahlunswegLastschrift
-              && (m.getBeitragsgruppe().getBetragMonatlich() > 0
-                  || m.getBeitragsgruppe().getBetragVierteljaehrlich() > 0
-                  || m.getBeitragsgruppe().getBetragHalbjaehrlich() > 0
-                  || m.getBeitragsgruppe().getBetragJaehrlich() > 0))
-          {
-            checkMitgliedKontodaten(m.getZahler(), bugs);
-            if (sepacheck)
-            {
-              checkSEPA(m.getZahler(), bugs);
-            }
-            isLastschrift = true;
-          }
-          break;
-      }
-    }
-    return isLastschrift;
+    return result;
   }
 
   /**

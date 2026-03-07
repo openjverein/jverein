@@ -531,37 +531,10 @@ public class AbrechnungSEPA
       ProgressMonitor monitor, Mitglied m, Beitragsgruppe bg, boolean primaer)
       throws RemoteException, ApplicationException
   {
-    Double betr = 0d;
     JVereinZahler zahler = null;
     Mitglied mZahler = m.getZahler();
-    if (((Integer) Einstellungen.getEinstellung(
-        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
-        && (mZahler.getZahlungstermin() != null && !mZahler.getZahlungstermin()
-            .isAbzurechnen(param.abrechnungsmonat)))
-    {
-      return null;
-    }
-
-    try
-    {
-      betr = BeitragsUtil.getBeitrag(
-          Beitragsmodel.getByKey(
-              (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
-          mZahler.getZahlungstermin(), mZahler.getZahlungsrhythmus(), bg,
-          param.stichtag, m);
-    }
-    catch (NullPointerException e)
-    {
-      throw new ApplicationException(
-          "Zahlungsinformationen bei " + Adressaufbereitung.getNameVorname(m));
-    }
-    if (primaer && ((Boolean) Einstellungen
-        .getEinstellung(Property.INDIVIDUELLEBEITRAEGE)
-        && m.getIndividuellerBeitrag() != null))
-    {
-      betr = m.getIndividuellerBeitrag();
-    }
-    if (betr == 0d)
+    Double betr = getBetrag(m, primaer, bg, param);
+    if (betr == null)
     {
       return null;
     }
@@ -1395,8 +1368,7 @@ public class AbrechnungSEPA
     MitgliedUtils.setMitglied(list);
 
     // Das Mitglied muss bereits eingetreten sein
-    // Im Dialog ist für den Bug Test der Stichtag nicht gesetzt
-    Date stichtag = param.stichtag != null ? param.stichtag : new Date();
+    Date stichtag = param.stichtag;
     list.addFilter("(eintritt <= ? or eintritt is null) ",
         new java.sql.Date(stichtag.getTime()));
     // Das Mitglied darf noch nicht ausgetreten sein
@@ -1494,5 +1466,43 @@ public class AbrechnungSEPA
         .createList(Kursteilnehmer.class);
     list.addFilter("abbudatum is null");
     return list;
+  }
+
+  public static Double getBetrag(Mitglied m, boolean primaer, Beitragsgruppe bg,
+      AbrechnungSEPAParam param) throws RemoteException, ApplicationException
+  {
+    Double betr;
+    if (((Integer) Einstellungen.getEinstellung(
+        Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+        && (m.getZahlungstermin() != null
+            && !m.getZahlungstermin().isAbzurechnen(param.abrechnungsmonat)))
+    {
+      return null;
+    }
+
+    try
+    {
+      betr = BeitragsUtil.getBeitrag(
+          Beitragsmodel.getByKey(
+              (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
+          m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, param.stichtag,
+          m);
+    }
+    catch (NullPointerException e)
+    {
+      throw new ApplicationException(
+          "Zahlungsinformationen bei " + Adressaufbereitung.getNameVorname(m));
+    }
+    if (primaer && ((Boolean) Einstellungen
+        .getEinstellung(Property.INDIVIDUELLEBEITRAEGE)
+        && m.getIndividuellerBeitrag() != null))
+    {
+      betr = m.getIndividuellerBeitrag();
+    }
+    if (betr == 0d)
+    {
+      return null;
+    }
+    return betr;
   }
 }

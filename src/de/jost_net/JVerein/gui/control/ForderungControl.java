@@ -89,6 +89,10 @@ public class ForderungControl extends AbstractAbrechnungControl
     boolean global = true;
     try
     {
+      // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
+      // Abrechnungslauf am Anfang geholt.
+      checkVerrechnungskonto(bugs);
+
       for (Mitglied m : mitglieder)
       {
         Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();

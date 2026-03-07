@@ -30,11 +30,11 @@ import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
-import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -288,27 +288,78 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
     {
       boolean isLastschrift = false;
       AbrechnungSEPAParam param = new AbrechnungSEPAParam(this, null);
-      boolean flexibel = (Integer) Einstellungen.getEinstellung(
-          Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey();
+
+      // Stichtag ist beim Öffnen des Dialogs nicht gesetzt und es wird kein
+      // checkInput gemacht
+      if (param.stichtag == null)
+      {
+        bugs.add(new Bug(null, "Stichtag fehlt", Bug.ERROR));
+        return bugs;
+      }
+
+      // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
+      // Abrechnungslauf am Anfang geholt.
+      checkVerrechnungskonto(bugs);
+
       // Bei allen Mitgliedern die abgerechnet werden das Beitragsmodell prüfen.
       // Falls der Zahler mit Basislastschrift zahlt wird dabei auch der SEPA
       // Check durchgeführt.
       if ((Integer) getAbbuchungsmodus()
           .getValue() != Abrechnungsmodi.KEINBEITRAG)
       {
+        Double betrag;
         DBIterator<Mitglied> it2 = AbrechnungSEPA
             .getAbrechnenMitgliederIt(param);
         while (it2.hasNext())
         {
+          boolean mitgliedChecked = false;
+          betrag = null;
           Mitglied m = it2.next();
           Mitglied zahler = m.getZahler();
-          if (flexibel && zahler.getZahlungstermin() != null && !zahler
-              .getZahlungstermin().isAbzurechnen(param.abrechnungsmonat))
+          if (!checkMitgliedBeitraege(m, bugs))
           {
             continue;
           }
-          isLastschrift = isLastschrift || checkMitgliedBeitraege(m,
-              !(Boolean) getSEPACheck().getValue(), bugs);
+          try
+          {
+            betrag = AbrechnungSEPA.getBetrag(m, true, m.getBeitragsgruppe(),
+                param);
+            if (betrag != null
+                && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+            {
+              checkMitgliedKontodaten(zahler, bugs);
+              if (!param.sepacheckdisable)
+              {
+                checkSEPA(zahler, bugs);
+              }
+              mitgliedChecked = true;
+              isLastschrift = true;
+            }
+            DBIterator<SekundaereBeitragsgruppe> sekundaer = Einstellungen
+                .getDBService().createList(SekundaereBeitragsgruppe.class);
+            sekundaer.addFilter("mitglied=?", m.getID());
+            while (sekundaer.hasNext())
+            {
+              SekundaereBeitragsgruppe sb = sekundaer.next();
+              betrag = AbrechnungSEPA.getBetrag(m, false,
+                  sb.getBeitragsgruppe(), param);
+              if (!mitgliedChecked && betrag != null
+                  && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+              {
+                checkMitgliedKontodaten(zahler, bugs);
+                if (!param.sepacheckdisable)
+                {
+                  checkSEPA(zahler, bugs);
+                }
+                mitgliedChecked = true;
+                isLastschrift = true;
+              }
+            }
+          }
+          catch (ApplicationException ex)
+          {
+            bugs.add(new Bug(m, ex.getMessage(), Bug.ERROR));
+          }
         }
       }
 
@@ -348,7 +399,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
             {
               isLastschrift = true;
               checkMitgliedKontodaten(mZahler, bugs);
-              if (!(Boolean) getSEPACheck().getValue())
+              if (!param.sepacheckdisable)
               {
                 checkSEPA(mZahler, bugs);
               }
