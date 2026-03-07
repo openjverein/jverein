@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -63,18 +64,18 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
     SimpleContainer rigth = new SimpleContainer(cl.getComposite());
 
     left.addHeadline("Parameter");
-    left.addLabelPair("Modus", control.getAbbuchungsmodus());
-    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
+    left.addInput(control.getAbbuchungsmodus());
+    left.addInput(control.getFaelligkeit());
     if ((Integer) Einstellungen.getEinstellung(
         Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
     {
-      left.addLabelPair("Abrechnungsmonat", control.getAbrechnungsmonat());
+      left.addInput(control.getAbrechnungsmonat());
     }
-    left.addLabelPair("Stichtag¹", control.getStichtag());
-    left.addLabelPair("Von Eintrittsdatum", control.getVondatum());
-    left.addLabelPair("Von Eingabedatum", control.getVonEingabedatum());
-    left.addLabelPair("Bis Austrittsdatum", control.getBisdatum());
-    left.addLabelPair("Zahlungsgrund für Beiträge", control.getZahlungsgrund());
+    left.addInput(control.getStichtag());
+    left.addInput(control.getVondatum());
+    left.addInput(control.getVonEingabedatum());
+    left.addInput(control.getBisdatum());
+    left.addInput(control.getZahlungsgrund());
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       left.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
@@ -91,7 +92,7 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
     rigth.addLabelPair("SEPA-Check temporär deaktivieren",
         control.getSEPACheck());
     rigth.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
-    rigth.addLabelPair("Abbuchungsausgabe", control.getAbbuchungsausgabe());
+    rigth.addInput(control.getAbbuchungsausgabe());
 
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
@@ -103,9 +104,9 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
         rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      rigth.addLabelPair("Rechnungsformular", control.getRechnungFormular());
-      rigth.addLabelPair("Rechnungstext", control.getRechnungstext());
-      rigth.addLabelPair("Rechnungsdatum", control.getRechnungsdatum());
+      rigth.addInput(control.getRechnungFormular());
+      rigth.addInput(control.getRechnungstext());
+      rigth.addInput(control.getRechnungsdatum());
     }
 
     group.addSeparator();
@@ -124,7 +125,7 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
     below.getComposite().setLayoutData(gridData);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getHelpButton());
+    buttons.addButton(control.getHelpButton(DokumentationUtil.ABRECHNUNG));
     buttons.addButton(control.getZahlungsgrundVariablenButton());
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {

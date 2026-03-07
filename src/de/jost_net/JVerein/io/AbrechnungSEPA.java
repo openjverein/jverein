@@ -38,6 +38,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.kapott.hbci.GV.SepaUtil;
 import org.kapott.hbci.GV.generators.ISEPAGenerator;
 import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
@@ -45,6 +47,7 @@ import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
@@ -101,6 +104,7 @@ import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.messaging.StatusBarMessage;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -109,12 +113,121 @@ public class AbrechnungSEPA
 {
   private int counter = 0;
 
+  private Settings settings = null;
+
   private BackgroundTask interrupt;
 
   private HashMap<String, ArrayList<JVereinZahler>> zahlermap = new HashMap<>();
 
-  public AbrechnungSEPA(AbrechnungSEPAParam param, ProgressMonitor monitor,
-      BackgroundTask backgroundTask) throws Exception
+  public AbrechnungSEPA(AbrechnungSEPAParam param) throws ApplicationException
+  {
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+
+    File sepafilercur = null;
+    if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
+    {
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("SEPA-Ausgabedatei wählen.");
+      String path = settings.getString("lastdir.sepa",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_SEPA_DATEINAME, param)
+              + ".xml");
+      String file = fd.open();
+      if (file == null || file.length() == 0)
+      {
+        throw new ApplicationException("Keine Datei ausgewählt!");
+      }
+      sepafilercur = new File(file);
+      param.sepafileRCUR = sepafilercur;
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
+    }
+
+    // PDF-Datei für Basislastschrift2PDF
+    String pdffileRCUR = null;
+    if (param.sepaprint)
+    {
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("PDF-Ausgabedatei wählen");
+
+      String path = settings.getString("lastdir.pdf",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      fd.setFileName(VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME, param) + ".pdf");
+      pdffileRCUR = fd.open();
+      if (pdffileRCUR == null)
+      {
+        return;
+      }
+      param.pdffileRCUR = pdffileRCUR;
+      File file = new File(pdffileRCUR);
+      // Wir merken uns noch das Verzeichnis fürs nächste mal
+      settings.setAttribute("lastdir.pdf", file.getParent());
+    }
+
+    {
+      BackgroundTask t = new BackgroundTask()
+      {
+        private boolean interrupt = false;
+
+        @Override
+        public void run(ProgressMonitor monitor) throws ApplicationException
+        {
+          try
+          {
+            DBTransaction.starten();
+            doAbrechnungSEPA(param, monitor, this);
+            DBTransaction.commit();
+
+            monitor.setPercentComplete(100);
+            monitor.setStatus(ProgressMonitor.STATUS_DONE);
+            GUI.getStatusBar()
+                .setSuccessText("Abrechnung durchgeführt" + param.getText());
+          }
+          catch (ApplicationException ae)
+          {
+            DBTransaction.rollback();
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+          catch (Exception e)
+          {
+            DBTransaction.rollback();
+            Logger.error("Fehler beim Abrechnungslauf", e);
+            GUI.getStatusBar()
+                .setErrorText("Fehler beim Abrechnungslauf: " + e.getMessage());
+            throw new ApplicationException("Fehler beim Abrechnungslauf", e);
+          }
+        }
+
+        @Override
+        public void interrupt()
+        {
+          interrupt = true;
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+          return interrupt;
+        }
+      };
+      Application.getController().start(t);
+    }
+  }
+
+  private void doAbrechnungSEPA(AbrechnungSEPAParam param,
+      ProgressMonitor monitor, BackgroundTask backgroundTask) throws Exception
   {
     interrupt = backgroundTask;
 

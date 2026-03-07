@@ -21,18 +21,39 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.io.AbrechnungSEPA;
+import de.jost_net.JVerein.io.AbrechnungSEPAParam;
+import de.jost_net.JVerein.io.Bankarbeitstage;
+import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Bug;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -41,17 +62,55 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
+import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbstractAbrechnungControl
+public abstract class AbstractAbrechnungControl
 {
   protected final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
 
-  protected LabelInput status = null;
+  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
+
+  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
+      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
+      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
+
+  private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
+
+  protected LabelInput status;
+
+  private DateInput faelligkeit;
+
+  private DateInput stichtag;
+
+  private CheckboxInput sollbuchungenzusammenfassen;
+
+  private CheckboxInput kompakteabbuchung;
+
+  private CheckboxInput sepacheck;
+
+  private CheckboxInput sepaprint;
+
+  private SelectInput ausgabe;
+
+  private CheckboxInput rechnung;
+
+  private CheckboxInput rechnungsdokumentspeichern;
+
+  private FormularInput rechnungsformular;
+
+  private TextInput rechnungstext;
+
+  private DateInput rechnungsdatum;
 
   protected JVereinTablePart bugsList;
 
@@ -61,8 +120,13 @@ public class AbstractAbrechnungControl
 
   private Beitragsmodel beitragsmodel;
 
+  protected Settings settings = null;
+
   public AbstractAbrechnungControl() throws RemoteException
   {
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+
     Calendar cal = Calendar.getInstance();
     cal.add(Calendar.MONTH, -36);
     sepagueltigkeit = cal.getTime();
@@ -81,6 +145,318 @@ public class AbstractAbrechnungControl
     }
     status = new LabelInput("");
     return status;
+  }
+
+  public DateInput getFaelligkeit() throws RemoteException
+  {
+    if (faelligkeit != null)
+    {
+      return faelligkeit;
+    }
+    Calendar cal = Calendar.getInstance();
+    Bankarbeitstage bat = new Bankarbeitstage();
+    cal = bat.getCalendar(cal,
+        1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
+    this.faelligkeit = new DateInput(cal.getTime(), new JVDateFormatTTMMJJJJ());
+    this.faelligkeit.setTitle("Fälligkeit");
+    this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
+    faelligkeit.addListener(event -> {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (faelligkeit.getValue() != null && stichtag != null
+          && getStichtag().getValue() == null)
+      {
+        getStichtag().setValue(faelligkeit.getValue());
+      }
+    });
+    faelligkeit.setMandatory(true);
+    faelligkeit.setName("Fälligkeit");
+    return faelligkeit;
+  }
+
+  public DateInput getStichtag()
+  {
+    if (stichtag != null)
+    {
+      return stichtag;
+    }
+    this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.stichtag.setTitle("Stichtag für die Abrechnung");
+    this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
+    stichtag.setMandatory(true);
+    stichtag.setName("Stichtag¹");
+    return stichtag;
+  }
+
+  public boolean isStichtagSupported()
+  {
+    return stichtag != null;
+  }
+
+  public SelectInput getAbbuchungsausgabe()
+  {
+    if (ausgabe != null)
+    {
+      return ausgabe;
+    }
+    Abrechnungsausgabe aus = Abrechnungsausgabe.getByKey(settings
+        .getInt("abrechnungsausgabe", Abrechnungsausgabe.SEPA_DATEI.getKey()));
+    if (aus != Abrechnungsausgabe.SEPA_DATEI
+        && aus != Abrechnungsausgabe.HIBISCUS
+        && aus != Abrechnungsausgabe.KEINE_DATEI)
+    {
+      aus = Abrechnungsausgabe.HIBISCUS;
+    }
+    ausgabe = new SelectInput(Abrechnungsausgabe.values(), aus);
+    ausgabe.setName("Abbuchungsausgabe");
+    return ausgabe;
+  }
+
+  public CheckboxInput getKompakteAbbuchung()
+  {
+    if (kompakteabbuchung != null)
+    {
+      return kompakteabbuchung;
+    }
+    kompakteabbuchung = new CheckboxInput(
+        settings.getBoolean("kompakteabbuchung", false));
+    kompakteabbuchung.addListener(new KompaktListener());
+    return kompakteabbuchung;
+  }
+
+  public CheckboxInput getSollbuchungenZusammenfassen()
+  {
+    if (sollbuchungenzusammenfassen != null)
+    {
+      return sollbuchungenzusammenfassen;
+    }
+    sollbuchungenzusammenfassen = new CheckboxInput(
+        settings.getBoolean("sollbuchungenzusammenfassen", false));
+    sollbuchungenzusammenfassen.addListener(new ZusammenfassenListener());
+    return sollbuchungenzusammenfassen;
+  }
+
+  public CheckboxInput getRechnung()
+  {
+    if (rechnung != null)
+    {
+      return rechnung;
+    }
+    rechnung = new CheckboxInput(settings.getBoolean("rechnung", false));
+    rechnung.addListener(new RechnungListener());
+    return rechnung;
+  }
+
+  public boolean isRechnungSupported()
+  {
+    return rechnung != null;
+  }
+
+  public CheckboxInput getRechnungsdokumentSpeichern()
+  {
+    if (rechnungsdokumentspeichern != null)
+    {
+      return rechnungsdokumentspeichern;
+    }
+    rechnungsdokumentspeichern = new CheckboxInput(
+        settings.getBoolean("rechnungsdokumentspeichern", false));
+    rechnungsdokumentspeichern
+        .setEnabled(settings.getBoolean("rechnung", false));
+    return rechnungsdokumentspeichern;
+  }
+
+  public boolean isRechnungsdokumentSupported()
+  {
+    return rechnungsdokumentspeichern != null;
+  }
+
+  public FormularInput getRechnungFormular() throws RemoteException
+  {
+    if (rechnungsformular != null)
+    {
+      return rechnungsformular;
+    }
+    rechnungsformular = new FormularInput(FormularArt.RECHNUNG,
+        settings.getString("rechnungsformular", ""));
+    updateRechnungsformular();
+    rechnungsformular.setName("Rechnungsformular");
+    return rechnungsformular;
+  }
+
+  public TextInput getRechnungstext()
+  {
+    if (rechnungstext != null)
+    {
+      return rechnungstext;
+    }
+    rechnungstext = new TextInput(
+        settings.getString("rechnungstext", "RE$rechnung_nummer"));
+    rechnungstext.setEnabled((boolean) rechnung.getValue());
+    rechnungstext.setHint("Wenn leer Zahlungsgrund");
+    rechnungstext.setName("Rechnungstext");
+    return rechnungstext;
+  }
+
+  public DateInput getRechnungsdatum()
+  {
+    if (rechnungsdatum != null)
+    {
+      return rechnungsdatum;
+    }
+    rechnungsdatum = new DateInput(new Date());
+    rechnungsdatum.setMandatory((boolean) rechnung.getValue());
+    rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+    rechnungsdatum.setName("Rechnungsdatum");
+    return rechnungsdatum;
+  }
+
+  public CheckboxInput getSEPAPrint()
+  {
+    if (sepaprint != null)
+    {
+      return sepaprint;
+    }
+    sepaprint = new CheckboxInput(settings.getBoolean("sepaprint", false));
+    return sepaprint;
+  }
+
+  public CheckboxInput getSEPACheck()
+  {
+    if (sepacheck != null)
+    {
+      return sepacheck;
+    }
+    sepacheck = new CheckboxInput(false);
+    sepacheck.addListener(new Listener()
+    {
+      @Override
+      public void handleEvent(Event event)
+      {
+        // Bei temporär deaktivieren den User fragen
+        if ((Boolean) sepacheck.getValue())
+        {
+          if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
+          {
+            sepacheck.setValue(false);
+          }
+        }
+      }
+    });
+    return sepacheck;
+  }
+
+  public static boolean confirmDialog(String title, String text)
+  {
+    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    d.setTitle(title);
+    d.setText(text);
+    try
+    {
+      Boolean choice = (Boolean) d.open();
+      if (!choice.booleanValue())
+      {
+        return false;
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error(CONFIRM_FEHLER, e);
+      return false;
+    }
+    return true;
+  }
+
+  public class RechnungListener implements Listener
+  {
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      updateRechnungsformular();
+      rechnungstext.setEnabled((boolean) rechnung.getValue());
+      rechnungsdatum.setMandatory((boolean) rechnung.getValue());
+      rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      if (rechnungsdokumentspeichern != null)
+      {
+        rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
+      }
+    }
+  }
+
+  private void updateRechnungsformular()
+  {
+    // Die Reihenfolge von mandatory und enabled ist abhängig von
+    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
+    if ((boolean) rechnung.getValue())
+    {
+      rechnungsformular.setEnabled(true);
+      rechnungsformular.setMandatory(true);
+    }
+    else
+    {
+      rechnungsformular.setMandatory(false);
+      rechnungsformular.setEnabled(false);
+    }
+  }
+
+  public class ZusammenfassenListener implements Listener
+  {
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if ((boolean) sollbuchungenzusammenfassen.getValue())
+      {
+        kompakteabbuchung.setValue(true);
+      }
+    }
+  }
+
+  public class KompaktListener implements Listener
+  {
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      if (!(boolean) kompakteabbuchung.getValue())
+      {
+        sollbuchungenzusammenfassen.setValue(false);
+      }
+    }
+  }
+
+  // ======== Buttons ========
+
+  public Button getHelpButton(String link)
+  {
+    Button b = new Button("Hilfe", new DokumentationAction(), link, false,
+        "question-circle.png");
+    return b;
+  }
+
+  public Button getZahlungsgrundVariablenButton() throws RemoteException
+  {
+    Button b = new Button("Zahlungsgrund Variablen",
+        new ZahlungsgrundVariableDialogAction(), null, false, "bookmark.png");
+    return b;
+  }
+
+  public Button getRechnungstextVariablenButton() throws RemoteException
+  {
+    Button b = new Button("Rechnungstext Variablen",
+        new RechnungVariableDialogAction(), null, false, "bookmark.png");
+    return b;
   }
 
   public Button getPruefenButton()
@@ -140,7 +516,8 @@ public class AbstractAbrechnungControl
               return;
             }
           }
-          handleStart();
+          saveSettings();
+          new AbrechnungSEPA(getAbrechnungSEPAParam());
           dialog.close();
         }
         catch (ApplicationException e)
@@ -154,18 +531,6 @@ public class AbstractAbrechnungControl
       }
     }, null, true, "walking.png");
     return button;
-  }
-
-  // Checks müssen in den abgeleiteten Klassen implementiert werden
-  protected String checkInput()
-  {
-    return null;
-  }
-
-  // Die Ausgabe muss in den abgeleiteten Klassen implementiert werden
-  protected void handleStart() throws RemoteException, ApplicationException
-  {
-    //
   }
 
   public Button getAbbrechenButton(AbstractDialog<Boolean> dialog)
@@ -224,12 +589,6 @@ public class AbstractAbrechnungControl
       bugsList.addItem(bug);
     }
     bugsList.sort();
-  }
-
-  // die Liste muss in den abgeleiteten Klassen implementiert werden
-  public List<Bug> getBugs()
-  {
-    return new ArrayList<Bug>();
   }
 
   /**
@@ -377,6 +736,7 @@ public class AbstractAbrechnungControl
     {
       if (zahlunswegLastschrift && m.getIndividuellerBeitrag() > 0)
       {
+        checkMitgliedKontodaten(m.getZahler(), bugs);
         if (sepacheck)
         {
           checkSEPA(m.getZahler(), bugs);
@@ -398,6 +758,7 @@ public class AbstractAbrechnungControl
           }
           else if (zahlunswegLastschrift && betrag > 0)
           {
+            checkMitgliedKontodaten(m.getZahler(), bugs);
             if (sepacheck)
             {
               checkSEPA(m.getZahler(), bugs);
@@ -420,6 +781,7 @@ public class AbstractAbrechnungControl
                   || m.getBeitragsgruppe().getBetragHalbjaehrlich() > 0
                   || m.getBeitragsgruppe().getBetragJaehrlich() > 0))
           {
+            checkMitgliedKontodaten(m.getZahler(), bugs);
             if (sepacheck)
             {
               checkSEPA(m.getZahler(), bugs);
@@ -444,16 +806,6 @@ public class AbstractAbrechnungControl
   public void checkMitgliedKontodaten(Mitglied m, ArrayList<Bug> bugs)
       throws RemoteException
   {
-    if (m.getMandatDatum().equals(Einstellungen.NODATE))
-    {
-      bugs.add(new Bug(m, "Für die Basislastschrift fehlt das Mandatsdatum!",
-          Bug.ERROR));
-    }
-    else if (m.getMandatDatum().after(new Date()))
-    {
-      bugs.add(new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
-    }
-
     if (m.getIban() == null || m.getIban().isEmpty())
     {
       bugs.add(
@@ -499,25 +851,142 @@ public class AbstractAbrechnungControl
    */
   public void checkSEPA(Mitglied m, ArrayList<Bug> bugs) throws RemoteException
   {
-    if (!m.getMandatDatum().equals(Einstellungen.NODATE))
+    if (m.getMandatDatum().equals(Einstellungen.NODATE))
     {
-      if (m.getLetzteLastschrift() == null
-          && m.getMandatDatum().before(sepagueltigkeit))
-      {
-        bugs.add(new Bug(m,
-            "Das Mandat ist älter als 36 Monate und es existiert noch keine Lastschrift in JVerein.\n"
-                + "Neues Mandat anfordern und eingeben oder den SEPA-Check temporär deaktivieren.",
-            Bug.ERROR));
-      }
+      bugs.add(new Bug(m, "Für die Basislastschrift fehlt das Mandatsdatum!",
+          Bug.ERROR));
+    }
+    else if (m.getMandatDatum().after(new Date()))
+    {
+      bugs.add(new Bug(m, "Das Mandatsdatum liegt in der Zukunft!", Bug.ERROR));
+    }
 
-      if (m.getLetzteLastschrift() != null
-          && m.getLetzteLastschrift().before(sepagueltigkeit)
-          && m.getMandatDatum().before(sepagueltigkeit))
+    if (m.getLetzteLastschrift() == null
+        && m.getMandatDatum().before(sepagueltigkeit))
+    {
+      bugs.add(new Bug(m,
+          "Das Mandat ist älter als 36 Monate und es existiert noch keine Lastschrift in JVerein.\n"
+              + "Neues Mandat anfordern und eingeben oder den SEPA-Check temporär deaktivieren.",
+          Bug.ERROR));
+    }
+
+    if (m.getLetzteLastschrift() != null
+        && m.getLetzteLastschrift().before(sepagueltigkeit)
+        && m.getMandatDatum().before(sepagueltigkeit))
+    {
+      bugs.add(new Bug(m,
+          "Letzte Lastschrift und das Mandat sind älter als 36 Monate.\nNeues Mandat anfordern und eingeben.",
+          Bug.ERROR));
+    }
+  }
+
+  protected void saveSettings()
+  {
+    try
+    {
+      settings.setAttribute("kompakteabbuchung",
+          (Boolean) kompakteabbuchung.getValue());
+      settings.setAttribute("sollbuchungenzusammenfassen",
+          (Boolean) sollbuchungenzusammenfassen.getValue());
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        bugs.add(new Bug(m,
-            "Letzte Lastschrift und das Mandat sind älter als 36 Monate.\nNeues Mandat anfordern und eingeben.",
-            Bug.ERROR));
+        settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+        if ((Boolean) Einstellungen
+            .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+            && JVereinPlugin.isArchiveServiceActive())
+        {
+          settings.setAttribute("rechnungsdokumentspeichern",
+              (Boolean) rechnungsdokumentspeichern.getValue());
+        }
+        settings.setAttribute("rechnungstext",
+            (String) rechnungstext.getValue());
+        settings.setAttribute("rechnungsformular",
+            rechnungsformular.getValue() == null ? null
+                : ((Formular) rechnungsformular.getValue()).getID());
+      }
+      settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
+      Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe()
+          .getValue();
+      settings.setAttribute("abrechnungsausgabe", aa.getKey());
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler", re);
+    }
+  }
+
+  private class ZahlungsgrundVariableDialogAction implements Action
+  {
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        Map<String, Object> zmap = new AllgemeineMap().getMap(null);
+        zmap = new AbrechnungsParameterMap().getMap(getAbrechnungSEPAParam(),
+            zmap);
+        zmap = MitgliedMap.getDummyMap(zmap);
+        new InsertVariableDialogAction(zmap).handleAction(null);
+      }
+      catch (RemoteException re)
+      {
+        //
       }
     }
   }
+
+  private class RechnungVariableDialogAction implements Action
+  {
+
+    @Override
+    public void handleAction(Object context) throws ApplicationException
+    {
+      try
+      {
+        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
+        rmap = new AbrechnungsParameterMap().getMap(getAbrechnungSEPAParam(),
+            rmap);
+        rmap = MitgliedMap.getDummyMap(rmap);
+        rmap = RechnungMap.getDummyMap(rmap);
+        new InsertVariableDialogAction(rmap).handleAction(null);
+      }
+      catch (RemoteException re)
+      {
+        //
+      }
+    }
+  }
+
+  protected AbrechnungSEPAParam getAbrechnungSEPAParam()
+      throws ApplicationException
+  {
+    SepaVersion sepaVersion = null;
+    try
+    {
+      sepaVersion = SepaVersion
+          .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION));
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException(e);
+    }
+    final AbrechnungSEPAParam abupar;
+    try
+    {
+      abupar = getSEPAParam(sepaVersion);
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(e);
+    }
+    return abupar;
+  }
+
+  protected abstract List<Bug> getBugs();
+
+  protected abstract AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
+      throws RemoteException, ApplicationException;
+
+  protected abstract String checkInput();
 }

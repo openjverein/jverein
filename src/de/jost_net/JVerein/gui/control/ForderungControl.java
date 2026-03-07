@@ -4,22 +4,13 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.RechnungMap;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
-import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput.AbbuchungsmodusObject;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
-import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -31,11 +22,8 @@ import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.server.Bug;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -46,27 +34,19 @@ public class ForderungControl extends AbstractAbrechnungControl
 
   private CheckboxInput vorlageSpeichernInput;
 
-  private TextInput rechnungsTextInput;
-
   private boolean einstellungRechnungAnzeigen = false;
 
   private boolean einstellungBuchungsklasseInBuchung = false;
 
   private boolean einstellungSteuerInBuchung = false;
 
-  final AbrechnungSEPAControl sepaControl = new AbrechnungSEPAControl();
-
-  private Settings settings = null;
-
   private Zusatzbetrag zusatzb;
 
-  private ZusatzbetragPart part;
+  private final ZusatzbetragPart part;
 
   public ForderungControl(Mitglied[] mitglieder) throws RemoteException
   {
     super();
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
 
     einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
@@ -84,11 +64,6 @@ public class ForderungControl extends AbstractAbrechnungControl
     return part;
   }
 
-  public AbrechnungSEPAControl getSepaControl()
-  {
-    return sepaControl;
-  }
-
   public CheckboxInput getVorlageSpeichernInput()
   {
     if (vorlageSpeichernInput != null)
@@ -99,55 +74,12 @@ public class ForderungControl extends AbstractAbrechnungControl
     return vorlageSpeichernInput;
   }
 
-  public Button getHelpButton()
-  {
-    Button b = new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.FORDERUNG, false, "question-circle.png");
-    return b;
-  }
-
-  public TextInput getRechnungsTextInput()
-  {
-    if (rechnungsTextInput != null)
-    {
-      return rechnungsTextInput;
-    }
-    rechnungsTextInput = sepaControl.getRechnungstext();
-    rechnungsTextInput.setHint("Wenn leer Zahlungsgrund");
-    return rechnungsTextInput;
-  }
-
-  public Button getZahlungsgrundVariablenButton() throws RemoteException
-  {
-    Button b = new Button("Zahlungsgrund Variablen",
-        new ZahlungsgrundVariableDialogAction(), null, false, "bookmark.png");
-    return b;
-  }
-
-  public Button getRechnungstextVariablenButton() throws RemoteException
-  {
-    Button b = new Button("Rechnungstext Variablen",
-        new RechnungVariableDialogAction(), null, false, "bookmark.png");
-    return b;
-  }
-
   public Button getVorlagenButton() throws RemoteException
   {
     Button b = new Button("Vorlagen",
         new ZusatzbetragVorlageAuswahlAction(part), null, false,
         "view-refresh.png");
     return b;
-  }
-
-  @Override
-  protected void handleStart() throws RemoteException, ApplicationException
-  {
-    saveSettings(part);
-    sepaControl.getZahlungsgrund()
-        .setValue((String) part.getBuchungstext().getValue());
-    sepaControl.getAbbuchungsmodus()
-        .setValue(new AbbuchungsmodusObject(Abrechnungsmodi.FORDERUNG));
-    sepaControl.startZusatzbetragAbrechnung(getZusatzbetraegeList(part));
   }
 
   @Override
@@ -166,12 +98,11 @@ public class ForderungControl extends AbstractAbrechnungControl
           if (global)
           {
             checkGlobal(bugs);
-            checkFaelligkeit((Date) sepaControl.getFaelligkeit().getValue(),
-                bugs);
+            checkFaelligkeit((Date) getFaelligkeit().getValue(), bugs);
             global = false;
           }
           checkMitgliedKontodaten(m, bugs);
-          if (!(Boolean) sepaControl.getSEPACheck().getValue())
+          if (!(Boolean) getSEPACheck().getValue())
           {
             checkSEPA(m, bugs);
           }
@@ -269,7 +200,7 @@ public class ForderungControl extends AbstractAbrechnungControl
     return zusatzb;
   }
 
-  private List<Zusatzbetrag> getZusatzbetraegeList(ZusatzbetragPart part)
+  public List<Zusatzbetrag> getZusatzbetraegeList()
       throws RemoteException, ApplicationException
   {
     List<Zusatzbetrag> list = new ArrayList<>();
@@ -279,10 +210,10 @@ public class ForderungControl extends AbstractAbrechnungControl
           .createObject(Zusatzbetrag.class, null);
       zb.setBetrag((Double) part.getBetrag().getValue());
       zb.setBuchungstext((String) part.getBuchungstext().getValue());
-      zb.setFaelligkeit((Date) sepaControl.getFaelligkeit().getValue());
+      zb.setFaelligkeit((Date) getFaelligkeit().getValue());
       zb.setIntervall(IntervallZusatzzahlung.KEIN);
       zb.setMitglied(Integer.parseInt(mit.getID()));
-      zb.setStartdatum((Date) sepaControl.getFaelligkeit().getValue());
+      zb.setStartdatum((Date) getFaelligkeit().getValue());
       zb.setBuchungsart((Buchungsart) part.getBuchungsart().getValue());
       zb.setBuchungsklasseId(part.getSelectedBuchungsKlasseId());
       if (part.isSteuerActive())
@@ -320,15 +251,15 @@ public class ForderungControl extends AbstractAbrechnungControl
   {
     try
     {
-      if (sepaControl.getFaelligkeit().getValue() == null)
+      if (getFaelligkeit().getValue() == null)
       {
         return ("Bitte Fälligkeit eingeben");
       }
       Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
-      if (sepaControl.getFaelligkeit().getValue() != null && weg != null
+      if (getFaelligkeit().getValue() != null && weg != null
           && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
-        if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
+        if (((Date) getFaelligkeit().getValue()).before(new Date()))
         {
           return ("Fälligkeit muss bei Lastschriften in der Zukunft liegen!");
         }
@@ -374,14 +305,13 @@ public class ForderungControl extends AbstractAbrechnungControl
         }
       }
 
-      if (einstellungRechnungAnzeigen
-          && (boolean) sepaControl.getRechnung().getValue())
+      if (einstellungRechnungAnzeigen && (boolean) getRechnung().getValue())
       {
-        if (sepaControl.getRechnungFormular().getValue() == null)
+        if (getRechnungFormular().getValue() == null)
         {
           return ("Bitte Rechnungsformular auswählen");
         }
-        if (sepaControl.getRechnungsdatum().getValue() == null)
+        if (getRechnungsdatum().getValue() == null)
         {
           return ("Bitte Rechnungsdatum auswählen");
         }
@@ -395,8 +325,10 @@ public class ForderungControl extends AbstractAbrechnungControl
     return null;
   }
 
-  private void saveSettings(ZusatzbetragPart part)
+  @Override
+  protected void saveSettings()
   {
+    super.saveSettings();
     try
     {
       settings.setAttribute("buchungstext",
@@ -461,52 +393,10 @@ public class ForderungControl extends AbstractAbrechnungControl
     }
   }
 
-  private class ZahlungsgrundVariableDialogAction implements Action
+  @Override
+  protected AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
+      throws RemoteException, ApplicationException
   {
-
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      try
-      {
-        sepaControl.getZahlungsgrund()
-            .setValue((String) part.getBuchungstext().getValue());
-
-        Map<String, Object> map = new AllgemeineMap().getMap(null);
-        map = new AbrechnungsParameterMap().getMap(
-            new AbrechnungSEPAParam(sepaControl, null, null, null), map);
-        map = MitgliedMap.getDummyMap(map);
-        new InsertVariableDialogAction(map).handleAction(null);
-      }
-      catch (RemoteException re)
-      {
-        //
-      }
-    }
-  }
-
-  private class RechnungVariableDialogAction implements Action
-  {
-
-    @Override
-    public void handleAction(Object context) throws ApplicationException
-    {
-      try
-      {
-        sepaControl.getZahlungsgrund()
-            .setValue((String) part.getBuchungstext().getValue());
-
-        Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-        rmap = new AbrechnungsParameterMap().getMap(
-            new AbrechnungSEPAParam(sepaControl, null, null, null), rmap);
-        rmap = MitgliedMap.getDummyMap(rmap);
-        rmap = RechnungMap.getDummyMap(rmap);
-        new InsertVariableDialogAction(rmap).handleAction(null);
-      }
-      catch (RemoteException re)
-      {
-        //
-      }
-    }
+    return new AbrechnungSEPAParam(this, sepaVersion);
   }
 }

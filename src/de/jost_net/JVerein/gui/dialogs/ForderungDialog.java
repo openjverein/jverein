@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.ForderungControl;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -75,7 +76,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
     left.addHeadline("Forderung");
-    left.addLabelPair("Fälligkeit ", control.getSepaControl().getFaelligkeit());
+    left.addLabelPair("Fälligkeit ", control.getFaelligkeit());
     left.addLabelPair("Zahlungsgrund", control.getPart().getBuchungstext());
     left.addLabelPair("Betrag", control.getPart().getBetrag());
     left.addLabelPair("Buchungsart", control.getPart().getBuchungsart());
@@ -97,33 +98,27 @@ public class ForderungDialog extends AbstractDialog<Boolean>
 
     right.addHeadline("Sollbuchungen");
     right.addLabelPair("Sollbuchungen zusammenfassen",
-        control.getSepaControl().getSollbuchungenZusammenfassen());
+        control.getSollbuchungenZusammenfassen());
 
     right.addHeadline("Lastschriften");
-    right.addLabelPair("Kompakte Abbuchung",
-        control.getSepaControl().getKompakteAbbuchung());
+    right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
     right.addLabelPair("SEPA-Check temporär deaktivieren",
-        control.getSepaControl().getSEPACheck());
-    right.addLabelPair("Lastschrift-PDF erstellen",
-        control.getSepaControl().getSEPAPrint());
-    right.addLabelPair("Abbuchungsausgabe",
-        control.getSepaControl().getAbbuchungsausgabe());
+        control.getSEPACheck());
+    right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
+    right.addInput(control.getAbbuchungsausgabe());
 
     if (einstellungRechnungAnzeigen)
     {
       right.addHeadline("Rechnungen");
-      right.addLabelPair("Rechnung erstellen",
-          control.getSepaControl().getRechnung());
+      right.addLabelPair("Rechnung erstellen", control.getRechnung());
       if (einstellungSpeicherungAnzeigen)
       {
         right.addLabelPair("Rechnung als Buchungsdokument speichern",
-            control.getSepaControl().getRechnungsdokumentSpeichern());
+            control.getRechnungsdokumentSpeichern());
       }
-      right.addLabelPair("Rechnungsformular",
-          control.getSepaControl().getRechnungFormular());
-      right.addLabelPair("Rechnungstext", control.getRechnungsTextInput());
-      right.addLabelPair("Rechnungsdatum",
-          control.getSepaControl().getRechnungsdatum());
+      right.addInput(control.getRechnungFormular());
+      right.addInput(control.getRechnungstext());
+      right.addInput(control.getRechnungsdatum());
     }
 
     LabelGroup below = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
@@ -135,7 +130,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     below.getComposite().setLayoutData(gridData);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getHelpButton());
+    buttons.addButton(control.getHelpButton(DokumentationUtil.FORDERUNG));
     buttons.addButton(control.getZahlungsgrundVariablenButton());
     if (einstellungRechnungAnzeigen)
     {
