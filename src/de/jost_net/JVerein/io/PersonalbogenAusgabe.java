@@ -341,17 +341,17 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         {
           rpt.addColumn("Familienmitglieder im Familienverband",
               Element.ALIGN_LEFT);
-          String zahltfuer = "";
+          String familienmitglieder = "";
           while (itbg.hasNext())
           {
             Mitglied mz = itbg.next();
-            if (zahltfuer.length() > 0)
+            if (familienmitglieder.length() > 0)
             {
-              zahltfuer += "\n";
+              familienmitglieder += "\n";
             }
-            zahltfuer += Adressaufbereitung.getNameVorname(mz);
+            familienmitglieder += Adressaufbereitung.getNameVorname(mz);
           }
-          rpt.addColumn(zahltfuer, Element.ALIGN_LEFT);
+          rpt.addColumn(familienmitglieder, Element.ALIGN_LEFT);
         }
       }
       else if (m.getBeitragsgruppe()
