@@ -95,8 +95,14 @@ public class ForderungControl extends AbstractAbrechnungControl
 
       for (Mitglied m : mitglieder)
       {
+        Mitglied zahler = m.getZahler();
+        if ((Boolean) part.getMitgliedzahltSelbst().getValue())
+        {
+          zahler = m;
+        }
         Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
-        if ((weg == null && m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+        if ((weg == null
+            && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
             || (weg != null && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT))
         {
           if (global)
@@ -105,10 +111,10 @@ public class ForderungControl extends AbstractAbrechnungControl
             checkFaelligkeit((Date) getFaelligkeit().getValue(), bugs);
             global = false;
           }
-          checkMitgliedKontodaten(m, bugs);
+          checkMitgliedKontodaten(zahler, bugs);
           if (!(Boolean) getSEPACheck().getValue())
           {
-            checkSEPA(m, bugs);
+            checkSEPA(zahler, bugs);
           }
         }
       }
