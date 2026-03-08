@@ -29,6 +29,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
@@ -76,8 +78,12 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
-    TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true, 1);
-    control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
+    if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+    {
+      TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
+          1);
+      control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
+    }
 
     // Aktiver zuletzt ausgewählter Tab.
     if (tabindex != -1)

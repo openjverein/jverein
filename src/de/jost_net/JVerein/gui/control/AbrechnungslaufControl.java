@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -34,13 +35,13 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
+import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
-import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
@@ -385,7 +386,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
 
     buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
-        new EditAction(BuchungDetailView.class));
+        new BuchungAction(false, null));
     buchungList.addColumn("Nr", "id-int");
     buchungList.addColumn("Geprüft", "geprueft",
         o -> (Boolean) o ? "\u2705" : "");
@@ -451,7 +452,9 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
         Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
     buchungList.setMulti(true);
-    // buchungList.setContextMenu(new BuchungMenu(this));
+
+    // TODO das geht nicht, da hier das BuchungsControl gebraucht wird
+    // buchungList.setContextMenu(new BuchungMenu(null));
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);
 
@@ -487,6 +490,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     {
       sollbuchungList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
     }
+    sollbuchungList.setContextMenu(new SollbuchungMenu(null));
     sollbuchungList.setRememberColWidths(true);
     sollbuchungList.setRememberOrder(true);
     sollbuchungList.setMulti(true);
