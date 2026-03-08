@@ -318,7 +318,6 @@ public class KontoControl extends FilterControl implements Savable
         Logger.info("Anfangsbestand für neues Konto " + konto.getBezeichnung()
             + " gespeichert");
       }
-      konto.store();
       DBTransaction.commit();
     }
     catch (RemoteException e)
