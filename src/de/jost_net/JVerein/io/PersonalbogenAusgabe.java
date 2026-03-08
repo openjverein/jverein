@@ -339,7 +339,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         itbg.addFilter("zahlerid = ?", m.getID());
         if (itbg.hasNext())
         {
-          rpt.addColumn("Vollzahler mit Angehörigen", Element.ALIGN_LEFT);
+          rpt.addColumn("Familienmitglieder im Familienverband",
+              Element.ALIGN_LEFT);
           String zahltfuer = "";
           while (itbg.hasNext())
           {
