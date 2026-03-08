@@ -631,34 +631,6 @@ public abstract class AbstractAbrechnungControl
    */
   public void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
   {
-    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
-    {
-      bugs.add(new Bug(null,
-          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
-          Bug.ERROR));
-    }
-    else
-    {
-      try
-      {
-        Konto k = Einstellungen.getDBService().createObject(Konto.class,
-            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
-                .toString());
-        if (k == null)
-        {
-          bugs.add(new Bug(null,
-              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-              Bug.ERROR));
-        }
-      }
-      catch (ObjectNotFoundException ex)
-      {
-        bugs.add(new Bug(null,
-            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-            Bug.ERROR));
-      }
-    }
-
     if (Einstellungen.getEinstellung(Property.NAME) == null
         || ((String) Einstellungen.getEinstellung(Property.NAME)).isEmpty())
     {
