@@ -91,46 +91,54 @@ public class PersonalbogenMailView extends AbstractView
       cont1.addInput(control.getInfo());
     }
 
-    SimpleVerticalContainer cont2 = new SimpleVerticalContainer(getParent(),
-        false, 4);
+    SimpleContainer cont2 = new SimpleContainer(getParent(), false);
     cont2.addHeadline("Parameter");
     cont2.addInput(control.getAusgabeart());
 
+    SimpleVerticalContainer vContainer = new SimpleVerticalContainer(
+        getParent(), false, 3);
+
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
-      cont2.addLabelPair("Zusatzbetrag drucken", control.getZusatzbetrag());
+      vContainer.addLabelPair("Zusatzbetrag drucken",
+          control.getZusatzbetrag());
     }
-    cont2.addLabelPair("Mitgliedskonto drucken", control.getMitgliedskonto());
+    vContainer.addLabelPair("Mitgliedskonto drucken",
+        control.getMitgliedskonto());
 
     if ((boolean) Einstellungen.getEinstellung(Property.VERMERKE))
     {
-      cont2.addLabelPair("Vermerk drucken", control.getVermerk());
+      vContainer.addLabelPair("Vermerk drucken", control.getVermerk());
     }
     if ((boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
     {
-      cont2.addLabelPair("Wiedervorlage drucken", control.getWiedervorlage());
+      vContainer.addLabelPair("Wiedervorlage drucken",
+          control.getWiedervorlage());
     }
     if ((boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
-      cont2.addLabelPair("Lehrgang drucken", control.getLehrgang());
+      vContainer.addLabelPair("Lehrgang drucken", control.getLehrgang());
     }
     if ((boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
-      cont2.addLabelPair("Zusatzfelder drucken", control.getZusatzfelder());
+      vContainer.addLabelPair("Zusatzfelder drucken",
+          control.getZusatzfelder());
     }
 
-    cont2.addLabelPair("Eigenschaften drucken", control.getEigenschaften());
+    vContainer.addLabelPair("Eigenschaften drucken",
+        control.getEigenschaften());
     if ((boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
-      cont2.addLabelPair("Arbeitseinsatz drucken", control.getArbeitseinsatz());
+      vContainer.addLabelPair("Arbeitseinsatz drucken",
+          control.getArbeitseinsatz());
     }
     if ((boolean) Einstellungen
         .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
     {
-      cont2.addLabelPair("Spendenbescheinigungen drucken",
+      vContainer.addLabelPair("Spendenbescheinigungen drucken",
           control.getSpendenbescheinigung());
     }
-    cont2.arrangeVertically();
+    vContainer.arrangeVertically();
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Mail");
