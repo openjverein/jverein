@@ -37,6 +37,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.control.PersonalbogenControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -75,6 +76,13 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   private FileOutputStream fos;
 
   private Reporter rpt;
+
+  private PersonalbogenControl control;
+
+  public PersonalbogenAusgabe(PersonalbogenControl control)
+  {
+    this.control = control;
+  }
 
   @Override
   public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
@@ -129,7 +137,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       File file, DBObject object)
       throws IOException, DocumentException, ApplicationException
   {
-    generierePersonalbogen(file, (Mitglied) object);
+    generierePersonalbogen(file, (Mitglied) object, control);
   }
 
   @Override
@@ -149,8 +157,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     return null;
   }
 
-  private void generierePersonalbogen(File file, Mitglied m)
-      throws IOException, ApplicationException
+  private void generierePersonalbogen(File file, Mitglied m,
+      PersonalbogenControl control) throws IOException, ApplicationException
   {
     try
     {
@@ -182,33 +190,57 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
 
       generiereMitglied(rpt, m);
 
-      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG)
+          && control.getZusatzbetrag() != null
+          && (boolean) control.getZusatzbetrag().getValue())
       {
         generiereZusatzbetrag(rpt, m);
       }
-      generiereMitgliedskonto(rpt, m);
+      if (control.getMitgliedskonto() != null
+          && (boolean) control.getMitgliedskonto().getValue())
+      {
+        generiereMitgliedskonto(rpt, m);
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.VERMERKE)
           && ((m.getVermerk1() != null && m.getVermerk1().length() > 0)
-              || (m.getVermerk2() != null && m.getVermerk2().length() > 0)))
+              || (m.getVermerk2() != null && m.getVermerk2().length() > 0))
+          && control.getVermerk() != null
+          && (boolean) control.getVermerk().getValue())
       {
         generiereVermerke(rpt, m);
       }
-      if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
+      if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE)
+          && control.getWiedervorlage() != null
+          && (boolean) control.getWiedervorlage().getValue())
       {
         generiereWiedervorlagen(rpt, m);
       }
-      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE)
+          && control.getLehrgang() != null
+          && (boolean) control.getLehrgang().getValue())
       {
         generiereLehrgaenge(rpt, m);
       }
-      generiereZusatzfelder(rpt, m);
-      generiereEigenschaften(rpt, m);
-      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
+      if (control.getZusatzfelder() != null
+          && (boolean) control.getZusatzfelder().getValue())
+      {
+        generiereZusatzfelder(rpt, m);
+      }
+      if (control.getEigenschaften() != null
+          && (boolean) control.getEigenschaften().getValue())
+      {
+        generiereEigenschaften(rpt, m);
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ)
+          && control.getArbeitseinsatz() != null
+          && (boolean) control.getArbeitseinsatz().getValue())
       {
         generiereArbeitseinsaetze(rpt, m);
       }
       if ((Boolean) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN)
+          && control.getSpendenbescheinigung() != null
+          && (boolean) control.getSpendenbescheinigung().getValue())
       {
         generiereSpendenbescheinigungen(rpt, m);
       }

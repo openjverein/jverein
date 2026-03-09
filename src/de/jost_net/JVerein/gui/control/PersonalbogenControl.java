@@ -13,6 +13,7 @@ import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -20,6 +21,24 @@ import de.willuhn.util.ApplicationException;
 
 public class PersonalbogenControl extends DruckMailControl
 {
+
+  private CheckboxInput zusatzbetrag;
+
+  private CheckboxInput mitgliedskonto;
+
+  private CheckboxInput vermerk;
+
+  private CheckboxInput wiedervorlage;
+
+  private CheckboxInput lehrgang;
+
+  private CheckboxInput zusatzfelder;
+
+  private CheckboxInput eigenschaften;
+
+  private CheckboxInput arbeitseinsatz;
+
+  private CheckboxInput spendenbescheinigung;
 
   public PersonalbogenControl(AbstractView view)
   {
@@ -38,7 +57,8 @@ public class PersonalbogenControl extends DruckMailControl
         try
         {
           saveFilterSettings();
-          new PersonalbogenAusgabe().aufbereiten(getMitglieder(currentObject),
+          new PersonalbogenAusgabe(PersonalbogenControl.this).aufbereiten(
+              getMitglieder(currentObject),
               (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
               getTxtString(), false, false, false);
         }
@@ -54,6 +74,53 @@ public class PersonalbogenControl extends DruckMailControl
       }
     }, null, true, "walking.png");
     return button;
+  }
+
+  @Override
+  public void saveFilterSettings()
+  {
+    super.saveFilterSettings();
+    if (zusatzbetrag != null)
+    {
+      settings.setAttribute("zusatzbetrag", (Boolean) zusatzbetrag.getValue());
+    }
+    if (mitgliedskonto != null)
+    {
+      settings.setAttribute("mitgliedskonto",
+          (Boolean) mitgliedskonto.getValue());
+    }
+    if (vermerk != null)
+    {
+      settings.setAttribute("vermerk", (Boolean) vermerk.getValue());
+    }
+    if (wiedervorlage != null)
+    {
+      settings.setAttribute("wiedervorlage",
+          (Boolean) wiedervorlage.getValue());
+    }
+    if (lehrgang != null)
+    {
+      settings.setAttribute("lehrgang", (Boolean) lehrgang.getValue());
+    }
+    if (zusatzfelder != null)
+    {
+      settings.setAttribute("zusatzfelder", (Boolean) zusatzfelder.getValue());
+    }
+    if (eigenschaften != null)
+    {
+      settings.setAttribute("eigenschaften",
+          (Boolean) eigenschaften.getValue());
+    }
+    if (arbeitseinsatz != null)
+    {
+      settings.setAttribute("arbeitseinsatz",
+          (Boolean) arbeitseinsatz.getValue());
+    }
+    if (spendenbescheinigung != null)
+    {
+      settings.setAttribute("spendenbescheinigung",
+          (Boolean) spendenbescheinigung.getValue());
+    }
   }
 
   private ArrayList<Mitglied> getMitglieder(Object object)
@@ -158,6 +225,101 @@ public class PersonalbogenControl extends DruckMailControl
       }
     }
     return text;
+  }
+
+  public CheckboxInput getZusatzbetrag()
+  {
+    if (zusatzbetrag != null)
+    {
+      return zusatzbetrag;
+    }
+    zusatzbetrag = new CheckboxInput(settings.getBoolean("zusatzbetrag", true));
+    return zusatzbetrag;
+  }
+
+  public CheckboxInput getMitgliedskonto()
+  {
+    if (mitgliedskonto != null)
+    {
+      return mitgliedskonto;
+    }
+    mitgliedskonto = new CheckboxInput(
+        settings.getBoolean("mitgliedskonto", true));
+    return mitgliedskonto;
+  }
+
+  public CheckboxInput getVermerk()
+  {
+    if (vermerk != null)
+    {
+      return vermerk;
+    }
+    vermerk = new CheckboxInput(settings.getBoolean("vermerk", true));
+    return vermerk;
+  }
+
+  public CheckboxInput getWiedervorlage()
+  {
+    if (wiedervorlage != null)
+    {
+      return wiedervorlage;
+    }
+    wiedervorlage = new CheckboxInput(
+        settings.getBoolean("wiedervorlage", true));
+    return wiedervorlage;
+  }
+
+  public CheckboxInput getLehrgang()
+  {
+    if (lehrgang != null)
+    {
+      return lehrgang;
+    }
+    lehrgang = new CheckboxInput(settings.getBoolean("lehrgang", true));
+    return lehrgang;
+  }
+
+  public CheckboxInput getZusatzfelder()
+  {
+    if (zusatzfelder != null)
+    {
+      return zusatzfelder;
+    }
+    zusatzfelder = new CheckboxInput(settings.getBoolean("zusatzfelder", true));
+    return zusatzfelder;
+  }
+
+  public CheckboxInput getEigenschaften()
+  {
+    if (eigenschaften != null)
+    {
+      return eigenschaften;
+    }
+    eigenschaften = new CheckboxInput(
+        settings.getBoolean("eigenschaften", true));
+    return eigenschaften;
+  }
+
+  public CheckboxInput getArbeitseinsatz()
+  {
+    if (arbeitseinsatz != null)
+    {
+      return arbeitseinsatz;
+    }
+    arbeitseinsatz = new CheckboxInput(
+        settings.getBoolean("arbeitseinsatz", true));
+    return arbeitseinsatz;
+  }
+
+  public CheckboxInput getSpendenbescheinigung()
+  {
+    if (spendenbescheinigung != null)
+    {
+      return spendenbescheinigung;
+    }
+    spendenbescheinigung = new CheckboxInput(
+        settings.getBoolean("spendenbescheinigung", true));
+    return spendenbescheinigung;
   }
 
   @Override
