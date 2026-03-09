@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
+import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenue;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
@@ -43,6 +44,8 @@ import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
+import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
+import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -380,7 +383,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     {
       return buchungList;
     }
-
     DBIterator<Buchung> it = Einstellungen.getDBService()
         .createList(Buchung.class);
     it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
@@ -453,8 +455,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
     buchungList.setMulti(true);
 
-    // TODO das geht nicht, da hier das BuchungsControl gebraucht wird
-    // buchungList.setContextMenu(new BuchungMenu(null));
+    buchungList.setContextMenu(new BuchungAbrechnugslaufMenue());
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);
 
@@ -472,7 +473,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         .createList(Sollbuchung.class);
     it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
 
-    sollbuchungList = new BetragSummaryTablePart(it, null);
+    sollbuchungList = new BetragSummaryTablePart(it,
+        new EditAction(SollbuchungDetailView.class));
     sollbuchungList.addColumn("Nr", "id-int");
     sollbuchungList.addColumn("Datum", Sollbuchung.DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -544,7 +546,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     it.addFilter("zusatzbetragabrechnungslauf.zusatzbetrag = zusatzbetrag.id");
     it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
 
-    zusatzbetraegeList = new BetragSummaryTablePart(it, null);
+    zusatzbetraegeList = new BetragSummaryTablePart(it,
+        new EditAction(ZusatzbetragDetailView.class));
     zusatzbetraegeList.addColumn("Nr", "id-int");
     zusatzbetraegeList.addColumn("Name", "mitglied");
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
@@ -612,7 +615,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
   private void starteAuswertung()
   {
-
     try
     {
       DBIterator<Sollbuchung> it = Einstellungen.getDBService()
