@@ -225,29 +225,52 @@ public class MitgliedskontoMenu extends ContextMenu
       if (o instanceof MitgliedskontoNode)
       {
         MitgliedskontoNode mkn = (MitgliedskontoNode) o;
-        if (mkn.getType() == MitgliedskontoNode.IST)
+        return checkMitgliedskontoNode(mkn, false);
+      }
+      else if (o instanceof MitgliedskontoNode[])
+      {
+        MitgliedskontoNode[] nodes = (MitgliedskontoNode[]) o;
+        for (MitgliedskontoNode node : nodes)
         {
-          try
+          if (checkMitgliedskontoNode(node, true))
           {
-            Object ob = Einstellungen.getDBService().createObject(Buchung.class,
-                mkn.getID());
-            if (ob != null)
-            {
-              Buchung b = (Buchung) ob;
-              if (b.getBuchungsart().getSpende())
-              {
-                return true;
-              }
-            }
-          }
-          catch (Exception e)
-          {
-            return false;
+            return true;
           }
         }
       }
       return false;
     }
+  }
+
+  private static boolean checkMitgliedskontoNode(MitgliedskontoNode mkn,
+      boolean nurGeldspende)
+  {
+    if (mkn.getType() == MitgliedskontoNode.IST)
+    {
+      try
+      {
+        Object ob = Einstellungen.getDBService().createObject(Buchung.class,
+            mkn.getID());
+        if (ob != null)
+        {
+          Buchung b = (Buchung) ob;
+          if (b.getBuchungsart().getSpende())
+          {
+            if (nurGeldspende && b.getBezeichnungSachzuwendung() != null
+                && !b.getBezeichnungSachzuwendung().isEmpty())
+            {
+              return false;
+            }
+            return true;
+          }
+        }
+      }
+      catch (Exception e)
+      {
+        return false;
+      }
+    }
+    return false;
   }
 
   private static class OhneRechnungItem extends CheckedSingleContextMenuItem
