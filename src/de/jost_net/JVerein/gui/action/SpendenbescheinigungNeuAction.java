@@ -331,13 +331,13 @@ public class SpendenbescheinigungNeuAction implements Action
   {
     if (b.getBuchungsart() == null || !b.getBuchungsart().getSpende())
     {
-      throw new ApplicationException("Die Buchung - " + b.getZweck()
-          + " - hat keine Buchungsart die als Spende deklariert ist!");
+      throw new ApplicationException("Die Buchung \"" + b.getZweck()
+          + "\" hat keine Buchungsart die als Spende deklariert ist!");
     }
     if (b.getSpendenbescheinigung() != null)
     {
-      throw new ApplicationException("Die Buchung - " + b.getZweck()
-          + " - ist bereits auf einer Spendenbescheinigung eingetragen!");
+      throw new ApplicationException("Die Buchung \"" + b.getZweck()
+          + "\" ist bereits auf einer Spendenbescheinigung eingetragen!");
     }
   }
 }
