@@ -34,7 +34,7 @@ import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.formatter.SollbuchungFormatter;
 import de.jost_net.JVerein.gui.menu.AbrechnungslaufMenu;
-import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenue;
+import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
@@ -455,7 +455,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
     buchungList.setMulti(true);
 
-    buchungList.setContextMenu(new BuchungAbrechnugslaufMenue());
+    buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
     buchungList.setRememberColWidths(true);
     buchungList.setRememberOrder(true);
 
