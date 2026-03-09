@@ -596,9 +596,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     LabelGroup zahlungsweg = new LabelGroup(containerZahlung.getComposite(),
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
-    ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
-    buttons1.paint(zahlungsweg.getComposite());
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    {
+      ButtonArea buttons1 = new ButtonArea();
+      buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
+      buttons1.paint(zahlungsweg.getComposite());
+    }
 
     SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
         zahlungsweg.getComposite(), false, 1);
@@ -619,7 +623,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           break;
       }
     }
-    cols1.addInput(control.getAbweichenderZahler());
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    {
+      cols1.addInput(control.getAbweichenderZahler());
+    }
     cols1.arrangeVertically();
 
     LabelGroup bankverbindung = control

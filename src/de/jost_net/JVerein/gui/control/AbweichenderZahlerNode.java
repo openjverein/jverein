@@ -1,0 +1,238 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.GenericObjectNode;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.logging.Logger;
+
+public class AbweichenderZahlerNode implements GenericObjectNode
+{
+  public static final int ROOT = 0;
+
+  public static final int ZAHLER = 1;
+
+  public static final int ANGEHOERIGER = 2;
+
+  private int type = ROOT;
+
+  private String id;
+
+  private Mitglied mitglied;
+
+  private AbweichenderZahlerNode parent = null;
+
+  private ArrayList<AbweichenderZahlerNode> children;
+
+  private Input status;
+
+  public AbweichenderZahlerNode(Input status) throws RemoteException
+  {
+    this.status = status;
+    this.parent = null;
+    this.type = ROOT;
+    this.children = new ArrayList<>();
+
+    Set<String> set = new HashSet<String>();
+    DBIterator<Mitglied> mitgliederIt = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    mitgliederIt.addFilter("altzahler is not null and altzahler != 0");
+    if (status.getValue().equals("Angemeldet"))
+      mitgliederIt.addFilter("(austritt is null or austritt > ?)", new Date());
+    if (status.getValue().equals("Abgemeldet"))
+      mitgliederIt.addFilter("(austritt is not null and austritt < ?)",
+          new Date());
+    while (mitgliederIt.hasNext())
+    {
+      Mitglied m = mitgliederIt.next();
+      if (!set.contains(m.getAbweichenderZahlerID().toString()))
+      {
+        set.add(m.getAbweichenderZahlerID().toString());
+        AbweichenderZahlerNode fbn = new AbweichenderZahlerNode(this,
+            m.getAbweichenderZahler());
+        children.add(fbn);
+      }
+    }
+  }
+
+  public AbweichenderZahlerNode(AbweichenderZahlerNode parent, Mitglied m)
+      throws RemoteException
+  {
+    this.status = parent.status;
+    this.parent = parent;
+    this.mitglied = m;
+    this.id = mitglied.getID();
+    this.type = ZAHLER;
+    this.children = new ArrayList<>();
+    DBIterator<Mitglied> it = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    it.addFilter("altzahler = ?", new Object[] { m.getID() });
+    if (status.getValue().equals("Angemeldet"))
+      it.addFilter("(austritt is null or austritt > ?)", new Date());
+    if (status.getValue().equals("Abgemeldet"))
+      it.addFilter("(austritt is not null and austritt < ?)", new Date());
+    while (it.hasNext())
+    {
+      AbweichenderZahlerNode fbn = new AbweichenderZahlerNode(this, it.next(),
+          1);
+      children.add(fbn);
+    }
+  }
+
+  public AbweichenderZahlerNode(AbweichenderZahlerNode parent, Mitglied m,
+      int dummy)
+  {
+    this.parent = parent;
+    this.type = ANGEHOERIGER;
+    this.mitglied = m;
+    try
+    {
+      this.id = m.getID();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+    this.children = new ArrayList<>();
+  }
+
+  public int getType()
+  {
+    return type;
+  }
+
+  public Mitglied getMitglied()
+  {
+    return mitglied;
+  }
+
+  @Override
+  public String getPrimaryAttribute()
+  {
+    return null;
+  }
+
+  @Override
+  public String getID()
+  {
+    return id;
+  }
+
+  @Override
+  public String[] getAttributeNames()
+  {
+    return new String[] { "name" };
+  }
+
+  @Override
+  public Object getAttribute(String name)
+  {
+    try
+    {
+      if (type == ROOT)
+      {
+        return "Abweichende Zahler";
+      }
+      String text = Adressaufbereitung.getNameVorname(mitglied);
+      if (type == ZAHLER)
+      {
+        text += Adressaufbereitung.getNameVorname(mitglied)
+            + (" --- Zahlungsweg: "
+                + Zahlungsweg.get(mitglied.getZahlungsweg()))
+            + (mitglied.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+                && mitglied.getIban().length() > 0
+                    ? ", IBAN: "
+                        + new IBANFormatter().format(mitglied.getIban())
+                    : "");
+      }
+      return text;
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+    return null;
+  }
+
+  @Override
+  public boolean equals(GenericObject other)
+  {
+    return false;
+  }
+
+  @Override
+  public boolean hasChild(GenericObjectNode object)
+  {
+    return children.size() > 0;
+  }
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public GenericIterator getPossibleParents()
+  {
+    return null;
+  }
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public GenericIterator getPath()
+  {
+    return null;
+  }
+
+  @Override
+  public GenericObjectNode getParent()
+  {
+    return parent;
+  }
+
+  @Override
+  @SuppressWarnings("rawtypes")
+  public GenericIterator getChildren() throws RemoteException
+  {
+    if (children != null)
+    {
+      return PseudoIterator
+          .fromArray(children.toArray(new GenericObject[children.size()]));
+    }
+    return null;
+  }
+
+  public void remove()
+  {
+    if (parent != null)
+    {
+      parent.children.remove(this);
+    }
+  }
+
+}

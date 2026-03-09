@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
+import de.jost_net.JVerein.gui.view.AbweichendeZahlerView;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufListeView;
 import de.jost_net.JVerein.gui.view.AnfangsbestandListeView;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
@@ -133,6 +134,11 @@ public class MyExtension implements Extension
       {
         mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
             new StartViewAction(FamilienbeitragView.class), "users.png"));
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+      {
+        mitglieder.addChild(new MyItem(mitglieder, "Abweichende Zahler",
+            new StartViewAction(AbweichendeZahlerView.class), "users.png"));
       }
       mitglieder.addChild(new MyItem(mitglieder, "Sollbuchungen",
           new StartViewAction(SollbuchungListeView.class), "calculator.png"));

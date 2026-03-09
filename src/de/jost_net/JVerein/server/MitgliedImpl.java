@@ -1128,7 +1128,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Mitglied getZahler() throws RemoteException
   {
-    if (getAbweichenderZahlerID() != null)
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && getAbweichenderZahlerID() != null)
     {
       return getAbweichenderZahler();
     }
@@ -1138,7 +1139,8 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public Long getZahlerID() throws RemoteException
   {
-    if (getAbweichenderZahlerID() != null)
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && getAbweichenderZahlerID() != null)
     {
       return getAbweichenderZahlerID();
     }

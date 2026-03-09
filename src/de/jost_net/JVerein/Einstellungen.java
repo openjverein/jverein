@@ -196,6 +196,7 @@ public class Einstellungen
         Boolean.class, "1"),
 
     // Anzeige
+    ABWEICHENDEZAHLER("abweichendezahler", Boolean.class, "1"),
     STERBEDATUM("sterbedatum", Boolean.class, "0"),
     KOMMUNIKATIONSDATEN("kommunikationsdaten", Boolean.class, "1"),
     SEKUNDAEREBEITRAGSGRUPPEN("sekundaerebeitragsgruppen", Boolean.class, "0"),

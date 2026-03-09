@@ -16,38 +16,45 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
-import de.jost_net.JVerein.gui.dialogs.FamilienmitgliedEntfernenDialog;
+import java.rmi.RemoteException;
+
+import de.jost_net.JVerein.Messaging.AbweichenderZahlerMessage;
+import de.jost_net.JVerein.gui.control.AbweichenderZahlerNode;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FamilienmitgliedEntfernenAction implements Action
+public class AbweichenderZahlerEntfernenAction implements Action
 {
 
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-    if (context == null || !(context instanceof FamilienbeitragNode))
+    if (!(context instanceof AbweichenderZahlerNode))
     {
-      throw new ApplicationException("Kein Familienmitglied ausgewählt");
+      throw new ApplicationException("Kein Eintrag ausgewählt");
     }
-    FamilienbeitragNode fbn = (FamilienbeitragNode) context;
-    FamilienmitgliedEntfernenDialog fed = new FamilienmitgliedEntfernenDialog(
-        fbn);
+    AbweichenderZahlerNode azn = (AbweichenderZahlerNode) context;
+    if (azn.getType() != AbweichenderZahlerNode.ANGEHOERIGER)
+    {
+      throw new ApplicationException(
+          "Kein Mitglied mit abweichendem Zahler ausgewählt");
+    }
+    Mitglied m = azn.getMitglied();
     try
     {
-      fed.open();
+      m.setAbweichenderZahlerID(null);
+      m.store();
+      Application.getMessagingFactory()
+          .sendMessage(new AbweichenderZahlerMessage(m));
     }
-    catch (OperationCanceledException oce)
-    {
-      throw oce;
-    }
-    catch (Exception e)
+    catch (RemoteException e)
     {
       Logger.error("Fehler", e);
-      return;
+      throw new ApplicationException(
+          "Interner Fehler beim Speichern des Mitglieds!");
     }
   }
 }

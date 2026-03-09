@@ -419,6 +419,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput zellenTransparent;
 
+  private CheckboxInput abweichendezahler;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -2363,6 +2365,17 @@ public class EinstellungControl extends AbstractControl
     return zellenTransparent;
   }
 
+  public CheckboxInput getAbweichendeZahler() throws RemoteException
+  {
+    if (abweichendezahler != null)
+    {
+      return abweichendezahler;
+    }
+    abweichendezahler = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER));
+    return abweichendezahler;
+  }
+
   public void handleStoreAllgemein()
   {
     try
@@ -2507,6 +2520,8 @@ public class EinstellungControl extends AbstractControl
       Einstellungen.setEinstellung(Property.UNTERDRUECKUNGKONTEN, klength);
       Einstellungen.setEinstellung(Property.WIRTSCHAFTSPLANANZEIGEN,
           wirtschaftsplanung.getValue());
+      Einstellungen.setEinstellung(Property.ABWEICHENDEZAHLER,
+          (Boolean) abweichendezahler.getValue());
 
       DBTransaction.commit();
 
