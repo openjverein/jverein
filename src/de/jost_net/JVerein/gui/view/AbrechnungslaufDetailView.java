@@ -37,7 +37,9 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
 
 public class AbrechnungslaufDetailView extends AbstractDetailView
@@ -55,16 +57,20 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     control = new AbrechnungslaufControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Detaildaten");
-    group.addInput(control.getDatum());
-    group.addInput(control.getAbgeschlossen());
-    group.addInput(control.getAbrechnungsmodus());
-    group.addInput(control.getFaelligkeit());
-    group.addInput(control.getAbrechnungStichtag());
-    group.addInput(control.getEintrittsdatum());
-    group.addInput(control.getAustrittsdatum());
-    group.addInput(control.getZahlungsgrund());
-    group.addInput(control.getZusatzAbrechnungen());
-    group.addInput(control.getBemerkung());
+
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    SimpleContainer rigth = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getDatum());
+    left.addInput(control.getAbgeschlossen());
+    left.addInput(control.getAbrechnungsmodus());
+    left.addInput(control.getFaelligkeit());
+    left.addInput(control.getAbrechnungStichtag());
+    rigth.addInput(control.getEintrittsdatum());
+    rigth.addInput(control.getAustrittsdatum());
+    rigth.addInput(control.getZahlungsgrund());
+    rigth.addInput(control.getZusatzAbrechnungen());
+    rigth.addInput(control.getBemerkung());
 
     TabFolder folder = new TabFolder(getParent(), SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -101,9 +107,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
       @Override
       public void widgetDefaultSelected(SelectionEvent e)
       {
-
       }
-
     });
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
