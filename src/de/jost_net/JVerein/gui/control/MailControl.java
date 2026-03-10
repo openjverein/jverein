@@ -16,6 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -24,6 +27,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -223,6 +234,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     {
       return anhang;
     }
+
     // Umwandeln in ArrayList
     ArrayList<MailAnhang> anhang2 = new ArrayList<>();
     for (MailAnhang ma : getMail().getAnhang())
@@ -725,6 +737,93 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mails.setOrder("ORDER BY betreff");
 
     return mails;
+  }
+
+  public void setDragDrop(Composite composit)
+  {
+    DropTarget target = new DropTarget(composit,
+        DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_DEFAULT);
+    final FileTransfer fileTransfer = FileTransfer.getInstance();
+    Transfer[] types = new Transfer[] { fileTransfer };
+    target.setTransfer(types);
+
+    target.addDropListener(new DropTargetListener()
+    {
+
+      public void dragEnter(DropTargetEvent event)
+      {
+        if (event.detail == DND.DROP_DEFAULT)
+        {
+          if ((event.operations & DND.DROP_COPY) != 0)
+            event.detail = DND.DROP_COPY;
+          else
+            event.detail = DND.DROP_NONE;
+        }
+        for (int i = 0; i < event.dataTypes.length; i++)
+        {
+          if (fileTransfer.isSupportedType(event.dataTypes[i]))
+          {
+            event.currentDataType = event.dataTypes[i];
+            // files should only be copied
+            if (event.detail != DND.DROP_COPY)
+              event.detail = DND.DROP_NONE;
+            break;
+          }
+        }
+      }
+
+      public void drop(DropTargetEvent event)
+      {
+        if (event.data == null)
+        {
+          event.detail = DND.DROP_NONE;
+          GUI.getStatusBar()
+              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+          return;
+        }
+        try
+        {
+          for (String filename : (String[]) event.data)
+          {
+            MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                .createObject(MailAnhang.class, null);
+            File file = new File(filename);
+            anh.setDateiname(file.getName());
+            FileInputStream fis = new FileInputStream(file);
+            byte[] buffer = new byte[(int) file.length()];
+            fis.read(buffer);
+            anh.setAnhang(buffer);
+            addAnhang(anh);
+            fis.close();
+          }
+        }
+        catch (IOException e)
+        {
+          GUI.getStatusBar()
+              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+        }
+      }
+
+      @Override
+      public void dragLeave(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dragOperationChanged(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dragOver(DropTargetEvent event)
+      {
+      }
+
+      @Override
+      public void dropAccept(DropTargetEvent event)
+      {
+      }
+    });
   }
 
   /**
