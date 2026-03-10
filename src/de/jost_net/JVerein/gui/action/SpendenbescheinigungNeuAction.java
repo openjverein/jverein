@@ -332,7 +332,7 @@ public class SpendenbescheinigungNeuAction implements Action
     if (b.getBuchungsart() == null || !b.getBuchungsart().getSpende())
     {
       throw new ApplicationException("Die Buchung \"" + b.getZweck()
-          + "\" hat keine Buchungsart die als Spende deklariert ist!");
+          + "\" hat keine Buchungsart, die als Spende deklariert ist!");
     }
     if (b.getSpendenbescheinigung() != null)
     {
