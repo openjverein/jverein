@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.menu;
 import de.jost_net.JVerein.gui.action.AbweichenderZahlerEntfernenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.control.AbweichenderZahlerNode;
-import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
@@ -57,7 +56,7 @@ public class AbweichenderZahlerMenu extends ContextMenu
       if (o instanceof AbweichenderZahlerNode)
       {
         AbweichenderZahlerNode azn = (AbweichenderZahlerNode) o;
-        if (azn.getType() == FamilienbeitragNode.ANGEHOERIGER)
+        if (azn.getType() == AbweichenderZahlerNode.ANGEHOERIGER)
         {
           return true;
         }

@@ -22,6 +22,8 @@ import de.jost_net.JVerein.Messaging.AbweichenderZahlerMessage;
 import de.jost_net.JVerein.gui.control.AbweichenderZahlerNode;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -45,6 +47,21 @@ public class AbweichenderZahlerEntfernenAction implements Action
     Mitglied m = azn.getMitglied();
     try
     {
+      YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
+      dialog.setTitle("Abweichenden Zahler entfernen");
+      dialog.setText(
+          "Soll der abweichende Zahler beim Mitglied wirklich entfernt werden?");
+      try
+      {
+        if (!(Boolean) dialog.open())
+        {
+          return;
+        }
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(e);
+      }
       m.setAbweichenderZahlerID(null);
       m.store();
       Application.getMessagingFactory()
