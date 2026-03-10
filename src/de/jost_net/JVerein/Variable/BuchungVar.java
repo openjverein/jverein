@@ -22,6 +22,7 @@ public enum BuchungVar
   ART("buchung_art"), //
   AUSZUGSNUMMER("buchung_auszugsnummer"), //
   BETRAG("buchung_betrag"), //
+  BETRAGNETTO("buchung_betrag_netto"), //
   BLATTNUMMER("buchung_blattnummer"), //
   BUCHUNGSARBEZEICHNUNG("buchung_buchungsart_bezeichnung"), //
   BUCHUNGSARTNUMMER("buchung_buchungsart_nummer"), //

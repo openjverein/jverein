@@ -18,7 +18,6 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.Map;
 
 import de.willuhn.util.ApplicationException;
 
@@ -142,9 +141,6 @@ public interface Buchung extends JVereinDBObject
   public Spendenbescheinigung getSpendenbescheinigung() throws RemoteException;
 
   public void setSpendenbescheinigungId(Long spendenbescheinigung)
-      throws RemoteException;
-
-  public Map<String, Object> getMap(Map<String, Object> map)
       throws RemoteException;
 
   public Boolean getVerzicht() throws RemoteException;

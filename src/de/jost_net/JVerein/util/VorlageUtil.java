@@ -42,7 +42,6 @@ import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufBuchungenControl;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
@@ -57,6 +56,7 @@ import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -180,7 +180,7 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL:
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL:
           map = new AbrechnungSollbuchungenParameterMap()
-              .getMap((AbrechnungslaufBuchungenControl) obj, map);
+              .getMap((Abrechnungslauf) obj, map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
           map = new SollbuchungListeFilterMap().getMap((SollbuchungControl) obj,

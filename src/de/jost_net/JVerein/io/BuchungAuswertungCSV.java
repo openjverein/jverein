@@ -30,6 +30,7 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -52,14 +53,14 @@ public class BuchungAuswertungCSV
 
       Buchung bu = (Buchung) Einstellungen.getDBService()
           .createObject(Buchung.class, null);
-      Map<String, Object> map = bu.getMap(null);
+      Map<String, Object> map = new BuchungMap().getMap(bu, null);
       CellProcessor[] processors = CellProcessors.createCellProcessors(map);
 
       writer.writeHeader(header);
 
       for (Buchung b : list)
       {
-        writer.write(b.getMap(null), header, processors);
+        writer.write(new BuchungMap().getMap(b, null), header, processors);
       }
       GUI.getStatusBar().setSuccessText(
           String.format("Auswertung fertig. %d Sätze.", list.size()));
@@ -85,7 +86,7 @@ public class BuchungAuswertungCSV
     {
       Buchung b = (Buchung) Einstellungen.getDBService()
           .createObject(Buchung.class, null);
-      return b.getMap(null).keySet().toArray(new String[0]);
+      return new BuchungMap().getMap(b, null).keySet().toArray(new String[0]);
     }
     catch (RemoteException e)
     {

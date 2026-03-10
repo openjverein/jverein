@@ -21,13 +21,8 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Variable.BuchungVar;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -43,7 +38,6 @@ import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
@@ -741,102 +735,6 @@ public class BuchungImpl extends AbstractJVereinDBObject
             RoundingMode.HALF_UP);
 
     return netto.doubleValue();
-  }
-
-  @Override
-  public Map<String, Object> getMap(Map<String, Object> inma)
-      throws RemoteException
-  {
-    Map<String, Object> map = null;
-    if (inma == null)
-    {
-      map = new HashMap<>();
-    }
-    else
-    {
-      map = inma;
-    }
-    map.put(BuchungVar.ABRECHNUNGSLAUF.getName(),
-        (this.getAbrechnungslauf() != null
-            ? this.getAbrechnungslauf().getDatum()
-            : ""));
-    map.put(BuchungVar.ART.getName(),
-        StringTool.toNotNullString(this.getArt()));
-    map.put(BuchungVar.AUSZUGSNUMMER.getName(), this.getAuszugsnummer());
-    map.put(BuchungVar.BETRAG.getName(), this.getBetrag());
-    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-      {
-        map.put(BuchungVar.STEUER.getName(),
-            this.getSteuer() == null ? 0d : this.getSteuer().getSatz());
-      }
-      else
-      {
-        map.put(BuchungVar.STEUER.getName(),
-            this.getBuchungsart() == null
-                || this.getBuchungsart().getSteuer() == null ? 0d
-                    : this.getBuchungsart().getSteuer().getSatz());
-      }
-    }
-    map.put(BuchungVar.BLATTNUMMER.getName(), this.getBlattnummer());
-    map.put(BuchungVar.ID.getName(), this.getID());
-    if (this.getBuchungsart() != null)
-    {
-      map.put(BuchungVar.BUCHUNGSARBEZEICHNUNG.getName(),
-          this.getBuchungsart().getBezeichnung());
-      map.put(BuchungVar.BUCHUNGSARTNUMMER.getName(),
-          this.getBuchungsart().getNummer());
-      if (this.getBuchungsart().getBuchungsklasse() != null)
-      {
-        map.put(BuchungVar.BUCHUNGSKLASSEBEZEICHNUNG.getName(),
-            this.getBuchungsart().getBuchungsklasse().getBezeichnung());
-        map.put(BuchungVar.BUCHUNGSKLASSENUMMER.getName(),
-            this.getBuchungsart().getBuchungsklasse().getNummer());
-      }
-      else
-      {
-        map.put(BuchungVar.BUCHUNGSKLASSEBEZEICHNUNG.getName(), "");
-        map.put(BuchungVar.BUCHUNGSKLASSENUMMER.getName(), "");
-      }
-    }
-    else
-    {
-      map.put(BuchungVar.BUCHUNGSARBEZEICHNUNG.getName(), "");
-      map.put(BuchungVar.BUCHUNGSARTNUMMER.getName(), "");
-      map.put(BuchungVar.BUCHUNGSKLASSEBEZEICHNUNG.getName(), "");
-      map.put(BuchungVar.BUCHUNGSKLASSENUMMER.getName(), "");
-    }
-
-    if (this.getProjekt() != null)
-    {
-      map.put(BuchungVar.PROJEKTNUMMER.getName(), this.getProjektID());
-      map.put(BuchungVar.PROJEKTBEZEICHNUNG.getName(),
-          this.getProjekt().getBezeichnung());
-    }
-    else
-    {
-      map.put(BuchungVar.PROJEKTNUMMER.getName(), "");
-      map.put(BuchungVar.PROJEKTBEZEICHNUNG.getName(), "");
-    }
-
-    map.put(BuchungVar.DATUM.getName(), this.getDatum());
-    map.put(BuchungVar.JAHRESABSCHLUSS.getName(),
-        this.getJahresabschluss() != null ? this.getJahresabschluss().getBis()
-            : "");
-    map.put(BuchungVar.KOMMENTAR.getName(),
-        StringTool.toNotNullString(this.getKommentar()));
-    map.put(BuchungVar.KONTONUMMER.getName(),
-        this.getKonto() != null ? this.getKonto().getNummer() : "");
-    map.put(BuchungVar.MITGLIEDSKONTO.getName(),
-        this.getSollbuchung() != null
-            ? Adressaufbereitung
-                .getNameVorname(this.getSollbuchung().getMitglied())
-            : "");
-    map.put(BuchungVar.NAME.getName(), this.getName());
-    map.put(BuchungVar.ZWECK1.getName(),
-        StringTool.toNotNullString(this.getZweck()));
-    return map;
   }
 
   @Override

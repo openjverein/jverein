@@ -297,17 +297,16 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           new StartViewAction(KontoauszugMailView.class, true),
           control.getMitglied(), false, "document-print.png"));
     }
-    if (isMitgliedDetail())
-    {
-      buttons.addButton(new ButtonRtoL("Personalbogen",
-          new StartViewAction(PersonalbogenMailView.class, true),
-          control.getCurrentObject(), false, "document-print.png"));
-      // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
-      // können
-      buttons.addButton(
-          new ButtonRtoL("Duplizieren", new MitgliedDuplizierenAction(),
-              control.getCurrentObject(), false, "edit-copy.png"));
-    }
+
+    buttons.addButton(new ButtonRtoL("Personalbogen",
+        new StartViewAction(PersonalbogenMailView.class, true),
+        control.getCurrentObject(), false, "document-print.png"));
+    // R.M. 27.01.2013 Mitglieder sollten aus dem Dialog raus kopiert werden
+    // können
+    buttons.addButton(
+        new ButtonRtoL("Duplizieren", new MitgliedDuplizierenAction(),
+            control.getCurrentObject(), false, "edit-copy.png"));
+
     buttons.addButton("Mail", new MitgliedMailSendenAction(),
         getCurrentObject(), false, "envelope-open.png");
     buttons.addButton("Speichern", new Action()
@@ -720,6 +719,13 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         containerMitgliedschaft.addPart(control.getFamilienverband());
+      }
+
+      if (control.isZahltFuerVisible())
+      {
+        LabelGroup cont = new LabelGroup(containerMitgliedschaft.getComposite(),
+            "Zahlt Beiträge und Zusatzbeträge für");
+        control.getZahltFuer().paint(cont.getComposite());
       }
     }
   }
