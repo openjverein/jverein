@@ -41,6 +41,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
@@ -55,6 +56,7 @@ import de.jost_net.JVerein.rmi.Mitgliedfoto;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
@@ -205,6 +207,11 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       {
         generiereArbeitseinsaetze(rpt, m);
       }
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+      {
+        generiereSpendenbescheinigungen(rpt, m);
+      }
     }
     catch (Exception re)
     {
@@ -330,18 +337,22 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         DBIterator<Mitglied> itbg = Einstellungen.getDBService()
             .createList(Mitglied.class);
         itbg.addFilter("zahlerid = ?", m.getID());
-        rpt.addColumn("Vollzahler mit Angehörigen", Element.ALIGN_LEFT);
-        String zahltfuer = "";
-        while (itbg.hasNext())
+        if (itbg.hasNext())
         {
-          Mitglied mz = itbg.next();
-          if (zahltfuer.length() > 0)
+          rpt.addColumn("Familienmitglieder im Familienverband",
+              Element.ALIGN_LEFT);
+          String familienmitglieder = "";
+          while (itbg.hasNext())
           {
-            zahltfuer += "\n";
+            Mitglied mz = itbg.next();
+            if (familienmitglieder.length() > 0)
+            {
+              familienmitglieder += "\n";
+            }
+            familienmitglieder += Adressaufbereitung.getNameVorname(mz);
           }
-          zahltfuer += Adressaufbereitung.getNameVorname(mz);
+          rpt.addColumn(familienmitglieder, Element.ALIGN_LEFT);
         }
-        rpt.addColumn(zahltfuer, Element.ALIGN_LEFT);
       }
       else if (m.getBeitragsgruppe()
           .getBeitragsArt() == ArtBeitragsart.FAMILIE_ANGEHOERIGER)
@@ -375,6 +386,44 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     {
       rpt.addColumn("Bankverbindung", Element.ALIGN_LEFT);
       rpt.addColumn(m.getBic() + "/" + m.getIban(), Element.ALIGN_LEFT);
+    }
+    if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+    {
+      rpt.addColumn("Mandat", Element.ALIGN_LEFT);
+      rpt.addColumn(
+          m.getMandatID() + " vom "
+              + new JVDateFormatTTMMJJJJ().format(m.getMandatDatum()),
+          Element.ALIGN_LEFT);
+    }
+    if (m.getKontoinhaber() != null && !m.getKontoinhaber().isBlank())
+    {
+      rpt.addColumn("Kontoinhaber", Element.ALIGN_LEFT);
+      rpt.addColumn(m.getKontoinhaber(), Element.ALIGN_LEFT);
+    }
+    if (m.getAbweichenderZahler() != null)
+    {
+      rpt.addColumn("Abweichender Zahler", Element.ALIGN_LEFT);
+      rpt.addColumn(
+          Adressaufbereitung.getIdNameVorname(m.getAbweichenderZahler()),
+          Element.ALIGN_LEFT);
+    }
+    DBIterator<Mitglied> itZahler = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    itZahler.addFilter("altzahler = ?", m.getID());
+    if (itZahler.hasNext())
+    {
+      rpt.addColumn("Zahlt für", Element.ALIGN_LEFT);
+      String zahltfuer = "";
+      while (itZahler.hasNext())
+      {
+        Mitglied mz = itZahler.next();
+        if (zahltfuer.length() > 0)
+        {
+          zahltfuer += "\n";
+        }
+        zahltfuer += Adressaufbereitung.getNameVorname(mz);
+      }
+      rpt.addColumn(zahltfuer, Element.ALIGN_LEFT);
     }
     rpt.addColumn("Datum Erstspeicherung", Element.ALIGN_LEFT);
     rpt.addColumn(m.getEingabedatum(), Element.ALIGN_LEFT);
@@ -674,6 +723,42 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         rpt.addColumn(ae.getDatum(), Element.ALIGN_LEFT);
         rpt.addColumn(ae.getStunden());
         rpt.addColumn(ae.getBemerkung(), Element.ALIGN_LEFT);
+      }
+    }
+    rpt.closeTable();
+  }
+
+  private void generiereSpendenbescheinigungen(Reporter rpt, Mitglied m)
+      throws RemoteException, DocumentException
+  {
+    DBIterator<Spendenbescheinigung> it = Einstellungen.getDBService()
+        .createList(Spendenbescheinigung.class);
+    it.addFilter("mitglied = ?", new Object[] { m.getID() });
+    // it.setOrder("ORDER BY datum");
+    if (it.size() > 0)
+    {
+      rpt.add(
+          new Paragraph("Spendenbescheinigungen", Reporter.getFreeSans(12)));
+      rpt.addHeaderColumn("Spendenart", Element.ALIGN_LEFT, 30,
+          BaseColor.LIGHT_GRAY);
+      rpt.addHeaderColumn("Bescheinigungsdatum", Element.ALIGN_LEFT, 60,
+          BaseColor.LIGHT_GRAY);
+      rpt.addHeaderColumn("Spendedatum", Element.ALIGN_LEFT, 60,
+          BaseColor.LIGHT_GRAY);
+      rpt.addHeaderColumn("Betrag", Element.ALIGN_LEFT, 90,
+          BaseColor.LIGHT_GRAY);
+      rpt.createHeader();
+      while (it.hasNext())
+      {
+        Spendenbescheinigung spb = it.next();
+        rpt.addColumn(Spendenart.get(spb.getSpendenart()), Element.ALIGN_LEFT);
+        rpt.addColumn(
+            new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
+            Element.ALIGN_LEFT);
+        rpt.addColumn(new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum()),
+            Element.ALIGN_LEFT);
+        rpt.addColumn(Einstellungen.DECIMALFORMAT.format(spb.getBetrag()),
+            Element.ALIGN_RIGHT);
       }
     }
     rpt.closeTable();

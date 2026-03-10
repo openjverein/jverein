@@ -307,6 +307,8 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private boolean isMitglied = false;
 
+  private JVereinTablePart zahtlFuer;
+
   public MitgliedControl(AbstractView view)
   {
     super(view);
@@ -1523,6 +1525,33 @@ public class MitgliedControl extends FilterControl implements Savable
     });
 
     return familienangehoerige;
+  }
+
+  public boolean isZahltFuerVisible() throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Mitglied> mitglieder = service.createList(Mitglied.class);
+    mitglieder.addFilter("altzahler = " + getMitglied().getID());
+    return mitglieder.hasNext();
+  }
+
+  public JVereinTablePart getZahltFuer() throws RemoteException
+  {
+    if (zahtlFuer != null)
+    {
+      return zahtlFuer;
+    }
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Mitglied> mitglieder = service.createList(Mitglied.class);
+    mitglieder.addFilter("altzahler = " + getMitglied().getID());
+
+    zahtlFuer = new JVereinTablePart(mitglieder, new MitgliedDetailAction());
+    zahtlFuer.setRememberColWidths(true);
+    zahtlFuer.setRememberOrder(true);
+    zahtlFuer.addColumn("Name", "name");
+    zahtlFuer.addColumn("Vorname", "vorname");
+
+    return zahtlFuer;
   }
 
   public JVereinTablePart getZusatzbetraegeTable() throws RemoteException

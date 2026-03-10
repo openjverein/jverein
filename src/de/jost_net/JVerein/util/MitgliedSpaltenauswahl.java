@@ -136,7 +136,7 @@ public class MitgliedSpaltenauswahl extends Spaltenauswahl
         new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
         false);
     add("Leitweg ID", "leitwegid", false, true);
-    add("Zahler ID", "zahlerid", false, false);
+    add("Vollzahler", "vollzahlerstring", false, false);
     try
     {
       if ((Boolean) Einstellungen
