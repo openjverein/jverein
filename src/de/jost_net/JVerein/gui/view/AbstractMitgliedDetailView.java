@@ -370,14 +370,17 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneDokumente(Composite parentComposite)
       throws RemoteException
   {
-    if (JVereinPlugin.isArchiveServiceActive()
-        && !control.getMitglied().isNewObject())
+    if (JVereinPlugin.isArchiveServiceActive())
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Dokumente");
 
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
-      mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
+      if (control.getMitglied().getID() != null)
+      {
+        mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
+      }
+
       dcontrol = new DokumentControl(this, "mitglieder", true);
 
       ButtonArea butts = new ButtonArea();

@@ -42,13 +42,14 @@ import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
+import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -126,17 +127,29 @@ public class DokumentControl extends AbstractControl
 
   public Button getNeuButton(final AbstractDokument doc)
   {
-    neuButton = new Button("Neues Dokument", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
+    neuButton = new Button("Neues Dokument", context -> {
+      try
       {
+        AbstractJVereinDBObject object = (AbstractJVereinDBObject) getCurrentObject();
+        if (object.isNewObject())
+        {
+          throw new ApplicationException(
+              object.getObjektName() + " bitte erst speichern.");
+        }
+        // Bei neuen Objecten wird die Referenz erst hier eingetragen
+        doc.setReferenz(Long.valueOf(object.getID()));
+
         GUI.startView(new DokumentDetailView(verzeichnis), doc);
       }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException("Fehler beim Datenkbankzugriff.", e);
+      }
+
     }, null, false, "document-new.png");
     neuButton.setEnabled(enabled);
     return neuButton;
+
   }
 
   public Button getSpeichernButton(final String verzeichnis)
@@ -285,6 +298,12 @@ public class DokumentControl extends AbstractControl
         }
         try
         {
+          AbstractJVereinDBObject object = (AbstractJVereinDBObject) getCurrentObject();
+          if (object.isNewObject())
+          {
+            throw new ApplicationException(
+                object.getObjektName() + " bitte erst speichern.");
+          }
           for (String filename : (String[]) event.data)
           {
             doc = Einstellungen.getDBService().createObject(dokumentClass,
@@ -297,7 +316,11 @@ public class DokumentControl extends AbstractControl
           }
           refreshTable();
         }
-        catch (ApplicationException | RemoteException e)
+        catch (ApplicationException e)
+        {
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
+        catch (RemoteException e)
         {
           GUI.getStatusBar()
               .setErrorText("Fehler bem Hinzufügen der Datei(en)");

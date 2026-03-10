@@ -128,30 +128,29 @@ public class BuchungPart implements Part
     if (JVereinPlugin.isArchiveServiceActive())
     {
       bu = (Buchung) control.getBuchung();
+
+      LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
+          "Dokumente", true);
+
+      BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
+          .createObject(BuchungDokument.class, null);
       if (!bu.isNewObject())
       {
-
-        LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
-            "Dokumente", true);
-
-        BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
-            .createObject(BuchungDokument.class, null);
         budo.setReferenz(Long.valueOf(bu.getID()));
-        dcontrol = new DokumentControl(view, "buchungen",
-            !buchungabgeschlossen);
-
-        grDokument.getComposite().setLayout(new GridLayout(1, false));
-        ButtonArea butts = new ButtonArea();
-        butts.addButton(dcontrol.getNeuButton(budo));
-        butts.paint(grDokument.getComposite());
-
-        grDokument.addPart(dcontrol.getDokumenteList(budo));
-        dcontrol.setDragDrop(grDokument.getComposite(), BuchungDokument.class);
-
-        GridData gridData = new GridData(GridData.FILL_BOTH);
-        gridData.heightHint = 150;
-        grDokument.getComposite().setLayoutData(gridData);
       }
+      dcontrol = new DokumentControl(view, "buchungen", !buchungabgeschlossen);
+
+      grDokument.getComposite().setLayout(new GridLayout(1, false));
+      ButtonArea butts = new ButtonArea();
+      butts.addButton(dcontrol.getNeuButton(budo));
+      butts.paint(grDokument.getComposite());
+
+      grDokument.addPart(dcontrol.getDokumenteList(budo));
+      dcontrol.setDragDrop(grDokument.getComposite(), BuchungDokument.class);
+
+      GridData gridData = new GridData(GridData.FILL_BOTH);
+      gridData.heightHint = 150;
+      grDokument.getComposite().setLayoutData(gridData);
     }
   }
 
