@@ -214,21 +214,6 @@ public class SpendenbescheinigungNeuAction implements Action
       spb.setFormular((Formular) FormularInput.initdefault(
           (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE)));
     }
-
-    // Nur Geldspenden
-    if (anzahlGeldspenden == buchungen.size())
-    {
-      double minbetrag = (Double) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGMINBETRAG);
-      if (spb.getBetrag() < minbetrag)
-      {
-        throw new ApplicationException(
-            String.format(
-                "Der Betrag der Spendenbescheinigung ist unter %s Euro. "
-                    + "Siehe Einstellungen->Spendenbescheinigungen.",
-                minbetrag));
-      }
-    }
   }
 
   private void generiereSpendenbescheinigung(Buchung b)
