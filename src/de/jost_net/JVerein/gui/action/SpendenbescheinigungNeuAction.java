@@ -26,6 +26,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.gui.dialogs.JahrAuswahlDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.keys.HerkunftSpende;
@@ -40,6 +41,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -62,7 +64,7 @@ public class SpendenbescheinigungNeuAction implements Action
           .createObject(Spendenbescheinigung.class, null);
       spb.setBescheinigungsdatum(new Date());
 
-      if (context != null && (context instanceof Mitglied))
+      if (context instanceof Mitglied)
       {
         Mitglied m = (Mitglied) context;
         SpbAdressaufbereitung.adressaufbereitung(m, spb);
@@ -136,6 +138,26 @@ public class SpendenbescheinigungNeuAction implements Action
   private void handleMitglied(Mitglied mg)
       throws RemoteException, ApplicationException
   {
+    Integer jahr = null;
+    JahrAuswahlDialog d = new JahrAuswahlDialog(
+        JahrAuswahlDialog.POSITION_CENTER);
+    try
+    {
+      jahr = d.open();
+      if (jahr == null)
+      {
+        throw new OperationCanceledException();
+      }
+    }
+    catch (OperationCanceledException oce)
+    {
+      throw oce;
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException(e);
+    }
+
     /* Ermitteln der Buchungen zu der neuen Spendenbescheinigung */
     Date minDatum = Calendar.getInstance().getTime();
     Date maxDatum = Calendar.getInstance().getTime();
@@ -157,18 +179,19 @@ public class SpendenbescheinigungNeuAction implements Action
     String sql = "SELECT buchung.id  FROM buchung "
         + "  JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
         + "  JOIN " + Sollbuchung.TABLE_NAME + " ON " + Buchung.T_SOLLBUCHUNG
-        + " = " + Sollbuchung.TABLE_NAME_ID
-        + " WHERE buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
+        + " = " + Sollbuchung.TABLE_NAME_ID + " WHERE year(buchung.datum) = ? "
+        + " AND buchungsart.spende = true " + "  AND " + Sollbuchung.T_ZAHLER
         + " = ? " + "  AND buchung.spendenbescheinigung IS NULL " + "  AND "
         + Buchung.T_SOLLBUCHUNG + " IS NOT NULL " + "ORDER BY buchung.datum";
     @SuppressWarnings("unchecked")
     ArrayList<Buchung> buchungen = (ArrayList<Buchung>) Einstellungen
-        .getDBService().execute(sql, new Object[] { mg.getID() }, rs);
+        .getDBService().execute(sql, new Object[] { jahr, mg.getID() }, rs);
 
     if (buchungen.isEmpty())
     {
       throw new ApplicationException(
-          "Es wurden keine relevanten Buchungen gefunden");
+          "Es wurden keine relevanten Buchungen für das Jahr " + jahr
+              + " gefunden");
     }
 
     for (Buchung bu : buchungen)
