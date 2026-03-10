@@ -21,12 +21,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.AbrechnungslaufBuchungenControl;
+import de.jost_net.JVerein.rmi.Abrechnungslauf;
 
 public class AbrechnungSollbuchungenParameterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(AbrechnungslaufBuchungenControl control,
+  public Map<String, Object> getMap(Abrechnungslauf lauf,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
@@ -46,16 +46,16 @@ public class AbrechnungSollbuchungenParameterMap extends AbstractMap
       switch (var)
       {
         case DATUM_F:
-          value = fromDate((Date) control.getDatum(false).getValue());
+          value = fromDate((Date) lauf.getDatum());
           break;
         case ZAHLUNGSGRUND:
-          value = control.getZahlungsgrund().getValue().toString();
+          value = lauf.getZahlungsgrund();
           break;
         case LAUF:
-          value = control.getLauf().getValue().toString();
+          value = lauf.getID();
           break;
         case BEMERKUNG:
-          value = control.getBemerkung().getValue().toString();
+          value = lauf.getBemerkung();
           break;
       }
       map.put(var.getName(), value);

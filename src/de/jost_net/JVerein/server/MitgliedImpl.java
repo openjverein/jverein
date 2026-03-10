@@ -1290,6 +1290,17 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         return "";
       }
     }
+    else if (fieldName.equals("vollzahlerstring"))
+    {
+      if (this.getVollZahler() != null)
+      {
+        return Adressaufbereitung.getNameVorname(this.getVollZahler());
+      }
+      else
+      {
+        return "";
+      }
+    }
     else if (fieldName.startsWith("zusatzfelder_"))
     {
       DBIterator<Felddefinition> it = Einstellungen.getDBService()
