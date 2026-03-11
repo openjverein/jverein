@@ -23,7 +23,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
