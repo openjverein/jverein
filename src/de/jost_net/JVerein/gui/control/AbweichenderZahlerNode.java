@@ -165,14 +165,7 @@ public class AbweichenderZahlerNode implements GenericObjectNode
       String text = Adressaufbereitung.getNameVorname(mitglied);
       if (type == ZAHLER)
       {
-        text += Adressaufbereitung.getNameVorname(mitglied)
-            + (" --- Zahlungsweg: "
-                + Zahlungsweg.get(mitglied.getZahlungsweg()))
-            + (mitglied.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
-                && mitglied.getIban().length() > 0
-                    ? ", IBAN: "
-                        + new IBANFormatter().format(mitglied.getIban())
-                    : "");
+        text += (", " + Zahlungsweg.get(mitglied.getZahlungsweg()));
       }
       return text;
     }
