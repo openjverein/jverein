@@ -641,7 +641,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         bankverbindung.getComposite(), false, spaltenanzahl);
-
     cols2.addInput(control.getMandatID());
     cols2.addInput(control.getMandatDatum());
     cols2.addInput(control.getMandatVersion());
@@ -650,6 +649,14 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols2.addInput(control.getBic());
     cols2.addInput(control.getKontoinhaber());
     cols2.arrangeVertically();
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && control.isZahltFuerVisible())
+    {
+      LabelGroup cont = new LabelGroup(containerZahlung.getComposite(),
+          "Zahlt Beiträge und Zusatzbeträge für");
+      control.getZahltFuer().paint(cont.getComposite());
+    }
   }
 
   /**
@@ -730,14 +737,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         containerMitgliedschaft.addPart(control.getFamilienverband());
-      }
-
-      if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
-          && control.isZahltFuerVisible())
-      {
-        LabelGroup cont = new LabelGroup(containerMitgliedschaft.getComposite(),
-            "Zahlt Beiträge und Zusatzbeträge für");
-        control.getZahltFuer().paint(cont.getComposite());
       }
     }
   }
