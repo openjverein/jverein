@@ -729,7 +729,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         containerMitgliedschaft.addPart(control.getFamilienverband());
       }
 
-      if (control.isZahltFuerVisible())
+      if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+          && control.isZahltFuerVisible())
       {
         LabelGroup cont = new LabelGroup(containerMitgliedschaft.getComposite(),
             "Zahlt Beiträge und Zusatzbeträge für");
