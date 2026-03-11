@@ -46,7 +46,6 @@ import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -143,7 +142,7 @@ public class DokumentControl extends AbstractControl
       }
       catch (RemoteException e)
       {
-        throw new ApplicationException("Fehler beim Datenkbankzugriff.", e);
+        throw new ApplicationException("Fehler beim Datenbankzugriff.", e);
       }
 
     }, null, false, "document-new.png");
@@ -292,8 +291,7 @@ public class DokumentControl extends AbstractControl
         if (event.data == null)
         {
           event.detail = DND.DROP_NONE;
-          GUI.getStatusBar()
-              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+          GUI.getStatusBar().setErrorText("Fehler bem Hinzufügen der Datei");
           return;
         }
         try
@@ -322,8 +320,7 @@ public class DokumentControl extends AbstractControl
         }
         catch (RemoteException e)
         {
-          GUI.getStatusBar()
-              .setErrorText("Fehler bem Hinzufügen der Datei(en)");
+          GUI.getStatusBar().setErrorText("Fehler bem Hinzufügen der Datei");
         }
       }
 
