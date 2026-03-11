@@ -133,6 +133,7 @@ public class MitgliedDetailAction implements Action
         {
           mitglied.setPersonenart("n");
         }
+        mitglied.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       }
       // Wenn CurrentObject und View von aktueller und nächster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch
