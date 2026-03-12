@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import de.jost_net.JVerein.util.VonBis;
@@ -28,7 +29,7 @@ class AltersgruppenParserTest
   void test01() throws ApplicationException
   {
     AltersgruppenParser ap = new AltersgruppenParser(
-        "0-5,6-10,11-16,17-25,25-100");
+        "0-5,6-10,11-16,17-25,26-100");
     VonBis vb = ap.getNext();
     assertEquals(0, vb.getVon());
     assertEquals(5, vb.getBis());
@@ -42,13 +43,21 @@ class AltersgruppenParserTest
     assertEquals(17, vb.getVon());
     assertEquals(25, vb.getBis());
     vb = ap.getNext();
-    assertEquals(25, vb.getVon());
+    assertEquals(26, vb.getVon());
     assertEquals(100, vb.getBis());
   }
 
   @Test
   void test02() throws ApplicationException
   {
-    new AltersgruppenParser("0-5,4-10");
+    assertThrows(RuntimeException.class,
+        () -> new AltersgruppenParser("0-5,4-99"));
+  }
+
+  @Test
+  void test03() throws ApplicationException
+  {
+    assertThrows(RuntimeException.class,
+        () -> new AltersgruppenParser("0-3,4-99"));
   }
 }

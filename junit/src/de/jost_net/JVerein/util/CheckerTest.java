@@ -16,92 +16,101 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import javax.mail.internet.AddressException;
 
 import org.junit.jupiter.api.Test;
 
 class CheckerTest
 {
+
   @Test
   void test01()
   {
-    assertTrue(EmailValidator.isValid("willi.wichtig@jverein.de"));
+    assertDoesNotThrow(
+        () -> EmailValidator.isValid("willi.wichtig@jverein.de"));
   }
 
   @Test
   void test02()
   {
-    assertFalse(EmailValidator.isValid(null));
+    assertThrows(AddressException.class, () -> EmailValidator.isValid(null));
   }
 
   @Test
   void test05()
   {
-    assertFalse(EmailValidator.isValid("willi wichtig@jverein.de"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi wichtig@jverein.de"));
   }
 
   @Test
   void test06()
   {
-    assertFalse(EmailValidator.isValid("willi@wichtig@jverein.de"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi@wichtig@jverein.de"));
   }
 
   @Test
   void test07()
   {
-    assertFalse(EmailValidator.isValid("willi.wichtig.jverein.de"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi.wichtig.jverein.de"));
   }
 
   @Test
   void test08()
   {
-    assertFalse(EmailValidator.isValid("willi.wichtig@jvereinde"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi.wichtig@jvereinde"));
   }
 
   @Test
   void test09()
   {
-    assertFalse(EmailValidator.isValid("willi.wichtig.@jverein.de"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi.wichtig.@jverein.de"));
   }
 
   @Test
   void test10()
   {
-    assertTrue(EmailValidator.isValid("jupp.schmitz@köln.de"));
+    assertDoesNotThrow(() -> EmailValidator.isValid("jupp.schmitz@köln.de"));
   }
 
   @Test
   void test11()
   {
-    assertTrue(EmailValidator.isValid("name@internetsite.shop"));
+    assertDoesNotThrow(() -> EmailValidator.isValid("name@internetsite.shop"));
   }
 
   @Test
   void test12()
   {
-    assertTrue(EmailValidator.isValid(
+    assertDoesNotThrow(() -> EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zwei.tld;"));
   }
 
   @Test
   void test13()
   {
-    assertFalse(EmailValidator.isValid(
+    assertThrows(AddressException.class, () -> EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse@example-zweitld;"));
   }
 
   @Test
   void test14()
   {
-    assertFalse(EmailValidator.isValid(
+    assertThrows(AddressException.class, () -> EmailValidator.isValid(
         "Gruppenname: erste.adresse@example-eins.tld, zweite.adresse;"));
   }
 
   @Test
   void test15()
   {
-    assertFalse(EmailValidator.isValid("willi.wichtig"));
+    assertThrows(AddressException.class,
+        () -> EmailValidator.isValid("willi.wichtig"));
   }
 
 }

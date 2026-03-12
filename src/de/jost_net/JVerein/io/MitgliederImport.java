@@ -13,6 +13,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import javax.mail.internet.AddressException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -634,9 +636,16 @@ public class MitgliederImport implements Importer
           String email = results.getString("email");
           if (email != null && email.length() != 0)
           {
-            if (!EmailValidator.isValid(email))
+            try
+            {
+              EmailValidator.isValid(email);
+            }
+            catch (AddressException e)
+            {
               throw new ApplicationException(
-                  "Zeile " + anz + ": Ungültige Email: " + email);
+                  "Zeile " + anz + ": Ungültige Email-Adresse: " + email + " : "
+                      + e.getMessage());
+            }
             m.setEmail(email);
           }
         }

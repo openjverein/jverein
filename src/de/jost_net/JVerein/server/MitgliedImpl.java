@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.internet.AddressException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -223,9 +225,14 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       if (getEmail() != null && getEmail().length() > 0)
       {
-        if (!EmailValidator.isValid(getEmail()))
+        try
         {
-          throw new ApplicationException("Ungültige Email-Adresse.");
+          EmailValidator.isValid(getEmail());
+        }
+        catch (AddressException e)
+        {
+          throw new ApplicationException(
+              "Ungültige Email-Adresse: " + e.getMessage());
         }
       }
 
