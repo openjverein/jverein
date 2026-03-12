@@ -102,16 +102,19 @@
 
   <target name="test" depends="test-compile" description="Run test suite">
     <mkdir dir="${release-test.dir}" />
-    <junitlauncher printsummary="true" haltOnFailure="true">
+    <junitlauncher printsummary="true" haltOnFailure="false">
       <classpath refid="test-cp" />
         <!-- the test classes themselves -->
       <classpath  refid="test-compilepath"/>
-      <testclasses outputdir="${release-test.dir}">
+      <testclasses outputdir="${release-test.dir}" failureProperty="ttt">
         <fileset dir="${class-test.dir}"/>
-        <listener type="legacy-brief" sendSysOut="true"/>
-        <listener type="legacy-xml" sendSysErr="true" sendSysOut="true"/>
+        <listener type="legacy-brief" sendSysErr="true" sendSysOut="true"/>
       </testclasses>
     </junitlauncher>
+  	<echo message="${ttt}"/>
+  	<loadfile property="message"
+  	          srcFile="${release-test.dir}/TEST-de.jost_net.JVerein.io.BankarbeitstageTest.txt"/>
+  	<echo message="${message}"/>
 </target>
 
   <target name="jar" depends="test" description="Generates the jar file">

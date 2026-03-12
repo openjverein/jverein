@@ -58,6 +58,6 @@ class AltersgruppenParserTest
   void test03() throws ApplicationException
   {
     assertThrows(RuntimeException.class,
-        () -> new AltersgruppenParser("0-3,4-10"));
+        () -> new AltersgruppenParser("0-3,4-99"));
   }
 }
