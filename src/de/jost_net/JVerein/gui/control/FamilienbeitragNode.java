@@ -18,17 +18,15 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
@@ -179,20 +177,43 @@ public class FamilienbeitragNode implements GenericObjectNode
   {
     try
     {
-      if (mitglied == null)
+      switch (type)
       {
-        return "Familienbeiträge";
+        case ROOT:
+          switch (name)
+          {
+            case "name":
+              return "Famimlienverband";
+            default:
+              return "";
+          }
+        case ZAHLER:
+        case ANGEHOERIGER:
+          switch (name)
+          {
+            case "name":
+              return Adressaufbereitung.getNameVorname(mitglied);
+            case "zahlungsweg":
+              return Zahlungsweg.get(mitglied.getZahlungsweg());
+            case "iban":
+              if (mitglied.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+                  && mitglied.getIban().length() > 0)
+              {
+                return mitglied.getIban();
+              }
+              return "";
+            case "austritt":
+              if (getMitglied().getAustritt() != null)
+              {
+                return getMitglied().getAustritt();
+              }
+              return "";
+            default:
+              return "";
+          }
+        default:
+          throw new RemoteException("Typ nicht implementiert");
       }
-      Date d = null;
-      if (getMitglied().getAustritt() != null)
-      {
-        d = getMitglied().getAustritt();
-      }
-      JVDateFormatTTMMJJJJ jvttmmjjjj = new JVDateFormatTTMMJJJJ();
-      return Adressaufbereitung.getNameVorname(mitglied)
-          + (d != null ? ", Austritt: " + jvttmmjjjj.format(d) : "")
-          + (mitglied.getIban().length() > 0 ? ", " + mitglied.getBic() + ", "
-              + new IBANFormatter().format(mitglied.getIban()) : "");
     }
     catch (RemoteException e)
     {
