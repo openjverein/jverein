@@ -486,8 +486,8 @@ public class ForderungControl
               + "Zu Testzwecken kann DE98ZZZ09999999999 eingesetzt werden.",
           Bug.ERROR));
     }
-
-    if (((Date) sepaControl.getFaelligkeit().getValue()).before(new Date()))
+    Date date = (Date) sepaControl.getFaelligkeit().getValue();
+    if (date != null && date.before(new Date()))
     {
       bugs.add(new Bug(null,
           "Fälligkeit muss bei Lastschriften in der Zukunft liegen!",
