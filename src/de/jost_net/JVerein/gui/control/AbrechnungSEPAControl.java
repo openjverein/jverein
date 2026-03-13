@@ -32,8 +32,10 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.JVereinDateInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;
@@ -50,9 +52,7 @@ import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -76,15 +76,15 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private AbbuchungsmodusInput modus;
 
-  private DateInput stichtag = null;
+  private JVereinDateInput stichtag = null;
 
   private SelectInput abrechnungsmonat;
 
-  private DateInput faelligkeit = null;
+  private JVereinDateInput faelligkeit = null;
 
-  private DateInput vondatum = null;
+  private JVereinDateInput vondatum = null;
 
-  private DateInput bisdatum = null;
+  private JVereinDateInput bisdatum = null;
 
   private TextInput zahlungsgrund;
 
@@ -110,9 +110,9 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private TextInput rechnungstext;
 
-  private DateInput rechnungsdatum;
+  private JVereinDateInput rechnungsdatum;
 
-  private DateInput voneingabedatum;
+  private JVereinDateInput voneingabedatum;
 
   private CheckboxInput rechnungsdokumentspeichern;
 
@@ -185,13 +185,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return modus;
   }
 
-  public DateInput getStichtag()
+  public JVereinDateInput getStichtag()
   {
     if (stichtag != null)
     {
       return stichtag;
     }
-    this.stichtag = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.stichtag = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
     this.stichtag.setTitle("Stichtag für die Abrechnung");
     this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
     stichtag.setMandatory(true);
@@ -203,7 +203,7 @@ public class AbrechnungSEPAControl extends AbstractControl
     return stichtag != null;
   }
 
-  public DateInput getFaelligkeit() throws RemoteException
+  public JVereinDateInput getFaelligkeit() throws RemoteException
   {
     if (faelligkeit != null)
     {
@@ -213,7 +213,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     Bankarbeitstage bat = new Bankarbeitstage();
     cal = bat.getCalendar(cal,
         1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
-    this.faelligkeit = new DateInput(cal.getTime(), new JVDateFormatTTMMJJJJ());
+    this.faelligkeit = new JVereinDateInput(cal.getTime(),
+        new JVDateFormatTTMMJJJJ());
     this.faelligkeit.setTitle("Fälligkeit");
     this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
     faelligkeit.addListener(event -> {
@@ -231,13 +232,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return faelligkeit;
   }
 
-  public DateInput getVondatum()
+  public JVereinDateInput getVondatum()
   {
     if (vondatum != null)
     {
       return vondatum;
     }
-    this.vondatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.vondatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
     this.vondatum.setTitle("Anfangsdatum Abrechnung");
     this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
     boolean mode = (Integer) modus
@@ -263,13 +264,14 @@ public class AbrechnungSEPAControl extends AbstractControl
     return vondatum != null;
   }
 
-  public DateInput getVonEingabedatum()
+  public JVereinDateInput getVonEingabedatum()
   {
     if (voneingabedatum != null)
     {
       return voneingabedatum;
     }
-    this.voneingabedatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.voneingabedatum = new JVereinDateInput(null,
+        new JVDateFormatTTMMJJJJ());
     boolean mode = (Integer) modus
         .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
     if (mode)
@@ -296,13 +298,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return voneingabedatum != null;
   }
 
-  public DateInput getBisdatum()
+  public JVereinDateInput getBisdatum()
   {
     if (bisdatum != null)
     {
       return bisdatum;
     }
-    this.bisdatum = new DateInput(null, new JVDateFormatTTMMJJJJ());
+    this.bisdatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
     this.bisdatum.setTitle("Enddatum Abrechnung");
     this.bisdatum
         .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
@@ -445,13 +447,13 @@ public class AbrechnungSEPAControl extends AbstractControl
     return rechnungstext;
   }
 
-  public DateInput getRechnungsdatum()
+  public JVereinDateInput getRechnungsdatum()
   {
     if (rechnungsdatum != null)
     {
       return rechnungsdatum;
     }
-    rechnungsdatum = new DateInput(new Date());
+    rechnungsdatum = new JVereinDateInput(new Date());
     rechnungsdatum.setMandatory((boolean) rechnung.getValue());
     rechnungsdatum.setEnabled((boolean) rechnung.getValue());
     return rechnungsdatum;
@@ -494,7 +496,8 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   public static boolean confirmDialog(String title, String text)
   {
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    JVereinYesNoDialog d = new JVereinYesNoDialog(
+        JVereinYesNoDialog.POSITION_CENTER);
     d.setTitle(title);
     d.setText(text);
     try
@@ -650,7 +653,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     SepaVersion sepaVersion = null;
     if (aa == Abrechnungsausgabe.SEPA_DATEI)
     {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      FileDialog fd = new FileDialog(GUI.getDisplay().getActiveShell(),
+          SWT.SAVE);
       fd.setText("SEPA-Ausgabedatei wählen.");
       String path = settings.getString("lastdir.sepa",
           System.getProperty("user.home"));
@@ -685,7 +689,8 @@ public class AbrechnungSEPAControl extends AbstractControl
     final Boolean pdfprintb = (Boolean) sepaprint.getValue();
     if (pdfprintb)
     {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      FileDialog fd = new FileDialog(GUI.getDisplay().getActiveShell(),
+          SWT.SAVE);
       fd.setText("PDF-Ausgabedatei wählen");
 
       String path = settings.getString("lastdir.pdf",
