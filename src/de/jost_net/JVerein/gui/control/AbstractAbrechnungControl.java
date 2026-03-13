@@ -541,7 +541,7 @@ public abstract class AbstractAbrechnungControl
     {
       return bugsList;
     }
-    bugsList = new JVereinTablePart(getBugs(), context -> {
+    bugsList = new JVereinTablePart(getInitialBugs(), context -> {
       Bug bug = (Bug) context;
       Object object = bug.getObject();
       if (object instanceof Mitglied)
@@ -582,6 +582,21 @@ public abstract class AbstractAbrechnungControl
       bugsList.addItem(bug);
     }
     bugsList.sort();
+  }
+
+  private List<Bug> getInitialBugs()
+  {
+    String error = checkInput();
+    if (error != null)
+    {
+      ArrayList<Bug> bugs = new ArrayList<>();
+      bugs.add(new Bug(null, error, Bug.ERROR));
+      return bugs;
+    }
+    else
+    {
+      return getBugs();
+    }
   }
 
   /**
@@ -708,7 +723,7 @@ public abstract class AbstractAbrechnungControl
    */
   public void checkFaelligkeit(Date faelligkeit, ArrayList<Bug> bugs)
   {
-    if (faelligkeit.before(new Date()))
+    if (faelligkeit != null && faelligkeit.before(new Date()))
     {
       bugs.add(new Bug(null,
           "Fälligkeit muss bei Lastschriften in der Zukunft liegen!",

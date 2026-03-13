@@ -289,14 +289,6 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
       boolean isLastschrift = false;
       AbrechnungSEPAParam param = new AbrechnungSEPAParam(this, null);
 
-      // Stichtag ist beim Öffnen des Dialogs nicht gesetzt und es wird kein
-      // checkInput gemacht
-      if (param.stichtag == null)
-      {
-        bugs.add(new Bug(null, "Stichtag fehlt", Bug.ERROR));
-        return bugs;
-      }
-
       // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
       // Abrechnungslauf am Anfang geholt.
       checkVerrechnungskonto(bugs);
