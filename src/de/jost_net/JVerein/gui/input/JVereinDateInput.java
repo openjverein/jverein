@@ -527,11 +527,7 @@ public class JVereinDateInput implements Input
     protected Shell createShell(Shell parent, int flags)
     {
       Shell activeShell = parent.getDisplay().getActiveShell();
-      if (!activeShell.equals(parent))
-      {
-        Logger.info("Verwende Dialog als Shell");
-      }
-      return new Shell(activeShell, flags);
+      return new Shell(activeShell != null ? activeShell : parent, flags);
     }
   }
 }
