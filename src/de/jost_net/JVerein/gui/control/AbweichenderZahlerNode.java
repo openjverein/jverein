@@ -189,10 +189,6 @@ public class AbweichenderZahlerNode implements GenericObjectNode
           {
             case "name":
               return Adressaufbereitung.getNameVorname(mitglied);
-            case "zahlungsweg":
-              return "";
-            case "iban":
-              return "";
             default:
               return "";
           }
