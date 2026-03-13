@@ -18,7 +18,6 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -108,9 +107,9 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitglied(int mitglied) throws RemoteException
+  public void setMitglied(Integer mitglied) throws RemoteException
   {
-    setAttribute("mitglied", Integer.valueOf(mitglied));
+    setAttribute("mitglied", mitglied);
   }
 
   @Override
@@ -315,25 +314,25 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getBIC() throws RemoteException
+  public String getBic() throws RemoteException
   {
     return (String) getAttribute("bic");
   }
 
   @Override
-  public void setBIC(String bic) throws RemoteException
+  public void setBic(String bic) throws RemoteException
   {
     setAttribute("bic", bic);
   }
 
   @Override
-  public String getIBAN() throws RemoteException
+  public String getIban() throws RemoteException
   {
     return (String) getAttribute("iban");
   }
 
   @Override
-  public void setIBAN(String iban) throws RemoteException
+  public void setIban(String iban) throws RemoteException
   {
     setAttribute("iban", iban);
   }
@@ -414,6 +413,20 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Lastschriften";
+  }
+
+  @Override
+  public Integer getZahlungsweg() throws RemoteException
+  {
+    // Nur wegen Interface ILastschrift
+    return null;
+  }
+
+  @Override
+  public Date getLetzteLastschrift() throws RemoteException
+  {
+    // Nur wegen Interface ILastschrift
+    return null;
   }
 
 }

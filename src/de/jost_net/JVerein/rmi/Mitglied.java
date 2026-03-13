@@ -23,10 +23,12 @@ import java.util.Map;
 import de.jost_net.JVerein.io.ILastschrift;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
 import de.jost_net.JVerein.keys.Zahlungstermin;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.util.ApplicationException;
 
-public interface Mitglied extends JVereinDBObject, ILastschrift
+public interface Mitglied
+    extends JVereinDBObject, ILastschrift, IGutschriftProvider
 {
   public enum namenformat
   {
@@ -104,9 +106,6 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
 
   public Integer getAlter() throws RemoteException;
 
-  @Override
-  public String getGeschlecht() throws RemoteException;
-
   public void setGeschlecht(String geschlecht) throws RemoteException;
 
   public String getTelefonprivat() throws RemoteException;
@@ -121,8 +120,6 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public String getHandy() throws RemoteException;
 
   public void setHandy(String handy) throws RemoteException;
-
-  public String getEmail() throws RemoteException;
 
   public void setEmail(String email) throws RemoteException;
 
@@ -224,9 +221,6 @@ public interface Mitglied extends JVereinDBObject, ILastschrift
   public void setLeitwegID(String leitwegid) throws RemoteException;
 
   public boolean checkSEPA() throws RemoteException, ApplicationException;
-
-  @Override
-  public String getMandatID() throws RemoteException;
 
   public void setMandatID(String mandatid) throws RemoteException;
 

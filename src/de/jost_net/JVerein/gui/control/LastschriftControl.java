@@ -477,7 +477,7 @@ public class LastschriftControl extends FilterControl implements Savable
     {
       return bic;
     }
-    bic = new BICInput(getLastschrift().getBIC());
+    bic = new BICInput(getLastschrift().getBic());
     bic.setName("BIC");
     bic.setEnabled(false);
     return bic;
@@ -489,7 +489,7 @@ public class LastschriftControl extends FilterControl implements Savable
     {
       return iban;
     }
-    iban = new IBANInput(new IBANFormatter().format(getLastschrift().getIBAN()),
+    iban = new IBANInput(new IBANFormatter().format(getLastschrift().getIban()),
         getBIC());
     iban.setName("IBAN");
     iban.setEnabled(false);

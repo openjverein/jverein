@@ -23,6 +23,7 @@ import org.eclipse.swt.SWT;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.ForderungAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
@@ -213,6 +214,8 @@ public class MitgliedMenu extends ContextMenu
         new MitgliedLastschriftAction(), "lastschrift.png"));
     addItem(new CheckedContextMenuItem("Forderung erstellen",
         new ForderungAction(), "lastschrift.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedContextMenuItem("Mail senden",
         new MitgliedMailSendenAction(), "envelope-open.png"));

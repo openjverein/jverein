@@ -31,8 +31,14 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
 
-public class LastschriftMap extends AbstractMap
+public class GutschriftMap extends AbstractMap
 {
+
+  public GutschriftMap()
+  {
+    super();
+  }
+
   public Map<String, Object> getMap(Lastschrift ls, Map<String, Object> inma)
       throws RemoteException
   {
@@ -53,7 +59,7 @@ public class LastschriftMap extends AbstractMap
 
     Abrechnungslauf abrl = ls.getAbrechnungslauf();
 
-    for (LastschriftVar var : LastschriftVar.values())
+    for (GutschriftVar var : GutschriftVar.values())
     {
       Object value = null;
       switch (var)
@@ -191,10 +197,10 @@ public class LastschriftMap extends AbstractMap
           value = "99";
           break;
         case ABRECHNUNGSLAUF_DATUM:
-          value = Datum.formatDate(toDate("01.01.2025"));
+          value = "01.01.2025";
           break;
         case ABRECHNUNGSLAUF_FAELLIGKEIT:
-          value = Datum.formatDate(toDate("10.01.2025"));
+          value = "10.01.2025";
           break;
         case ANREDE_DU:
           value = "Hallo Willi,";
@@ -242,7 +248,7 @@ public class LastschriftMap extends AbstractMap
           value = "12345";
           break;
         case MANDATDATUM:
-          value = Datum.formatDate(toDate("01.01.2024"));
+          value = "01.01.2024";
           break;
         case BIC:
           value = "XXXXXXXXXXX";

@@ -133,6 +133,7 @@ public class VorlageUtil
         case MAHNUNG_DATEINAME:
         case KONTOAUSZUG_DATEINAME:
         case CT1_AUSGABE_DATEINAME:
+        case GUTSCHRIFT_DATEINAME:
         case PRENOTIFICATION_DATEINAME:
         case PERSONALBOGEN_DATEINAME:
         case KONTENRAHMEN_DATEINAME_V1:
@@ -362,6 +363,7 @@ public class VorlageUtil
         case MAHNUNG_DATEINAME:
         case KONTOAUSZUG_DATEINAME:
         case CT1_AUSGABE_DATEINAME:
+        case GUTSCHRIFT_DATEINAME:
         case PRENOTIFICATION_DATEINAME:
         case PERSONALBOGEN_DATEINAME:
         case KONTENRAHMEN_DATEINAME_V1:

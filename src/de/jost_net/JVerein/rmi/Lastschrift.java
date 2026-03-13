@@ -20,82 +20,45 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.io.ILastschrift;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 
-public interface Lastschrift extends JVereinDBObject, IAdresse
+public interface Lastschrift
+    extends JVereinDBObject, ILastschrift, IGutschriftProvider
 {
 
   public Abrechnungslauf getAbrechnungslauf() throws RemoteException;
 
   public void setAbrechnungslauf(int abrechnungslauf) throws RemoteException;
 
-  public Mitglied getMitglied() throws RemoteException;
-
-  public void setMitglied(int mitglied) throws RemoteException;
-
   public Kursteilnehmer getKursteilnehmer() throws RemoteException;
 
   public void setKursteilnehmer(int kursteilnehmer) throws RemoteException;
 
-  @Override
-  public String getPersonenart() throws RemoteException;
-
   public void setPersonenart(String personenart) throws RemoteException;
-
-  @Override
-  public String getAnrede() throws RemoteException;
 
   public void setAnrede(String anrede) throws RemoteException;
 
-  @Override
-  public String getTitel() throws RemoteException;
-
   public void setTitel(String titel) throws RemoteException;
-
-  @Override
-  public String getName() throws RemoteException;
 
   public void setName(String name) throws RemoteException;
 
-  @Override
-  public String getVorname() throws RemoteException;
-
   public void setVorname(String vorname) throws RemoteException;
 
-  @Override
-  public String getStrasse() throws RemoteException;
-
   public void setStrasse(String strasse) throws RemoteException;
-
-  @Override
-  public String getAdressierungszusatz() throws RemoteException;
 
   public void setAdressierungszusatz(String adressierungszusatz)
       throws RemoteException;
 
-  @Override
-  public String getPlz() throws RemoteException;
-
   public void setPlz(String plz) throws RemoteException;
-
-  @Override
-  public String getOrt() throws RemoteException;
 
   public void setOrt(String ort) throws RemoteException;
 
-  @Override
-  public String getStaat() throws RemoteException;
-
   public void setStaat(String staat) throws RemoteException;
-
-  public String getEmail() throws RemoteException;
 
   public void setEmail(String email) throws RemoteException;
 
-  public String getMandatID() throws RemoteException;
-
   public void setMandatID(String mandatid) throws RemoteException;
-
-  public Date getMandatDatum() throws RemoteException;
 
   public void setMandatDatum(Date mandatdatum) throws RemoteException;
 
@@ -103,25 +66,12 @@ public interface Lastschrift extends JVereinDBObject, IAdresse
 
   public void setMandatSequence(String mandatsequence) throws RemoteException;
 
-  public String getBIC() throws RemoteException;
-
-  public void setBIC(String bic) throws RemoteException;
-
-  public String getIBAN() throws RemoteException;
-
-  public void setIBAN(String iban) throws RemoteException;
-
   public String getVerwendungszweck() throws RemoteException;
 
   public void setVerwendungszweck(String verwendungszweck)
       throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
-
   public void setBetrag(Double betrag) throws RemoteException;
-
-  @Override
-  public String getGeschlecht() throws RemoteException;
 
   public void setGeschlecht(String geschlecht) throws RemoteException;
 
