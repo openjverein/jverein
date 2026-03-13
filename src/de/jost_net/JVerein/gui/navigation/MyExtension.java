@@ -132,7 +132,7 @@ public class MyExtension implements Extension
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
-        mitglieder.addChild(new MyItem(mitglieder, "Familienbeitrag",
+        mitglieder.addChild(new MyItem(mitglieder, "Familienverband",
             new StartViewAction(FamilienbeitragView.class), "users.png"));
       }
       if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))

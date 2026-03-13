@@ -183,7 +183,7 @@ public class FamilienbeitragNode implements GenericObjectNode
           switch (name)
           {
             case "name":
-              return "Famimlienverband";
+              return "Familienverband";
             default:
               return "";
           }
