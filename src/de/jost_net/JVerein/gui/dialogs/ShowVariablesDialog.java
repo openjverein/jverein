@@ -26,7 +26,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
@@ -37,7 +36,7 @@ import de.willuhn.logging.Logger;
 /**
  * Dialog, zum Anzeigen von Variablen-Namen und deren Inhalten.
  */
-public class ShowVariablesDialog extends AbstractDialog<Object>
+public class ShowVariablesDialog extends AbstractJVereinDialog<Object>
 {
 
   private Map<String, Object> vars;

@@ -33,7 +33,6 @@ import de.jost_net.JVerein.rmi.ZusatzbetragVorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -45,7 +44,7 @@ import de.willuhn.logging.Logger;
  * Ein Dialog, zur Auswahl und Bearbeitung von Zusatzbetrag-Vorlagen
  */
 public class ZusatzbetragVorlageDialog
-    extends AbstractDialog<ZusatzbetragVorlage>
+    extends AbstractJVereinDialog<ZusatzbetragVorlage>
 {
 
   private ZusatzbetragVorlage selected = null;
@@ -54,7 +53,7 @@ public class ZusatzbetragVorlageDialog
 
   public ZusatzbetragVorlageDialog()
   {
-    super(AbstractDialog.POSITION_CENTER);
+    super(AbstractJVereinDialog.POSITION_CENTER);
 
     setTitle("Zusatzbetrag-Vorlagen");
     setSize(1100, 500);
