@@ -157,16 +157,44 @@ public class AbweichenderZahlerNode implements GenericObjectNode
   {
     try
     {
-      if (type == ROOT)
+      switch (type)
       {
-        return "Abweichende Zahler";
+        case ROOT:
+          switch (name)
+          {
+            case "name":
+              return "Abweichende Zahler";
+            default:
+              return "";
+          }
+        case ZAHLER:
+          switch (name)
+          {
+            case "name":
+              return Adressaufbereitung.getNameVorname(mitglied);
+            case "zahlungsweg":
+              return Zahlungsweg.get(mitglied.getZahlungsweg());
+            case "iban":
+              if (mitglied.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT
+                  && mitglied.getIban().length() > 0)
+              {
+                return mitglied.getIban();
+              }
+              return "";
+            default:
+              return "";
+          }
+        case ANGEHOERIGER:
+          switch (name)
+          {
+            case "name":
+              return Adressaufbereitung.getNameVorname(mitglied);
+            default:
+              return "";
+          }
+        default:
+          throw new RemoteException("Typ nicht implementiert");
       }
-      String text = Adressaufbereitung.getNameVorname(mitglied);
-      if (type == ZAHLER)
-      {
-        text += (", " + Zahlungsweg.get(mitglied.getZahlungsweg()));
-      }
-      return text;
     }
     catch (RemoteException e)
     {

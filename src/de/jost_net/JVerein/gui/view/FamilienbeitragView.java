@@ -32,7 +32,7 @@ public class FamilienbeitragView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Familienbeitrag");
+    GUI.getView().setTitle("Familienverband");
 
     control.init("familie.", null, null);
 
