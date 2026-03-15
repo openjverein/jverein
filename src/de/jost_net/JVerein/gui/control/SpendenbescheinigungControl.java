@@ -68,6 +68,7 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.SpbAdressaufbereitung;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -338,7 +339,19 @@ public class SpendenbescheinigungControl extends DruckMailControl
         Formular f = getSpendenbescheinigung().getFormular();
         @SuppressWarnings("unchecked")
         List<Formular> list = formular.getList();
-        if (!list.contains(f))
+
+        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // werden
+        boolean found = false;
+        for (Formular fo : list)
+        {
+          if (BeanUtil.equals(fo, f))
+          {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
         {
           list.add(f);
           formular.setList(list);

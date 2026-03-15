@@ -34,6 +34,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
@@ -132,10 +133,14 @@ public class SplitbuchungsContainer
   public static void add(Buchung b) throws RemoteException, ApplicationException
   {
     b.setSpeicherung(false);
-    if (!splitbuchungen.contains(b))
+    for (Buchung buchung : splitbuchungen)
     {
-      splitbuchungen.add(b);
+      if (BeanUtil.equals(buchung, b))
+      {
+        return;
+      }
     }
+    splitbuchungen.add(b);
   }
 
   public static BigDecimal getSumme(Integer typ) throws RemoteException

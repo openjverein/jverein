@@ -26,6 +26,7 @@ import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.gui.dialogs.DropdownDialog;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
@@ -89,7 +90,7 @@ public class WirtschaftsplanAddBuchungsartAction implements Action
             .noneMatch(art1 -> {
               try
               {
-                return art1.equals(buchungsart);
+                return BeanUtil.equals(art1, buchungsart);
               }
               catch (RemoteException e)
               {

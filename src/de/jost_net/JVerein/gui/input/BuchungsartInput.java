@@ -30,6 +30,7 @@ import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -118,8 +119,24 @@ public class BuchungsartInput
           ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
               .execute(sql, new Object[] { dv, db, StatusBuchungsart.AUTO,
                   StatusBuchungsart.ACTIVE }, rs);
-          if (bart != null && ergebnis != null && !ergebnis.contains(bart))
-            ergebnis.add(bart);
+          // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+          // werden
+          if (bart != null && ergebnis != null)
+          {
+            boolean found = false;
+            for (Buchungsart a : ergebnis)
+            {
+              if (BeanUtil.equals(a, bart))
+              {
+                found = true;
+                break;
+              }
+            }
+            if (!found)
+            {
+              ergebnis.add(bart);
+            }
+          }
           buchungsart = new SelectInput(ergebnis, bart);
         }
         else
@@ -148,8 +165,25 @@ public class BuchungsartInput
           ArrayList<Buchungsart> ergebnis = new ArrayList<Buchungsart>();
           while (it.hasNext())
             ergebnis.add(it.next());
-          if (bart != null && ergebnis != null && !ergebnis.contains(bart))
-            ergebnis.add(bart);
+
+          // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+          // werden
+          if (bart != null && ergebnis != null)
+          {
+            boolean found = false;
+            for (Buchungsart a : ergebnis)
+            {
+              if (BeanUtil.equals(a, bart))
+              {
+                found = true;
+                break;
+              }
+            }
+            if (!found)
+            {
+              ergebnis.add(bart);
+            }
+          }
           buchungsart = new SelectInput(ergebnis, bart);
         }
 

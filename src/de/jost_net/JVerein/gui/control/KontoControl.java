@@ -57,6 +57,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -568,8 +569,23 @@ public class KontoControl extends FilterControl implements Savable
     }
 
     Buchungsart b = konto.getBuchungsart();
-    if (liste != null && b != null && !liste.contains(b))
-      liste.add(b);
+    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    if (liste != null && b != null)
+    {
+      boolean found = false;
+      for (Buchungsart art : liste)
+      {
+        if (BeanUtil.equals(art, b))
+        {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+      {
+        liste.add(b);
+      }
+    }
     buchungsart = new SelectInput(liste, b);
     buchungsart.setPleaseChoose("Bitte auswählen");
 

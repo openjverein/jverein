@@ -58,6 +58,7 @@ import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatDATETIME;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -158,11 +159,16 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   public void addEmpfaenger(MailEmpfaenger me) throws RemoteException
   {
-    if (!getMail().getEmpfaenger().contains(me))
+    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    for (MailEmpfaenger e : getMail().getEmpfaenger())
     {
-      getEmpfaenger().addItem(me);
-      getMail().getEmpfaenger().add(me);
+      if (BeanUtil.equals(e, me))
+      {
+        return;
+      }
     }
+    getEmpfaenger().addItem(me);
+    getMail().getEmpfaenger().add(me);
   }
 
   public void removeEmpfaenger(MailEmpfaenger me) throws RemoteException
@@ -173,11 +179,16 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   public void addAnhang(MailAnhang ma) throws RemoteException
   {
-    if (!getMail().getAnhang().contains(ma))
+    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    for (MailAnhang a : getMail().getAnhang())
     {
-      getAnhang().addItem(ma);
-      getMail().getAnhang().add(ma);
+      if (BeanUtil.equals(a, ma))
+      {
+        return;
+      }
     }
+    getAnhang().addItem(ma);
+    getMail().getAnhang().add(ma);
   }
 
   public void removeAnhang(MailAnhang ma) throws RemoteException
@@ -602,7 +613,19 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       while (it.hasNext())
       {
         MailEmpfaenger me = it.next();
-        if (!m.getEmpfaenger().contains(me))
+
+        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // werden
+        boolean found = false;
+        for (MailEmpfaenger e : m.getEmpfaenger())
+        {
+          if (BeanUtil.equals(e, me))
+          {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
         {
           me.delete();
         }
@@ -617,7 +640,18 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       while (it.hasNext())
       {
         MailAnhang ma = (MailAnhang) it.next();
-        if (!m.getAnhang().contains(ma))
+        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // werden
+        boolean found = false;
+        for (MailAnhang a : m.getAnhang())
+        {
+          if (BeanUtil.equals(a, ma))
+          {
+            found = true;
+            break;
+          }
+        }
+        if (!found)
         {
           ma.delete();
         }
