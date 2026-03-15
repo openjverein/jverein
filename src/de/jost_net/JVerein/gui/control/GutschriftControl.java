@@ -56,8 +56,6 @@ public class GutschriftControl extends AbstractAbrechnungControl
 {
   private final Double LIMIT = 0.005;
 
-  private final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
-
   private boolean isMitglied;
 
   private IGutschriftProvider[] providerArray;
@@ -74,24 +72,11 @@ public class GutschriftControl extends AbstractAbrechnungControl
 
   private SelectInput steuerInput;
 
-  private Boolean einstellungRechnungAnzeigen;
-
-  private Boolean einstellungBuchungsklasseInBuchung;
-
-  private Boolean einstellungSteuerInBuchung;
-
   public GutschriftControl(IGutschriftProvider[] providerArray)
       throws RemoteException
   {
     this.isMitglied = providerArray[0] instanceof Mitglied;
     this.providerArray = providerArray;
-
-    einstellungRechnungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    einstellungSteuerInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.STEUERINBUCHUNG);
   }
 
   public IGutschriftProvider[] getProviderArray()
@@ -416,21 +401,21 @@ public class GutschriftControl extends AbstractAbrechnungControl
     {
       settings.setAttribute("verwendungszweck", (String) zweckInput.getValue());
 
-      // Fixen Betrag erstatten
-      settings.setAttribute("fixerBetragAbrechnen",
-          (boolean) fixerBetragAbrechnenInput.getValue());
-
       if (!isMitglied)
       {
-        if ((Double) fixerBetragInput.getValue() != null)
-        {
-          settings.setAttribute("fixerBetrag",
-              (Double) fixerBetragInput.getValue());
-        }
-        else
-        {
-          settings.setAttribute("fixerBetrag", "");
-        }
+        // Fixen Betrag erstatten
+        settings.setAttribute("fixerBetragAbrechnen",
+            (boolean) fixerBetragAbrechnenInput.getValue());
+      }
+
+      if ((Double) fixerBetragInput.getValue() != null)
+      {
+        settings.setAttribute("fixerBetrag",
+            (Double) fixerBetragInput.getValue());
+      }
+      else
+      {
+        settings.setAttribute("fixerBetrag", "");
       }
 
       if ((Buchungsart) buchungsartInput.getValue() != null)
@@ -442,7 +427,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
       {
         settings.setAttribute("buchungsart", "");
       }
-      if (einstellungBuchungsklasseInBuchung)
+      if (buchungsklasseInput != null)
       {
         if ((Buchungsklasse) buchungsklasseInput.getValue() != null)
         {
@@ -454,7 +439,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
           settings.setAttribute("buchungsklasse", "");
         }
       }
-      if (einstellungSteuerInBuchung)
+      if (steuerInput != null)
       {
         if ((Steuer) steuerInput.getValue() != null)
         {
@@ -487,7 +472,8 @@ public class GutschriftControl extends AbstractAbrechnungControl
       {
         return ("Bitte Ausführungsdatum auswählen");
       }
-      if (einstellungRechnungAnzeigen && (boolean) getRechnung().getValue())
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN)
+          && (boolean) getRechnung().getValue())
       {
         if (getRechnungsformular().getValue() == null)
         {
@@ -509,12 +495,12 @@ public class GutschriftControl extends AbstractAbrechnungControl
         {
           return ("Bitte Buchungsart eingeben");
         }
-        if (einstellungBuchungsklasseInBuchung
+        if (buchungsklasseInput != null
             && getBuchungsklasseInput().getValue() == null)
         {
           return ("Bitte Buchungsklasse eingeben");
         }
-        if (einstellungSteuerInBuchung)
+        if (steuerInput != null)
         {
           Buchungsart buchungsart = (Buchungsart) getBuchungsartInput()
               .getValue();
