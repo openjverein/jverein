@@ -26,7 +26,10 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.gui.control.AbstractAbrechnungControl;
+import de.jost_net.JVerein.gui.control.ForderungControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
+import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
@@ -46,11 +49,11 @@ public class AbrechnungSEPAParam
 
   public final int abrechnungsmonat;
 
-  public final Date faelligkeit;
+  public Date faelligkeit;
 
   public final Date stichtag;
 
-  public final Abrechnungsausgabe abbuchungsausgabe;
+  public Abrechnungsausgabe abbuchungsausgabe;
 
   public final Date vondatum;
 
@@ -62,31 +65,31 @@ public class AbrechnungSEPAParam
 
   public final Boolean kursteilnehmer;
 
-  public final Boolean kompakteabbuchung;
+  public Boolean kompakteabbuchung;
 
-  public final boolean sollbuchungenzusammenfassen;
+  public boolean sollbuchungenzusammenfassen;
 
-  public final boolean rechnung;
+  public boolean rechnung;
 
-  public final boolean rechnungsdokumentSpeichern;
+  public boolean rechnungsdokumentSpeichern;
 
-  public final Formular rechnungsformular;
+  public Formular rechnungsformular;
 
-  public final String rechnungstext;
+  public String rechnungstext;
 
-  public final Date rechnungsdatum;
+  public Date rechnungsdatum;
 
-  public final Boolean sepaprint;
+  public Boolean sepaprint;
 
-  public final Boolean sepacheckdisable;
+  public Boolean sepacheckdisable;
 
-  public final File sepafileRCUR;
+  public File sepafileRCUR = null;
 
   public final SepaVersion sepaVersion;
 
-  public final String pdffileRCUR;
+  public String pdffileRCUR = null;
 
-  public final DBService service;
+  public DBService service;
 
   public Konto konto;
 
@@ -96,17 +99,40 @@ public class AbrechnungSEPAParam
 
   List<Zusatzbetrag> zusatzbetraegeList;
 
-  public AbrechnungSEPAParam(AbrechnungSEPAControl ac, File sepafileRCUR,
-      SepaVersion sepaVersion, String pdffileRCUR)
+  public AbrechnungSEPAParam(ForderungControl fc, SepaVersion sepaVersion)
       throws ApplicationException, RemoteException
   {
-    zusatzbetraegeList = ac.getZusatzbetraegeList();
+    setAbstractParams(fc);
+    this.sepaVersion = sepaVersion;
+    zusatzbetraegeList = fc.getZusatzbetraegeList();
+    abbuchungsmodus = Abrechnungsmodi.FORDERUNG;
+    verwendungszweck = (String) fc.getPart().getBuchungstext().getValue();
+    abrechnungsmonat = 12;
+    stichtag = null;
+    vondatum = null;
+    voneingabedatum = null;
+    bisdatum = null;
+    zusatzbetraege = false;
+    kursteilnehmer = false;
+  }
+
+  public AbrechnungSEPAParam(AbrechnungSEPAControl ac, SepaVersion sepaVersion)
+      throws ApplicationException, RemoteException
+  {
+    setAbstractParams(ac);
+    this.sepaVersion = sepaVersion;
+    zusatzbetraegeList = null;
     abbuchungsmodus = (Integer) ac.getAbbuchungsmodus().getValue();
-    Monat monat = (Monat) ac.getAbrechnungsmonat().getValue();
-    abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
-        .getValue();
-    abrechnungsmonat = monat.getKey();
-    faelligkeit = (Date) ac.getFaelligkeit().getValue();
+    verwendungszweck = (String) ac.getZahlungsgrund().getValue();
+    if (ac.isAbrechnungsmonatSupported())
+    {
+      Monat monat = (Monat) ac.getAbrechnungsmonat().getValue();
+      abrechnungsmonat = monat.getKey();
+    }
+    else
+    {
+      abrechnungsmonat = 12;
+    }
     stichtag = ac.isStichtagSupported() ? (Date) ac.getStichtag().getValue()
         : null;
     vondatum = ac.isVondatumSupported() ? (Date) ac.getVondatum().getValue()
@@ -116,13 +142,20 @@ public class AbrechnungSEPAParam
         : null;
     bisdatum = ac.isBisdatumSupported() ? (Date) ac.getBisdatum().getValue()
         : null;
-    verwendungszweck = (String) ac.getZahlungsgrund().getValue();
     zusatzbetraege = ac.isZusatzbetragSupported()
         ? (Boolean) ac.getZusatzbetrag().getValue()
         : false;
     kursteilnehmer = ac.isKursteilnehmerSupported()
         ? (Boolean) ac.getKursteilnehmer().getValue()
         : false;
+  }
+
+  protected void setAbstractParams(AbstractAbrechnungControl ac)
+      throws ApplicationException, RemoteException
+  {
+    abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
+        .getValue();
+    faelligkeit = (Date) ac.getFaelligkeit().getValue();
     kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
     sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen()
         .getValue();
@@ -152,9 +185,6 @@ public class AbrechnungSEPAParam
     }
     sepaprint = (Boolean) ac.getSEPAPrint().getValue();
     sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
-    this.pdffileRCUR = pdffileRCUR;
-    this.sepafileRCUR = sepafileRCUR;
-    this.sepaVersion = sepaVersion;
 
     if (abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
     {

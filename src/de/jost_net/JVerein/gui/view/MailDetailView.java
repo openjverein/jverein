@@ -136,6 +136,7 @@ public class MailDetailView extends AbstractDetailView
 
     JameicaUtil.addLabel("Anhang", comp, GridData.VERTICAL_ALIGN_BEGINNING);
     Composite comp4 = new Composite(comp, SWT.NONE);
+    control.setDragDrop(comp4);
     GridData gd4 = new GridData(GridData.FILL_HORIZONTAL);
     gd4.heightHint = 100;
     comp4.setLayoutData(gd4);

@@ -47,6 +47,9 @@ public class DokumentationUtil
   private static final String ADMEINSTELLUNG = ADMIN + "einstellungen/";
 
   // Mitglieder
+  public static final String ABWEICHENDEZAHLER = MITGLIEDER
+      + "abweichendezahler";
+
   public static final String ARBEITSEINSATZ = MITGLIEDER + "arbeitseinsatz";
 
   public static final String FAMILIENBEITRAG = MITGLIEDER + "familienbeitrag";

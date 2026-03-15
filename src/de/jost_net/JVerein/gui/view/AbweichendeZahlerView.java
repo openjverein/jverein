@@ -17,26 +17,40 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.SEPABugsControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
 
-public class SEPABugsView extends AbstractView
+public class AbweichendeZahlerView extends AbstractView
 {
+  final MitgliedControl control = new MitgliedControl(this);
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("SEPA-Fehler");
+    GUI.getView().setTitle("Abweichende Zahler");
 
-    SEPABugsControl control = new SEPABugsControl(this);
+    control.init("abweichendezahler.", null, null);
 
-    control.getBugsList().paint(this.getParent());
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    group.addInput(control.getMitgliedStatus());
+
+    control.getAbweichenderZahlerTree().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SEPABUGS, false, "question-circle.png");
+        DokumentationUtil.ABWEICHENDEZAHLER, false, "question-circle.png");
     buttons.paint(this.getParent());
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterAlternativerZahlerConsumer();
+    super.unbind();
   }
 }

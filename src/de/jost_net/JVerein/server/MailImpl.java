@@ -121,7 +121,8 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     }
     if (isNewObject())
     {
-      return new TreeSet<>();
+      anhang = new TreeSet<>();
+      return anhang;
     }
     DBIterator<MailAnhang> it = Einstellungen.getDBService()
         .createList(MailAnhang.class);

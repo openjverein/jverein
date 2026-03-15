@@ -31,7 +31,7 @@ public class FamilienmitgliedEntfernenAction implements Action
   {
     if (context == null || !(context instanceof FamilienbeitragNode))
     {
-      throw new ApplicationException("kein Familienmitglied ausgewählt");
+      throw new ApplicationException("Kein Familienmitglied ausgewählt");
     }
     FamilienbeitragNode fbn = (FamilienbeitragNode) context;
     FamilienmitgliedEntfernenDialog fed = new FamilienmitgliedEntfernenDialog(

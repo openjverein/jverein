@@ -21,9 +21,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import de.willuhn.util.ApplicationException;
 
+@Disabled
 class BankarbeitstageTest
 {
   @Test

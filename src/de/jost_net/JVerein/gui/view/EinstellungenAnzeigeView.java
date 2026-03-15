@@ -43,6 +43,7 @@ public class EinstellungenAnzeigeView extends AbstractView
 
     SimpleContainer cont1 = new SimpleContainer(cols1.getComposite());
     cont1.addHeadline("Mitglieder Feature Auswahl");
+    cont1.addLabelPair("Abweichende Zahler *", control.getAbweichendeZahler());
     cont1.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
     cont1.addLabelPair("Familienbeitrag *", control.getFamilienbeitrag());
     cont1.addLabelPair("Kursteilnehmer *", control.getKursteilnehmer());

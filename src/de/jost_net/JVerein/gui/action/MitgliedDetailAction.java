@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.control.AbweichenderZahlerNode;
 import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
@@ -49,7 +50,12 @@ public class MitgliedDetailAction implements Action
     Mitglied mitglied;
     try
     {
-      if (context instanceof FamilienbeitragNode)
+      if (context instanceof AbweichenderZahlerNode)
+      {
+        AbweichenderZahlerNode azn = (AbweichenderZahlerNode) context;
+        mitglied = azn.getMitglied();
+      }
+      else if (context instanceof FamilienbeitragNode)
       {
         FamilienbeitragNode fbn = (FamilienbeitragNode) context;
         mitglied = fbn.getMitglied();
@@ -133,6 +139,7 @@ public class MitgliedDetailAction implements Action
         {
           mitglied.setPersonenart("n");
         }
+        mitglied.setMitgliedstyp(Long.valueOf(Mitgliedstyp.MITGLIED));
       }
       // Wenn CurrentObject und View von aktueller und nächster View gleich
       // sind, wird die aktuelle View nicht in die History aufgenommen. Dadurch

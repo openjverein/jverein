@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.PersonalbogenControl;
+import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DialogInput;
@@ -93,6 +94,51 @@ public class PersonalbogenMailView extends AbstractView
     SimpleContainer cont2 = new SimpleContainer(getParent(), false);
     cont2.addHeadline("Parameter");
     cont2.addInput(control.getAusgabeart());
+
+    SimpleVerticalContainer vContainer = new SimpleVerticalContainer(
+        getParent(), false, 3);
+
+    if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+    {
+      vContainer.addLabelPair("Zusatzbetrag drucken",
+          control.getZusatzbetrag());
+    }
+    vContainer.addLabelPair("Mitgliedskonto drucken",
+        control.getMitgliedskonto());
+
+    if ((boolean) Einstellungen.getEinstellung(Property.VERMERKE))
+    {
+      vContainer.addLabelPair("Vermerk drucken", control.getVermerk());
+    }
+    if ((boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
+    {
+      vContainer.addLabelPair("Wiedervorlage drucken",
+          control.getWiedervorlage());
+    }
+    if ((boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
+    {
+      vContainer.addLabelPair("Lehrgang drucken", control.getLehrgang());
+    }
+    if ((boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
+    {
+      vContainer.addLabelPair("Zusatzfelder drucken",
+          control.getZusatzfelder());
+    }
+
+    vContainer.addLabelPair("Eigenschaften drucken",
+        control.getEigenschaften());
+    if ((boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
+    {
+      vContainer.addLabelPair("Arbeitseinsatz drucken",
+          control.getArbeitseinsatz());
+    }
+    if ((boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+    {
+      vContainer.addLabelPair("Spendenbescheinigungen drucken",
+          control.getSpendenbescheinigung());
+    }
+    vContainer.arrangeVertically();
 
     SimpleContainer cont = new SimpleContainer(getParent(), true);
     cont.addHeadline("Mail");

@@ -14,16 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.server;
 
-import java.rmi.RemoteException;
-import java.util.Date;
+package de.jost_net.JVerein.Messaging;
 
-import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
 
-public interface IVersand extends JVereinDBObject
+/**
+ * Wird versendet, wenn sich der AbweichenderZahlerTree geaendert hat.
+ */
+public class AbweichenderZahlerMessage extends ObjectMessage
 {
-  public void setVersanddatum(Date datum) throws RemoteException;
-
-  public Date getVersanddatum() throws RemoteException;
+  public AbweichenderZahlerMessage(GenericObject object)
+  {
+    super(object);
+  }
 }

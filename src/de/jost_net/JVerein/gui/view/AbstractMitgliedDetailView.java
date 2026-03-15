@@ -370,14 +370,17 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneDokumente(Composite parentComposite)
       throws RemoteException
   {
-    if (JVereinPlugin.isArchiveServiceActive()
-        && !control.getMitglied().isNewObject())
+    if (JVereinPlugin.isArchiveServiceActive())
     {
       Container cont = getTabOrLabelContainer(parentComposite, "Dokumente");
 
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
-      mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
+      if (control.getMitglied().getID() != null)
+      {
+        mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
+      }
+
       dcontrol = new DokumentControl(this, "mitglieder", true);
 
       ButtonArea butts = new ButtonArea();
@@ -595,12 +598,16 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     LabelGroup zahlungsweg = new LabelGroup(containerZahlung.getComposite(),
         "Zahlungsweg");
     zahlungsweg.getComposite().setLayout(new GridLayout(1, false));
-    ButtonArea buttons1 = new ButtonArea();
-    buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
-    buttons1.paint(zahlungsweg.getComposite());
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    {
+      ButtonArea buttons1 = new ButtonArea();
+      buttons1.addButton(control.getAbweichenderZahlerErzeugenButton());
+      buttons1.paint(zahlungsweg.getComposite());
+    }
 
     SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
-        zahlungsweg.getComposite(), false, 1);
+        zahlungsweg.getComposite(), false, spaltenanzahl);
 
     cols1.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())
@@ -618,7 +625,11 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
           break;
       }
     }
-    cols1.addInput(control.getAbweichenderZahler());
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER))
+    {
+      cols1.addInput(control.getAbweichenderZahler());
+    }
     cols1.arrangeVertically();
 
     LabelGroup bankverbindung = control
@@ -630,7 +641,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     SimpleVerticalContainer cols2 = new SimpleVerticalContainer(
         bankverbindung.getComposite(), false, spaltenanzahl);
-
     cols2.addInput(control.getMandatID());
     cols2.addInput(control.getMandatDatum());
     cols2.addInput(control.getMandatVersion());
@@ -639,6 +649,14 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     cols2.addInput(control.getBic());
     cols2.addInput(control.getKontoinhaber());
     cols2.arrangeVertically();
+
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABWEICHENDEZAHLER)
+        && control.isZahltFuerVisible())
+    {
+      LabelGroup cont = new LabelGroup(containerZahlung.getComposite(),
+          "Zahlt Beiträge und Zusatzbeträge für");
+      control.getZahltFuer().paint(cont.getComposite());
+    }
   }
 
   /**
@@ -719,13 +737,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       if ((Boolean) Einstellungen.getEinstellung(Property.FAMILIENBEITRAG))
       {
         containerMitgliedschaft.addPart(control.getFamilienverband());
-      }
-
-      if (control.isZahltFuerVisible())
-      {
-        LabelGroup cont = new LabelGroup(containerMitgliedschaft.getComposite(),
-            "Zahlt Beiträge und Zusatzbeträge für");
-        control.getZahltFuer().paint(cont.getComposite());
       }
     }
   }
