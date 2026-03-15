@@ -149,7 +149,7 @@ public class AbweichenderZahlerNode implements GenericObjectNode
   @Override
   public String[] getAttributeNames()
   {
-    return new String[] { "name" };
+    return new String[] { "name", "zahlungsweg", "iban" };
   }
 
   @Override

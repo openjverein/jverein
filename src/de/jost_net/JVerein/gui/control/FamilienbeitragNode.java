@@ -169,7 +169,7 @@ public class FamilienbeitragNode implements GenericObjectNode
   @Override
   public String[] getAttributeNames()
   {
-    return new String[] { "name", "vorname", "blz", "konto" };
+    return new String[] { "name", "zahlungsweg", "iban", "austritt" };
   }
 
   @Override

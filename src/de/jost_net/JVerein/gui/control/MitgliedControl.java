@@ -2563,7 +2563,7 @@ public class MitgliedControl extends FilterControl implements Savable
     familienbeitragtree.addColumn("Name", "name");
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
     familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
-    familienbeitragtree.addColumn("Austritt", "austrtt", new DateFormatter());
+    familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
 
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
     familienbeitragtree.setRememberColWidths(true);
