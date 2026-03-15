@@ -47,4 +47,6 @@ public interface IAdresse
   public String getGeschlecht() throws RemoteException;
 
   public String getStaatCode() throws RemoteException;
+
+  public String getEmail() throws RemoteException;
 }

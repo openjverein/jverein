@@ -17,11 +17,11 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-public interface Sollbuchung extends JVereinDBObject
+import de.jost_net.JVerein.server.IGutschriftProvider;
+
+public interface Sollbuchung extends JVereinDBObject, IGutschriftProvider
 {
   public static final String TABLE_NAME = "sollbuchung";
 
@@ -99,17 +99,8 @@ public interface Sollbuchung extends JVereinDBObject
 
   public void setBetrag(Double betrag) throws RemoteException;
 
-  public Double getBetrag() throws RemoteException;
-
-  public Double getIstSumme() throws RemoteException;
-
   public Rechnung getRechnung() throws RemoteException;
 
   public void setRechnung(Rechnung rechnung) throws RemoteException;
-
-  ArrayList<SollbuchungPosition> getSollbuchungPositionList()
-      throws RemoteException;
-
-  public List<Buchung> getBuchungList() throws RemoteException;
 
 }

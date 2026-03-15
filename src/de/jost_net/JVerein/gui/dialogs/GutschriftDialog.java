@@ -14,6 +14,7 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
@@ -25,37 +26,34 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.gui.control.ForderungControl;
+import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.util.ApplicationException;
 
-/**
- * Dialog zur Zuordnung von Zusatzbeträgen
- */
-public class ForderungDialog extends AbstractDialog<Boolean>
+public class GutschriftDialog extends AbstractDialog<Boolean>
 {
-  private Mitglied[] mitglieder;
+  private boolean isMitglied = false;
 
-  /**
-   * @param position
-   */
-  public ForderungDialog(int position, Mitglied[] m)
+  private GutschriftControl control;
+
+  public GutschriftDialog(IGutschriftProvider[] providerArray)
+      throws RemoteException
   {
-    super(position);
-    super.setSize(950, SWT.DEFAULT);
-    setTitle("Forderung erstellen");
-    this.mitglieder = m;
+    super(SWT.CENTER);
+    setTitle("Gutschrift erstellen");
+    this.control = new GutschriftControl(providerArray);
+    this.isMitglied = providerArray[0] instanceof Mitglied;
+    setSize(950, SWT.DEFAULT);
   }
 
   @Override
-  protected void paint(Composite parent)
-      throws RemoteException, ApplicationException
+  protected void paint(Composite parent) throws RemoteException
   {
     boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
@@ -67,78 +65,82 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     boolean einstellungSteuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
 
-    final ForderungControl control = new ForderungControl(mitglieder);
-
     LabelGroup group = new LabelGroup(parent, "");
     group.addInput(control.getStatus());
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
-    left.addHeadline("Forderung");
-    left.addLabelPair("Fälligkeit ", control.getFaelligkeit());
-    left.addLabelPair("Zahlungsgrund", control.getPart().getBuchungstext());
-    left.addLabelPair("Betrag", control.getPart().getBetrag());
-    left.addLabelPair("Buchungsart", control.getPart().getBuchungsart());
+    left.addHeadline("Überweisung");
+    left.addLabelPair("Ausgabe", control.getAbbuchungsausgabe());
+    left.addLabelPair("Ausführungsdatum", control.getFaelligkeit());
+    left.addLabelPair("Verwendungszweck", control.getZweckInput());
+
+    // Fixen Betrag erstatten
+    right.addHeadline("Fixer Betrag");
+    if (!isMitglied)
+    {
+      right.addLabelPair("Fixen Betrag erstatten",
+          control.getFixerBetragAbrechnenInput());
+    }
+    else
+    {
+      // Nicht anzeigen aber Wert auf true setzen
+      control.getFixerBetragAbrechnenInput();
+    }
+    right.addLabelPair("Erstattungsbetrag", control.getFixerBetragInput());
+    right.addLabelPair("Buchungsart", control.getBuchungsartInput());
     if (einstellungBuchungsklasseInBuchung)
     {
-      left.addLabelPair("Buchungsklasse",
-          control.getPart().getBuchungsklasse());
+      right.addLabelPair("Buchungsklasse", control.getBuchungsklasseInput());
     }
     if (einstellungSteuerInBuchung)
     {
-      left.addLabelPair("Steuer", control.getPart().getSteuer());
+      right.addLabelPair("Steuer", control.getSteuerInput());
     }
-    left.addLabelPair("Zahlungsweg", control.getPart().getZahlungsweg());
-    left.addLabelPair("Mitglied zahlt selbst",
-        control.getPart().getMitgliedzahltSelbst());
-    left.addHeadline("Vorlagen");
-    left.addLabelPair("Als Vorlage speichern",
-        control.getVorlageSpeichernInput());
 
-    right.addHeadline("Sollbuchungen");
-    right.addLabelPair("Sollbuchungen zusammenfassen",
-        control.getSollbuchungenZusammenfassen());
-
-    right.addHeadline("Lastschriften");
-    right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
-    right.addLabelPair("SEPA-Check temporär deaktivieren",
-        control.getSEPACheck());
-    right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
-    right.addInput(control.getAbbuchungsausgabe());
-
+    // Nur anzeigen wenn Rechnungen aktiviert sind
     if (einstellungRechnungAnzeigen)
     {
-      right.addHeadline("Rechnungen");
-      right.addLabelPair("Rechnung erstellen", control.getRechnung());
+      ColumnLayout cl2 = new ColumnLayout(group.getComposite(), 1);
+      SimpleContainer below = new SimpleContainer(cl2.getComposite(), false, 2);
+      below.addHeadline("Rechnung");
+      SimpleContainer bleft = new SimpleContainer(below.getComposite(), false,
+          2);
+      SimpleContainer bright = new SimpleContainer(below.getComposite(), false,
+          2);
+
+      bleft.addLabelPair("Rechnung zur Gutschrift erzeugen",
+          control.getRechnung());
       if (einstellungSpeicherungAnzeigen)
       {
-        right.addLabelPair("Rechnung als Buchungsdokument speichern",
+        bleft.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      right.addInput(control.getRechnungsformular());
-      right.addInput(control.getRechnungstext("Wenn leer Zahlungsgrund"));
-      right.addInput(control.getRechnungsdatum());
+      bleft.addLabelPair("Erstattungsformular", control.getRechnungsformular());
+      bleft.addInput(control.getRechnungsdatum());
+      bright.addInput(control.getRechnungstext("Wenn leer Verwendungzweck"));
+      bright.addInput(control.getRechnungskommentar());
     }
 
-    LabelGroup below = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
+    LabelGroup below2 = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
         true);
-    below.getComposite().setLayout(new GridLayout(1, false));
-    below.addPart(control.getBugsList());
+    below2.getComposite().setLayout(new GridLayout(1, false));
+    below2.addPart(control.getBugsList());
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
-    below.getComposite().setLayoutData(gridData);
+    below2.getComposite().setLayoutData(gridData);
 
+    // Buttons
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getHelpButton(DokumentationUtil.FORDERUNG));
-    buttons.addButton(control.getZahlungsgrundVariablenButton());
+    buttons.addButton(control.getHelpButton(DokumentationUtil.GUTSCHRIFT));
+    buttons.addButton(control.getVZweckVariablenButton());
     if (einstellungRechnungAnzeigen)
     {
-      buttons.addButton(control.getRechnungstextVariablenButton());
+      buttons.addButton(control.getRZweckVariablenButton());
     }
-    buttons.addButton(control.getVorlagenButton());
     buttons.addButton(control.getPruefenButton());
-    buttons.addButton(control.getStartButton(this));
+    buttons.addButton(control.getErstellenButton(this));
     buttons.addButton(control.getAbbrechenButton(this));
     buttons.paint(parent);
   }

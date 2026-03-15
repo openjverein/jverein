@@ -25,6 +25,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.mail.internet.AddressException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
@@ -223,9 +225,14 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       }
       if (getEmail() != null && getEmail().length() > 0)
       {
-        if (!EmailValidator.isValid(getEmail()))
+        try
         {
-          throw new ApplicationException("Ungültige Email-Adresse.");
+          EmailValidator.isValid(getEmail());
+        }
+        catch (AddressException e)
+        {
+          throw new ApplicationException(
+              "Ungültige Email-Adresse: " + e.getMessage());
         }
       }
 
@@ -1595,4 +1602,25 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   {
     setAttribute("ktoiname", "");
   }
+
+  // Für Gutschrift Support
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return this;
+  }
+
+  @Override
+  public Double getBetrag() throws RemoteException
+  {
+    return Double.valueOf(0d);
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    // Hier sinnlos aber wegen IMitglied aus IGutschriftprovider nötig
+  }
+
 }

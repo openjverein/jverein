@@ -16,75 +16,40 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
-import java.util.Calendar;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.DBTools.DBTransaction;
-import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
 import de.jost_net.JVerein.gui.input.AbbuchungsmodusInput;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.JVereinDateInput;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
-import de.jost_net.JVerein.io.Bankarbeitstage;
-import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
-import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.Monat;
-import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Kursteilnehmer;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SekundaereBeitragsgruppe;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
+import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
-public class AbrechnungSEPAControl extends AbstractControl
+public class AbrechnungSEPAControl extends AbstractAbrechnungControl
 {
 
-  private static String CONFIRM_TITEL = "SEPA-Check temporär deaktivieren";
-
-  private static String CONFIRM_TEXT = "Bei einer SEPA-Lastschrift muß ein gültiges SEPA-Mandat vorliegen.\n"
-      + "Wenn das Mandat älter als 3 Jahre ist, müssen in den letzten 3 Jahren Lastschriften durchgeführt worden sein.\n"
-      + "Wählen Sie \"Ja\" nur, wenn diese Bedingungen für alle Mitglieder erfüllt sind.";
-
-  private static String CONFIRM_FEHLER = "Fehler beim Setzen der Checkbox";
-
+  // Inputs in Settings gespeichert
   private AbbuchungsmodusInput modus;
-
-  private JVereinDateInput stichtag = null;
-
-  private SelectInput abrechnungsmonat;
-
-  private JVereinDateInput faelligkeit = null;
-
-  private JVereinDateInput vondatum = null;
-
-  private JVereinDateInput bisdatum = null;
 
   private TextInput zahlungsgrund;
 
@@ -92,48 +57,21 @@ public class AbrechnungSEPAControl extends AbstractControl
 
   private CheckboxInput kursteilnehmer;
 
-  private CheckboxInput kompakteabbuchung;
+  // Inputs nicht in Settings gespeichert
+  private SelectInput abrechnungsmonat;
 
-  private CheckboxInput sepaprint;
+  private JVereinDateInput vondatum;
 
-  private CheckboxInput sepacheck;
-
-  private SelectInput ausgabe;
-
-  private Settings settings = null;
-
-  private CheckboxInput sollbuchungenzusammenfassen;
-
-  private CheckboxInput rechnung;
-
-  private FormularInput rechnungsformular;
-
-  private TextInput rechnungstext;
-
-  private JVereinDateInput rechnungsdatum;
+  private JVereinDateInput bisdatum;
 
   private JVereinDateInput voneingabedatum;
 
-  private CheckboxInput rechnungsdokumentspeichern;
-
-  private List<Zusatzbetrag> zusatzbetraegeList;
-
-  public AbrechnungSEPAControl(AbstractView view)
+  public AbrechnungSEPAControl() throws RemoteException
   {
-    super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
+    super();
   }
 
-  public SelectInput getAbrechnungsmonat()
-  {
-    if (abrechnungsmonat != null)
-    {
-      return abrechnungsmonat;
-    }
-    abrechnungsmonat = new SelectInput(Monat.values(), Monat.JANUAR);
-    return abrechnungsmonat;
-  }
+  // Inputs in Settings gespeichert
 
   public AbbuchungsmodusInput getAbbuchungsmodus() throws RemoteException
   {
@@ -182,142 +120,8 @@ public class AbrechnungSEPAControl extends AbstractControl
         }
       }
     });
+    modus.setName("Modus");
     return modus;
-  }
-
-  public JVereinDateInput getStichtag()
-  {
-    if (stichtag != null)
-    {
-      return stichtag;
-    }
-    this.stichtag = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
-    this.stichtag.setTitle("Stichtag für die Abrechnung");
-    this.stichtag.setText("Bitte Stichtag für die Abrechnung wählen");
-    stichtag.setMandatory(true);
-    return stichtag;
-  }
-
-  public boolean isStichtagSupported()
-  {
-    return stichtag != null;
-  }
-
-  public JVereinDateInput getFaelligkeit() throws RemoteException
-  {
-    if (faelligkeit != null)
-    {
-      return faelligkeit;
-    }
-    Calendar cal = Calendar.getInstance();
-    Bankarbeitstage bat = new Bankarbeitstage();
-    cal = bat.getCalendar(cal,
-        1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
-    this.faelligkeit = new JVereinDateInput(cal.getTime(),
-        new JVDateFormatTTMMJJJJ());
-    this.faelligkeit.setTitle("Fälligkeit");
-    this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
-    faelligkeit.addListener(event -> {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      if (faelligkeit.getValue() != null && stichtag != null
-          && getStichtag().getValue() == null)
-      {
-        getStichtag().setValue(faelligkeit.getValue());
-      }
-    });
-    faelligkeit.setMandatory(true);
-    return faelligkeit;
-  }
-
-  public JVereinDateInput getVondatum()
-  {
-    if (vondatum != null)
-    {
-      return vondatum;
-    }
-    this.vondatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
-    this.vondatum.setTitle("Anfangsdatum Abrechnung");
-    this.vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
-    boolean mode = (Integer) modus
-        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
-    if (mode)
-    {
-      vondatum.setValue(new Date());
-    }
-    this.vondatum.setEnabled(mode);
-    this.vondatum.addListener(event -> {
-      if (vondatum.hasChanged())
-      {
-        vondatum.setMandatory(voneingabedatum.getValue() == null);
-        voneingabedatum.setMandatory(vondatum.getValue() == null);
-      }
-    });
-    vondatum.hasChanged();
-    return vondatum;
-  }
-
-  public boolean isVondatumSupported()
-  {
-    return vondatum != null;
-  }
-
-  public JVereinDateInput getVonEingabedatum()
-  {
-    if (voneingabedatum != null)
-    {
-      return voneingabedatum;
-    }
-    this.voneingabedatum = new JVereinDateInput(null,
-        new JVDateFormatTTMMJJJJ());
-    boolean mode = (Integer) modus
-        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
-    if (mode)
-    {
-      voneingabedatum.setValue(new Date());
-    }
-    this.voneingabedatum.setMandatory(mode && this.vondatum.getValue() == null);
-    this.voneingabedatum.setEnabled(mode);
-    // Das kann erst gemacht werden wenn voneingabedatum existiert
-    this.vondatum.setMandatory(mode && this.voneingabedatum.getValue() == null);
-    this.voneingabedatum.addListener(event -> {
-      if (voneingabedatum.hasChanged())
-      {
-        vondatum.setMandatory(voneingabedatum.getValue() == null);
-        voneingabedatum.setMandatory(vondatum.getValue() == null);
-      }
-    });
-    voneingabedatum.hasChanged();
-    return voneingabedatum;
-  }
-
-  public boolean isVoneingabgedatumSupported()
-  {
-    return voneingabedatum != null;
-  }
-
-  public JVereinDateInput getBisdatum()
-  {
-    if (bisdatum != null)
-    {
-      return bisdatum;
-    }
-    this.bisdatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
-    this.bisdatum.setTitle("Enddatum Abrechnung");
-    this.bisdatum
-        .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
-    boolean mode = (Integer) modus
-        .getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER;
-    this.bisdatum.setMandatory(mode);
-    this.bisdatum.setEnabled(mode);
-    return bisdatum;
-  }
-
-  public boolean isBisdatumSupported()
-  {
-    return bisdatum != null;
   }
 
   public TextInput getZahlungsgrund()
@@ -327,8 +131,8 @@ public class AbrechnungSEPAControl extends AbstractControl
       return zahlungsgrund;
     }
     String zgrund = settings.getString("zahlungsgrund", "bitte eingeben");
-
     zahlungsgrund = new TextInput(zgrund, 140);
+    zahlungsgrund.setName("Zahlungsgrund für Beiträge");
     return zahlungsgrund;
   }
 
@@ -364,209 +168,335 @@ public class AbrechnungSEPAControl extends AbstractControl
     return kursteilnehmer != null;
   }
 
-  public CheckboxInput getKompakteAbbuchung()
+  // Inputs nicht in Settings gespeichert
+
+  public SelectInput getAbrechnungsmonat()
   {
-    if (kompakteabbuchung != null)
+    if (abrechnungsmonat != null)
     {
-      return kompakteabbuchung;
+      return abrechnungsmonat;
     }
-    kompakteabbuchung = new CheckboxInput(
-        settings.getBoolean("kompakteabbuchung", false));
-    kompakteabbuchung.addListener(new KompaktListener());
-    return kompakteabbuchung;
+    abrechnungsmonat = new SelectInput(Monat.values(), Monat.JANUAR);
+    abrechnungsmonat.setName("Abrechnungsmonat");
+    return abrechnungsmonat;
   }
 
-  public CheckboxInput getSollbuchungenZusammenfassen()
+  public boolean isAbrechnungsmonatSupported()
   {
-    if (sollbuchungenzusammenfassen != null)
+    return abrechnungsmonat != null;
+  }
+
+  public JVereinDateInput getVondatum()
+  {
+    if (vondatum != null)
     {
-      return sollbuchungenzusammenfassen;
+      return vondatum;
     }
-    sollbuchungenzusammenfassen = new CheckboxInput(
-        settings.getBoolean("sollbuchungenzusammenfassen", false));
-    sollbuchungenzusammenfassen.addListener(new ZusammenfassenListener());
-    return sollbuchungenzusammenfassen;
-  }
-
-  public CheckboxInput getRechnung()
-  {
-    if (rechnung != null)
+    vondatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
+    vondatum.setTitle("Anfangsdatum Abrechnung");
+    vondatum.setText("Bitte Anfangsdatum der Abrechnung wählen");
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
     {
-      return rechnung;
+      vondatum.setValue(new Date());
     }
-    rechnung = new CheckboxInput(settings.getBoolean("rechnung", false));
-    rechnung.addListener(new RechnungListener());
-    return rechnung;
-  }
-
-  public boolean isRechnungSupported()
-  {
-    return rechnung != null;
-  }
-
-  public CheckboxInput getRechnungsdokumentSpeichern()
-  {
-    if (rechnungsdokumentspeichern != null)
-    {
-      return rechnungsdokumentspeichern;
-    }
-    rechnungsdokumentspeichern = new CheckboxInput(
-        settings.getBoolean("rechnungsdokumentspeichern", false));
-    rechnungsdokumentspeichern
-        .setEnabled(settings.getBoolean("rechnung", false));
-    return rechnungsdokumentspeichern;
-  }
-
-  public boolean isRechnungsdokumentSupported()
-  {
-    return rechnungsdokumentspeichern != null;
-  }
-
-  public FormularInput getRechnungFormular() throws RemoteException
-  {
-    if (rechnungsformular != null)
-    {
-      return rechnungsformular;
-    }
-    rechnungsformular = new FormularInput(FormularArt.RECHNUNG,
-        settings.getString("rechnungsformular", ""));
-    updateRechnungsformular();
-    return rechnungsformular;
-  }
-
-  public TextInput getRechnungstext()
-  {
-    if (rechnungstext != null)
-    {
-      return rechnungstext;
-    }
-    rechnungstext = new TextInput(
-        settings.getString("rechnungstext", "RE$rechnung_nummer"));
-    rechnungstext.setEnabled((boolean) rechnung.getValue());
-    rechnungstext.setHint("Wenn leer Zahlungsgrund für Beiträge");
-    return rechnungstext;
-  }
-
-  public JVereinDateInput getRechnungsdatum()
-  {
-    if (rechnungsdatum != null)
-    {
-      return rechnungsdatum;
-    }
-    rechnungsdatum = new JVereinDateInput(new Date());
-    rechnungsdatum.setMandatory((boolean) rechnung.getValue());
-    rechnungsdatum.setEnabled((boolean) rechnung.getValue());
-    return rechnungsdatum;
-  }
-
-  public CheckboxInput getSEPAPrint()
-  {
-    if (sepaprint != null)
-    {
-      return sepaprint;
-    }
-    sepaprint = new CheckboxInput(settings.getBoolean("sepaprint", false));
-    return sepaprint;
-  }
-
-  public CheckboxInput getSEPACheck()
-  {
-    if (sepacheck != null)
-    {
-      return sepacheck;
-    }
-    sepacheck = new CheckboxInput(false);
-    sepacheck.addListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
+    vondatum.setEnabled(mode);
+    vondatum.addListener(event -> {
+      if (vondatum.hasChanged())
       {
-        // Bei temporär deaktivieren den User fragen
-        if ((Boolean) sepacheck.getValue())
+        vondatum.setMandatory(voneingabedatum.getValue() == null);
+        voneingabedatum.setMandatory(vondatum.getValue() == null);
+      }
+    });
+    vondatum.hasChanged();
+    vondatum.setName("Von Eintrittsdatum");
+    return vondatum;
+  }
+
+  public boolean isVondatumSupported()
+  {
+    return vondatum != null;
+  }
+
+  public JVereinDateInput getVonEingabedatum()
+  {
+    if (voneingabedatum != null)
+    {
+      return voneingabedatum;
+    }
+    voneingabedatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.EINGETRETENEMITGLIEDER;
+    if (mode)
+    {
+      voneingabedatum.setValue(new Date());
+    }
+    voneingabedatum.setMandatory(mode && this.vondatum.getValue() == null);
+    voneingabedatum.setEnabled(mode);
+    // Das kann erst gemacht werden wenn voneingabedatum existiert
+    vondatum.setMandatory(mode && this.voneingabedatum.getValue() == null);
+    voneingabedatum.addListener(event -> {
+      if (voneingabedatum.hasChanged())
+      {
+        vondatum.setMandatory(voneingabedatum.getValue() == null);
+        voneingabedatum.setMandatory(vondatum.getValue() == null);
+      }
+    });
+    voneingabedatum.hasChanged();
+    voneingabedatum.setName("Von Eingabedatum");
+    return voneingabedatum;
+  }
+
+  public boolean isVoneingabgedatumSupported()
+  {
+    return voneingabedatum != null;
+  }
+
+  public JVereinDateInput getBisdatum()
+  {
+    if (bisdatum != null)
+    {
+      return bisdatum;
+    }
+    bisdatum = new JVereinDateInput(null, new JVDateFormatTTMMJJJJ());
+    bisdatum.setTitle("Enddatum Abrechnung");
+    bisdatum
+        .setText("Bitte maximales Austrittsdatum für die Abrechnung wählen");
+    boolean mode = (Integer) modus
+        .getValue() == Abrechnungsmodi.ABGEMELDETEMITGLIEDER;
+    if (mode)
+    {
+      bisdatum.setValue(new Date());
+    }
+    bisdatum.setMandatory(mode);
+    bisdatum.setEnabled(mode);
+    bisdatum.setName("Bis Austrittsdatum");
+    return bisdatum;
+  }
+
+  public boolean isBisdatumSupported()
+  {
+    return bisdatum != null;
+  }
+
+  @Override
+  protected List<Bug> getBugs()
+  {
+    ArrayList<Bug> bugs = new ArrayList<>();
+    try
+    {
+      boolean isLastschrift = false;
+      AbrechnungSEPAParam param = new AbrechnungSEPAParam(this, null);
+
+      // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
+      // Abrechnungslauf am Anfang geholt.
+      checkVerrechnungskonto(bugs);
+
+      // Bei allen Mitgliedern die abgerechnet werden das Beitragsmodell prüfen.
+      // Falls der Zahler mit Basislastschrift zahlt wird dabei auch der SEPA
+      // Check durchgeführt.
+      if ((Integer) getAbbuchungsmodus()
+          .getValue() != Abrechnungsmodi.KEINBEITRAG)
+      {
+        Double betrag;
+        DBIterator<Mitglied> it2 = AbrechnungSEPA
+            .getAbrechnenMitgliederIt(param);
+        while (it2.hasNext())
         {
-          if (!confirmDialog(CONFIRM_TITEL, CONFIRM_TEXT))
+          boolean mitgliedChecked = false;
+          betrag = null;
+          Mitglied m = it2.next();
+          Mitglied zahler = m.getZahler();
+          if (!checkMitgliedBeitraege(m, bugs))
           {
-            sepacheck.setValue(false);
+            continue;
+          }
+          try
+          {
+            betrag = AbrechnungSEPA.getBetrag(m, true, m.getBeitragsgruppe(),
+                param);
+            if (betrag != null
+                && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+            {
+              checkMitgliedKontodaten(zahler, bugs);
+              if (!param.sepacheckdisable)
+              {
+                checkSEPA(zahler, bugs);
+              }
+              mitgliedChecked = true;
+              isLastschrift = true;
+            }
+            DBIterator<SekundaereBeitragsgruppe> sekundaer = Einstellungen
+                .getDBService().createList(SekundaereBeitragsgruppe.class);
+            sekundaer.addFilter("mitglied=?", m.getID());
+            while (sekundaer.hasNext())
+            {
+              SekundaereBeitragsgruppe sb = sekundaer.next();
+              betrag = AbrechnungSEPA.getBetrag(m, false,
+                  sb.getBeitragsgruppe(), param);
+              if (!mitgliedChecked && betrag != null
+                  && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
+              {
+                checkMitgliedKontodaten(zahler, bugs);
+                if (!param.sepacheckdisable)
+                {
+                  checkSEPA(zahler, bugs);
+                }
+                mitgliedChecked = true;
+                isLastschrift = true;
+              }
+            }
+          }
+          catch (ApplicationException ex)
+          {
+            bugs.add(new Bug(m, ex.getMessage(), Bug.ERROR));
           }
         }
       }
-    });
-    return sepacheck;
+
+      // Zusatzbeträge prüfen
+      if (param.zusatzbetraege)
+      {
+        List<Zusatzbetrag> zusatzbetraege = AbrechnungSEPA
+            .getAbrechnenZusatzbetragList(param);
+        Date stichtag = param.stichtag != null ? param.stichtag : new Date();
+
+        for (Zusatzbetrag z : zusatzbetraege)
+        {
+          if (z.isAktiv(stichtag))
+          {
+            Mitglied m = z.getMitglied();
+            Mitglied mZahler;
+            if (z.getMitgliedzahltSelbst())
+            {
+              mZahler = m;
+            }
+            else
+            {
+              mZahler = m.getZahler();
+            }
+            Integer zahlungsweg;
+            if (z.getZahlungsweg() != null
+                && z.getZahlungsweg().getKey() != Zahlungsweg.STANDARD)
+            {
+              zahlungsweg = z.getZahlungsweg().getKey();
+            }
+            else
+            {
+              zahlungsweg = mZahler.getZahlungsweg();
+            }
+
+            if (zahlungsweg == Zahlungsweg.BASISLASTSCHRIFT)
+            {
+              isLastschrift = true;
+              checkMitgliedKontodaten(mZahler, bugs);
+              if (!param.sepacheckdisable)
+              {
+                checkSEPA(mZahler, bugs);
+              }
+            }
+          }
+        }
+      }
+
+      // Kursteilnehmer prüfen
+      if (param.kursteilnehmer)
+      {
+        DBIterator<Kursteilnehmer> list = AbrechnungSEPA
+            .getAbrechnenKursteilnehmerIt(param);
+        if (list.size() > 0)
+        {
+          isLastschrift = true;
+        }
+      }
+
+      if (isLastschrift)
+      {
+        // Bei Lastschrift auch allgemeine Daten prüfen weil z.B. dann
+        // Verrechnungskonto und Vereinskontodaten gebraucht werden.
+        checkGlobal(bugs);
+        checkGlaeubigerId(bugs);
+        checkFaelligkeit((Date) getFaelligkeit().getValue(), bugs);
+      }
+
+      if (bugs.isEmpty())
+      {
+        bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
+      }
+    }
+    catch (Exception ex)
+    {
+      bugs.add(new Bug(null, ex.getMessage(), Bug.ERROR));
+    }
+    return bugs;
   }
 
-  public static boolean confirmDialog(String title, String text)
+  @Override
+  protected String checkInput()
   {
-    JVereinYesNoDialog d = new JVereinYesNoDialog(
-        JVereinYesNoDialog.POSITION_CENTER);
-    d.setTitle(title);
-    d.setText(text);
     try
     {
-      Boolean choice = (Boolean) d.open();
-      if (!choice.booleanValue())
+      Integer modus = null;
+      try
       {
-        return false;
+        modus = (Integer) getAbbuchungsmodus().getValue();
       }
-    }
-    catch (Exception e)
-    {
-      Logger.error(CONFIRM_FEHLER, e);
-      return false;
-    }
-    return true;
-  }
-
-  public SelectInput getAbbuchungsausgabe()
-  {
-    if (ausgabe != null)
-    {
-      return ausgabe;
-    }
-    Abrechnungsausgabe aus = Abrechnungsausgabe.getByKey(settings
-        .getInt("abrechnungsausgabe", Abrechnungsausgabe.SEPA_DATEI.getKey()));
-    if (aus != Abrechnungsausgabe.SEPA_DATEI
-        && aus != Abrechnungsausgabe.HIBISCUS
-        && aus != Abrechnungsausgabe.KEINE_DATEI)
-    {
-      aus = Abrechnungsausgabe.HIBISCUS;
-    }
-    ausgabe = new SelectInput(Abrechnungsausgabe.values(), aus);
-    return ausgabe;
-  }
-
-  public Button getStartButton()
-  {
-    Button button = new Button("Starten", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
+      catch (RemoteException e)
       {
-        try
+        return ("Interner Fehler - kann Abrechnungsmodus nicht auslesen");
+      }
+      if (getFaelligkeit().getValue() == null)
+      {
+        return ("Fälligkeitsdatum fehlt");
+      }
+      if (getStichtag().getValue() == null)
+      {
+        return ("Stichtag fehlt");
+      }
+      if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER)
+      {
+        if (vondatum == null || voneingabedatum == null
+            || (vondatum.getValue() == null
+                && voneingabedatum.getValue() == null))
         {
-          doAbrechnung();
-        }
-        catch (ApplicationException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
-        }
-        catch (RemoteException e)
-        {
-          GUI.getStatusBar().setErrorText(e.getMessage());
+          return ("Von-Datum fehlt");
         }
       }
-    }, null, true, "walking.png");
-    return button;
+      if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER)
+      {
+        if (bisdatum == null || bisdatum.getValue() == null)
+        {
+          return ("Bis-Datum fehlt");
+        }
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+      {
+        if ((Boolean) getRechnung().getValue())
+        {
+          if (getRechnungsformular().getValue() == null)
+          {
+            return ("Rechnungsformular fehlt");
+          }
+          if (getRechnungsdatum().getValue() == null)
+          {
+            return ("Rechnungsdatum fehlt");
+          }
+        }
+      }
+    }
+    catch (RemoteException re)
+    {
+      return ("Fehler beim Auswerten der Eingabe!");
+    }
+    return null;
   }
 
-  public void startZusatzbetragAbrechnung(List<Zusatzbetrag> zusatzbetraege)
-      throws RemoteException, ApplicationException
+  @Override
+  protected void saveSettings()
   {
-    zusatzbetraegeList = zusatzbetraege;
-    doAbrechnung();
-  }
+    super.saveSettings();
 
-  private void doAbrechnung() throws ApplicationException, RemoteException
-  {
     settings.setAttribute("modus", (Integer) modus.getValue());
     settings.setAttribute("zahlungsgrund", (String) zahlungsgrund.getValue());
     if (zusatzbetrag != null)
@@ -579,270 +509,12 @@ public class AbrechnungSEPAControl extends AbstractControl
       settings.setAttribute("kursteilnehmer",
           (Boolean) kursteilnehmer.getValue());
     }
-    settings.setAttribute("kompakteabbuchung",
-        (Boolean) kompakteabbuchung.getValue());
-    settings.setAttribute("sollbuchungenzusammenfassen",
-        (Boolean) sollbuchungenzusammenfassen.getValue());
-    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-    {
-      settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
-      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-          && JVereinPlugin.isArchiveServiceActive())
-      {
-        settings.setAttribute("rechnungsdokumentspeichern",
-            (Boolean) rechnungsdokumentspeichern.getValue());
-      }
-      settings.setAttribute("rechnungstext", (String) rechnungstext.getValue());
-      settings.setAttribute("rechnungsformular",
-          rechnungsformular.getValue() == null ? null
-              : ((Formular) rechnungsformular.getValue()).getID());
-    }
-    settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
-    Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe()
-        .getValue();
-    settings.setAttribute("abrechnungsausgabe", aa.getKey());
-    Integer modus = null;
-    try
-    {
-      modus = (Integer) getAbbuchungsmodus().getValue();
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          "Interner Fehler - kann Abrechnungsmodus nicht auslesen");
-    }
-    if (faelligkeit == null || faelligkeit.getValue() == null)
-    {
-      throw new ApplicationException("Fälligkeitsdatum fehlt");
-    }
-    if (stichtag != null && stichtag.getValue() == null)
-    {
-      throw new ApplicationException("Stichtag fehlt");
-    }
-    if (modus == Abrechnungsmodi.EINGETRETENEMITGLIEDER)
-    {
-      if (vondatum == null || voneingabedatum == null
-          || (vondatum.getValue() == null
-              && voneingabedatum.getValue() == null))
-      {
-        throw new ApplicationException("Von-Datum fehlt");
-      }
-    }
-    if (modus == Abrechnungsmodi.ABGEMELDETEMITGLIEDER)
-    {
-      if (bisdatum == null || bisdatum.getValue() == null)
-      {
-        throw new ApplicationException("Bis-Datum fehlt");
-      }
-    }
-    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-    {
-      if ((Boolean) rechnung.getValue())
-      {
-        if (rechnungsformular.getValue() == null)
-        {
-          throw new ApplicationException("Rechnungsformular fehlt");
-        }
-        if (rechnungsdatum.getValue() == null)
-        {
-          throw new ApplicationException("Rechnungsdatum fehlt");
-        }
-      }
-    }
-    File sepafilercur = null;
-    SepaVersion sepaVersion = null;
-    if (aa == Abrechnungsausgabe.SEPA_DATEI)
-    {
-      FileDialog fd = new FileDialog(GUI.getDisplay().getActiveShell(),
-          SWT.SAVE);
-      fd.setText("SEPA-Ausgabedatei wählen.");
-      String path = settings.getString("lastdir.sepa",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_SEPA_DATEINAME, this)
-              + ".xml");
-      String file = fd.open();
-      if (file == null || file.length() == 0)
-      {
-        throw new ApplicationException("Keine Datei ausgewählt!");
-      }
-      sepafilercur = new File(file);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
-      settings.setAttribute("lastdir.sepa", sepafilercur.getParent());
-      try
-      {
-        sepaVersion = SepaVersion
-            .byURN((String) Einstellungen.getEinstellung(Property.SEPAVERSION));
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException(e);
-      }
-    }
-
-    // PDF-Datei für Basislastschrift2PDF
-    String pdffileRCUR = null;
-    final Boolean pdfprintb = (Boolean) sepaprint.getValue();
-    if (pdfprintb)
-    {
-      FileDialog fd = new FileDialog(GUI.getDisplay().getActiveShell(),
-          SWT.SAVE);
-      fd.setText("PDF-Ausgabedatei wählen");
-
-      String path = settings.getString("lastdir.pdf",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME, this) + ".pdf");
-      pdffileRCUR = fd.open();
-      if (pdffileRCUR == null)
-      {
-        return;
-      }
-      File file = new File(pdffileRCUR);
-      // Wir merken uns noch das Verzeichnis fürs nächste mal
-      settings.setAttribute("lastdir.pdf", file.getParent());
-    }
-
-    {
-      final AbrechnungSEPAParam abupar;
-      try
-      {
-        abupar = new AbrechnungSEPAParam(this, sepafilercur, sepaVersion,
-            pdffileRCUR);
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(e);
-      }
-      BackgroundTask t = new BackgroundTask()
-      {
-        private boolean interrupt = false;
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-
-            DBTransaction.starten();
-            new AbrechnungSEPA(abupar, monitor, this);
-            DBTransaction.commit();
-
-            monitor.setPercentComplete(100);
-            monitor.setStatus(ProgressMonitor.STATUS_DONE);
-            GUI.getStatusBar()
-                .setSuccessText("Abrechnung durchgeführt" + abupar.getText());
-          }
-          catch (ApplicationException ae)
-          {
-            DBTransaction.rollback();
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-          catch (Exception e)
-          {
-            DBTransaction.rollback();
-            Logger.error("Fehler beim Abrechnungslauf", e);
-            GUI.getStatusBar()
-                .setErrorText("Fehler beim Abrechnungslauf: " + e.getMessage());
-            throw new ApplicationException("Fehler beim Abrechnungslauf", e);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          interrupt = true;
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return interrupt;
-        }
-      };
-      Application.getController().start(t);
-    }
   }
 
-  public class RechnungListener implements Listener
+  @Override
+  protected AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
+      throws RemoteException, ApplicationException
   {
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      updateRechnungsformular();
-      rechnungstext.setEnabled((boolean) rechnung.getValue());
-      rechnungsdatum.setMandatory((boolean) rechnung.getValue());
-      rechnungsdatum.setEnabled((boolean) rechnung.getValue());
-      if (rechnungsdokumentspeichern != null)
-      {
-        rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
-      }
-    }
-  }
-
-  private void updateRechnungsformular()
-  {
-    // Die Reihenfolge von mandatory und enabled ist abhängig von
-    // enable/disable. Sonst klappt das mit der gelben Farbe nicht
-    if ((boolean) rechnung.getValue())
-    {
-      rechnungsformular.setEnabled(true);
-      rechnungsformular.setMandatory(true);
-    }
-    else
-    {
-      rechnungsformular.setMandatory(false);
-      rechnungsformular.setEnabled(false);
-    }
-  }
-
-  public class ZusammenfassenListener implements Listener
-  {
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      if ((boolean) sollbuchungenzusammenfassen.getValue())
-      {
-        kompakteabbuchung.setValue(true);
-      }
-    }
-  }
-
-  public class KompaktListener implements Listener
-  {
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
-      {
-        return;
-      }
-      if (!(boolean) kompakteabbuchung.getValue())
-      {
-        sollbuchungenzusammenfassen.setValue(false);
-      }
-    }
-  }
-
-  public List<Zusatzbetrag> getZusatzbetraegeList()
-  {
-    return zusatzbetraegeList;
+    return new AbrechnungSEPAParam(this, sepaVersion);
   }
 }

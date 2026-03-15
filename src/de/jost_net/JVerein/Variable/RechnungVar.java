@@ -78,6 +78,9 @@ public enum RechnungVar
   IBANMASKIERT("rechnung_ibanmaskiert"), //
   BANKNAME("rechnung_bankname"), //
   EMPFAENGER("rechnung_empfaenger"),
+  RECHNUNGSTEXT("rechnung_rechnungstext"),
+  REFERENZRECHNUNG("rechnung_referenz_nummer"),
+  ERSTATTUNGSBETRAG("rechnung_erstattungsbetrag"),
   ZAHLUNGSWEG("rechnung_zahlungsweg"),
   KOMMENTAR("rechnung_kommentar"),
   // Muss der letzt Eintrag sein, da hier die Map selbst verwendet wird

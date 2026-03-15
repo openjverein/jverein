@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control.listener;
 
+import javax.mail.internet.AddressException;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -53,9 +55,14 @@ public class EMailListener implements Listener
     {
       return;
     }
-    if (!EmailValidator.isValid(em))
+    try
     {
-      GUI.getStatusBar().setErrorText("Mailadresse ist ungültig");
+      EmailValidator.isValid(em);
+    }
+    catch (AddressException e)
+    {
+      GUI.getStatusBar()
+          .setErrorText("Mailadresse ist ungültig: " + e.getMessage());
     }
   }
 }

@@ -3,37 +3,27 @@ package de.jost_net.JVerein.util;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 
-import de.willuhn.logging.Logger;
-
 public class EmailValidator
 {
-  public static boolean isValid(String emailAddress)
+  public static void isValid(String emailAddress) throws AddressException
   {
     if (emailAddress == null)
     {
-      return false;
+      throw new AddressException("Mailadresse ist leer");
     }
-    try
+
+    InternetAddress internetAddress = new InternetAddress(emailAddress);
+    if (internetAddress.isGroup())
     {
-      InternetAddress internetAddress = new InternetAddress(emailAddress);
-      if (internetAddress.isGroup())
+      for (InternetAddress member : internetAddress.getGroup(true))
       {
-        for (InternetAddress member : internetAddress.getGroup(true))
-        {
-          Check(member);
-        }
-      }
-      else
-      {
-        Check(internetAddress);
+        Check(member);
       }
     }
-    catch (AddressException e)
+    else
     {
-      Logger.error("Ungültige E-Mail-Adresse \"" + emailAddress + "\"", e);
-      return false;
+      Check(internetAddress);
     }
-    return true;
   }
 
   private static void Check(InternetAddress internetAddress)

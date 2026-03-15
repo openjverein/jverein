@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Abrechnungsausgabe
  */
-public enum Ct1Ausgabe
+public enum UeberweisungAusgabe
 {
 
   SEPA_DATEI(1, "Datei"),
@@ -29,7 +29,7 @@ public enum Ct1Ausgabe
 
   private final int key;
 
-  Ct1Ausgabe(int key, String text)
+  UeberweisungAusgabe(int key, String text)
   {
     this.key = key;
     this.text = text;
@@ -45,9 +45,9 @@ public enum Ct1Ausgabe
     return text;
   }
 
-  public static Ct1Ausgabe getByKey(int key)
+  public static UeberweisungAusgabe getByKey(int key)
   {
-    for (Ct1Ausgabe ara : Ct1Ausgabe.values())
+    for (UeberweisungAusgabe ara : UeberweisungAusgabe.values())
     {
       if (ara.getKey() == key)
       {

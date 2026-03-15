@@ -14,32 +14,21 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.io;
+package de.jost_net.JVerein.gui.menu;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import de.jost_net.JVerein.gui.action.BugObjektEditAction;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import de.willuhn.util.ApplicationException;
-
-@Disabled
-class BankarbeitstageTest
+/**
+ * Kontext-Menu zu Mailanhängen.
+ */
+public class BugListMenu extends ContextMenu
 {
-  @Test
-  void test01() throws ApplicationException
+
+  public BugListMenu()
   {
-    Bankarbeitstage bat = new Bankarbeitstage();
-    Calendar cal = Calendar.getInstance();
-    cal.set(2013, Calendar.DECEMBER, 30);
-    cal = bat.getCalendar(cal, 1);
-    Calendar cal2 = Calendar.getInstance();
-    cal2.set(Calendar.YEAR, 2014);
-    cal2.set(Calendar.MONTH, Calendar.JANUARY);
-    cal2.set(Calendar.DAY_OF_MONTH, 2);
-    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-    assertEquals(sdf.format(cal2.getTime()), sdf.format(cal.getTime()));
+    addItem(new CheckedSingleContextMenuItem("Objekt bearbeiten",
+        new BugObjektEditAction(), "text-x-generic.png"));
   }
 }

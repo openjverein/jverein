@@ -45,6 +45,7 @@ public class EinstellungenRechnungenView extends AbstractView
     cont.addLabelPair("Text Überweisung",
         control.getRechnungTextUeberweisung());
     cont.addLabelPair("Text Bar", control.getRechnungTextBar());
+    cont.addLabelPair("Text Gutschrift", control.getRechnungTextGutschrift());
     cont.addLabelPair("Länge Rechnungsnummer", control.getZaehlerLaenge());
 
     cont.addHeadline("QR-Code");

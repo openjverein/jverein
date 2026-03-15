@@ -14,29 +14,36 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.server;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.SEPABugsControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class SEPABugsView extends AbstractView
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.SollbuchungPosition;
+
+public interface IGutschriftProvider extends IMitglied, IBetrag
 {
-
-  @Override
-  public void bind() throws Exception
+  default Mitglied getGutschriftZahler() throws RemoteException
   {
-    GUI.getView().setTitle("SEPA-Fehler");
+    return getMitglied();
+  }
 
-    SEPABugsControl control = new SEPABugsControl(this);
+  default Double getIstSumme() throws RemoteException
+  {
+    return getBetrag();
+  }
 
-    control.getBugsList().paint(this.getParent());
+  default List<Buchung> getBuchungList() throws RemoteException
+  {
+    return null;
+  }
 
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SEPABUGS, false, "question-circle.png");
-    buttons.paint(this.getParent());
+  default ArrayList<SollbuchungPosition> getSollbuchungPositionList()
+      throws RemoteException
+  {
+    return null;
   }
 }

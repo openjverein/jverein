@@ -17,19 +17,19 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
+import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.Monat;
 
 public class AbrechnungslaufParameterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(AbrechnungSEPAControl control,
+  public Map<String, Object> getMap(AbrechnungSEPAParam param,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
@@ -48,31 +48,31 @@ public class AbrechnungslaufParameterMap extends AbstractMap
       switch (var)
       {
         case DATUM_FAELLIGKEIT_F:
-          value = fromDate((Date) control.getFaelligkeit().getValue());
+          value = fromDate(param.faelligkeit);
           break;
         case DATUM_STICHTAG_F:
-          value = fromDate((Date) control.getStichtag().getValue());
+          value = fromDate(param.stichtag);
           break;
         case DATUM_EINTRITT_F:
-          value = fromDate((Date) control.getVondatum().getValue());
+          value = fromDate(param.vondatum);
           break;
         case DATUM_EINGABE_F:
-          value = fromDate((Date) control.getVonEingabedatum().getValue());
+          value = fromDate(param.voneingabedatum);
           break;
         case DATUM_AUSTRITT_F:
-          value = fromDate((Date) control.getBisdatum().getValue());
+          value = fromDate(param.bisdatum);
           break;
         case ZAHLUNGSGRUND:
-          value = control.getZahlungsgrund().getValue().toString();
+          value = param.verwendungszweck;
           break;
         case MODUS:
-          value = control.getAbbuchungsmodus().getText();
+          value = param.abbuchungsausgabe.getText();
           break;
         case ABREACHNUNGSMONAT:
           if ((Integer) Einstellungen.getEinstellung(
               Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
           {
-            value = control.getAbrechnungsmonat().getText();
+            value = Monat.getByKey(param.abrechnungsmonat).getText();
           }
           break;
       }

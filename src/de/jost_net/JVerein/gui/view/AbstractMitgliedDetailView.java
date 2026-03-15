@@ -607,7 +607,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
 
     SimpleVerticalContainer cols1 = new SimpleVerticalContainer(
-        zahlungsweg.getComposite(), false, 1);
+        zahlungsweg.getComposite(), false, spaltenanzahl);
 
     cols1.addInput(control.getZahlungsweg());
     if (isMitgliedDetail())

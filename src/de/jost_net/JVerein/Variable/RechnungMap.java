@@ -152,8 +152,7 @@ public class RechnungMap extends AbstractMap
         case MK_STAND:
         case STAND:
           value = Einstellungen.DECIMALFORMAT.format(ist - summe);
-
-          // Deise Felder gibt es nicht mehr in der Form, damit bei alten
+          // Diese Felder gibt es nicht mehr in der Form, damit bei alten
           // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
           // hinzufügen
         case DIFFERENZ:
@@ -248,9 +247,33 @@ public class RechnungMap extends AbstractMap
         case EMPFAENGER:
           value = Adressaufbereitung.getAdressfeld(re);
           break;
+        case ERSTATTUNGSBETRAG:
+          value = re.getErstattungsbetrag() != null
+              ? Einstellungen.DECIMALFORMAT.format(re.getErstattungsbetrag())
+              : "";
+          break;
+        case RECHNUNGSTEXT:
+          value = re.getRechnungstext();
+          break;
+        case REFERENZRECHNUNG:
+          value = "";
+          if (re.getReferenzrechnungID() != null)
+          {
+            value = StringTool.lpad(re.getReferenzrechnungID().toString(),
+                (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
+                "0");
+          }
+          break;
+        case KOMMENTAR:
+          value = re.getKommentar();
+          break;
+        case QRCODE_SUMME:
+          // Wird erst in FormularAufbereitung gesetzt
+          break;
         case ZAHLUNGSWEG:
           value = re.getZahlungsweg().getKey();
           break;
+        // Muss der letzt Eintrag sein, da hier die Map selbst verwendet wird
         case ZAHLUNGSWEGTEXT:
           String zahlungsweg = "";
           switch (re.getZahlungsweg().getKey())
@@ -279,6 +302,12 @@ public class RechnungMap extends AbstractMap
               break;
             }
           }
+          // Bei Gutschrift den Gutschrifttext verwenden
+          if (re.getErstattungsbetrag() != null)
+          {
+            zahlungsweg = (String) Einstellungen
+                .getEinstellung(Property.RECHNUNGTEXTGUTSCHRIFT);
+          }
           try
           {
             value = VelocityTool.eval(new AllgemeineMap().getMap(map),
@@ -290,11 +319,7 @@ public class RechnungMap extends AbstractMap
             value = zahlungsweg;
           }
           break;
-        case KOMMENTAR:
-          value = re.getKommentar();
-          break;
-        case QRCODE_SUMME:
-          // Wird erst in FormularAufbereitung gesetzt
+        default:
           break;
       }
       map.put(var.getName(), value);
@@ -501,6 +526,17 @@ public class RechnungMap extends AbstractMap
           // Deprecated Einträg nicht in der DummyMap, damit sie nicht für neue
           // Formulare etc. verwendet werden
           continue;
+        case ERSTATTUNGSBETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(100.00);
+          break;
+        case RECHNUNGSTEXT:
+          value = "Der Rechnungstext";
+          break;
+        case REFERENZRECHNUNG:
+          value = "00333";
+          break;
+        default:
+          break;
       }
       map.put(var.getName(), value);
     }
