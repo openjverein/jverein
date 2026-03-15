@@ -159,7 +159,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   public void addEmpfaenger(MailEmpfaenger me) throws RemoteException
   {
-    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht werden
     for (MailEmpfaenger e : getMail().getEmpfaenger())
     {
       if (BeanUtil.equals(e, me))
@@ -179,7 +179,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   public void addAnhang(MailAnhang ma) throws RemoteException
   {
-    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht werden
     for (MailAnhang a : getMail().getAnhang())
     {
       if (BeanUtil.equals(a, ma))
@@ -614,7 +614,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       {
         MailEmpfaenger me = it.next();
 
-        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
         // werden
         boolean found = false;
         for (MailEmpfaenger e : m.getEmpfaenger())
@@ -640,7 +640,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       while (it.hasNext())
       {
         MailAnhang ma = (MailAnhang) it.next();
-        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
         // werden
         boolean found = false;
         for (MailAnhang a : m.getAnhang())

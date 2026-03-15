@@ -119,7 +119,7 @@ public class BuchungsartInput
           ArrayList<Buchungsart> ergebnis = (ArrayList<Buchungsart>) service
               .execute(sql, new Object[] { dv, db, StatusBuchungsart.AUTO,
                   StatusBuchungsart.ACTIVE }, rs);
-          // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+          // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
           // werden
           if (bart != null && ergebnis != null)
           {
@@ -166,7 +166,7 @@ public class BuchungsartInput
           while (it.hasNext())
             ergebnis.add(it.next());
 
-          // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+          // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
           // werden
           if (bart != null && ergebnis != null)
           {

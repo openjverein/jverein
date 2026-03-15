@@ -569,7 +569,7 @@ public class KontoControl extends FilterControl implements Savable
     }
 
     Buchungsart b = konto.getBuchungsart();
-    // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht werden
+    // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht werden
     if (liste != null && b != null)
     {
       boolean found = false;

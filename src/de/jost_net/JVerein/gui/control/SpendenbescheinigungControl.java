@@ -340,7 +340,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         @SuppressWarnings("unchecked")
         List<Formular> list = formular.getList();
 
-        // Contains geht bei RemotObject nicht, muss über BeanUtil gemacht
+        // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
         // werden
         boolean found = false;
         for (Formular fo : list)
