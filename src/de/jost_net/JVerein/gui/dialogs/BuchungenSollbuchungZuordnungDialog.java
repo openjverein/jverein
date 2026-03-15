@@ -73,7 +73,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
   private CheckboxInput useIban = null;
 
-  private CheckboxInput useMitgleidId = null;
+  private CheckboxInput useMitgliedId = null;
 
   private CheckboxInput useName = null;
 
@@ -103,7 +103,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     dateFrom = createDateInput(vondatum, true);
     dateUntil = createDateInput(bisdatum, false);
     useIban = new CheckboxInput(settings.getBoolean(SETTINGS_IBAN, true));
-    useMitgleidId = new CheckboxInput(
+    useMitgliedId = new CheckboxInput(
         settings.getBoolean(SETTINGS_MITGLIEDSNUMMER, false));
     useName = new CheckboxInput(
         settings.getBoolean(SETTINGS_VORNAME_NAME, false));
@@ -138,7 +138,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
             ? "Ext. Mitgliedsnummer"
             : "Mitgliedsnummer"),
-        useMitgleidId);
+        useMitgliedId);
     group.addLabelPair("Nach eindeutigen Vorname und Nachname", useName);
     group.addLabelPair("Nach eindeutigem Verwendungszweck", useZweck);
     ButtonArea buttons = new ButtonArea();
@@ -193,7 +193,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     {
       arten.add(ZuordnungsArt.IBAN);
     }
-    if ((boolean) this.useMitgleidId.getValue())
+    if ((boolean) this.useMitgliedId.getValue())
     {
       arten.add(ZuordnungsArt.ID);
     }
@@ -212,7 +212,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
     settings.setAttribute(SETTINGS_IBAN, (Boolean) useIban.getValue());
     settings.setAttribute(SETTINGS_MITGLIEDSNUMMER,
-        (Boolean) useMitgleidId.getValue());
+        (Boolean) useMitgliedId.getValue());
     settings.setAttribute(SETTINGS_VORNAME_NAME, (Boolean) useName.getValue());
     settings.setAttribute(SETTINGS_ZWECK, (Boolean) useZweck.getValue());
 
@@ -265,8 +265,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
             ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
                 "sollbuchung");
-            it.addFilter("sollbuchung.datum >= ?", von);
-            it.addFilter("sollbuchung.datum <= ?", bis);
+            it.addFilter("sollbuchung.datum BETWEEN ? and ?", von, bis);
 
             it.leftJoin("buchung", "buchung.sollbuchung = sollbuchung.id");
 
@@ -319,17 +318,20 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                 // Kurze Namen am Ende, sonst passen sie ggf. auf Teile von
                 // langen Namen
                 it.setOrder(
-                    "Order by length(mitglied.name)+length(mitglied.vorname) DESC,mitglied.id, sollbuchung.datum");
+                    "Order by length(mitglied.name)+length(mitglied.vorname) DESC,"
+                        + "mitglied.id, sollbuchung.datum");
                 break;
               case NAME_ZAHLER:
                 it.setOrder(
-                    "Order by length(zahler.name)+length(zahler.vorname) DESC,mitglied.id, sollbuchung.datum");
+                    "Order by length(zahler.name)+length(zahler.vorname) DESC,"
+                        + "mitglied.id, sollbuchung.datum");
                 break;
               case ID:
                 if (externeMitgliedsnummer)
                 {
                   it.setOrder(
-                      "Order by length(mitglied.externemitgliedsnummer) DESC,mitglied.id, sollbuchung.datum");
+                      "Order by length(mitglied.externemitgliedsnummer) DESC,"
+                          + "mitglied.id, sollbuchung.datum");
                 }
                 else
                 {
@@ -368,8 +370,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
               DBIterator<BuchungImpl> buchungIt = Einstellungen.getDBService()
                   .createList(BuchungImpl.class);
-              buchungIt.addFilter("datum >= ?", von);
-              buchungIt.addFilter("datum <= ?", bis);
+              buchungIt.addFilter("datum BETWEEN ? and ?", von, bis);
               buchungIt.addFilter("(splittyp != ? or splittyp is null)",
                   SplitbuchungTyp.HAUPT);
               buchungIt.addFilter("(splittyp != ? or splittyp is null)",
