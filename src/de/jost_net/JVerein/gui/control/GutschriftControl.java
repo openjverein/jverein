@@ -117,7 +117,7 @@ public class GutschriftControl
 
   private Settings settings = null;
 
-  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl(null);
+  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl();
 
   public GutschriftControl(IGutschriftProvider[] providerArray)
       throws RemoteException
