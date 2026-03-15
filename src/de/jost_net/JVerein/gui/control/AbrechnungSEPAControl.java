@@ -281,7 +281,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
   }
 
   @Override
-  public List<Bug> getBugs()
+  protected List<Bug> getBugs()
   {
     ArrayList<Bug> bugs = new ArrayList<>();
     try
@@ -416,6 +416,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
         // Bei Lastschrift auch allgemeine Daten prüfen weil z.B. dann
         // Verrechnungskonto und Vereinskontodaten gebraucht werden.
         checkGlobal(bugs);
+        checkGlaeubigerId(bugs);
         checkFaelligkeit((Date) getFaelligkeit().getValue(), bugs);
       }
 
@@ -473,7 +474,7 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
       {
         if ((Boolean) getRechnung().getValue())
         {
-          if (getRechnungFormular().getValue() == null)
+          if (getRechnungsformular().getValue() == null)
           {
             return ("Rechnungsformular fehlt");
           }

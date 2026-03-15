@@ -2,39 +2,32 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.kapott.hbci.sepa.SepaVersion;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.GutschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.BugObjektEditAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
-import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BugListMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Gutschrift;
-import de.jost_net.JVerein.io.GutschriftParam;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
-import de.jost_net.JVerein.keys.UeberweisungAusgabe;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
-import de.jost_net.JVerein.rmi.Formular;
-import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -43,7 +36,6 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.server.IGutschriftProvider;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
@@ -52,36 +44,23 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.util.Color;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class GutschriftControl
+public class GutschriftControl extends AbstractAbrechnungControl
 {
   private final Double LIMIT = 0.005;
 
   private final String KEINFEHLER = "Es wurden keine Probleme gefunden.";
 
-  private JVereinTablePart bugsList;
-
   private boolean isMitglied;
 
   private IGutschriftProvider[] providerArray;
-
-  private LabelInput status;
-
-  private GutschriftParam params;
-
-  private SelectInput ausgabeInput;
-
-  private DateInput datumInput;
 
   private TextInput zweckInput;
 
@@ -95,43 +74,20 @@ public class GutschriftControl
 
   private SelectInput steuerInput;
 
-  private DisableTextAreaInput kommentarInput;
-
-  private CheckboxInput rechnungErzeugenInput;
-
-  private CheckboxInput rechnungsDokumentSpeichernInput;
-
-  private FormularInput formularInput;
-
-  private TextInput rechnungsTextInput;
-
-  private DateInput rechnungsDatumInput;
-
   private Boolean einstellungRechnungAnzeigen;
-
-  private Boolean einstellungSpeicherungAnzeigen;
 
   private Boolean einstellungBuchungsklasseInBuchung;
 
   private Boolean einstellungSteuerInBuchung;
 
-  private Settings settings = null;
-
-  final AbrechnungSEPAControl scontrol = new AbrechnungSEPAControl();
-
   public GutschriftControl(IGutschriftProvider[] providerArray)
       throws RemoteException
   {
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     this.isMitglied = providerArray[0] instanceof Mitglied;
     this.providerArray = providerArray;
 
     einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-        && JVereinPlugin.isArchiveServiceActive();
     einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     einstellungSteuerInBuchung = (Boolean) Einstellungen
@@ -141,53 +97,6 @@ public class GutschriftControl
   public IGutschriftProvider[] getProviderArray()
   {
     return providerArray;
-  }
-
-  public GutschriftParam getParams()
-  {
-    return params;
-  }
-
-  public LabelInput getStatus()
-  {
-    if (status != null)
-    {
-      return status;
-    }
-    status = new LabelInput("");
-    return status;
-  }
-
-  // Ausgabe
-  public SelectInput getAusgabeInput()
-  {
-    if (ausgabeInput != null)
-    {
-      return ausgabeInput;
-    }
-    UeberweisungAusgabe aus = UeberweisungAusgabe.getByKey(
-        settings.getInt("ausgabe", UeberweisungAusgabe.HIBISCUS.getKey()));
-    if (aus != UeberweisungAusgabe.SEPA_DATEI
-        && aus != UeberweisungAusgabe.HIBISCUS)
-    {
-      aus = UeberweisungAusgabe.HIBISCUS;
-    }
-    ausgabeInput = new SelectInput(UeberweisungAusgabe.values(), aus);
-    ausgabeInput.setMandatory(true);
-    return ausgabeInput;
-  }
-
-  // Ausführungsdatum
-  public DateInput getDatumInput()
-  {
-    if (datumInput != null)
-    {
-      return datumInput;
-    }
-    Date d = new Date();
-    datumInput = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    datumInput.setMandatory(true);
-    return datumInput;
   }
 
   // Verwendungszweck
@@ -323,6 +232,11 @@ public class GutschriftControl
     return buchungsklasseInput;
   }
 
+  public boolean isBuchungsklasseInputActiv()
+  {
+    return buchungsklasseInput != null;
+  }
+
   public SelectInput getSteuerInput() throws RemoteException
   {
     if (steuerInput != null)
@@ -347,6 +261,11 @@ public class GutschriftControl
     steuerInput.setPleaseChoose("Keine Steuer");
     updateSteuerInput();
     return steuerInput;
+  }
+
+  public boolean isSteuerInputActiv()
+  {
+    return steuerInput != null;
   }
 
   private void updateFixerBetragInput()
@@ -399,101 +318,6 @@ public class GutschriftControl
     }
   }
 
-  public DisableTextAreaInput getRechnungKommentarInput() throws RemoteException
-  {
-    if (kommentarInput != null)
-    {
-      return kommentarInput;
-    }
-
-    kommentarInput = new DisableTextAreaInput(
-        settings.getString("kommentar", ""), 1024);
-    kommentarInput.setHeight(50);
-    kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
-    return kommentarInput;
-  }
-
-  public CheckboxInput getRechnungErzeugenInput()
-  {
-    if (rechnungErzeugenInput != null)
-    {
-      return rechnungErzeugenInput;
-    }
-    rechnungErzeugenInput = scontrol.getRechnung();
-    rechnungErzeugenInput
-        .setValue(settings.getBoolean("rechnungErzeugen", false));
-    rechnungErzeugenInput.addListener(e -> {
-      kommentarInput.setEnabled((Boolean) rechnungErzeugenInput.getValue());
-    });
-    return rechnungErzeugenInput;
-  }
-
-  public CheckboxInput getRechnungsDokumentSpeichernInput()
-  {
-    if (rechnungsDokumentSpeichernInput != null)
-    {
-      return rechnungsDokumentSpeichernInput;
-    }
-    rechnungsDokumentSpeichernInput = scontrol.getRechnungsdokumentSpeichern();
-    rechnungsDokumentSpeichernInput
-        .setValue(settings.getBoolean("rechnungsDokumentSpeichern", false));
-    return rechnungsDokumentSpeichernInput;
-  }
-
-  public FormularInput getFormularInput() throws RemoteException
-  {
-    if (formularInput != null)
-    {
-      return formularInput;
-    }
-    formularInput = scontrol.getRechnungFormular();
-    Formular f = null;
-    try
-    {
-      String id = settings.getString("formular", "");
-      if (id != null && !id.isEmpty())
-      {
-        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
-            id);
-      }
-    }
-    catch (Exception ex)
-    {
-      // Nicht gefunden, dann null
-    }
-    formularInput.setValue(f);
-    return formularInput;
-  }
-
-  public TextInput getRechnungsTextInput()
-  {
-    if (rechnungsTextInput != null)
-    {
-      return rechnungsTextInput;
-    }
-    rechnungsTextInput = scontrol.getRechnungstext();
-    rechnungsTextInput.setValue(settings.getString("rechnungstext", ""));
-    rechnungsTextInput.setHint("Wenn leer Verwendungzweck");
-    return rechnungsTextInput;
-  }
-
-  public DateInput getRechnungsDatumInput()
-  {
-    if (rechnungsDatumInput != null)
-    {
-      return rechnungsDatumInput;
-    }
-    rechnungsDatumInput = scontrol.getRechnungsdatum();
-    return rechnungsDatumInput;
-  }
-
-  public Button getHelpButton()
-  {
-    Button b = new Button("Hilfe", new DokumentationAction(),
-        DokumentationUtil.GUTSCHRIFT, false, "question-circle.png");
-    return b;
-  }
-
   public Button getVZweckVariablenButton() throws RemoteException
   {
     Map<String, Object> map = GutschriftMap.getDummyMap(null);
@@ -515,49 +339,27 @@ public class GutschriftControl
     return b;
   }
 
-  public Button getPruefenButton()
-  {
-    Button b = new Button("Auf Probleme prüfen", context -> {
-      updateBuglist();
-    }, null, false, "bug.png");
-    return b;
-  }
-
-  public void updateBuglist()
-  {
-    if (!checkInput())
-    {
-      return;
-    }
-    status.setValue("");
-    storeValues();
-    try
-    {
-      refreshBugsList();
-    }
-    catch (RemoteException e)
-    {
-      status.setValue("Interner Fehler beim Update der Fehlerliste");
-      status.setColor(Color.ERROR);
-      Logger.error("Fehler", e);
-    }
-  }
-
   public Button getErstellenButton(GutschriftDialog dialog)
   {
     Button b = new Button("Erstellen", context -> {
       try
       {
-        if (!checkInput())
+        status.setValue("");
+        String error = checkInput();
+        if (error != null)
         {
+          bugsList.removeAll();
+          bugsList.addItem(new Bug(null, error, Bug.ERROR));
+          status.setValue("Es Existieren Warnungen/Fehler, bitte beheben!");
+          status.setColor(Color.ERROR);
           return;
         }
-
-        updateBuglist();
+        refreshBugsList();
 
         // Prüfen ob Error oder Warning vorliegen. Bei Error nicht weiter
         // machen.
-        List<Bug> bugs = getBugs();
+        @SuppressWarnings("unchecked")
+        List<Bug> bugs = bugsList.getItems();
         for (Bug bug : bugs)
         {
           if (bug.getKlassifikation() == Bug.ERROR)
@@ -589,7 +391,8 @@ public class GutschriftControl
             return;
           }
         }
-        new Gutschrift(this);
+        saveSettings();
+        new Gutschrift(this, getAbrechnungSEPAParam());
         dialog.close();
       }
       catch (ApplicationException e)
@@ -605,63 +408,13 @@ public class GutschriftControl
     return b;
   }
 
-  public Button getAbbrechenButton(GutschriftDialog dialog)
+  @Override
+  protected void saveSettings()
   {
-    Button b = new Button("Abbrechen", context -> {
-      dialog.close();
-    }, null, false, "process-stop.png");
-    return b;
-  }
-
-  public void storeValues()
-  {
-    params = new GutschriftParam();
-    params.setAusgabe((UeberweisungAusgabe) ausgabeInput.getValue());
-    params.setDatum((Date) datumInput.getValue());
-    params.setVerwendungszweck((String) zweckInput.getValue());
-
-    // Fixer Betrag
-    boolean fixerBetragAbrechnen = (boolean) fixerBetragAbrechnenInput
-        .getValue();
-    if (fixerBetragAbrechnen)
-    {
-      params.setFixerBetragAbrechnen(fixerBetragAbrechnen);
-      params.setFixerBetrag((Double) fixerBetragInput.getValue());
-      params.setBuchungsart((Buchungsart) buchungsartInput.getValue());
-      if (buchungsklasseInput != null)
-      {
-        params
-            .setBuchungsklasse((Buchungsklasse) buchungsklasseInput.getValue());
-      }
-      if (steuerInput != null)
-      {
-        params.setSteuer((Steuer) steuerInput.getValue());
-      }
-    }
-
-    // Rechnung
-    if (einstellungRechnungAnzeigen)
-    {
-      params.setRechnungErzeugen((boolean) rechnungErzeugenInput.getValue());
-      params.setFormular((Formular) formularInput.getValue());
-      if (rechnungsDokumentSpeichernInput != null)
-      {
-        params.setRechnungsDokumentSpeichern(
-            (boolean) rechnungsDokumentSpeichernInput.getValue());
-      }
-      params.setRechnungsText((String) rechnungsTextInput.getValue());
-      params.setRechnungsDatum((Date) rechnungsDatumInput.getValue());
-      params.setRechnungsKommentar((String) kommentarInput.getValue());
-    }
-    saveSettings();
-  }
-
-  public void saveSettings()
-  {
+    super.saveSettings();
     try
     {
-      settings.setAttribute("ausgabe", params.getAusgabe().getKey());
-      settings.setAttribute("verwendungszweck", params.getVerwendungszweck());
+      settings.setAttribute("verwendungszweck", (String) zweckInput.getValue());
 
       // Fixen Betrag erstatten
       settings.setAttribute("fixerBetragAbrechnen",
@@ -713,19 +466,6 @@ public class GutschriftControl
           settings.setAttribute("steuer", "");
         }
       }
-
-      if (einstellungRechnungAnzeigen)
-      {
-        settings.setAttribute("rechnungErzeugen", params.isRechnungErzeugen());
-        if (einstellungSpeicherungAnzeigen)
-        {
-          settings.setAttribute("rechnungsDokumentSpeichern",
-              params.isRechnungsDokumentSpeichern());
-        }
-        settings.setAttribute("formular", params.getFormular().getID());
-        settings.setAttribute("rechnungstext", params.getRechnungsText());
-        settings.setAttribute("kommentar", params.getRechnungsKommentar());
-      }
     }
     catch (RemoteException ex)
     {
@@ -733,37 +473,29 @@ public class GutschriftControl
     }
   }
 
-  public boolean checkInput()
+  @Override
+  protected String checkInput()
   {
     try
     {
       if (getZweckInput().getValue() == null
           || ((String) getZweckInput().getValue()).isEmpty())
       {
-        status.setValue("Bitte Verwendungszweck eingeben");
-        status.setColor(Color.ERROR);
-        return false;
+        return ("Bitte Verwendungszweck eingeben");
       }
-      if (getDatumInput().getValue() == null)
+      if (getFaelligkeit().getValue() == null)
       {
-        status.setValue("Bitte Ausführungsdatum auswählen");
-        status.setColor(Color.ERROR);
-        return false;
+        return ("Bitte Ausführungsdatum auswählen");
       }
-      if (einstellungRechnungAnzeigen
-          && (boolean) getRechnungErzeugenInput().getValue())
+      if (einstellungRechnungAnzeigen && (boolean) getRechnung().getValue())
       {
-        if (getFormularInput().getValue() == null)
+        if (getRechnungsformular().getValue() == null)
         {
-          status.setValue("Bitte Erstattungsformular auswählen");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Erstattungsformular auswählen");
         }
-        if (getRechnungsDatumInput().getValue() == null)
+        if (getRechnungsdatum().getValue() == null)
         {
-          status.setValue("Bitte Rechnungsdatum auswählen");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Rechnungsdatum auswählen");
         }
       }
       if ((boolean) getFixerBetragAbrechnenInput().getValue())
@@ -771,22 +503,16 @@ public class GutschriftControl
         if (getFixerBetragInput().getValue() == null
             || ((Double) getFixerBetragInput().getValue()) < LIMIT)
         {
-          status.setValue("Bitte positiven Erstattungsbetrag eingeben");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte positiven Erstattungsbetrag eingeben");
         }
         if (getBuchungsartInput().getValue() == null)
         {
-          status.setValue("Bitte Buchungsart eingeben");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Buchungsart eingeben");
         }
         if (einstellungBuchungsklasseInBuchung
             && getBuchungsklasseInput().getValue() == null)
         {
-          status.setValue("Bitte Buchungsklasse eingeben");
-          status.setColor(Color.ERROR);
-          return false;
+          return ("Bitte Buchungsklasse eingeben");
         }
         if (einstellungSteuerInBuchung)
         {
@@ -797,23 +523,16 @@ public class GutschriftControl
           {
             if (buchungsart.getSpende() || buchungsart.getAbschreibung())
             {
-              status.setValue(
-                  "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
-              status.setColor(Color.ERROR);
-              return false;
+              return ("Bei Spenden und Abschreibungen ist keine Steuer möglich.");
             }
             if (steuer.getBuchungsart().getArt() != buchungsart.getArt())
             {
               switch (buchungsart.getArt())
               {
                 case ArtBuchungsart.AUSGABE:
-                  status.setValue("Umsatzsteuer statt Vorsteuer gewählt!");
-                  status.setColor(Color.ERROR);
-                  return false;
+                  return ("Umsatzsteuer statt Vorsteuer gewählt!");
                 case ArtBuchungsart.EINNAHME:
-                  status.setValue("Vorsteuer statt Umsatzsteuer gewählt!");
-                  status.setColor(Color.ERROR);
-                  return false;
+                  return ("Vorsteuer statt Umsatzsteuer gewählt!");
                 // Umbuchung ist bei Anlagebuchungen möglich,
                 // Hier ist eine Vorsteuer (Kauf) und Umsatzsteuer (Verkauf)
                 // möglich
@@ -827,20 +546,20 @@ public class GutschriftControl
     }
     catch (RemoteException re)
     {
-      status.setValue("Fehler beim Auswerten der Eingabe!");
-      status.setColor(Color.ERROR);
-      return false;
+      return ("Fehler beim Auswerten der Eingabe!");
     }
-    return true;
+    return null;
   }
 
-  public JVereinTablePart getBugsList() throws RemoteException
+  @Override
+  public JVereinTablePart getBugsList()
   {
     if (bugsList != null)
     {
       return bugsList;
     }
-    bugsList = new JVereinTablePart(getBugs(), new BugObjektEditAction());
+    bugsList = new JVereinTablePart(getInitialBugs(),
+        new BugObjektEditAction());
     bugsList.addColumn("Typ", "objektName");
     bugsList.addColumn("ID", "objektId");
     bugsList.addColumn("Zahler", "zahlerName");
@@ -852,25 +571,17 @@ public class GutschriftControl
     return bugsList;
   }
 
-  public void refreshBugsList() throws RemoteException
-  {
-    bugsList.removeAll();
-    for (Bug bug : getBugs())
-    {
-      bugsList.addItem(bug);
-    }
-    bugsList.sort();
-  }
-
-  private List<Bug> getBugs() throws RemoteException
+  @Override
+  protected List<Bug> getBugs()
   {
     ArrayList<Bug> bugs = new ArrayList<>();
-    if (getParams() != null)
+    try
     {
+      checkVerrechnungskonto(bugs);
       checkGlobal(bugs);
       for (IGutschriftProvider provider : getProviderArray())
       {
-        doChecks(provider, getParams(), bugs);
+        doChecks(provider, bugs);
       }
 
       if (bugs.isEmpty())
@@ -878,95 +589,16 @@ public class GutschriftControl
         bugs.add(new Bug(null, KEINFEHLER, Bug.HINT));
       }
     }
+    catch (Exception ex)
+    {
+      bugs.add(new Bug(null, ex.getMessage(), Bug.ERROR));
+    }
+
     return bugs;
   }
 
-  private void checkGlobal(ArrayList<Bug> bugs) throws RemoteException
-  {
-    if (Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID) == null)
-    {
-      bugs.add(new Bug(null,
-          "Verrechnungskonto nicht gesetzt. Unter Administration->Einstellungen->Abrechnung erfassen.",
-          Bug.ERROR));
-    }
-    else
-    {
-      try
-      {
-        Konto k = Einstellungen.getDBService().createObject(Konto.class,
-            Einstellungen.getEinstellung(Property.VERRECHNUNGSKONTOID)
-                .toString());
-        if (k == null)
-        {
-          bugs.add(new Bug(null,
-              "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-              Bug.ERROR));
-        }
-      }
-      catch (ObjectNotFoundException ex)
-      {
-        bugs.add(new Bug(null,
-            "Verrechnungskonto nicht gefunden. Unter Administration->Einstellungen->Abrechnung erfassen.",
-            Bug.ERROR));
-      }
-    }
-
-    if (Einstellungen.getEinstellung(Property.NAME) == null
-        || ((String) Einstellungen.getEinstellung(Property.NAME)).isEmpty())
-    {
-      bugs.add(new Bug(null,
-          "Name des Vereins fehlt. Unter "
-              + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.ERROR));
-    }
-
-    if (Einstellungen.getEinstellung(Property.IBAN) == null
-        || ((String) Einstellungen.getEinstellung(Property.IBAN)).isEmpty())
-    {
-      bugs.add(new Bug(null,
-          "Die IBAN des Vereins fehlt. Unter "
-              + "Administration->Einstellungen->Allgemein erfassen.",
-          Bug.ERROR));
-    }
-    else
-    {
-      try
-      {
-        new IBAN((String) Einstellungen.getEinstellung(Property.IBAN));
-      }
-      catch (SEPAException e)
-      {
-        bugs.add(new Bug(null,
-            "Ungültige IBAN des Vereins. Unter "
-                + "Administration->Einstellungen->Allgemein korrigieren.",
-            Bug.ERROR));
-      }
-    }
-
-    if (Einstellungen.getEinstellung(Property.BIC) == null
-        || ((String) Einstellungen.getEinstellung(Property.BIC)).isEmpty())
-    {
-      bugs.add(new Bug(null, "Die BIC des Vereins ist nicht eingetragen.",
-          Bug.HINT));
-    }
-    else
-    {
-      try
-      {
-        new BIC((String) Einstellungen.getEinstellung(Property.BIC));
-      }
-      catch (SEPAException e)
-      {
-        bugs.add(new Bug(null,
-            "Ungültige BIC des Vereins. Unter "
-                + "Administration->Einstellungen->Allgemein korrigieren.",
-            Bug.ERROR));
-      }
-    }
-  }
-
-  public String doChecks(IGutschriftProvider provider, GutschriftParam params,
-      ArrayList<Bug> bugs) throws RemoteException
+  public String doChecks(IGutschriftProvider provider, ArrayList<Bug> bugs)
+      throws RemoteException
   {
     String meldung;
 
@@ -1134,8 +766,10 @@ public class GutschriftControl
       }
     }
 
-    if (provider instanceof Rechnung && !params.isFixerBetragAbrechnen()
-        && sollbList != null && sollbList.size() > 1
+    boolean fixbetragabrechnen = (Boolean) fixerBetragAbrechnenInput.getValue();
+    Double fixerbetrag = (Double) fixerBetragInput.getValue();
+    if (provider instanceof Rechnung && fixbetragabrechnen && sollbList != null
+        && sollbList.size() > 1
         && provider.getBetrag() - provider.getIstSumme() > LIMIT)
     {
       // Bei Gesamtrechnung erlauben wir nicht, dass eine beteiligte Sollbuchung
@@ -1158,14 +792,14 @@ public class GutschriftControl
       }
     }
 
-    if (params.isFixerBetragAbrechnen())
+    if (fixbetragabrechnen)
     {
       // Beträge bestimmen
       double tmp = provider.getBetrag() - provider.getIstSumme();
       double offenbetrag = tmp > LIMIT ? tmp : 0;
-      tmp = params.getFixerBetrag() - offenbetrag;
+      tmp = fixerbetrag - offenbetrag;
       double ueberweisungsbetrag = tmp > LIMIT ? tmp : 0;
-      tmp = params.getFixerBetrag() - ueberweisungsbetrag;
+      tmp = fixerbetrag - ueberweisungsbetrag;
       double ausgleichsbetrag = tmp > LIMIT ? tmp : 0;
 
       Sollbuchung sollbFix = null;
@@ -1198,7 +832,7 @@ public class GutschriftControl
       }
 
       if (sollbFix != null
-          && !checkVorhandenePosten(sollbFix, params, ausgleichsbetrag))
+          && !checkVorhandenePosten(sollbFix, ausgleichsbetrag))
       {
         meldung = "Der Betrag der Sollbuchungspositionen mit der gewählten Buchungsart, \n"
             + "Buchungsklasse und Steuer ist nicht ausreichend!";
@@ -1283,7 +917,7 @@ public class GutschriftControl
   }
 
   private boolean checkVorhandenePosten(Sollbuchung sollb,
-      GutschriftParam params, double ausgleichsbetrag) throws RemoteException
+      double ausgleichsbetrag) throws RemoteException
   {
     boolean buchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
@@ -1300,23 +934,34 @@ public class GutschriftControl
       }
       String posSteuer = pos.getSteuer() != null ? pos.getSteuer().getID()
           : "0";
-      String paramsSteuer = params.getSteuer() != null
-          ? params.getSteuer().getID()
+      String paramsSteuer = steuerInput != null
+          ? ((Steuer) steuerInput.getValue()).getID()
           : "0";
-      if (!pos.getBuchungsart().getID().equals(params.getBuchungsart().getID())
-          || (buchungsklasseInBuchung && !pos.getBuchungsklasse().getID()
-              .equals(params.getBuchungsklasse().getID()))
+      String paramKlasse = buchungsklasseInput != null
+          ? ((Buchungsklasse) buchungsklasseInput.getValue()).getID()
+          : "0";
+      if (!pos.getBuchungsart().getID()
+          .equals(((Buchungsart) buchungsartInput.getValue()).getID())
+          || (buchungsklasseInBuchung
+              && !pos.getBuchungsklasse().getID().equals(paramKlasse))
           || (steuerInBuchung && !posSteuer.equals(paramsSteuer)))
       {
         continue;
       }
       summe += pos.getBetrag();
     }
-    if (summe - params.getFixerBetrag() < -LIMIT)
+    if (summe - (Double) fixerBetragInput.getValue() < -LIMIT)
     {
       // Es gibt nicht genügend Betrag für die Erstattung
       return false;
     }
     return true;
+  }
+
+  @Override
+  protected AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
+      throws RemoteException, ApplicationException
+  {
+    return new AbrechnungSEPAParam(this, sepaVersion);
   }
 }

@@ -28,10 +28,14 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.AbstractAbrechnungControl;
 import de.jost_net.JVerein.gui.control.ForderungControl;
+import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.Monat;
+import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -45,25 +49,8 @@ import de.willuhn.util.ApplicationException;
 
 public class AbrechnungSEPAParam
 {
-  public final int abbuchungsmodus;
-
-  public final int abrechnungsmonat;
-
+  // Abstract Abrechnung
   public Date faelligkeit;
-
-  public final Date stichtag;
-
-  public Abrechnungsausgabe abbuchungsausgabe;
-
-  public final Date vondatum;
-
-  public final Date bisdatum;
-
-  public final String verwendungszweck;
-
-  public final Boolean zusatzbetraege;
-
-  public final Boolean kursteilnehmer;
 
   public Boolean kompakteabbuchung;
 
@@ -77,6 +64,8 @@ public class AbrechnungSEPAParam
 
   public String rechnungstext;
 
+  public String rechnungskommentar;
+
   public Date rechnungsdatum;
 
   public Boolean sepaprint;
@@ -84,8 +73,6 @@ public class AbrechnungSEPAParam
   public Boolean sepacheckdisable;
 
   public File sepafileRCUR = null;
-
-  public final SepaVersion sepaVersion;
 
   public String pdffileRCUR = null;
 
@@ -95,9 +82,79 @@ public class AbrechnungSEPAParam
 
   private String text = "";
 
-  public Date voneingabedatum;
+  // Bei allen
+  public Abrechnungsausgabe abbuchungsausgabe;
+
+  public final int abbuchungsmodus;
+
+  public final String verwendungszweck;
+
+  public final SepaVersion sepaVersion;
+
+  // Abrechnung
+  public final int abrechnungsmonat;
+
+  public final Date stichtag;
+
+  public final Date vondatum;
+
+  public final Date voneingabedatum;
+
+  public final Date bisdatum;
+
+  public final Boolean zusatzbetraege;
+
+  public final Boolean kursteilnehmer;
+
+  // Gutschrift
+  public final Boolean fixerBetragAbrechnen;
+
+  public final Double betrag;
+
+  public final Buchungsart buchungsart;
+
+  public final Buchungsklasse buchungsklasse;
+
+  public final Steuer steuer;
 
   List<Zusatzbetrag> zusatzbetraegeList;
+
+  public AbrechnungSEPAParam(GutschriftControl gc, SepaVersion sepaVersion)
+      throws ApplicationException, RemoteException
+  {
+    setAbstractParams(gc);
+    this.sepaVersion = sepaVersion;
+    zusatzbetraegeList = null;
+    abbuchungsmodus = Abrechnungsmodi.GUTSCHRIFT;
+    verwendungszweck = (String) gc.getZweckInput().getValue();
+    fixerBetragAbrechnen = (Boolean) gc.getFixerBetragAbrechnenInput()
+        .getValue();
+    if (fixerBetragAbrechnen)
+    {
+      betrag = (Double) gc.getFixerBetragInput().getValue();
+      buchungsart = (Buchungsart) gc.getBuchungsartInput().getValue();
+      buchungsklasse = gc.isBuchungsklasseInputActiv()
+          ? (Buchungsklasse) gc.getBuchungsklasseInput().getValue()
+          : null;
+      steuer = gc.isSteuerInputActiv()
+          ? (Steuer) gc.getSteuerInput().getValue()
+          : null;
+    }
+    else
+    {
+      betrag = null;
+      buchungsart = null;
+      buchungsklasse = null;
+      steuer = null;
+    }
+    abrechnungsmonat = 12;
+    stichtag = faelligkeit;
+    vondatum = null;
+    voneingabedatum = null;
+    bisdatum = null;
+    zusatzbetraege = false;
+    kursteilnehmer = false;
+  }
 
   public AbrechnungSEPAParam(ForderungControl fc, SepaVersion sepaVersion)
       throws ApplicationException, RemoteException
@@ -114,6 +171,15 @@ public class AbrechnungSEPAParam
     bisdatum = null;
     zusatzbetraege = false;
     kursteilnehmer = false;
+    fixerBetragAbrechnen = true;
+    betrag = (Double) fc.getPart().getBetrag().getValue();
+    buchungsart = (Buchungsart) fc.getPart().getBuchungsart().getValue();
+    buchungsklasse = fc.getPart().isBuchungsklasseActive()
+        ? (Buchungsklasse) fc.getPart().getBuchungsklasse().getValue()
+        : null;
+    steuer = fc.getPart().isSteuerActive()
+        ? (Steuer) fc.getPart().getSteuer().getValue()
+        : null;
   }
 
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, SepaVersion sepaVersion)
@@ -133,7 +199,7 @@ public class AbrechnungSEPAParam
     {
       abrechnungsmonat = 12;
     }
-    stichtag = ac.isStichtagSupported() ? (Date) ac.getStichtag().getValue()
+    stichtag = ac.isStichtagActiv() ? (Date) ac.getStichtag().getValue()
         : null;
     vondatum = ac.isVondatumSupported() ? (Date) ac.getVondatum().getValue()
         : null;
@@ -148,32 +214,49 @@ public class AbrechnungSEPAParam
     kursteilnehmer = ac.isKursteilnehmerSupported()
         ? (Boolean) ac.getKursteilnehmer().getValue()
         : false;
+    fixerBetragAbrechnen = false;
+    betrag = null;
+    buchungsart = null;
+    buchungsklasse = null;
+    steuer = null;
   }
 
   protected void setAbstractParams(AbstractAbrechnungControl ac)
       throws ApplicationException, RemoteException
   {
-    abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
-        .getValue();
-    faelligkeit = (Date) ac.getFaelligkeit().getValue();
-    kompakteabbuchung = (Boolean) ac.getKompakteAbbuchung().getValue();
-    sollbuchungenzusammenfassen = (Boolean) ac.getSollbuchungenZusammenfassen()
-        .getValue();
-    if (ac.isRechnungSupported())
+    faelligkeit = ac.isFaelligkeitActiv()
+        ? (Date) ac.getFaelligkeit().getValue()
+        : null;
+    kompakteabbuchung = ac.isKompakteAbbuchungActiv()
+        ? (Boolean) ac.getKompakteAbbuchung().getValue()
+        : false;
+    sollbuchungenzusammenfassen = ac.isSollbuchungenZusammenfassenActiv()
+        ? (Boolean) ac.getSollbuchungenZusammenfassen().getValue()
+        : false;
+    sepaprint = ac.isSEPAPrintActiv()
+        ? (Boolean) ac.getSEPAPrint().getValue()
+        : false;
+    sepacheckdisable = ac.isSEPACheckActiv()
+        ? (Boolean) ac.getSEPACheck().getValue()
+        : false;
+    if (ac.isRechnungActiv())
     {
       rechnung = (Boolean) ac.getRechnung().getValue();
-      if (ac.isRechnungsdokumentSupported())
-      {
-        rechnungsdokumentSpeichern = (Boolean) ac
-            .getRechnungsdokumentSpeichern().getValue();
-      }
-      else
-      {
-        rechnungsdokumentSpeichern = false;
-      }
-      rechnungsformular = (Formular) ac.getRechnungFormular().getValue();
-      rechnungstext = (String) ac.getRechnungstext().getValue();
-      rechnungsdatum = (Date) ac.getRechnungsdatum().getValue();
+      rechnungsdokumentSpeichern = ac.isRechnungsdokumentSpeichernActiv()
+          ? (Boolean) ac.getRechnungsdokumentSpeichern().getValue()
+          : false;
+      rechnungsformular = ac.isRechnungsformularActiv()
+          ? (Formular) ac.getRechnungsformular().getValue()
+          : null;
+      rechnungstext = ac.isRechnungstextActiv()
+          ? (String) ac.getRechnungstext(null).getValue()
+          : null;
+      rechnungsdatum = ac.isRechnungsdatumActiv()
+          ? (Date) ac.getRechnungsdatum().getValue()
+          : null;
+      rechnungskommentar = ac.isRechnungskommentarActiv()
+          ? (String) ac.getRechnungskommentar().getValue()
+          : null;
     }
     else
     {
@@ -181,62 +264,67 @@ public class AbrechnungSEPAParam
       rechnungsdokumentSpeichern = false;
       rechnungsformular = null;
       rechnungstext = null;
+      rechnungskommentar = null;
       rechnungsdatum = null;
     }
-    sepaprint = (Boolean) ac.getSEPAPrint().getValue();
-    sepacheckdisable = (Boolean) ac.getSEPACheck().getValue();
 
-    if (abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
+    if (ac.isAbbuchungsausgabeActiv())
     {
-      // DB-Service holen
-      try
+      abbuchungsausgabe = (Abrechnungsausgabe) ac.getAbbuchungsausgabe()
+          .getValue();
+
+      if (abbuchungsausgabe == Abrechnungsausgabe.HIBISCUS)
       {
-        service = (DBService) Application.getServiceFactory().lookup(HBCI.class,
-            "database");
-        DBIterator<Konto> konten = service.createList(Konto.class);
-        Logger.debug("Vereinskonto: "
-            + (String) Einstellungen.getEinstellung(Property.IBAN));
-        while (konten.hasNext())
+        // DB-Service holen
+        try
         {
-          konto = (Konto) konten.next();
-          Logger.debug("Hibiscus-Konto: " + konto.getIban());
-          if (((String) Einstellungen.getEinstellung(Property.IBAN))
-              .equals(konto.getIban()))
+          service = (DBService) Application.getServiceFactory()
+              .lookup(HBCI.class, "database");
+          DBIterator<Konto> konten = service.createList(Konto.class);
+          Logger.debug("Vereinskonto: "
+              + (String) Einstellungen.getEinstellung(Property.IBAN));
+          while (konten.hasNext())
           {
-            // passendes Konto gefunden
-            break;
+            konto = (Konto) konten.next();
+            Logger.debug("Hibiscus-Konto: " + konto.getIban());
+            if (((String) Einstellungen.getEinstellung(Property.IBAN))
+                .equals(konto.getIban()))
+            {
+              // passendes Konto gefunden
+              break;
+            }
+            else
+            {
+              konto = null;
+            }
           }
-          else
-          {
-            konto = null;
-          }
-        }
-        if (konto == null)
-        {
-          // Kein passendes Konto gefunden. Deshalb Kontoauswahldialog.
-          KontoAuswahlDialog d = new KontoAuswahlDialog(
-              KontoAuswahlDialog.POSITION_CENTER);
-          konto = (Konto) d.open();
           if (konto == null)
           {
-            throw new ApplicationException("Bitte wählen Sie ein Konto aus");
+            // Kein passendes Konto gefunden. Deshalb Kontoauswahldialog.
+            KontoAuswahlDialog d = new KontoAuswahlDialog(
+                KontoAuswahlDialog.POSITION_CENTER);
+            konto = (Konto) d.open();
+            if (konto == null)
+            {
+              throw new ApplicationException("Bitte wählen Sie ein Konto aus");
+            }
           }
         }
+        catch (OperationCanceledException e)
+        {
+          throw new ApplicationException("Bitte wählen Sie ein Konto aus");
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler", e);
+          throw new ApplicationException(
+              "Hibiscus-Datenbank kann nicht geöffnet werden.");
+        }
       }
-      catch (OperationCanceledException e)
+      else
       {
-        throw new ApplicationException("Bitte wählen Sie ein Konto aus");
+        service = null;
       }
-      catch (Exception e)
-      {
-        Logger.error("Fehler", e);
-        throw new ApplicationException(
-            "Hibiscus-Datenbank kann nicht geöffnet werden.");
-      }
-    }
-    else
-    {
-      service = null;
     }
   }
 

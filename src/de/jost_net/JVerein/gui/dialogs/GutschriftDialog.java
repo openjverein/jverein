@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.IGutschriftProvider;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -34,13 +35,10 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.jameica.system.Settings;
 
 public class GutschriftDialog extends AbstractDialog<Boolean>
 {
   private boolean isMitglied = false;
-
-  private Settings settings = null;
 
   private GutschriftControl control;
 
@@ -49,8 +47,6 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
   {
     super(SWT.CENTER);
     setTitle("Gutschrift erstellen");
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     this.control = new GutschriftControl(providerArray);
     this.isMitglied = providerArray[0] instanceof Mitglied;
     setSize(950, SWT.DEFAULT);
@@ -76,8 +72,8 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
     left.addHeadline("Überweisung");
-    left.addLabelPair("Ausgabe", control.getAusgabeInput());
-    left.addLabelPair("Ausführungsdatum", control.getDatumInput());
+    left.addLabelPair("Ausgabe", control.getAbbuchungsausgabe());
+    left.addLabelPair("Ausführungsdatum", control.getFaelligkeit());
     left.addLabelPair("Verwendungszweck", control.getZweckInput());
 
     // Fixen Betrag erstatten
@@ -115,16 +111,16 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
           2);
 
       bleft.addLabelPair("Rechnung zur Gutschrift erzeugen",
-          control.getRechnungErzeugenInput());
+          control.getRechnung());
       if (einstellungSpeicherungAnzeigen)
       {
         bleft.addLabelPair("Rechnung als Buchungsdokument speichern",
-            control.getRechnungsDokumentSpeichernInput());
+            control.getRechnungsdokumentSpeichern());
       }
-      bleft.addLabelPair("Erstattungsformular", control.getFormularInput());
-      bleft.addLabelPair("Rechnungsdatum", control.getRechnungsDatumInput());
-      bright.addLabelPair("Rechnungstext", control.getRechnungsTextInput());
-      bright.addLabelPair("Kommentar", control.getRechnungKommentarInput());
+      bleft.addLabelPair("Erstattungsformular", control.getRechnungsformular());
+      bleft.addInput(control.getRechnungsdatum());
+      bright.addInput(control.getRechnungstext("Wenn leer Verwendungzweck"));
+      bright.addInput(control.getRechnungskommentar());
     }
 
     LabelGroup below2 = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
@@ -134,11 +130,10 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
     below2.getComposite().setLayoutData(gridData);
-    control.updateBuglist();
 
     // Buttons
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getHelpButton());
+    buttons.addButton(control.getHelpButton(DokumentationUtil.GUTSCHRIFT));
     buttons.addButton(control.getVZweckVariablenButton());
     if (einstellungRechnungAnzeigen)
     {

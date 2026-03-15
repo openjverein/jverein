@@ -116,8 +116,8 @@ public class ForderungDialog extends AbstractDialog<Boolean>
         right.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      right.addInput(control.getRechnungFormular());
-      right.addInput(control.getRechnungstext());
+      right.addInput(control.getRechnungsformular());
+      right.addInput(control.getRechnungstext("Wenn leer Zahlungsgrund"));
       right.addInput(control.getRechnungsdatum());
     }
 

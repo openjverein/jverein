@@ -104,8 +104,8 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
         rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
-      rigth.addInput(control.getRechnungFormular());
-      rigth.addInput(control.getRechnungstext());
+      rigth.addInput(control.getRechnungsformular());
+      rigth.addInput(control.getRechnungstext("Wenn leer Zahlungsgrund"));
       rigth.addInput(control.getRechnungsdatum());
     }
 

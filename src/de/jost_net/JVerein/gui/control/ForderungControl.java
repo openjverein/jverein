@@ -83,7 +83,7 @@ public class ForderungControl extends AbstractAbrechnungControl
   }
 
   @Override
-  public List<Bug> getBugs()
+  protected List<Bug> getBugs()
   {
     ArrayList<Bug> bugs = new ArrayList<>();
     boolean global = true;
@@ -108,6 +108,7 @@ public class ForderungControl extends AbstractAbrechnungControl
           if (global)
           {
             checkGlobal(bugs);
+            checkGlaeubigerId(bugs);
             checkFaelligkeit((Date) getFaelligkeit().getValue(), bugs);
             global = false;
           }
@@ -317,7 +318,7 @@ public class ForderungControl extends AbstractAbrechnungControl
 
       if (einstellungRechnungAnzeigen && (boolean) getRechnung().getValue())
       {
-        if (getRechnungFormular().getValue() == null)
+        if (getRechnungsformular().getValue() == null)
         {
           return ("Bitte Rechnungsformular auswählen");
         }

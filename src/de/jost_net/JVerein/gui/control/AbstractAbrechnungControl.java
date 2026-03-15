@@ -29,18 +29,18 @@ import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.gui.action.BugObjektEditAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.menu.BugListMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;
@@ -50,7 +50,6 @@ import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Bug;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.OBanToo.SEPA.BIC;
@@ -59,7 +58,6 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -110,6 +108,8 @@ public abstract class AbstractAbrechnungControl
   private TextInput rechnungstext;
 
   private DateInput rechnungsdatum;
+
+  private DisableTextAreaInput rechnungskommentar;
 
   protected JVereinTablePart bugsList;
 
@@ -169,6 +169,11 @@ public abstract class AbstractAbrechnungControl
     return faelligkeit;
   }
 
+  public boolean isFaelligkeitActiv()
+  {
+    return faelligkeit != null;
+  }
+
   public DateInput getStichtag()
   {
     if (stichtag != null)
@@ -183,7 +188,7 @@ public abstract class AbstractAbrechnungControl
     return stichtag;
   }
 
-  public boolean isStichtagSupported()
+  public boolean isStichtagActiv()
   {
     return stichtag != null;
   }
@@ -207,6 +212,11 @@ public abstract class AbstractAbrechnungControl
     return ausgabe;
   }
 
+  public boolean isAbbuchungsausgabeActiv()
+  {
+    return ausgabe != null;
+  }
+
   public CheckboxInput getKompakteAbbuchung()
   {
     if (kompakteabbuchung != null)
@@ -217,6 +227,11 @@ public abstract class AbstractAbrechnungControl
         settings.getBoolean("kompakteabbuchung", false));
     kompakteabbuchung.addListener(new KompaktListener());
     return kompakteabbuchung;
+  }
+
+  public boolean isKompakteAbbuchungActiv()
+  {
+    return kompakteabbuchung != null;
   }
 
   public CheckboxInput getSollbuchungenZusammenfassen()
@@ -231,6 +246,11 @@ public abstract class AbstractAbrechnungControl
     return sollbuchungenzusammenfassen;
   }
 
+  public boolean isSollbuchungenZusammenfassenActiv()
+  {
+    return sollbuchungenzusammenfassen != null;
+  }
+
   public CheckboxInput getRechnung()
   {
     if (rechnung != null)
@@ -242,7 +262,7 @@ public abstract class AbstractAbrechnungControl
     return rechnung;
   }
 
-  public boolean isRechnungSupported()
+  public boolean isRechnungActiv()
   {
     return rechnung != null;
   }
@@ -260,12 +280,12 @@ public abstract class AbstractAbrechnungControl
     return rechnungsdokumentspeichern;
   }
 
-  public boolean isRechnungsdokumentSupported()
+  public boolean isRechnungsdokumentSpeichernActiv()
   {
     return rechnungsdokumentspeichern != null;
   }
 
-  public FormularInput getRechnungFormular() throws RemoteException
+  public FormularInput getRechnungsformular() throws RemoteException
   {
     if (rechnungsformular != null)
     {
@@ -278,7 +298,12 @@ public abstract class AbstractAbrechnungControl
     return rechnungsformular;
   }
 
-  public TextInput getRechnungstext()
+  public boolean isRechnungsformularActiv()
+  {
+    return rechnungsformular != null;
+  }
+
+  public TextInput getRechnungstext(String hint)
   {
     if (rechnungstext != null)
     {
@@ -287,9 +312,14 @@ public abstract class AbstractAbrechnungControl
     rechnungstext = new TextInput(
         settings.getString("rechnungstext", "RE$rechnung_nummer"));
     rechnungstext.setEnabled((boolean) rechnung.getValue());
-    rechnungstext.setHint("Wenn leer Zahlungsgrund");
+    rechnungstext.setHint(hint);
     rechnungstext.setName("Rechnungstext");
     return rechnungstext;
+  }
+
+  public boolean isRechnungstextActiv()
+  {
+    return rechnungstext != null;
   }
 
   public DateInput getRechnungsdatum()
@@ -305,6 +335,31 @@ public abstract class AbstractAbrechnungControl
     return rechnungsdatum;
   }
 
+  public boolean isRechnungsdatumActiv()
+  {
+    return rechnungsdatum != null;
+  }
+
+  public DisableTextAreaInput getRechnungskommentar() throws RemoteException
+  {
+    if (rechnungskommentar != null)
+    {
+      return rechnungskommentar;
+    }
+
+    rechnungskommentar = new DisableTextAreaInput(
+        settings.getString("rechnungskommentar", ""), 1024);
+    rechnungskommentar.setHeight(50);
+    rechnungskommentar.setEnabled((Boolean) rechnung.getValue());
+    rechnungskommentar.setName("Rechnungskommentar");
+    return rechnungskommentar;
+  }
+
+  public boolean isRechnungskommentarActiv()
+  {
+    return rechnungskommentar != null;
+  }
+
   public CheckboxInput getSEPAPrint()
   {
     if (sepaprint != null)
@@ -313,6 +368,11 @@ public abstract class AbstractAbrechnungControl
     }
     sepaprint = new CheckboxInput(settings.getBoolean("sepaprint", false));
     return sepaprint;
+  }
+
+  public boolean isSEPAPrintActiv()
+  {
+    return sepaprint != null;
   }
 
   public CheckboxInput getSEPACheck()
@@ -338,6 +398,11 @@ public abstract class AbstractAbrechnungControl
       }
     });
     return sepacheck;
+  }
+
+  public boolean isSEPACheckActiv()
+  {
+    return sepacheck != null;
   }
 
   public static boolean confirmDialog(String title, String text)
@@ -370,10 +435,23 @@ public abstract class AbstractAbrechnungControl
       {
         return;
       }
-      updateRechnungsformular();
-      rechnungstext.setEnabled((boolean) rechnung.getValue());
-      rechnungsdatum.setMandatory((boolean) rechnung.getValue());
-      rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      if (rechnungsformular != null)
+      {
+        updateRechnungsformular();
+      }
+      if (rechnungstext != null)
+      {
+        rechnungstext.setEnabled((boolean) rechnung.getValue());
+      }
+      if (rechnungsdatum != null)
+      {
+        rechnungsdatum.setMandatory((boolean) rechnung.getValue());
+        rechnungsdatum.setEnabled((boolean) rechnung.getValue());
+      }
+      if (rechnungskommentar != null)
+      {
+        rechnungskommentar.setEnabled((boolean) rechnung.getValue());
+      }
       if (rechnungsdokumentspeichern != null)
       {
         rechnungsdokumentspeichern.setEnabled((boolean) rechnung.getValue());
@@ -535,46 +613,24 @@ public abstract class AbstractAbrechnungControl
     return b;
   }
 
-  public Part getBugsList()
+  public JVereinTablePart getBugsList()
   {
     if (bugsList != null)
     {
       return bugsList;
     }
-    bugsList = new JVereinTablePart(getInitialBugs(), context -> {
-      Bug bug = (Bug) context;
-      Object object = bug.getObject();
-      if (object instanceof Mitglied)
-      {
-        Mitglied m = (Mitglied) object;
-        try
-        {
-          if (m.getMitgliedstyp() == null
-              || m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
-          {
-            GUI.startView(new MitgliedDetailView(), m);
-          }
-          else
-          {
-            GUI.startView(new NichtMitgliedDetailView(), m);
-          }
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(
-              "Fehler beim Anzeigen eines Mitgliedes", e);
-        }
-      }
-    });
+    bugsList = new JVereinTablePart(getInitialBugs(),
+        new BugObjektEditAction());
     bugsList.addColumn("Name", "name");
     bugsList.addColumn("Meldung", "meldung");
     bugsList.addColumn("Klassifikation", "klassifikationText");
+    bugsList.setContextMenu(new BugListMenu());
     bugsList.setRememberColWidths(true);
     bugsList.setRememberOrder(true);
     return bugsList;
   }
 
-  public void refreshBugsList() throws RemoteException
+  protected void refreshBugsList() throws RemoteException
   {
     bugsList.removeAll();
     for (Bug bug : getBugs())
@@ -584,7 +640,7 @@ public abstract class AbstractAbrechnungControl
     bugsList.sort();
   }
 
-  private List<Bug> getInitialBugs()
+  protected List<Bug> getInitialBugs()
   {
     String error = checkInput();
     if (error != null)
@@ -700,7 +756,17 @@ public abstract class AbstractAbrechnungControl
             Bug.ERROR));
       }
     }
+  }
 
+  /**
+   * Prüfung der Gläubiger Id.
+   * 
+   * @param bugs
+   *          Die Bugliste
+   * @throws RemoteException
+   */
+  public void checkGlaeubigerId(ArrayList<Bug> bugs) throws RemoteException
+  {
     if (Einstellungen.getEinstellung(Property.GLAEUBIGERID) == null
         || ((String) Einstellungen.getEinstellung(Property.GLAEUBIGERID))
             .length() == 0)
@@ -883,30 +949,53 @@ public abstract class AbstractAbrechnungControl
   {
     try
     {
-      settings.setAttribute("kompakteabbuchung",
-          (Boolean) kompakteabbuchung.getValue());
-      settings.setAttribute("sollbuchungenzusammenfassen",
-          (Boolean) sollbuchungenzusammenfassen.getValue());
+      if (ausgabe != null)
+      {
+        Abrechnungsausgabe aa = (Abrechnungsausgabe) ausgabe.getValue();
+        settings.setAttribute("abrechnungsausgabe", aa.getKey());
+      }
+      if (kompakteabbuchung != null)
+      {
+        settings.setAttribute("kompakteabbuchung",
+            (Boolean) kompakteabbuchung.getValue());
+      }
+      if (sollbuchungenzusammenfassen != null)
+      {
+        settings.setAttribute("sollbuchungenzusammenfassen",
+            (Boolean) sollbuchungenzusammenfassen.getValue());
+      }
+      if (sepaprint != null)
+      {
+        settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
+      }
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
-        settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
-        if ((Boolean) Einstellungen
-            .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-            && JVereinPlugin.isArchiveServiceActive())
+        if (rechnung != null)
+        {
+          settings.setAttribute("rechnung", (Boolean) rechnung.getValue());
+        }
+        if (rechnungsdokumentspeichern != null)
         {
           settings.setAttribute("rechnungsdokumentspeichern",
               (Boolean) rechnungsdokumentspeichern.getValue());
         }
-        settings.setAttribute("rechnungstext",
-            (String) rechnungstext.getValue());
-        settings.setAttribute("rechnungsformular",
-            rechnungsformular.getValue() == null ? null
-                : ((Formular) rechnungsformular.getValue()).getID());
+        if (rechnungstext != null)
+        {
+          settings.setAttribute("rechnungstext",
+              (String) rechnungstext.getValue());
+        }
+        if (rechnungsformular != null)
+        {
+          settings.setAttribute("rechnungsformular",
+              rechnungsformular.getValue() == null ? null
+                  : ((Formular) rechnungsformular.getValue()).getID());
+        }
+        if (rechnungskommentar != null)
+        {
+          settings.setAttribute("rechnungskommentar",
+              (String) rechnungskommentar.getValue());
+        }
       }
-      settings.setAttribute("sepaprint", (Boolean) sepaprint.getValue());
-      Abrechnungsausgabe aa = (Abrechnungsausgabe) this.getAbbuchungsausgabe()
-          .getValue();
-      settings.setAttribute("abrechnungsausgabe", aa.getKey());
     }
     catch (RemoteException re)
     {
