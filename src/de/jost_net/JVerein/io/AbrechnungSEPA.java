@@ -39,6 +39,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.kapott.hbci.GV.SepaUtil;
 import org.kapott.hbci.GV.generators.ISEPAGenerator;
 import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
@@ -123,7 +124,9 @@ public class AbrechnungSEPA extends SEPASupport
     File sepafilercur = null;
     if (param.abbuchungsausgabe == Abrechnungsausgabe.SEPA_DATEI)
     {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      Shell shell = GUI.getDisplay().getActiveShell();
+      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
+          SWT.SAVE);
       fd.setText("SEPA-Ausgabedatei wählen.");
       String path = settings.getString("lastdir.sepa",
           System.getProperty("user.home"));
@@ -149,7 +152,9 @@ public class AbrechnungSEPA extends SEPASupport
     String pdffileRCUR = null;
     if (param.sepaprint)
     {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      Shell shell = GUI.getDisplay().getActiveShell();
+      FileDialog fd = new FileDialog(shell == null ? GUI.getShell() : shell,
+          SWT.SAVE);
       fd.setText("PDF-Ausgabedatei wählen");
 
       String path = settings.getString("lastdir.pdf",

@@ -16,6 +16,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.BugObjektEditAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.dialogs.GutschriftDialog;
+import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
@@ -41,7 +42,6 @@ import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
@@ -366,7 +366,8 @@ public class GutschriftControl extends AbstractAbrechnungControl
         }
         if (warning)
         {
-          YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          JVereinYesNoDialog d = new JVereinYesNoDialog(
+              JVereinYesNoDialog.POSITION_CENTER);
           d.setTitle("Warnungen");
           d.setText(
               "Es existieren Warnungen.\nWenn fortgefahren wird, werden betroffene Einträge übersprungen.\nFortfahren?");

@@ -37,6 +37,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.gui.action.BugObjektEditAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
+import de.jost_net.JVerein.gui.dialogs.JVereinYesNoDialog;
 import de.jost_net.JVerein.gui.input.DisableTextAreaInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.JVereinDateInput;
@@ -60,7 +61,6 @@ import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -408,7 +408,8 @@ public abstract class AbstractAbrechnungControl
 
   public static boolean confirmDialog(String title, String text)
   {
-    YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+    JVereinYesNoDialog d = new JVereinYesNoDialog(
+        JVereinYesNoDialog.POSITION_CENTER);
     d.setTitle(title);
     d.setText(text);
     try
