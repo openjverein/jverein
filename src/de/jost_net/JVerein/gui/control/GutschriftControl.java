@@ -335,7 +335,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
         {
           bugsList.removeAll();
           bugsList.addItem(new Bug(null, error, Bug.ERROR));
-          status.setValue("Es Existieren Warnungen/Fehler, bitte beheben!");
+          status.setValue("Es existieren Warnungen/Fehler, bitte beheben!");
           status.setColor(Color.ERROR);
           return;
         }
@@ -454,7 +454,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
     }
     catch (RemoteException ex)
     {
-      Logger.error("Fehler beim Speichern der Settings", ex);
+      Logger.error("Fehler beim Speichern der Eingaben", ex);
     }
   }
 
@@ -920,16 +920,20 @@ public class GutschriftControl extends AbstractAbrechnungControl
       }
       String posSteuer = pos.getSteuer() != null ? pos.getSteuer().getID()
           : "0";
+      String posKlasse = pos.getBuchungsklasse() != null
+          ? pos.getBuchungsklasse().getID()
+          : "0";
       String paramsSteuer = steuerInput != null
-          ? ((Steuer) steuerInput.getValue()).getID()
-          : "0";
+          && steuerInput.getValue() != null
+              ? ((Steuer) steuerInput.getValue()).getID()
+              : "0";
       String paramKlasse = buchungsklasseInput != null
-          ? ((Buchungsklasse) buchungsklasseInput.getValue()).getID()
-          : "0";
+          && buchungsklasseInput.getValue() != null
+              ? ((Buchungsklasse) buchungsklasseInput.getValue()).getID()
+              : "0";
       if (!pos.getBuchungsart().getID()
           .equals(((Buchungsart) buchungsartInput.getValue()).getID())
-          || (buchungsklasseInBuchung
-              && !pos.getBuchungsklasse().getID().equals(paramKlasse))
+          || (buchungsklasseInBuchung && !posKlasse.equals(paramKlasse))
           || (steuerInBuchung && !posSteuer.equals(paramsSteuer)))
       {
         continue;

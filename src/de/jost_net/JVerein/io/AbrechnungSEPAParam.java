@@ -136,8 +136,7 @@ public class AbrechnungSEPAParam
       buchungsklasse = gc.isBuchungsklasseInputActiv()
           ? (Buchungsklasse) gc.getBuchungsklasseInput().getValue()
           : null;
-      steuer = gc.isSteuerInputActiv()
-          ? (Steuer) gc.getSteuerInput().getValue()
+      steuer = gc.isSteuerInputActiv() ? (Steuer) gc.getSteuerInput().getValue()
           : null;
     }
     else
@@ -199,8 +198,7 @@ public class AbrechnungSEPAParam
     {
       abrechnungsmonat = 12;
     }
-    stichtag = ac.isStichtagActiv() ? (Date) ac.getStichtag().getValue()
-        : null;
+    stichtag = ac.isStichtagActiv() ? (Date) ac.getStichtag().getValue() : null;
     vondatum = ac.isVondatumSupported() ? (Date) ac.getVondatum().getValue()
         : null;
     voneingabedatum = ac.isVoneingabgedatumSupported()
@@ -233,8 +231,7 @@ public class AbrechnungSEPAParam
     sollbuchungenzusammenfassen = ac.isSollbuchungenZusammenfassenActiv()
         ? (Boolean) ac.getSollbuchungenZusammenfassen().getValue()
         : false;
-    sepaprint = ac.isSEPAPrintActiv()
-        ? (Boolean) ac.getSEPAPrint().getValue()
+    sepaprint = ac.isSEPAPrintActiv() ? (Boolean) ac.getSEPAPrint().getValue()
         : false;
     sepacheckdisable = ac.isSEPACheckActiv()
         ? (Boolean) ac.getSEPACheck().getValue()
