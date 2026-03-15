@@ -182,7 +182,7 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
 
       GUI.getCurrentView().reload();
       GUI.getStatusBar().setSuccessText(buchungList.getItems().size()
-          + " Buchungen wurde erfolgreich zugeordnet.");
+          + " Buchungen wurden erfolgreich zugeordnet.");
 
       DBTransaction.commit();
       close();
