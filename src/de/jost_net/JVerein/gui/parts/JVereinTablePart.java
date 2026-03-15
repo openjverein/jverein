@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
+import java.rmi.RemoteException;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
@@ -26,6 +27,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
+import de.willuhn.logging.Logger;
 
 public class JVereinTablePart extends TablePart
 {
@@ -97,6 +99,29 @@ public class JVereinTablePart extends TablePart
     }
 
     return ctx;
+  }
+
+  // Überschrieben um den Checked-Status beim sortieren beizubehalten
+  @Override
+  protected void orderBy(int index)
+  {
+    if (checkable)
+    {
+      try
+      {
+        List<?> l = getItems();
+        super.orderBy(index);
+        setChecked(l.toArray(), true);
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler beim Sortieren");
+      }
+    }
+    else
+    {
+      super.orderBy(index);
+    }
   }
 
 }

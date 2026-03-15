@@ -17,34 +17,24 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.rmi.RemoteException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
-import de.jost_net.JVerein.keys.Zahlungsweg;
-import de.jost_net.JVerein.rmi.Buchung;
-import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.server.BuchungImpl;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -61,19 +51,16 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-/**
- * Dialog, ueber den Daten importiert werden koennen.
- */
 public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 {
   private static final String SETTINGS_PREFIX = "BUCHUNGSZUORDNUNG.";
 
-  private static final String SETTINGS_NAME_IBAN = SETTINGS_PREFIX + "IBAN";
+  private static final String SETTINGS_IBAN = SETTINGS_PREFIX + "IBAN";
 
-  private static final String SETTINGS_NAME_MITGLIEDSNUMMER = SETTINGS_PREFIX
+  private static final String SETTINGS_MITGLIEDSNUMMER = SETTINGS_PREFIX
       + "MITGLIEDSNUMMER";
 
-  private static final String SETTINGS_NAME_VORNAME_NAME = SETTINGS_PREFIX
+  private static final String SETTINGS_VORNAME_NAME = SETTINGS_PREFIX
       + "VORNAME_NAME";
 
   private static final String SETTINGS_ZWECK = SETTINGS_PREFIX + "ZWECK";
@@ -86,7 +73,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
 
   private CheckboxInput useIban = null;
 
-  private CheckboxInput useMemberNumber = null;
+  private CheckboxInput useMitgleidId = null;
 
   private CheckboxInput useName = null;
 
@@ -115,11 +102,11 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     // Inputs
     dateFrom = createDateInput(vondatum, true);
     dateUntil = createDateInput(bisdatum, false);
-    useIban = new CheckboxInput(settings.getBoolean(SETTINGS_NAME_IBAN, true));
-    useMemberNumber = new CheckboxInput(
-        settings.getBoolean(SETTINGS_NAME_MITGLIEDSNUMMER, false));
+    useIban = new CheckboxInput(settings.getBoolean(SETTINGS_IBAN, true));
+    useMitgleidId = new CheckboxInput(
+        settings.getBoolean(SETTINGS_MITGLIEDSNUMMER, false));
     useName = new CheckboxInput(
-        settings.getBoolean(SETTINGS_NAME_VORNAME_NAME, false));
+        settings.getBoolean(SETTINGS_VORNAME_NAME, false));
     useZweck = new CheckboxInput(settings.getBoolean(SETTINGS_ZWECK, false));
   }
 
@@ -151,33 +138,44 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
         .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER)
             ? "Ext. Mitgliedsnummer"
             : "Mitgliedsnummer"),
-        useMemberNumber);
+        useMitgleidId);
     group.addLabelPair("Nach eindeutigen Vorname und Nachname", useName);
     group.addLabelPair("Nach eindeutigem Verwendungszweck", useZweck);
     ButtonArea buttons = new ButtonArea();
 
-    Button button = new Button("Zuordnungen suchen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        doSearchAssignment();
-      }
-    }, null, true, "user-friends.png");
+    Button button = new Button("Zuordnungen suchen",
+        context -> buchungenZuordnen(), null, true, "user-friends.png");
     buttons.addButton(button);
-    buttons.addButton("Abbrechen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        throw new OperationCanceledException();
-      }
+    buttons.addButton("Abbrechen", context -> {
+      throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     group.addButtonArea(buttons);
     getShell()
         .setMinimumSize(getShell().computeSize(WINDOW_WIDTH, SWT.DEFAULT));
+  }
+
+  private enum ZuordnungsArt
+  {
+    IBAN("IBAN"),
+    NAME("Name"),
+    NAME_KONTOINHABER("Name Kontoinhaber"),
+    NAME_ZWECK("Name im Verwendungszweck"),
+    NAME_ZAHLER("Name des Zahlers"),
+    NAME_KONTOINHABER_ZAHLER("Name Kontoinhaber des Zahlers"),
+    ZWECK("Verwendungszweck"),
+    ID("Id");
+
+    private String art;
+
+    ZuordnungsArt(String art)
+    {
+      this.art = art;
+    }
+
+    public String getText()
+    {
+      return art;
+    }
   }
 
   /**
@@ -185,350 +183,333 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
    * den BuchungenMitgliedskontenZuordnungVorschauDialog weiter
    * 
    */
-  private void doSearchAssignment()
+  private void buchungenZuordnen()
   {
-    final Date dateFromInput = (Date) dateFrom.getValue();
-    final Date dateUntilInput = (Date) dateUntil.getValue();
+    final Date von = (Date) dateFrom.getValue();
+    final Date bis = (Date) dateUntil.getValue();
 
-    final boolean useIbanInput = Boolean.TRUE.equals(this.useIban.getValue());
-    final boolean useMemberNumberInput = Boolean.TRUE
-        .equals(this.useMemberNumber.getValue());
-    final boolean useNameInput = Boolean.TRUE.equals(this.useName.getValue());
-    final boolean useZweckInput = Boolean.TRUE.equals(this.useZweck.getValue());
+    HashSet<ZuordnungsArt> arten = new HashSet<>();
+    if ((boolean) this.useIban.getValue())
+    {
+      arten.add(ZuordnungsArt.IBAN);
+    }
+    if ((boolean) this.useMitgleidId.getValue())
+    {
+      arten.add(ZuordnungsArt.ID);
+    }
+    if ((boolean) this.useName.getValue())
+    {
+      arten.add(ZuordnungsArt.NAME);
+      arten.add(ZuordnungsArt.NAME_KONTOINHABER);
+      arten.add(ZuordnungsArt.NAME_ZWECK);
+      arten.add(ZuordnungsArt.NAME_ZAHLER);
+      arten.add(ZuordnungsArt.NAME_KONTOINHABER_ZAHLER);
+    }
+    if ((boolean) this.useZweck.getValue())
+    {
+      arten.add(ZuordnungsArt.ZWECK);
+    }
 
-    settings.setAttribute(SETTINGS_NAME_IBAN, useIbanInput);
-    settings.setAttribute(SETTINGS_NAME_MITGLIEDSNUMMER, useMemberNumberInput);
-    settings.setAttribute(SETTINGS_NAME_VORNAME_NAME, useNameInput);
-    settings.setAttribute(SETTINGS_ZWECK, useZweckInput);
+    settings.setAttribute(SETTINGS_IBAN, (Boolean) useIban.getValue());
+    settings.setAttribute(SETTINGS_MITGLIEDSNUMMER,
+        (Boolean) useMitgleidId.getValue());
+    settings.setAttribute(SETTINGS_VORNAME_NAME, (Boolean) useName.getValue());
+    settings.setAttribute(SETTINGS_ZWECK, (Boolean) useZweck.getValue());
 
     BackgroundTask t = new BackgroundTask()
     {
+
+      private boolean interrupted = false;
 
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
         try
         {
-          boolean externeMitgliedsnummer = Boolean.TRUE
-              .equals((Boolean) Einstellungen
-                  .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER));
+          boolean externeMitgliedsnummer = (Boolean) Einstellungen
+              .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER);
 
-          if (!useIbanInput && !useMemberNumberInput && !useNameInput
-              && !useZweckInput)
+          if (arten.size() == 0)
           {
             GUI.getStatusBar()
                 .setErrorText("Es wurde keine Zuordnungsart angegeben.");
             return;
           }
 
-          if (dateFromInput == null || dateUntilInput == null)
+          if (von == null || bis == null)
           {
             GUI.getStatusBar()
                 .setErrorText("Bitte geben Sie ein Start- und Enddatum ein.");
             return;
           }
 
-          if (dateUntilInput.before(dateFromInput))
+          if (bis.before(von))
           {
             GUI.getStatusBar()
                 .setErrorText("Das Enddatum liegt vor dem Startdatum.");
             return;
           }
 
-          Map<String, String> uniqueIbans = new HashMap<>();
-          Set<String> duplicateIbans = new HashSet<>();
+          HashMap<String, HashMap<Integer, Integer>> zuordnungMap = new HashMap<>();
 
-          Map<String, String> uniqueIds = new HashMap<>();
-          Set<String> duplicateIds = new HashSet<>();
-
-          Map<String, String> uniqueNames = new HashMap<>();
-          Set<String> duplicateNames = new HashSet<>();
-
-          Map<String, String> uniqueZweck = new HashMap<>();
-
-          if (useIbanInput || useMemberNumberInput || useNameInput)
+          for (ZuordnungsArt art : ZuordnungsArt.values())
           {
-            DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
-                .createList(Mitglied.class);
-
-            while (mitglieder.hasNext())
-            {
-              Mitglied mitglied = mitglieder.next();
-
-              if (useIbanInput)
-              {
-                processUniqueEntry(mitglied.getIban(), mitglied.getID(),
-                    uniqueIbans, duplicateIbans);
-              }
-
-              if (useMemberNumberInput)
-              {
-                if (externeMitgliedsnummer)
-                {
-                  processUniqueEntry(mitglied.getExterneMitgliedsnummer(),
-                      mitglied.getID(), uniqueIds, duplicateIds);
-                }
-                else
-                {
-                  uniqueIds.put(mitglied.getID(), mitglied.getID());
-                }
-              }
-
-              if (useNameInput)
-              {
-                processUniqueEntry(concatName(mitglied), mitglied.getID(),
-                    uniqueNames, duplicateNames);
-              }
-            }
-          }
-          if (useZweckInput)
-          {
-            ResultSetExtractor rs = new ResultSetExtractor()
-            {
-              @Override
-              public Object extract(ResultSet rs)
-                  throws SQLException, RemoteException
-              {
-                while (rs.next())
-                {
-                  // 1 = MitgliedID, 2 = Zweck1
-                  uniqueZweck.put(rs.getString(2), rs.getString(1));
-                }
-                return new Object();
-              }
-            };
-
-            Einstellungen.getDBService()
-                .execute("SELECT " + Sollbuchung.MITGLIED + ", "
-                    + Sollbuchung.ZWECK1 + " FROM " + Sollbuchung.TABLE_NAME
-                    + " WHERE " + Sollbuchung.MITGLIED + " IS NOT NULL"
-                    + " GROUP BY " + Sollbuchung.ZWECK1 + " HAVING COUNT("
-                    + Sollbuchung.ZWECK1 + ") = 1", new Object[] {}, rs);
-          }
-          duplicateIbans.clear();
-          duplicateIds.clear();
-          duplicateNames.clear();
-
-          if (uniqueIbans.isEmpty() && uniqueIds.isEmpty()
-              && uniqueNames.isEmpty() && uniqueZweck.isEmpty())
-          {
-            GUI.getStatusBar().setErrorText(
-                "Es wurden keine eindeutigen Mitglieder zum Zuordnen in den gewählten Zeitraum gefunden.");
-            return;
-          }
-
-          DBIterator<Buchung> buchungen = Einstellungen.getDBService()
-              .createList(Buchung.class);
-          buchungen.addFilter("datum >= ?", dateFromInput);
-          buchungen.addFilter("datum <= ?", dateUntilInput);
-          buchungen.addFilter("(splittyp != ? or splittyp is null)",
-              SplitbuchungTyp.HAUPT);
-          buchungen.addFilter("(splittyp != ? or splittyp is null)",
-              SplitbuchungTyp.GEGEN);
-          buchungen.addFilter(Buchung.SOLLBUCHUNG + " is null");
-          buchungen.setOrder("ORDER BY datum");
-
-          List<BookingMemberAccountEntry> assignedBooking = new ArrayList<>();
-          Set<String> usedMemberAccount = new HashSet<>();
-
-          while (buchungen.hasNext())
-          {
-            Buchung buchung = buchungen.next();
-
-            String bookingPurpose = getBookingPurpose(buchung);
-            if (assginMemberAccountToBooking(assignedBooking, usedMemberAccount,
-                dateFromInput, dateUntilInput, buchung,
-                uniqueIbans.get(buchung.getIban()), "IBAN")
-                || assginMemberAccountToBooking(assignedBooking,
-                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
-                    uniqueIds.get(bookingPurpose),
-                    externeMitgliedsnummer ? "Ext. Mitgliedsnummer"
-                        : "Mitgliedsnummer")
-                || assginMemberAccountToBooking(assignedBooking,
-                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
-                    uniqueNames.get(bookingPurpose), "Vorname und Nachname")
-                || assginMemberAccountToBooking(assignedBooking,
-                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
-                    uniqueNames.get(buchung.getName()), "Vorname und Nachname")
-                || assginMemberAccountToBooking(assignedBooking,
-                    usedMemberAccount, dateFromInput, dateUntilInput, buchung,
-                    uniqueZweck.get(bookingPurpose), "Verwendungszweck"))
+            if (!arten.contains(art))
             {
               continue;
             }
-          }
+            monitor.setStatusText("Suche Zuordnungen nach " + art.getText());
+            monitor.setPercentComplete(0);
 
-          if (assignedBooking.isEmpty())
-          {
-            GUI.getStatusBar().setErrorText(
-                "Es wurden keine passenden Buchungen oder Sollbuchungen zum Zuordnen gefunden.");
+            HashMap<Integer, Integer> artMap = new HashMap<>();
+
+            ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+                "sollbuchung");
+            it.addFilter("sollbuchung.datum >= ?", von);
+            it.addFilter("sollbuchung.datum <= ?", bis);
+
+            it.leftJoin("buchung", "buchung.sollbuchung = sollbuchung.id");
+
+            it.addColumn(
+                "sum(sollbuchung.betrag -COALESCE(buchung.betrag,0)) as fehlbetrag");
+            it.addHaving("fehlbetrag != 0");
+            it.addColumn("sollbuchung.zweck1 as sollbuchung_zweck");
+
+            it.leftJoin("mitglied", "mitglied.id = sollbuchung.mitglied");
+            it.addColumn("mitglied.id as mitglied_id");
+            it.addColumn("mitglied.name as mitglied_name");
+            it.addColumn("mitglied.vorname as mitglied_vorname");
+            it.addColumn("mitglied.iban as mitglied_iban");
+            it.addColumn("mitglied.kontoinhaber as mitglied_kontoinhaber");
+
+            it.leftJoin("mitglied as zahler", "mitglied.altzahler = zahler.id");
+            it.addColumn("zahler.name as zahler_name");
+            it.addColumn("zahler.vorname as zahler_vorname");
+            it.addColumn("zahler.kontoinhaber as zahler_kontoinhaber");
+
+            if (externeMitgliedsnummer)
+            {
+              it.addColumn(
+                  "mitglied.externemitgliedsnummer as mitglied_externe_id");
+            }
+
+            it.addColumn("sollbuchung.id as sollbuchung_id");
+
+            it.addGroupBy("sollbuchung.id");
+
+            // Alle nach anderer Art zugeordnete Sollbuchungen überspringen
+            String zugeordneteSollbuchungIds = zuordnungMap.values().stream()
+                .filter(m -> m.size() > 0)
+                .map(e -> e.values().stream().filter(t -> t != null)
+                    .map(s -> s.toString()).collect(Collectors.joining(",")))
+                .collect(Collectors.joining(","));
+
+            if (!zugeordneteSollbuchungIds.isBlank())
+            {
+              it.addFilter(
+                  "sollbuchung.id NOT IN (" + zugeordneteSollbuchungIds + ")");
+            }
+
+            // Sortierung je nach Art. Muss auf jeden Fall nach Mitglied-Id
+            // sortiert sein, sonst funktioniert die Zuordnung nicht richtig
+            switch (art)
+            {
+              case NAME:
+              case NAME_ZWECK:
+                // Kurze Namen am Ende, sonst passen sie ggf. auf Teile von
+                // langen Namen
+                it.setOrder(
+                    "Order by length(mitglied.name)+length(mitglied.vorname) DESC,mitglied.id, sollbuchung.datum");
+                break;
+              case NAME_ZAHLER:
+                it.setOrder(
+                    "Order by length(zahler.name)+length(zahler.vorname) DESC,mitglied.id, sollbuchung.datum");
+                break;
+              case ID:
+                if (externeMitgliedsnummer)
+                {
+                  it.setOrder(
+                      "Order by length(mitglied.externemitgliedsnummer) DESC,mitglied.id, sollbuchung.datum");
+                }
+                else
+                {
+                  it.setOrder(
+                      "Order by length(mitglied.id) DESC,mitglied.id, sollbuchung.datum");
+                }
+                break;
+              default:
+                it.setOrder("Order by mitglied.id, sollbuchung.datum");
+            }
+
+            String zugeordneteBuchungIds = zuordnungMap.values().stream()
+                .filter(m -> m.size() > 0)
+                .map(e -> e.entrySet().stream()
+                    .filter(t -> t.getValue() != null).map(m -> m.toString())
+                    .collect(Collectors.joining(",")))
+                .collect(Collectors.joining(","));
+
+            HashSet<Integer> buchungenMitglied = new HashSet<>();
+            int oldMitgliedId = 0;
+            int count = 0;
+            while (it.hasNext())
+            {
+              if (isInterrupted())
+              {
+                throw new OperationCanceledException();
+              }
+              monitor.setPercentComplete(count++ * 100 / it.size());
+              PseudoDBObject o = it.next();
+
+              if (o.getInteger("mitglied_id") != oldMitgliedId)
+              {
+                buchungenMitglied = new HashSet<>();
+                oldMitgliedId = o.getInteger("mitglied_id");
+              }
+
+              DBIterator<BuchungImpl> buchungIt = Einstellungen.getDBService()
+                  .createList(BuchungImpl.class);
+              buchungIt.addFilter("datum >= ?", von);
+              buchungIt.addFilter("datum <= ?", bis);
+              buchungIt.addFilter("(splittyp != ? or splittyp is null)",
+                  SplitbuchungTyp.HAUPT);
+              buchungIt.addFilter("(splittyp != ? or splittyp is null)",
+                  SplitbuchungTyp.GEGEN);
+              buchungIt.addFilter("sollbuchung is null");
+
+              buchungIt.addFilter("CAST(betrag AS DECIMAL(10,2)) = ?",
+                  Math.round(o.getDouble("fehlbetrag") * 100) / 100);
+
+              // Buchungen, die diesem Mitglied schon zugeordnet wurden,
+              // rausfiltern
+              if (buchungenMitglied.size() > 0)
+              {
+                buchungIt.addFilter("id not IN (" + buchungenMitglied.stream()
+                    .map(String::valueOf).collect(Collectors.joining(","))
+                    + ")");
+              }
+
+              // Alle nach anderer Art zugeordnete Buchungen rausfiltern.
+              if (!zugeordneteBuchungIds.isBlank())
+              {
+                it.addFilter(
+                    "buchung.id NOT IN (" + zugeordneteBuchungIds + ")");
+              }
+
+              buchungIt.setOrder("Order by datum");
+              buchungIt.setLimit(1);
+
+              switch (art)
+              {
+                case IBAN:
+                  buchungIt.addFilter("iban is not null");
+                  buchungIt.addFilter("iban != ''");
+                  buchungIt.addFilter("iban = ?",
+                      o.getAttribute("mitglied_iban"));
+                  break;
+                case NAME:
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("mitglied_name"));
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("mitglied_vorname"));
+                  break;
+                case NAME_ZWECK:
+                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("mitglied_name"));
+                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("mitglied_vorname"));
+                  break;
+                case NAME_KONTOINHABER:
+                  buchungIt.addFilter("? is not null",
+                      o.getAttribute("mitglied_kontoinhaber"));
+                  buchungIt.addFilter("? != ''",
+                      o.getAttribute("mitglied_kontoinhaber"));
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("mitglied_kontoinhaber"));
+                  break;
+                case NAME_ZAHLER:
+                  buchungIt.addFilter("? is not null",
+                      o.getAttribute("zahler_name"));
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("zahler_name"));
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("zahler_vorname"));
+                  break;
+                case NAME_KONTOINHABER_ZAHLER:
+                  buchungIt.addFilter("? is not null",
+                      o.getAttribute("zahler_kontoinhaber"));
+                  buchungIt.addFilter("? != ''",
+                      o.getAttribute("zahler_kontoinhaber"));
+                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("zahler_kontoinhaber"));
+                  break;
+                case ZWECK:
+                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
+                      o.getAttribute("sollbuchung_zweck"));
+                  break;
+                case ID:
+                  buchungIt.addFilter("buchung.zweck LIKE ?",
+                      o.getAttribute(
+                          externeMitgliedsnummer ? "mitglied_externe_id"
+                              : "mitglied_id"));
+                  break;
+              }
+
+              if (buchungIt.hasNext())
+              {
+                BuchungImpl buchung = buchungIt.next();
+                Integer buchungId = Integer.parseInt(buchung.getID());
+                if (!artMap.containsKey(buchungId))
+                {
+                  artMap.put(buchungId, o.getInteger("sollbuchung_id"));
+                  buchungenMitglied.add(buchungId);
+                }
+                else
+                {
+                  // Für diese Buchung passte schon eine ander Sollbuchung,
+                  // daher keine zuordnen.
+                  artMap.put(buchungId, null);
+                }
+              }
+            }
+            zuordnungMap.put(art.getText(), artMap);
+
+            long anz = artMap.entrySet().stream()
+                .filter(e -> e.getValue() != null).count();
+            if (anz > 0)
+            {
+              monitor.setStatusText("           " + anz + " Zuordnungen nach "
+                  + art.getText() + " gefunden.");
+            }
           }
-          else
-          {
-            BuchungenSollbuchungZuordnungVorschauDialog userValidationDialog = new BuchungenSollbuchungZuordnungVorschauDialog(
-                assignedBooking);
-            userValidationDialog.open();
-          }
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("error while saving import file", e);
-          throw new ApplicationException("Fehler bei der Zuordnungssuche", e);
+          monitor.setStatus(ProgressMonitor.STATUS_DONE);
+          monitor.setPercentComplete(100);
+
+          new BuchungenSollbuchungZuordnungVorschauDialog(zuordnungMap).open();
         }
         catch (Exception e)
         {
+          DBTransaction.rollback();
           Logger.error("error while opening a dialog", e);
-          throw new ApplicationException(
-              "Fehler bei der Durchführung der Zuordnung (Bestätigungsdialog)",
-              e);
+          throw new ApplicationException("Fehler beim Zuordnen", e);
         }
       }
 
       @Override
       public void interrupt()
       {
-        //
+        interrupted = true;
       }
 
       @Override
       public boolean isInterrupted()
       {
-        return false;
+        return interrupted;
       }
     };
 
     Application.getController().start(t);
 
     close();
-  }
-
-  private String getBookingPurpose(Buchung buchung) throws RemoteException
-  {
-    String zweck = buchung.getZweck();
-    if (zweck == null)
-      return null;
-    zweck = zweck.replaceAll("\r\n", " ").replaceAll("\r", " ")
-        .replaceAll("\n", " ").toUpperCase();
-    // manche Banken haengen hier noch zusaetzliche Felder ran: diese versuchen
-    // wir Abzuschneiden
-    if (zweck.contains(" IBAN:"))
-    {
-      zweck = zweck.substring(0, zweck.indexOf(" IBAN:"));
-    }
-    return zweck;
-  }
-
-  private boolean assginMemberAccountToBooking(
-      final List<BookingMemberAccountEntry> assignedBooking,
-      final Set<String> usedMemberAccount, Date dateFromInput,
-      Date dateUntilInput, final Buchung buchung, String mitgliedsId,
-      final String zuordnungsart) throws RemoteException
-  {
-    boolean processed = false;
-
-    if (mitgliedsId != null)
-    {
-      // wir wollen das nicht nochmal mit der Buchung probieren, da dies das
-      // gleiche Ergebnis wäre
-      processed = true;
-
-      ResultSetExtractor rs = new ResultSetExtractor()
-      {
-        @Override
-        public Object extract(ResultSet rs) throws SQLException, RemoteException
-        {
-          while (rs.next())
-          {
-            long sollbuchungId = rs.getLong(1);
-
-            DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
-                .createList(Sollbuchung.class);
-            sollbIt.addFilter("id = ?", sollbuchungId);
-
-            while (sollbIt.hasNext())
-            {
-              Sollbuchung sollb = sollbIt.next();
-
-              if (!usedMemberAccount.contains(sollb.getID()))
-              {
-                BigDecimal ist = convertDoubleToBigDecimal(sollb.getIstSumme());
-                BigDecimal soll = convertDoubleToBigDecimal(sollb.getBetrag());
-
-                if (soll.subtract(ist)
-                    .equals(convertDoubleToBigDecimal(buchung.getBetrag())))
-                {
-                  assignedBooking.add(new BookingMemberAccountEntry(buchung,
-                      sollb, zuordnungsart));
-                  usedMemberAccount.add(sollb.getID());
-                  return new Object();
-                }
-              }
-            }
-          }
-          return new Object();
-        }
-      };
-
-      String sql = "SELECT " + Sollbuchung.TABLE_NAME_ID + " FROM "
-          + Sollbuchung.TABLE_NAME
-          + " inner join abrechnungslauf as a on a.id = "
-          + Sollbuchung.T_ABRECHNUNGSLAUF + " WHERE a.stichtag >= ?"
-          + " AND a.stichtag <= ?" + " AND " + Sollbuchung.T_MITGLIED + " = ?"
-          + " AND " + Sollbuchung.T_ZAHLUNGSWEG + " = ?" + " GROUP BY "
-          + Sollbuchung.TABLE_NAME_ID + " ORDER BY a.stichtag, "
-          + Sollbuchung.TABLE_NAME_ID;
-      Einstellungen.getDBService().execute(sql, new Object[] { dateFromInput,
-          dateUntilInput, mitgliedsId, Zahlungsweg.ÜBERWEISUNG }, rs);
-    }
-
-    return processed;
-  }
-
-  private BigDecimal convertDoubleToBigDecimal(Double doubleValue)
-  {
-    BigDecimal value = BigDecimal.valueOf(doubleValue);
-    return value.setScale(2, RoundingMode.HALF_UP);
-  }
-
-  private String concatName(Mitglied mitglied) throws RemoteException
-  {
-    if (mitglied.getVorname() == null || mitglied.getVorname().length() == 0)
-    {
-      return mitglied.getName() == null ? "" : mitglied.getName().toUpperCase();
-    }
-    else
-    {
-      if (mitglied.getName() == null || mitglied.getName().length() == 0)
-      {
-        return mitglied.getVorname() == null ? ""
-            : mitglied.getVorname().toUpperCase();
-      }
-      else
-      {
-        return mitglied.getVorname().toUpperCase() + " "
-            + mitglied.getName().toUpperCase();
-      }
-    }
-  }
-
-  private void processUniqueEntry(String key, String value,
-      Map<String, String> uniqueKeys, Set<String> duplicateKeys)
-  {
-    if (key != null && key.length() > 0)
-    {
-      if (uniqueKeys.containsKey(key))
-      {
-        uniqueKeys.remove(key);
-        duplicateKeys.add(key);
-      }
-      else
-      {
-        if (!duplicateKeys.contains(key))
-        {
-          uniqueKeys.put(key, value);
-        }
-      }
-    }
   }
 
   /**
@@ -538,109 +519,5 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   protected Object getData() throws Exception
   {
     return null;
-  }
-
-  protected class BookingMemberAccountEntry implements GenericObject
-  {
-    public static final String PREFIX_BUCHUNG = "buchung-";
-
-    public static final String PREFIX_MITGLIEDSKONTO = "mitgliedskonto-";
-
-    private Buchung buchung;
-
-    private Sollbuchung sollbuchung;
-
-    private String zuordnungsart;
-
-    BookingMemberAccountEntry(Buchung buchung, Sollbuchung sollbuchung,
-        String zuordnungsart)
-    {
-      this.buchung = buchung;
-      this.sollbuchung = sollbuchung;
-      this.zuordnungsart = zuordnungsart;
-    }
-
-    public Buchung getBuchung()
-    {
-      return buchung;
-    }
-
-    public Sollbuchung getSollbuchung()
-    {
-      return sollbuchung;
-    }
-
-    @Override
-    public boolean equals(GenericObject arg0) throws RemoteException
-    {
-      if (arg0 instanceof BookingMemberAccountEntry)
-      {
-        BookingMemberAccountEntry otherValue = (BookingMemberAccountEntry) arg0;
-        return otherValue.getBuchung().equals(buchung)
-            && otherValue.getSollbuchung().equals(sollbuchung);
-      }
-      return false;
-    }
-
-    @Override
-    public Object getAttribute(String arg0) throws RemoteException
-    {
-      if (arg0 == null)
-        return null;
-
-      if (arg0.startsWith(PREFIX_BUCHUNG))
-      {
-        return buchung.getAttribute(arg0.substring(PREFIX_BUCHUNG.length()));
-      }
-
-      if (arg0.startsWith(PREFIX_MITGLIEDSKONTO))
-      {
-        return sollbuchung
-            .getAttribute(arg0.substring(PREFIX_MITGLIEDSKONTO.length()));
-      }
-
-      if (arg0.equals("id"))
-      {
-        return getID();
-      }
-
-      if (arg0.equals("zuordnungsart"))
-      {
-        return zuordnungsart;
-      }
-      return null;
-    }
-
-    @Override
-    public String[] getAttributeNames() throws RemoteException
-    {
-      List<String> attributeNames = new ArrayList<>();
-      attributeNames.add("id");
-      attributeNames.add("zuordnungsart");
-
-      for (String dao : buchung.getAttributeNames())
-      {
-        attributeNames.add(PREFIX_BUCHUNG + dao);
-      }
-
-      for (String dao : sollbuchung.getAttributeNames())
-      {
-        attributeNames.add(PREFIX_MITGLIEDSKONTO + dao);
-      }
-
-      return attributeNames.toArray(new String[0]);
-    }
-
-    @Override
-    public String getID() throws RemoteException
-    {
-      return buchung.getID() + "." + sollbuchung.getID();
-    }
-
-    @Override
-    public String getPrimaryAttribute() throws RemoteException
-    {
-      return "id";
-    }
   }
 }
