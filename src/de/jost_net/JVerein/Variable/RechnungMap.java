@@ -99,7 +99,7 @@ public class RechnungMap extends AbstractMap
         betrag.add(Einstellungen.DECIMALFORMAT.format(steuerMap.get(satz)));
       }
     }
-    if (buchungDatum.size() > 1)
+    if (buchungDatum.size() > 1 || steuerMap.size() > 0)
     {
       zweck.add("Summe");
       betrag.add(Einstellungen.DECIMALFORMAT.format(summe));
