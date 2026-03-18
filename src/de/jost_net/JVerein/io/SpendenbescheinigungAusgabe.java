@@ -738,7 +738,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   protected void closeDocument(FormularAufbereitung formularaufbereitung,
       DBObject object) throws IOException, DocumentException
   {
-    if (object != null && ((Spendenbescheinigung) object).getFormular() != null)
+    if (rpt == null)
     {
       super.closeDocument(formularaufbereitung, object);
     }
