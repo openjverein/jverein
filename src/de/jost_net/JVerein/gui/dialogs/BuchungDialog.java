@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.util.ApplicationException;
 
@@ -55,6 +56,13 @@ public class BuchungDialog extends AbstractDialog<Boolean>
     }
 
     cont.addPart(new BuchungListPart(list, null, null));
+
+    ButtonArea buttons = new ButtonArea();
+    cont.addButtonArea(buttons);
+    buttons.addButton("Schließen", e -> close(), null, false,
+        "process-stop.png");
+    buttons.paint(parent);
+
   }
 
   @Override
