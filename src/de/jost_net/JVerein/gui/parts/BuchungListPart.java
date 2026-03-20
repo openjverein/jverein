@@ -111,5 +111,6 @@ public class BuchungListPart extends BuchungListTablePart
     setRememberColWidths(true);
     setRememberOrder(true);
     setRememberState(true);
+    setMulti(true);
   }
 }

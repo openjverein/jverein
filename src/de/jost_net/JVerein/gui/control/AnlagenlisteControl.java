@@ -21,7 +21,9 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
@@ -54,8 +56,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
 
   public static final String ENDWERT = "endwert";
 
-  public static final String KONTO = "konto";
-
   public static final String NUTZUNGSDAUER = "nutzungsdauer";
 
   public static final String ANSCHAFFUNG_DATUM = "anschaffung";
@@ -63,8 +63,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   public static final String BETRAG = "betrag";
 
   public static final String AFAART = "afaart";
-
-  private static final String KONTO_ID = "konto_id";
 
   private SaldoListTablePart saldoList;
 
@@ -82,7 +80,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new SaldoListTablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
       {
         // Sortieren verhindern
         @Override
@@ -124,6 +122,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setFormatter(new SaldoFormatter());
       saldoList.setMulti(true);
+      saldoList.setContextMenu(new SaldoMenu(this));
       return saldoList;
     }
     catch (RemoteException e)
@@ -185,6 +184,8 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     it.addColumn("konto.nutzungsdauer AS " + NUTZUNGSDAUER);
     it.addColumn("konto.anschaffung AS " + ANSCHAFFUNG_DATUM);
     it.addColumn("konto.betrag AS " + BETRAG);
+    it.addColumn("buchungsart.id AS " + BUCHUNGSART_ID);
+    it.addColumn("buchungsklasse.id AS " + BUCHUNGSKLASSE_ID);
 
     it.addColumn(
         "SUM(case when buchungbuchungsart.abschreibung = TRUE then buchung.betrag ELSE 0 END) AS "
@@ -321,18 +322,20 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         PseudoDBObject head = new PseudoDBObject();
         head.setAttribute(ART, ART_HEADER);
         head.setAttribute(GRUPPE, klasse);
+        head.setAttribute(BUCHUNGSKLASSE_ID, o.getAttribute(BUCHUNGSKLASSE_ID));
         zeilen.add(head);
-        klasseAlt = klasse;
       }
       // Bei neuer Buchungsart Kopfzeile anzeigen.
-      if (!buchungsart.equals(artAlt))
+      if (!buchungsart.equals(artAlt) || !klasse.equals(klasseAlt))
       {
         PseudoDBObject head = new PseudoDBObject();
         head.setAttribute(ART, ART_HEADER);
         head.setAttribute(GRUPPE, buchungsart);
+        head.setAttribute(BUCHUNGSART_ID, o.getAttribute(BUCHUNGSART_ID));
         zeilen.add(head);
         artAlt = buchungsart;
       }
+      klasseAlt = klasse;
 
       // Die Detailzeile wie sie aus dem iterator kommt azeigen.
       o.setAttribute(ART, ART_DETAIL);

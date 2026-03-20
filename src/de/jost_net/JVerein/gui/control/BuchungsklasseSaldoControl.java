@@ -20,7 +20,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -46,7 +48,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   /**
    * Die Art der Buchung: Einnahme (0), Ausgabe (1), Umbuchung (2)
    */
-  protected static final String ARTBUCHUNGSART = "art";
+  public static final String ARTBUCHUNGSART = "artBuchungsArt";
 
   /**
    * Die Summe, bei optiernenden Vereinen die Nettosumme + Steuern auf der
@@ -93,7 +95,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new SaldoListTablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
       {
         // Sortieren verhindern
         @Override
@@ -121,6 +123,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setRememberOrder(true);
       saldoList.setRememberState(true);
+      saldoList.setContextMenu(new SaldoMenu(this));
       saldoList.setFormatter(new SaldoFormatter());
 
       return saldoList;
@@ -245,6 +248,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         PseudoDBObject head = new PseudoDBObject();
         head.setAttribute(ART, ART_HEADER);
         head.setAttribute(GRUPPE, klasse);
+        head.setAttribute(BUCHUNGSKLASSE_ID, o.getAttribute(BUCHUNGSKLASSE_ID));
+        // Für Projektsaldo
+        head.setAttribute(PROJEKT_ID, o.getAttribute(PROJEKT_ID));
         zeilen.add(head);
         klasseAlt = klasse;
       }
@@ -328,6 +334,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
             "Saldo Buchungen ohne Buchungsart");
         ohneBuchungsart.setAttribute(EINNAHMEN, summeOhneBuchungsart);
         ohneBuchungsart.setAttribute(ANZAHL, anzahl);
+        // Für Menü brauchen wir eine id
+        ohneBuchungsart.setAttribute(BUCHUNGSART_ID, -1);
         zeilen.add(ohneBuchungsart);
       }
     }
@@ -399,6 +407,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
                 + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
         break;
     }
+    it.addColumn("buchungsart.id as " + BUCHUNGSART_ID);
+    it.addColumn("buchungsklasse.id as " + BUCHUNGSKLASSE_ID);
     it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
     it.addColumn("buchungsart.status");
@@ -414,6 +424,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
           + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
           + SUMME, Kontoart.ANLAGE.getKey());
+      it.addColumn("st.steuerbetrag AS " + STEUERBETRAG);
     }
     else
     {

@@ -46,6 +46,8 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
 
     // Wir überschreiben das "buchungsklasse" Feld mit dem Projektname
     it.addColumn("projekt.bezeichnung as " + BUCHUNGSKLASSE);
+    it.addColumn("projekt.bezeichnung as " + PROJEKT);
+    it.addColumn("projekt.id as " + PROJEKT_ID);
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
     String on = "projekt.id = buchung.projekt ";

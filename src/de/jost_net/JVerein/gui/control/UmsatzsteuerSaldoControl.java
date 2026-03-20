@@ -21,7 +21,9 @@ import java.util.ArrayList;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
@@ -46,6 +48,8 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
 
   public static final String STEUER = "steuer";
 
+  public static final String STEUER_ID = "steuer_id";
+
   public static final String STEUERBETRAG = "steuerbetrag";
 
   private static final String ARTSTEUERBUCHUNGSART = "artsteuerbuchungsart";
@@ -66,7 +70,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new SaldoListTablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
       {
         @Override
         protected void orderBy(int index)
@@ -86,6 +90,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setMulti(true);
       saldoList.setFormatter(new SaldoFormatter());
+      saldoList.setContextMenu(new SaldoMenu(this));
     }
     catch (RemoteException e)
     {
@@ -156,6 +161,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
       if (o.getAttribute(STEUER) == null)
       {
         o.setAttribute(STEUER, "Steuerfreie Umsätze");
+        o.setAttribute(STEUER_ID, -1);
       }
 
       zeilen.add(o);
@@ -202,6 +208,7 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
     it.addColumn("steuer.name as " + STEUER);
+    it.addColumn("steuer.id as " + STEUER_ID);
     it.addColumn("steuerbuchungsart.art as " + ARTSTEUERBUCHUNGSART);
     it.addColumn("COUNT(buchung.id) as " + ANZAHL);
 

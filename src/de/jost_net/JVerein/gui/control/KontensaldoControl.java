@@ -19,7 +19,9 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
+import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -42,8 +44,6 @@ public class KontensaldoControl extends AbstractSaldoControl
 {
 
   public static final String KONTOART = "kontoart";
-
-  public static final String KONTO_ID = "konto_id";
 
   public static final String OHNE_BUCHUNGSART = "ohne_buchungsart";
 
@@ -71,7 +71,7 @@ public class KontensaldoControl extends AbstractSaldoControl
       {
         return saldoList;
       }
-      saldoList = new SaldoListTablePart(getList(), null)
+      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
       {
         @Override
         protected void orderBy(int index)
@@ -101,6 +101,7 @@ public class KontensaldoControl extends AbstractSaldoControl
       saldoList.setRememberColWidths(true);
       saldoList.setMulti(true);
       saldoList.setFormatter(new SaldoFormatter());
+      saldoList.setContextMenu(new SaldoMenu(this));
     }
     catch (RemoteException e)
     {
@@ -169,6 +170,7 @@ public class KontensaldoControl extends AbstractSaldoControl
     it.addColumn("konto.kontoart AS " + KONTOART);
     it.addColumn("konto.id as " + KONTO_ID);
     it.addColumn("konto.bezeichnung as " + GRUPPE);
+    it.addColumn("konto.bezeichnung as " + KONTO);
     it.addColumn("konto.nummer as " + KONTO_NUMMER);
 
     it.leftJoin("buchung",

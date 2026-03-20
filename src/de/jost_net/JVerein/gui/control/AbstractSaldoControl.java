@@ -61,6 +61,8 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    */
   public static final String AUSGABEN = "ausgaben";
 
+  public static final String STEUERBETRAG = "steuerBetrag";
+
   /**
    * Summe der Umbuchungen.
    */
@@ -72,9 +74,19 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   public static final String BUCHUNGSKLASSE = "buchungsklasse";
 
   /**
+   * Die Buchungsklasse_ID aus der DB
+   */
+  public static final String BUCHUNGSKLASSE_ID = "buchungsklasse_id";
+
+  /**
    * Die Buchungsart aus der DB.
    */
   public static final String BUCHUNGSART = "buchungsart";
+
+  /**
+   * Die Buchungsart_ID aus der DB.
+   */
+  public static final String BUCHUNGSART_ID = "buchungsart_id";
 
   /**
    * Anfangsbestand der Konten.
@@ -96,6 +108,17 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    * Projekt...)
    */
   public static final String GRUPPE = "gruppe";
+
+  /**
+   * Die Projekt_ID aus der DBbeim Projektsaldo
+   */
+  public static final String PROJEKT_ID = "projekt_id";
+
+  public static final String PROJEKT = "projekt";
+
+  public static final String KONTO_ID = "konto_id";
+
+  public static final String KONTO = "konto";
 
   private DateLabel datumvon;
 
