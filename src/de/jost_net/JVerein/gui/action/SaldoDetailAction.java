@@ -20,7 +20,6 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
-import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
 import de.jost_net.JVerein.gui.control.UmsatzsteuerSaldoControl;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
@@ -47,9 +46,9 @@ public class SaldoDetailAction implements Action
     try
     {
       PseudoDBObject o = (PseudoDBObject) context;
-      if (o.getAttribute(AnlagenlisteControl.KONTO_ID) != null)
+      if (o.getAttribute(AbstractSaldoControl.KONTO_ID) != null)
       {
-        String id = o.getAttribute(AnlagenlisteControl.KONTO_ID).toString();
+        String id = o.getAttribute(AbstractSaldoControl.KONTO_ID).toString();
 
         Konto konto = Einstellungen.getDBService().createObject(Konto.class,
             id);
@@ -82,7 +81,8 @@ public class SaldoDetailAction implements Action
             .createObject(Buchungsklasse.class, id);
         GUI.startView(BuchungsklasseDetailView.class, buchungsklasse);
       }
-      else if (o.getAttribute(UmsatzsteuerSaldoControl.STEUER_ID) != null)
+      else if (o.getAttribute(UmsatzsteuerSaldoControl.STEUER_ID) != null
+          && o.getInteger(UmsatzsteuerSaldoControl.STEUER_ID) > 0)
       {
         String id = o.getAttribute(UmsatzsteuerSaldoControl.STEUER_ID)
             .toString();

@@ -84,7 +84,7 @@ public class SaldoBuchungAction implements Action
         if (buchungsartId == -1)
         {
           it.addFilter("buchung.buchungsart is null");
-          filterText.add("ohne Buchungsart");
+          filterText.add("Ohne Buchungsart");
         }
         else
         {
@@ -98,7 +98,7 @@ public class SaldoBuchungAction implements Action
             if (buchungsklasseId == null)
             {
               it.addFilter("buchung.buchungsklasse is null");
-              filterText.add("ohne Buchungsklasse");
+              filterText.add("Ohne Buchungsklasse");
             }
             else
             {
@@ -178,12 +178,20 @@ public class SaldoBuchungAction implements Action
       else if (control instanceof UmsatzsteuerSaldoControl)
       {
         Integer steuerID = o.getInteger(UmsatzsteuerSaldoControl.STEUER_ID);
+
+        it.join("konto");
+        it.addFilter("buchung.konto = konto.id");
+        it.addFilter("konto.kontoart = ?", Kontoart.GELD.getKey());
+        filterText.add("Kontoarten: " + Kontoart.GELD.getText());
         if (steuerID == null)
         {
           throw new ApplicationException("Keine Steuer ausgewählt");
         }
         else if (steuerID == -1)
         {
+          it.join("buchungsart");
+          it.addFilter("buchung.buchungsart = buchungsart.id");
+
           // Steuerfreie Buchungen nur Einnahmen
           it.addFilter("buchungsart.art = ?", ArtBuchungsart.EINNAHME);
           if (steuerInBuchung)
@@ -204,6 +212,9 @@ public class SaldoBuchungAction implements Action
           }
           else
           {
+            it.join("buchungsart");
+            it.addFilter("buchung.buchungsart = buchungsart.id");
+
             it.addFilter("buchungsart.steuer = ?", steuerID);
           }
           filterText.add(

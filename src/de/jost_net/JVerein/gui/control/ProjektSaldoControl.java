@@ -46,8 +46,14 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
 
     // Wir überschreiben das "buchungsklasse" Feld mit dem Projektname
     it.addColumn("projekt.bezeichnung as " + BUCHUNGSKLASSE);
-    it.addColumn("projekt.bezeichnung as " + PROJEKT);
     it.addColumn("projekt.id as " + PROJEKT_ID);
+    // TODO Das geht erstmal, gut ist es aber nicht, im Buchungen Dialog steht
+    // dan auch der Projektname als Klasse.
+    // Außerdem ist noch ein BUG, dass bei KlasseInBuchung Buchungsarten
+    // mehrfach angezeigt werden, wenn sie in mehreren Klassen existieren. Es
+    // sollte also auch nach Klasse gruppiert werden.
+    it.addColumn("CONCAT(projekt.bezeichnung,'') as " + PROJEKT);
+
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
     String on = "projekt.id = buchung.projekt ";

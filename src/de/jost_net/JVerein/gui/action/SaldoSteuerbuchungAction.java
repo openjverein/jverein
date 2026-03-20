@@ -80,11 +80,11 @@ public class SaldoSteuerbuchungAction implements Action
       else
       {
         it.join("buchungsart as buchungbuchungsart");
+        it.addFilter("buchungbuchungsart.id = buchung.buchungsart");
         it.addFilter("buchungbuchungsart.steuer = steuer.id");
+
       }
 
-      // Steuer ->BA+BKL
-      // BU/BA-> Steuer
       it.addFilter("steuer.buchungsart = ?", buchungsartId);
       filterText.add("Steuer-Buchungsart: "
           + o.getAttribute(AbstractSaldoControl.BUCHUNGSART));

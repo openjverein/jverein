@@ -424,7 +424,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
           + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
           + SUMME, Kontoart.ANLAGE.getKey());
-      it.addColumn("st.steuerbetrag AS " + STEUERBETRAG);
+      it.addColumn("SUM(st.steuerbetrag) AS " + STEUERBETRAG);
     }
     else
     {
@@ -455,6 +455,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     it.addGroupBy("buchungsart.art");
     it.addGroupBy("buchungsart.status");
     it.addGroupBy("buchungsart.nummer");
+
     // Ggf. Buchungsarten ausblenden
     if (unterdrueckung)
     {
