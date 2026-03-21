@@ -250,6 +250,9 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             return;
           }
 
+          // Map mit allen bereits zugeordneten Sollbuchungen. Wird erst
+          // gefüllt, wenn die Zuordnung nach einer Art abgeschlossen ist.
+          // <ZuordnungArt<BuchungId, SollbuchungId>>
           HashMap<String, HashMap<Integer, Integer>> zuordnungMap = new HashMap<>();
 
           for (ZuordnungsArt art : ZuordnungsArt.values())
@@ -261,6 +264,9 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             monitor.setStatusText("Suche Zuordnungen nach " + art.getText());
             monitor.setPercentComplete(0);
 
+            // Map mit den Zugeordneten Buchungen dieser Art. Wird am Ende in
+            // zuordnungMap übernommen
+            // <BuchungId, SollbuchungId>
             HashMap<Integer, Integer> artMap = new HashMap<>();
 
             ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
@@ -343,6 +349,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                 it.setOrder("Order by mitglied.id, sollbuchung.datum");
             }
 
+            // Alle nach anderer Art zugeordnete Buchungen
             String zugeordneteBuchungIds = zuordnungMap.values().stream()
                 .filter(m -> m.size() > 0)
                 .map(e -> e.entrySet().stream()
@@ -350,6 +357,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                     .collect(Collectors.joining(",")))
                 .collect(Collectors.joining(","));
 
+            // Diese Map enthält alle BuchungsIds die dem aktuellen Mitglied
+            // zugeordnet wurden.
             HashSet<Integer> buchungenMitglied = new HashSet<>();
             int oldMitgliedId = 0;
             int count = 0;
@@ -381,7 +390,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                   Math.round(o.getDouble("fehlbetrag") * 100) / 100);
 
               // Buchungen, die diesem Mitglied schon zugeordnet wurden,
-              // rausfiltern
+              // rausfiltern. (Es dürfen mehrere Sollbuchungen zu einer Buchung
+              // passen, solange es das gleiche Mitglied ist)
               if (buchungenMitglied.size() > 0)
               {
                 buchungIt.addFilter("id not IN (" + buchungenMitglied.stream()
@@ -466,8 +476,11 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                 }
                 else
                 {
-                  // Für diese Buchung passte schon eine ander Sollbuchung,
-                  // daher keine zuordnen.
+                  // Für diese Buchung passte schon eine andere Sollbuchung
+                  // eines anderen Mitglieds, daher keine zuordnen. Es dürfen
+                  // auf
+                  // eine Buchung nur Sollbuchungen des gleichen Mitglieds
+                  // passen, sonst ist es nicht eindeutig genug.
                   artMap.put(buchungId, null);
                 }
               }
