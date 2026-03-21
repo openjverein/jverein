@@ -125,34 +125,34 @@ public class SaldoBuchungAction implements Action
         {
           // Bei der Mittelverwendung verwenden wir nur Geldkonten und
           // zweckfremde Anlagen.
-
-          switch (o.getInteger(MittelverwendungSaldoControl.ARTBUCHUNGSART))
+          if (o.getAttribute(
+              MittelverwendungSaldoControl.ARTBUCHUNGSART) == null)
           {
-            // (Ausgaben Geldkonto+zweckfremde Anlagen) - (Umbuchungen
-            // Schuldenen+gebundene Anlagen)>0
+            // Ohne Buchungsart kein Filter
+          }
+          else if (o.getInteger(
+              MittelverwendungSaldoControl.ARTBUCHUNGSART) == ArtBuchungsart.UMBUCHUNG)
+          {
+            it.addFilter(
+                "(konto.kontoart = ? OR (konto.kontoart = ? and konto.zweck = ?))",
+                Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
+                Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
 
-            // (Einnamen Geldkonto+zweckfremde Anlagen) - (Umbuchungen
-            // Schuldenen+gebundene Anlagen)>0
-            case ArtBuchungsart.AUSGABE:
-            case ArtBuchungsart.EINNAHME:
-              it.addFilter(
-                  "(konto.kontoart = ? OR (konto.kontoart = ? and konto.zweck = ?))",
-                  Kontoart.GELD.getKey(), Kontoart.ANLAGE.getKey(),
-                  Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey());
-              filterText.add("Kontoarten: " + Kontoart.GELD.getText() + ", "
-                  + Kontoart.ANLAGE.getText() + " (nur "
-                  + Anlagenzweck.ZWECKFREMD_EINGESETZT.getText() + ")");
-              break;
-            case ArtBuchungsart.UMBUCHUNG:
-              it.addFilter(
-                  "(konto.kontoart = ? OR (konto.kontoart = ? and konto.zweck = ?))",
-                  Kontoart.SCHULDEN.getKey(), Kontoart.ANLAGE.getKey(),
-                  Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
-              filterText.add("Kontoarten: " + Kontoart.SCHULDEN.getText() + ", "
-                  + Kontoart.ANLAGE.getText() + " (nur "
-                  + Anlagenzweck.NUTZUNGSGEBUNDEN.getText() + ")");
-              filterText.add("ACHTUNG Beträge haben das falsche Vorzeichen!");
-              break;
+            filterText.add("Kontoarten: " + Kontoart.SCHULDEN.getText() + ", "
+                + Kontoart.ANLAGE.getText() + " (nur "
+                + Anlagenzweck.NUTZUNGSGEBUNDEN.getText() + ")");
+            filterText.add("ACHTUNG Beträge haben das falsche Vorzeichen!");
+          }
+          else
+          {
+            it.addFilter(
+                "(konto.kontoart = ? OR (konto.kontoart = ? and konto.zweck = ?))",
+                Kontoart.GELD.getKey(), Kontoart.ANLAGE.getKey(),
+                Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey());
+
+            filterText.add("Kontoarten: " + Kontoart.GELD.getText() + ", "
+                + Kontoart.ANLAGE.getText() + " (nur "
+                + Anlagenzweck.ZWECKFREMD_EINGESETZT.getText() + ")");
           }
         }
         else
@@ -160,7 +160,6 @@ public class SaldoBuchungAction implements Action
           filterText.add("Kontoarten: " + Kontoart.GELD.getText() + ", "
               + Kontoart.ANLAGE.getText() + ", " + Kontoart.SCHULDEN.getText());
         }
-
       }
 
       else if (control instanceof KontensaldoControl
