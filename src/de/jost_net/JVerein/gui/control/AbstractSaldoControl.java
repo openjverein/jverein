@@ -76,6 +76,8 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    */
   public static final String BUCHUNGSART = "buchungsart";
 
+  public static final String PROJEKT = "projekt";
+
   /**
    * Anfangsbestand der Konten.
    */

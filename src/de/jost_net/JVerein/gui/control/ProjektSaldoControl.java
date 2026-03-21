@@ -34,6 +34,8 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     super(view);
     gruppenBezeichnung = "Projekt";
     mitOhneBuchungsart = false;
+    mitBuchungsklasseSpalte = true;
+    spalteGruppe = PROJEKT;
   }
 
   @Override
@@ -41,11 +43,11 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
       throws RemoteException
   {
     // Den Iterator aus BuchungsklasseSaldo erweitern um nach Projekten statt
-    // nach Buchungsklassenzu gruppieren
+    // nach Buchungsklassen zu gruppieren
     ExtendedDBIterator<PseudoDBObject> it = super.getIterator();
 
-    // Wir überschreiben das "buchungsklasse" Feld mit dem Projektname
-    it.addColumn("projekt.bezeichnung as " + BUCHUNGSKLASSE);
+    it.addColumn("projekt.bezeichnung as " + PROJEKT);
+
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
     String on = "projekt.id = buchung.projekt ";
@@ -58,14 +60,15 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {
       case BuchungsartSort.NACH_NUMMER:
-        it.setOrder(
-            "ORDER BY projekt.bezeichnung, buchungsart.nummer is null, buchungsart.nummer ");
+        it.setOrder("ORDER BY projekt.bezeichnung,"
+            + "buchungsklasse.nummer is NULL,buchungsklasse.nummer,"
+            + "buchungsart.nummer is null, buchungsart.nummer ");
         break;
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
-        it.setOrder(
-            "ORDER BY projekt.bezeichnung, buchungsart.bezeichnung is NUll,"
-                + "buchungsart.bezeichnung ");
+        it.setOrder("ORDER BY projekt.bezeichnung,"
+            + "buchungsklassse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+            + "buchungsart.bezeichnung is NUll, buchungsart.bezeichnung ");
         break;
     }
     return it;

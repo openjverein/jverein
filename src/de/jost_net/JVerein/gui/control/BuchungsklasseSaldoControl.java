@@ -71,6 +71,16 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
    */
   protected String gruppenBezeichnung = "Buchnugsklasse";
 
+  /**
+   * Spalte die für die Gruppe verwendet wird. Default Buchungsklasse
+   */
+  protected String spalteGruppe = BUCHUNGSKLASSE;
+
+  /**
+   * Soll eine Buchungsklasse-Spalte angezeigt werden? Default false.
+   */
+  protected boolean mitBuchungsklasseSpalte = false;
+
   private SaldoListTablePart saldoList;
 
   /**
@@ -103,6 +113,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         }
       };
       saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
+      if (mitBuchungsklasseSpalte)
+      {
+        saldoList.addColumn("Buchungsklasse", BUCHUNGSKLASSE);
+      }
       saldoList.addColumn("Buchungsart", BUCHUNGSART);
       saldoList.addColumn("Einnahmen", EINNAHMEN,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
@@ -154,7 +168,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     {
       PseudoDBObject o = it.next();
 
-      String klasse = (String) o.getAttribute(BUCHUNGSKLASSE);
+      String klasse = (String) o.getAttribute(spalteGruppe);
       if (klasse == null || klasse.equals(" - ") || klasse.equals(" ()"))
       {
         klasse = "Nicht zugeordnet";
