@@ -208,8 +208,7 @@ public class Gutschrift extends SEPASupport
               // Der Überweisungsbetrag wird mit offenen Beträgen verrechnet. Es
               // wird nur etwas überwiesen wenn der fixe Betrag den offenen
               // Betrag überschreitet
-              ueberweisungsbetrag = Math.max(params.betrag - offenbetrag,
-                  0);
+              ueberweisungsbetrag = Math.max(params.betrag - offenbetrag, 0);
               // Es muss der Betrag beim Provider ausgeglichen werden der mit
               // dem fixen Betrag verrechnet wurde. Dieser gilt ja durch die
               // Gutschrift als bezahlt
@@ -448,7 +447,7 @@ public class Gutschrift extends SEPASupport
     if (params.rechnungsdokumentSpeichern && rechnung != null
         && buchung != null)
     {
-      generiereBuchungsdokument(prov, buchung, rechnung);
+      storeBuchungsDokument(rechnung, buchung, params.faelligkeit);
       monitor.setStatusText(MARKER + "Buchungsdokument erzeugt");
     }
     return (buchung);
@@ -689,28 +688,6 @@ public class Gutschrift extends SEPASupport
       buchung.store();
     }
     return buchung;
-  }
-
-  /**
-   * Die Methode generiert für eine Buchung die Rechnung als Buchungsdokument.
-   * 
-   * @param prov
-   *          Das selektierte Objekt (Provider) für das eine Gutschrift erzeugt
-   *          werden soll. Es wird benutzt um die MitgliedMap für den Zahler zu
-   *          erzeugen.
-   * @param buchung
-   *          Die Buchung bei der die Rechnung hinterlegt werden soll.
-   * @param rechnung
-   *          Die Rechnung die bei der Buchung hinterlegt werden soll.
-   */
-  private void generiereBuchungsdokument(IGutschriftProvider prov,
-      Buchung buchung, Rechnung rechnung)
-      throws RemoteException, ApplicationException
-  {
-    Map<String, Object> rmap = new AllgemeineMap().getMap(null);
-    rmap = new MitgliedMap().getMap(prov.getGutschriftZahler(), rmap);
-    rmap = new RechnungMap().getMap(rechnung, rmap);
-    storeBuchungsDokument(rechnung, buchung, params.faelligkeit, rmap);
   }
 
   /**
