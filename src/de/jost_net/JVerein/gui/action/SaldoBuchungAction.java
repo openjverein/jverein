@@ -141,7 +141,7 @@ public class SaldoBuchungAction implements Action
             filterText.add("Kontoarten: " + Kontoart.SCHULDEN.getText() + ", "
                 + Kontoart.ANLAGE.getText() + " (nur "
                 + Anlagenzweck.NUTZUNGSGEBUNDEN.getText() + ")");
-            filterText.add("ACHTUNG Beträge haben das falsche Vorzeichen!");
+            filterText.add("Achtung: Beträge haben das falsche Vorzeichen!");
           }
           else
           {
