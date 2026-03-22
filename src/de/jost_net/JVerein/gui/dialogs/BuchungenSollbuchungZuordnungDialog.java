@@ -157,11 +157,11 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
   private enum ZuordnungsArt
   {
     IBAN("IBAN"),
-    NAME("Name"),
-    NAME_KONTOINHABER("Name Kontoinhaber"),
     NAME_ZWECK("Name im Verwendungszweck"),
-    NAME_ZAHLER("Name des Zahlers"),
     NAME_KONTOINHABER_ZAHLER("Name Kontoinhaber des Zahlers"),
+    NAME_ZAHLER("Name des Zahlers"),
+    NAME_KONTOINHABER("Name Kontoinhaber"),
+    NAME("Name"),
     ZWECK("Verwendungszweck"),
     ID("Id");
 
@@ -264,7 +264,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             monitor.setStatusText("Suche Zuordnungen nach " + art.getText());
             monitor.setPercentComplete(0);
 
-            // Map mit den Zugeordneten Buchungen dieser Art. Wird am Ende in
+            // Map mit den zugeordneten Buchungen dieser Art. Wird am Ende in
             // zuordnungMap übernommen
             // <BuchungId, SollbuchungId>
             HashMap<Integer, Integer> artMap = new HashMap<>();
@@ -477,9 +477,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                 else
                 {
                   // Für diese Buchung passte schon eine andere Sollbuchung
-                  // eines anderen Mitglieds, daher keine zuordnen. Es dürfen
-                  // auf
-                  // eine Buchung nur Sollbuchungen des gleichen Mitglieds
+                  // eines anderen Mitglieds, daher keine Zuordnung. Es dürfen
+                  // auf eine Buchung nur Sollbuchungen des gleichen Mitglieds
                   // passen, sonst ist es nicht eindeutig genug.
                   artMap.put(buchungId, null);
                 }
