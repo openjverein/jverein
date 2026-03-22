@@ -18,7 +18,11 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.util.VorlageUtil;
 
 public class BuchungDokumentImpl extends AbstractDokumentImpl
     implements BuchungDokument
@@ -35,6 +39,20 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   protected String getTableName()
   {
     return "buchungdokument";
+  }
+
+  @Override
+  protected String getVerzeichnis()
+  {
+    return "buchungen";
+  }
+
+  @Override
+  protected String getDateiPfad() throws RemoteException
+  {
+    AbstractJVereinDBObject dbObject = Einstellungen.getDBService()
+        .createObject(Buchung.class, getReferenz().toString());
+    return VorlageUtil.getName(VorlageTyp.BUCHUNG_DOKUMENT_PFAD, dbObject);
   }
 
 }

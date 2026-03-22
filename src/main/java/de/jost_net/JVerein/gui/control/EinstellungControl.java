@@ -422,6 +422,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput abweichendezahler;
 
+  private CheckboxInput dokumentenspeicherung_messaging;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -916,6 +918,18 @@ public class EinstellungControl extends AbstractControl
     dokumentenspeicherung = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG));
     return dokumentenspeicherung;
+  }
+
+  public CheckboxInput getDokumentenspeicherungMessaging()
+      throws RemoteException
+  {
+    if (dokumentenspeicherung_messaging != null)
+    {
+      return dokumentenspeicherung_messaging;
+    }
+    dokumentenspeicherung_messaging = new CheckboxInput((Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING));
+    return dokumentenspeicherung_messaging;
   }
 
   public CheckboxInput getIndividuelleBeitraege() throws RemoteException
@@ -2493,6 +2507,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) arbeitseinsatz.getValue());
       Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
           (Boolean) dokumentenspeicherung.getValue());
+      Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
+          (Boolean) dokumentenspeicherung_messaging.getValue());
       Einstellungen.setEinstellung(Property.INDIVIDUELLEBEITRAEGE,
           (Boolean) individuellebeitraege.getValue());
       Einstellungen.setEinstellung(Property.EXTERNEMITGLIEDSNUMMER,

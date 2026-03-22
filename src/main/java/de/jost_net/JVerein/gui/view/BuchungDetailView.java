@@ -133,7 +133,6 @@ public class BuchungDetailView extends AbstractDetailView
   @Override
   public void unbind() throws OperationCanceledException, ApplicationException
   {
-    part.deregisterDocumentConsumer();
     // Bei Splitbuchunge Funktioniert die Änderungsüberwachung nicht, da nicht
     // direkt gespeichert wird.
     try

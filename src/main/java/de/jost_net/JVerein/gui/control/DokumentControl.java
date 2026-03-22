@@ -17,14 +17,8 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -35,37 +29,29 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.messaging.Message;
-import de.willuhn.jameica.messaging.MessageConsumer;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DokumentControl extends AbstractControl
+public class DokumentControl extends AbstractControl implements Savable
 {
-
-  private AbstractDokument doc;
-
   private DokumentPart dopa;
 
   private FileInput datei;
@@ -74,32 +60,43 @@ public class DokumentControl extends AbstractControl
 
   private Button neuButton;
 
-  private Button speichernButton;
-
-  private String verzeichnis;
-
   private boolean enabled;
-
-  private DokumentMessageConsumer mc = null;
 
   private Settings settings = null;
 
-  public DokumentControl(AbstractView view, String verzeichnis, boolean enabled)
+  private Class<? extends AbstractDokument> clazz;
+
+  public DokumentControl(AbstractView view, boolean enabled,
+      Class<? extends AbstractDokument> clazz)
   {
     super(view);
-    this.verzeichnis = verzeichnis;
     this.enabled = enabled;
     this.settings = new Settings(this.getClass());
+    this.clazz = clazz;
   }
 
+  // Wird nur aus der DokumentDetailView aufgerufen
   private AbstractDokument getDokument() throws RemoteException
   {
-    doc = (AbstractDokument) getCurrentObject();
-    if (doc == null)
+    Object doc = getCurrentObject();
+    if (doc == null || !(doc instanceof AbstractDokument))
     {
-      throw new RemoteException("Programmfehler! Dokument fehlt");
+      throw new RemoteException(
+          "Programmfehler! Dokument fehlt oder hat falschen Typ");
     }
-    return doc;
+    return (AbstractDokument) doc;
+  }
+
+  // Wird nur aus der DokumentListe aufgerufen
+  private AbstractJVereinDBObject getReferenzObject() throws RemoteException
+  {
+    Object obj = getCurrentObject();
+    if (obj == null || !(obj instanceof AbstractJVereinDBObject))
+    {
+      throw new RemoteException(
+          "Programmfehler! Referenz-Object fehlt oder hat falschen Typ");
+    }
+    return (AbstractJVereinDBObject) obj;
   }
 
   public FileInput getDatei()
@@ -108,8 +105,14 @@ public class DokumentControl extends AbstractControl
     {
       return datei;
     }
-    datei = new PathFileInput("", false,
-        settings.getString("buchung.dokument", ""));
+    datei = new FileInput("", false)
+    {
+      @Override
+      protected void customize(FileDialog fd)
+      {
+        fd.setFilterPath(settings.getString("buchung.dokument", ""));
+      }
+    };
     return datei;
   }
 
@@ -123,21 +126,23 @@ public class DokumentControl extends AbstractControl
     return dopa;
   }
 
-  public Button getNeuButton(final AbstractDokument doc)
+  public Button getNeuButton()
   {
     neuButton = new Button("Neues Dokument", context -> {
       try
       {
-        AbstractJVereinDBObject object = (AbstractJVereinDBObject) getCurrentObject();
+        AbstractJVereinDBObject object = getReferenzObject();
         if (object.isNewObject())
         {
           throw new ApplicationException(
               object.getObjektName() + " bitte erst speichern.");
         }
-        // Bei neuen Objecten wird die Referenz erst hier eingetragen
+
+        AbstractDokument doc = (AbstractDokument) Einstellungen.getDBService()
+            .createObject(clazz, null);
         doc.setReferenz(Long.valueOf(object.getID()));
 
-        GUI.startView(new DokumentDetailView(verzeichnis), doc);
+        GUI.startView(new DokumentDetailView(), doc);
       }
       catch (RemoteException e)
       {
@@ -147,121 +152,64 @@ public class DokumentControl extends AbstractControl
     }, null, false, "document-new.png");
     neuButton.setEnabled(enabled);
     return neuButton;
-
   }
 
-  public Button getSpeichernButton(final String verzeichnis)
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
   {
-    speichernButton = new Button("Speichern", context -> speichern(verzeichnis),
-        null, true, "document-save.png");
-    return speichernButton;
+    AbstractDokument dokument = getDokument();
+    File file = new File((String) datei.getValue());
+    settings.setAttribute("buchung.dokument", file.getParent());
+    dokument.setBemerkung((String) dopa.getBemerkung().getValue());
+    dokument.setDatum((Date) dopa.getDatum().getValue());
+    dokument.setFile(file);
+    return dokument;
   }
 
-  private void speichern(String verzeichnis) throws ApplicationException
+  @Override
+  public void handleStore() throws ApplicationException
   {
     try
     {
-      File file = new File((String) datei.getValue());
-      if (file.isDirectory())
-      {
-        throw new ApplicationException(
-            "Verzeichnisse können nicht gespeichert werden.");
-      }
-      if (!file.exists())
-      {
-        throw new ApplicationException("Datei existiert nicht");
-      }
-
-      settings.setAttribute("buchung.dokument", file.getParent());
-
-      dokumentSpeichern(verzeichnis, file,
-          (String) dopa.getBemerkung().getValue(),
-          (Date) dopa.getDatum().getValue(), doc);
-      speichernButton.setEnabled(false);
-      GUI.getStatusBar().setSuccessText("Dokument gespeichert");
+      prepareStore().store();
     }
-    catch (IOException e)
+    catch (RemoteException e)
     {
-      throw new ApplicationException("Allgemeiner Ein-/Ausgabe-Fehler");
-    }
-  }
-
-  /**
-   * Speichert des Dokuments
-   * 
-   * @throws ApplicationException
-   */
-  private void dokumentSpeichern(String verzeichnis, File file,
-      String bemerkung, Date datum, AbstractDokument doc)
-      throws ApplicationException
-  {
-    try (FileInputStream fis = new FileInputStream(file);)
-    {
-      if (fis.available() <= 0)
-      {
-        throw new ApplicationException("Datei ist leer");
-      }
-      // Dokument speichern
-      String locverz = verzeichnis + doc.getReferenz();
-      QueryMessage qm = new QueryMessage(locverz, fis);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
-      // Satz in die DB schreiben
-      doc.setBemerkung(
-          bemerkung.length() > 50 ? bemerkung.substring(0, 50) : bemerkung);
-      String uuid = qm.getData().toString();
-      doc.setUUID(uuid);
-      doc.setDatum(datum);
-      doc.store();
-      // Zusätzliche Eigenschaft speichern
-      Map<String, String> map = new HashMap<>();
-      map.put("filename", file.getName());
-      qm = new QueryMessage(uuid, map);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
-    }
-    catch (FileNotFoundException e)
-    {
-      throw new ApplicationException("Datei existiert nicht");
-    }
-    catch (IOException e)
-    {
-      throw new ApplicationException("Allgemeiner Ein-/Ausgabe-Fehler");
+      String fehler = "Fehler bei speichern des Dokuments";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
     }
   }
 
   public JVereinTablePart getDokumenteList() throws RemoteException
   {
-    return docsList;
-  }
-
-  public JVereinTablePart getDokumenteList(AbstractDokument doc)
-      throws RemoteException
-  {
     if (docsList != null)
     {
       return docsList;
     }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<AbstractDokument> docs = service.createList(doc.getClass());
-    docs.addFilter("referenz = ?", new Object[] { doc.getReferenz() });
-    docs.setOrder("ORDER BY datum desc");
-
-    docsList = new JVereinTablePart(docs, new DokumentShowAction());
+    docsList = new AutoUpdateTablePart(getList(), new DokumentShowAction());
     docsList.setTableName("Dokumente");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setMulti(true);
-    this.mc = new DokumentMessageConsumer();
-    Application.getMessagingFactory().registerMessageConsumer(this.mc);
 
     return docsList;
   }
 
-  public void setDragDrop(Composite composit,
-      Class<? extends AbstractDokument> dokumentClass)
+  private DBIterator<AbstractDokument> getList() throws RemoteException
+  {
+    DBIterator<AbstractDokument> docs = Einstellungen.getDBService()
+        .createList(clazz);
+    docs.addFilter("referenz = ?", getReferenzObject().getID());
+
+    docs.setOrder("ORDER BY datum desc");
+    return docs;
+  }
+
+  public void setDragDrop(Composite composit)
   {
     DropTarget target = new DropTarget(composit,
         DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_DEFAULT);
@@ -306,7 +254,7 @@ public class DokumentControl extends AbstractControl
         }
         try
         {
-          AbstractJVereinDBObject object = (AbstractJVereinDBObject) getCurrentObject();
+          AbstractJVereinDBObject object = getReferenzObject();
           if (object.isNewObject())
           {
             throw new ApplicationException(
@@ -314,13 +262,15 @@ public class DokumentControl extends AbstractControl
           }
           for (String filename : (String[]) event.data)
           {
-            doc = Einstellungen.getDBService().createObject(dokumentClass,
-                null);
-            doc.setReferenz(
-                Long.valueOf(((GenericObject) getCurrentObject()).getID()));
+            AbstractDokument document = Einstellungen.getDBService()
+                .createObject(clazz, null);
+            document.setReferenz(Long.valueOf(object.getID()));
             File file = new File(filename);
-            dokumentSpeichern(verzeichnis + ".", file, file.getName(),
-                new Date(), doc);
+
+            document.setBemerkung(file.getName());
+            document.setDatum(new Date());
+            document.setFile(file);
+            document.store();
           }
           refreshTable();
         }
@@ -356,106 +306,14 @@ public class DokumentControl extends AbstractControl
     });
   }
 
-  public void refreshTable() throws RemoteException
+  private void refreshTable() throws RemoteException
   {
     docsList.removeAll();
-    DBIterator<AbstractDokument> docs = Einstellungen.getDBService()
-        .createList(doc.getClass());
-    docs.addFilter("referenz = ?", new Object[] { doc.getReferenz() });
-    docs.setOrder("ORDER BY datum desc");
+    DBIterator<AbstractDokument> docs = getList();
     while (docs.hasNext())
     {
       docsList.addItem(docs.next());
     }
     docsList.sort();
-  }
-
-  /**
-   * Wird benachrichtigt um die Anzeige zu aktualisieren.
-   */
-  private class DokumentMessageConsumer implements MessageConsumer
-  {
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-     */
-    @Override
-    public boolean autoRegister()
-    {
-      return false;
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-     */
-    @Override
-    public Class<?>[] getExpectedMessageTypes()
-    {
-      return new Class[] { DokumentMessage.class };
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-     */
-    @Override
-    public void handleMessage(final Message message) throws Exception
-    {
-      GUI.getDisplay().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          try
-          {
-            DokumentMessage dm = (DokumentMessage) message;
-            doc = (AbstractDokument) dm.getObject();
-
-            if (docsList == null)
-            {
-              // Eingabe-Feld existiert nicht. Also abmelden
-              Application.getMessagingFactory()
-                  .unRegisterMessageConsumer(DokumentMessageConsumer.this);
-              return;
-            }
-            refreshTable();
-          }
-          catch (Exception e)
-          {
-            // Wenn hier ein Fehler auftrat, deregistrieren wir uns
-            // wieder
-            Logger.error("Dokumenteliste konnte nicht aktualisiert werden", e);
-            Application.getMessagingFactory()
-                .unRegisterMessageConsumer(DokumentMessageConsumer.this);
-          }
-        }
-      });
-    }
-  }
-
-  /**
-   * FileInput mit Angabe des Ordners
-   */
-  private class PathFileInput extends FileInput
-  {
-
-    private String path;
-
-    public PathFileInput(String file, boolean save, String path)
-    {
-      super(file, save);
-      this.path = path;
-    }
-
-    @Override
-    protected void customize(FileDialog fd)
-    {
-      fd.setFilterPath(path);
-    }
-  }
-
-  public void deregisterDocumentConsumer()
-  {
-    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
   }
 }

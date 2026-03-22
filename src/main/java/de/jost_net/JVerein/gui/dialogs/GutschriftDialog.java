@@ -25,7 +25,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -58,8 +57,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
     boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
     boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-        && JVereinPlugin.isArchiveServiceActive();
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG);
     boolean einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     boolean einstellungSteuerInBuchung = (Boolean) Einstellungen
