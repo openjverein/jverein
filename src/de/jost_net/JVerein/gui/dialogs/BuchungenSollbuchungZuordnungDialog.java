@@ -403,7 +403,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               // Alle nach anderer Art zugeordnete Buchungen rausfiltern.
               if (!zugeordneteBuchungIds.isBlank())
               {
-                it.addFilter(
+                buchungIt.addFilter(
                     "buchung.id NOT IN (" + zugeordneteBuchungIds + ")");
               }
 
