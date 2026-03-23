@@ -488,7 +488,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                       "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
                           + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
                           + " LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("sollbuchung_zweck"));
+                      umlauteEretzen(
+                          (String) o.getAttribute("sollbuchung_zweck")));
                   break;
                 case ID:
                   buchungIt.addFilter("buchung.zweck LIKE ?",
