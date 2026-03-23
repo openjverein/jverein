@@ -418,43 +418,75 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                       o.getAttribute("mitglied_iban"));
                   break;
                 case NAME:
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("mitglied_name"));
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("mitglied_vorname"));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen((String) o.getAttribute("mitglied_name")));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen(
+                          (String) o.getAttribute("mitglied_vorname")));
                   break;
                 case NAME_ZWECK:
-                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("mitglied_name"));
-                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("mitglied_vorname"));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.zweck),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen((String) o.getAttribute("mitglied_name")));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.zweck),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen(
+                          (String) o.getAttribute("mitglied_vorname")));
                   break;
                 case NAME_KONTOINHABER:
                   buchungIt.addFilter("? is not null",
                       o.getAttribute("mitglied_kontoinhaber"));
-                  buchungIt.addFilter("? != ''",
-                      o.getAttribute("mitglied_kontoinhaber"));
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("mitglied_kontoinhaber"));
+                  buchungIt.addFilter("? != ''", umlauteEretzen(
+                      (String) o.getAttribute("mitglied_kontoinhaber")));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen(
+                          (String) o.getAttribute("mitglied_kontoinhaber")));
                   break;
                 case NAME_ZAHLER:
                   buchungIt.addFilter("? is not null",
                       o.getAttribute("zahler_name"));
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("zahler_name"));
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("zahler_vorname"));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen((String) o.getAttribute("zahler_name")));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen(
+                          (String) o.getAttribute("zahler_vorname")));
                   break;
                 case NAME_KONTOINHABER_ZAHLER:
                   buchungIt.addFilter("? is not null",
                       o.getAttribute("zahler_kontoinhaber"));
-                  buchungIt.addFilter("? != ''",
-                      o.getAttribute("zahler_kontoinhaber"));
-                  buchungIt.addFilter("buchung.name LIKE CONCAT('%',?,'%')",
-                      o.getAttribute("zahler_kontoinhaber"));
+                  buchungIt.addFilter("? != ''", umlauteEretzen(
+                      (String) o.getAttribute("zahler_kontoinhaber")));
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
+                      umlauteEretzen(
+                          (String) o.getAttribute("zahler_kontoinhaber")));
                   break;
                 case ZWECK:
-                  buchungIt.addFilter("buchung.zweck LIKE CONCAT('%',?,'%')",
+                  buchungIt.addFilter(
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                          + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
+                          + " LIKE CONCAT('%',?,'%')",
                       o.getAttribute("sollbuchung_zweck"));
                   break;
                 case ID:
@@ -523,6 +555,20 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     Application.getController().start(t);
 
     close();
+  }
+
+  public String umlauteEretzen(String text)
+  {
+    if (text == null)
+    {
+      return null;
+    }
+
+    // >Wir ersetzen "ue" -> "u" und "ü" -> "u", da manche Banken die Punkte
+    // entfernen: "ü" -> "u". Daher machen wir: "u" == "ü" == "ue".
+    return text.toLowerCase().replaceAll("ä", "a").replaceAll("ae", "a")
+        .replaceAll("ö", "o").replaceAll("oe", "o").replaceAll("ü", "u")
+        .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s");
   }
 
   /**
