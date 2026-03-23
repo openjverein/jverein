@@ -1254,7 +1254,7 @@ public class AbrechnungSEPA extends SEPASupport
 
       if (re != null && param.rechnungsdokumentSpeichern)
       {
-        storeBuchungsDokument(re, buchung, datum, map);
+        storeBuchungsDokument(re, buchung, datum);
       }
 
       if (sollb != null)
