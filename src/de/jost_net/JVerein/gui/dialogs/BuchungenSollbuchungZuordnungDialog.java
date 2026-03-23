@@ -352,9 +352,10 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             // Alle nach anderer Art zugeordnete Buchungen
             String zugeordneteBuchungIds = zuordnungMap.values().stream()
                 .filter(m -> m.size() > 0)
-                .map(e -> e.entrySet().stream()
-                    .filter(t -> t.getValue() != null).map(m -> m.toString())
-                    .collect(Collectors.joining(",")))
+                .map(
+                    e -> e.entrySet().stream().filter(t -> t.getValue() != null)
+                        .map(m -> m.getKey().toString())
+                        .collect(Collectors.joining(",")))
                 .collect(Collectors.joining(","));
 
             // Diese Map enthält alle BuchungsIds die dem aktuellen Mitglied
