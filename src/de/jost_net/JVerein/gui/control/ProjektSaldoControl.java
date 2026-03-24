@@ -67,7 +67,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
       case BuchungsartSort.NACH_BEZEICHNUNG:
       default:
         it.setOrder("ORDER BY projekt.bezeichnung,"
-            + "buchungsklassse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
+            + "buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
             + "buchungsart.bezeichnung is NUll, buchungsart.bezeichnung ");
         break;
     }
