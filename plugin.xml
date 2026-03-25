@@ -40,8 +40,8 @@
     <consumer queue="jverein.dbobject.store" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
   </messaging>
   
-  <requires jameica="2.8+">
-    <import plugin="hibiscus" version="2.8.7+"/>
+  <requires jameica="2.12+">
+    <import plugin="hibiscus" version="2.12+"/>
   </requires>
 
 </plugin>
