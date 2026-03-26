@@ -16,11 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
+import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Monat;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatJJJJ;
@@ -31,7 +35,7 @@ public class AbrechnungsParameterMap extends AbstractMap
 {
 
   public Map<String, Object> getMap(AbrechnungSEPAParam param,
-      Map<String, Object> inma)
+      Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
     if (inma == null)
@@ -51,7 +55,11 @@ public class AbrechnungsParameterMap extends AbstractMap
           value = Abrechnungsmodi.get(param.abbuchungsmodus);
           break;
         case ABRECHNUNGSMONAT:
-          value = Monat.getByKey(param.abrechnungsmonat).getText();
+          if ((Integer) Einstellungen.getEinstellung(
+              Property.BEITRAGSMODEL) == Beitragsmodel.FLEXIBEL.getKey())
+          {
+            value = Monat.getByKey(param.abrechnungsmonat).getText();
+          }
           break;
         case FAELLIGKEIT:
           value = "";
