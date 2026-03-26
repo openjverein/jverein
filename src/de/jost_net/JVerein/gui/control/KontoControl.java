@@ -41,7 +41,6 @@ import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
-import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -79,8 +78,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.hbci.Settings;
-import de.willuhn.jameica.plugin.Version;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -695,20 +692,10 @@ public class KontoControl extends FilterControl implements Savable
     {
       return anlagenart;
     }
-    Version version = Application.getManifest().getVersion();
-    if (version.compareTo(new Version("2.10.5")) < 0)
-    {
-      anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
-          getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-          AbstractInputAuswahl.ComboBox);
-    }
-    else
-    {
-      anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
-          getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-          (Integer) Einstellungen
-              .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    }
+    anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
+        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
+        (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
@@ -791,19 +778,9 @@ public class KontoControl extends FilterControl implements Savable
     {
       return afaart;
     }
-    Version version = Application.getManifest().getVersion();
-    if (version.compareTo(new Version("2.10.5")) < 0)
-    {
-      afaart = new BuchungsartInput().getBuchungsartInput(afaart,
-          getKonto().getAfaart(), buchungsarttyp.AFAART,
-          AbstractInputAuswahl.ComboBox);
-    }
-    else
-    {
-      afaart = new BuchungsartInput().getBuchungsartInput(afaart,
-          getKonto().getAfaart(), buchungsarttyp.AFAART, (Integer) Einstellungen
-              .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    }
+    afaart = new BuchungsartInput().getBuchungsartInput(afaart,
+        getKonto().getAfaart(), buchungsarttyp.AFAART, (Integer) Einstellungen
+            .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     afaart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {

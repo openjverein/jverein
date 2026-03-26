@@ -43,31 +43,31 @@ public class EinstellungenAnzeigeView extends AbstractView
 
     SimpleContainer cont1 = new SimpleContainer(cols1.getComposite());
     cont1.addHeadline("Mitglieder Feature Auswahl");
-    cont1.addLabelPair("Abweichende Zahler *", control.getAbweichendeZahler());
-    cont1.addLabelPair("Arbeitseinsatz *", control.getArbeitseinsatz());
-    cont1.addLabelPair("Familienverband *", control.getFamilienbeitrag());
-    cont1.addLabelPair("Kursteilnehmer *", control.getKursteilnehmer());
-    cont1.addLabelPair("Lehrgänge *", control.getLehrgaenge());
-    cont1.addLabelPair("Lesefelder *", control.getUseLesefelder());
-    cont1.addLabelPair("Nicht-Mitglieder *", control.getZusatzadressen());
-    cont1.addLabelPair("Rechnungen/Mahnungen *", control.getRechnungen());
-    cont1.addLabelPair("Spendenbescheinigungen *",
+    cont1.addLabelPair("Abweichende Zahler", control.getAbweichendeZahler());
+    cont1.addLabelPair("Arbeitseinsatz", control.getArbeitseinsatz());
+    cont1.addLabelPair("Familienverband", control.getFamilienbeitrag());
+    cont1.addLabelPair("Kursteilnehmer", control.getKursteilnehmer());
+    cont1.addLabelPair("Lehrgänge", control.getLehrgaenge());
+    cont1.addLabelPair("Lesefelder", control.getUseLesefelder());
+    cont1.addLabelPair("Nicht-Mitglieder", control.getZusatzadressen());
+    cont1.addLabelPair("Rechnungen/Mahnungen", control.getRechnungen());
+    cont1.addLabelPair("Spendenbescheinigungen",
         control.getSpendenbescheinigungen());
-    cont1.addLabelPair("Wiedervorlage *", control.getWiedervorlage());
-    cont1.addLabelPair("Zusatzbeträge *", control.getZusatzbetrag());
-    cont1.addLabelPair("Zusatzfelder *", control.getUseZusatzfelder());
+    cont1.addLabelPair("Wiedervorlage", control.getWiedervorlage());
+    cont1.addLabelPair("Zusatzbeträge", control.getZusatzbetrag());
+    cont1.addLabelPair("Zusatzfelder", control.getUseZusatzfelder());
 
     SimpleContainer cont2 = new SimpleContainer(cols1.getComposite());
     cont2.addHeadline("Buchführung Feature Auswahl");
-    cont2.addLabelPair("Projekte *", control.getProjekte());
-    cont2.addLabelPair("Mittelverwendung *", control.getMittelverwendung());
-    cont2.addLabelPair("Wirtschaftsplanung *", control.getWirtschaftsplanung());
-    cont2.addLabelPair("Anlagenkonten *", control.getAnlagenkonten());
+    cont2.addLabelPair("Projekte", control.getProjekte());
+    cont2.addLabelPair("Mittelverwendung", control.getMittelverwendung());
+    cont2.addLabelPair("Wirtschaftsplanung", control.getWirtschaftsplanung());
+    cont2.addLabelPair("Anlagenkonten", control.getAnlagenkonten());
     cont2.addLabelPair("Rücklagenkonten", control.getRuecklagenkonten());
     cont2.addLabelPair("Forderungen/Verbindlichkeiten Konten",
         control.getVerbindlichkeitenForderungen());
     cont2.addHeadline("Sonstige Feature Auswahl");
-    cont2.addLabelPair("Dokumentenspeicherung *",
+    cont2.addLabelPair("Dokumentenspeicherung",
         control.getDokumentenspeicherung());
 
     SimpleContainer cont3 = new SimpleContainer(cols1.getComposite());
@@ -118,9 +118,6 @@ public class EinstellungenAnzeigeView extends AbstractView
     rechts.addLabelPair("Buchungsart/-klasse Anzeige",
         control.getBuchungsartAnzeige());
 
-    cont.addSeparator();
-    cont.addHeadline(
-        "* " + "Änderung erfordert Neustart (Bei Jameica < 2.12.0)");
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_ANZEIGE, false, "question-circle.png");
