@@ -46,9 +46,7 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         control.getAutomatischeBuchungskorrekturHibiscus());
     cont.addLabelPair("Geprüft Markierung mit Hibiscus synchronisieren",
         control.getGeprueftSynchronisieren());
-    cont.addLabelPair(
-        "Umsatzsteuer Support (Neustart erforderlich bei jameica < 2.12.0)",
-        control.getOptiert());
+    cont.addLabelPair("Umsatzsteuer Support", control.getOptiert());
     cont.addLabelPair("Umsatzsteuer Pflicht", control.getOptiertPflicht());
     cont.addLabelPair("Steuer individuell pro Buchung setzen",
         control.getSteuerInBuchung());
