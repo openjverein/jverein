@@ -347,7 +347,7 @@ public class Einstellungen
 
     // Statistik
     ALTERSGRUPPEN("altersgruppen", String.class,
-        "1-5,6-10,11-17,18-25,26-50,50-100"),
+        "1-5,6-10,11-17,18-25,26-50,51-100"),
     JUBILARSTARTALTER("jubilarstartalter", Integer.class, "0"),
     JUBILAEEN("jubilaeen", String.class, "10,25,40,50"),
     ALTERSJUBILAEEN("altersjubilaeen", String.class,

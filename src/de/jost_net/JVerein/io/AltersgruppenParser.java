@@ -64,7 +64,7 @@ public class AltersgruppenParser
             "Fehler in den Altergruppen" + " " + e.getMessage());
       }
     }
-    for (int i = 0; i < 100; i++)
+    for (int i = 1; i < 100; i++)
     {
       boolean found = false;
       for (VonBis vb : elemente)
