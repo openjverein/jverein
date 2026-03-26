@@ -116,10 +116,20 @@ public class SpendenbescheinigungMap extends AbstractMap
           value = Einstellungen.DECIMALFORMAT.format(spb.getBetrag());
           break;
         case BETRAGINWORTEN:
+          Double ganzbetrag = spb.getBetrag() * 100;
+          long euro = spb.getBetrag().longValue();
+          long cent = ganzbetrag.longValue() - 100 * euro;
           try
           {
-            value = "-" + GermanNumber.toString(spb.getBetrag().longValue())
-                + "-";
+            String wort = GermanNumber.toString(euro);
+            if (cent == 0)
+            {
+              value = "-" + wort + "-";
+            }
+            else
+            {
+              value = "-" + wort + " Euro " + GermanNumber.toString(cent) + "-";
+            }
           }
           catch (Exception e)
           {
