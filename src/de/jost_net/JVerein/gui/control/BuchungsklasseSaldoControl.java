@@ -478,8 +478,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
     if (mitSteuer)
     {
-      String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
-          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag ";
+      String subselect = "(SELECT steuer.buchungsart,";
+      if (klasseInBuchung)
+      {
+        subselect += " steuer.buchungsklasse,";
+
+      }
+      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag ";
       // Bei Projektsaldo auch Projekt-Spalte
       if (this instanceof ProjektSaldoControl)
       {
