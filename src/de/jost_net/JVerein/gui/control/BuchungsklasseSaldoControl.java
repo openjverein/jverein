@@ -434,9 +434,14 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       it.addColumn("COALESCE(SUM(buchung.betrag),0) AS " + SUMME);
     }
 
-    it.leftJoin("buchung",
-        "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?",
-        getDatumvon().getDate(), getDatumbis().getDate());
+    String buchungOn = "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?";
+    // Bei Projektsaldo nur Buchungen verwenden, die auch ein Projekt haben
+    if (this instanceof ProjektSaldoControl)
+    {
+      buchungOn += " and buchung.projekt is not null";
+    }
+    it.leftJoin("buchung", buchungOn, getDatumvon().getDate(),
+        getDatumbis().getDate());
     it.leftJoin("konto", "buchung.konto = konto.id");
     it.addFilter("konto.kontoart is null OR konto.kontoart < ?",
         Kontoart.LIMIT.getKey());
@@ -474,8 +479,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     if (mitSteuer)
     {
       String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
-          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag, "
-          + "buchung.projekt " + " FROM buchung"
+          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag ";
+      // Bei Projektsaldo auch Projekt-Spalte
+      if (this instanceof ProjektSaldoControl)
+      {
+        subselect += ",buchung.projekt ";
+      }
+      subselect += " FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
@@ -493,7 +503,13 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       subselect += " WHERE datum >= ? and datum <= ? "
           // Keine Steuer bei alten Steuerbuchungen mit dependencyid
           + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
-          + " GROUP BY steuer.buchungsart, buchung.projekt";
+          + " GROUP BY steuer.buchungsart";
+      // Bei Projektsaldo auch Steuer nach Projekt gruppieren
+      if (this instanceof ProjektSaldoControl)
+      {
+        subselect += ", buchung.projekt";
+      }
+
       if (klasseInBuchung)
       {
         subselect += ",steuer.buchungsklasse";
