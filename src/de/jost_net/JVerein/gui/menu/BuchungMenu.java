@@ -32,6 +32,7 @@ import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
+import de.jost_net.JVerein.gui.action.SpendenbescheinigungAnzeigenAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
@@ -90,24 +91,29 @@ public class BuchungMenu extends ContextMenu
           new MitgliedDetailAction(), "user-friends.png"));
       addItem(new MitgliedOeffnenItem("Sollbuchung anzeigen",
           new SollbuchungEditAction(), "calculator.png"));
-      if ((Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
-      {
-        addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
-            new AnlagenkontoNeuAction(), "document-new.png"));
-      }
     }
     try
     {
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
       {
-        addItem(new SpendenbescheinigungMenuItem("Spendenbescheinigung",
+        addItem(new SpendenbescheinigungAnzeigenMenuItem(
+            "Spendenbescheinigung anzeigen",
+            new SpendenbescheinigungAnzeigenAction(), "file-invoice.png"));
+        addItem(new SpendenbescheinigungErstellenMenuItem(
+            "Spendenbescheinigung erstellen",
             new SpendenbescheinigungNeuAction(), "file-invoice.png"));
       }
     }
     catch (RemoteException e)
     {
       // Dann nicht
+    }
+    if (geldkonto
+        && (Boolean) Einstellungen.getEinstellung(Property.ANLAGENKONTEN))
+    {
+      addItem(new SingleGegenBuchungItem("Neues Anlagenkonto",
+          new AnlagenkontoNeuAction(), "document-new.png"));
     }
     String text = "Buchungsart zuordnen";
     try
@@ -387,10 +393,38 @@ public class BuchungMenu extends ContextMenu
     }
   }
 
-  private static class SpendenbescheinigungMenuItem
+  private static class SpendenbescheinigungAnzeigenMenuItem
       extends CheckedSingleContextMenuItem
   {
-    private SpendenbescheinigungMenuItem(String text, Action action,
+    private SpendenbescheinigungAnzeigenMenuItem(String text, Action action,
+        String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        if (o instanceof Buchung)
+        {
+          Buchung b = (Buchung) o;
+          return b.getSpendenbescheinigung() != null;
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+      }
+      return false;
+    }
+  }
+
+  private static class SpendenbescheinigungErstellenMenuItem
+      extends CheckedSingleContextMenuItem
+  {
+    private SpendenbescheinigungErstellenMenuItem(String text, Action action,
         String icon)
     {
       super(text, action, icon);
