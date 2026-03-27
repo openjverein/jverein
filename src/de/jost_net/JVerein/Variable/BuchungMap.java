@@ -81,9 +81,10 @@ public class BuchungMap extends AbstractMap
           }
           else
           {
-            value = bu.getBuchungsart().getBuchungsklasse() != null
-                ? bu.getBuchungsart().getBuchungsklasse().getBezeichnung()
-                : "";
+            value = bu.getBuchungsart() != null
+                && bu.getBuchungsart().getBuchungsklasse() != null
+                    ? bu.getBuchungsart().getBuchungsklasse().getBezeichnung()
+                    : "";
           }
           break;
         case BUCHUNGSKLASSENUMMER:
@@ -96,9 +97,10 @@ public class BuchungMap extends AbstractMap
           }
           else
           {
-            value = bu.getBuchungsart().getBuchungsklasse() != null
-                ? bu.getBuchungsart().getBuchungsklasse().getNummer()
-                : "";
+            value = bu.getBuchungsart() != null
+                && bu.getBuchungsart().getBuchungsklasse() != null
+                    ? bu.getBuchungsart().getBuchungsklasse().getNummer()
+                    : "";
           }
           break;
         case DATUM:
