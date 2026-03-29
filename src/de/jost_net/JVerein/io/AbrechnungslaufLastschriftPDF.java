@@ -53,7 +53,7 @@ public class AbrechnungslaufLastschriftPDF
           BaseColor.LIGHT_GRAY);
       reporter.addHeaderColumn("Mandat", Element.ALIGN_CENTER, 45,
           BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 35,
+      reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 35,
           BaseColor.LIGHT_GRAY);
       reporter.createHeader();
 
