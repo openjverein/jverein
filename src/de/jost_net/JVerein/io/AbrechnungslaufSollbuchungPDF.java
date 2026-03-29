@@ -37,8 +37,9 @@ import de.willuhn.util.ApplicationException;
 public class AbrechnungslaufSollbuchungPDF
 {
 
-  public AbrechnungslaufSollbuchungPDF(DBIterator<Sollbuchung> it, final File file,
-      String title, String subtitle) throws ApplicationException
+  public AbrechnungslaufSollbuchungPDF(DBIterator<Sollbuchung> it,
+      final File file, String title, String subtitle)
+      throws ApplicationException
   {
     try
     {
@@ -69,8 +70,8 @@ public class AbrechnungslaufSollbuchungPDF
             Element.ALIGN_LEFT);
         reporter.addColumn(
             Adressaufbereitung.getNameVorname(sollb.getMitglied()),
-            Element.ALIGN_LEFT);
-        reporter.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, false);
+        reporter.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT, false);
 
         reporter.addColumn(sollb.getBetrag());
         reporter.addColumn(sollb.getIstSumme());

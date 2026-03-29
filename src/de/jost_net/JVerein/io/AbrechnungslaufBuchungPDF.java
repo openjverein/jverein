@@ -67,8 +67,10 @@ public class AbrechnungslaufBuchungPDF
         if (buch.getSollbuchung() != null
             && buch.getSollbuchung().getMitglied() != null)
         {
-          reporter.addColumn(Adressaufbereitung.getNameVorname(
-              buch.getSollbuchung().getMitglied()), Element.ALIGN_LEFT);
+          reporter.addColumn(
+              Adressaufbereitung
+                  .getNameVorname(buch.getSollbuchung().getMitglied()),
+              Element.ALIGN_LEFT, false);
         }
         else
         {
@@ -77,14 +79,16 @@ public class AbrechnungslaufBuchungPDF
         if (buch.getSollbuchung() != null
             && buch.getSollbuchung().getZahler() != null)
         {
-          reporter.addColumn(Adressaufbereitung.getNameVorname(
-              buch.getSollbuchung().getZahler()), Element.ALIGN_LEFT);
+          reporter.addColumn(
+              Adressaufbereitung
+                  .getNameVorname(buch.getSollbuchung().getZahler()),
+              Element.ALIGN_LEFT, false);
         }
         else
         {
           reporter.addColumn("", Element.ALIGN_LEFT);
         }
-        reporter.addColumn(buch.getZweck(), Element.ALIGN_LEFT);
+        reporter.addColumn(buch.getZweck(), Element.ALIGN_LEFT, false);
         reporter.addColumn(buch.getBetrag());
       }
       reporter.closeTable();
