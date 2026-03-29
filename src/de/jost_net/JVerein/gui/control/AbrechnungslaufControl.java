@@ -643,10 +643,11 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil
-          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL, this);
-      final String subtitle = VorlageUtil
-          .getName(VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL, this);
+      final String title = VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL, getAbrechnungslauf());
+      final String subtitle = VorlageUtil.getName(
+          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+          getAbrechnungslauf());
 
       BackgroundTask t = new BackgroundTask()
       {
