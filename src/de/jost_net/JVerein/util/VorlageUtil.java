@@ -179,6 +179,9 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL:
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL:
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((Abrechnungslauf) obj, map);
           break;
@@ -408,6 +411,9 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME:
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL:
         case ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL:
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:

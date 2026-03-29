@@ -187,7 +187,11 @@ public enum VorlageTyp
       Vorlageart.DATEINAME.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME("abrechnungslaufliste-dateiname",
       "Abrechnungslauf Sollbuchungen Dateiname",
-      "Abrechnungslaufliste-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
+      "Abrechnungslauf-Sollbuchungen-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME("abrechnungslauf-buchungen-dateiname",
+      "Abrechnungslauf Buchungen Dateiname",
+      "Abrechnungslauf-Buchungen-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Auswertung
@@ -378,6 +382,13 @@ public enum VorlageTyp
       Vorlageart.TITEL.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL("abrechnungslaufliste-subtitel",
       "Abrechnungslauf Sollbuchungen Subtitel",
+      "Nr. $parameter_lauf zum $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_f))",
+      Vorlageart.TITEL.getKey()),
+  ABRECHNUNGSLAUF_BUCHUNGEN_TITEL("abrechnungslauf-buchungen-titel",
+      "Abrechnungslauf Buchungen Titel", "Abrechnungslauf Buchungen",
+      Vorlageart.TITEL.getKey()),
+  ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL("abrechnungslauf-buchungen-subtitel",
+      "Abrechnungslauf Buchungen Subtitel",
       "Nr. $parameter_lauf zum $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_f))",
       Vorlageart.TITEL.getKey()),
   // Reports aus Auswertung

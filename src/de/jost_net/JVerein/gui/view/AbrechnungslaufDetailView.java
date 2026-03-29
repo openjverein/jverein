@@ -76,9 +76,15 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
+    ButtonAreaRtoL buchbuttons = new ButtonAreaRtoL();
+    buchbuttons.addButton(control.getStartBuchungListeButton());
+    buchbuttons.paint(tabBuchung.getComposite());
     control.getBuchungList().paint(tabBuchung.getComposite());
 
     TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
+    ButtonAreaRtoL sollbbuttons = new ButtonAreaRtoL();
+    sollbbuttons.addButton(control.getStartSollbuchungListeButton());
+    sollbbuttons.paint(tabSollbuchung.getComposite());
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
@@ -116,7 +122,6 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(control.getStartListeButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }

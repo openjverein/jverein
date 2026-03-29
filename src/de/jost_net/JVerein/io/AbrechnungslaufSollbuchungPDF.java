@@ -34,10 +34,10 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AbrechnungslaufPDF
+public class AbrechnungslaufSollbuchungPDF
 {
 
-  public AbrechnungslaufPDF(DBIterator<Sollbuchung> it, final File file,
+  public AbrechnungslaufSollbuchungPDF(DBIterator<Sollbuchung> it, final File file,
       String title, String subtitle) throws ApplicationException
   {
     try
