@@ -178,11 +178,16 @@ public enum VorlageTyp
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME(
       "abrechnungslauf-lastschriften-dateiname",
-      "Abrechnungslauf Lastschriften Dateiname",
+      "Abrechnungslauf SEPAPDF-Lastschriften Dateiname",
       "Lastschriften-$parameter_faelligkeit_f-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
+  ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME(
+      "abrechnungslauf-lastschriften2-dateiname",
+      "Abrechnungslauf Lastschriften Dateiname",
+      "Abrechnungs-Lastschriften-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
   ABRECHNUNGSLAUF_SEPA_DATEINAME("abrechnungslauf-sepa-xml-dateiname",
-      "Abrechnungslauf SEPAXMLLastschriften Dateiname",
+      "Abrechnungslauf SEPAXML-Lastschriften Dateiname",
       "SEPA-Lastschriften-$parameter_faelligkeit_f-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME("abrechnungslaufliste-dateiname",
@@ -373,6 +378,14 @@ public enum VorlageTyp
       "Wirtschaftsplan Subtitel (Mehrere Pläne)", "",
       Vorlageart.TITEL.getKey()),
   // Reports aus Abrechnung
+  ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL("abrechnungslauf-lastschriften2-titel",
+      "Abrechnungslauf Lastschriften Titel", "Abrechnungslauf Lastschriften",
+      Vorlageart.TITEL.getKey()),
+  ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL(
+      "abrechnungslauf-lastschriften2-subtitel",
+      "Abrechnungslauf Lastschriften Subtitel",
+      "Nr. $parameter_lauf zum $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_f))",
+      Vorlageart.TITEL.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL("abrechnungslaufliste-titel",
       "Abrechnungslauf Sollbuchungen Titel", "Abrechnungslauf",
       Vorlageart.TITEL.getKey()),

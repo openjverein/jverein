@@ -82,6 +82,9 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
+    ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
+    lastbuttons.addButton(control.getStartLastschriftListeButton());
+    lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
