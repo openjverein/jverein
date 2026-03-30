@@ -50,12 +50,6 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
 
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
-    String on = "projekt.id = buchung.projekt ";
-    if (mitSteuer)
-    {
-      on += " OR projekt.id = st.projekt";
-    }
-    it.join("projekt", on);
 
     switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
     {

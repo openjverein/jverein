@@ -426,8 +426,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-          + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
-          + SUMME, Kontoart.ANLAGE.getKey());
+          + ") AS DECIMAL(10,2))),0) + COALESCE(st.steuerbetrag,0) AS " + SUMME,
+          Kontoart.ANLAGE.getKey());
     }
     else
     {
@@ -435,10 +435,11 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     }
 
     String buchungOn = "buchung.buchungsart = buchungsart.id AND datum >= ? AND datum <= ?";
-    // Bei Projektsaldo nur Buchungen verwenden, die auch ein Projekt haben
+    // Bei Projektsaldo nur Buchungen verwenden, die zu dem Projekt gehöhren
     if (this instanceof ProjektSaldoControl)
     {
-      buchungOn += " and buchung.projekt is not null";
+      it.join("projekt");
+      buchungOn += " and buchung.projekt = projekt.id";
     }
     it.leftJoin("buchung", buchungOn, getDatumvon().getDate(),
         getDatumbis().getDate());
@@ -482,15 +483,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       if (klasseInBuchung)
       {
         subselect += " steuer.buchungsklasse,";
-
       }
-      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag ";
-      // Bei Projektsaldo auch Projekt-Spalte
-      if (this instanceof ProjektSaldoControl)
-      {
-        subselect += ",buchung.projekt ";
-      }
-      subselect += " FROM buchung"
+      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag,"
+          + "buchung.projekt FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
@@ -520,9 +515,14 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         subselect += ",steuer.buchungsklasse";
       }
       subselect += ") AS st ";
-      it.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
-          Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
-          getDatumvon().getDate(), getDatumbis().getDate());
+      String stOn = "st.buchungsart = buchungsart.id ";
+      if (this instanceof ProjektSaldoControl)
+      {
+        stOn += " and st.projekt = projekt.id ";
+      }
+      it.leftJoin(subselect, stOn, Kontoart.LIMIT.getKey(),
+          Kontoart.ANLAGE.getKey(), getDatumvon().getDate(),
+          getDatumbis().getDate());
     }
     if (klasseInBuchung)
     {
