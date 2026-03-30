@@ -263,6 +263,7 @@ public class Einstellungen
     ZUSATZBETRAGAUSGETRETENE("zusatzbetragausgetretene", Boolean.class, "0"),
     KEINEISTBUCHUNGBEILASTSCHRIFT("keineistbuchungbeilastschrift",
         Boolean.class, "0"),
+    ZAHLERBEILASTSCHRIFT("zahlerbeilastschrift", Boolean.class, "1"),
 
     // Verzeichnisse
     VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),

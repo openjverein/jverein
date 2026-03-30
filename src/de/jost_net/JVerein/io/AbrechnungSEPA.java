@@ -352,6 +352,7 @@ public class AbrechnungSEPA extends SEPASupport
             if (!zahler.getMitglied().getID().equals(zahler.getPersonId()))
             {
               zahler.setVerwendungszweck(zahler.getVerwendungszweck() + " "
+                  + zahler.getMitglied().getName() + ", "
                   + zahler.getMitglied().getVorname());
             }
             if (gesamtZahler == null)
@@ -1098,13 +1099,23 @@ public class AbrechnungSEPA extends SEPASupport
 
         // Bei nicht kompakter Abbuchung Daten des Mitglieds und nicht die des
         // Zahlers verwenden.
+        boolean zahlernameinlastschrift = (Boolean) Einstellungen
+            .getEinstellung(Property.ZAHLERBEILASTSCHRIFT);
         Mitglied mZweck = m;
+        String zweck = zahler.getVerwendungszweck();
         if (!kompakt)
         {
           mZweck = zahler.getMitglied();
         }
-        String zweck = getVerwendungszweckName(mZweck,
-            zahler.getVerwendungszweck());
+        if (zahlernameinlastschrift)
+        {
+          zweck = getVerwendungszweckName(mZweck, zahler.getVerwendungszweck());
+        }
+        if (!kompakt && !zahlernameinlastschrift
+            && !zahler.getMitglied().getID().equals(zahler.getPersonId()))
+        {
+          zweck = zweck + " " + mZweck.getName() + ", " + mZweck.getVorname();
+        }
         ls.setVerwendungszweck(zweck);
         zahler.setVerwendungszweck(zweck);
         break;
