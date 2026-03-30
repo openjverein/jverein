@@ -429,7 +429,13 @@ public enum VorlageTyp
   BUCHUNGSARTEN_TITEL("buchungsarten-titel", "Buchungsarten Titel",
       "Buchungsarten", Vorlageart.TITEL.getKey()),
   BUCHUNGSARTEN_SUBTITEL("buchungsarten-subtitel", "Buchungsarten Subtitel", "",
-      Vorlageart.TITEL.getKey());
+      Vorlageart.TITEL.getKey()),
+  BUCHUNGSKLASSE_SUBTITEL("buchungsklasse-subtitel", "Buchungsklasse Subtitel",
+      "", Vorlageart.TITEL.getKey()),
+  BUCHUNGSKLASSE_DATEINAME("buchungsklasse-dateiname",
+      "Buchungsklasse Dateiname", "buchungsklassen", Vorlageart.TITEL.getKey()),
+  BUCHUNGSKLASSE_TITEL("buchungsklasse-titel", "Buchungsklasse Titel",
+      "Buchungsklassen", Vorlageart.TITEL.getKey());
 
   private final String text;
 

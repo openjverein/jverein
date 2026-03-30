@@ -22,15 +22,20 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.BuchungsklasseDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -140,5 +145,21 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
         new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));
     VorZurueckControl.setObjektListe(null, null);
     return buchungsklassenList;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (buchungsklassenList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      buchungsklassenList.export(
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSE_TITEL),
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSE_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSE_DATEINAME), art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

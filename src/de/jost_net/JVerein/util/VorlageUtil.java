@@ -142,6 +142,9 @@ public class VorlageUtil
         case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
         case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
         case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
+        case BUCHUNGSKLASSE_DATEINAME:
+        case BUCHUNGSKLASSE_TITEL:
+        case BUCHUNGSKLASSE_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -275,9 +278,6 @@ public class VorlageUtil
           map = new WirtschaftsplanParameterMap()
               .getMap((WirtschaftsplanControl) obj, map);
           break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
-          return "";
       }
     }
     catch (Exception e)
@@ -491,8 +491,9 @@ public class VorlageUtil
         case WIRTSCHAFTSPLAN_SUBTITEL:
           map = WirtschaftsplanParameterMap.getDummyMap(map);
           break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
+        case BUCHUNGSKLASSE_DATEINAME:
+        case BUCHUNGSKLASSE_SUBTITEL:
+        case BUCHUNGSKLASSE_TITEL:
           break;
       }
     }
