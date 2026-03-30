@@ -1000,7 +1000,8 @@ public class AbrechnungSEPA extends SEPASupport
     {
       id = ((Mitglied) adr).getExterneMitgliedsnummer();
     }
-    String mitgliedname = id + "/" + Adressaufbereitung.getNameVorname(adr);
+    String mitgliedname = id + "/"
+        + Adressaufbereitung.getNameVorname(adr).toUpperCase();
 
     verwendungszweck = mitgliedname + " " + verwendungszweck;
     if (verwendungszweck.length() >= 140)
@@ -1114,7 +1115,8 @@ public class AbrechnungSEPA extends SEPASupport
         if (!kompakt && !zahlernameinlastschrift
             && !zahler.getMitglied().getID().equals(zahler.getPersonId()))
         {
-          zweck = zweck + " " + mZweck.getName() + ", " + mZweck.getVorname();
+          zweck = zweck + " " + mZweck.getName().toUpperCase() + ", "
+              + mZweck.getVorname().toUpperCase();
         }
         ls.setVerwendungszweck(zweck);
         zahler.setVerwendungszweck(zweck);
