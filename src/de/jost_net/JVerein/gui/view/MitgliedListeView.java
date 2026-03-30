@@ -64,10 +64,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     TabGroup tab1 = new TabGroup(folder, "Allgemein", true, 3);
     SimpleContainer left = new SimpleContainer(tab1.getComposite());
     left.addInput(control.getMitgliedStatus());
-    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-      left.addInput(control.getSuchExterneMitgliedsnummer());
-    else
-      left.addInput(control.getSuchMitgliedsnummer());
+    left.addInput(control.getStichtag());
     left.addInput(control.getSuchname());
 
     SimpleContainer middle = new SimpleContainer(tab1.getComposite());
@@ -85,7 +82,10 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     SimpleContainer right = new SimpleContainer(tab1.getComposite());
     right.addInput(control.getSuchGeschlecht());
     right.addInput(control.getMailauswahl());
-    right.addInput(control.getStichtag());
+    if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
+      right.addInput(control.getSuchExterneMitgliedsnummer());
+    else
+      right.addInput(control.getSuchMitgliedsnummer());
 
     // Zeiter Tab
     TabGroup tab2 = new TabGroup(folder, "Datum", true, 3);
