@@ -7,14 +7,14 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": [
-        "^build/build\\.properties$"
+      "managerFilePatterns": [
+        "/^build/build\.properties$/"
       ],
       "matchStrings": [
         "# renovate: depName=(?<depName>.*?)\\s*\\S+\\.version\\s*=\\s*(?<currentValue>\\d+.\\d+.\\d+)"
       ],
       "datasourceTemplate": "github-tags",
-      "versioningTemplate": "regex:^(?<major>\\d+).(?<minor>\\d+).(?<patch>\\d+)$"
+      "versioningTemplate": "regex:^(?<major>\d+).(?<minor>\d+).(?<patch>\d+)$"
     }
   ]
 }
