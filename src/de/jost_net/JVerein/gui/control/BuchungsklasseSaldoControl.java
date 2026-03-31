@@ -438,7 +438,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     // Bei Projektsaldo nur Buchungen verwenden, die zu dem Projekt gehöhren
     if (this instanceof ProjektSaldoControl)
     {
-      it.join("projekt");
+      // Bei H2 geht es nicht ohne ON Clause, daher machen wir hier diese
+      // sinnlose.
+      it.join("projekt", "projekt.id = projekt.id");
       buchungOn += " and buchung.projekt = projekt.id";
     }
     it.leftJoin("buchung", buchungOn, getDatumvon().getDate(),
@@ -484,8 +486,12 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       {
         subselect += " steuer.buchungsklasse,";
       }
-      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag,"
-          + "buchung.projekt FROM buchung"
+      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag";
+      if (this instanceof ProjektSaldoControl)
+      {
+        subselect += ",buchung.projekt";
+      }
+      subselect += " FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
 
