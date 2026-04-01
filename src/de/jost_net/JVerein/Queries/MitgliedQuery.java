@@ -224,33 +224,24 @@ public class MitgliedQuery
     }
     if (control.isMitgliedStatusAktiv())
     {
+      Date stichtag = new Date();
+      if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
+      {
+        stichtag = (Date) control.getStichtag().getValue();
+      }
       if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
       {
-        if (control.isStichtagAktiv()
-            && control.getStichtag().getValue() != null)
-        {
-          addCondition("(eintritt is null or eintritt <= ?)");
-          bedingungen.add(control.getStichtag().getValue());
-          addCondition("(austritt is null or austritt >= ?)");
-          bedingungen.add(control.getStichtag(false).getValue());
-        }
-        else
-        {
-          addCondition("(austritt is null)");
-        }
+        addCondition("(eintritt is null or eintritt <= ?)");
+        bedingungen.add(stichtag);
+        addCondition("(austritt is null or austritt > ?)");
+        bedingungen.add(stichtag);
       }
       else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
       {
-        if (control.isStichtagAktiv()
-            && control.getStichtag().getValue() != null)
-        {
-          addCondition("austritt is not null and austritt <= ?");
-          bedingungen.add(control.getStichtag(false).getValue());
-        }
-        else
-        {
-          addCondition("austritt is not null");
-        }
+        addCondition(
+            "austritt is not null and austritt <= ? or eintritt is not null and eintritt > ?");
+        bedingungen.add(stichtag);
+        bedingungen.add(stichtag);
       }
     }
     if (control.isMailauswahlAktiv())
