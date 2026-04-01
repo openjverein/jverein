@@ -243,6 +243,11 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
       {
         throw new ApplicationException("Bitte Eintrittsdatum eingeben!");
       }
+      if (getEintritt() != null && getAustritt() != null
+          && !getAustritt().after(getEintritt()))
+      {
+        throw new ApplicationException("Austritt muss nach Eintritt sein!");
+      }
       if (getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
       {
         if (getIban() == null || getIban().length() == 0)

@@ -344,6 +344,7 @@ public class SplitbuchungsContainer
   {
     Buchung buch = (Buchung) Einstellungen.getDBService()
         .createObject(Buchung.class, null);
+    buch.setAbrechnungslauf(b.getAbrechnungslauf());
     buch.setArt(b.getArt());
     buch.setAuszugsnummer(b.getAuszugsnummer());
     buch.setBetrag(b.getBetrag() * -1);
@@ -362,9 +363,8 @@ public class SplitbuchungsContainer
     buch.setIban(b.getIban());
     buch.setSteuer(b.getSteuer());
 
-    // Folgende Spalten werden nicht übertragen (Stand 4.0.0):
+    // Folgende Spalten werden nicht übertragen (Stand 4.1.4):
     // sollbuchung
-    // abrechnungslauf
     // splitid
     // splittyp
     // spendenbescheinigung

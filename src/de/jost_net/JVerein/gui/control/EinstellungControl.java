@@ -319,6 +319,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput keineistbuchungbeilastschrift;
 
+  private CheckboxInput zahlerbeilastschrift;
+
   private SelectInput altersmodel;
 
   private ScaleInput sepadatumoffset;
@@ -2100,6 +2102,18 @@ public class EinstellungControl extends AbstractControl
     return keineistbuchungbeilastschrift;
   }
 
+  public CheckboxInput getZahlerBeiLastschrift() throws RemoteException
+  {
+    if (zahlerbeilastschrift != null)
+    {
+      return zahlerbeilastschrift;
+    }
+    zahlerbeilastschrift = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.ZAHLERBEILASTSCHRIFT));
+    zahlerbeilastschrift.setName(" ");
+    return zahlerbeilastschrift;
+  }
+
   public CheckboxInput getAbrlAbschliessen() throws RemoteException
   {
     if (abrlabschliessen != null)
@@ -2623,6 +2637,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) zusatzbetragAusgetretene.getValue());
       Einstellungen.setEinstellung(Property.KEINEISTBUCHUNGBEILASTSCHRIFT,
           (Boolean) keineistbuchungbeilastschrift.getValue());
+      Einstellungen.setEinstellung(Property.ZAHLERBEILASTSCHRIFT,
+          (Boolean) zahlerbeilastschrift.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

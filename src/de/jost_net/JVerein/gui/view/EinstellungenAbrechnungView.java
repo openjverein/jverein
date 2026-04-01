@@ -55,6 +55,8 @@ public class EinstellungenAbrechnungView extends AbstractView
         control.getZusatzbetragAusgetretene());
     cont.addLabelPair("Keine Istbuchung bei Lastschriften erzeugen",
         control.getKeineIstbuchungBeiLastschrift());
+    cont.addLabelPair("Zahler Namen bei Lastschrift Zweck voranstellen",
+        control.getZahlerBeiLastschrift());
     cont.addLabelPair("Abrechnungslauf abschließen",
         control.getAbrlAbschliessen());
     cont.addSeparator();
