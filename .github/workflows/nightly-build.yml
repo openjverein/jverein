@@ -26,20 +26,12 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml nightly)
-        echo ${ant_output}
+        mvn -B -f jverein/pom.xml -Pnightly package
 
-        ssa="SELECTED_VERSION="
-        text="${ant_output#*${ssa}}"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+        tmp_base_version=$(sed -rn 's#.*version="([0-9]+\.[0-9]+\.[0-9]+)".*#\1#p' jverein/plugin.xml | head -n1)
+        tmp_version="${tmp_base_version}-nightly"
+        tmp_filename="jverein.${tmp_base_version}-nightly.zip"
+        tmp_path="target/releases/nightly/${tmp_filename}"
 
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
         echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT

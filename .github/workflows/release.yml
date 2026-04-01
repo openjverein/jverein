@@ -22,24 +22,12 @@ jobs:
     - name: Build OpenJVerein plugin
       id: openjverein
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
-        echo ${ant_output}
+        mvn -B -f jverein/pom.xml package
 
-        ssa="SELECTED_VERSION="
-        text="${ant_output#*${ssa}}"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        
-        ssa="SELECTED_PLUGIN_PATH="
-        text="${ant_output#*${ssa}}"
-        tmp_plugin_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+        tmp_version=$(sed -rn 's#.*version="([0-9]+\.[0-9]+\.[0-9]+)".*#\1#p' jverein/plugin.xml | head -n1)
+        tmp_filename="jverein.${tmp_version}.zip"
+        tmp_path="target/releases/${tmp_filename}"
+        tmp_plugin_path="target/releases/jverein/plugin.xml"
 
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
         echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT

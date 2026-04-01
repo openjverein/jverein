@@ -31,6 +31,10 @@
     </resolver:resolve>
   </target>
 
+  <target name="bootstrap-build-dependencies" description="loads properties required to build Jameica and Hibiscus">
+    <loadproperties srcfile="${build.dir}/build.properties" />
+  </target>
+
   <target name="init" description="inits the build" depends="resolve-dependencies">
     <buildnumber file="${build.dir}/BUILD" />
     <tstamp>
@@ -238,7 +242,7 @@
   </target>
 
   <target name="build-dependencies" description="Downloads and builds Jameica and Hibiscus"
-          depends="init">
+          depends="bootstrap-build-dependencies">
     <antcall target="build-package">
       <param name="name" value="jameica" />
       <param name="url" value="${jameica.url}" />

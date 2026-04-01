@@ -1,12 +1,10 @@
 # Ressourcen
 
+OpenJVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica.
 
-OpenJVerein nutzt die Homebankingsoftware Hibiscus und das GUI-Framework Jameica. Für die Entwicklung müssen daher deren Git-Repositories eingebunden werden:
+Das Git-Repository von OpenJVerein ist:
 
-* https://github.com/willuhn/jameica.git
-* https://github.com/willuhn/hibiscus.git
-
-Das Git-Repository von OpenJVerein kann dann über https://github.com/openjverein/jverein verwendet werden.
+* https://github.com/openjverein/jverein
 
 Das OpenJVerein-Repository sollte am besten geforkt werden. Um die Änderungen zu übernehmen, erstellt bitte einen Pull-Request.
 
@@ -17,59 +15,110 @@ Das Handbuch ist im Repository https://github.com/openjverein/jverein-Book. Der 
 
 # Entwicklungsumgebung
 
-Für die OpenJVerein-Entwicklung werden benötigt
+Für die OpenJVerein-Entwicklung werden benötigt:
 
-- Eclipse/IntelliJ IDEA
+- Eclipse oder IntelliJ IDEA
 - Java 17+ (JDK)
+- Maven
 
 Es wird Java 17 oder eine höhere Version benötigt, damit die Kompatibilität zu Jameica gewährleistet ist.
 
-# Build und Test
-Build und Test sind hier beschrieben: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse
+# Initialer Checkout und Build
 
-# Einrichtung der IDE
-Um alle externen Abhängigkeiten bereitzustellen, muss initial das Ant-Build-Script mit dem Parameter `resolve-dependencies` ausgeführt 
-werden. Dieses lädt die benötigten Bibliotheken herunter und kopiert sie in das Verzeichnis `lib`.
+## Repository klonen
+
+Klone zunächst deinen Fork von JVerein:
 
 ```shell
-ant -file build/build.xml resolve-dependencies
+git clone https://github.com/<dein-user>/jverein.git
+cd jverein
 ```
 
-Sowohl IntelliJ als auch Eclipse enthalten eine Unterstützung für Ant-Build-Scripts, die es ermöglicht, das 
-Build-Script über die IDE auszuführen.
+Jameica und Hibiscus müssen nicht mehr separat vorab geklont werden. Der Maven-Bootstrap lädt beide Projekte bei Bedarf selbst herunter und legt sie weiterhin als Nachbarverzeichnisse `../jameica` und `../hibiscus` an.
 
-- Eclipse:
-  - siehe [Running Ant Buildfiles](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Ftasks%2Ftasks-ant-running.htm)
-  und im Schritt 3 `resolve-dependencies` auswählen.
-  - Alternativ über die [Ant View](https://help.eclipse.org/latest/index.jsp?topic=%2Forg.eclipse.platform.doc.user%2Freference%2Fref-antview.htm) die
-  build.xml hinzufügen, danach resolve-dependencies anklicken und auf den grünen Play-Button klicken.
-- IntelliJ:
-  - Plugin wie unter [Getting started with Ant](https://www.jetbrains.com/help/idea/ant.html) beschrieben, installieren und wie in der dort verlinkten früheren 
-    Dokumentation beschrieben, benutzen.
-## Eclipse 
-Die Einrichtung von Eclipse ist hier: https://www.willuhn.de/wiki/doku.php?id=develop:eclipse und hier: https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq beschrieben.
+## Host-Artefakte initial vorbereiten
+
+Vor dem ersten normalen Build müssen die von Jameica und Hibiscus bereitgestellten Host-Artefakte lokal ins Maven-Repository installiert werden:
+
+```shell
+mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources
+```
+
+Dieser Schritt:
+
+1. lädt Jameica und Hibiscus als ZIP von GitHub
+2. entpackt sie nach `../jameica` und `../hibiscus`
+3. führt dort die vorhandenen Build-Skripte aus
+4. installiert die für JVerein benötigten Artefakte in das lokale Maven-Repository
+
+Der Schritt muss normalerweise nur erneut ausgeführt werden, wenn:
+
+- das lokale Maven-Repository bereinigt wurde
+- die konfigurierten Jameica-/Hibiscus-Versionen im `pom.xml` geändert wurden
+- die Nachbarverzeichnisse `../jameica` oder `../hibiscus` bewusst neu aufgebaut werden sollen
+
+## Normaler Build und Test
+
+Danach läuft der normale Build direkt mit Maven:
+
+```shell
+mvn test
+mvn package
+```
+
+Für das Nightly-Artefakt:
+
+```shell
+mvn -Pnightly package
+```
+
+## Eclipse
+
+Die allgemeine Einrichtung von Eclipse ist weiterhin hier beschrieben:
+
+- https://www.willuhn.de/wiki/doku.php?id=develop:eclipse
+- https://www.willuhn.de/wiki/doku.php?id=develop:jameica:faq
+
+Wichtig für den aktuellen Projektstand:
+
+1. zuerst `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` ausführen
+2. danach JVerein importieren
+3. falls Jameica und Hibiscus ebenfalls in der IDE geöffnet werden sollen, die Nachbarverzeichnisse `../jameica` und `../hibiscus` als zusätzliche Projekte oder Module importieren
 
 ## IntelliJ
-Für die Verwendung von IntelliJ folge diesen Schritten:
-### Downloads
-1. Klone deinen JVerein-Fork
-2. Öffne eine Kommandozeile im JVerein Ordner und führe den Command `ant -buildfile ./build/build.xml build-dependencies` aus um die Jameica und Hibiscus Abhängigkeiten zu laden.
+
+Für die Verwendung von IntelliJ:
 
 ### Projekt-Struktur
-1. Um das JVerein-Projekt anzulegen, folge dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-project (Unter dem Punkt "Import a project with settings") und wähle den JVerein Ordner aus. Der JVerein Ordner muss als Eclipse Projekt importiert werden.
-2. Die eben heruntergeladenen Abhängigkeiten, befinden sich in dem Ordner, in dem auch der JVerein Ordner liegt. Importiere diese Ordner als Module nach dieser Anleitung: https://www.jetbrains.com/help/idea/import-project-from-eclipse-page-1.html#import-as-module (Unter dem Punkt "Import an Eclipse project as a module"). Auch hier müssen die Ordner als Eclipse-Modul importiert werden.
-3. Unter File -> Project Structure muss eine SDK mit mindestens Java 17 ausgewählt werden und das Language Level auf Java 11 gesetzt sein.
-4. Wechsle nun in diesem Fenster auf Modules und passe in allen Modulen die SDK so an, dass sie auf ein installiertes SDK verweist.
-5. Ebenfalls in diesem Fenster muss aus dem Hibiscus Modul im Sources tab der Ordner test entfernt werden.
-6. Lege eine neue Run/Debug Configuration an. Wähle dort "Application".
-7. In der Configuration wähle als Modul "jameica" und als Main Class "de.willuhn.jameica.Main". Für die Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen. Als Working Directory wähle jameica-<version>-nightly.src/jameica.
+
+1. Klone deinen JVerein-Fork.
+2. Führe im JVerein-Ordner `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` aus.
+3. Öffne das Projekt in IntelliJ direkt auf Basis des vorhandenen `pom.xml`.
+4. Wenn du Jameica und Hibiscus in IntelliJ mit bearbeiten oder direkt starten willst, öffne zusätzlich die Nachbarverzeichnisse `../jameica` und `../hibiscus` oder importiere sie als weitere Module.
+5. Unter `File -> Project Structure` muss eine SDK mit mindestens Java 17 ausgewählt werden. Das Language Level für den JVerein-Build bleibt Java 11 kompatibel.
+6. Falls das Hibiscus-Modul importiert wird, muss dort gegebenenfalls der Ordner `test` aus den Sources entfernt werden.
+
+### Run-Konfiguration
+
+1. Lege eine neue `Application`-Run-Konfiguration an.
+2. Wähle als Modul `jameica`.
+3. Wähle als Main Class `de.willuhn.jameica.Main`.
+4. Für Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen.
+5. Als Working Directory verwende das Nachbarprojekt `../jameica`.
 
 ### Erster Start
-1. Führe die eben erstellte Configuration aus. Noch sind keine Plugins installiert, schließe daher Jameica wieder.
-2. Navigiere in den erstellten jameica.test Ordner und öffne die Datei `cfg/de.willuhn.jameica.system.Config.properties` in einem Text-Editor.
-3. Füge die Zeilen `jameica.plugin.dir.0=../hibiscus` und `jameica.plugin.dir.1=../jverein` in die Datei ein.
-4. Führe nun die Jameica-Configuration erneut aus und die Plugins werden jetzt geladen. Die Einrichtung ist abgeschlossen und du kannst anfangen an diesem Projekt mitzuwirken.
-5. Wenn du etwas am Code geändert hast und du deine Änderungen testen willst, musst du vor dem erneuten Ausführen der Run-Configuration einen Rebuild des Projekts durchführen.
+
+1. Führe die Jameica-Konfiguration einmal aus und beende Jameica wieder.
+2. Navigiere in den erzeugten Ordner `jameica.test` und öffne `cfg/de.willuhn.jameica.system.Config.properties`.
+3. Ergänze dort:
+
+```properties
+jameica.plugin.dir.0=../hibiscus
+jameica.plugin.dir.1=../jverein
+```
+
+4. Starte Jameica erneut. Danach werden Hibiscus und JVerein als Plugins geladen.
+5. Wenn du Code geändert hast und über die IDE testest, führe vor dem nächsten Start einen Rebuild aus.
 
 
 # Code Struktur
