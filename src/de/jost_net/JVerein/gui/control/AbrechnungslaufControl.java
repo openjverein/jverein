@@ -616,7 +616,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           if (lastschriftList == null)
           {
             throw new ApplicationException(
-                "Der Export kann nicht durcheführt werden, Tabelle ist nicht geladen.");
+                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
           }
           lastschriftList.export(
               VorlageUtil.getName(
@@ -627,6 +627,31 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   getAbrechnungslauf()),
               VorlageUtil.getName(
                   VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+                  getAbrechnungslauf()),
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
+
+  public ButtonRtoL exportZusatzbetragButton(ExportArt art)
+      throws ApplicationException
+  {
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          if (zusatzbetraegeList == null)
+          {
+            throw new ApplicationException(
+                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
+          }
+          zusatzbetraegeList.export(
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
                   getAbrechnungslauf()),
               art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");

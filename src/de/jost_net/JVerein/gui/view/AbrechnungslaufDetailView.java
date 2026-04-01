@@ -93,6 +93,10 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     {
       TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
           1);
+      ButtonAreaRtoL zusatzbuttons = new ButtonAreaRtoL();
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.PDF));
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.CSV));
+      zusatzbuttons.paint(tabZusatzbetraege.getComposite());
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 

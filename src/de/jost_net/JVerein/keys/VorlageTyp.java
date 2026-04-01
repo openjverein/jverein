@@ -184,7 +184,12 @@ public enum VorlageTyp
   ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME(
       "abrechnungslauf-lastschriften2-dateiname",
       "Abrechnungslauf Lastschriften Dateiname",
-      "Abrechnungs-Lastschriften-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
+      "Abrechnungslauf-Lastschriften-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME(
+      "abrechnungslauf-zusatzbetraege-dateiname",
+      "Abrechnungslauf Zusatzbeträge Dateiname",
+      "Abrechnungslauf-Zusatzbeträge-$parameter_lauf-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   ABRECHNUNGSLAUF_SEPA_DATEINAME("abrechnungslauf-sepa-xml-dateiname",
       "Abrechnungslauf SEPAXML-Lastschriften Dateiname",
@@ -384,6 +389,14 @@ public enum VorlageTyp
   ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL(
       "abrechnungslauf-lastschriften2-subtitel",
       "Abrechnungslauf Lastschriften Subtitel",
+      "Nr. $parameter_lauf zum $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_f))",
+      Vorlageart.TITEL.getKey()),
+  ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL("abrechnungslauf-zusatzbetraege-titel",
+      "Abrechnungslauf Zusatzbeträge Titel", "Abrechnungslauf Zusatzbeträge",
+      Vorlageart.TITEL.getKey()),
+  ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL(
+      "abrechnungslauf-zusatzbetraege-subtitel",
+      "Abrechnungslauf Zusatzbeträge Subtitel",
       "Nr. $parameter_lauf zum $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$parameter_datum_f))",
       Vorlageart.TITEL.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL("abrechnungslaufliste-titel",
