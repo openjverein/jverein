@@ -378,7 +378,7 @@ public enum VorlageTyp
       Vorlageart.TITEL.getKey()),
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL("abrechnungslaufliste-titel",
-      "Abrechnungslauf Sollbuchungen Titel", "Abrechnungslauf",
+      "Abrechnungslauf Sollbuchungen Titel", "Abrechnungslauf Sollbuchungen",
       Vorlageart.TITEL.getKey()),
   ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL("abrechnungslaufliste-subtitel",
       "Abrechnungslauf Sollbuchungen Subtitel",
