@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -77,13 +78,15 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
     ButtonAreaRtoL buchbuttons = new ButtonAreaRtoL();
-    buchbuttons.addButton(control.getStartBuchungListeButton());
+    buchbuttons.addButton(control.exportBuchungButton(ExportArt.PDF));
+    buchbuttons.addButton(control.exportBuchungButton(ExportArt.CSV));
     buchbuttons.paint(tabBuchung.getComposite());
     control.getBuchungList().paint(tabBuchung.getComposite());
 
     TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
     ButtonAreaRtoL sollbbuttons = new ButtonAreaRtoL();
-    sollbbuttons.addButton(control.getStartSollbuchungListeButton());
+    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.PDF));
+    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.CSV));
     sollbbuttons.paint(tabSollbuchung.getComposite());
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 

@@ -16,12 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -42,12 +38,11 @@ import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
-import de.jost_net.JVerein.io.AbrechnungslaufBuchungPDF;
-import de.jost_net.JVerein.io.AbrechnungslaufSollbuchungPDF;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -74,11 +69,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class AbrechnungslaufControl extends FilterControl implements Savable
 {
@@ -608,166 +600,51 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public ButtonRtoL getStartSollbuchungListeButton()
+  public ButtonRtoL exportBuchungButton(ExportArt art)
+      throws ApplicationException
   {
-    return new ButtonRtoL("PDF", o -> starteSollbuchungAuswertung(), null, true,
-        "file-pdf.png");
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          if (buchungList == null)
+          {
+            throw new ApplicationException(
+                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
+          }
+          buchungList.export(
+              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
+                  getAbrechnungslauf()),
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
-  private void starteSollbuchungAuswertung()
+  public ButtonRtoL exportSollbuchungButton(ExportArt art)
+      throws ApplicationException
   {
-    try
-    {
-      DBIterator<Sollbuchung> it = Einstellungen.getDBService()
-          .createList(Sollbuchung.class);
-      it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
-          getAbrechnungslauf()) + ".pdf");
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL, getAbrechnungslauf());
-      final String subtitle = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
-          getAbrechnungslauf());
-
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          if (sollbuchungList == null)
           {
-            GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-            new AbrechnungslaufSollbuchungPDF(it, file, title, subtitle);
+            throw new ApplicationException(
+                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
           }
-          catch (ApplicationException ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-
-    }
-    catch (RemoteException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  public ButtonRtoL getStartBuchungListeButton()
-  {
-    return new ButtonRtoL("PDF", o -> starteBuchungAuswertung(), null, true,
-        "file-pdf.png");
-  }
-
-  private void starteBuchungAuswertung()
-  {
-    try
-    {
-      DBIterator<Buchung> it = Einstellungen.getDBService()
-          .createList(Buchung.class);
-      it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
-              getAbrechnungslauf()) + ".pdf");
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL, getAbrechnungslauf());
-      final String subtitle = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL, getAbrechnungslauf());
-
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-            new AbrechnungslaufBuchungPDF(it, file, title, subtitle);
-          }
-          catch (ApplicationException ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-
-    }
-    catch (RemoteException e)
-    {
-      e.printStackTrace();
-    }
+          sollbuchungList.export(
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
+                  getAbrechnungslauf()),
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }
