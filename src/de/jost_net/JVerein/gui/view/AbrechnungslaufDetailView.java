@@ -91,12 +91,20 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
+    ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.PDF));
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.CSV));
+    lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
           1);
+      ButtonAreaRtoL zusatzbuttons = new ButtonAreaRtoL();
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.PDF));
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.CSV));
+      zusatzbuttons.paint(tabZusatzbetraege.getComposite());
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
