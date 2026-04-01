@@ -42,11 +42,11 @@ import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
-import de.jost_net.JVerein.io.AbrechnungslaufLastschriftPDF;
 import de.jost_net.JVerein.io.AbrechnungslaufPDF;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
@@ -608,87 +608,29 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public ButtonRtoL getStartLastschriftListeButton()
+  public ButtonRtoL exportLastschriftButton(ExportArt art)
+      throws ApplicationException
   {
-    return new ButtonRtoL("PDF", o -> starteLastschriftAuswertung(), null, true,
-        "file-pdf.png");
-  }
-
-  private void starteLastschriftAuswertung()
-  {
-    try
-    {
-      DBIterator<Lastschrift> it = Einstellungen.getDBService()
-          .createList(Lastschrift.class);
-      it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
-          getAbrechnungslauf()) + ".pdf");
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
-          getAbrechnungslauf());
-      final String subtitle = VorlageUtil.getName(
-          VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
-          getAbrechnungslauf());
-
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          if (lastschriftList == null)
           {
-            GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-            new AbrechnungslaufLastschriftPDF(it, file, title, subtitle);
+            throw new ApplicationException(
+                "Der Export kann nicht durcheführt werden, Tabelle ist nicht geladen.");
           }
-          catch (ApplicationException ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-
-    }
-    catch (RemoteException e)
-    {
-      e.printStackTrace();
-    }
+          lastschriftList.export(
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
+                  getAbrechnungslauf()),
+              VorlageUtil.getName(
+                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+                  getAbrechnungslauf()),
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
   public ButtonRtoL getStartListeButton()

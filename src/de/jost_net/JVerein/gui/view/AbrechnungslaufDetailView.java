@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -83,7 +84,8 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
     ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
-    lastbuttons.addButton(control.getStartLastschriftListeButton());
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.PDF));
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.CSV));
     lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
