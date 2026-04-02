@@ -34,6 +34,8 @@
     <release.root>${project.build.directory}/releases</release.root>
     <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
     <release.plugin.lib.dir>${release.plugin.dir}/lib</release.plugin.lib.dir>
+    <release.basename>${project.artifactId}.${project.version}</release.basename>
+    <release.nightly.basename>${project.artifactId}.${project.version}-nightly</release.nightly.basename>
     <release.filename>${project.artifactId}.${project.version}.zip</release.filename>
     <release.nightly.filename>${project.artifactId}.${project.version}-nightly.zip</release.nightly.filename>
     <release.plugin.xml>${release.plugin.dir}/plugin.xml</release.plugin.xml>
@@ -429,14 +431,30 @@
                   <replacefilter token="[PLUGIN_ZIP]"
                                  value="${release.series}/${release.filename}" />
                 </replace>
-                <mkdir dir="${release.root}" />
-                <zip destfile="${release.zip.path}">
-                  <fileset dir="${release.root}">
-                    <include name="${project.artifactId}" />
-                    <include name="${project.artifactId}/**" />
-                  </fileset>
-                </zip>
               </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <executions>
+          <execution>
+            <id>assemble-release-zip</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <finalName>${release.basename}</finalName>
+              <outputDirectory>${release.root}</outputDirectory>
+              <descriptors>
+                <descriptor>src/assembly/release.xml</descriptor>
+              </descriptors>
             </configuration>
           </execution>
         </executions>
@@ -721,20 +739,21 @@
         <plugins>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
+            <artifactId>maven-assembly-plugin</artifactId>
             <executions>
               <execution>
-                <id>prepare-nightly-zip</id>
+                <id>assemble-nightly-zip</id>
                 <phase>package</phase>
                 <goals>
-                  <goal>run</goal>
+                  <goal>single</goal>
                 </goals>
                 <configuration>
-                  <target>
-                    <mkdir dir="${release.root}/nightly" />
-                    <copy file="${release.zip.path}"
-                          tofile="${release.nightly.path}" />
-                  </target>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${release.nightly.basename}</finalName>
+                  <outputDirectory>${release.root}/nightly</outputDirectory>
+                  <descriptors>
+                    <descriptor>src/assembly/release.xml</descriptor>
+                  </descriptors>
                 </configuration>
               </execution>
             </executions>
