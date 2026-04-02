@@ -6,12 +6,31 @@
     <format>zip</format>
   </formats>
   <includeBaseDirectory>false</includeBaseDirectory>
+  <files>
+    <file>
+      <source>${project.build.directory}/${project.build.finalName}.jar</source>
+      <outputDirectory>${project.artifactId}</outputDirectory>
+      <destName>${project.artifactId}.jar</destName>
+    </file>
+    <file>
+      <source>${assembly.plugin.xml}</source>
+      <outputDirectory>${project.artifactId}</outputDirectory>
+      <destName>plugin.xml</destName>
+    </file>
+  </files>
   <fileSets>
     <fileSet>
-      <directory>${release.plugin.dir}</directory>
-      <outputDirectory>${project.artifactId}</outputDirectory>
+      <directory>${project.build.directory}/assembly-lib</directory>
+      <outputDirectory>${project.artifactId}/lib</outputDirectory>
       <includes>
-        <include>**</include>
+        <include>*.jar</include>
+      </includes>
+    </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/lib</directory>
+      <outputDirectory>${project.artifactId}/lib</outputDirectory>
+      <includes>
+        <include>*.jar</include>
       </includes>
     </fileSet>
   </fileSets>
