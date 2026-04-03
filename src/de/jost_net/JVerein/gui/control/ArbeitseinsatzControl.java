@@ -495,6 +495,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
             zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            zb.setMitgliedzahltSelbst(false);
             Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
                 Mitglied.class, (String) z.getAttribute("mitgliedid"));
             Beitragsgruppe b = m.getBeitragsgruppe();
