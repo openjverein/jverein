@@ -517,4 +517,10 @@ public class AbrechnungSEPAControl extends AbstractAbrechnungControl
   {
     return new AbrechnungSEPAParam(this, sepaVersion);
   }
+
+  @Override
+  protected void doStart() throws ApplicationException
+  {
+    new AbrechnungSEPA(getAbrechnungSEPAParam());
+  }
 }
