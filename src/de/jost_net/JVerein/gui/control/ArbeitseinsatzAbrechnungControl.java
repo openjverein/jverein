@@ -16,30 +16,18 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -48,10 +36,9 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -66,7 +53,6 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -140,259 +126,6 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     return suchjahr;
   }
 
-  public Button getPDFAusgabeButton()
-  {
-    Button b = new Button("PDF", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          startePDFAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Arbeitseinsatzüberprüfung");
-        }
-      }
-    }, null, false, "file-pdf.png");
-    return b;
-  }
-
-  public Button getVariablenButton() throws RemoteException
-  {
-    Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = MitgliedMap.getDummyMap(map);
-    Button b = new Button("Buchungstext Variablen",
-        new InsertVariableDialogAction(map), null, false, "bookmark.png");
-    return b;
-  }
-
-  public Button getCSVAusgabeButton()
-  {
-    Button b = new Button("CSV", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteCSVAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der CSV-Ausgabe der Arbeitseinsatzüberprüfung");
-        }
-      }
-    }, null, false, "xsd.png");
-    return b;
-  }
-
-  private void startePDFAuswertung() throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    fd.setFileName(VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this) + ".pdf");
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    final String title = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_TITEL, this);
-    final String subtitle = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL, this);
-    settings.setAttribute("lastdir", file.getParent());
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
-          reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Sollstunden", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Iststunden", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Differenz", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Stundensatz", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Gesamtbetrag", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.createHeader();
-          while (it.hasNext())
-          {
-            ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
-            {
-              reporter.addColumn((String) z.getAttribute("idnamevorname"),
-                  Element.ALIGN_LEFT);
-            }
-            else
-            {
-              reporter.addColumn((String) z.getAttribute("namevorname"),
-                  Element.ALIGN_LEFT);
-            }
-            reporter.addColumn((Double) z.getAttribute("soll"));
-            reporter.addColumn((Double) z.getAttribute("ist"));
-            reporter.addColumn((Double) z.getAttribute("differenz"));
-            reporter.addColumn((Double) z.getAttribute("stundensatz"));
-            reporter.addColumn((Double) z.getAttribute("gesamtbetrag"));
-          }
-          reporter.closeTable();
-          reporter.close();
-          fos.close();
-          GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          GUI.getCurrentView().reload();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-          throw new ApplicationException(e);
-        }
-        FileViewer.show(file);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-  }
-
-  private void starteCSVAuswertung() throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    fd.setFileName(VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this) + ".csv");
-    fd.setFilterExtensions(new String[] { "*.csv" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".csv"))
-    {
-      s = s + ".csv";
-    }
-    final File file = new File(s);
-    final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    settings.setAttribute("lastdir", file.getParent());
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
-              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-
-          final String[] header = new String[] { "name", "vorname", "strasse",
-              "adressierungszusatz", "plz", "ort", "anrede", "telefonprivat",
-              "telefondienstlich", "handy", "email", "soll", "ist", "differenz",
-              "stundensatz", "gesamtbetrag" };
-          writer.writeHeader(header);
-          // set up some data to write
-          while (it.hasNext())
-          {
-            ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            final HashMap<String, ? super Object> data1 = new HashMap<>();
-            Mitglied m = (Mitglied) z.getAttribute("mitglied");
-            data1.put(header[0], m.getName());
-            data1.put(header[1], m.getVorname());
-            data1.put(header[2], m.getStrasse());
-            data1.put(header[3], m.getAdressierungszusatz());
-            data1.put(header[4], m.getPlz());
-            data1.put(header[5], m.getOrt());
-            data1.put(header[6], m.getAnrede());
-            data1.put(header[7], m.getTelefonprivat());
-            data1.put(header[8], m.getTelefondienstlich());
-            data1.put(header[9], m.getHandy());
-            data1.put(header[10], m.getEmail());
-            data1.put(header[11], z.getAttribute("soll"));
-            data1.put(header[12], z.getAttribute("ist"));
-            data1.put(header[13], z.getAttribute("differenz"));
-            data1.put(header[14], z.getAttribute("stundensatz"));
-            data1.put(header[15], z.getAttribute("gesamtbetrag"));
-            writer.write(data1, header);
-          }
-          writer.close();
-          GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          GUI.getCurrentView().reload();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-          throw new ApplicationException(e);
-        }
-        FileViewer.show(file);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-
-  }
-
   public TextInput getBuchungstext() throws RemoteException
   {
     if (buchungstext != null)
@@ -439,6 +172,45 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     mitgliedZahltSelbst
         .setName(" *Falls ein abweichender Zahler konfiguriert ist.");
     return mitgliedZahltSelbst;
+  }
+
+  public Button getVariablenButton() throws RemoteException
+  {
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = MitgliedMap.getDummyMap(map);
+    Button b = new Button("Buchungstext Variablen",
+        new InsertVariableDialogAction(map), null, false, "bookmark.png");
+    return b;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      if (arbeitseinsatzueberpruefungList
+          .getArbeitseinsatzUeberpruefungList() == null)
+      {
+        throw new ApplicationException(
+            "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
+      }
+      try
+      {
+        arbeitseinsatzueberpruefungList.getArbeitseinsatzUeberpruefungList()
+            .export(
+                VorlageUtil.getName(
+                    VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_TITEL, this),
+                VorlageUtil.getName(
+                    VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL, this),
+                VorlageUtil.getName(
+                    VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this),
+                art);
+      }
+      catch (OperationCanceledException ex)
+      {
+        // Ignorieren und Dialog nicht schließen
+        return;
+      }
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
   private void starteArbeitseinsatzGenerierung()

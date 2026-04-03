@@ -23,6 +23,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -86,8 +87,8 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ARBEITSEINSATZPRUEFEN, false, "question-circle.png");
-    buttons2.addButton(control.getPDFAusgabeButton());
-    buttons2.addButton(control.getCSVAusgabeButton());
+    buttons2.addButton(control.exportButton(ExportArt.PDF));
+    buttons2.addButton(control.exportButton(ExportArt.CSV));
     buttons2.addButton(control.getVariablenButton());
     buttons2.addButton(control.getPruefenButton());
     buttons2.addButton(control.getStartButton(this));

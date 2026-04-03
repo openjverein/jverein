@@ -29,7 +29,6 @@ import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.util.ApplicationException;
@@ -51,7 +50,8 @@ public class ArbeitseinsatzUeberpruefungList extends JVereinTablePart
     this.schluessel = schluessel;
   }
 
-  public Part getArbeitseinsatzUeberpruefungList() throws ApplicationException
+  public JVereinTablePart getArbeitseinsatzUeberpruefungList()
+      throws ApplicationException
   {
     ArrayList<ArbeitseinsatzZeile> zeile = null;
     try

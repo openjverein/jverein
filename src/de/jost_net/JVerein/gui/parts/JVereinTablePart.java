@@ -16,21 +16,54 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.supercsv.cellprocessor.constraint.NotNull;
+import org.supercsv.cellprocessor.ift.CellProcessor;
+import org.supercsv.io.CsvMapWriter;
+import org.supercsv.io.ICsvMapWriter;
+import org.supercsv.prefs.CsvPreference;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Element;
+
+import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.Reporter;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class JVereinTablePart extends TablePart
 {
+
+  private Control tableControl;
+
+  public enum ExportArt
+  {
+    PDF,
+    CSV
+  }
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -81,6 +114,8 @@ public class JVereinTablePart extends TablePart
   {
     Context ctx = super.createFeatureEventContext(e, data);
 
+    this.tableControl = ctx.control;
+
     if (!e.equals(Feature.Event.PAINT))
     {
       return ctx;
@@ -124,4 +159,125 @@ public class JVereinTablePart extends TablePart
     }
   }
 
+  public void export(String title, String subtitle, String filename,
+      ExportArt art) throws ApplicationException
+  {
+    if (tableControl.isDisposed())
+      return;
+
+    if (!(tableControl instanceof Table))// && !(tableControl instanceof Tree))
+      return;
+
+    try
+    {
+      Table t = (Table) tableControl;
+
+      TableItem[] rows = t.getItems();
+      if (rows == null || rows.length == 0)
+        return;
+
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("Ausgabedatei wählen.");
+
+      Settings settings = new Settings(this.getClass());
+      String path = settings.getString("lastdir",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      String extension = "";
+      switch (art)
+      {
+        case CSV:
+          extension = ".csv";
+          break;
+        case PDF:
+          extension = ".pdf";
+          break;
+      }
+
+      fd.setFileName(filename);
+      fd.setFilterExtensions(new String[] { "*" + extension });
+
+      final String s = fd.open();
+
+      if (s == null || s.length() == 0)
+      {
+        throw new OperationCanceledException("Abgebrochen");
+      }
+
+      File file = new File(s);
+      settings.setAttribute("lastdir", file.getParent());
+
+      switch (art)
+      {
+        case CSV:
+          ICsvMapWriter writer = null;
+
+          writer = new CsvMapWriter(new FileWriter(file),
+              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
+
+          CellProcessor[] cellProcessor = new CellProcessor[t.getColumnCount()];
+          String[] header = new String[t.getColumnCount()];
+
+          int n = 0;
+          for (TableColumn col : t.getColumns())
+          {
+            header[n] = col.getText();
+            cellProcessor[n++] = new NotNull();
+          }
+          writer.writeHeader(header);
+
+          int cols = t.getColumnCount();
+          for (TableItem row : rows)
+          {
+            Map<String, Object> csvzeile = new HashMap<>();
+            for (int i = 0; i < cols; ++i)
+            {
+              csvzeile.put(header[i], row.getText(i));
+            }
+            writer.write(csvzeile, header, cellProcessor);
+          }
+          writer.close();
+          break;
+        case PDF:
+          FileOutputStream fos = new FileOutputStream(file);
+          Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
+              20, 20, 20, 20);
+
+          for (TableColumn col : t.getColumns())
+          {
+            reporter.addHeaderColumn(col.getText(), col.getStyle(),
+                col.getWidth(), BaseColor.LIGHT_GRAY);
+          }
+          reporter.createHeader();
+          ArrayList<Rectangle> r = new ArrayList<>();
+          int colCount = t.getColumnCount();
+          for (TableItem row : rows)
+          {
+            for (int i = 0; i < colCount; ++i)
+            {
+              r.add(row.getTextBounds(i));
+              reporter.addColumn(row.getText(i), Element.ALIGN_LEFT);
+            }
+          }
+          reporter.closeTable();
+          reporter.close();
+          fos.close();
+          break;
+      }
+
+      FileViewer.show(file);
+    }
+    catch (OperationCanceledException e)
+    {
+      throw new OperationCanceledException(e);
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim erstellen der Auswertung.", e);
+      throw new ApplicationException("Fehler beim erstellen der Auswertung.");
+    }
+  }
 }
