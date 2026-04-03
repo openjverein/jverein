@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
+import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
@@ -69,7 +70,10 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -91,6 +95,14 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
 
   private JVereinTablePart arbeitseinsatzList;
+
+  private TextInput buchungstext;
+
+  private SelectInput zahlungsweg;
+
+  private CheckboxInput mitgliedZahltSelbst;
+
+  private DateInput faelligkeit;
 
   public ArbeitseinsatzControl(AbstractView view)
   {
@@ -256,6 +268,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
       {
         try
         {
+          saveSettings();
           starteArbeitseinsatzGenerierung();
         }
         catch (RemoteException e)
@@ -467,10 +480,85 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
 
   }
 
-  private void starteArbeitseinsatzGenerierung() throws RemoteException
+  public TextInput getBuchungstext() throws RemoteException
+  {
+    if (buchungstext != null)
+    {
+      return buchungstext;
+    }
+    buchungstext = new TextInput(settings.getString("buchungstext", ""), 140);
+    buchungstext.setMandatory(true);
+    return buchungstext;
+  }
+
+  public SelectInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+    Zahlungsweg weg = new Zahlungsweg(Zahlungsweg.STANDARD);
+    String wegsetting = settings.getString("zahlungsweg", "");
+    if (wegsetting.length() > 0)
+    {
+      try
+      {
+        weg = new Zahlungsweg(Integer.valueOf(wegsetting));
+      }
+      catch (Exception e)
+      {
+        //
+      }
+    }
+    zahlungsweg = new SelectInput(Zahlungsweg.getArray(), weg);
+    zahlungsweg.setPleaseChoose("Standard");
+    return zahlungsweg;
+  }
+
+  public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
+  {
+    if (mitgliedZahltSelbst != null)
+    {
+      return mitgliedZahltSelbst;
+    }
+    mitgliedZahltSelbst = new CheckboxInput(
+        settings.getBoolean("mitgliedzahltselbst", false));
+    mitgliedZahltSelbst
+        .setName(" *Falls ein abweichender Zahler konfiguriert ist.");
+    return mitgliedZahltSelbst;
+  }
+
+  public DateInput getFaelligkeit() throws RemoteException
+  {
+    if (faelligkeit != null)
+    {
+      return faelligkeit;
+    }
+    Calendar cal = Calendar.getInstance();
+    Bankarbeitstage bat = new Bankarbeitstage();
+    cal = bat.getCalendar(cal,
+        1 + (Integer) Einstellungen.getEinstellung(Property.SEPADATUMOFFSET));
+    this.faelligkeit = new DateInput(cal.getTime(), new JVDateFormatTTMMJJJJ());
+    faelligkeit.setMandatory(true);
+    return faelligkeit;
+  }
+
+  private void starteArbeitseinsatzGenerierung()
+      throws RemoteException, ApplicationException
   {
     final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    final int jahr = (Integer) getSuchJahr().getValue();
+    String text = (String) getBuchungstext().getValue();
+    if (text == null || text.isEmpty())
+    {
+      throw new ApplicationException("Bitte Buchungstext eingeben.");
+    }
+    Date faelligkeit = (Date) getFaelligkeit().getValue();
+    if (faelligkeit == null)
+    {
+      throw new ApplicationException("Bitte Fälligkeit eingeben.");
+    }
+    Zahlungsweg zahlungsweg = (Zahlungsweg) getZahlungsweg().getValue();
+    Boolean mitgliedzahltselbst = (Boolean) getMitgliedzahltSelbst().getValue();
 
     BackgroundTask t = new BackgroundTask()
     {
@@ -488,13 +576,14 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
             Double betrag = (Double) z.getAttribute("gesamtbetrag");
             betrag = betrag * -1;
             zb.setBetrag(betrag);
-            zb.setBuchungstext(String.format("Arbeitseinsatz %d", jahr));
-            zb.setFaelligkeit(new Date());
-            zb.setStartdatum(new Date());
+            zb.setBuchungstext(text);
+            zb.setFaelligkeit(faelligkeit);
+            zb.setStartdatum(faelligkeit);
             zb.setIntervall(IntervallZusatzzahlung.KEIN);
             zb.setMitglied(
                 Integer.valueOf((String) z.getAttribute("mitgliedid")));
-            zb.setZahlungsweg(new Zahlungsweg(Zahlungsweg.STANDARD));
+            zb.setZahlungsweg(zahlungsweg);
+            zb.setMitgliedzahltSelbst(mitgliedzahltselbst);
             Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
                 Mitglied.class, (String) z.getAttribute("mitgliedid"));
             Beitragsgruppe b = m.getBeitragsgruppe();
@@ -703,4 +792,34 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     return arbeitseinsaetze;
   }
 
+  protected void saveSettings()
+  {
+    try
+    {
+      settings.setAttribute("buchungstext",
+          (String) getBuchungstext().getValue());
+      Zahlungsweg weg = (Zahlungsweg) getZahlungsweg().getValue();
+      if (weg != null)
+      {
+        settings.setAttribute("zahlungsweg", weg.getKey());
+      }
+      else
+      {
+        settings.setAttribute("zahlungsweg", "");
+      }
+      Boolean tmp = (Boolean) getMitgliedzahltSelbst().getValue();
+      if (tmp != null)
+      {
+        settings.setAttribute("mitgliedzahltselbst", tmp);
+      }
+      else
+      {
+        settings.setAttribute("mitgliedzahltselbst", "false");
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler", re);
+    }
+  }
 }

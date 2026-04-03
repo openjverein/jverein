@@ -57,6 +57,13 @@ public class ArbeitseinsatzUeberpruefungView extends AbstractView
     });
     group.addLabelPair("Auswertung", aui);
 
+    LabelGroup group2 = new LabelGroup(getParent(), "Zusatzbetrag");
+    group2.addLabelPair("Buchungstext", control.getBuchungstext());
+    group2.addLabelPair("Fälligkeit", control.getFaelligkeit());
+    group2.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+    group2.addLabelPair("Mitglied zahlt selbst",
+        control.getMitgliedzahltSelbst());
+
     control.getArbeitseinsatzUeberpruefungList().paint(getParent());
     ButtonArea buttons2 = new ButtonArea();
     buttons2.addButton("Hilfe", new DokumentationAction(),
