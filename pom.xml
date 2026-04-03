@@ -26,6 +26,7 @@
     <hibiscus.extracted.dir>${project.basedir}/../hibiscus-${hibiscus.version}</hibiscus.extracted.dir>
     <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
     <swt.version>3.128.0</swt.version>
+    <!-- Wird nur zum Kompilieren benötigt, da die SWT-Bibliothek zur Laufzeit von Jameica bereitgestellt wird -->
     <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
     <icu4j.version>52.2</icu4j.version>
     <jaxb.api.version>2.4.0-b180725.0427</jaxb.api.version>
@@ -438,99 +439,7 @@
     </plugins>
   </build>
 
-  <!-- Selektiert die SWT-Implementierung basierend auf dem Betriebssystem und der Architektur des Build-Hosts -->
   <profiles>
-    <profile>
-      <id>swt-linux-amd64</id>
-      <activation>
-        <os>
-          <name>Linux</name>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.gtk.linux.x86_64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-linux-x86_64</id>
-      <activation>
-        <os>
-          <name>Linux</name>
-          <arch>x86_64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.gtk.linux.x86_64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-linux-aarch64</id>
-      <activation>
-        <os>
-          <name>Linux</name>
-          <arch>aarch64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.gtk.linux.aarch64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-macos-amd64</id>
-      <activation>
-        <os>
-          <family>mac</family>
-          <arch>x86_64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.cocoa.macosx.x86_64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-macos-aarch64</id>
-      <activation>
-        <os>
-          <family>mac</family>
-          <arch>aarch64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.cocoa.macosx.aarch64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-windows-amd64</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>amd64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
-      </properties>
-    </profile>
-
-    <profile>
-      <id>swt-windows-x86_64</id>
-      <activation>
-        <os>
-          <family>windows</family>
-          <arch>x86_64</arch>
-        </os>
-      </activation>
-      <properties>
-        <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
-      </properties>
-    </profile>
-
     <!-- Profil für die Bereitstellung von Jameica- und Hibiscus-Artefakten im lokalen Maven-Repository, wenn sie nicht bereits vorhanden sind -->
     <profile>
       <id>installed-host-artifacts</id>
