@@ -810,7 +810,7 @@ public class Einstellungen
   {
     IMAPCopyData imapCopyData = new IMAPCopyData(
         (Boolean) getEinstellung(Property.COPYTOIMAPFOLDER),
-        (String) getEinstellung(Property.IMAPAUTHUSER), getSmtpAuthPwd(),
+        (String) getEinstellung(Property.IMAPAUTHUSER), getImapAuthPwd(),
         (String) getEinstellung(Property.IMAPHOST),
         (String) getEinstellung(Property.IMAPPORT),
         (Boolean) getEinstellung(Property.IMAPSSL),
