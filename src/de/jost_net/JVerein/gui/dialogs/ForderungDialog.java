@@ -113,7 +113,7 @@ public class ForderungDialog extends AbstractDialog<Boolean>
       right.addLabelPair("Rechnung erstellen", control.getRechnung());
       if (einstellungSpeicherungAnzeigen)
       {
-        right.addLabelPair("Rechnung als Buchungsdokument speichern",
+        right.addLabelPair("Als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
       right.addInput(control.getRechnungsformular());

@@ -16,30 +16,23 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
+import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
-import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -55,16 +48,11 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
-import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 {
@@ -74,15 +62,21 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 
   private ArbeitseinsatzUeberpruefungInput auswertungschluessel = null;
 
-  private TextInput buchungstext;
+  private Zusatzbetrag zusatzb;
 
-  private SelectInput zahlungsweg;
-
-  private CheckboxInput mitgliedZahltSelbst;
+  private final ZusatzbetragPart part;
 
   public ArbeitseinsatzAbrechnungControl() throws RemoteException
   {
     super();
+
+    zusatzb = getZusatzbetrag();
+    part = new ZusatzbetragPart(zusatzb, false);
+  }
+
+  public ZusatzbetragPart getPart()
+  {
+    return part;
   }
 
   public ArbeitseinsatzUeberpruefungInput getAuswertungSchluessel()
@@ -93,6 +87,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       return auswertungschluessel;
     }
     auswertungschluessel = new ArbeitseinsatzUeberpruefungInput(1);
+    auswertungschluessel.addListener(new FilterListener());
     return auswertungschluessel;
   }
 
@@ -126,63 +121,6 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     return suchjahr;
   }
 
-  public TextInput getBuchungstext() throws RemoteException
-  {
-    if (buchungstext != null)
-    {
-      return buchungstext;
-    }
-    buchungstext = new TextInput(settings.getString("buchungstext", ""), 140);
-    buchungstext.setMandatory(true);
-    return buchungstext;
-  }
-
-  public SelectInput getZahlungsweg() throws RemoteException
-  {
-    if (zahlungsweg != null)
-    {
-      return zahlungsweg;
-    }
-    Zahlungsweg weg = new Zahlungsweg(Zahlungsweg.STANDARD);
-    String wegsetting = settings.getString("zahlungsweg", "");
-    if (wegsetting.length() > 0)
-    {
-      try
-      {
-        weg = new Zahlungsweg(Integer.valueOf(wegsetting));
-      }
-      catch (Exception e)
-      {
-        //
-      }
-    }
-    zahlungsweg = new SelectInput(Zahlungsweg.getArray(), weg);
-    zahlungsweg.setPleaseChoose("Standard");
-    return zahlungsweg;
-  }
-
-  public CheckboxInput getMitgliedzahltSelbst() throws RemoteException
-  {
-    if (mitgliedZahltSelbst != null)
-    {
-      return mitgliedZahltSelbst;
-    }
-    mitgliedZahltSelbst = new CheckboxInput(
-        settings.getBoolean("mitgliedzahltselbst", false));
-    mitgliedZahltSelbst
-        .setName(" *Falls ein abweichender Zahler konfiguriert ist.");
-    return mitgliedZahltSelbst;
-  }
-
-  public Button getVariablenButton() throws RemoteException
-  {
-    Map<String, Object> map = new AllgemeineMap().getMap(null);
-    map = MitgliedMap.getDummyMap(map);
-    Button b = new Button("Buchungstext Variablen",
-        new InsertVariableDialogAction(map), null, false, "bookmark.png");
-    return b;
-  }
-
   public Button exportButton(ExportArt art) throws ApplicationException
   {
     return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
@@ -213,110 +151,68 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
-  private void starteArbeitseinsatzGenerierung()
-      throws RemoteException, ApplicationException
+  private Zusatzbetrag getZusatzbetrag() throws RemoteException
   {
-    final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
-    String text = (String) getBuchungstext().getValue();
-    Date faelligkeit = (Date) getFaelligkeit().getValue();
-    Zahlungsweg zahlungsweg = (Zahlungsweg) getZahlungsweg().getValue();
-    Boolean mitgliedzahltselbst = (Boolean) getMitgliedzahltSelbst().getValue();
-
-    BackgroundTask t = new BackgroundTask()
+    Zusatzbetrag zusatzb = (Zusatzbetrag) Einstellungen.getDBService()
+        .createObject(Zusatzbetrag.class, null);
+    zusatzb.setStartdatum(new Date());
+    zusatzb.setBuchungstext(settings.getString("buchungstext", ""));
+    zusatzb.setBetrag(0.0);
+    String zahlungsweg = settings.getString("zahlungsweg", "");
+    if (zahlungsweg.length() > 0)
     {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
+      try
       {
-        try
-        {
-          DBTransaction.starten();
-          monitor.setStatusText("Starte die Generierung der Zusatzbeträge");
-          monitor.setStatus(ProgressMonitor.STATUS_RUNNING);
-
-          int i = 0;
-          while (it.hasNext())
-          {
-            if (isInterrupted())
-            {
-              monitor.setStatus(ProgressMonitor.STATUS_CANCEL);
-              monitor.setStatusText("Generierung abgebrochen.");
-              monitor.setPercentComplete(100);
-              throw new OperationCanceledException();
-            }
-
-            ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
-            Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
-                Mitglied.class, (String) z.getAttribute("mitgliedid"));
-            Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
-                .createObject(Zusatzbetrag.class, null);
-            Double betrag = (Double) z.getAttribute("gesamtbetrag");
-            betrag = betrag * -1;
-            zb.setBetrag(betrag);
-            String vzweck = text;
-            boolean ohneLesefelder = !vzweck
-                .contains(Einstellungen.LESEFELD_PRE);
-            Map<String, Object> map = new AllgemeineMap().getMap(null);
-            map = new MitgliedMap().getMap(m, map, ohneLesefelder);
-            try
-            {
-              vzweck = VelocityTool.eval(map, vzweck);
-            }
-            catch (IOException e)
-            {
-              Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-            }
-            zb.setBuchungstext(vzweck);
-            zb.setFaelligkeit(faelligkeit);
-            zb.setStartdatum(faelligkeit);
-            zb.setIntervall(IntervallZusatzzahlung.KEIN);
-            zb.setMitglied(
-                Integer.valueOf((String) z.getAttribute("mitgliedid")));
-            zb.setZahlungsweg(zahlungsweg);
-            zb.setMitgliedzahltSelbst(mitgliedzahltselbst);
-            Beitragsgruppe b = m.getBeitragsgruppe();
-            zb.setBuchungsart(b.getBuchungsart());
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-            {
-              zb.setBuchungsklasseId(b.getBuchungsklasseId());
-            }
-            zb.setSteuer(b.getSteuer());
-            zb.store();
-            i++;
-            monitor.setPercentComplete(100 * i / it.size());
-            monitor.setStatusText("Zusatzbetrag generiert für " + m.getName()
-                + ", " + m.getVorname() + " über "
-                + Einstellungen.DECIMALFORMAT.format(betrag) + "€");
-          }
-          monitor.setPercentComplete(100);
-          DBTransaction.commit();
-        }
-        catch (Exception e)
-        {
-          DBTransaction.rollback();
-          Logger.error("Fehler beim Zusatzbeträge erstellen", e);
-          GUI.getStatusBar().setErrorText(
-              "Fehler beim Zusatzbeträge erstellen: " + e.getMessage());
-          throw new ApplicationException("Fehler beim Zusatzbeträge erstellen",
-              e);
-        }
-
+        Zahlungsweg weg = new Zahlungsweg(Integer.valueOf(zahlungsweg));
+        zusatzb.setZahlungsweg(weg);
       }
-
-      @Override
-      public void interrupt()
+      catch (Exception e)
       {
         //
       }
+    }
+    zusatzb.setMitgliedzahltSelbst(
+        settings.getBoolean("mitgliedzahltselbst", false));
+    return zusatzb;
+  }
 
-      @Override
-      public boolean isInterrupted()
+  public List<Zusatzbetrag> getZusatzbetraegeList()
+      throws RemoteException, ApplicationException
+  {
+    final GenericIterator<ArbeitseinsatzZeile> it = getIterator();
+    List<Zusatzbetrag> list = new ArrayList<>();
+    while (it.hasNext())
+    {
+      ArbeitseinsatzZeile z = (ArbeitseinsatzZeile) it.next();
+      Mitglied m = (Mitglied) Einstellungen.getDBService()
+          .createObject(Mitglied.class, (String) z.getAttribute("mitgliedid"));
+      Zusatzbetrag zb = (Zusatzbetrag) Einstellungen.getDBService()
+          .createObject(Zusatzbetrag.class, null);
+      Double betrag = (Double) z.getAttribute("gesamtbetrag");
+      betrag = betrag * -1;
+      zb.setBetrag(betrag);
+      zb.setBuchungstext((String) part.getBuchungstext().getValue());
+      zb.setFaelligkeit((Date) getFaelligkeit().getValue());
+      zb.setIntervall(IntervallZusatzzahlung.KEIN);
+      zb.setMitglied(Integer.parseInt(m.getID()));
+      zb.setStartdatum((Date) getFaelligkeit().getValue());
+      zb.setZahlungsweg((Zahlungsweg) part.getZahlungsweg().getValue());
+      zb.setMitgliedzahltSelbst(
+          (Boolean) part.getMitgliedzahltSelbst().getValue());
+      Beitragsgruppe b = m.getBeitragsgruppe();
+      zb.setBuchungsart(b.getBuchungsart());
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
       {
-        return false;
+        zb.setBuchungsklasseId(b.getBuchungsklasseId());
       }
-    };
-    Application.getController().start(t);
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        zb.setSteuer(b.getSteuer());
+      }
+      list.add(zb);
+    }
+    return list;
   }
 
   private GenericIterator<ArbeitseinsatzZeile> getIterator()
@@ -401,8 +297,8 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     try
     {
       settings.setAttribute("buchungstext",
-          (String) getBuchungstext().getValue());
-      Zahlungsweg weg = (Zahlungsweg) getZahlungsweg().getValue();
+          (String) part.getBuchungstext().getValue());
+      Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
       if (weg != null)
       {
         settings.setAttribute("zahlungsweg", weg.getKey());
@@ -411,7 +307,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       {
         settings.setAttribute("zahlungsweg", "");
       }
-      Boolean tmp = (Boolean) getMitgliedzahltSelbst().getValue();
+      Boolean tmp = (Boolean) part.getMitgliedzahltSelbst().getValue();
       if (tmp != null)
       {
         settings.setAttribute("mitgliedzahltselbst", tmp);
@@ -435,6 +331,10 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 
     try
     {
+      // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
+      // Abrechnungslauf am Anfang geholt.
+      checkVerrechnungskonto(bugs);
+
       ArrayList<ArbeitseinsatzZeile> zeilen = arbeitseinsatzueberpruefungList
           .getInfo();
       for (ArbeitseinsatzZeile zeile : zeilen)
@@ -442,11 +342,11 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
         Mitglied m = (Mitglied) Einstellungen.getDBService().createObject(
             Mitglied.class, (String) zeile.getAttribute("mitgliedid"));
         Mitglied zahler = m.getZahler();
-        if ((Boolean) getMitgliedzahltSelbst().getValue())
+        if ((Boolean) part.getMitgliedzahltSelbst().getValue())
         {
           zahler = m;
         }
-        Zahlungsweg weg = (Zahlungsweg) getZahlungsweg().getValue();
+        Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
         if ((weg == null
             && zahler.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
             || (weg != null && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT))
@@ -480,28 +380,15 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
   }
 
   @Override
-  protected AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
-      throws RemoteException, ApplicationException
-  {
-    // wird hier nicht verwendet
-    return null;
-  }
-
-  @Override
   protected String checkInput()
   {
     try
     {
-      int i = (Integer) auswertungschluessel.getValue();
-      if (i != ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG)
-      {
-        return ("Auswertung wird nur bei Minderleistung durchgeführt");
-      }
       if (getFaelligkeit().getValue() == null)
       {
         return ("Bitte Fälligkeit eingeben");
       }
-      Zahlungsweg weg = (Zahlungsweg) getZahlungsweg().getValue();
+      Zahlungsweg weg = (Zahlungsweg) part.getZahlungsweg().getValue();
       if (getFaelligkeit().getValue() != null && weg != null
           && weg.getKey() == Zahlungsweg.BASISLASTSCHRIFT)
       {
@@ -511,10 +398,22 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
         }
       }
 
-      if (getBuchungstext().getValue() == null
-          || ((String) getBuchungstext().getValue()).isEmpty())
+      if (part.getBuchungstext().getValue() == null
+          || ((String) part.getBuchungstext().getValue()).isEmpty())
       {
         return ("Bitte Buchungstext eingeben");
+      }
+      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN)
+          && (boolean) getRechnung().getValue())
+      {
+        if (getRechnungsformular().getValue() == null)
+        {
+          return ("Bitte Rechnungsformular auswählen");
+        }
+        if (getRechnungsdatum().getValue() == null)
+        {
+          return ("Bitte Rechnungsdatum auswählen");
+        }
       }
     }
     catch (RemoteException re)
@@ -525,8 +424,9 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
   }
 
   @Override
-  protected void doStart() throws ApplicationException, RemoteException
+  protected AbrechnungSEPAParam getSEPAParam(SepaVersion sepaVersion)
+      throws RemoteException, ApplicationException
   {
-    starteArbeitseinsatzGenerierung();
+    return new AbrechnungSEPAParam(this, sepaVersion);
   }
 }

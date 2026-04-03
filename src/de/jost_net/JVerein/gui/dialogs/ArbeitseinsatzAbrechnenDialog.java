@@ -21,9 +21,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -44,7 +46,7 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
   {
     super(position);
     super.setSize(950, SWT.DEFAULT);
-    setTitle("Auswertung Arbeitseinsätze");
+    setTitle("Abrechnung Arbeitseinsätze");
   }
 
   @Override
@@ -61,14 +63,42 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
 
     left.addHeadline("Filter");
     left.addLabelPair("Jahr", control.getSuchJahr());
-    left.addLabelPair("Auswertung", control.getAuswertungSchluessel());
 
-    right.addHeadline("Abrechnungsparameter");
-    right.addLabelPair("Buchungstext", control.getBuchungstext());
-    right.addLabelPair("Fälligkeit", control.getFaelligkeit());
-    right.addLabelPair("Zahlungsweg", control.getZahlungsweg());
-    right.addLabelPair("Mitglied zahlt selbst",
-        control.getMitgliedzahltSelbst());
+    left.addHeadline("Abrechnungsparameter");
+    left.addLabelPair("Zahlungsgrund", control.getPart().getBuchungstext());
+    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
+    left.addLabelPair("Zahlungsweg", control.getPart().getZahlungsweg());
+    left.addLabelPair("Mitglied zahlt selbst",
+        control.getPart().getMitgliedzahltSelbst());
+    left.addHeadline("Sollbuchungen");
+    left.addLabelPair("Sollbuchungen zusammenfassen",
+        control.getSollbuchungenZusammenfassen());
+
+    right.addHeadline("Lastschriften");
+    right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
+    right.addLabelPair("SEPA-Check temporär deaktivieren",
+        control.getSEPACheck());
+    right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
+    right.addInput(control.getAbbuchungsausgabe());
+
+    boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.RECHNUNGENANZEIGEN);
+    boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+        && JVereinPlugin.isArchiveServiceActive();
+    if (einstellungRechnungAnzeigen)
+    {
+      right.addHeadline("Rechnungen");
+      right.addLabelPair("Rechnung erstellen", control.getRechnung());
+      if (einstellungSpeicherungAnzeigen)
+      {
+        right.addLabelPair("Als Buchungsdokument speichern",
+            control.getRechnungsdokumentSpeichern());
+      }
+      right.addInput(control.getRechnungsformular());
+      right.addInput(control.getRechnungstext("Wenn leer Zahlungsgrund"));
+      right.addInput(control.getRechnungsdatum());
+    }
 
     GridData gridData = new GridData(GridData.FILL_BOTH);
     LabelGroup liste = new LabelGroup(parent, "", true);
@@ -84,16 +114,18 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
     gridData.heightHint = 150;
     below.getComposite().setLayoutData(gridData);
 
-    ButtonArea buttons2 = new ButtonArea();
-    buttons2.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ARBEITSEINSATZPRUEFEN, false, "question-circle.png");
-    buttons2.addButton(control.exportButton(ExportArt.PDF));
-    buttons2.addButton(control.exportButton(ExportArt.CSV));
-    buttons2.addButton(control.getVariablenButton());
-    buttons2.addButton(control.getPruefenButton());
-    buttons2.addButton(control.getStartButton(this));
-    buttons2.addButton(control.getAbbrechenButton(this));
-    buttons2.paint(parent);
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(
+        control.getHelpButton(DokumentationUtil.ARBEITSEINSATZPRUEFEN));
+    buttons.addButton(control.getZahlungsgrundVariablenButton());
+    if (einstellungRechnungAnzeigen)
+    {
+      buttons.addButton(control.getRechnungstextVariablenButton());
+    }
+    buttons.addButton(control.getPruefenButton());
+    buttons.addButton(control.getStartButton(this));
+    buttons.addButton(control.getAbbrechenButton(this));
+    buttons.paint(parent);
   }
 
   @Override

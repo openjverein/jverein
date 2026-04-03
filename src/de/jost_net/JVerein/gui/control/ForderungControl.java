@@ -10,7 +10,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.ZusatzbetragVorlageAuswahlAction;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
-import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
@@ -410,11 +409,5 @@ public class ForderungControl extends AbstractAbrechnungControl
       throws RemoteException, ApplicationException
   {
     return new AbrechnungSEPAParam(this, sepaVersion);
-  }
-
-  @Override
-  public void doStart() throws ApplicationException
-  {
-    new AbrechnungSEPA(getAbrechnungSEPAParam());
   }
 }

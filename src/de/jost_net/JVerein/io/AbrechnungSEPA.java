@@ -459,7 +459,8 @@ public class AbrechnungSEPA extends SEPASupport
       ProgressMonitor monitor) throws Exception
   {
     if (param.abbuchungsmodus != Abrechnungsmodi.KEINBEITRAG
-        && param.abbuchungsmodus != Abrechnungsmodi.FORDERUNG)
+        && param.abbuchungsmodus != Abrechnungsmodi.FORDERUNG
+        && param.abbuchungsmodus != Abrechnungsmodi.ARBEITSEINSATZ)
     {
       DBIterator<Mitglied> list = getAbrechnenMitgliederIt(param);
       // Sätze im Resultset

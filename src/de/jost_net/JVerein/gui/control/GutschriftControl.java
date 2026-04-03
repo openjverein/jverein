@@ -955,10 +955,4 @@ public class GutschriftControl extends AbstractAbrechnungControl
   {
     return new AbrechnungSEPAParam(this, sepaVersion);
   }
-
-  @Override
-  public void doStart() throws ApplicationException
-  {
-    // wird hier nicht benutzt
-  }
 }

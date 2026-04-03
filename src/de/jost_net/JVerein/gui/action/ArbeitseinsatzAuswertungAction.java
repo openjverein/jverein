@@ -23,7 +23,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.dialogs.ArbeitseinsatzAbrechnenDialog;
+import de.jost_net.JVerein.gui.dialogs.ArbeitseinsatzAuswertungDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -32,9 +32,9 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Ruft den Abrechnungsdialog für Arbeitseinsätze auf
+ * Ruft den Auswertungsdialog für Arbeitseinsätze auf
  */
-public class ArbeitseinsatzAbrechnenAction implements Action
+public class ArbeitseinsatzAuswertungAction implements Action
 {
 
   @Override
@@ -42,7 +42,7 @@ public class ArbeitseinsatzAbrechnenAction implements Action
   {
     try
     {
-      ArbeitseinsatzAbrechnenDialog dialog = new ArbeitseinsatzAbrechnenDialog(
+      ArbeitseinsatzAuswertungDialog dialog = new ArbeitseinsatzAuswertungDialog(
           AbstractDialog.POSITION_CENTER);
       dialog.open();
     }

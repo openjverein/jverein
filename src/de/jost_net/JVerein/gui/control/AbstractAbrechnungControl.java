@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.JVereinDateInput;
 import de.jost_net.JVerein.gui.menu.BugListMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.Bankarbeitstage;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
@@ -589,7 +590,7 @@ public abstract class AbstractAbrechnungControl
             }
           }
           saveSettings();
-          doStart();
+          new AbrechnungSEPA(getAbrechnungSEPAParam());
           dialog.close();
         }
         catch (ApplicationException e)
@@ -1078,7 +1079,4 @@ public abstract class AbstractAbrechnungControl
       throws RemoteException, ApplicationException;
 
   protected abstract String checkInput();
-
-  protected abstract void doStart()
-      throws RemoteException, ApplicationException;
 }
