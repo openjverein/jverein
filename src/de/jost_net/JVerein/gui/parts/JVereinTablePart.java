@@ -198,7 +198,7 @@ public class JVereinTablePart extends TablePart
       }
 
       fd.setFileName(filename);
-      fd.setFilterExtensions(new String[] { extension });
+      fd.setFilterExtensions(new String[] { "*" + extension });
 
       final String s = fd.open();
 
