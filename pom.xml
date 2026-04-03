@@ -41,6 +41,7 @@
   </properties>
 
   <dependencies>
+    <!-- JVerein paketiert diese Bibliotheken selbst im Release-ZIP unter jverein/lib. -->
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
@@ -196,34 +197,11 @@
       </exclusions>
     </dependency>
 
+    <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.supercsv</groupId>
-      <artifactId>super-csv</artifactId>
-      <version>2.4.0</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.itextpdf</groupId>
-      <artifactId>itextpdf</artifactId>
-      <version>5.5.13.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.itextpdf</groupId>
-      <artifactId>itext-pdfa</artifactId>
-      <version>5.5.13.5</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.pdfbox</groupId>
-      <artifactId>pdfbox</artifactId>
-      <version>3.0.7</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -236,13 +214,6 @@
       <groupId>org.apache.velocity</groupId>
       <artifactId>velocity</artifactId>
       <version>1.7</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>com.github.hbci4j</groupId>
-      <artifactId>hbci4j-core</artifactId>
-      <version>4.1.6</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -269,6 +240,40 @@
       <version>${jaxb.api.version}</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Hibiscus-Plugin bereitgestellt werden. -->
+    <dependency>
+      <groupId>net.sf.supercsv</groupId>
+      <artifactId>super-csv</artifactId>
+      <version>2.4.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itextpdf</artifactId>
+      <version>5.5.13.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.itextpdf</groupId>
+      <artifactId>itext-pdfa</artifactId>
+      <version>5.5.13.5</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>3.0.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.github.hbci4j</groupId>
+      <artifactId>hbci4j-core</artifactId>
+      <version>4.1.6</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Verbleibende lokale JARs, fuer die es aktuell keinen Maven-Bezug gibt. -->
     <dependency>
       <groupId>jonelo</groupId>
       <artifactId>numerical-chameleon-local</artifactId>
@@ -284,6 +289,7 @@
       <systemPath>${project.basedir}/lib/bsh-2.1.1.jar</systemPath>
     </dependency>
 
+    <!-- Testbibliotheken fuer JVerein. -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -449,16 +455,11 @@
         </property>
       </activation>
       <dependencies>
+        <!-- Vom Jameica-Host gebaute und spaeter von Jameica bereitgestellte Artefakte. -->
         <dependency>
           <groupId>de.willuhn</groupId>
           <artifactId>jameica-lib</artifactId>
           <version>${jameica.version}</version>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>de.willuhn</groupId>
-          <artifactId>hibiscus-lib</artifactId>
-          <version>${hibiscus.version}</version>
           <scope>provided</scope>
         </dependency>
         <dependency>
@@ -471,6 +472,13 @@
           <groupId>de.willuhn</groupId>
           <artifactId>de-willuhn-util</artifactId>
           <version>${jameica.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <!-- Vom Hibiscus-Plugin gebaut und spaeter von Hibiscus bereitgestellt. -->
+        <dependency>
+          <groupId>de.willuhn</groupId>
+          <artifactId>hibiscus-lib</artifactId>
+          <version>${hibiscus.version}</version>
           <scope>provided</scope>
         </dependency>
         <dependency>
