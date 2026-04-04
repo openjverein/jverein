@@ -14,12 +14,16 @@
     <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <obantoo.version>2.1.12</obantoo.version>
-    <!-- renovate: depName=willuhn/jameica -->
+    <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
+    <bsh.version>2.1.1</bsh.version>
+    <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
+    <!-- renovate: depName=willuhn/jameica datasource=github-tags -->
     <jameica.version>2.12.0</jameica.version>
-    <!-- renovate: depName=willuhn/hibiscus -->
+    <!-- renovate: depName=willuhn/hibiscus datasource=github-tags -->
     <hibiscus.version>2.12.2</hibiscus.version>
     <jameica.download.url>https://github.com/willuhn/jameica/archive/refs/tags</jameica.download.url>
     <hibiscus.download.url>https://github.com/willuhn/hibiscus/archive/refs/tags</hibiscus.download.url>
+    <bsh.download.url>https://github.com/beanshell/beanshell/releases/download</bsh.download.url>
     <jameica.dir>${project.basedir}/../jameica</jameica.dir>
     <hibiscus.dir>${project.basedir}/../hibiscus</hibiscus.dir>
     <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
@@ -197,7 +201,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
     <dependency>
       <groupId>commons-lang</groupId>
@@ -281,13 +284,6 @@
       <version>0</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/nc.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>org.beanshell</groupId>
-      <artifactId>bsh-local</artifactId>
-      <version>2.1.1</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/bsh-2.1.1.jar</systemPath>
     </dependency>
 
     <!-- Testbibliotheken fuer JVerein. -->
@@ -550,6 +546,11 @@
           <version>${obantoo.version}</version>
           <scope>provided</scope>
         </dependency>
+        <dependency>
+          <groupId>org.beanshell</groupId>
+          <artifactId>bsh</artifactId>
+          <version>${bsh.version}</version>
+        </dependency>
       </dependencies>
     </profile>
 
@@ -591,6 +592,20 @@
                   <overwrite>false</overwrite>
                   <unpack>true</unpack>
                   <unpackWhenChanged>true</unpackWhenChanged>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-bsh</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${bsh.download.url}/${bsh.version}/bsh-${bsh.version}.jar</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>bsh-${bsh.version}.jar</outputFileName>
+                  <overwrite>false</overwrite>
+                  <sha1>${bsh.sha1}</sha1>
                 </configuration>
               </execution>
             </executions>
@@ -719,6 +734,21 @@
                   <groupId>de.jost_net</groupId>
                   <artifactId>obantoo-bin</artifactId>
                   <version>${obantoo.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-bsh</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${host.bootstrap.dir}/bsh-${bsh.version}.jar</file>
+                  <groupId>org.beanshell</groupId>
+                  <artifactId>bsh</artifactId>
+                  <version>${bsh.version}</version>
                   <packaging>jar</packaging>
                   <generatePom>true</generatePom>
                 </configuration>

@@ -30,7 +30,7 @@
       <directory>${project.basedir}/lib</directory>
       <outputDirectory>${project.artifactId}/lib</outputDirectory>
       <includes>
-        <include>*.jar</include>
+        <include>nc.jar</include>
       </includes>
     </fileSet>
   </fileSets>

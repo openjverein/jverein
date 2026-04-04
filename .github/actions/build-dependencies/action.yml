@@ -20,13 +20,15 @@ runs:
       jameica_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=jameica.version -DforceStdout | tail -n1)
       hibiscus_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=hibiscus.version -DforceStdout | tail -n1)
       obantoo_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=obantoo.version -DforceStdout | tail -n1)
+      bsh_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=bsh.version -DforceStdout | tail -n1)
 
       for artifact in \
         "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
         "$local_repo/de/willuhn/hibiscus-lib/$hibiscus_version/hibiscus-lib-$hibiscus_version.jar" \
         "$local_repo/de/willuhn/de-willuhn-ds/$jameica_version/de-willuhn-ds-$jameica_version.jar" \
         "$local_repo/de/willuhn/de-willuhn-util/$jameica_version/de-willuhn-util-$jameica_version.jar" \
-        "$local_repo/de/jost_net/obantoo-bin/$obantoo_version/obantoo-bin-$obantoo_version.jar"
+        "$local_repo/de/jost_net/obantoo-bin/$obantoo_version/obantoo-bin-$obantoo_version.jar" \
+        "$local_repo/org/beanshell/bsh/$bsh_version/bsh-$bsh_version.jar"
       do
         if [ ! -f "$artifact" ]; then
           echo "Missing host artifact: $artifact"
