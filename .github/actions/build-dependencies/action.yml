@@ -11,28 +11,14 @@ runs:
       architecture: x64
       cache: 'maven'
 
-  - name: Read host artifact coordinates from Maven
-    id: host-artifact-coordinates
+  - name: Check host artifacts in local Maven repository
+    id: host-artifacts
     shell: bash
     run: |
       local_repo=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=settings.localRepository -DforceStdout | tail -n1)
       jameica_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=jameica.version -DforceStdout | tail -n1)
       hibiscus_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=hibiscus.version -DforceStdout | tail -n1)
       obantoo_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=obantoo.version -DforceStdout | tail -n1)
-
-      echo "local_repo=$local_repo" >> "$GITHUB_OUTPUT"
-      echo "jameica_version=$jameica_version" >> "$GITHUB_OUTPUT"
-      echo "hibiscus_version=$hibiscus_version" >> "$GITHUB_OUTPUT"
-      echo "obantoo_version=$obantoo_version" >> "$GITHUB_OUTPUT"
-
-  - name: Check host artifacts in local Maven repository
-    id: host-artifacts
-    shell: bash
-    run: |
-      local_repo="${{ steps.host-artifact-coordinates.outputs.local_repo }}"
-      jameica_version="${{ steps.host-artifact-coordinates.outputs.jameica_version }}"
-      hibiscus_version="${{ steps.host-artifact-coordinates.outputs.hibiscus_version }}"
-      obantoo_version="${{ steps.host-artifact-coordinates.outputs.obantoo_version }}"
 
       missing=0
       for artifact in \
