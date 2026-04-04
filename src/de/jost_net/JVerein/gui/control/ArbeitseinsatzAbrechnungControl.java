@@ -310,8 +310,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     it.addColumn("arbeitseinsatzstunden as " + SOLLSTUNDEN);
     it.addColumn("beitragsgruppe.arbeitseinsatzbetrag as " + STUNDENSATZ);
     it.addColumn("sum(stunden) as " + ISTSTUNDEN);
-    it.leftJoin("beitragsgruppe",
-        "mitglied.beitragsgruppe = beitragsgruppe.id");
+    it.join("beitragsgruppe", "mitglied.beitragsgruppe = beitragsgruppe.id");
     it.leftJoin("arbeitseinsatz",
         "mitglied.id = arbeitseinsatz.mitglied and year(arbeitseinsatz.datum) = ? ",
         year);
