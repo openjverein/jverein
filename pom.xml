@@ -574,51 +574,31 @@
 
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-resources-plugin</artifactId>
-            <version>3.5.0</version>
-            <executions>
-              <execution>
-                <id>prepare-jameica-working-copy</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>copy-resources</goal>
-                </goals>
-                <configuration>
-                  <overwrite>true</overwrite>
-                  <outputDirectory>${jameica.dir}</outputDirectory>
-                  <resources>
-                    <resource>
-                      <directory>${jameica.extracted.dir}</directory>
-                      <filtering>false</filtering>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-              <execution>
-                <id>prepare-hibiscus-working-copy</id>
-                <phase>initialize</phase>
-                <goals>
-                  <goal>copy-resources</goal>
-                </goals>
-                <configuration>
-                  <overwrite>true</overwrite>
-                  <outputDirectory>${hibiscus.dir}</outputDirectory>
-                  <resources>
-                    <resource>
-                      <directory>${hibiscus.extracted.dir}</directory>
-                      <filtering>false</filtering>
-                    </resource>
-                  </resources>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>3.1.0</version>
             <executions>
+              <execution>
+                <id>prepare-host-working-copies</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <delete dir="${jameica.dir}" quiet="true"/>
+                    <mkdir dir="${jameica.dir}"/>
+                    <copy todir="${jameica.dir}" overwrite="true">
+                      <fileset dir="${jameica.extracted.dir}"/>
+                    </copy>
+
+                    <delete dir="${hibiscus.dir}" quiet="true"/>
+                    <mkdir dir="${hibiscus.dir}"/>
+                    <copy todir="${hibiscus.dir}" overwrite="true">
+                      <fileset dir="${hibiscus.extracted.dir}"/>
+                    </copy>
+                  </target>
+                </configuration>
+              </execution>
               <execution>
                 <id>build-jameica-and-hibiscus</id>
                 <phase>initialize</phase>
