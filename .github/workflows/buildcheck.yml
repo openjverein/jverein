@@ -7,7 +7,6 @@ on:
       - 'plugin.xml'
       - 'pom.xml'
       - 'lib/**'
-      - 'lib.src/**'
       - 'src/**'
       - 'junit/**'
       - '.github/workflows/**/*.yml'
