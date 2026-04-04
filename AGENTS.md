@@ -52,13 +52,14 @@ User Action → gui/action/* → gui/control/.prepareStore()
 
 ## Building & Dependencies
 
-### Ant Build System (Maven + Ant)
+### Maven Build
 ```bash
-# Initial setup - resolves Jameica, Hibiscus, and dependencies
-ant -file build/build.xml resolve-dependencies
+# Initial setup - bootstrap host artifacts from Jameica and Hibiscus
+mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources
 
-# Dependencies downloaded to: lib/ and lib.test/
-# External plugins required: jameica, hibiscus (as separate git repos)
+# Normal build
+mvn test
+mvn package
 ```
 
 ### Build Dependencies
@@ -71,9 +72,9 @@ ant -file build/build.xml resolve-dependencies
 
 ### IntelliJ IDEA Workflow
 1. Clone jverein, hibiscus, jameica repos at same parent level
-2. Run: `ant -buildfile ./build/build.xml build-dependencies` to download dependencies
-3. Import jverein as **Eclipse project** (not regular Java)
-4. Import hibiscus and jameica as modules (remove test folder from hibiscus)
+2. Run: `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources`
+3. Open jverein directly via `pom.xml`
+4. Import hibiscus and jameica as additional modules if needed (remove test folder from hibiscus)
 5. Run configuration: `de.willuhn.jameica.Main` (main class) in jameica module
 6. Edit `jameica.test/cfg/de.willuhn.jameica.system.Config.properties`:
    ```
@@ -202,7 +203,6 @@ ant -file build/build.xml resolve-dependencies
 
 - `CONTRIBUTING.md`: Contains detailed code structure overview
 - `pom.xml`: Dependencies and build configuration
-- `build/build.xml`: Ant orchestration, resolve-dependencies target
 - `plugin.xml`: Plugin metadata and service declarations
 - `src/de/jost_net/JVerein/Einstellungen.java`: Global settings registry
 - `src/de/jost_net/JVerein/JVereinPlugin.java`: Plugin lifecycle and message consumers
