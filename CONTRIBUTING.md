@@ -82,8 +82,10 @@ Die allgemeine Einrichtung von Eclipse ist weiterhin hier beschrieben:
 Wichtig für den aktuellen Projektstand:
 
 1. zuerst `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` ausführen
-2. danach JVerein importieren
-3. falls Jameica und Hibiscus ebenfalls in der IDE geöffnet werden sollen, die Nachbarverzeichnisse `../jameica` und `../hibiscus` als zusätzliche Projekte oder Module importieren
+2. danach JVerein in Eclipse als Maven-Projekt mit m2e importieren
+3. anschließend auch die Nachbarverzeichnisse `../jameica` und `../hibiscus` als Projekte importieren
+
+Für lokale Tests und das Starten der Anwendung sind `../jameica` und `../hibiscus` nicht optional. Sie müssen vorhanden sein und im Workspace geöffnet werden, weil Jameica als Host-Anwendung startet und Hibiscus zusätzlich als Plugin geladen wird.
 
 ## IntelliJ
 
@@ -94,9 +96,11 @@ Für die Verwendung von IntelliJ:
 1. Klone deinen JVerein-Fork.
 2. Führe im JVerein-Ordner `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` aus.
 3. Öffne das Projekt in IntelliJ direkt auf Basis des vorhandenen `pom.xml`.
-4. Wenn du Jameica und Hibiscus in IntelliJ mit bearbeiten oder direkt starten willst, öffne zusätzlich die Nachbarverzeichnisse `../jameica` und `../hibiscus` oder importiere sie als weitere Module.
+4. Öffne zusätzlich die Nachbarverzeichnisse `../jameica` und `../hibiscus` oder importiere sie als weitere Module.
 5. Unter `File -> Project Structure` muss eine SDK mit mindestens Java 17 ausgewählt werden. Das Language Level für den JVerein-Build bleibt Java 11 kompatibel.
 6. Falls das Hibiscus-Modul importiert wird, muss dort gegebenenfalls der Ordner `test` aus den Sources entfernt werden.
+
+Für lokale Tests und das Starten der Anwendung sind `../jameica` und `../hibiscus` ebenfalls nicht optional.
 
 ### Run-Konfiguration
 

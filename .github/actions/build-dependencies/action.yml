@@ -13,6 +13,7 @@ runs:
 
   - name: Check host artifacts in local Maven repository
     id: host-artifacts
+    continue-on-error: true
     shell: bash
     run: |
       local_repo=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=settings.localRepository -DforceStdout | tail -n1)
@@ -20,7 +21,6 @@ runs:
       hibiscus_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=hibiscus.version -DforceStdout | tail -n1)
       obantoo_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=obantoo.version -DforceStdout | tail -n1)
 
-      missing=0
       for artifact in \
         "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
         "$local_repo/de/willuhn/hibiscus-lib/$hibiscus_version/hibiscus-lib-$hibiscus_version.jar" \
@@ -29,14 +29,14 @@ runs:
         "$local_repo/de/jost_net/obantoo-bin/$obantoo_version/obantoo-bin-$obantoo_version.jar"
       do
         if [ ! -f "$artifact" ]; then
-          missing=1
-          break
+          echo "Missing host artifact: $artifact"
+          exit 1
         fi
       done
 
-      echo "missing=$missing" >> "$GITHUB_OUTPUT"
+      echo "All host artifacts already installed"
 
   - name: Bootstrap Jameica and Hibiscus host artifacts
-    if: steps.host-artifacts.outputs.missing == '1'
+    if: steps.host-artifacts.outcome == 'failure'
     shell: bash
     run: mvn -B -f jverein/pom.xml -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources
