@@ -22,9 +22,9 @@
     <hibiscus.download.url>https://github.com/willuhn/hibiscus/archive/refs/tags</hibiscus.download.url>
     <jameica.dir>${project.basedir}/../jameica</jameica.dir>
     <hibiscus.dir>${project.basedir}/../hibiscus</hibiscus.dir>
-    <jameica.extracted.dir>${project.basedir}/../jameica-${jameica.version}</jameica.extracted.dir>
-    <hibiscus.extracted.dir>${project.basedir}/../hibiscus-${hibiscus.version}</hibiscus.extracted.dir>
     <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
+    <jameica.extracted.dir>${host.bootstrap.dir}/jameica-${jameica.version}</jameica.extracted.dir>
+    <hibiscus.extracted.dir>${host.bootstrap.dir}/hibiscus-${hibiscus.version}</hibiscus.extracted.dir>
     <swt.version>3.128.0</swt.version>
     <!-- Wird nur zum Kompilieren benötigt, da die SWT-Bibliothek zur Laufzeit von Jameica bereitgestellt wird -->
     <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
@@ -446,7 +446,6 @@
   </build>
 
   <profiles>
-    <!-- Profil für die Bereitstellung von Jameica- und Hibiscus-Artefakten im lokalen Maven-Repository, wenn sie nicht bereits vorhanden sind -->
     <profile>
       <id>installed-host-artifacts</id>
       <activation>
@@ -490,46 +489,104 @@
       </dependencies>
     </profile>
 
+    <!-- Profil für die Bereitstellung von Jameica- und Hibiscus-Artefakten im lokalen Maven-Repository, wenn sie nicht bereits vorhanden sind -->
     <profile>
       <id>bootstrap-host-artifacts</id>
       <build>
         <plugins>
+          <plugin>
+            <groupId>com.googlecode.maven-download-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>1.13.0</version>
+            <executions>
+              <execution>
+                <id>download-jameica</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${jameica.download.url}/${jameica.version}.zip</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>jameica-${jameica.version}.zip</outputFileName>
+                  <overwrite>false</overwrite>
+                  <unpack>true</unpack>
+                  <unpackWhenChanged>true</unpackWhenChanged>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-hibiscus</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${hibiscus.download.url}/${hibiscus.version}.zip</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>hibiscus-${hibiscus.version}.zip</outputFileName>
+                  <overwrite>false</overwrite>
+                  <unpack>true</unpack>
+                  <unpackWhenChanged>true</unpackWhenChanged>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.5.0</version>
+            <executions>
+              <execution>
+                <id>prepare-jameica-working-copy</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <overwrite>true</overwrite>
+                  <outputDirectory>${jameica.dir}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${jameica.extracted.dir}</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+              <execution>
+                <id>prepare-hibiscus-working-copy</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <overwrite>true</overwrite>
+                  <outputDirectory>${hibiscus.dir}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${hibiscus.extracted.dir}</directory>
+                      <filtering>false</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <version>3.1.0</version>
             <executions>
               <execution>
-                <id>bootstrap-jameica-and-hibiscus</id>
+                <id>build-jameica-and-hibiscus</id>
                 <phase>initialize</phase>
                 <goals>
                   <goal>run</goal>
                 </goals>
                 <configuration>
                   <target>
-                    <mkdir dir="${host.bootstrap.dir}" />
-
-                    <get src="${jameica.download.url}/${jameica.version}.zip"
-                         dest="${host.bootstrap.dir}/jameica-${jameica.version}.zip"
-                         skipexisting="true" />
-                    <get src="${hibiscus.download.url}/${hibiscus.version}.zip"
-                         dest="${host.bootstrap.dir}/hibiscus-${hibiscus.version}.zip"
-                         skipexisting="true" />
-
-                    <unzip src="${host.bootstrap.dir}/jameica-${jameica.version}.zip"
-                           dest="${project.basedir}/.."
-                           overwrite="false" />
-                    <unzip src="${host.bootstrap.dir}/hibiscus-${hibiscus.version}.zip"
-                           dest="${project.basedir}/.."
-                           overwrite="false" />
-
-                    <move file="${jameica.extracted.dir}"
-                          tofile="${jameica.dir}"
-                          failonerror="false" />
-                    <move file="${hibiscus.extracted.dir}"
-                          tofile="${hibiscus.dir}"
-                          failonerror="false" />
-
                     <ant dir="${jameica.dir}" antfile="build/build.xml" inheritall="false">
                       <target name="nightly" />
                     </ant>
