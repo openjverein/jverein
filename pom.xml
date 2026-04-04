@@ -538,6 +538,7 @@
           <version>${obantoo.version}</version>
           <scope>provided</scope>
         </dependency>
+        <!-- Wird nur über Github-Release bereitgestellt, da es nicht in einem öffentlichen Maven-Repository verfügbar ist. -->
         <dependency>
           <groupId>org.beanshell</groupId>
           <artifactId>bsh</artifactId>
