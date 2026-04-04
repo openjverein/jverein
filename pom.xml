@@ -36,6 +36,7 @@
     <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
     <release.filename>${project.artifactId}.${project.version}.zip</release.filename>
     <release.nightly.filename>${project.artifactId}.${project.version}-nightly.zip</release.nightly.filename>
+    <release.javadoc.dir>${release.root}/javadoc</release.javadoc.dir>
     <assembly.plugin.xml>${release.plugin.dir}/plugin.xml</assembly.plugin.xml>
     <plugin.zip.path>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}/${release.filename}</plugin.zip.path>
   </properties>
@@ -422,6 +423,45 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <executions>
+          <execution>
+            <id>generate-release-javadoc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <failOnError>false</failOnError>
+              <doclint>none</doclint>
+              <quiet>true</quiet>
+              <source>${maven.compiler.release}</source>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <docencoding>${project.build.sourceEncoding}</docencoding>
+              <outputDirectory>${release.javadoc.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.7.1</version>
         <executions>
@@ -688,6 +728,7 @@
     <profile>
       <id>nightly</id>
       <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
         <assembly.plugin.xml>${release.nightly.generated.dir}/plugin.xml</assembly.plugin.xml>
         <plugin.zip.path>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}/${release.nightly.filename}</plugin.zip.path>
       </properties>
