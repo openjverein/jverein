@@ -11,6 +11,7 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>11</maven.compiler.release>
     <maven.compiler.parameters>true</maven.compiler.parameters>
     <obantoo.version>2.1.12</obantoo.version>
@@ -416,7 +417,7 @@
               <goal>copy-resources</goal>
             </goals>
             <configuration>
-              <overwrite>true</overwrite>
+              <changeDetection>always</changeDetection>
               <outputDirectory>${release.plugin.dir}</outputDirectory>
               <resources>
                 <resource>
@@ -770,7 +771,7 @@
                   <goal>copy-resources</goal>
                 </goals>
                 <configuration>
-                  <overwrite>true</overwrite>
+                  <changeDetection>always</changeDetection>
                   <outputDirectory>${release.nightly.generated.dir}</outputDirectory>
                   <resources>
                     <resource>
