@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Jameica" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="de.willuhn.jameica.Main" />
+    <module name="jameica" />
+    <option name="VM_PARAMETERS" value="-XstartOnFirstThread" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../jameica" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
