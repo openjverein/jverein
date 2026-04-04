@@ -197,8 +197,8 @@ public class AbrechnungSEPAParam
     bisdatum = null;
     zusatzbetraege = false;
     kursteilnehmer = false;
-    fixerBetragAbrechnen = true;
-    betrag = (Double) ac.getPart().getBetrag().getValue();
+    fixerBetragAbrechnen = false;
+    betrag = null;
     buchungsart = null;
     buchungsklasse = null;
     steuer = null;
