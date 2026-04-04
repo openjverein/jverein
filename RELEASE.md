@@ -1,13 +1,13 @@
 # Release-Prozess
 
-Dieses Dokument beschreibt den aktuellen Release-Ablauf für OpenJVerein auf Basis von [pom.xml](/Users/tobias/code/jverein/pom.xml) und [release.yml](/Users/tobias/code/jverein/.github/workflows/release.yml).
+Dieses Dokument beschreibt den aktuellen Release-Ablauf für OpenJVerein auf Basis von [pom.xml](pom.xml) und [release.yml](.github/workflows/release.yml).
 
 ## Version vorbereiten
 
 Die freizugebende Version wird in zwei Dateien gepflegt und muss dort übereinstimmen:
 
-- [pom.xml](/Users/tobias/code/jverein/pom.xml)
-- [plugin.xml](/Users/tobias/code/jverein/plugin.xml)
+- [pom.xml](pom.xml)
+- [plugin.xml](plugin.xml)
 
 Vor einem Release muss die neue Zielversion in beiden Dateien eingetragen und committed sein.
 
@@ -37,7 +37,13 @@ target/releases/jverein/plugin.xml
 
 ## Offizielles Release
 
-Das offizielle Release wird über den GitHub-Workflow [release.yml](/Users/tobias/code/jverein/.github/workflows/release.yml) gestartet.
+Das offizielle Release wird über den GitHub-Workflow [release.yml](.github/workflows/release.yml) gestartet.
+
+Dabei gilt:
+
+- Für ein Bugfix-Release muss der Workflow auf dem jeweiligen Versions-Branch gestartet werden, zum Beispiel `4.1`.
+- Für ein neues Minor-Release muss der Workflow auf `master` gestartet werden.
+- Für ein neues Major-Release müssen die Zielversionen in [pom.xml](pom.xml) und [plugin.xml](plugin.xml) vor dem Start des Workflows manuell angepasst werden.
 
 Ablauf des Workflows:
 
@@ -53,7 +59,7 @@ Die Dateien im Website-Repository müssen daher nicht mehr manuell gepflegt werd
 
 ## Nightly-Build
 
-Der Nightly-Build läuft separat über [nightly-build.yml](/Users/tobias/code/jverein/.github/workflows/nightly-build.yml).
+Der Nightly-Build läuft separat über [nightly-build.yml](.github/workflows/nightly-build.yml).
 
 Lokal kann das Nightly-Artefakt erzeugt werden mit:
 
