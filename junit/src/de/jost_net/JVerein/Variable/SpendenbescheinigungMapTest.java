@@ -94,7 +94,7 @@ class SpendenbescheinigungMapTest {
             assertNotNull(map);
             assertEquals("Herr Max Mustermann",
                     map.get(SpendenbescheinigungVar.ANREDE.getName()));
-            assertEquals("123,45",
+            assertEquals(Einstellungen.DECIMALFORMAT.format(123.45),
                     map.get(SpendenbescheinigungVar.BETRAG.getName()));
             assertEquals("-einhundertdreiundzwanzig Euro fünfundvierzig-",
                     map.get(SpendenbescheinigungVar.BETRAGINWORTEN.getName()));
