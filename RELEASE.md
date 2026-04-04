@@ -11,6 +11,8 @@ Die freizugebende Version wird in zwei Dateien gepflegt und muss dort übereinst
 
 Vor einem Release muss die neue Zielversion in beiden Dateien eingetragen und committed sein.
 
+Wichtig: Der Maven-Build verwendet `project.version` aus `pom.xml` als technische Build-Version. `plugin.xml` muss weiterhin inhaltlich zur Plugin-Version passen.
+
 ## Lokale Prüfung
 
 Vor dem eigentlichen Release sollte der Build lokal einmal vollständig geprüft werden:
@@ -45,7 +47,7 @@ Ablauf des Workflows:
 4. Das GitHub-Release mit `jverein.<version>.zip` anlegen.
 5. Die erzeugte ZIP-Datei und die generierte `plugin.xml` in das Website-Repository `openjverein/openjverein.github.io` unter `jameica-repository/<major>.<minor>/` kopieren.
 6. Die ZIP-Datei für das Jameica-Repository signieren.
-7. Anschließend die nächste Entwicklungsversion in `plugin.xml` hochzählen und committen. Auf `master` wird zusätzlich ein neuer Bugfix-Branch `<major>.<minor>` angelegt.
+7. Anschließend wird im Workflow die nächste Entwicklungsversion in `pom.xml` und `plugin.xml` hochgezählt und committed. Auf `master` wird zusätzlich ein neuer Bugfix-Branch `<major>.<minor>` angelegt.
 
 Die Dateien im Website-Repository müssen daher nicht mehr manuell gepflegt werden.
 
@@ -70,3 +72,4 @@ target/releases/nightly/jverein.<version>-nightly.zip
 - Die Release-ZIP und das Nightly-ZIP werden über das `maven-assembly-plugin` erzeugt.
 - Der Veröffentlichungsordner im Jameica-Repository wird aus `project.version` als `<major>.<minor>` abgeleitet.
 - Für lokale Builds reicht nach einmaligem Bootstrap in der Regel `mvn test` oder `mvn package`.
+- `target/jverein-sources.jar` und `target/releases/javadoc/` werden lokal erzeugt, aktuell aber nicht über die GitHub-Release-Workflows veröffentlicht.
