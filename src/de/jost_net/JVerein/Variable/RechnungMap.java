@@ -149,6 +149,9 @@ public class RechnungMap extends AbstractMap
         case SUMME_OFFEN:
           value = Einstellungen.DECIMALFORMAT.format(summe - ist);
           break;
+        case QRCODE_SUMME_OFFEN:
+          value = summe - ist;
+          break;
         case MK_STAND:
         case STAND:
           value = Einstellungen.DECIMALFORMAT.format(ist - summe);
@@ -422,6 +425,9 @@ public class RechnungMap extends AbstractMap
           break;
         case SUMME_OFFEN:
           value = Einstellungen.DECIMALFORMAT.format(13.8);
+          break;
+        case QRCODE_SUMME_OFFEN:
+          value = 13.8;
           break;
         case QRCODE_INTRO:
           value = "Bequem bezahlen mit Girocode. Einfach mit der Banking-App auf dem Handy abscannen.";
