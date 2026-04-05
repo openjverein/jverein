@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -282,8 +283,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
           : o.getDouble(SOLLSTUNDEN);
       Double ist = o.getAttribute(ISTSTUNDEN) == null ? 0d
           : o.getDouble(ISTSTUNDEN);
-      Double satz = o.getAttribute(STUNDENSATZ) == null ? null
-          : o.getDouble(STUNDENSATZ);
+      Double satz = o.getDouble(STUNDENSATZ);
       Mitglied mitglied = (Mitglied) Einstellungen.getDBService()
           .createObject(Mitglied.class, o.getAttribute(MITGLIED_ID).toString());
       o.setAttribute(DIFFERENZ, ist - soll);
@@ -298,14 +298,10 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       throws RemoteException
   {
     int year = (Integer) getSuchJahr().getValue();
-    int schluessel;
+    int schluessel = ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG;
     if (auswertungschluessel != null)
     {
       schluessel = (Integer) getAuswertungSchluessel().getValue();
-    }
-    else
-    {
-      schluessel = ArbeitseinsatzUeberpruefungInput.MINDERLEISTUNG;
     }
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
@@ -545,15 +541,18 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       {
         try
         {
+          DBTransaction.starten();
           for (Zusatzbetrag zb : list)
           {
             zb.store();
           }
+          DBTransaction.commit();
           GUI.getStatusBar()
               .setSuccessText("Zusatzbeträge erfolgreich generiert");
         }
         catch (Exception e)
         {
+          DBTransaction.rollback();
           Logger.error("Fehler beim Zusatzbeträge generieren", e);
           GUI.getStatusBar().setErrorText(e.getMessage());
           throw new ApplicationException(e);
