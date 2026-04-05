@@ -504,7 +504,7 @@ public class RechnungMap extends AbstractMap
           value = "Bitte überweisen Sie den Betrag auf das angegebene Konto.";
           break;
         case ZAHLUNGSWEG:
-          value = Zahlungsweg.get(Zahlungsweg.ÜBERWEISUNG);
+          value = Zahlungsweg.ÜBERWEISUNG;
           break;
         case KOMMENTAR:
           value = "Der Rechnungskommentar";
