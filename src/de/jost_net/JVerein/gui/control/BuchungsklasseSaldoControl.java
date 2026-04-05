@@ -212,9 +212,9 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           listNeu.add(steuerObject);
         }
       }
-      sortList(listNeu);
       list = listNeu;
     }
+    sortList(list);
 
     ArrayList<PseudoDBObject> zeilen = new ArrayList<>();
 
@@ -259,8 +259,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
                   + ")");
           break;
         default:
-          o.setAttribute(BUCHUNGSART_TEXT, o.getAttribute(buchungsart));
-          o.setAttribute(BUCHUNGSKLASSE_TEXT, o.getAttribute(buchungsklasse));
+          o.setAttribute(BUCHUNGSART_TEXT, buchungsart);
+          o.setAttribute(BUCHUNGSKLASSE_TEXT, buchungsklasse);
           break;
       }
 
