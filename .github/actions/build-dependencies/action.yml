@@ -19,13 +19,14 @@ runs:
       set -euo pipefail
       pom=jverein/pom.xml
       local_repo="$HOME/.m2/repository"
-      get_property() {
-        xmllint --xpath "string(/*[local-name()='project']/*[local-name()='properties']/*[local-name()='${1}'])" "$pom"
+      read_property() {
+        local property_name="$1"
+        sed -nE "s|.*<${property_name}>([^<]+)</${property_name}>.*|\\1|p" "$pom"
       }
-      jameica_version=$(get_property 'jameica.version')
-      hibiscus_version=$(get_property 'hibiscus.version')
-      obantoo_version=$(get_property 'obantoo.version')
-      bsh_version=$(get_property 'bsh.version')
+      jameica_version=$(read_property jameica.version)
+      hibiscus_version=$(read_property hibiscus.version)
+      obantoo_version=$(read_property obantoo.version)
+      bsh_version=$(read_property bsh.version)
 
       for artifact in \
         "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
