@@ -22,10 +22,10 @@ runs:
       get_property() {
         xmllint --xpath "string(/*[local-name()='project']/*[local-name()='properties']/*[local-name()='${1}'])" "$pom"
       }
-      jameica_version=get_property 'jameica.version'
-      hibiscus_version=get_property 'hibiscus.version'
-      obantoo_version=get_property 'obantoo.version'
-      bsh_version=get_property 'bsh.version'
+      jameica_version=$(get_property 'jameica.version')
+      hibiscus_version=$(get_property 'hibiscus.version')
+      obantoo_version=$(get_property 'obantoo.version')
+      bsh_version=$(get_property 'bsh.version')
 
       for artifact in \
         "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
