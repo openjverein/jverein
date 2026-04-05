@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
+import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -49,9 +50,12 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
 public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 {
@@ -416,7 +420,12 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
     {
       // Prüfen ob das Verrechnungskonto gesetzt ist. Das wird auch beim
       // Abrechnungslauf am Anfang geholt.
-      checkVerrechnungskonto(bugs);
+      // Es ist nur nötig wenn abgerechnet wird, nicht wenn nur Zusatzbeträge
+      // erzeugt werden
+      if (isKompakteAbbuchungActiv())
+      {
+        checkVerrechnungskonto(bugs);
+      }
 
       for (PseudoDBObject o : getList())
       {
@@ -481,10 +490,9 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       if (part.getBuchungstext().getValue() == null
           || ((String) part.getBuchungstext().getValue()).isEmpty())
       {
-        return ("Bitte Buchungstext eingeben");
+        return ("Bitte Zahlungsgrund eingeben");
       }
-      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN)
-          && (boolean) getRechnung().getValue())
+      if (isRechnungActiv() && (boolean) getRechnung().getValue())
       {
         if (getRechnungsformular().getValue() == null)
         {
@@ -508,5 +516,62 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       throws RemoteException, ApplicationException
   {
     return new AbrechnungSEPAParam(this, sepaVersion);
+  }
+
+  @Override
+  protected void startAbrechnung() throws ApplicationException, RemoteException
+  {
+    if (isKompakteAbbuchungActiv())
+    {
+      // Das ist die Abrechnung
+      new AbrechnungSEPA(getAbrechnungSEPAParam());
+    }
+    else
+    {
+      // Das ist die Zusatzbeträge Generierung
+      starteZusatzberaegeGenerierung();
+    }
+  }
+
+  private void starteZusatzberaegeGenerierung()
+      throws RemoteException, ApplicationException
+  {
+    BackgroundTask t = new BackgroundTask()
+    {
+      List<Zusatzbetrag> list = getZusatzbetraegeList();
+
+      @Override
+      public void run(ProgressMonitor monitor) throws ApplicationException
+      {
+        try
+        {
+          for (Zusatzbetrag zb : list)
+          {
+            zb.store();
+          }
+          GUI.getStatusBar()
+              .setSuccessText("Zusatzbeträge erfolgreich generiert");
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler beim Zusatzbeträge generieren", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+          throw new ApplicationException(e);
+        }
+      }
+
+      @Override
+      public void interrupt()
+      {
+        //
+      }
+
+      @Override
+      public boolean isInterrupted()
+      {
+        return false;
+      }
+    };
+    Application.getController().start(t);
   }
 }

@@ -590,7 +590,7 @@ public abstract class AbstractAbrechnungControl
             }
           }
           saveSettings();
-          new AbrechnungSEPA(getAbrechnungSEPAParam());
+          startAbrechnung();
           dialog.close();
         }
         catch (ApplicationException e)
@@ -604,6 +604,11 @@ public abstract class AbstractAbrechnungControl
       }
     }, null, true, "walking.png");
     return button;
+  }
+
+  protected void startAbrechnung() throws ApplicationException, RemoteException
+  {
+    new AbrechnungSEPA(getAbrechnungSEPAParam());
   }
 
   public Button getAbbrechenButton(AbstractDialog<Boolean> dialog)
