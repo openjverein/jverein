@@ -72,7 +72,7 @@ public class ArbeitseinsatzListeView extends AbstractView
         DokumentationUtil.ARBEITSEINSATZ, false, "question-circle.png");
     buttons.addButton("Auswertung", new ArbeitseinsatzAuswertungAction(),
         control, false, "screwdriver.png");
-    buttons.addButton("Zusatzberäge generieren",
+    buttons.addButton("Zusatzbeträge generieren",
         new ArbeitseinsatzZusatzbetraegeAction(), control, false,
         "euro-sign.png");
     buttons.addButton("Abrechnung", new ArbeitseinsatzAbrechnenAction(),
