@@ -70,9 +70,6 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
     left.addLabelPair("Zahlungsweg", control.getPart().getZahlungsweg());
     left.addLabelPair("Mitglied zahlt selbst",
         control.getPart().getMitgliedzahltSelbst());
-    left.addHeadline("Sollbuchungen");
-    left.addLabelPair("Sollbuchungen zusammenfassen",
-        control.getSollbuchungenZusammenfassen());
 
     right.addHeadline("Lastschriften");
     right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
