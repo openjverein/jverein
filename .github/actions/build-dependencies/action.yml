@@ -16,11 +16,16 @@ runs:
     continue-on-error: true
     shell: bash
     run: |
-      local_repo=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=settings.localRepository -DforceStdout | tail -n1)
-      jameica_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=jameica.version -DforceStdout | tail -n1)
-      hibiscus_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=hibiscus.version -DforceStdout | tail -n1)
-      obantoo_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=obantoo.version -DforceStdout | tail -n1)
-      bsh_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=bsh.version -DforceStdout | tail -n1)
+      set -euo pipefail
+      pom=jverein/pom.xml
+      local_repo="$HOME/.m2/repository"
+      get_property() {
+        xmllint --xpath "string(/*[local-name()='project']/*[local-name()='properties']/*[local-name()='${1}'])" "$pom"
+      }
+      jameica_version=get_property 'jameica.version'
+      hibiscus_version=get_property 'hibiscus.version'
+      obantoo_version=get_property 'obantoo.version'
+      bsh_version=get_property 'bsh.version'
 
       for artifact in \
         "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
