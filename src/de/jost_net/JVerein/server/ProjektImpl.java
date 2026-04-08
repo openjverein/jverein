@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
@@ -66,6 +67,14 @@ public class ProjektImpl extends AbstractJVereinDBObject implements Projekt
       {
         throw new ApplicationException(
             "Es existieren Buchungen mit diesem Projekt.");
+      }
+      it = Einstellungen.getDBService().createList(Wirtschaftsplan.class);
+      it.addFilter("projekt = ?", new Object[] { getID() });
+      it.setLimit(1);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Es existieren Wirtschaftspläne mit diesem Projekt.");
       }
     }
     catch (RemoteException e)
