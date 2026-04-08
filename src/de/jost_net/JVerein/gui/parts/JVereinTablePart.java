@@ -261,8 +261,11 @@ public class JVereinTablePart extends TablePart
           {
             for (int i = 0; i < colCount; ++i)
             {
+              TableColumn col = t.getColumn(i);
               r.add(row.getTextBounds(i));
-              reporter.addColumn(row.getText(i), Element.ALIGN_LEFT);
+              reporter.addColumn(row.getText(i),
+                  col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
+                      : Element.ALIGN_RIGHT);
             }
           }
           reporter.closeTable();
