@@ -119,6 +119,18 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Long getProjektID() throws RemoteException
+  {
+    return (Long) getAttribute("projekt");
+  }
+
+  @Override
+  public void setProjektID(Long projektID) throws RemoteException
+  {
+    setAttribute("projekt", projektID);
+  }
+
+  @Override
   public void setDatumBis(Date date) throws RemoteException
   {
     setAttribute("datum_bis", date);

@@ -160,9 +160,22 @@ public class WirtschaftsplanNode
     // für Rücklagen gibt.
     ExtendedDBIterator<PseudoDBObject> istIt = new ExtendedDBIterator<>(
         "buchungsart");
-    istIt.leftJoin("buchung",
-        "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
-        wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+    if (wirtschaftsplan.getProjektID() != null
+        && (Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    {
+      istIt.leftJoin("buchung",
+          "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?"
+              + " and buchung.projekt = ?",
+          wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis(),
+          wirtschaftsplan.getProjektID());
+    }
+    else
+    {
+      istIt.leftJoin("buchung",
+          "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
+          wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+    }
+
     if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
       if ((Boolean) Einstellungen
