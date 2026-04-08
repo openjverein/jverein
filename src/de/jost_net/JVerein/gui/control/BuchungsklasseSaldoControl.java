@@ -59,8 +59,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
    */
   protected static final String SUMME = "summe";
 
-  protected static final String STEUERBETRAG = "steuerbetrag";
-
   /**
    * true wenn Steuern verwendet werden sollen. Default wie in Einstellungen
    * "Optiert" gesetzt.
@@ -541,47 +539,11 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
         "buchungsart");
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTANZEIGE))
-    {
-      case BuchungsartAnzeige.NUMMER_BEZEICHNUNG:
-        it.addColumn(
-            "CONCAT(buchungsart.nummer,' - ',buchungsart.bezeichnung) as "
-                + BUCHUNGSART);
-        it.addColumn(
-            "CONCAT(buchungsklasse.nummer,' - ',buchungsklasse.bezeichnung) as "
-                + BUCHUNGSKLASSE);
-        break;
-      case BuchungsartAnzeige.BEZEICHNUNG_NUMMER:
-        it.addColumn(
-            "CONCAT(buchungsart.bezeichnung,' (',buchungsart.nummer,')') as "
-                + BUCHUNGSART);
-        it.addColumn(
-            "CONCAT(buchungsklasse.bezeichnung,' (',buchungsklasse.nummer,')') as "
-                + BUCHUNGSKLASSE);
-        break;
-      default:
-        it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
-        it.addColumn("buchungsklasse.bezeichnung as " + BUCHUNGSKLASSE);
-        break;
-    }
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        it.setOrder(
-            "Order by buchungsklasse.nummer is null,buchungsklasse.nummer,"
-                + " buchungsart.nummer is null, buchungsart.nummer");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG:
-      default:
-        it.setOrder(
-            "Order by buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-                + " buchungsart.bezeichnung is NULL, buchungsart.bezeichnung ");
-        break;
-    }
-    it.addColumn("buchungsart.id as " + BUCHUNGSART_ID);
-    it.addColumn("buchungsklasse.id as " + BUCHUNGSKLASSE_ID);
+
     it.addColumn("buchungsart.art as " + ARTBUCHUNGSART);
     it.addColumn("buchungsart.id as " + BUCHUNGSART_ID);
+    it.addColumn("buchungsart.nummer as " + BUCHUNGSART_NUMMER);
+    it.addColumn("buchungsart.bezeichnung as " + BUCHUNGSART);
     it.addColumn("buchungsart.status");
 
     it.addColumn("buchungsklasse.id as " + BUCHUNGSKLASSE_ID);
@@ -597,9 +559,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
           + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-          + ") AS DECIMAL(10,2))),0) + COALESCE(SUM(st.steuerbetrag),0) AS "
-          + SUMME, Kontoart.ANLAGE.getKey());
-      it.addColumn("SUM(st.steuerbetrag) AS " + STEUERBETRAG);
+          + ") AS DECIMAL(10,2))),0) AS " + SUMME, Kontoart.ANLAGE.getKey());
     }
     else
     {
@@ -683,6 +643,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     it.addColumn(
         "SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
             + SUMME);
+    // Für das Menu müssen wir wissen, ob es eine Steuer ist
+    it.addColumn(
+        "SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
+            + STEUERBETRAG);
 
     // Keine Steuer bei Anlagekonten
     it.join("konto",

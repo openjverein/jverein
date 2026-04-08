@@ -75,8 +75,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
 
   public static final String BUCHUNGSKLASSE_NUMMER = "buchungsklasse_nummer";
 
-  public static final String BUCHUNGSKLASSE_ID = "buchungsklasse_id";
-
   /**
    * Buchungsklasse Text der angezeigt werden soll
    */
@@ -93,11 +91,16 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   public static final String BUCHUNGSART = "buchungsart";
 
   /**
+   * Buchungsart Text der angezeigt werden soll
+   */
+  public static final String BUCHUNGSART_TEXT = "buchungsart_text";
+
+  public static final String BUCHUNGSART_NUMMER = "buchungsart_nummer";
+
+  /**
    * Die Buchungsart_ID aus der DB.
    */
   public static final String BUCHUNGSART_ID = "buchungsart_id";
-
-  public static final String PROJEKT_ID = "projekt_id";
 
   /**
    * Anfangsbestand der Konten.
