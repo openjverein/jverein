@@ -18,13 +18,13 @@
     <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
     <bsh.version>2.1.1</bsh.version>
     <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
+    <bsh.download.url>https://github.com/beanshell/beanshell/releases/download</bsh.download.url>
     <!-- renovate: depName=willuhn/jameica datasource=github-tags -->
     <jameica.version>2.12.0</jameica.version>
+    <jameica.download.url>https://github.com/willuhn/jameica/archive/refs/tags</jameica.download.url>
     <!-- renovate: depName=willuhn/hibiscus datasource=github-tags -->
     <hibiscus.version>2.12.2</hibiscus.version>
-    <jameica.download.url>https://github.com/willuhn/jameica/archive/refs/tags</jameica.download.url>
     <hibiscus.download.url>https://github.com/willuhn/hibiscus/archive/refs/tags</hibiscus.download.url>
-    <bsh.download.url>https://github.com/beanshell/beanshell/releases/download</bsh.download.url>
     <jameica.dir>${project.basedir}/../jameica</jameica.dir>
     <hibiscus.dir>${project.basedir}/../hibiscus</hibiscus.dir>
     <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
