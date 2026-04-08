@@ -182,8 +182,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           {
             o.setAttribute(SUMME,
                 o.getDouble(SUMME) + steuerObject.getDouble(SUMME));
-            o.setAttribute(ANZAHL,
-                o.getInteger(ANZAHL) + steuerObject.getInteger(ANZAHL));
 
             if (o.getAttribute(EINNAHMEN) != null
                 && steuerObject.getAttribute(EINNAHMEN) != null)
@@ -362,7 +360,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       o.setAttribute(ART, ART_DETAIL);
 
       // Anzahl null blenden wir aus
-      if (o.getInteger(ANZAHL).equals(0))
+      if (o.getInteger(ANZAHL) != null && o.getInteger(ANZAHL).equals(0))
       {
         o.setAttribute(ANZAHL, null);
       }
@@ -624,7 +622,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
 
     ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
 
-    it.addColumn("COUNT(buchung.id) as " + ANZAHL);
     it.addColumn("buchungsart.status");
 
     it.addColumn("buchungsart.nummer as " + BUCHUNGSART_NUMMER);
@@ -669,7 +666,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     if (klasseInBuchung)
     {
       it.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchung.buchungsklasse");
+          "buchungsklasse.id = steuer.buchungsklasse");
     }
     else
     {
