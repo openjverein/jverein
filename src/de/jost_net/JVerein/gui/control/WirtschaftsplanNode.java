@@ -264,9 +264,19 @@ public class WirtschaftsplanNode
     if ((boolean) Einstellungen
         .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      istIt.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchung.buchungsklasse"
-              + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse" : ""));
+      if (art != WirtschaftsplanImpl.RUECKLAGE)
+      {
+        istIt.leftJoin("buchungsklasse",
+            "buchungsklasse.id = buchung.buchungsklasse"
+                + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse"
+                    : ""));
+      }
+      else
+      {
+        // Keine Steuer bei Rücklagen
+        istIt.leftJoin("buchungsklasse",
+            "buchungsklasse.id = buchung.buchungsklasse");
+      }
       istIt.addGroupBy("buchungsklasse.id");
       istIt.addFilter("buchungsklasse.id = ?", buchungsklasse.getID());
     }
