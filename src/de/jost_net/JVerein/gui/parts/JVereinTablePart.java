@@ -46,6 +46,7 @@ import de.jost_net.JVerein.io.Reporter;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -165,7 +166,7 @@ public class JVereinTablePart extends TablePart
     if (tableControl.isDisposed())
       return;
 
-    if (!(tableControl instanceof Table))// && !(tableControl instanceof Tree))
+    if (!(tableControl instanceof Table))
       return;
 
     try
@@ -198,7 +199,7 @@ public class JVereinTablePart extends TablePart
       }
 
       fd.setFileName(filename);
-      fd.setFilterExtensions(new String[] { extension });
+      fd.setFilterExtensions(new String[] { "*" + extension });
 
       final String s = fd.open();
 
@@ -248,7 +249,9 @@ public class JVereinTablePart extends TablePart
 
           for (TableColumn col : t.getColumns())
           {
-            reporter.addHeaderColumn(col.getText(), col.getStyle(),
+            reporter.addHeaderColumn(col.getText(),
+                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
+                    : Element.ALIGN_RIGHT,
                 col.getWidth(), BaseColor.LIGHT_GRAY);
           }
           reporter.createHeader();
