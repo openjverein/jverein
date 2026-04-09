@@ -229,12 +229,16 @@ public class WirtschaftsplanNode
           + SUMME, Kontoart.ANLAGE.getKey());
 
       // Für die Steuerbträge auf der Steuerbuchungsart machen wir ein Subselect
-      String subselect = "(SELECT steuer.buchungsart, steuer.buchungsklasse,"
-          + " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
+      String subselect = "(SELECT steuer.buchungsart,";
+      if ((boolean) Einstellungen
+          .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
+      {
+        subselect += " steuer.buchungsklasse,";
+      }
+      subselect += " SUM(CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS steuerbetrag "
           + " FROM buchung"
           // Keine Steuer bei Anlagekonten
           + " JOIN konto on buchung.konto = konto.id and konto.kontoart < ? and konto.kontoart != ?";
-
       // Wenn die Steuer in der Buchung steht, können wir sie direkt nehmen,
       // sonst müssen wir den Umweg über die Buchungsart nehmen.
       if (steuerInBuchung)
@@ -277,9 +281,19 @@ public class WirtschaftsplanNode
     if ((boolean) Einstellungen
         .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      istIt.leftJoin("buchungsklasse",
-          "buchungsklasse.id = buchung.buchungsklasse"
-              + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse" : ""));
+      if (art != WirtschaftsplanImpl.RUECKLAGE)
+      {
+        istIt.leftJoin("buchungsklasse",
+            "buchungsklasse.id = buchung.buchungsklasse"
+                + (mitSteuer ? " OR buchungsklasse.id = st.buchungsklasse"
+                    : ""));
+      }
+      else
+      {
+        // Keine Steuer bei Rücklagen
+        istIt.leftJoin("buchungsklasse",
+            "buchungsklasse.id = buchung.buchungsklasse");
+      }
       istIt.addGroupBy("buchungsklasse.id");
       istIt.addFilter("buchungsklasse.id = ?", buchungsklasse.getID());
     }
