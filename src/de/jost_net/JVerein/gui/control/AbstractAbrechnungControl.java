@@ -486,7 +486,8 @@ public abstract class AbstractAbrechnungControl
       {
         return;
       }
-      if ((boolean) sollbuchungenzusammenfassen.getValue())
+      if ((boolean) sollbuchungenzusammenfassen.getValue()
+          && kompakteabbuchung != null)
       {
         kompakteabbuchung.setValue(true);
       }
@@ -502,7 +503,8 @@ public abstract class AbstractAbrechnungControl
       {
         return;
       }
-      if (!(boolean) kompakteabbuchung.getValue())
+      if (!(boolean) kompakteabbuchung.getValue()
+          && sollbuchungenzusammenfassen != null)
       {
         sollbuchungenzusammenfassen.setValue(false);
       }
