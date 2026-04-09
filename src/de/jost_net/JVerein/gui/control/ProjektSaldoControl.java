@@ -17,10 +17,8 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -49,30 +47,50 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     it.addColumn("projekt.bezeichnung as " + PROJEKT);
     it.addColumn("projekt.id as " + PROJEKT_ID);
 
+    it.join("projekt", "buchung.projekt = projekt.id");
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
-    String on = "projekt.id = buchung.projekt ";
-    if (mitSteuer)
-    {
-      on += " OR projekt.id = st.projekt";
-    }
-    it.join("projekt", on);
 
-    switch ((Integer) Einstellungen.getEinstellung(Property.BUCHUNGSARTSORT))
-    {
-      case BuchungsartSort.NACH_NUMMER:
-        it.setOrder("ORDER BY projekt.bezeichnung,"
-            + "buchungsklasse.nummer is NULL,buchungsklasse.nummer,"
-            + "buchungsart.nummer is null, buchungsart.nummer ");
-        break;
-      case BuchungsartSort.NACH_BEZEICHNUNG:
-      default:
-        it.setOrder("ORDER BY projekt.bezeichnung,"
-            + "buchungsklasse.bezeichnung is NULL, buchungsklasse.bezeichnung,"
-            + "buchungsart.bezeichnung is NUll, buchungsart.bezeichnung ");
-        break;
-    }
     return it;
+  }
+
+  @Override
+  protected ExtendedDBIterator<PseudoDBObject> getSteuerIterator()
+      throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = super.getSteuerIterator();
+    it.join("projekt", "buchung.projekt = projekt.id");
+    it.addGroupBy("buchung.projekt");
+    it.addColumn("projekt.id as " + PROJEKT_ID);
+    it.addColumn("projekt.bezeichnung as " + PROJEKT);
+
+    return it;
+  }
+
+  @Override
+  protected void sortList(List<PseudoDBObject> list) throws RemoteException
+  {
+    super.sortList(list);
+    list.sort((o1, o2) -> {
+      try
+      {
+        if (o1.getAttribute(PROJEKT) == null)
+        {
+          return 1;
+        }
+        if (o2.getAttribute(PROJEKT) == null)
+        {
+          return -1;
+        }
+
+        return ((String) o1.getAttribute(PROJEKT))
+            .compareTo((String) o2.getAttribute(PROJEKT));
+      }
+      catch (RemoteException e)
+      {
+        return 0;
+      }
+    });
   }
 
   @Override
