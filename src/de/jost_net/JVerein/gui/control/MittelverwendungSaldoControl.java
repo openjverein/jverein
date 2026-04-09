@@ -43,14 +43,13 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
 
     // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
     // Anlagen.
-    String filter = "konto.kontoart is null OR (buchungsart.art != ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?)))"
-        + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR (konto.kontoart = ? AND konto.zweck = ?))) ";
-
-    if (mitSteuer)
-    {
-      filter += "OR st.steuerbetrag is not null";
-    }
-    it.addFilter(filter, ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
+    it.addFilter(
+        "konto.kontoart is null OR "
+            + "(buchungsart.art != ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?)))"
+            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?))) ",
+        ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
         Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
         ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),
         Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
@@ -59,8 +58,7 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
     // den Einnahmen bzw. Ausgaben ab.
     if (mitSteuer)
     {
-      // Nettobetrag berechnen und steuerbetrag der Steuerbuchungsart
-      // hinzurechnen
+      // Nettobetrag berechnen
       it.addColumn("COALESCE(SUM("
           + "(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0 "
           + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
@@ -68,11 +66,10 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
           // Anlagenkonto immer Bruttobeträge.
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
-          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-          + ") AS DECIMAL(10,2))),0) "
-          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(SUM(st.steuerbetrag),0) ELSE 0 END AS "
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 "
+          + "ELSE COALESCE(steuer.satz,0) END" + ") AS DECIMAL(10,2))),0) AS "
           + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE,
-          Kontoart.ANLAGE.getKey(), ArtBuchungsart.AUSGABE);
+          Kontoart.ANLAGE.getKey());
 
       it.addColumn("COALESCE(SUM("
           + "(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0 "
@@ -81,11 +78,10 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
           // Anlagenkonto immer Bruttobeträge.
           // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
           // Netto zu berehnen.
-          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 ELSE COALESCE(steuer.satz,0) END"
-          + ") AS DECIMAL(10,2))),0) "
-          + "+ CASE WHEN buchungsart.art = ? THEN COALESCE(SUM(st.steuerbetrag),0) ELSE 0 END AS "
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 "
+          + "ELSE COALESCE(steuer.satz,0) END" + ") AS DECIMAL(10,2))),0)  AS "
           + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME,
-          Kontoart.ANLAGE.getKey(), ArtBuchungsart.EINNAHME);
+          Kontoart.ANLAGE.getKey());
     }
     else
     {
@@ -97,6 +93,38 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
           + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
           + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
     }
+
+    return it;
+  }
+
+  @Override
+  protected ExtendedDBIterator<PseudoDBObject> getSteuerIterator()
+      throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = super.getSteuerIterator();
+
+    // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
+    // Anlagen.
+    it.addFilter(
+        "konto.kontoart is null OR "
+            + "(buchungsart.art != ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?)))"
+            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?))) ",
+        ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
+        ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
+
+    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0"
+        + " THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END * "
+        + "CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
+        + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE);
+
+    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0"
+        + " THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END * "
+        + "CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
+        + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
 
     return it;
   }
