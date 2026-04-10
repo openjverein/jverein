@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -10,9 +9,6 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
@@ -74,6 +70,12 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 
   public static final String GESAMTBETRAG = "gesamtbetrag";
 
+  public static final int AUSWERTUNG = 1;
+
+  public static final int ZUSATZBETRAEGE = 2;
+
+  public static final int ABRECHNUNG = 3;
+
   private JVereinTablePart arbeitseinsatzueberpruefungList;
 
   private SelectInput suchjahr = null;
@@ -84,10 +86,12 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
 
   private final ZusatzbetragPart part;
 
-  public ArbeitseinsatzAbrechnungControl() throws RemoteException
+  private int typ = 1;
+
+  public ArbeitseinsatzAbrechnungControl(int typ) throws RemoteException
   {
     super();
-
+    this.typ = typ;
     zusatzb = getZusatzbetrag();
     part = new ZusatzbetragPart(zusatzb, false);
   }
@@ -517,15 +521,16 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
   @Override
   protected void startAbrechnung() throws ApplicationException, RemoteException
   {
-    if (isKompakteAbbuchungActiv())
+    switch (typ)
     {
-      // Das ist die Abrechnung
-      new AbrechnungSEPA(getAbrechnungSEPAParam());
-    }
-    else
-    {
-      // Das ist die Zusatzbeträge Generierung
-      starteZusatzberaegeGenerierung();
+      case ABRECHNUNG:
+        new AbrechnungSEPA(getAbrechnungSEPAParam());
+        break;
+      case ZUSATZBETRAEGE:
+        starteZusatzberaegeGenerierung();
+        break;
+      case AUSWERTUNG:
+        // Nichts zu tun
     }
   }
 
