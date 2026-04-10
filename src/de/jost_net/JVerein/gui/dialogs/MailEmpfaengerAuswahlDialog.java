@@ -332,6 +332,9 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       switch (selection)
       {
         case AKTIVE_MITGLIEDER:
+          it.addFilter("(eintritt IS NULL OR eintritt <= ?)"
+              + " AND (austritt IS NULL OR austritt > ?)", d, d);
+          break;
         case AKTIVE_MITGLIEDER_NICHT_MITGLIEDER:
           it.addFilter(
               "adresstyp != ? OR ((eintritt IS NULL OR eintritt <= ?)"
@@ -339,6 +342,9 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
               Long.valueOf(Mitgliedstyp.MITGLIED), d, d);
           break;
         case INAKTIVE_MITGLIEDER:
+          it.addFilter("NOT ((eintritt IS NULL OR eintritt <= ?)"
+              + " AND (austritt IS NULL OR austritt > ?))", d, d);
+          break;
         case INAKTIVE_MITGLIEDER_NICHT_MITGLIEDER:
           it.addFilter(
               "adresstyp != ? OR NOT ((eintritt IS NULL OR eintritt <= ?)"
