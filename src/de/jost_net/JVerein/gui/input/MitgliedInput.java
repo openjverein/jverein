@@ -32,12 +32,23 @@ public class MitgliedInput
   public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
       Mitglied mitglied, int auswahl) throws RemoteException
   {
+    return getMitgliedInput(mitgliedInput, mitglied, auswahl, null);
+  }
+
+  public AbstractInput getMitgliedInput(AbstractInput mitgliedInput,
+      Mitglied mitglied, int auswahl, Integer mitgliedstyp)
+      throws RemoteException
+  {
     switch (auswahl)
     {
       case AbstractInputAuswahl.ComboBox:
         // Hole alle Mitglieder aus Datenbank um sie später anzuzeigen.
         DBIterator<Mitglied> it = Einstellungen.getDBService()
             .createList(Mitglied.class);
+        if (mitgliedstyp != null)
+        {
+          it.addFilter("adresstyp = ?", mitgliedstyp);
+        }
         it.setOrder("order by name, vorname");
         ArrayList<Mitglied> mitgliederList = new ArrayList<>();
         while (it.hasNext())
@@ -55,7 +66,7 @@ public class MitgliedInput
         break;
       case AbstractInputAuswahl.SearchInput:
       default:
-        mitgliedInput = new MitgliedSearchInput();
+        mitgliedInput = new MitgliedSearchInput(mitgliedstyp);
         ((MitgliedSearchInput) mitgliedInput)
             .setSearchString("Zum Suchen tippen");
         mitgliedInput.setValue(mitglied);

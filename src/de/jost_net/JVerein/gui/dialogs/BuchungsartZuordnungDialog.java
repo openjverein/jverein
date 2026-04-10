@@ -80,6 +80,8 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
 
   public final static String KEINE_STEUER = "Keine Steuer";
 
+  private String entfernenText = "Entfernen";
+
   /**
    * @param position
    */
@@ -98,6 +100,10 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
     steuerInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.STEUERINBUCHUNG);
+    if (klasseInBuchung || steuerInBuchung)
+    {
+      entfernenText = "Alle entfernen";
+    }
 
     LabelGroup group = new LabelGroup(parent, "");
     group.addLabelPair("Buchungsart", getBuchungsartAuswahl());
@@ -158,7 +164,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
         close();
       }
     }, null, true, "ok.png");
-    buttons.addButton("Alle Entfernen", new Action()
+    buttons.addButton(entfernenText, new Action()
     {
 
       @Override

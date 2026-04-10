@@ -52,6 +52,7 @@ public enum RechnungVar
   MK_SUMME_OFFEN("mitgliedskonto_summe_offen"), //
   SUMME("rechnung_summe"), //
   SUMME_OFFEN("rechnung_summe_offen"), //
+  QRCODE_SUMME_OFFEN("qrcode_summe_offen"), //
   QRCODE_SUMME("qrcode_summe"), //
   QRCODE_INTRO("qrcode_intro"),
   DATUM("rechnung_datum"),

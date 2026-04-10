@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -130,7 +131,8 @@ public class ArbeitseinsatzPart implements Part
     else
     {
       mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
-          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL),
+          Integer.valueOf(Mitgliedstyp.MITGLIED));
     }
     mitglied.setMandatory(true);
     return mitglied;
