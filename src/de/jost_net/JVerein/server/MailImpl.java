@@ -127,6 +127,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     DBIterator<MailAnhang> it = Einstellungen.getDBService()
         .createList(MailAnhang.class);
     it.addFilter("mail = ?", getID());
+
     anhang = new TreeSet<>();
     while (it.hasNext())
     {
@@ -189,7 +190,12 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   {
     if ("anhaenge".equals(fieldName))
     {
-      return getAnhang().size();
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<PseudoDBObject>(
+          "mailanhang");
+      it.addFilter("mail = ?", getID());
+      it.addColumn("count(id) as count");
+      PseudoDBObject o = it.next();
+      return o.getAttribute("count");
     }
     return super.getAttribute(fieldName);
   }
