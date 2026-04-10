@@ -27,9 +27,18 @@ import de.willuhn.logging.Logger;
 
 public class MitgliedSearchInput extends SearchInput
 {
+
+  private Integer mitgliedstyp = null;
+
   public MitgliedSearchInput()
   {
     super();
+  }
+
+  public MitgliedSearchInput(Integer mitgliedstyp)
+  {
+    super();
+    this.mitgliedstyp = mitgliedstyp;
   }
 
   @Override
@@ -46,6 +55,10 @@ public class MitgliedSearchInput extends SearchInput
         text = "%" + text.toUpperCase() + "%";
         result.addFilter("(UPPER(name) like ? or UPPER(vorname) like ?)",
             new Object[] { text, text });
+      }
+      if (mitgliedstyp != null)
+      {
+        result.addFilter("adresstyp = ?", mitgliedstyp);
       }
       result.setOrder("order by name, vorname");
 
