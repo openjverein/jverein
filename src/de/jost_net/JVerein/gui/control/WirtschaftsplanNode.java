@@ -160,9 +160,22 @@ public class WirtschaftsplanNode
     // für Rücklagen gibt.
     ExtendedDBIterator<PseudoDBObject> istIt = new ExtendedDBIterator<>(
         "buchungsart");
-    istIt.leftJoin("buchung",
-        "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
-        wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+    if (wirtschaftsplan.getProjektID() != null
+        && (Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    {
+      istIt.leftJoin("buchung",
+          "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?"
+              + " and buchung.projekt = ?",
+          wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis(),
+          wirtschaftsplan.getProjektID());
+    }
+    else
+    {
+      istIt.leftJoin("buchung",
+          "buchung.buchungsart = buchungsart.id and buchung.datum >= ? and buchung.datum <= ?",
+          wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+    }
+
     if (art != WirtschaftsplanImpl.RUECKLAGE)
     {
       if ((Boolean) Einstellungen
@@ -237,9 +250,14 @@ public class WirtschaftsplanNode
         subselect += " JOIN buchungsart ON buchung.buchungsart = buchungsart.id "
             + " JOIN steuer ON steuer.id = buchungsart.steuer ";
       }
-      subselect += " WHERE datum >= ? and datum <= ? "
-          // Keine Steuer bei alten Steuerbuchungen mit dependencyid
-          + " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
+      subselect += " WHERE datum >= ? and datum <= ? ";
+      if (wirtschaftsplan.getProjektID() != null
+          && (Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+      {
+        subselect += " AND buchung.projekt = ? ";
+      }
+      // Keine Steuer bei alten Steuerbuchungen mit dependencyid
+      subselect += " AND (buchung.dependencyid is null or  buchung.dependencyid = -1)"
           + " GROUP BY steuer.buchungsart";
       if ((boolean) Einstellungen
           .getEinstellung(Einstellungen.Property.BUCHUNGSKLASSEINBUCHUNG))
@@ -247,9 +265,20 @@ public class WirtschaftsplanNode
         subselect += ",steuer.buchungsklasse";
       }
       subselect += ") AS st ";
-      istIt.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
-          Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
-          wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+      if (wirtschaftsplan.getProjektID() != null
+          && (Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+      {
+        istIt.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
+            Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
+            wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis(),
+            wirtschaftsplan.getProjektID());
+      }
+      else
+      {
+        istIt.leftJoin(subselect, "st.buchungsart = buchungsart.id ",
+            Kontoart.LIMIT.getKey(), Kontoart.ANLAGE.getKey(),
+            wirtschaftsplan.getDatumVon(), wirtschaftsplan.getDatumBis());
+      }
 
       if (steuerInBuchung)
       {

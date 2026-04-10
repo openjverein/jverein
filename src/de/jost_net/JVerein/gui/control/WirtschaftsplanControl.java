@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
@@ -53,6 +54,7 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -72,6 +74,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   private WirtschaftsplanUebersichtPart uebersicht;
 
   private Wirtschaftsplan wirtschaftsplan;
+
+  private SelectInput projekt;
 
   private boolean tableChanged = false;
 
@@ -143,6 +147,33 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     }
     wirtschaftsplan = (Wirtschaftsplan) getCurrentObject();
     return wirtschaftsplan;
+  }
+
+  public SelectInput getProjekt() throws RemoteException
+  {
+    if (projekt != null)
+    {
+      return projekt;
+    }
+    ArrayList<Projekt> projektliste = new ArrayList<>();
+    DBIterator<Projekt> list = Einstellungen.getDBService()
+        .createList(Projekt.class);
+    list.setOrder("ORDER BY bezeichnung");
+    while (list.hasNext())
+    {
+      projektliste.add(list.next());
+    }
+    Long pid = getWirtschaftsplan().getProjektID();
+    Projekt p = null;
+    if (pid != null)
+    {
+      p = (Projekt) Einstellungen.getDBService().createObject(Projekt.class,
+          pid.toString());
+    }
+    projekt = new SelectInput(projektliste, p);
+    projekt.setAttribute("bezeichnung");
+    projekt.setPleaseChoose("Keine Einschränkung");
+    return projekt;
   }
 
   public EditTreePart getEinnahmen() throws RemoteException
@@ -453,6 +484,14 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     Date bis = (Date) uebersicht.getBis().getValue();
     wirtschaftsplan.setDatumBis(bis);
     wirtschaftsplan.setDatumVon(von);
+    Long pid = null;
+    Projekt p = uebersicht.getProjekt() == null ? null
+        : (Projekt) uebersicht.getProjekt().getValue();
+    if (p != null)
+    {
+      pid = Long.valueOf(p.getID());
+    }
+    wirtschaftsplan.setProjektID(pid);
 
     return wirtschaftsplan;
   }
