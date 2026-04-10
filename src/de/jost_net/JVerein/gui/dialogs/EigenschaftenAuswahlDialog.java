@@ -46,6 +46,10 @@ public class EigenschaftenAuswahlDialog
     extends AbstractDialog<EigenschaftenAuswahlParameter>
 {
 
+  public static final String UND = "und";
+
+  public static final String ODER = "oder";
+
   private FilterControl control;
 
   private SelectInput eigenschaftenverknuepfung;
@@ -181,8 +185,8 @@ public class EigenschaftenAuswahlDialog
       return eigenschaftenverknuepfung;
     }
     ArrayList<String> werte = new ArrayList<>();
-    werte.add("und");
-    werte.add("oder");
+    werte.add(UND);
+    werte.add(ODER);
     eigenschaftenverknuepfung = new SelectInput(werte,
         control.getEigenschaftenVerknuepfung());
     eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
