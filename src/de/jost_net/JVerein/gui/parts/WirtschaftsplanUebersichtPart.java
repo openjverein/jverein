@@ -23,6 +23,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -30,6 +31,7 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -45,6 +47,8 @@ public class WirtschaftsplanUebersichtPart implements Part
   private DateInput bis;
 
   private DateInput von;
+
+  private SelectInput projekt;
 
   private DecimalInput sollEinnahme;
 
@@ -69,7 +73,7 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     LabelGroup uebersicht = new LabelGroup(parent, "Übersicht");
 
-    ColumnLayout baseData = new ColumnLayout(uebersicht.getComposite(), 3);
+    ColumnLayout baseData = new ColumnLayout(uebersicht.getComposite(), 4);
 
     SimpleContainer bezeichnungContainer = new SimpleContainer(
         baseData.getComposite());
@@ -85,6 +89,15 @@ public class WirtschaftsplanUebersichtPart implements Part
     bis = new DateInput(control.getWirtschaftsplan().getDatumBis(),
         new JVDateFormatTTMMJJJJ());
     bisContainer.addLabelPair("Bis", bis);
+
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.PROJEKTEANZEIGEN))
+    {
+    SimpleContainer projektContainer = new SimpleContainer(
+        baseData.getComposite());
+    projekt = control.getProjekt();
+    projektContainer.addLabelPair("Projekt", projekt);
+    }
 
     ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 6);
 
@@ -272,5 +285,10 @@ public class WirtschaftsplanUebersichtPart implements Part
   public DateInput getVon()
   {
     return von;
+  }
+
+  public SelectInput getProjekt()
+  {
+    return projekt;
   }
 }
