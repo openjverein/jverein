@@ -69,9 +69,6 @@ public class EigenschaftenAuswahlDialog
    * 
    * @param defaults
    *          Liste der Eigenschaften-IDs durch Komma separiert.
-   * @param ohnePflicht
-   *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1
-   *          ignoriert werden. true: ignorieren
    * @param verknuepfung
    *          Spezifiziert ob der Input Verknüpfung (UND,ODER) im Dialog
    *          angezeigt werden soll.

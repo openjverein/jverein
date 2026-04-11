@@ -21,11 +21,12 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.keys.Eigenschaftenauswahl;
@@ -98,7 +99,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         try
         {
           EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
-              true, new MitgliedControl(null), true);
+              true, new MitgliedControl(null), false);
           param = ead.open();
           setSelection();
         }
@@ -308,7 +309,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       if (eigenschaftenNodes != null)
       {
         it.addColumn("eigenschaft as " + EIGENSCHAFT);
-        it.join("eigenschaften", "mitglied.id = eigenschaften.mitglied");
+        it.leftJoin("eigenschaften", "mitglied.id = eigenschaften.mitglied");
       }
       // Filtern nach Mitgliedstyp
       switch (selection)
@@ -360,7 +361,8 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       it.setOrder("Order by mitglied.id");
 
       ArrayList<Long> selectedIds = new ArrayList<>();
-      HashMap<Long, Integer> map = new HashMap<>();
+      ArrayList<Long> mitgliederIds = new ArrayList<>();
+      List<Long[]> mitgliedEigenschaften = new ArrayList<>();
 
       while (it.hasNext())
       {
@@ -368,30 +370,11 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         Long mitglied_id = (Long) o.getAttribute(MITGLIED_ID);
         if (eigenschaftenNodes != null)
         {
+          mitgliederIds.add(mitglied_id);
           Long eigenschaft = (Long) o.getAttribute(EIGENSCHAFT);
-          if (param.getVerknuepfung().equals(EigenschaftenAuswahlDialog.ODER))
+          if (eigenschaft != null)
           {
-            for (EigenschaftenNode node : eigenschaftenNodes)
-            {
-              if (Long.valueOf(node.getEigenschaft().getID()) == eigenschaft)
-              {
-                selectedIds.add(mitglied_id);
-              }
-            }
-          }
-          else if (param.getVerknuepfung()
-              .equals(EigenschaftenAuswahlDialog.UND))
-          {
-            for (EigenschaftenNode node : eigenschaftenNodes)
-            {
-              if (Long.valueOf(node.getEigenschaft().getID()) == eigenschaft)
-              {
-                Integer count = map.get(mitglied_id) != null
-                    ? map.get(mitglied_id) + 1
-                    : 1;
-                map.put(mitglied_id, count);
-              }
-            }
+            mitgliedEigenschaften.add(new Long[] { mitglied_id, eigenschaft });
           }
         }
         else
@@ -400,18 +383,18 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
 
-      if (eigenschaftenNodes != null
-          && param.getVerknuepfung().equals(EigenschaftenAuswahlDialog.UND))
+      if (eigenschaftenNodes != null)
       {
-        int anzahl = eigenschaftenNodes.size();
-        for (Map.Entry<Long, Integer> entry : map.entrySet())
+        ArrayList<Long> suchIds = new ArrayList<>();
+        HashMap<Long, String> suchauswahl = new HashMap<>();
+        for (EigenschaftenNode node : eigenschaftenNodes)
         {
-          // Wenn alle Eigenschaften enthalten waren, dann Mitglied selektieren
-          if (entry.getValue() == anzahl)
-          {
-            selectedIds.add(entry.getKey());
-          }
+          Long eigenschaftId = Long.valueOf(node.getEigenschaft().getID());
+          suchIds.add(eigenschaftId);
+          suchauswahl.put(eigenschaftId, node.getPreset());
         }
+        selectedIds = MitgliedQuery.getFilteredIds(mitgliederIds, suchIds,
+            suchauswahl, mitgliedEigenschaften, param.getVerknuepfung());
       }
 
       for (Object o : control.getMitgliedMitMail().getItems(false))
