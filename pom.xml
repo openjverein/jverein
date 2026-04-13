@@ -664,6 +664,7 @@
                 </goals>
                 <configuration>
                   <file>${jameica.dir}/releases/jameica-lib.jar</file>
+                  <sources>${jameica.dir}/releases/nightly/jameica-${jameica.version}.src.zip</sources>
                   <groupId>de.willuhn</groupId>
                   <artifactId>jameica-lib</artifactId>
                   <version>${jameica.version}</version>
@@ -679,6 +680,7 @@
                 </goals>
                 <configuration>
                   <file>${hibiscus.dir}/releases/hibiscus-lib.jar</file>
+                  <sources>${hibiscus.dir}/releases/nightly/hibiscus-${hibiscus.version}.src.zip</sources>
                   <groupId>de.willuhn</groupId>
                   <artifactId>hibiscus-lib</artifactId>
                   <version>${hibiscus.version}</version>
