@@ -531,7 +531,9 @@ public class BuchungImpl extends AbstractJVereinDBObject
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
       throws RemoteException
   {
-    setAttribute("abrechnungslauf", Long.valueOf(abrechnungslauf.getID()));
+    Long value = abrechnungslauf == null ? null
+        : Long.valueOf(abrechnungslauf.getID());
+    setAttribute("abrechnungslauf", value);
   }
 
   @Override
