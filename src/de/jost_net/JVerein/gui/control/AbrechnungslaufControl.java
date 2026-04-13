@@ -605,23 +605,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   {
     return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
         context -> {
-          if (lastschriftList == null)
-          {
-            throw new ApplicationException(
-                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-          }
-          lastschriftList.export(
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
-                  getAbrechnungslauf()),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          doExport(lastschriftList,
+              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME, art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -630,23 +617,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   {
     return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
         context -> {
-          if (zusatzbetraegeList == null)
-          {
-            throw new ApplicationException(
-                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-          }
-          zusatzbetraegeList.export(
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
-                  getAbrechnungslauf()),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          doExport(zusatzbetraegeList,
+              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME, art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -655,21 +629,9 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   {
     return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
         context -> {
-          if (buchungList == null)
-          {
-            throw new ApplicationException(
-                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-          }
-          buchungList.export(
-              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
-                  getAbrechnungslauf()),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          doExport(buchungList, VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME, art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -678,23 +640,25 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   {
     return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
         context -> {
-          if (sollbuchungList == null)
-          {
-            throw new ApplicationException(
-                "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-          }
-          sollbuchungList.export(
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
-                  getAbrechnungslauf()),
-              VorlageUtil.getName(
-                  VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
-                  getAbrechnungslauf()),
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          doExport(sollbuchungList,
+              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME, art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
+
+  private void doExport(JVereinTablePart tabelle, VorlageTyp titel,
+      VorlageTyp subtitel, VorlageTyp dateiname, ExportArt art)
+      throws ApplicationException
+  {
+    if (tabelle == null)
+    {
+      throw new ApplicationException(
+          "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
+    }
+    tabelle.export(VorlageUtil.getName(titel, getAbrechnungslauf()),
+        VorlageUtil.getName(subtitel, getAbrechnungslauf()),
+        VorlageUtil.getName(dateiname, getAbrechnungslauf()), art);
+    GUI.getStatusBar().setSuccessText("Auswertung fertig.");
   }
 }
