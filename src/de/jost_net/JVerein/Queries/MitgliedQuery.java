@@ -31,6 +31,7 @@ import org.apache.commons.lang.StringUtils;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -483,63 +484,8 @@ public class MitgliedQuery
             }
           });
 
-      ArrayList<Long> mitgliederIdsFiltered = new ArrayList<>();
-      for (Long mitglied : mitgliederIds)
-      {
-        ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
-        for (Long[] value : mitgliedEigenschaften)
-        {
-          if (value[0].equals(mitglied))
-            mitgliedeigenschaftenIds.add(value[1]);
-        }
-
-        boolean ok = false;
-        for (Long suchId : suchIds)
-        {
-          if (control.getEigenschaftenVerknuepfung().equals("und"))
-          {
-            ok = true;
-            if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
-            {
-              if (!mitgliedeigenschaftenIds.contains(suchId))
-              {
-                ok = false;
-                break;
-              }
-            }
-            else // EigenschaftenNode2.MINUS
-            {
-              if (mitgliedeigenschaftenIds.contains(suchId))
-              {
-                ok = false;
-                break;
-              }
-            }
-          }
-          else // Oder
-          {
-            if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
-            {
-              if (mitgliedeigenschaftenIds.contains(suchId))
-              {
-                ok = true;
-                break;
-              }
-            }
-            else // EigenschaftenNode2.MINUS
-            {
-              if (!mitgliedeigenschaftenIds.contains(suchId))
-              {
-                ok = true;
-                break;
-              }
-            }
-          }
-        }
-        if (ok)
-          mitgliederIdsFiltered.add(mitglied);
-      }
-      return getMitglieder(mitgliederIdsFiltered);
+      return getMitglieder(getFilteredIds(mitgliederIds, suchIds, suchauswahl,
+          mitgliedEigenschaften, control.getEigenschaftenVerknuepfung()));
     }
     else
     {
@@ -598,5 +544,84 @@ public class MitgliedQuery
     }
     and = true;
     sql += condition;
+  }
+
+  /**
+   * Die Methode evaluiert die Eigenschaften der Mitglieder.
+   * 
+   * @param mitgliederIds
+   *          Liste der Mitglieder IDs
+   * @param suchIds
+   *          Liste der auszuwertenden Eigenschaften IDs
+   * @param suchauswahl
+   *          Map mit dem Vorzeichen der Eigenschaft PLUS/MINUS
+   * @param mitgliedEigenschaften
+   *          Liste der Mitglied/Eigenschaften, Index 0 ist Mitglied, Index 1
+   *          ist Eigenschaft
+   * @param verknuepfung
+   *          Verknüpfung der Eigenschaften UND/ODER
+   * @return Gefilterte Mitglieder IDs
+   */
+  public static ArrayList<Long> getFilteredIds(ArrayList<Long> mitgliederIds,
+      ArrayList<Long> suchIds, HashMap<Long, String> suchauswahl,
+      List<Long[]> mitgliedEigenschaften, String verknuepfung)
+  {
+    ArrayList<Long> mitgliederIdsFiltered = new ArrayList<>();
+    for (Long mitglied : mitgliederIds)
+    {
+      ArrayList<Long> mitgliedeigenschaftenIds = new ArrayList<>();
+      for (Long[] value : mitgliedEigenschaften)
+      {
+        if (value[0].equals(mitglied))
+          mitgliedeigenschaftenIds.add(value[1]);
+      }
+
+      boolean ok = false;
+      for (Long suchId : suchIds)
+      {
+        if (verknuepfung.equals(EigenschaftenAuswahlDialog.UND))
+        {
+          ok = true;
+          if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
+          {
+            if (!mitgliedeigenschaftenIds.contains(suchId))
+            {
+              ok = false;
+              break;
+            }
+          }
+          else // EigenschaftenNode2.MINUS
+          {
+            if (mitgliedeigenschaftenIds.contains(suchId))
+            {
+              ok = false;
+              break;
+            }
+          }
+        }
+        else // Oder
+        {
+          if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))
+          {
+            if (mitgliedeigenschaftenIds.contains(suchId))
+            {
+              ok = true;
+              break;
+            }
+          }
+          else // EigenschaftenNode2.MINUS
+          {
+            if (!mitgliedeigenschaftenIds.contains(suchId))
+            {
+              ok = true;
+              break;
+            }
+          }
+        }
+      }
+      if (ok)
+        mitgliederIdsFiltered.add(mitglied);
+    }
+    return mitgliederIdsFiltered;
   }
 }

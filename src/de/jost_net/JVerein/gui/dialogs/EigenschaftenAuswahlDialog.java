@@ -46,6 +46,10 @@ public class EigenschaftenAuswahlDialog
     extends AbstractDialog<EigenschaftenAuswahlParameter>
 {
 
+  public static final String UND = "und";
+
+  public static final String ODER = "oder";
+
   private FilterControl control;
 
   private SelectInput eigenschaftenverknuepfung;
@@ -65,9 +69,6 @@ public class EigenschaftenAuswahlDialog
    * 
    * @param defaults
    *          Liste der Eigenschaften-IDs durch Komma separiert.
-   * @param ohnePflicht
-   *          Spezifiziert ob Eigenschaftengruppen mit Pflicht und Max1
-   *          ignoriert werden. true: ignorieren
    * @param verknuepfung
    *          Spezifiziert ob der Input Verknüpfung (UND,ODER) im Dialog
    *          angezeigt werden soll.
@@ -181,8 +182,8 @@ public class EigenschaftenAuswahlDialog
       return eigenschaftenverknuepfung;
     }
     ArrayList<String> werte = new ArrayList<>();
-    werte.add("und");
-    werte.add("oder");
+    werte.add(UND);
+    werte.add(ODER);
     eigenschaftenverknuepfung = new SelectInput(werte,
         control.getEigenschaftenVerknuepfung());
     eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
