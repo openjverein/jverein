@@ -282,8 +282,8 @@ public class JVereinTablePart extends TablePart
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim erstellen der Auswertung.", e);
-      throw new ApplicationException("Fehler beim erstellen der Auswertung.");
+      Logger.error("Fehler beim Erstellen der Auswertung.", e);
+      throw new ApplicationException("Fehler beim Erstellen der Auswertung.");
     }
   }
 }
