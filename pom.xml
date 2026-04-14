@@ -25,9 +25,9 @@
     <!-- renovate: depName=willuhn/hibiscus datasource=github-tags -->
     <hibiscus.version>2.12.2</hibiscus.version>
     <hibiscus.download.url>https://github.com/willuhn/hibiscus/archive/refs/tags</hibiscus.download.url>
-    <!-- Standardpfade für lokal gebootstrappte Host-Projekte; können per -Djameica.dir/-Dhibiscus.dir überschrieben werden. -->
-    <jameica.dir>${project.basedir}/bootstrap/jameica</jameica.dir>
-    <hibiscus.dir>${project.basedir}/bootstrap/hibiscus</hibiscus.dir>
+    <!-- Standardpfade für lokal gebootstrappte Host-Projekte außerhalb des Plugin-Ordners; können per -Djameica.dir/-Dhibiscus.dir überschrieben werden. -->
+    <jameica.dir>${project.basedir}/../openjverein-bootstrap/jameica</jameica.dir>
+    <hibiscus.dir>${project.basedir}/../openjverein-bootstrap/hibiscus</hibiscus.dir>
     <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
     <jameica.extracted.dir>${host.bootstrap.dir}/jameica-${jameica.version}</jameica.extracted.dir>
     <hibiscus.extracted.dir>${host.bootstrap.dir}/hibiscus-${hibiscus.version}</hibiscus.extracted.dir>
