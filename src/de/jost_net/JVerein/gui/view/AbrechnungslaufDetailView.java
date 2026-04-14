@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -76,18 +77,34 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
+    ButtonAreaRtoL buchbuttons = new ButtonAreaRtoL();
+    buchbuttons.addButton(control.exportBuchungButton(ExportArt.PDF));
+    buchbuttons.addButton(control.exportBuchungButton(ExportArt.CSV));
+    buchbuttons.paint(tabBuchung.getComposite());
     control.getBuchungList().paint(tabBuchung.getComposite());
 
     TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
+    ButtonAreaRtoL sollbbuttons = new ButtonAreaRtoL();
+    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.PDF));
+    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.CSV));
+    sollbbuttons.paint(tabSollbuchung.getComposite());
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
+    ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.PDF));
+    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.CSV));
+    lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
           1);
+      ButtonAreaRtoL zusatzbuttons = new ButtonAreaRtoL();
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.PDF));
+      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.CSV));
+      zusatzbuttons.paint(tabZusatzbetraege.getComposite());
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
@@ -116,7 +133,6 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(control.getStartListeButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
   }
