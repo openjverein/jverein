@@ -37,7 +37,14 @@ cd jverein
 ```
 
 Jameica und Hibiscus müssen nicht mehr separat vorab geklont werden. Der Maven-Bootstrap lädt beide Projekte bei Bedarf
-selbst herunter und legt sie weiterhin als Nachbarverzeichnisse `../jameica` und `../hibiscus` an.
+selbst herunter und legt sie standardmäßig im Projekt unter `bootstrap/jameica` und `bootstrap/hibiscus` ab.
+
+Wenn du bewusst mit eigenen lokalen Checkouts arbeiten willst, kannst du die Standardpfade überschreiben:
+
+```shell
+mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts \
+  -Djameica.dir=../jameica -Dhibiscus.dir=../hibiscus generate-sources
+```
 
 ## Host-Artefakte initial vorbereiten
 
@@ -51,7 +58,7 @@ mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources
 Dieser Schritt:
 
 1. lädt Jameica und Hibiscus als ZIP von GitHub
-2. entpackt sie nach `../jameica` und `../hibiscus`
+2. entpackt sie in die konfigurierten Host-Projektordner, standardmäßig `bootstrap/jameica` und `bootstrap/hibiscus`
 3. führt dort die vorhandenen Build-Skripte aus
 4. installiert die für JVerein benötigten Artefakte in das lokale Maven-Repository
 
@@ -59,7 +66,7 @@ Der Schritt muss normalerweise nur erneut ausgeführt werden, wenn:
 
 - das lokale Maven-Repository bereinigt wurde
 - die konfigurierten Jameica-/Hibiscus-Versionen im `pom.xml` geändert wurden
-- die Nachbarverzeichnisse `../jameica` oder `../hibiscus` bewusst neu aufgebaut werden sollen
+- die Host-Projektordner bewusst neu aufgebaut werden sollen
 
 ## Normaler Build und Test
 
@@ -87,11 +94,12 @@ Wichtig für den aktuellen Projektstand:
 
 1. zuerst `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` ausführen
 2. danach JVerein in Eclipse als Maven-Projekt mit m2e importieren
-3. anschließend auch die Nachbarverzeichnisse `../jameica` und `../hibiscus` als Projekte importieren
+3. anschließend auch `bootstrap/jameica` und `bootstrap/hibiscus` als Projekte importieren
+   Alternativ kannst du eigene Checkouts verwenden, wenn du den Bootstrap mit `-Djameica.dir=... -Dhibiscus.dir=...`
+   auf diese Ordner zeigst.
 
-Für lokale Tests und das Starten der Anwendung sind `../jameica` und `../hibiscus` nicht optional. Sie müssen vorhanden
-sein und im Workspace geöffnet werden, weil Jameica als Host-Anwendung startet und Hibiscus zusätzlich als Plugin
-geladen wird.
+Für lokale Tests und das Starten der Anwendung sind Jameica und Hibiscus nicht optional. Sie müssen vorhanden sein und
+im Workspace geöffnet werden, weil Jameica als Host-Anwendung startet und Hibiscus zusätzlich als Plugin geladen wird.
 
 ## IntelliJ
 
@@ -102,7 +110,7 @@ Für die Verwendung von IntelliJ:
 1. Klone deinen JVerein-Fork.
 2. Führe im JVerein-Ordner `mvn -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources` aus.
 3. Öffne das Projekt in IntelliJ direkt auf Basis des vorhandenen `pom.xml`.
-4. Importiere `../jameica` und `../hibiscus` als weitere Module mit File -> New -> Import Module from existing sources.
+4. Importiere `bootstrap/jameica` und `bootstrap/hibiscus` als weitere Module mit File -> New -> Import Module from existing sources.
    Sie müssen als Eclipse Module importiert werden.
 5. Unter `File -> Project Structure` muss eine SDK mit mindestens Java 17 ausgewählt werden. Das Language Level für den
    JVerein-Build bleibt Java 11 kompatibel.
@@ -114,7 +122,8 @@ Für die Verwendung von IntelliJ:
 2. Wähle als Modul `jameica`.
 3. Wähle als Main Class `de.willuhn.jameica.Main`.
 4. Für Program Arguments siehe https://www.willuhn.de/wiki/doku.php?id=develop:eclipse#launch-konfiguration_anlegen.
-5. Als Working Directory verwende das Nachbarprojekt `../jameica`.
+5. Als Working Directory verwende standardmäßig `bootstrap/jameica`.
+   Wenn du mit eigenen Checkouts arbeitest, entsprechend deinen überschriebenen `jameica.dir`.
 
 ### Erster Start
 
@@ -124,8 +133,10 @@ Für die Verwendung von IntelliJ:
 
 ```properties
 jameica.plugin.dir.0=../hibiscus
-jameica.plugin.dir.1=../jverein
+jameica.plugin.dir.1=../../
 ```
+
+Bei Verwendung von `bootstrap/jameica` zeigt `../hibiscus` auf `bootstrap/hibiscus`, und `../../` auf das JVerein-Projekt.
 
 4. Starte Jameica erneut. Danach werden Hibiscus und JVerein als Plugins geladen.
 5. Wenn du Code geändert hast und über die IDE testest, führe vor dem nächsten Start einen Rebuild aus.
