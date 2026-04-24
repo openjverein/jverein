@@ -518,7 +518,13 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
       view.reload();
     }
-    catch (RemoteException e)
+    catch (ApplicationException e)
+    {
+      DBTransaction.rollback();
+
+      throw new ApplicationException(e.getMessage());
+    }
+    catch (Exception e)
     {
       DBTransaction.rollback();
 
