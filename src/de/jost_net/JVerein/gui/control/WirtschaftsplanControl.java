@@ -457,7 +457,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     return wirtschaftsplan;
   }
 
-  public void handleStore()
+  @Override
+  public void handleStore() throws ApplicationException
   {
     try
     {
@@ -516,14 +517,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
       tableChanged = false;
 
       view.reload();
-
-      GUI.getStatusBar().setSuccessText("Wirtschaftsplan gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
-
-      GUI.getStatusBar().setErrorText(e.getMessage());
     }
     catch (RemoteException e)
     {
@@ -531,7 +524,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 
       String fehler = "Fehler beim Speichern des Wirtschaftsplans";
       Logger.error(fehler, e);
-      GUI.getStatusBar().setErrorText(fehler);
+      throw new ApplicationException(fehler);
     }
   }
 
