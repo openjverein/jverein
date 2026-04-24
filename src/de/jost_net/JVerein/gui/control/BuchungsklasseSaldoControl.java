@@ -94,8 +94,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected boolean mitUmbuchung = true;
 
   /**
-   * Soll Gesamtsaldo mit augegeben werden? Default true. Wird bei Projektsaldo
-   * wenn ein Projekt ausgewählt ist nicht angezeigt
+   * Soll Gesamtsaldo mit ausgegeben werden? Default true. Wird bei Projektsaldo
+   * nicht angezeigt wenn ein Projekt ausgewählt ist.
    */
   protected boolean mitGesamtSaldo = true;
 

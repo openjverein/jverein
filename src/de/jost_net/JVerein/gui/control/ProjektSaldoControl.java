@@ -115,7 +115,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     List<Projekt> projektliste = new ArrayList<>();
     DBIterator<Projekt> list = Einstellungen.getDBService()
         .createList(Projekt.class);
-    // Nur Projekte anzeugen die in dem Zeitraum aktiv sind
+    // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
     list.addFilter("(startdatum is null or startdatum <= ?)",
         getDatumbis().getDate());
     list.addFilter("(endedatum is null or endedatum >= ?)",
@@ -134,7 +134,7 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     List<String> ids = new ArrayList<>();
     DBIterator<Projekt> list = Einstellungen.getDBService()
         .createList(Projekt.class);
-    // Nur Projekte anzeugen die in dem Zeitraum aktiv sind
+    // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
     list.addFilter("(startdatum is null or startdatum <= ?)",
         getDatumbis().getDate());
     list.addFilter("(endedatum is null or endedatum >= ?)",
