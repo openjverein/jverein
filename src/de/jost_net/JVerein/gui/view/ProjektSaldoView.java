@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.ProjektSaldoControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -43,11 +41,8 @@ public class ProjektSaldoView extends AbstractView
     QuickAccessPart qpart = new QuickAccessPart(control, true);
     qpart.paint(this.getParent());
 
-    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
-    {
-      LabelGroup projekt = new LabelGroup(getParent(), "Projekt");
-      projekt.addLabelPair("Projekt", control.getProjekt());
-    }
+    LabelGroup projekt = new LabelGroup(getParent(), "Projekt");
+    projekt.addLabelPair("Projekt", control.getProjekt());
 
     LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
     group.addPart(control.getSaldoList());
