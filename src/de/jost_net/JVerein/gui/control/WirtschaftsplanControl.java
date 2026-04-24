@@ -522,7 +522,7 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       DBTransaction.rollback();
 
-      throw new ApplicationException(e.getMessage());
+      throw e;
     }
     catch (Exception e)
     {
