@@ -8,14 +8,12 @@
     {
       "customType": "regex",
       "managerFilePatterns": [
-        "/^build/build\.properties$/"
+        "/^pom\\.xml$/"
       ],
       "matchStrings": [
-        "# renovate: depName=(?<depName>.*?)\\s*\\S+\\.version\\s*=\\s*(?<currentValue>\\d+.\\d+.\\d+)"
+        "<!-- renovate: depName=(?<depName>\\S+) datasource=(?<datasource>\\S+) -->\\s*<(?<propertyName>[A-Za-z0-9_.-]+\\.version)>(?<currentValue>\\d+\\.\\d+\\.\\d+)</\\k<propertyName>>"
       ],
-      "datasourceTemplate": "github-tags",
-      "versioningTemplate": "regex:^(?<major>\d+).(?<minor>\d+).(?<patch>\d+)$"
+      "versioningTemplate": "regex:^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)$"
     }
   ]
 }
-

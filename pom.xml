@@ -1,25 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.github.openjverein</groupId>
   <artifactId>jverein</artifactId>
-  <version>3.2.0</version>
+  <version>4.2.0</version>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.release>11</maven.compiler.release>
-    <maven.test.skip>true</maven.test.skip>
+    <maven.compiler.parameters>true</maven.compiler.parameters>
+    <obantoo.version>2.1.12</obantoo.version>
+    <!-- renovate: depName=beanshell/beanshell datasource=github-tags -->
+    <bsh.version>2.1.1</bsh.version>
+    <bsh.sha1>5c01a006b0aba21ef55c01f96ea062c1cb2bf707</bsh.sha1>
+    <bsh.download.url>https://github.com/beanshell/beanshell/releases/download</bsh.download.url>
+    <!-- renovate: depName=willuhn/jameica datasource=github-tags -->
     <jameica.version>2.12.0</jameica.version>
-    <hibiscus.version>2.12.0</hibiscus.version>
-    <!-- See https://github.com/willuhn/jameica/commit/1a8a8005e04c6201972a63bd403b161f9e3802e7 -->
-    <swt.version>4.33</swt.version>
+    <jameica.download.url>https://github.com/willuhn/jameica/archive/refs/tags</jameica.download.url>
+    <!-- renovate: depName=willuhn/hibiscus datasource=github-tags -->
+    <hibiscus.version>2.12.2</hibiscus.version>
+    <hibiscus.download.url>https://github.com/willuhn/hibiscus/archive/refs/tags</hibiscus.download.url>
+    <!-- Standardpfade für lokal gebootstrappte Host-Projekte außerhalb des Plugin-Ordners; können per -Djameica.dir/-Dhibiscus.dir überschrieben werden. -->
+    <jameica.dir>${project.basedir}/../openjverein-bootstrap/jameica</jameica.dir>
+    <hibiscus.dir>${project.basedir}/../openjverein-bootstrap/hibiscus</hibiscus.dir>
+    <host.bootstrap.dir>${project.build.directory}/host-bootstrap</host.bootstrap.dir>
+    <jameica.extracted.dir>${host.bootstrap.dir}/jameica-${jameica.version}</jameica.extracted.dir>
+    <hibiscus.extracted.dir>${host.bootstrap.dir}/hibiscus-${hibiscus.version}</hibiscus.extracted.dir>
+    <swt.version>3.128.0</swt.version>
+    <!-- Wird nur zum Kompilieren benötigt, da die SWT-Bibliothek zur Laufzeit von Jameica bereitgestellt wird -->
+    <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
+    <icu4j.version>52.2</icu4j.version>
+    <jaxb.api.version>2.4.0-b180725.0427</jaxb.api.version>
+    <bytebuddy.agent.version>1.17.8</bytebuddy.agent.version>
+    <release.root>${project.build.directory}/releases</release.root>
+    <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
+    <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
+    <release.filename>${project.artifactId}.${project.version}.zip</release.filename>
+    <release.nightly.filename>${project.artifactId}.${project.version}-nightly.zip</release.nightly.filename>
+    <release.javadoc.dir>${release.root}/javadoc</release.javadoc.dir>
+    <assembly.plugin.xml>${release.plugin.dir}/plugin.xml</assembly.plugin.xml>
+    <plugin.zip.path>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}/${release.filename}</plugin.zip.path>
   </properties>
 
-
   <dependencies>
+    <!-- JVerein paketiert diese Bibliotheken selbst im Release-ZIP unter jverein/lib. -->
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
@@ -174,12 +203,51 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Jameica-Host bereitgestellt werden. -->
     <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.6</version>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>be.cyberelf.nanoxml</groupId>
+      <artifactId>nanoxml</artifactId>
+      <version>2.2.3</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.velocity</groupId>
+      <artifactId>velocity</artifactId>
+      <version>1.7</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>${swt.artifactId}</artifactId>
+      <version>${swt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.ibm.icu</groupId>
+      <artifactId>icu4j</artifactId>
+      <version>${icu4j.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.annotation</groupId>
+      <artifactId>javax.annotation-api</artifactId>
+      <version>1.3.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+      <version>${jaxb.api.version}</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Compile-Zeit-Abhaengigkeiten, die zur Laufzeit vom Hibiscus-Plugin bereitgestellt werden. -->
     <dependency>
       <groupId>net.sf.supercsv</groupId>
       <artifactId>super-csv</artifactId>
@@ -205,18 +273,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>be.cyberelf.nanoxml</groupId>
-      <artifactId>nanoxml</artifactId>
-      <version>2.2.3</version>
+      <groupId>com.github.hbci4j</groupId>
+      <artifactId>hbci4j-core</artifactId>
+      <version>4.1.6</version>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.velocity</groupId>
-      <artifactId>velocity</artifactId>
-      <version>1.7</version>
-      <scope>provided</scope>
-    </dependency>
-    <!-- Test -->
+
+    <!-- Testbibliotheken fuer JVerein. -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
@@ -224,18 +287,535 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.junit.platform</groupId>
-      <artifactId>junit-platform-launcher</artifactId>
-      <version>6.0.3</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>5.23.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
-    	<groupId>org.mockito</groupId>
-    	<artifactId>mockito-core</artifactId>
-    	<version>5.23.0</version>
-    	<scope>test</scope>
+      <groupId>net.bytebuddy</groupId>
+      <artifactId>byte-buddy-agent</artifactId>
+      <version>${bytebuddy.agent.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
+
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <testSourceDirectory>junit/src</testSourceDirectory>
+    <finalName>${project.artifactId}</finalName>
+
+    <resources>
+      <resource>
+        <directory>src</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.15.0</version>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.2</version>
+        <executions>
+          <execution>
+            <id>enforce-build-prerequisites</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[17,)</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>[3.9.0,)</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <version>3.6.1</version>
+        <executions>
+          <execution>
+            <id>parse-project-version</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>parse-version</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.5</version>
+        <configuration>
+          <argLine>-javaagent:${settings.localRepository}/net/bytebuddy/byte-buddy-agent/${bytebuddy.agent.version}/byte-buddy-agent-${bytebuddy.agent.version}.jar</argLine>
+          <useModulePath>false</useModulePath>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.5.0</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
+            <manifestEntries>
+              <Class-Path>lang help lib</Class-Path>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.10.0</version>
+        <executions>
+          <execution>
+            <id>copy-runtime-dependencies-to-target-release-layout</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeScope>runtime</includeScope>
+              <outputDirectory>${project.build.directory}/assembly-lib</outputDirectory>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <id>generate-release-plugin-xml</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <changeDetection>always</changeDetection>
+              <outputDirectory>${release.plugin.dir}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}</directory>
+                  <includes>
+                    <include>plugin.xml</include>
+                  </includes>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>3.12.0</version>
+        <executions>
+          <execution>
+            <id>generate-release-javadoc</id>
+            <phase>package</phase>
+            <goals>
+              <goal>javadoc</goal>
+            </goals>
+            <configuration>
+              <failOnError>false</failOnError>
+              <doclint>none</doclint>
+              <quiet>true</quiet>
+              <source>${maven.compiler.release}</source>
+              <encoding>${project.build.sourceEncoding}</encoding>
+              <docencoding>${project.build.sourceEncoding}</docencoding>
+              <outputDirectory>${release.javadoc.dir}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.7.1</version>
+        <executions>
+          <execution>
+            <id>assemble-release-zip</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${project.artifactId}.${project.version}</finalName>
+                  <outputDirectory>${release.root}</outputDirectory>
+              <descriptors>
+                <descriptor>src/assembly/release.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>installed-host-artifacts</id>
+      <activation>
+        <property>
+          <name>!bootstrap.host.artifacts</name>
+        </property>
+      </activation>
+      <dependencies>
+        <!-- Vom Jameica-Host gebaute und spaeter von Jameica bereitgestellte Artefakte. -->
+        <dependency>
+          <groupId>de.willuhn</groupId>
+          <artifactId>jameica-lib</artifactId>
+          <version>${jameica.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>de.willuhn</groupId>
+          <artifactId>de-willuhn-ds</artifactId>
+          <version>${jameica.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>de.willuhn</groupId>
+          <artifactId>de-willuhn-util</artifactId>
+          <version>${jameica.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <!-- Vom Hibiscus-Plugin gebaut und spaeter von Hibiscus bereitgestellt. -->
+        <dependency>
+          <groupId>de.willuhn</groupId>
+          <artifactId>hibiscus-lib</artifactId>
+          <version>${hibiscus.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>de.jost_net</groupId>
+          <artifactId>obantoo-bin</artifactId>
+          <version>${obantoo.version}</version>
+          <scope>provided</scope>
+        </dependency>
+        <!-- Wird nur über Github-Release bereitgestellt, da es nicht in einem öffentlichen Maven-Repository verfügbar ist. -->
+        <dependency>
+          <groupId>org.beanshell</groupId>
+          <artifactId>bsh</artifactId>
+          <version>${bsh.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <!-- Profil für die Bereitstellung von Jameica- und Hibiscus-Artefakten im lokalen Maven-Repository, wenn sie nicht bereits vorhanden sind -->
+    <profile>
+      <id>bootstrap-host-artifacts</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.googlecode.maven-download-plugin</groupId>
+            <artifactId>download-maven-plugin</artifactId>
+            <version>1.13.0</version>
+            <executions>
+              <execution>
+                <id>download-jameica</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${jameica.download.url}/${jameica.version}.zip</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>jameica-${jameica.version}.zip</outputFileName>
+                  <overwrite>false</overwrite>
+                  <unpack>true</unpack>
+                  <unpackWhenChanged>true</unpackWhenChanged>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-hibiscus</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${hibiscus.download.url}/${hibiscus.version}.zip</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>hibiscus-${hibiscus.version}.zip</outputFileName>
+                  <overwrite>false</overwrite>
+                  <unpack>true</unpack>
+                  <unpackWhenChanged>true</unpackWhenChanged>
+                </configuration>
+              </execution>
+              <execution>
+                <id>download-bsh</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>wget</goal>
+                </goals>
+                <configuration>
+                  <url>${bsh.download.url}/${bsh.version}/bsh-${bsh.version}.jar</url>
+                  <outputDirectory>${host.bootstrap.dir}</outputDirectory>
+                  <outputFileName>bsh-${bsh.version}.jar</outputFileName>
+                  <overwrite>false</overwrite>
+                  <sha1>${bsh.sha1}</sha1>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>prepare-host-working-copies</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <delete dir="${jameica.dir}" quiet="true"/>
+                    <mkdir dir="${jameica.dir}"/>
+                    <copy todir="${jameica.dir}" overwrite="true">
+                      <fileset dir="${jameica.extracted.dir}"/>
+                    </copy>
+
+                    <delete dir="${hibiscus.dir}" quiet="true"/>
+                    <mkdir dir="${hibiscus.dir}"/>
+                    <copy todir="${hibiscus.dir}" overwrite="true">
+                      <fileset dir="${hibiscus.extracted.dir}"/>
+                    </copy>
+                  </target>
+                </configuration>
+              </execution>
+              <execution>
+                <id>build-jameica-and-hibiscus</id>
+                <phase>initialize</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+                <configuration>
+                  <target>
+                    <ant dir="${jameica.dir}" antfile="build/build.xml" inheritall="false">
+                      <target name="nightly" />
+                    </ant>
+                    <ant dir="${hibiscus.dir}" antfile="build/build.xml" inheritall="false">
+                      <target name="nightly" />
+                    </ant>
+                  </target>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-install-plugin</artifactId>
+            <version>3.1.4</version>
+            <executions>
+              <execution>
+                <id>install-jameica-lib</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${jameica.dir}/releases/jameica-lib.jar</file>
+                  <sources>${jameica.dir}/releases/nightly/jameica-${jameica.version}.src.zip</sources>
+                  <groupId>de.willuhn</groupId>
+                  <artifactId>jameica-lib</artifactId>
+                  <version>${jameica.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-hibiscus-lib</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${hibiscus.dir}/releases/hibiscus-lib.jar</file>
+                  <sources>${hibiscus.dir}/releases/nightly/hibiscus-${hibiscus.version}.src.zip</sources>
+                  <groupId>de.willuhn</groupId>
+                  <artifactId>hibiscus-lib</artifactId>
+                  <version>${hibiscus.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-de-willuhn-ds</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${jameica.dir}/lib/de_willuhn_ds/de_willuhn_ds.jar</file>
+                  <groupId>de.willuhn</groupId>
+                  <artifactId>de-willuhn-ds</artifactId>
+                  <version>${jameica.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-de-willuhn-util</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${jameica.dir}/lib/de_willuhn_util/de_willuhn_util.jar</file>
+                  <groupId>de.willuhn</groupId>
+                  <artifactId>de-willuhn-util</artifactId>
+                  <version>${jameica.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-obantoo-bin</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${hibiscus.dir}/lib/obantoo-bin-${obantoo.version}.jar</file>
+                  <groupId>de.jost_net</groupId>
+                  <artifactId>obantoo-bin</artifactId>
+                  <version>${obantoo.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+              <execution>
+                <id>install-bsh</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>install-file</goal>
+                </goals>
+                <configuration>
+                  <file>${host.bootstrap.dir}/bsh-${bsh.version}.jar</file>
+                  <groupId>org.beanshell</groupId>
+                  <artifactId>bsh</artifactId>
+                  <version>${bsh.version}</version>
+                  <packaging>jar</packaging>
+                  <generatePom>true</generatePom>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>nightly</id>
+      <properties>
+        <maven.javadoc.skip>true</maven.javadoc.skip>
+        <assembly.plugin.xml>${release.nightly.generated.dir}/plugin.xml</assembly.plugin.xml>
+        <plugin.zip.path>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}/${release.nightly.filename}</plugin.zip.path>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate-nightly-plugin-xml</id>
+                <phase>prepare-package</phase>
+                <goals>
+                  <goal>copy-resources</goal>
+                </goals>
+                <configuration>
+                  <changeDetection>always</changeDetection>
+                  <outputDirectory>${release.nightly.generated.dir}</outputDirectory>
+                  <resources>
+                    <resource>
+                      <directory>${project.basedir}</directory>
+                      <includes>
+                        <include>plugin.xml</include>
+                      </includes>
+                      <filtering>true</filtering>
+                    </resource>
+                  </resources>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>assemble-nightly-zip</id>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <finalName>${project.artifactId}.${project.version}-nightly</finalName>
+                  <outputDirectory>${release.root}/nightly</outputDirectory>
+                  <descriptors>
+                    <descriptor>src/assembly/release.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <scm>
     <connection>scm:git:https://github.com/openjverein/jverein.git</connection>

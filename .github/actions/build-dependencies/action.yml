@@ -1,5 +1,5 @@
 name: Reusable build steps
-description: Setups the build environment and builds Jameica and Hibiscus
+description: Set up the build environment and bootstrap host artifacts into the local Maven repository
 runs:
   using: "composite"
   steps:
@@ -11,20 +11,40 @@ runs:
       architecture: x64
       cache: 'maven'
 
-  - name: Restore build dependencies
-    id: restore-cache
-    uses: actions/cache@v5
-    with:
-      path: |
-        jameica/bin/
-        jameica/lib/
-        jameica/releases/jameica-lib.jar
-        hibiscus/bin/
-        hibiscus/lib/
-        hibiscus/releases/hibiscus-lib.jar
-      key: ${{ hashFiles('jverein/build/build.properties', 'jverein/build/build.xml') }}
-
-  - name: Build Jameica and Hibiscus
-    if: steps.restore-cache.outputs.cache-hit != 'true'
+  - name: Check host artifacts in local Maven repository
+    id: host-artifacts
+    continue-on-error: true
     shell: bash
-    run: ant -noinput -buildfile jverein/build/build.xml build-dependencies
+    run: |
+      set -euo pipefail
+      pom=jverein/pom.xml
+      local_repo="$HOME/.m2/repository"
+      read_property() {
+        local property_name="$1"
+        sed -nE "s|.*<${property_name}>([^<]+)</${property_name}>.*|\\1|p" "$pom"
+      }
+      jameica_version=$(read_property jameica.version)
+      hibiscus_version=$(read_property hibiscus.version)
+      obantoo_version=$(read_property obantoo.version)
+      bsh_version=$(read_property bsh.version)
+
+      for artifact in \
+        "$local_repo/de/willuhn/jameica-lib/$jameica_version/jameica-lib-$jameica_version.jar" \
+        "$local_repo/de/willuhn/hibiscus-lib/$hibiscus_version/hibiscus-lib-$hibiscus_version.jar" \
+        "$local_repo/de/willuhn/de-willuhn-ds/$jameica_version/de-willuhn-ds-$jameica_version.jar" \
+        "$local_repo/de/willuhn/de-willuhn-util/$jameica_version/de-willuhn-util-$jameica_version.jar" \
+        "$local_repo/de/jost_net/obantoo-bin/$obantoo_version/obantoo-bin-$obantoo_version.jar" \
+        "$local_repo/org/beanshell/bsh/$bsh_version/bsh-$bsh_version.jar"
+      do
+        if [ ! -f "$artifact" ]; then
+          echo "Missing host artifact: $artifact"
+          exit 1
+        fi
+      done
+
+      echo "All host artifacts already installed"
+
+  - name: Bootstrap Jameica and Hibiscus host artifacts
+    if: steps.host-artifacts.outcome == 'failure'
+    shell: bash
+    run: mvn -B -f jverein/pom.xml -Dbootstrap.host.artifacts=true -Pbootstrap-host-artifacts generate-sources

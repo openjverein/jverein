@@ -1,6 +1,3 @@
-# This workflow will build a Java project with Ant
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-ant
-
 name: OpenJVerein official release
 
 on: workflow_dispatch
@@ -22,24 +19,12 @@ jobs:
     - name: Build OpenJVerein plugin
       id: openjverein
       run: |
-        ant_output=$(ant -e -q -noinput -buildfile jverein/build/build.xml)
-        echo ${ant_output}
+        mvn -B -f jverein/pom.xml package
 
-        ssa="SELECTED_VERSION="
-        text="${ant_output#*${ssa}}"
-        tmp_version=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_FILENAME="
-        text="${ant_output#*${ssa}}"
-        tmp_filename=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-
-        ssa="SELECTED_PATH="
-        text="${ant_output#*${ssa}}"
-        tmp_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
-        
-        ssa="SELECTED_PLUGIN_PATH="
-        text="${ant_output#*${ssa}}"
-        tmp_plugin_path=$(echo $text | sed -rn 's/^([^[:blank:]]*).*$/\1/p')
+        tmp_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=project.version -DforceStdout | tail -n1)
+        tmp_filename="jverein.${tmp_version}.zip"
+        tmp_path="target/releases/${tmp_filename}"
+        tmp_plugin_path="target/releases/jverein/plugin.xml"
 
         echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
         echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
@@ -102,7 +87,7 @@ jobs:
       env:
         CODESIGN_KEY: ${{ secrets.CODESIGN_KEY }}
 
-    - name: "Minor/major release: Create new Branch and update version in plugin.xml for bugfix branch"
+    - name: "Minor/major release: Create new Branch and update versions for bugfix branch"
       if: github.ref_name == 'master'
       run: |
         cd jverein
@@ -111,13 +96,14 @@ jobs:
         git checkout -b ${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
         
         new_version=${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}.1
+        mvn -B -f pom.xml versions:set -DnewVersion="${new_version}" -DgenerateBackupPoms=false
         sed -i "s/name=\"jverein\" version=\"${{ steps.openjverein.outputs.selected_version }}/name=\"jverein\" version=\"${new_version}/" plugin.xml
         
-        git add plugin.xml
-        git commit -m "Update Version in plugin.xml to ${new_version}"
+        git add pom.xml plugin.xml
+        git commit -m "Update Versionen in pom.xml und plugin.xml auf ${new_version}"
         git push --set-upstream origin ${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
         
-    - name: Update Version in plugin.xml
+    - name: Update versions in pom.xml and plugin.xml
       run: |
         cd jverein
         git config --local user.email "actions@github.com"
@@ -135,8 +121,9 @@ jobs:
 
         new_version=${{ steps.openjverein.outputs.major }}.$minor.$bugfix
         
+        mvn -B -f pom.xml versions:set -DnewVersion="${new_version}" -DgenerateBackupPoms=false
         sed -i "s/name=\"jverein\" version=\"${{ steps.openjverein.outputs.selected_version }}/name=\"jverein\" version=\"${new_version}/" plugin.xml
         
-        git add plugin.xml
-        git commit -m "Update Version in plugin.xml to ${new_version}"
+        git add pom.xml plugin.xml
+        git commit -m "Update Versionen in pom.xml und plugin.xml auf ${new_version}"
         git push
