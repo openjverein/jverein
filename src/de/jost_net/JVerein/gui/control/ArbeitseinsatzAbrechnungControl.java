@@ -231,48 +231,34 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
   }
 
   public JVereinTablePart getArbeitseinsatzUeberpruefungList()
-      throws ApplicationException
+      throws RemoteException
   {
-    try
+    if (arbeitseinsatzueberpruefungList != null)
     {
-      if (arbeitseinsatzueberpruefungList == null)
-      {
-        arbeitseinsatzueberpruefungList = new JVereinTablePart(getList(), null);
-        arbeitseinsatzueberpruefungList.addColumn("Name", MITGLIED);
-        arbeitseinsatzueberpruefungList.addColumn("Sollstunden", SOLLSTUNDEN,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.addColumn("Iststunden", ISTSTUNDEN,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.addColumn("Differenz", DIFFERENZ,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.addColumn("Stundensatz", STUNDENSATZ,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.setRememberColWidths(true);
-      }
-      else
-      {
-        saveSettings();
-        arbeitseinsatzueberpruefungList.removeAll();
-        for (PseudoDBObject o : getList())
-        {
-          arbeitseinsatzueberpruefungList.addItem(o);
-        }
-        arbeitseinsatzueberpruefungList.sort();
-      }
+      return arbeitseinsatzueberpruefungList;
     }
-    catch (RemoteException e)
+    else
     {
-      Logger.error("Fehler", e);
-      throw new ApplicationException("Fehler aufgetreten", e);
+      arbeitseinsatzueberpruefungList = new JVereinTablePart(getList(), null);
+      arbeitseinsatzueberpruefungList.addColumn("Name", MITGLIED);
+      arbeitseinsatzueberpruefungList.addColumn("Sollstunden", SOLLSTUNDEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      arbeitseinsatzueberpruefungList.addColumn("Iststunden", ISTSTUNDEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      arbeitseinsatzueberpruefungList.addColumn("Differenz", DIFFERENZ,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      arbeitseinsatzueberpruefungList.addColumn("Stundensatz", STUNDENSATZ,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+      arbeitseinsatzueberpruefungList.setRememberColWidths(true);
+      return arbeitseinsatzueberpruefungList;
     }
-    return arbeitseinsatzueberpruefungList;
   }
 
   public ArrayList<PseudoDBObject> getList() throws RemoteException
@@ -354,11 +340,20 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
   {
     try
     {
-      getArbeitseinsatzUeberpruefungList();
+      if (arbeitseinsatzueberpruefungList != null)
+      {
+        saveSettings();
+        arbeitseinsatzueberpruefungList.removeAll();
+        for (PseudoDBObject o : getList())
+        {
+          arbeitseinsatzueberpruefungList.addItem(o);
+        }
+        arbeitseinsatzueberpruefungList.sort();
+      }
     }
-    catch (ApplicationException e1)
+    catch (RemoteException e)
     {
-      //
+      Logger.error("Fehler beim Tabellenaufbau", e);
     }
   }
 
