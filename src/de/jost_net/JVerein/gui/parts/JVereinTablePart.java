@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ import org.supercsv.prefs.CsvPreference;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.gui.dialogs.SpaltenAuswahlDialog;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.willuhn.datasource.GenericIterator;
@@ -51,7 +53,6 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -85,8 +86,7 @@ public class JVereinTablePart extends TablePart
    * @param action
    *          die beim Doppelklick auf ein Element ausgefuehrt wird.
    */
-  public JVereinTablePart(@SuppressWarnings("rawtypes") GenericIterator list,
-      Action action)
+  public JVereinTablePart(GenericIterator<?> list, Action action)
   {
     super(list, action);
   }
@@ -99,8 +99,7 @@ public class JVereinTablePart extends TablePart
    * @param action
    *          die beim Doppelklick auf ein Element ausgefuehrt wird.
    */
-  public JVereinTablePart(@SuppressWarnings("rawtypes") List list,
-      Action action)
+  public JVereinTablePart(List<?> list, Action action)
   {
     super(list, action);
   }
@@ -160,8 +159,18 @@ public class JVereinTablePart extends TablePart
     }
   }
 
+  /**
+   * Exportiert die aktuell angezeigte Tabelle als PDF oder CSV
+   * 
+   * @param title
+   * @param subtitle
+   * @param filename
+   * @param settingPrefix
+   * @param art
+   * @throws ApplicationException
+   */
   public void export(String title, String subtitle, String filename,
-      ExportArt art) throws ApplicationException
+      String settingPrefix, ExportArt art) throws ApplicationException
   {
     if (tableControl.isDisposed())
       return;
@@ -172,21 +181,20 @@ public class JVereinTablePart extends TablePart
     try
     {
       Table t = (Table) tableControl;
-
       TableItem[] rows = t.getItems();
       if (rows == null || rows.length == 0)
-        return;
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      Settings settings = new Settings(this.getClass());
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
       {
-        fd.setFilterPath(path);
+        throw new ApplicationException("Tabelle enthält keine Daten");
       }
+
+      // Spalten so wie angezeigt sortieren
+      List<TableColumn> listeSortiert = new ArrayList<>();
+      int[] order = t.getColumnOrder();
+      for (int i = 0; i < t.getColumnCount(); i++)
+      {
+        listeSortiert.add(t.getColumn(order[i]));
+      }
+
       String extension = "";
       switch (art)
       {
@@ -196,6 +204,21 @@ public class JVereinTablePart extends TablePart
         case PDF:
           extension = ".pdf";
           break;
+      }
+      settingPrefix += extension + ".";
+
+      List<TableColumn> listeAuswahl = new SpaltenAuswahlDialog(listeSortiert,
+          settingPrefix).open();
+      List<TableColumn> listeOrig = Arrays.asList(t.getColumns());
+
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText("Ausgabedatei wählen.");
+
+      String path = settings.getString(settingPrefix + "lastdir",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
       }
 
       fd.setFileName(filename);
@@ -209,7 +232,7 @@ public class JVereinTablePart extends TablePart
       }
 
       File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
+      settings.setAttribute(settingPrefix + "lastdir", file.getParent());
 
       switch (art)
       {
@@ -220,23 +243,24 @@ public class JVereinTablePart extends TablePart
               CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
           CellProcessor[] cellProcessor = new CellProcessor[t.getColumnCount()];
-          String[] header = new String[t.getColumnCount()];
+          String[] header = new String[listeSortiert.size()];
 
           int n = 0;
-          for (TableColumn col : t.getColumns())
+          for (TableColumn col : listeSortiert)
           {
             header[n] = col.getText();
             cellProcessor[n++] = new NotNull();
           }
           writer.writeHeader(header);
 
-          int cols = t.getColumnCount();
           for (TableItem row : rows)
           {
             Map<String, Object> csvzeile = new HashMap<>();
-            for (int i = 0; i < cols; ++i)
+            int i = 0;
+            for (TableColumn col : listeAuswahl)
             {
-              csvzeile.put(header[i], row.getText(i));
+              int index = listeOrig.indexOf(col);
+              csvzeile.put(header[i++], row.getText(index));
             }
             writer.write(csvzeile, header, cellProcessor);
           }
@@ -247,7 +271,7 @@ public class JVereinTablePart extends TablePart
           Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
               20, 20, 20, 20);
 
-          for (TableColumn col : t.getColumns())
+          for (TableColumn col : listeAuswahl)
           {
             reporter.addHeaderColumn(col.getText(),
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
@@ -256,14 +280,14 @@ public class JVereinTablePart extends TablePart
           }
           reporter.createHeader();
           ArrayList<Rectangle> r = new ArrayList<>();
-          int colCount = t.getColumnCount();
+
           for (TableItem row : rows)
           {
-            for (int i = 0; i < colCount; ++i)
+            for (TableColumn col : listeAuswahl)
             {
-              TableColumn col = t.getColumn(i);
-              r.add(row.getTextBounds(i));
-              reporter.addColumn(row.getText(i),
+              int index = listeOrig.indexOf(col);
+              r.add(row.getTextBounds(index));
+              reporter.addColumn(row.getText(index),
                   col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                       : Element.ALIGN_RIGHT);
             }
@@ -273,12 +297,15 @@ public class JVereinTablePart extends TablePart
           fos.close();
           break;
       }
-
       FileViewer.show(file);
     }
     catch (OperationCanceledException e)
     {
       throw new OperationCanceledException(e);
+    }
+    catch (ApplicationException e)
+    {
+      throw e;
     }
     catch (Exception e)
     {

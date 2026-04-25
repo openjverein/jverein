@@ -489,6 +489,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     sollbuchungList.setRememberColWidths(true);
     sollbuchungList.setRememberOrder(true);
     sollbuchungList.setMulti(true);
+
     return sollbuchungList;
   }
 
@@ -608,7 +609,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           doExport(lastschriftList,
               VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
               VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME, art);
+              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+              "abrechnungslauf.lastschrift", art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -620,7 +622,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           doExport(zusatzbetraegeList,
               VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
               VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME, art);
+              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
+              "abrechnungslauf.zusatzbetrag", art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -631,7 +634,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         context -> {
           doExport(buchungList, VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
               VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME, art);
+              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
+              "abrechnungslauf.buchung", art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
@@ -643,13 +647,14 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           doExport(sollbuchungList,
               VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
               VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME, art);
+              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
+              "abrechnungslauf.sollbuchung", art);
         }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 
   private void doExport(JVereinTablePart tabelle, VorlageTyp titel,
-      VorlageTyp subtitel, VorlageTyp dateiname, ExportArt art)
-      throws ApplicationException
+      VorlageTyp subtitel, VorlageTyp dateiname, String settingPrefix,
+      ExportArt art) throws ApplicationException
   {
     if (tabelle == null)
     {
@@ -658,7 +663,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
     tabelle.export(VorlageUtil.getName(titel, getAbrechnungslauf()),
         VorlageUtil.getName(subtitel, getAbrechnungslauf()),
-        VorlageUtil.getName(dateiname, getAbrechnungslauf()), art);
+        VorlageUtil.getName(dateiname, getAbrechnungslauf()), settingPrefix,
+        art);
     GUI.getStatusBar().setSuccessText("Auswertung fertig.");
   }
 }
