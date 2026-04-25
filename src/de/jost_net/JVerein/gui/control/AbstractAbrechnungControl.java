@@ -486,7 +486,8 @@ public abstract class AbstractAbrechnungControl
       {
         return;
       }
-      if ((boolean) sollbuchungenzusammenfassen.getValue())
+      if ((boolean) sollbuchungenzusammenfassen.getValue()
+          && kompakteabbuchung != null)
       {
         kompakteabbuchung.setValue(true);
       }
@@ -502,7 +503,8 @@ public abstract class AbstractAbrechnungControl
       {
         return;
       }
-      if (!(boolean) kompakteabbuchung.getValue())
+      if (!(boolean) kompakteabbuchung.getValue()
+          && sollbuchungenzusammenfassen != null)
       {
         sollbuchungenzusammenfassen.setValue(false);
       }
@@ -590,7 +592,7 @@ public abstract class AbstractAbrechnungControl
             }
           }
           saveSettings();
-          new AbrechnungSEPA(getAbrechnungSEPAParam());
+          startAbrechnung();
           dialog.close();
         }
         catch (ApplicationException e)
@@ -604,6 +606,11 @@ public abstract class AbstractAbrechnungControl
       }
     }, null, true, "walking.png");
     return button;
+  }
+
+  protected void startAbrechnung() throws ApplicationException, RemoteException
+  {
+    new AbrechnungSEPA(getAbrechnungSEPAParam());
   }
 
   public Button getAbbrechenButton(AbstractDialog<Boolean> dialog)

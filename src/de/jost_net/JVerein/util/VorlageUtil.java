@@ -42,7 +42,7 @@ import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
@@ -270,7 +270,7 @@ public class VorlageUtil
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
         case AUSWERTUNG_ARBEITSEINSAETZE_SUBTITEL:
           map = new AuswertungArbeitseinsatzFilterMap()
-              .getMap((ArbeitseinsatzControl) obj, map);
+              .getMap((ArbeitseinsatzAbrechnungControl) obj, map);
           break;
         case BUCHUNGSARTEN_DATEINAME:
         case BUCHUNGSARTEN_TITEL:

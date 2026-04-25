@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.control.AbstractAbrechnungControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.ForderungControl;
 import de.jost_net.JVerein.gui.control.GutschriftControl;
 import de.jost_net.JVerein.keys.Abrechnungsausgabe;
@@ -147,7 +148,7 @@ public class AbrechnungSEPAParam
       steuer = null;
     }
     abrechnungsmonat = 12;
-    stichtag = faelligkeit;
+    stichtag = null;
     vondatum = null;
     voneingabedatum = null;
     bisdatum = null;
@@ -179,6 +180,28 @@ public class AbrechnungSEPAParam
     steuer = fc.getPart().isSteuerActive()
         ? (Steuer) fc.getPart().getSteuer().getValue()
         : null;
+  }
+
+  public AbrechnungSEPAParam(ArbeitseinsatzAbrechnungControl ac,
+      SepaVersion sepaVersion) throws ApplicationException, RemoteException
+  {
+    setAbstractParams(ac);
+    this.sepaVersion = sepaVersion;
+    zusatzbetraegeList = ac.getZusatzbetraegeList();
+    abbuchungsmodus = Abrechnungsmodi.ARBEITSEINSATZ;
+    verwendungszweck = (String) ac.getPart().getBuchungstext().getValue();
+    abrechnungsmonat = 12;
+    stichtag = null;
+    vondatum = null;
+    voneingabedatum = null;
+    bisdatum = null;
+    zusatzbetraege = false;
+    kursteilnehmer = false;
+    fixerBetragAbrechnen = false;
+    betrag = null;
+    buchungsart = null;
+    buchungsklasse = null;
+    steuer = null;
   }
 
   public AbrechnungSEPAParam(AbrechnungSEPAControl ac, SepaVersion sepaVersion)

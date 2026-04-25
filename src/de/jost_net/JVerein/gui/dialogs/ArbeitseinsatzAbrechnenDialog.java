@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -10,9 +9,6 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
@@ -25,9 +21,8 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
-import de.jost_net.JVerein.gui.control.ForderungControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -38,36 +33,24 @@ import de.willuhn.util.ApplicationException;
 /**
  * Dialog zur Zuordnung von Zusatzbeträgen
  */
-public class ForderungDialog extends AbstractDialog<Boolean>
+public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
 {
-  private Mitglied[] mitglieder;
-
   /**
    * @param position
    */
-  public ForderungDialog(int position, Mitglied[] m)
+  public ArbeitseinsatzAbrechnenDialog(int position)
   {
     super(position);
     super.setSize(950, SWT.DEFAULT);
-    setTitle("Forderung erstellen");
-    this.mitglieder = m;
+    setTitle("Abrechnung Arbeitseinsätze");
   }
 
   @Override
   protected void paint(Composite parent)
       throws RemoteException, ApplicationException
   {
-    boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.RECHNUNGENANZEIGEN);
-    boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-        && JVereinPlugin.isArchiveServiceActive();
-    boolean einstellungBuchungsklasseInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    boolean einstellungSteuerInBuchung = (Boolean) Einstellungen
-        .getEinstellung(Property.STEUERINBUCHUNG);
-
-    final ForderungControl control = new ForderungControl(mitglieder);
+    final ArbeitseinsatzAbrechnungControl control = new ArbeitseinsatzAbrechnungControl(
+        ArbeitseinsatzAbrechnungControl.ABRECHNUNG);
 
     LabelGroup group = new LabelGroup(parent, "");
     group.addInput(control.getStatus());
@@ -75,30 +58,15 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     SimpleContainer left = new SimpleContainer(cl.getComposite(), false, 2);
     SimpleContainer right = new SimpleContainer(cl.getComposite(), false, 2);
 
-    left.addHeadline("Forderung");
-    left.addLabelPair("Fälligkeit ", control.getFaelligkeit());
+    left.addHeadline("Filter");
+    left.addLabelPair("Jahr", control.getSuchJahr());
+
+    left.addHeadline("Abrechnungsparameter");
     left.addLabelPair("Zahlungsgrund", control.getPart().getBuchungstext());
-    left.addLabelPair("Betrag", control.getPart().getBetrag());
-    left.addLabelPair("Buchungsart", control.getPart().getBuchungsart());
-    if (einstellungBuchungsklasseInBuchung)
-    {
-      left.addLabelPair("Buchungsklasse",
-          control.getPart().getBuchungsklasse());
-    }
-    if (einstellungSteuerInBuchung)
-    {
-      left.addLabelPair("Steuer", control.getPart().getSteuer());
-    }
+    left.addLabelPair("Fälligkeit", control.getFaelligkeit());
     left.addLabelPair("Zahlungsweg", control.getPart().getZahlungsweg());
     left.addLabelPair("Mitglied zahlt selbst",
         control.getPart().getMitgliedzahltSelbst());
-    left.addHeadline("Vorlagen");
-    left.addLabelPair("Als Vorlage speichern",
-        control.getVorlageSpeichernInput());
-
-    right.addHeadline("Sollbuchungen");
-    right.addLabelPair("Sollbuchungen zusammenfassen",
-        control.getSollbuchungenZusammenfassen());
 
     right.addHeadline("Lastschriften");
     right.addLabelPair("Kompakte Abbuchung", control.getKompakteAbbuchung());
@@ -107,6 +75,11 @@ public class ForderungDialog extends AbstractDialog<Boolean>
     right.addLabelPair("Lastschrift-PDF erstellen", control.getSEPAPrint());
     right.addInput(control.getAbbuchungsausgabe());
 
+    boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.RECHNUNGENANZEIGEN);
+    boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
+        && JVereinPlugin.isArchiveServiceActive();
     if (einstellungRechnungAnzeigen)
     {
       right.addHeadline("Rechnungen");
@@ -121,22 +94,28 @@ public class ForderungDialog extends AbstractDialog<Boolean>
       right.addInput(control.getRechnungsdatum());
     }
 
+    GridData gridData = new GridData(GridData.FILL_BOTH);
+    LabelGroup liste = new LabelGroup(parent, "", true);
+    liste.getComposite().setLayout(new GridLayout(1, false));
+    control.getArbeitseinsatzUeberpruefungList().paint(liste.getComposite());
+    gridData.heightHint = 150;
+    liste.getComposite().setLayoutData(gridData);
+
     LabelGroup below = new LabelGroup(parent, "Fehler/Warnungen/Hinweise",
         true);
     below.getComposite().setLayout(new GridLayout(1, false));
     below.addPart(control.getBugsList());
-    GridData gridData = new GridData(GridData.FILL_BOTH);
     gridData.heightHint = 150;
     below.getComposite().setLayoutData(gridData);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getHelpButton(DokumentationUtil.FORDERUNG));
+    buttons.addButton(
+        control.getHelpButton(DokumentationUtil.ARBEITSEINSATZPRUEFEN));
     buttons.addButton(control.getZahlungsgrundVariablenButton());
     if (einstellungRechnungAnzeigen)
     {
       buttons.addButton(control.getRechnungstextVariablenButton());
     }
-    buttons.addButton(control.getVorlagenButton());
     buttons.addButton(control.getPruefenButton());
     buttons.addButton(control.getStartButton(this));
     buttons.addButton(control.getAbbrechenButton(this));
