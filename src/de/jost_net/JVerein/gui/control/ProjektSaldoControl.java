@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -29,6 +30,7 @@ import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
@@ -60,23 +62,12 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     projekt.setAttribute("bezeichnung");
     projekt.setPleaseChoose("Keine Einschränkung");
     projekt.addListener(new ProjektListener());
-    if (p != null)
-    {
-      mitGesamtSaldo = false;
-    }
-    else
-    {
-      mitGesamtSaldo = true;
-    }
+    mitGesamtSaldo = p == null;
     return projekt;
   }
 
   public class ProjektListener implements Listener
   {
-
-    ProjektListener()
-    {
-    }
 
     @Override
     public void handleEvent(Event event)
@@ -110,9 +101,9 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     }
   }
 
+  @SuppressWarnings("unchecked")
   private List<Projekt> getProjektliste() throws RemoteException
   {
-    List<Projekt> projektliste = new ArrayList<>();
     DBIterator<Projekt> list = Einstellungen.getDBService()
         .createList(Projekt.class);
     // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
@@ -121,38 +112,28 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     list.addFilter("(endedatum is null or endedatum >= ?)",
         getDatumvon().getDate());
     list.setOrder("ORDER BY bezeichnung");
-    while (list.hasNext())
-    {
-      Projekt p = list.next();
-      projektliste.add(p);
-    }
-    return projektliste;
+    return PseudoIterator.asList(list);
   }
 
   private Projekt getDefaultProjekt() throws RemoteException
   {
-    List<String> ids = new ArrayList<>();
-    DBIterator<Projekt> list = Einstellungen.getDBService()
-        .createList(Projekt.class);
-    // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
-    list.addFilter("(startdatum is null or startdatum <= ?)",
-        getDatumbis().getDate());
-    list.addFilter("(endedatum is null or endedatum >= ?)",
-        getDatumvon().getDate());
-    list.setOrder("ORDER BY bezeichnung");
-    while (list.hasNext())
-    {
-      Projekt p = list.next();
-      ids.add(p.getID());
-    }
     Projekt p = null;
     String pid = settings.getString("projekt", "");
-    if (pid.length() > 0 && ids.contains(pid))
+    if (pid.length() > 0)
     {
       try
       {
         p = (Projekt) Einstellungen.getDBService().createObject(Projekt.class,
             pid);
+        Date start = p.getStartDatum();
+        Date ende = p.getEndeDatum();
+        if (start != Einstellungen.NODATE
+            && start.after(getDatumbis().getDate())
+            || ende != Einstellungen.NODATE
+                && ende.before(getDatumvon().getDate()))
+        {
+          return null;
+        }
       }
       catch (ObjectNotFoundException e)
       {
