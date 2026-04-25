@@ -17,16 +17,31 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class ProjektSaldoControl extends BuchungsklasseSaldoControl
 {
+  private SelectInput projekt;
+
   public ProjektSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
@@ -34,6 +49,129 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
     mitOhneBuchungsart = false;
     mitBuchungsklasseSpalte = true;
     spalteGruppe = PROJEKT;
+  }
+
+  public SelectInput getProjekt() throws RemoteException
+  {
+    if (projekt != null)
+    {
+      return projekt;
+    }
+    Projekt p = getDefaultProjekt();
+    projekt = new SelectInput(getProjektliste(), p);
+    projekt.setAttribute("bezeichnung");
+    projekt.setPleaseChoose("Keine Einschränkung");
+    projekt.addListener(new ProjektListener());
+    mitGesamtSaldo = p == null;
+    return projekt;
+  }
+
+  public class ProjektListener implements Listener
+  {
+
+    @Override
+    public void handleEvent(Event event)
+    {
+      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      {
+        return;
+      }
+      try
+      {
+        if (saldoList == null)
+        {
+          return;
+        }
+        saveProjektSettings();
+        ArrayList<PseudoDBObject> zeile = getList();
+        getSaldoList().removeAll();
+        for (PseudoDBObject sz : zeile)
+        {
+          getSaldoList().addItem(sz);
+        }
+      }
+      catch (RemoteException e1)
+      {
+        Logger.error("Fehler", e1);
+      }
+      catch (ApplicationException e)
+      {
+        Logger.error("Fehler bei neu laden der Liste.");
+      }
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Projekt> getProjektliste() throws RemoteException
+  {
+    DBIterator<Projekt> list = Einstellungen.getDBService()
+        .createList(Projekt.class);
+    // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
+    list.addFilter("(startdatum is null or startdatum <= ?)",
+        getDatumbis().getDate());
+    list.addFilter("(endedatum is null or endedatum >= ?)",
+        getDatumvon().getDate());
+    list.setOrder("ORDER BY bezeichnung");
+    return PseudoIterator.asList(list);
+  }
+
+  private Projekt getDefaultProjekt() throws RemoteException
+  {
+    Projekt p = null;
+    String pid = settings.getString("projekt", "");
+    if (pid.length() > 0)
+    {
+      try
+      {
+        p = (Projekt) Einstellungen.getDBService().createObject(Projekt.class,
+            pid);
+        Date start = p.getStartDatum();
+        Date ende = p.getEndeDatum();
+        if (start != Einstellungen.NODATE
+            && start.after(getDatumbis().getDate())
+            || ende != Einstellungen.NODATE
+                && ende.before(getDatumvon().getDate()))
+        {
+          return null;
+        }
+      }
+      catch (ObjectNotFoundException e)
+      {
+        // Dann kein Default
+      }
+    }
+    return p;
+  }
+
+  private void saveProjektSettings() throws RemoteException
+  {
+    Projekt p = (Projekt) getProjekt().getValue();
+    if (p != null)
+    {
+      settings.setAttribute("projekt", p.getID());
+      mitGesamtSaldo = false;
+    }
+    else
+    {
+      settings.setAttribute("projekt", "");
+      mitGesamtSaldo = true;
+    }
+  }
+
+  @Override
+  public void reloadList() throws ApplicationException
+  {
+    try
+    {
+      projekt.setList(getProjektliste());
+      projekt.setValue(getDefaultProjekt());
+      saveProjektSettings();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler bei neu laden der Liste.");
+    }
+    super.reloadList();
   }
 
   @Override
@@ -46,8 +184,12 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
 
     it.addColumn("projekt.bezeichnung as " + PROJEKT);
     it.addColumn("projekt.id as " + PROJEKT_ID);
-
     it.join("projekt", "buchung.projekt = projekt.id");
+    Projekt p = (Projekt) getProjekt().getValue();
+    if (p != null)
+    {
+      it.addFilter("projekt.id = ?", p.getID());
+    }
     it.addGroupBy("projekt.id");
     it.addGroupBy("projekt.bezeichnung");
 
@@ -60,6 +202,11 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   {
     ExtendedDBIterator<PseudoDBObject> it = super.getSteuerIterator();
     it.join("projekt", "buchung.projekt = projekt.id");
+    Projekt p = (Projekt) getProjekt().getValue();
+    if (p != null)
+    {
+      it.addFilter("projekt.id = ?", p.getID());
+    }
     it.addGroupBy("buchung.projekt");
     it.addColumn("projekt.id as " + PROJEKT_ID);
     it.addColumn("projekt.bezeichnung as " + PROJEKT);

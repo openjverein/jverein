@@ -86,12 +86,18 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
    */
   protected boolean mitBuchungsklasseSpalte = false;
 
-  private SaldoListTablePart saldoList;
+  protected SaldoListTablePart saldoList;
 
   /**
    * Sollen Umbuchungen mit augegeben werden? Default true.
    */
   protected boolean mitUmbuchung = true;
+
+  /**
+   * Soll Gesamtsaldo mit ausgegeben werden? Default true. Wird bei Projektsaldo
+   * nicht angezeigt wenn ein Projekt ausgewählt ist.
+   */
+  protected boolean mitGesamtSaldo = true;
 
   public BuchungsklasseSaldoControl(AbstractView view) throws RemoteException
   {
@@ -400,17 +406,20 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       zeilen.add(saldogv);
     }
 
-    PseudoDBObject o = new PseudoDBObject();
-    o.setAttribute(ART, ART_LEERZEILE);
-    zeilen.add(o);
+    if (mitGesamtSaldo)
+    {
+      PseudoDBObject o = new PseudoDBObject();
+      o.setAttribute(ART, ART_LEERZEILE);
+      zeilen.add(o);
 
-    PseudoDBObject saldo = new PseudoDBObject();
-    saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
-    saldo.setAttribute(GRUPPE, "Gesamt Saldo");
-    saldo.setAttribute(EINNAHMEN, einnahmenGesamt);
-    saldo.setAttribute(AUSGABEN, ausgabenGesamt);
-    saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
-    zeilen.add(saldo);
+      PseudoDBObject saldo = new PseudoDBObject();
+      saldo.setAttribute(ART, ART_GESAMTSALDOFOOTER);
+      saldo.setAttribute(GRUPPE, "Gesamt Saldo");
+      saldo.setAttribute(EINNAHMEN, einnahmenGesamt);
+      saldo.setAttribute(AUSGABEN, ausgabenGesamt);
+      saldo.setAttribute(UMBUCHUNGEN, umbuchungenGesamt);
+      zeilen.add(saldo);
+    }
 
     Double summeOhneBuchungsart = 0d;
     if (mitOhneBuchungsart)
@@ -446,12 +455,15 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
     }
 
-    PseudoDBObject saldogv = new PseudoDBObject();
-    saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
-    saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
-    saldogv.setAttribute(EINNAHMEN, einnahmenGesamt + ausgabenGesamt
-        + umbuchungenGesamt + summeOhneBuchungsart);
-    zeilen.add(saldogv);
+    if (mitGesamtSaldo)
+    {
+      PseudoDBObject saldogv = new PseudoDBObject();
+      saldogv.setAttribute(ART, ART_GESAMTGEWINNVERLUST);
+      saldogv.setAttribute(GRUPPE, "Gesamt Gewinn/Verlust");
+      saldogv.setAttribute(EINNAHMEN, einnahmenGesamt + ausgabenGesamt
+          + umbuchungenGesamt + summeOhneBuchungsart);
+      zeilen.add(saldogv);
+    }
 
     return zeilen;
   }

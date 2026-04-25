@@ -41,6 +41,9 @@ public class ProjektSaldoView extends AbstractView
     QuickAccessPart qpart = new QuickAccessPart(control, true);
     qpart.paint(this.getParent());
 
+    LabelGroup projekt = new LabelGroup(getParent(), "Projekt");
+    projekt.addLabelPair("Projekt", control.getProjekt());
+
     LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
     group.addPart(control.getSaldoList());
 
