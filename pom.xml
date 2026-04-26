@@ -275,7 +275,7 @@
     <dependency>
       <groupId>com.github.hbci4j</groupId>
       <artifactId>hbci4j-core</artifactId>
-      <version>4.1.6</version>
+      <version>4.1.8</version>
       <scope>provided</scope>
     </dependency>
 
