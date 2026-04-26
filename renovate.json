@@ -4,6 +4,17 @@
     "config:recommended"
   ],
   "forkProcessing": "enabled",
+  "packageRules": [
+    {
+      "matchManagers": [
+        "maven"
+      ],
+      "matchDepTypes": [
+        "provided"
+      ],
+      "enabled": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
