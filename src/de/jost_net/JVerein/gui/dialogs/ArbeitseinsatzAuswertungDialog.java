@@ -59,10 +59,9 @@ public class ArbeitseinsatzAuswertungDialog extends AbstractDialog<Boolean>
     liste.getComposite().setLayoutData(gridData);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(
-        control.getHelpButton(DokumentationUtil.ARBEITSEINSATZPRUEFEN));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
+    buttons.addButton(control.getHelpButton(DokumentationUtil.ARBEITSEINSATZ));
     buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton(control.getAbbrechenButton(this));
     buttons.paint(parent);
   }

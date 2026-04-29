@@ -80,8 +80,7 @@ public class ArbeitseinsatzZusatzbetraegeDialog extends AbstractDialog<Boolean>
     below.getComposite().setLayoutData(gridData);
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(
-        control.getHelpButton(DokumentationUtil.ARBEITSEINSATZPRUEFEN));
+    buttons.addButton(control.getHelpButton(DokumentationUtil.ARBEITSEINSATZ));
     buttons.addButton(control.getZahlungsgrundVariablenButton());
     buttons.addButton(control.getPruefenButton());
     buttons.addButton(control.getStartButton(this));
