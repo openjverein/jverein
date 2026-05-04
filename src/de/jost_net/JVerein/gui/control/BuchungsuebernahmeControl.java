@@ -131,8 +131,6 @@ public class BuchungsuebernahmeControl
         "hibiscusMaxBuchungID");
     kontenlist.addColumn("Bemerkung", "bemerkung");
 
-    kontenlist.setRememberColWidths(true);
-    kontenlist.setRememberOrder(true);
     return kontenlist;
   }
 

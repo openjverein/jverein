@@ -164,8 +164,6 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
       eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
       eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
-      eigenschaftList.setRememberColWidths(true);
-      eigenschaftList.setRememberOrder(true);
       eigenschaftList.setRememberState(true);
       eigenschaftList.setMulti(true);
       eigenschaftList.setAction(

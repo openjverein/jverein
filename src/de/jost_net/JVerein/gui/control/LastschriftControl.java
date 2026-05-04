@@ -131,9 +131,7 @@ public class LastschriftControl extends FilterControl implements Savable
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lastschriftList.setRememberColWidths(true);
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
-    lastschriftList.setRememberOrder(true);
     lastschriftList.setMulti(true);
     lastschriftList.setAction(
         new EditAction(LastschriftDetailView.class, lastschriftList));

@@ -82,8 +82,6 @@ public class MitgliedSuchProfilControl extends AbstractControl
 
     profillist = new JVereinTablePart(profile, new SuchprofilLadenAction());
     profillist.addColumn("Bezeichnung", "bezeichnung");
-    profillist.setRememberColWidths(true);
-    profillist.setRememberOrder(true);
     profillist.setContextMenu(new SuchprofilMenu(this));
     profillist.setMulti(true);
     this.mc = new SuchprofilMessageConsumer();

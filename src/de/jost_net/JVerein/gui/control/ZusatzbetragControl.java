@@ -330,8 +330,6 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
           new JaNeinFormatter(), false, Column.ALIGN_LEFT);
       zusatzbetraegeList
           .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
-      zusatzbetraegeList.setRememberColWidths(true);
-      zusatzbetraegeList.setRememberOrder(true);
       zusatzbetraegeList.setMulti(true);
       zusatzbetraegeList.setAction(
           new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));

@@ -1509,8 +1509,6 @@ public class MitgliedControl extends FilterControl implements Savable
     }
 
     familienangehoerige = new JVereinTablePart(new MitgliedDetailAction());
-    familienangehoerige.setRememberColWidths(true);
-    familienangehoerige.setRememberOrder(true);
     refreshFamilienangehoerigeTable();
     familienangehoerige.addColumn("Name", "name");
     familienangehoerige.addColumn("Vorname", "vorname");
@@ -1552,8 +1550,6 @@ public class MitgliedControl extends FilterControl implements Savable
     mitglieder.addFilter("altzahler = " + getMitglied().getID());
 
     zahtlFuer = new JVereinTablePart(mitglieder, new MitgliedDetailAction());
-    zahtlFuer.setRememberColWidths(true);
-    zahtlFuer.setRememberOrder(true);
     zahtlFuer.addColumn("Name", "name");
     zahtlFuer.addColumn("Vorname", "vorname");
 
@@ -1572,8 +1568,6 @@ public class MitgliedControl extends FilterControl implements Savable
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
     zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege,
         new EditAction(ZusatzbetragDetailView.class));
-    zusatzbetraegeList.setRememberColWidths(true);
-    zusatzbetraegeList.setRememberOrder(true);
     zusatzbetraegeList.setMulti(true);
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -1638,8 +1632,6 @@ public class MitgliedControl extends FilterControl implements Savable
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
-    wiedervorlageList.setRememberColWidths(true);
-    wiedervorlageList.setRememberOrder(true);
     wiedervorlageList.setMulti(true);
     return wiedervorlageList;
   }
@@ -1656,8 +1648,6 @@ public class MitgliedControl extends FilterControl implements Savable
     me.addFilter("mailempfaenger.mail = mail.id");
     me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
     mailList = new JVereinTablePart(me, new EditAction(MailDetailView.class));
-    mailList.setRememberColWidths(true);
-    mailList.setRememberOrder(true);
     mailList.setMulti(true);
     mailList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
@@ -1682,8 +1672,6 @@ public class MitgliedControl extends FilterControl implements Savable
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze,
         new EditAction(ArbeitseinsatzDetailView.class));
-    arbeitseinsatzList.setRememberColWidths(true);
-    arbeitseinsatzList.setRememberOrder(true);
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
     arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList.addColumn("Datum", "datum",
@@ -1707,8 +1695,6 @@ public class MitgliedControl extends FilterControl implements Savable
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new JVereinTablePart(lehrgaenge,
         new EditAction(LehrgangDetailView.class));
-    lehrgaengeList.setRememberColWidths(true);
-    lehrgaengeList.setRememberOrder(true);
     lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
@@ -2164,8 +2150,6 @@ public class MitgliedControl extends FilterControl implements Savable
     new MitgliedSpaltenauswahl().setColumns(part, atyp);
     part.setContextMenu(new MitgliedMenu(detailaction, part));
     part.setMulti(true);
-    part.setRememberColWidths(true);
-    part.setRememberOrder(true);
     part.setRememberState(true);
     if (detailaction instanceof MitgliedDetailAction)
     {
@@ -2564,10 +2548,9 @@ public class MitgliedControl extends FilterControl implements Savable
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
     familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
     familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
+    familienbeitragtree.setRememberColWidths(true);
 
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
-    familienbeitragtree.setRememberColWidths(true);
-    familienbeitragtree.setRememberOrder(true);
     this.fbc = new FamilienbeitragMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.fbc);
     familienbeitragtree.setFormatter(new TreeFormatter()
@@ -2611,10 +2594,9 @@ public class MitgliedControl extends FilterControl implements Savable
     abweichenderzahlertree.addColumn("Name", "name");
     abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
     abweichenderzahlertree.addColumn("IBAN", "iban", new IBANFormatter());
+    abweichenderzahlertree.setRememberColWidths(true);
 
     abweichenderzahlertree.setContextMenu(new AbweichenderZahlerMenu());
-    abweichenderzahlertree.setRememberColWidths(true);
-    abweichenderzahlertree.setRememberOrder(true);
     this.azc = new AbweichenderZahlerMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.azc);
     abweichenderzahlertree.setFormatter(new TreeFormatter()
@@ -3031,8 +3013,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
     beitragsTabelle = new JVereinTablePart(
         new EditAction(MitgliedNextBGruppeView.class));
-    beitragsTabelle.setRememberColWidths(true);
-    beitragsTabelle.setRememberOrder(true);
     beitragsTabelle.setContextMenu(new MitgliedNextBGruppeMenue(this));
     beitragsTabelle.addColumn("Ab Datum", MitgliedNextBGruppe.COL_AB_DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));

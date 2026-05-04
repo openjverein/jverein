@@ -165,8 +165,6 @@ public class EigenschaftGruppeControl extends VorZurueckControl
         new JaNeinFormatter());
     eigenschaftgruppeList
         .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
-    eigenschaftgruppeList.setRememberColWidths(true);
-    eigenschaftgruppeList.setRememberOrder(true);
     eigenschaftgruppeList.setMulti(true);
     eigenschaftgruppeList.setAction(new EditAction(
         EigenschaftGruppeDetailView.class, eigenschaftgruppeList));

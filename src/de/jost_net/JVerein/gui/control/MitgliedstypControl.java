@@ -143,8 +143,6 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
     mitgliedstypList.addColumn("ID", "id");
     mitgliedstypList.setContextMenu(new MitgliedstypMenu(mitgliedstypList));
-    mitgliedstypList.setRememberColWidths(true);
-    mitgliedstypList.setRememberOrder(true);
     mitgliedstypList.setMulti(true);
     mitgliedstypList.setAction(
         new EditAction(MitgliedstypDetailView.class, mitgliedstypList));

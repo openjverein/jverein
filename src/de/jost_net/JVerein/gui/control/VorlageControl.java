@@ -153,8 +153,6 @@ public class VorlageControl extends FilterControl implements Savable
     namenList.addColumn("Vorlage Art", "art");
     namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
     namenList.setContextMenu(new VorlageMenu(namenList));
-    namenList.setRememberColWidths(true);
-    namenList.setRememberOrder(true);
     namenList.setRememberState(true);
     namenList.removeFeature(FeatureSummary.class);
     namenList.setAction(

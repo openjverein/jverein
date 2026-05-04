@@ -119,7 +119,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
       saldoList.addColumn(" ", " ",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_LEFT);
-      saldoList.setRememberColWidths(true);
       saldoList.setFormatter(new SaldoFormatter());
       saldoList.setMulti(true);
       saldoList.setContextMenu(new SaldoMenu(this));

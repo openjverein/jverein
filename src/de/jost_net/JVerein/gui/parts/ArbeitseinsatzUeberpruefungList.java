@@ -79,7 +79,6 @@ public class ArbeitseinsatzUeberpruefungList extends JVereinTablePart
             "gesamtbetrag",
             new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
             Column.ALIGN_RIGHT);
-        arbeitseinsatzueberpruefungList.setRememberColWidths(true);
       }
       else
       {

@@ -60,7 +60,6 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Vorname", "vorname");
     empfaenger.addColumn("Mitgliedstyp", "mitgliedstyp");
-    empfaenger.setRememberOrder(true);
     empfaenger.setMulti(true);
     empfaenger.paint(parent);
 

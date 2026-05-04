@@ -375,9 +375,7 @@ public class KontoControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
-    kontenList.setRememberColWidths(true);
     kontenList.setContextMenu(new KontoMenu(kontenList));
-    kontenList.setRememberOrder(true);
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));
     VorZurueckControl.setObjektListe(null, null);

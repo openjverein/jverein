@@ -74,7 +74,7 @@ public class JVereinTablePart extends TablePart
    */
   public JVereinTablePart(Action action)
   {
-    super(action);
+    this((List<?>) null, action);
   }
 
   /**
@@ -85,10 +85,10 @@ public class JVereinTablePart extends TablePart
    * @param action
    *          die beim Doppelklick auf ein Element ausgefuehrt wird.
    */
-  public JVereinTablePart(@SuppressWarnings("rawtypes") GenericIterator list,
+  public JVereinTablePart(GenericIterator<?> list,
       Action action)
   {
-    super(list, action);
+    this(asList(list), action);
   }
 
   /**
@@ -99,10 +99,12 @@ public class JVereinTablePart extends TablePart
    * @param action
    *          die beim Doppelklick auf ein Element ausgefuehrt wird.
    */
-  public JVereinTablePart(@SuppressWarnings("rawtypes") List list,
+  public JVereinTablePart(List<?> list,
       Action action)
   {
     super(list, action);
+    setRememberColWidths(true);
+    setRememberOrder(true);
   }
 
   public void setAction(Action action)
