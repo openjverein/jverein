@@ -50,9 +50,6 @@ public class KontoList extends JVereinTablePart
 
     addColumn("Kontonummer", "nummer");
     addColumn("Bezeichnung", "bezeichnung");
-    setRememberOrder(true);
-    setRememberColWidths(true);
-
   }
 
   /**

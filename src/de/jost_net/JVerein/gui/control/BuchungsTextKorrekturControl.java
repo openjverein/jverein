@@ -92,8 +92,6 @@ public class BuchungsTextKorrekturControl extends AbstractControl
         }
       });
       buchungsList.setMulti(true);
-      buchungsList.setRememberColWidths(true);
-      buchungsList.setRememberOrder(true);
       buchungsList.setRememberState(true);
     }
     return buchungsList;

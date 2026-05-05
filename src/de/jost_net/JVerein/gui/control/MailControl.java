@@ -153,7 +153,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         new DateFormatter(new JVDateFormatDATETIME()));
     empfaenger.setContextMenu(new MailEmpfaengerMenu(this));
     empfaenger.setMulti(true);
-    empfaenger.setRememberOrder(true);
     return empfaenger;
   }
 
@@ -211,7 +210,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
     mitgliedmitmail.addColumn("Mitgliedstyp", Mitglied.MITGLIEDSTYP);
-    mitgliedmitmail.setRememberOrder(true);
     mitgliedmitmail.setCheckable(true);
     mitgliedmitmail.removeFeature(FeatureSummary.class);
     return mitgliedmitmail;
@@ -257,9 +255,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .registerMessageConsumer(this.mailDeleteConsumer);
     anhang = new JVereinTablePart(anhang2, new MailAnhangAnzeigeAction());
     anhang.addColumn("Dateiname", "dateiname");
-    anhang.setRememberColWidths(true);
     anhang.setContextMenu(new MailAnhangMenu(this));
-    anhang.setRememberOrder(true);
     anhang.setMulti(true);
     return anhang;
   }
@@ -680,10 +676,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.addColumn("Anhänge", "anhaenge");
-    mailsList.setRememberColWidths(true);
     mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
-    mailsList.setRememberOrder(true);
     mailsList.setAction(new EditAction(MailDetailView.class, mailsList));
     VorZurueckControl.setObjektListe(null, null);
     return mailsList;

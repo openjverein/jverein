@@ -39,9 +39,9 @@ import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -412,9 +412,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     mitgliedskontoTree.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.setContextMenu(new MitgliedskontoMenu());
-    mitgliedskontoTree.setRememberColWidths(true);
-    mitgliedskontoTree.setRememberOrder(true);
     mitgliedskontoTree.setFormatter(new MitgliedskontoTreeFormatter());
+    mitgliedskontoTree.setRememberColWidths(true);
     this.mc = new MitgliedskontoMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);
 
@@ -456,8 +455,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       {
         sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
       }
-      sollbuchungenList.setRememberColWidths(true);
-      sollbuchungenList.setRememberOrder(true);
       sollbuchungenList.setMulti(multi);
       if (action == null)
       {
@@ -498,8 +495,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       mitgliederList.addColumn("Name", "name");
       mitgliederList.addColumn("Vorname", "vorname");
       mitgliederList.setContextMenu(menu);
-      mitgliederList.setRememberColWidths(true);
-      mitgliederList.setRememberOrder(true);
       mitgliederList.setMulti(true);
     }
     else
@@ -551,7 +546,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           new EditAction(SollbuchungPositionDetailView.class));
     }
 
-    buchungList.setRememberColWidths(true);
     if (editable)
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());

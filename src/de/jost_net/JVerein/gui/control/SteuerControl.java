@@ -108,7 +108,6 @@ public class SteuerControl extends VorZurueckControl implements Savable
       }
       steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
       steuerList.setContextMenu(new SteuerMenue(steuerList));
-      steuerList.setRememberColWidths(true);
       steuerList.setMulti(true);
       steuerList.setCheckable(false);
       steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));

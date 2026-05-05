@@ -334,8 +334,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       }
       abrechnungslaufList
           .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
-      abrechnungslaufList.setRememberColWidths(true);
-      abrechnungslaufList.setRememberOrder(true);
       abrechnungslaufList.setAction(
           new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
       VorZurueckControl.setObjektListe(null, null);
@@ -449,8 +447,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     buchungList.setMulti(true);
 
     buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
-    buchungList.setRememberColWidths(true);
-    buchungList.setRememberOrder(true);
 
     return buchungList;
   }
@@ -486,8 +482,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       sollbuchungList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
     }
     sollbuchungList.setContextMenu(new SollbuchungMenu(null));
-    sollbuchungList.setRememberColWidths(true);
-    sollbuchungList.setRememberOrder(true);
     sollbuchungList.setMulti(true);
     return sollbuchungList;
   }
@@ -520,9 +514,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    lastschriftList.setRememberColWidths(true);
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
-    lastschriftList.setRememberOrder(true);
     lastschriftList.setMulti(true);
     return lastschriftList;
   }
@@ -593,8 +585,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         new JaNeinFormatter(), false, Column.ALIGN_LEFT);
     zusatzbetraegeList
         .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
-    zusatzbetraegeList.setRememberColWidths(true);
-    zusatzbetraegeList.setRememberOrder(true);
     zusatzbetraegeList.setMulti(true);
 
     return zusatzbetraegeList;

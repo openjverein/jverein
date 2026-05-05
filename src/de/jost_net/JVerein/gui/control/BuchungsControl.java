@@ -39,8 +39,8 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
@@ -81,9 +81,9 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.Datum;
@@ -1761,8 +1761,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       }
       buchungsList.setMulti(true);
       buchungsList.setContextMenu(new BuchungMenu(this));
-      buchungsList.setRememberColWidths(true);
-      buchungsList.setRememberOrder(true);
       buchungsList.setRememberState(true);
       buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
       buchungsList.setAction(new BuchungAction(false, buchungsList));
@@ -1852,7 +1850,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         splitbuchungsList.addColumn("Projekt", "projekt");
       }
       splitbuchungsList.setContextMenu(new SplitBuchungMenu(this));
-      splitbuchungsList.setRememberColWidths(true);
       splitbuchungsList.setFormatter(new TableFormatter()
       {
         /**

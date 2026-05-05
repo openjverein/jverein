@@ -176,9 +176,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsartList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgangsartList.addColumn("Veranstalter", "veranstalter");
-    lehrgangsartList.setRememberColWidths(true);
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
-    lehrgangsartList.setRememberOrder(true);
     lehrgangsartList.setMulti(true);
     lehrgangsartList.setAction(
         new EditAction(LehrgangsartDetailView.class, lehrgangsartList));

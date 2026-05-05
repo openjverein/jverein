@@ -156,8 +156,6 @@ public class ProjektControl extends FilterControl implements Savable
     projektList.addColumn("Endedatum", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     projektList.setContextMenu(new ProjektMenu(projektList));
-    projektList.setRememberColWidths(true);
-    projektList.setRememberOrder(true);
     projektList.setMulti(true);
     projektList.setAction(new EditAction(ProjektDetailView.class, projektList));
     VorZurueckControl.setObjektListe(null, null);

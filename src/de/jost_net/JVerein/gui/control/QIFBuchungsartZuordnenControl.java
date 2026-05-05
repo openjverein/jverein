@@ -177,8 +177,6 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
       posBeispielListTable.addColumn("Zweck", QIFImportPos.COL_ZWECK);
       posBeispielListTable.addColumn("Konto", QIFImportPos.VIEW_QIFKONTO_NAME);
 
-      posBeispielListTable.setRememberColWidths(true);
-      posBeispielListTable.setRememberOrder(true);
     }
     else
     {
@@ -384,8 +382,6 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
       distinctBuchartListTable.addColumn("Mitgliedskonto",
           QIFImportPos.VIEW_MITGLIED_BAR);
 
-      distinctBuchartListTable.setRememberColWidths(true);
-      distinctBuchartListTable.setRememberOrder(true);
       distinctBuchartListTable.setFormatter(new BuchartListTableFormater());
       distinctBuchartListTable
           .addSelectionListener(new BuchartListSelectionListener());

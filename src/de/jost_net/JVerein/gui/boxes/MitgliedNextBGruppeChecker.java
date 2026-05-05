@@ -154,8 +154,6 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
       aenderungsListenPart.addColumn("Nach Beitragsgruppe",
           MitgliedNextBGruppe.VIEW_BEITRAGSGRUPPE);
 
-      aenderungsListenPart.setRememberColWidths(true);
-      aenderungsListenPart.setRememberOrder(true);
       aenderungsListenPart.setContextMenu(new ListenContextMenu());
     }
     listeAktuallisieren();

@@ -438,8 +438,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
           new JaNeinFormatter(), false, Column.ALIGN_LEFT);
       zusatzbetragVorlageList
           .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
-      zusatzbetragVorlageList.setRememberColWidths(true);
-      zusatzbetragVorlageList.setRememberOrder(true);
       zusatzbetragVorlageList.setMulti(true);
       zusatzbetragVorlageList.setAction(new EditAction(
           ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));
