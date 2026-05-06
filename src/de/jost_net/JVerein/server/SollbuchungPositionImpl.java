@@ -96,11 +96,11 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
         throw new ApplicationException(
             "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
-      if (getBuchungsart().isSteuerBuchungsart())
-      {
-        throw new ApplicationException(
-            "Keine manuelle Buchung auf Steuerbuchungsart möglich.");
-      }
+    }
+    if (getBuchungsart().isSteuerBuchungsart())
+    {
+      throw new ApplicationException(
+          "Keine manuelle Buchung auf Steuerbuchungsart möglich.");
     }
   }
 
