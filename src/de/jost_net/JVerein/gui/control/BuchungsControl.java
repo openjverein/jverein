@@ -39,8 +39,8 @@ import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
@@ -81,9 +81,9 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
-import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.Datum;
@@ -893,7 +893,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
         getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
@@ -1129,8 +1129,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
 
     suchbuchungsart = (SelectInput) new BuchungsartInput().getBuchungsartInput(
-        suchbuchungsart, null, buchungsarttyp.BUCHUNGSART,
-        AbstractInputAuswahl.ComboBox);
+        null, buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
 
     @SuppressWarnings("unchecked")
     List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();

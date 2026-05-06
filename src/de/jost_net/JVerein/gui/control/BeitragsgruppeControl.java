@@ -348,9 +348,8 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(getBeitragsgruppe().getBuchungsart(),
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
