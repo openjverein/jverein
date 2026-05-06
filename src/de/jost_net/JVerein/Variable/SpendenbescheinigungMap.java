@@ -38,7 +38,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.Base64;
-import jonelo.NumericalChameleon.SpokenNumbers.GermanNumber;
+import net.numericalchameleon.util.GermanNumber;
 
 public class SpendenbescheinigungMap extends AbstractMap
 {

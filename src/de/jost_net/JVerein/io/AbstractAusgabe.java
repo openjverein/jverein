@@ -58,9 +58,12 @@ public abstract class AbstractAusgabe
    * Die Dokumente aufbereiten und ggf. per Mail versenden
    * 
    * @param list
-   * @param control
+   * @param text
+   * @param art
+   * @param betreff
    * @param pdfa
    * @param encrypt
+   * @param versanddatum
    * @throws IOException
    * @throws ApplicationException
    * @throws DocumentException

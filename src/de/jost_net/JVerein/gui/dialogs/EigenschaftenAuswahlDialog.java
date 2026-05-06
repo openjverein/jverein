@@ -77,8 +77,6 @@ public class EigenschaftenAuswahlDialog
    * @param onlyChecked
    *          Gibt an ob nur die Checkbox Werte UNCHECKED und CHECKED angezeigt
    *          werden.
-   * @param mitglieder
-   *          Liste der Mitglieder welche selektiert wurden.
    */
   public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
       FilterControl control, boolean onlyChecked)

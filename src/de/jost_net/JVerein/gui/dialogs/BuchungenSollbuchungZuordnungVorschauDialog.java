@@ -151,7 +151,6 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
 
     buchungList.addColumn("Zuordnungsart", "art");
 
-    buchungList.setRememberColWidths(true);
     buchungList.setCheckable(true);
     buchungList.setChecked(list.toArray(), true);
     buchungList.paint(parent);

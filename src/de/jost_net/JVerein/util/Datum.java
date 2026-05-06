@@ -166,8 +166,8 @@ public class Datum
   }
 
   /**
-   * Gibt das Alter zum übergebenen Date zurück. oder null falls kein Geburtstag
-   * übergeben wurde oder das Alter < 1 ist.
+   * Gibt das Alter zum übergebenen Referenzdatum zurück oder <code>null</code>,
+   * falls kein Geburtstag übergeben wurde oder das Alter kleiner als eins ist.
    * 
    * @param geburtstag
    * @return alter

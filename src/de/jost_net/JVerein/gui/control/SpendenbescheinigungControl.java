@@ -548,9 +548,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addColumn("Zeile 6", "zeile6");
     spbList.addColumn("Zeile 7", "zeile7");
 
-    spbList.setRememberColWidths(true);
     spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
-    spbList.setRememberOrder(true);
     spbList.setMulti(true);
     spbList.setAction(
         new EditAction(SpendenbescheinigungDetailView.class, spbList));

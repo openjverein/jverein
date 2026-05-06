@@ -90,13 +90,12 @@ public class WirtschaftsplanUebersichtPart implements Part
         new JVDateFormatTTMMJJJJ());
     bisContainer.addLabelPair("Bis", bis);
 
-    if ((Boolean) Einstellungen
-        .getEinstellung(Property.PROJEKTEANZEIGEN))
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
-    SimpleContainer projektContainer = new SimpleContainer(
-        baseData.getComposite());
-    projekt = control.getProjekt();
-    projektContainer.addLabelPair("Projekt", projekt);
+      SimpleContainer projektContainer = new SimpleContainer(
+          baseData.getComposite());
+      projekt = control.getProjekt();
+      projektContainer.addLabelPair("Projekt", projekt);
     }
 
     ColumnLayout finanzData = new ColumnLayout(uebersicht.getComposite(), 6);

@@ -634,8 +634,6 @@ public abstract class AbstractAbrechnungControl
     bugsList.addColumn("Meldung", "meldung");
     bugsList.addColumn("Klassifikation", "klassifikationText");
     bugsList.setContextMenu(new BugListMenu());
-    bugsList.setRememberColWidths(true);
-    bugsList.setRememberOrder(true);
     return bugsList;
   }
 

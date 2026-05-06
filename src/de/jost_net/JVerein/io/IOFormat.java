@@ -26,8 +26,8 @@ package de.jost_net.JVerein.io;
 public interface IOFormat
 {
   /**
-   * Liefert einen sprechenden Namen fuer das Datei-Format. Zum Beispiel
-   * &quotCSV-Datei&quot;
+   * Liefert einen sprechenden Namen fuer das Datei-Format, zum Beispiel
+   * &quot;CSV-Datei&quot;.
    * 
    * @return Sprechender Name des Datei-Formats.
    */

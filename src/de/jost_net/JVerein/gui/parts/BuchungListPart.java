@@ -108,8 +108,6 @@ public class BuchungListPart extends BuchungListTablePart
         new SollbuchungFormatter());
     addColumn("Ersatz für Aufwendungen", "verzicht", new JaNeinFormatter());
     setContextMenu(menu);
-    setRememberColWidths(true);
-    setRememberOrder(true);
     setRememberState(true);
     setMulti(true);
   }

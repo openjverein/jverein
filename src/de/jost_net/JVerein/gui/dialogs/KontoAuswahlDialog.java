@@ -64,11 +64,11 @@ public class KontoAuswahlDialog extends AbstractDialog<Konto>
    * @param keinkonto
    *          Darf der Dialog auch ohne Kontenauswahl geschlossen werden?
    * @param nurHibiscus
-   *          Es sollen nur Hibiscus-Konten angezeigt werden
+   *          Es sollen nur Hibiscus-Konten angezeigt werden.
    * @param nurAktuelleKonten
-   *          Es sollen nur aktuelle Konten angezeigt werden
-   * @param abschreibung
-   *          Es sollen nur Anlagekonten angezeigt werden
+   *          Es sollen nur aktuelle Konten angezeigt werden.
+   * @param art
+   *          Es sollen nur Konten der angegebenen Art angezeigt werden.
    */
   public KontoAuswahlDialog(int position, boolean keinkonto,
       boolean nurHibiscus, boolean nurAktuelleKonten, Kontenfilter art)

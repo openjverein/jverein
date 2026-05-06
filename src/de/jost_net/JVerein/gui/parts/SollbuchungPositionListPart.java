@@ -78,9 +78,6 @@ public class SollbuchungPositionListPart extends BetragSummaryTablePart
       addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
     }
-
-    setRememberColWidths(true);
-    setRememberOrder(true);
     setMulti(true);
   }
 }

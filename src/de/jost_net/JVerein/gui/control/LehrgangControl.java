@@ -332,8 +332,6 @@ public class LehrgangControl extends FilterControl implements Savable
       lehrgaengeList.addColumn("Veranstalter", "veranstalter");
       lehrgaengeList.addColumn("Ergebnis", "ergebnis");
       lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
-      lehrgaengeList.setRememberColWidths(true);
-      lehrgaengeList.setRememberOrder(true);
       lehrgaengeList.setMulti(true);
       lehrgaengeList
           .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));

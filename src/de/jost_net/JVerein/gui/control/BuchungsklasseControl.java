@@ -133,8 +133,6 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
     buchungsklassenList
         .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
-    buchungsklassenList.setRememberColWidths(true);
-    buchungsklassenList.setRememberOrder(true);
     buchungsklassenList.setMulti(true);
     buchungsklassenList.setAction(
         new EditAction(BuchungsklasseDetailView.class, buchungsklassenList));

@@ -320,8 +320,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Kommentar", KOMMENTAR);
-      saldoList.setRememberColWidths(true);
-      saldoList.setRememberOrder(true);
       saldoList.removeFeature(FeatureSummary.class);
       saldoList.setFormatter(new SaldoFormatter());
       return saldoList;
@@ -368,8 +366,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
       zuflussList.addColumn(" ", " ",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_LEFT);
-      zuflussList.setRememberColWidths(true);
-      zuflussList.setRememberOrder(true);
       zuflussList.removeFeature(FeatureSummary.class);
       return zuflussList;
     }

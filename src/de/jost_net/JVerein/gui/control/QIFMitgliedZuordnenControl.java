@@ -172,9 +172,6 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
       posBeispielListTable.addColumn("Name", QIFImportPos.COL_NAME);
       posBeispielListTable.addColumn("Zweck", QIFImportPos.COL_ZWECK);
       posBeispielListTable.addColumn("Konto", QIFImportPos.VIEW_QIFKONTO_NAME);
-
-      posBeispielListTable.setRememberColWidths(true);
-      posBeispielListTable.setRememberOrder(true);
     }
     else
     {
@@ -398,8 +395,6 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
       distinctExternNameListTable.addColumn("JVerein Mitglied",
           QIFImportPos.VIEW_MITGLIEDS_NAME);
 
-      distinctExternNameListTable.setRememberColWidths(true);
-      distinctExternNameListTable.setRememberOrder(true);
       distinctExternNameListTable.setFormatter(new NamensListTableFormater());
       distinctExternNameListTable
           .addSelectionListener(new ExterneNamensListSelectionListener());

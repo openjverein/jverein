@@ -131,8 +131,8 @@ public class Einstellungen
    * 
    * @param key
    *          der Settings-Key
-   * @param value
-   *          der zu speichernde Wert
+   * @param def
+   *          Standardwert, falls Settings-Key nicht vorhanden.
    */
   public static boolean getSettingBoolean(String key, boolean def)
   {
@@ -158,7 +158,8 @@ public class Einstellungen
    * 
    * @param key
    *          der zu lesende Settings-Key
-   * @param value
+   * @param def
+   *          Standardwert, falls Settings-Key nicht vorhanden.
    */
   public static int getSettingInt(String key, int def)
   {

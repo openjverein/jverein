@@ -33,8 +33,8 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
    * Füllt alle Daten aus der Sollbuchung in die Rechnung. Das Datum und das
    * Formular müssen selbst hinzugefügt werden
    * 
-   * @param mk
-   *          die Sollbuchung aus der eine Rechnung erstellt werden soll
+   * @param sollb
+   *          Die Sollbuchung, aus der eine Rechnung erstellt werden soll.
    */
   public void fill(Sollbuchung sollb)
       throws RemoteException, ApplicationException;

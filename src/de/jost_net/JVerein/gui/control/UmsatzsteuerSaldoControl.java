@@ -87,7 +87,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
       saldoList.addColumn("Anzahl", ANZAHL);
-      saldoList.setRememberColWidths(true);
       saldoList.setMulti(true);
       saldoList.setFormatter(new SaldoFormatter());
       saldoList.setContextMenu(new SaldoMenu(this));

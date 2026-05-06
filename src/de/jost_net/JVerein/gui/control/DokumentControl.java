@@ -242,9 +242,7 @@ public class DokumentControl extends AbstractControl
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
-    docsList.setRememberColWidths(true);
     docsList.setContextMenu(new DokumentMenu(enabled));
-    docsList.setRememberOrder(true);
     docsList.setMulti(true);
     this.mc = new DokumentMessageConsumer();
     Application.getMessagingFactory().registerMessageConsumer(this.mc);

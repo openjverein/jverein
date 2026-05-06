@@ -24,7 +24,7 @@ public class IBANFormatter implements Formatter
    * Gruppiert eine IBAN in Gruppen zu je 4 Zeichen und schreibt die ersten
    * beiden Buchstaben (Laenderkennzeichen) gross.
    * 
-   * @param s
+   * @param o
    *          die IBAN.
    * @return die formatierte Darstellung.
    */
@@ -36,7 +36,7 @@ public class IBANFormatter implements Formatter
     }
     String s = (String) o;
 
-    // Wenn es falsche Zeien enthält, nicht formatieren
+    // Wenn es falsche Zeichen enthält, nicht formatieren.
     if (!s.trim().replaceAll(" ", "").matches("^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{11,30}$"))
     {
       return s;

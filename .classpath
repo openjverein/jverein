@@ -1,64 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" output="bin-test" path="junit/src">
+	<classpathentry including="**/*.java" kind="src" output="target/classes" path="src">
+		<attributes>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="src" output="target/test-classes" path="junit/src">
 		<attributes>
 			<attribute name="test" value="true"/>
+			<attribute name="optional" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11">
 		<attributes>
-			<attribute name="module" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="src" path="/jameica"/>
-	<classpathentry kind="lib" path="lib/nc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/bsh-2.1.1.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/hibiscus"/>
-	<classpathentry exported="true" kind="lib" path="lib/activation.jar"/>
-	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/obantoo-bin-2.1.12.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/csvjdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/itext-hyph-xml.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jollyday.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/joda-time.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/snakeyaml.jar"/>
-	<classpathentry exported="true" kind="lib" path="/jameica/lib/swt/win64/swt.jar" sourcepath="/jameica/lib.src/swt/linux/swt.src.zip"/>
-	<classpathentry exported="true" kind="lib" path="lib/javase.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core.jar"/>
-	<classpathentry exported="true" kind="lib" path="/jameica/lib/de_willuhn_ds/de_willuhn_ds.jar"/>
-	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/super-csv-2.4.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/itext-pdfa-5.5.13.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/itextpdf-5.5.13.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/freemarker.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jsoup.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/vinnie.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ez-vcard.jar"/>
-	<classpathentry exported="true" kind="lib" path="/hibiscus/lib/pdfbox/pdfbox-3.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/xmpbox.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta.activation-api.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j.jar"/>
-	<classpathentry kind="lib" path="lib/library.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5">
+	<classpathentry kind="con" path="org.eclipse.m2e.MAVEN2_CLASSPATH_CONTAINER">
 		<attributes>
-			<attribute name="test" value="true"/>
+			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/mockito-core.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/byte-buddy.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib.test/byte-buddy-agent.jar">
-		<attributes>
-			<attribute name="test" value="true"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="output" path="bin"/>
+	<classpathentry kind="output" path="target/classes"/>
 </classpath>

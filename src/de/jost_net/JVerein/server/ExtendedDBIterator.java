@@ -80,7 +80,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void addColumn(String column, Object... p) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (this.columns.equals(""))
     {
@@ -107,22 +107,22 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void setOrder(String order) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     this.order = order;
   }
 
   /**
-   * Fügt eine GroupBy definition hinzu
+   * Fügt eine GroupBy Definition hinzu.
    * 
-   * @param having
-   *          die GROUP BY spalte
+   * @param group
+   *          die GROUP BY Spalte
    * @throws RemoteException
    */
   public void addGroupBy(String group) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (this.group.equals(""))
     {
@@ -147,7 +147,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void addHaving(String having, Object... p) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (this.having.equals(""))
     {
@@ -203,7 +203,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void addFilter(String filter, Object... p) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (filter == null)
       return; // no filter given
@@ -233,7 +233,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void join(String table) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (table == null)
       return;
@@ -258,7 +258,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   public void join(String table, String on, Object... p) throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (table == null || on == null)
       return;
@@ -292,7 +292,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
       throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialized
+      return; // already initialized
 
     if (table == null || on == null)
       return;
@@ -370,7 +370,7 @@ public class ExtendedDBIterator<T extends AbstractDBObject>
   private void init() throws RemoteException
   {
     if (this.initialized)
-      return; // allready initialzed
+      return; // already initialzed
 
     // Die Parameter in der richtigen Reihenfolge hinzufügen
     params.addAll(joinParams);
