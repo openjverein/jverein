@@ -46,7 +46,9 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -155,25 +157,52 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     {
       return projekt;
     }
-    ArrayList<Projekt> projektliste = new ArrayList<>();
+    if (getWirtschaftsplan().isNewObject())
+    {
+      projekt = new SelectInput(new Object[0], null);
+      projekt.setPleaseChoose("Zur Auswahl erst Speichern");
+      projekt.disable();
+    }
+    else
+    {
+      projekt = new SelectInput(getProjektliste(),
+          getWirtschaftsplan().getProjekt());
+      projekt.setPleaseChoose("Keine Einschränkung");
+    }
+    projekt.setAttribute("bezeichnung");
+    return projekt;
+  }
+
+  @SuppressWarnings("unchecked")
+  private List<Projekt> getProjektliste() throws RemoteException
+  {
     DBIterator<Projekt> list = Einstellungen.getDBService()
         .createList(Projekt.class);
+    // Nur Projekte anzeigen die in dem Zeitraum aktiv sind
+    list.addFilter("(startdatum is null or startdatum <= ?)",
+        getWirtschaftsplan().getDatumBis());
+    list.addFilter("(endedatum is null or endedatum >= ?)",
+        getWirtschaftsplan().getDatumVon());
     list.setOrder("ORDER BY bezeichnung");
-    while (list.hasNext())
+    List<Projekt> finallist = PseudoIterator.asList(list);
+    Projekt projekt = getWirtschaftsplan().getProjekt();
+    if (finallist != null && projekt != null)
     {
-      projektliste.add(list.next());
+      boolean found = false;
+      for (Projekt p : finallist)
+      {
+        if (BeanUtil.equals(p, projekt))
+        {
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+      {
+        finallist.add(projekt);
+      }
     }
-    Long pid = getWirtschaftsplan().getProjektID();
-    Projekt p = null;
-    if (pid != null)
-    {
-      p = (Projekt) Einstellungen.getDBService().createObject(Projekt.class,
-          pid.toString());
-    }
-    projekt = new SelectInput(projektliste, p);
-    projekt.setAttribute("bezeichnung");
-    projekt.setPleaseChoose("Keine Einschränkung");
-    return projekt;
+    return finallist;
   }
 
   public EditTreePart getEinnahmen() throws RemoteException

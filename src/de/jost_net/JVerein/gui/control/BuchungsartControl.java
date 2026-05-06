@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
+
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
@@ -418,8 +419,6 @@ public class BuchungsartControl extends FilterControl implements Savable
       buchungsartList.addColumn("Suchtext", "suchbegriff");
       buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
       buchungsartList.setMulti(true);
-      buchungsartList.setRememberColWidths(true);
-      buchungsartList.setRememberOrder(true);
       buchungsartList.setRememberState(true);
       buchungsartList.setAction(
           new EditAction(BuchungsartDetailView.class, buchungsartList));

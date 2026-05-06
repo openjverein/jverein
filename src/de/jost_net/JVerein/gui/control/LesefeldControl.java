@@ -434,8 +434,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
       lesefeldList.addColumn("Skript-Name", "bezeichnung");
       lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
       lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
-      lesefeldList.setRememberColWidths(true);
-      lesefeldList.setRememberOrder(true);
       lesefeldList.setMulti(true);
       lesefeldList
           .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
@@ -490,8 +488,6 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     lesefeldMitgliedList.addColumn("Skript-Name", "bezeichnung");
     lesefeldMitgliedList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
     lesefeldMitgliedList.setContextMenu(new LesefeldMenu(null));
-    lesefeldMitgliedList.setRememberColWidths(true);
-    lesefeldMitgliedList.setRememberOrder(true);
     lesefeldMitgliedList.setMulti(true);
     return lesefeldMitgliedList;
   }

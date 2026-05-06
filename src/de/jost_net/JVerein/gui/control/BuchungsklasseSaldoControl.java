@@ -143,8 +143,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
       }
       saldoList.addColumn("Anzahl", ANZAHL);
       saldoList.setMulti(true);
-      saldoList.setRememberColWidths(true);
-      saldoList.setRememberOrder(true);
       saldoList.setRememberState(true);
       saldoList.setContextMenu(new SaldoMenu(this));
       saldoList.setFormatter(new SaldoFormatter());

@@ -159,8 +159,6 @@ public class ZusatzbetragVorlageDialog
     }
     tab.addColumn("Zahlt selbst", "mitgliedzahltselbst", new JaNeinFormatter(),
         false, Column.ALIGN_LEFT);
-    tab.setRememberColWidths(true);
-    tab.setRememberOrder(true);
 
     return this.tab;
   }

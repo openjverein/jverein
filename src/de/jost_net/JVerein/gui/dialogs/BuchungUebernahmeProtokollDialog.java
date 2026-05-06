@@ -92,8 +92,6 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
     bu.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
-    bu.setRememberColWidths(true);
-    bu.setRememberOrder(true);
     bu.paint(parent);
 
     if (exception != null)

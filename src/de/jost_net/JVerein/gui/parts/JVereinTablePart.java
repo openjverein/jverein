@@ -75,7 +75,7 @@ public class JVereinTablePart extends TablePart
    */
   public JVereinTablePart(Action action)
   {
-    super(action);
+    this((List<?>) null, action);
   }
 
   /**
@@ -88,7 +88,7 @@ public class JVereinTablePart extends TablePart
    */
   public JVereinTablePart(GenericIterator<?> list, Action action)
   {
-    super(list, action);
+    this(asList(list), action);
   }
 
   /**
@@ -102,6 +102,8 @@ public class JVereinTablePart extends TablePart
   public JVereinTablePart(List<?> list, Action action)
   {
     super(list, action);
+    setRememberColWidths(true);
+    setRememberOrder(true);
   }
 
   public void setAction(Action action)

@@ -39,9 +39,9 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.QIFImportHead;
 import de.jost_net.JVerein.rmi.QIFImportPos;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.server.BuchungImpl;
 import de.jost_net.JVerein.server.QIFImportPosImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -287,8 +287,6 @@ public class QIFBuchungsImportControl extends AbstractControl
         new PosStatusFormater());
     qifImportPosList.addColumn("Mitglied", QIFImportPos.VIEW_MITGLIEDS_NAME);
 
-    qifImportPosList.setRememberColWidths(true);
-    qifImportPosList.setRememberOrder(true);
     qifImportPosList.setFormatter(new QIFImportPosListTableFormater());
     return qifImportPosList;
 

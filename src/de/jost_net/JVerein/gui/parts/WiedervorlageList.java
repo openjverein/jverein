@@ -63,8 +63,6 @@ public class WiedervorlageList extends JVereinTablePart
           new DateFormatter(new JVDateFormatTTMMJJJJ()));
       wiedervorlageList
           .setContextMenu(new WiedervorlageMenu(wiedervorlageList));
-      wiedervorlageList.setRememberColWidths(true);
-      wiedervorlageList.setRememberOrder(true);
       wiedervorlageList.setMulti(true);
       wiedervorlageList.setAction(
           new EditAction(WiedervorlageDetailView.class, wiedervorlageList));

@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.willuhn.util.ApplicationException;
 
@@ -119,9 +120,22 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  public Projekt getProjekt() throws RemoteException
+  {
+    Object p = (Object) super.getAttribute("projekt");
+    if (p == null)
+    {
+      return null; // Kein Projekt zugeordnet
+    }
+
+    Cache cache = Cache.get(Projekt.class, true);
+    return (Projekt) cache.get(p);
+  }
+
+  @Override
   public Long getProjektID() throws RemoteException
   {
-    return (Long) getAttribute("projekt");
+    return (Long) super.getAttribute("projekt");
   }
 
   @Override

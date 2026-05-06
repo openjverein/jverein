@@ -166,10 +166,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    anfangsbestandList.setRememberColWidths(true);
     anfangsbestandList
         .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
-    anfangsbestandList.setRememberOrder(true);
     anfangsbestandList.setMulti(true);
     anfangsbestandList.setAction(
         new EditAction(AnfangsbestandDetailView.class, anfangsbestandList));
