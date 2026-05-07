@@ -165,7 +165,8 @@ public class BuchungsartInput
         break;
       case STEUERART:
         it.addFilter("id NOT IN (SELECT DISTINCT buchungsart from buchung"
-            + " where (dependencyid IS NULL OR dependencyid != -1) AND buchungsart IS NOT NULL)");
+            + " where (dependencyid IS NULL OR dependencyid = -1) AND buchungsart IS NOT NULL)");
+        it.addFilter("steuer IS NULL");
         break;
       case ALLE:
         break;
