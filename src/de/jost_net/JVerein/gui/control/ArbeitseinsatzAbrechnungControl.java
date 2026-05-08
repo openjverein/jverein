@@ -17,13 +17,15 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.kapott.hbci.sepa.SepaVersion;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
@@ -160,7 +162,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
                 this),
             VorlageUtil.getName(
                 VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this),
-            art);
+            "arbeitseinsatz.abrechnung", art);
       }
       catch (OperationCanceledException ex)
       {
@@ -256,7 +258,6 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
-      arbeitseinsatzueberpruefungList.setRememberColWidths(true);
       return arbeitseinsatzueberpruefungList;
     }
   }
