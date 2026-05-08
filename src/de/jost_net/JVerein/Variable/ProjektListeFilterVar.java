@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-public enum ProjekteFilterVar
+public enum ProjektListeFilterVar
 {
   BEZEICHNUNG("filter_bezeichnung"),
   DATUM_START_VON_F("filter_startdatum_von_f"),
@@ -26,7 +26,7 @@ public enum ProjekteFilterVar
 
   private String name;
 
-  ProjekteFilterVar(String name)
+  ProjektListeFilterVar(String name)
   {
     this.name = name;
   }

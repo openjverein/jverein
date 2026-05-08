@@ -34,7 +34,7 @@ import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.ProjekteFilterMap;
+import de.jost_net.JVerein.Variable.ProjektListeFilterMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SollbuchungListeFilterMap;
@@ -177,6 +177,8 @@ public class VorlageUtil
               .getMap((Abrechnungslauf) obj, map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
+        case SOLLBUCHUNGEN_TITEL:
+        case SOLLBUCHUNGEN_SUBTITEL:
           map = new SollbuchungListeFilterMap().getMap((SollbuchungControl) obj,
               map);
           break;
@@ -272,7 +274,7 @@ public class VorlageUtil
         case PROJEKTE_DATEINAME:
         case PROJEKTE_TITEL:
         case PROJEKTE_SUBTITEL:
-          map = new ProjekteFilterMap().getMap((ProjektControl) obj, map);
+          map = new ProjektListeFilterMap().getMap((ProjektControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
@@ -452,6 +454,8 @@ public class VorlageUtil
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
+        case SOLLBUCHUNGEN_TITEL:
+        case SOLLBUCHUNGEN_SUBTITEL:
           map = SollbuchungListeFilterMap.getDummyMap(map);
           break;
         case ZUSATZBETRAEGE_DATEINAME:
@@ -535,7 +539,7 @@ public class VorlageUtil
         case PROJEKTE_DATEINAME:
         case PROJEKTE_TITEL:
         case PROJEKTE_SUBTITEL:
-          map = ProjekteFilterMap.getDummyMap(map);
+          map = ProjektListeFilterMap.getDummyMap(map);
           break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:

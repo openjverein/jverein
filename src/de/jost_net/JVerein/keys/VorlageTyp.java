@@ -438,6 +438,10 @@ public enum VorlageTyp
       "Jahresabschlüsse", Vorlageart.TITEL.getKey()),
   JAHRESABSCHLUESSE_SUBTITEL("jahresabschluesse-subtitel",
       "Jahresabschlüsse Subtitel", "", Vorlageart.TITEL.getKey()),
+  SOLLBUCHUNGEN_TITEL("sollbuchungen-titel", "Sollbuchungen Titel",
+      "Sollbuchungen", Vorlageart.TITEL.getKey()),
+  SOLLBUCHUNGEN_SUBTITEL("sollbuchungen-subtitel", "Sollbuchungen Subtitel", "",
+      Vorlageart.TITEL.getKey()),
 
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL("abrechnungslauf-lastschriften2-titel",

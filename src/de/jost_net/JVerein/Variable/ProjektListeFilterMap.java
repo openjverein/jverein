@@ -23,7 +23,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
 
-public class ProjekteFilterMap extends AbstractMap
+public class ProjektListeFilterMap extends AbstractMap
 {
 
   public Map<String, Object> getMap(FilterControl control,
@@ -39,7 +39,7 @@ public class ProjekteFilterMap extends AbstractMap
       map = inma;
     }
 
-    for (ProjekteFilterVar var : ProjekteFilterVar
+    for (ProjektListeFilterVar var : ProjektListeFilterVar
         .values())
     {
       Object value = null;
@@ -79,7 +79,7 @@ public class ProjekteFilterMap extends AbstractMap
     {
       map = inMap;
     }
-    for (ProjekteFilterVar var : ProjekteFilterVar
+    for (ProjektListeFilterVar var : ProjektListeFilterVar
         .values())
     {
       Object value = null;

@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,13 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -44,11 +37,9 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -64,7 +55,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -73,11 +63,8 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class ZusatzbetragControl extends VorZurueckControl implements Savable
 {
@@ -403,138 +390,20 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Button getPDFAusgabeButton()
+  public Button exportButton(ExportArt art) throws ApplicationException
   {
-    Button b = new Button("PDF", new Action()
+    if (zusatzbetraegeList == null)
     {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Zusatzbeträge");
-        }
-      }
-    }, null, true, "file-pdf.png");
-    return b;
-  }
-
-  private void starteAuswertung() throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_DATEINAME, this)
-            + ".pdf");
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    final DBIterator<Zusatzbetrag> it = getIterator();
-    settings.setAttribute("lastdir", file.getParent());
-    final String title = VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL,
-        this);
-    final String subtitle = VorlageUtil
-        .getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this);
-
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
-          reporter.addHeaderColumn("Mitglied", Element.ALIGN_LEFT, 60,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Startdatum", Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nächste Fälligkeit", Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Letzte abgerechnete Fälligkeit",
-              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Nicht mehr ausführen ab",
-              Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 50,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 30,
-              BaseColor.LIGHT_GRAY);
-          reporter.createHeader();
-          while (it.hasNext())
-          {
-            Zusatzbetrag z = (Zusatzbetrag) it.next();
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.MITGLIEDSNUMMERANZEIGEN))
-            {
-              reporter.addColumn(
-                  Adressaufbereitung.getIdNameVorname(z.getMitglied()),
-                  Element.ALIGN_LEFT);
-            }
-            else
-            {
-              reporter.addColumn(
-                  Adressaufbereitung.getNameVorname(z.getMitglied()),
-                  Element.ALIGN_LEFT);
-            }
-            reporter.addColumn(z.getStartdatum(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getFaelligkeit(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getAusfuehrung(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getIntervallText(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getEndedatum(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getBuchungstext(), Element.ALIGN_LEFT);
-            reporter.addColumn(z.getBetrag());
-          }
-          reporter.closeTable();
-          reporter.close();
-          fos.close();
-          GUI.getCurrentView().reload();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-          throw new ApplicationException(e);
-        }
-        FileViewer.show(file);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      zusatzbetraegeList.export(
+          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_DATEINAME, this),
+          "zusatzbetraege", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }
