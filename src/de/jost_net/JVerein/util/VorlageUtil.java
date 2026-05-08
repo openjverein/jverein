@@ -326,9 +326,6 @@ public class VorlageUtil
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
-          return "";
       }
     }
     catch (Exception e)
@@ -582,11 +579,14 @@ public class VorlageUtil
         case MITGLIEDSTYPEN_DATEINAME:
         case MITGLIEDSTYPEN_TITEL:
         case MITGLIEDSTYPEN_SUBTITEL:
+        case WIRTSCHAFTSPLAENE_DATEINAME:
+        case WIRTSCHAFTSPLAENE_TITEL:
+        case WIRTSCHAFTSPLAENE_SUBTITEL:
+        case JAHRESABSCHLUESSE_DATEINAME:
+        case JAHRESABSCHLUESSE_TITEL:
+        case JAHRESABSCHLUESSE_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
-          break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
           break;
       }
     }
