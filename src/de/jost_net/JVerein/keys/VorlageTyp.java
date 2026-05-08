@@ -175,7 +175,7 @@ public enum VorlageTyp
       "Wirtschaftsplan-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   JAHRESABSCHLUESSE_DATEINAME("jahresabschluesse-dateiname",
-      "Jahresabschluesse Dateiname",
+      "Jahresabschlüsse Dateiname",
       "Jahresabschluesse-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   WIRTSCHAFTSPLAENE_DATEINAME("wirtschaftsplaene-dateiname",
