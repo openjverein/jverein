@@ -23,22 +23,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanNode.Type;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -46,6 +49,7 @@ import de.jost_net.JVerein.rmi.Wirtschaftsplan;
 import de.jost_net.JVerein.rmi.WirtschaftsplanItem;
 import de.jost_net.JVerein.server.WirtschaftsplanImpl;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -57,6 +61,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -66,6 +71,8 @@ import de.willuhn.util.ApplicationException;
 public class WirtschaftsplanControl extends VorZurueckControl implements Savable
 {
   public final static String AUSWERTUNG_CSV = ".csv";
+
+  private JVereinTablePart wirtschaftsplaene;
 
   private EditTreePart einnahmen;
 
@@ -105,9 +112,14 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
    */
   public Part getWirtschaftsplanungList() throws RemoteException
   {
+    if (wirtschaftsplaene != null)
+    {
+      return wirtschaftsplaene;
+    }
+
     DBService service = Einstellungen.getDBService();
 
-    JVereinTablePart wirtschaftsplaene = new JVereinTablePart(
+    wirtschaftsplaene = new JVereinTablePart(
         service.createList(Wirtschaftsplan.class), null);
 
     CurrencyFormatter formatter = new CurrencyFormatter("",
@@ -679,5 +691,22 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public void setToChanged()
   {
     tableChanged = true;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (wirtschaftsplaene == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      wirtschaftsplaene.export(
+          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL),
+          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME),
+          "wirtschaftsplaene", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

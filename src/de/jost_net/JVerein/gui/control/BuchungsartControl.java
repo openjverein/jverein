@@ -16,15 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.rmi.RemoteException;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -34,9 +26,8 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
@@ -52,7 +43,6 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -62,11 +52,8 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class BuchungsartControl extends FilterControl implements Savable
 {
@@ -490,129 +477,20 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
   }
 
-  public Button getPDFAusgabeButton()
+  public Button exportButton(ExportArt art) throws ApplicationException
   {
-    Button b = new Button("PDF", new Action()
+    if (buchungsartList == null)
     {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der PDF-Ausgabe der Buchungsarten");
-        }
-      }
-    }, null, false, "file-pdf.png");
-    return b;
-  }
-
-  private void starteAuswertung() throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    fd.setFileName(
-        VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this) + ".pdf");
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-
-    String s = fd.open();
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith(".pdf"))
-    {
-      s = s + ".pdf";
-    }
-    final File file = new File(s);
-    final DBIterator<Buchungsart> it = getBuchungsarten();
-    settings.setAttribute("lastdir", file.getParent());
-    final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL,
-        this);
-    final String subtitle = VorlageUtil
-        .getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this);
-    BackgroundTask t = new BackgroundTask()
-    {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, title, subtitle, it.size());
-          reporter.addHeaderColumn("Nummer", Element.ALIGN_LEFT, 20,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_LEFT, 80,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Art", Element.ALIGN_LEFT, 25,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Buchungsklasse", Element.ALIGN_LEFT, 80,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Spende", Element.ALIGN_CENTER, 20,
-              BaseColor.LIGHT_GRAY);
-          reporter.addHeaderColumn("Steuer", Element.ALIGN_CENTER, 25,
-              BaseColor.LIGHT_GRAY);
-          reporter.createHeader();
-          while (it.hasNext())
-          {
-            Buchungsart b = it.next();
-            reporter.addColumn(b.getNummer() + "", Element.ALIGN_RIGHT);
-            reporter.addColumn(b.getBezeichnung(), Element.ALIGN_LEFT);
-            reporter.addColumn(ArtBuchungsart.get(b.getArt()),
-                Element.ALIGN_LEFT);
-            if (b.getBuchungsklasse() != null)
-            {
-              reporter.addColumn(b.getBuchungsklasse().getBezeichnung(),
-                  Element.ALIGN_LEFT);
-            }
-            else
-            {
-              reporter.addColumn("", Element.ALIGN_LEFT);
-            }
-            reporter.addColumn(b.getSpende());
-            reporter.addColumn(
-                b.getSteuer() == null ? "" : b.getSteuer().getName(),
-                Element.ALIGN_RIGHT);
-          }
-          reporter.closeTable();
-          reporter.close();
-          fos.close();
-          GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          GUI.getCurrentView().reload();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-          throw new ApplicationException(e);
-        }
-        FileViewer.show(file);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      buchungsartList.export(
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this),
+          "buchungsarten", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

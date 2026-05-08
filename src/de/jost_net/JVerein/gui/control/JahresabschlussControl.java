@@ -29,9 +29,11 @@ import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -41,6 +43,7 @@ import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -51,6 +54,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -454,4 +458,20 @@ public class JahresabschlussControl extends KontensaldoControl
     return text;
   }
 
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (jahresabschlussList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      jahresabschlussList.export(
+          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
+          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
+          "jahresabschluesse", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
 }
