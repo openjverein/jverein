@@ -24,6 +24,7 @@ import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
@@ -167,6 +168,7 @@ public class BuchungsartInput
         it.addFilter("id NOT IN (SELECT DISTINCT buchungsart from buchung"
             + " where (dependencyid IS NULL OR dependencyid = -1) AND buchungsart IS NOT NULL)");
         it.addFilter("steuer IS NULL");
+        it.addFilter("art != ?", ArtBuchungsart.UMBUCHUNG);
         break;
       case ALLE:
         break;
