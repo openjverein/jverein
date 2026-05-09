@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,8 @@ public class JVereinTablePart extends TablePart
 {
 
   private Control tableControl;
+
+  private List<Column> allColumns = new LinkedList<Column>();
 
   public enum ExportArt
   {
@@ -159,6 +162,81 @@ public class JVereinTablePart extends TablePart
     {
       super.orderBy(index);
     }
+  }
+
+  @Override
+  public void addColumn(Column col)
+  {
+    try
+    {
+      if (settings.getBoolean(getTablePartID() + col.getName(), true))
+      {
+        super.addColumn(col);
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim ermitteln der TablePartID", e);
+      // Dann zeigen wir sie mit an
+      super.addColumn(col);
+    }
+    this.allColumns.add(col);
+  }
+
+  /**
+   * Speichert die anzuzeigenden Spalten
+   * 
+   * @param columns
+   * @throws RemoteException
+   */
+  public void saveSpalten(List<Column> columns) throws RemoteException
+  {
+    for (Column c : allColumns)
+    {
+      settings.setAttribute(getTablePartID() + c.getName(),
+          columns.contains(c));
+    }
+  }
+
+  /**
+   * Ermittelt die ID der Tablepart aus der View und dem Objekttyp
+   * 
+   * @return
+   * @throws RemoteException
+   */
+  private String getTablePartID() throws RemoteException
+  {
+    List<?> items = getItems();
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(GUI.getCurrentView().getClass().getSimpleName());
+    sb.append(".");
+    if (items.size() > 0)
+    {
+      sb.append(getItems().get(0).getClass().getSimpleName());
+      sb.append(".");
+    }
+    return sb.toString();
+  }
+
+  /**
+   * Holt alle Spalten der Tabelle, auch die ausgeblendeten
+   * 
+   * @return
+   */
+  public List<Column> getAllColums()
+  {
+    return allColumns;
+  }
+
+  /**
+   * Holt alle sichtbaren Spalten der Tabelle
+   * 
+   * @return
+   */
+  public List<Column> getColums()
+  {
+    return columns;
   }
 
   /**

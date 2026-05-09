@@ -46,5 +46,7 @@ public class BeitragsgruppeListeView extends AbstractView
         new NewAction(BeitragsgruppeDetailView.class, Beitragsgruppe.class),
         null, false, "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getPanelButton());
   }
 }
