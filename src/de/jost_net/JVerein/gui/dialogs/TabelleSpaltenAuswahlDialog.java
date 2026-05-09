@@ -17,36 +17,34 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
 {
-  private List<Column> auswahl;
+  private JVereinTablePart[] tableParts;
 
-  private JVereinTablePart spaltenList;
-
-  private JVereinTablePart tablePart;
-
-  public TabelleSpaltenAuswahlDialog(JVereinTablePart tablePart)
+  public TabelleSpaltenAuswahlDialog(JVereinTablePart... tableParts)
   {
     super(TabelleSpaltenAuswahlDialog.POSITION_CENTER);
 
-    this.tablePart = tablePart;
-    auswahl = tablePart.getColums();
+    this.tableParts = tableParts;
     setTitle("Spalten auswählen");
     setSize(400, SWT.DEFAULT);
   }
@@ -55,19 +53,48 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    LabelGroup options = new LabelGroup(parent, "");
-    options.addPart(getList());
-
-    for (Column col : tablePart.getAllColums())
+    TabFolder folder = null;
+    List<JVereinTablePart> parts = new ArrayList<>();
+    int nummer = 1;
+    for (JVereinTablePart table : tableParts)
     {
-      spaltenList.setChecked(col, auswahl.contains(col));
+      JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null);
+      part.addColumn("Name", "name");
+      part.setCheckable(true);
+
+      if (tableParts.length > 1)
+      {
+        if (folder == null)
+        {
+          folder = new TabFolder(parent, SWT.BORDER);
+          folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+        }
+
+        TabGroup tab = new TabGroup(folder, "Tabelle " + nummer++, true, 1);
+        tab.addPart(part);
+      }
+      else
+      {
+        LabelGroup group = new LabelGroup(parent, "Tabelle");
+        group.addPart(part);
+      }
+
+      List<Column> auswahl = table.getColums();
+      for (Column col : table.getAllColums())
+      {
+        part.setChecked(col, auswahl.contains(col));
+      }
+      parts.add(part);
     }
 
     ButtonArea b = new ButtonArea();
     b.addButton("Speichern", c -> {
       try
       {
-        tablePart.saveSpalten(spaltenList.getItems());
+        for (int i = 0; i < tableParts.length; i++)
+        {
+          tableParts[i].saveSpalten(parts.get(i).getItems());
+        }
         GUI.getCurrentView().reload();
       }
       catch (RemoteException e)
@@ -81,18 +108,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     b.paint(parent);
-  }
-
-  private Part getList()
-  {
-    if (spaltenList != null)
-    {
-      return spaltenList;
-    }
-    spaltenList = new JVereinTablePart(tablePart.getAllColums(), null);
-    spaltenList.addColumn("Name", "name");
-    spaltenList.setCheckable(true);
-    return spaltenList;
   }
 
   @Override

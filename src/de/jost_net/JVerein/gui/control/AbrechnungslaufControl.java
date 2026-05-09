@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -69,6 +70,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -368,7 +371,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   }
 
   @SuppressWarnings("unchecked")
-  public Part getBuchungList() throws RemoteException
+  public JVereinTablePart getBuchungList() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -451,7 +454,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return buchungList;
   }
 
-  public Part getSollbuchungList() throws RemoteException
+  public JVereinTablePart getSollbuchungList() throws RemoteException
   {
     if (sollbuchungList != null)
     {
@@ -487,7 +490,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return sollbuchungList;
   }
 
-  public Part getLastschriftList() throws RemoteException
+  public JVereinTablePart getLastschriftList() throws RemoteException
   {
     if (lastschriftList != null)
     {
@@ -520,7 +523,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return lastschriftList;
   }
 
-  public Part getZusatzbetraegeList() throws RemoteException
+  public JVereinTablePart getZusatzbetraegeList() throws RemoteException
   {
     if (zusatzbetraegeList != null)
     {
@@ -589,6 +592,26 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     zusatzbetraegeList.setMulti(true);
 
     return zusatzbetraegeList;
+  }
+
+  public PanelButton getPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getBuchungList(), getSollbuchungList(),
+            getLastschriftList(), getZusatzbetraegeList()).open();
+      }
+      catch (OperationCanceledException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten asuwählen");
   }
 
   public ButtonRtoL exportLastschriftButton(ExportArt art)

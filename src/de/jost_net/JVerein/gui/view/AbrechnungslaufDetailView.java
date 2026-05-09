@@ -135,6 +135,8 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getPanelButton());
   }
 
   @Override

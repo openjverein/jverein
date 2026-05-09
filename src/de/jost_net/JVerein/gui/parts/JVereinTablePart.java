@@ -130,6 +130,10 @@ public class JVereinTablePart extends TablePart
     // Die letzte Spalte packen wir nach Titelbreite, falls diese kleiner als
     // der gespeicherte Wert ist. So wird ggf. verhindert, dass eine horizontale
     // Scrollbar angezeigt wird, wenn es gar nicht nötig ist.
+    if (table.getColumnCount() == 0)
+    {
+      return ctx;
+    }
     TableColumn c = table.getColumn(table.getColumnCount() - 1);
     int widthOld = c.getWidth();
     c.pack();
