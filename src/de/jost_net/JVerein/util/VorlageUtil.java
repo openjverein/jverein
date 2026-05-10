@@ -19,9 +19,9 @@ package de.jost_net.JVerein.util;
 import java.rmi.RemoteException;
 import java.util.Map;
 
-import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
+import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
@@ -34,6 +34,7 @@ import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.ProjektListeFilterMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
 import de.jost_net.JVerein.Variable.SollbuchungListeFilterMap;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.ProjektControl;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
@@ -128,23 +130,6 @@ public class VorlageUtil
           map = new MitgliedMap().getMap(mitglied, map);
           map.put("formular_name", (String) obj);
           break;
-        case SPENDENBESCHEINIGUNG_DATEINAME:
-        case RECHNUNG_DATEINAME:
-        case MAHNUNG_DATEINAME:
-        case KONTOAUSZUG_DATEINAME:
-        case CT1_AUSGABE_DATEINAME:
-        case GUTSCHRIFT_DATEINAME:
-        case PRENOTIFICATION_DATEINAME:
-        case PERSONALBOGEN_DATEINAME:
-        case KONTENRAHMEN_DATEINAME_V1:
-        case KONTENRAHMEN_DATEINAME_V2:
-        case VCARD_DATEINAME:
-        case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
-        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
-        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
-          // Bei zip oder einzelnes Dokument für mehrere Einträge
-          // Nur die allgemeine Map
-          break;
         case KONTENSALDO_DATEINAME:
         case KONTENSALDO_TITEL:
         case KONTENSALDO_SUBTITEL:
@@ -192,6 +177,8 @@ public class VorlageUtil
               .getMap((Abrechnungslauf) obj, map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
+        case SOLLBUCHUNGEN_TITEL:
+        case SOLLBUCHUNGEN_SUBTITEL:
           map = new SollbuchungListeFilterMap().getMap((SollbuchungControl) obj,
               map);
           break;
@@ -284,9 +271,61 @@ public class VorlageUtil
           map = new WirtschaftsplanParameterMap()
               .getMap((WirtschaftsplanControl) obj, map);
           break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
-          return "";
+        case PROJEKTE_DATEINAME:
+        case PROJEKTE_TITEL:
+        case PROJEKTE_SUBTITEL:
+          map = new ProjektListeFilterMap().getMap((ProjektControl) obj, map);
+          break;
+        case SPENDENBESCHEINIGUNG_DATEINAME:
+        case RECHNUNG_DATEINAME:
+        case MAHNUNG_DATEINAME:
+        case KONTOAUSZUG_DATEINAME:
+        case CT1_AUSGABE_DATEINAME:
+        case GUTSCHRIFT_DATEINAME:
+        case PRENOTIFICATION_DATEINAME:
+        case PERSONALBOGEN_DATEINAME:
+        case KONTENRAHMEN_DATEINAME_V1:
+        case KONTENRAHMEN_DATEINAME_V2:
+        case VCARD_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
+        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
+        case BUCHUNGSKLASSEN_DATEINAME:
+        case BUCHUNGSKLASSEN_TITEL:
+        case BUCHUNGSKLASSEN_SUBTITEL:
+        case STEUERN_DATEINAME:
+        case STEUERN_TITEL:
+        case STEUERN_SUBTITEL:
+        case BEITRAGSGRUPPEN_DATEINAME:
+        case BEITRAGSGRUPPEN_TITEL:
+        case BEITRAGSGRUPPEN_SUBTITEL:
+        case EIGENSCHAFTENGRUPPEN_DATEINAME:
+        case EIGENSCHAFTENGRUPPEN_TITEL:
+        case EIGENSCHAFTENGRUPPEN_SUBTITEL:
+        case EIGENSCHAFTEN_DATEINAME:
+        case EIGENSCHAFTEN_TITEL:
+        case EIGENSCHAFTEN_SUBTITEL:
+        case ZUSATZFELDER_DATEINAME:
+        case ZUSATZFELDER_TITEL:
+        case ZUSATZFELDER_SUBTITEL:
+        case FORMULARE_DATEINAME:
+        case FORMULARE_TITEL:
+        case FORMULARE_SUBTITEL:
+        case LEHRGANGSARTEN_DATEINAME:
+        case LEHRGANGSARTEN_TITEL:
+        case LEHRGANGSARTEN_SUBTITEL:
+        case MITGLIEDSTYPEN_DATEINAME:
+        case MITGLIEDSTYPEN_TITEL:
+        case MITGLIEDSTYPEN_SUBTITEL:
+        case WIRTSCHAFTSPLAENE_DATEINAME:
+        case WIRTSCHAFTSPLAENE_TITEL:
+        case WIRTSCHAFTSPLAENE_SUBTITEL:
+        case JAHRESABSCHLUESSE_DATEINAME:
+        case JAHRESABSCHLUESSE_TITEL:
+        case JAHRESABSCHLUESSE_SUBTITEL:
+          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Nur die allgemeine Map
+          break;
       }
     }
     catch (Exception e)
@@ -367,23 +406,6 @@ public class VorlageUtil
           map = MitgliedMap.getDummyMap(map);
           map.put("formular_name", "Freies Formular");
           break;
-        case SPENDENBESCHEINIGUNG_DATEINAME:
-        case RECHNUNG_DATEINAME:
-        case MAHNUNG_DATEINAME:
-        case KONTOAUSZUG_DATEINAME:
-        case CT1_AUSGABE_DATEINAME:
-        case GUTSCHRIFT_DATEINAME:
-        case PRENOTIFICATION_DATEINAME:
-        case PERSONALBOGEN_DATEINAME:
-        case KONTENRAHMEN_DATEINAME_V1:
-        case KONTENRAHMEN_DATEINAME_V2:
-        case VCARD_DATEINAME:
-        case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
-        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
-        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
-          // Bei zip oder einzelnes Dokument für mehrere Einträge
-          // Nur die allgemeine Map
-          break;
         case KONTENSALDO_DATEINAME:
         case KONTENSALDO_TITEL:
         case KONTENSALDO_SUBTITEL:
@@ -429,6 +451,8 @@ public class VorlageUtil
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
+        case SOLLBUCHUNGEN_TITEL:
+        case SOLLBUCHUNGEN_SUBTITEL:
           map = SollbuchungListeFilterMap.getDummyMap(map);
           break;
         case ZUSATZBETRAEGE_DATEINAME:
@@ -509,8 +533,60 @@ public class VorlageUtil
         case WIRTSCHAFTSPLAN_SUBTITEL:
           map = WirtschaftsplanParameterMap.getDummyMap(map);
           break;
-        default:
-          Logger.error("Dateiname Typ nicht implementiert: " + typ.toString());
+        case PROJEKTE_DATEINAME:
+        case PROJEKTE_TITEL:
+        case PROJEKTE_SUBTITEL:
+          map = ProjektListeFilterMap.getDummyMap(map);
+          break;
+        case SPENDENBESCHEINIGUNG_DATEINAME:
+        case RECHNUNG_DATEINAME:
+        case MAHNUNG_DATEINAME:
+        case KONTOAUSZUG_DATEINAME:
+        case CT1_AUSGABE_DATEINAME:
+        case GUTSCHRIFT_DATEINAME:
+        case PRENOTIFICATION_DATEINAME:
+        case PERSONALBOGEN_DATEINAME:
+        case KONTENRAHMEN_DATEINAME_V1:
+        case KONTENRAHMEN_DATEINAME_V2:
+        case VCARD_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_DATEINAME:
+        case WIRTSCHAFTSPLAN_MEHRERE_TITEL:
+        case WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL:
+        case BUCHUNGSKLASSEN_DATEINAME:
+        case BUCHUNGSKLASSEN_TITEL:
+        case BUCHUNGSKLASSEN_SUBTITEL:
+        case STEUERN_DATEINAME:
+        case STEUERN_TITEL:
+        case STEUERN_SUBTITEL:
+        case BEITRAGSGRUPPEN_DATEINAME:
+        case BEITRAGSGRUPPEN_TITEL:
+        case BEITRAGSGRUPPEN_SUBTITEL:
+        case EIGENSCHAFTENGRUPPEN_DATEINAME:
+        case EIGENSCHAFTENGRUPPEN_TITEL:
+        case EIGENSCHAFTENGRUPPEN_SUBTITEL:
+        case EIGENSCHAFTEN_DATEINAME:
+        case EIGENSCHAFTEN_TITEL:
+        case EIGENSCHAFTEN_SUBTITEL:
+        case ZUSATZFELDER_DATEINAME:
+        case ZUSATZFELDER_TITEL:
+        case ZUSATZFELDER_SUBTITEL:
+        case FORMULARE_DATEINAME:
+        case FORMULARE_TITEL:
+        case FORMULARE_SUBTITEL:
+        case LEHRGANGSARTEN_DATEINAME:
+        case LEHRGANGSARTEN_TITEL:
+        case LEHRGANGSARTEN_SUBTITEL:
+        case MITGLIEDSTYPEN_DATEINAME:
+        case MITGLIEDSTYPEN_TITEL:
+        case MITGLIEDSTYPEN_SUBTITEL:
+        case WIRTSCHAFTSPLAENE_DATEINAME:
+        case WIRTSCHAFTSPLAENE_TITEL:
+        case WIRTSCHAFTSPLAENE_SUBTITEL:
+        case JAHRESABSCHLUESSE_DATEINAME:
+        case JAHRESABSCHLUESSE_TITEL:
+        case JAHRESABSCHLUESSE_SUBTITEL:
+          // Bei zip oder einzelnes Dokument für mehrere Einträge
+          // Nur die allgemeine Map
           break;
       }
     }

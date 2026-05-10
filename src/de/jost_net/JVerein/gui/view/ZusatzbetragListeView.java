@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.action.ZusatzbetraegeImportAction;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -50,7 +51,8 @@ public class ZusatzbetragListeView extends AbstractView
         "euro-sign.png");
     buttons.addButton("Import", new ZusatzbetraegeImportAction(), null, false,
         "file-import.png");
-    buttons.addButton(control.getPDFAusgabeButton());
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(ZusatzbetragDetailView.class, Zusatzbetrag.class),
         control, false, "document-new.png");

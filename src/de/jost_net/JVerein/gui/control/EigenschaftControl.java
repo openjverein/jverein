@@ -22,19 +22,24 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.EigenschaftDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -180,5 +185,22 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
       eigenschaftList.sort();
     }
     return eigenschaftList;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (eigenschaftList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      eigenschaftList.export(
+          VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_TITEL),
+          VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.EIGENSCHAFTEN_DATEINAME),
+          "eigenschaften", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

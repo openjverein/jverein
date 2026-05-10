@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -81,8 +82,8 @@ public class SpendenbescheinigungListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.SPENDENBESCHEINIGUNG, false, "question-circle.png");
-    buttons.addButton(control.getCSVExportButton());
-    buttons.addButton(control.getPDFExportButton());
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu (automatisch)",
         new StartViewAction(SpendenbescheinigungAutoNeuView.class), null, false,
         "document-new.png");

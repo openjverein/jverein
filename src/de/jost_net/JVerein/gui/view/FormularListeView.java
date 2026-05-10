@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -42,6 +43,8 @@ public class FormularListeView extends AbstractView
         DokumentationUtil.FORMULARE, false, "question-circle.png");
     buttons.addButton("Importieren", new FormularImportAction(), null, false,
         "file-import.png");
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(FormularDetailView.class, Formular.class), null, false,
         "document-new.png");

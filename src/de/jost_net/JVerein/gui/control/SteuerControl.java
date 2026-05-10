@@ -32,20 +32,25 @@ import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.SteuerDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -259,5 +264,20 @@ public class SteuerControl extends VorZurueckControl implements Savable
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
     }
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (steuerList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      steuerList.export(VorlageUtil.getName(VorlageTyp.STEUERN_TITEL),
+          VorlageUtil.getName(VorlageTyp.STEUERN_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.STEUERN_DATEINAME), "steuern", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

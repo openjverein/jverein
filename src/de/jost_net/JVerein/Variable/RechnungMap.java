@@ -322,8 +322,6 @@ public class RechnungMap extends AbstractMap
             value = zahlungsweg;
           }
           break;
-        default:
-          break;
       }
       map.put(var.getName(), value);
     }
@@ -540,8 +538,6 @@ public class RechnungMap extends AbstractMap
           break;
         case REFERENZRECHNUNG:
           value = "00333";
-          break;
-        default:
           break;
       }
       map.put(var.getName(), value);

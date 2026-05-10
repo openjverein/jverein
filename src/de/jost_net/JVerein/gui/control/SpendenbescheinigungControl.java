@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -28,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -45,20 +42,18 @@ import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
-import de.jost_net.JVerein.io.SpendenbescheinigungExportCSV;
-import de.jost_net.JVerein.io.SpendenbescheinigungExportPDF;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.keys.SuchVersand;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -89,12 +84,9 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class SpendenbescheinigungControl extends DruckMailControl
     implements Savable
@@ -851,103 +843,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }, null, true, "walking.png");
   }
 
-  public Button getPDFExportButton()
-  {
-    return new Button("PDF", c -> starteExport(ExportPDF), null, false,
-        "file-pdf.png");
-  }
-
-  public Button getCSVExportButton()
-  {
-    return new Button("CSV", c -> starteExport(ExportCSV), null, false,
-        "xsd.png");
-  }
-
-  private void starteExport(String type) throws ApplicationException
-  {
-    try
-    {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME, this)
-              + "." + type);
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      ArrayList<Spendenbescheinigung> spbList = getSpendenbescheinigungen();
-      ausgabe(type, file, spbList);
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(
-          String.format("Fehler beim Aufbau des Reports: %s", e.getMessage()));
-    }
-  }
-
-  private void ausgabe(final String type, final File file,
-      final ArrayList<Spendenbescheinigung> spbList)
-  {
-    final String title = VorlageUtil
-        .getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this);
-    final String subtitle = VorlageUtil
-        .getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL, this);
-    BackgroundTask t = new BackgroundTask()
-    {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          switch (type)
-          {
-            case ExportCSV:
-              new SpendenbescheinigungExportCSV(file, spbList);
-              break;
-            case ExportPDF:
-              new SpendenbescheinigungExportPDF(file, spbList, 4, title,
-                  subtitle);
-              break;
-          }
-          GUI.getCurrentView().reload();
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler", e);
-          GUI.getStatusBar().setErrorText(e.getMessage());
-          throw new ApplicationException(e);
-        }
-        FileViewer.show(file);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-  }
-
   public class MitgliedListener implements Listener
   {
     @Override
@@ -1091,5 +986,23 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
     }
     return map;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (spbList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      spbList.export(
+          VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME,
+              this),
+          "spendenbescheinigungen", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

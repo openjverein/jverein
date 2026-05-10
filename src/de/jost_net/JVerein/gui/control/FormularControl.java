@@ -37,19 +37,24 @@ import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.FormularImpl;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -379,4 +384,19 @@ public class FormularControl extends FormularPartControl implements Savable
     formularList.sort();
   }
 
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (formularList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
+          VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
+          art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
 }
