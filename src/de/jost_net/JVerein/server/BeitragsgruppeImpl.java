@@ -282,7 +282,7 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
         }
       }
 
-      if (getBuchungsart().isSteuerBuchungsart())
+      if (getBuchungsart() != null && getBuchungsart().isSteuerBuchungsart())
       {
         throw new ApplicationException(
             "Keine manuelle Buchung auf Steuerbuchungsart möglich.");
