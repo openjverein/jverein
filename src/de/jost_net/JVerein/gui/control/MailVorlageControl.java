@@ -22,15 +22,20 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailVorlage;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -150,5 +155,20 @@ public class MailVorlageControl extends VorZurueckControl
     }
     VorZurueckControl.setObjektListe(null, null);
     return mailvorlageList;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (mailvorlageList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      mailvorlageList.export(VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL),
+          VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL),
+          VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME), "mails", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

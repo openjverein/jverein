@@ -17,10 +17,10 @@ public enum KursteilnehmerListeFilterVar
 {
   NAME("filter_name"),
   VERWENDUNGSZWECK("filter_verwendungszweck"),
-  DATUM_EINGABE_VON_F("filter_startdatum_von_f"),
-  DATUM_EINGABE_BIS_F("filter_startdatum_bis_f"),
-  DATUM_ABBUCHUNG_VON_F("filter_endedatum_von_f"),
-  DATUM_ABBUCHUNG_BIS_F("filter_endedatum_bis_f");
+  DATUM_EINGABE_VON_F("filter_eingabedatum_von_f"),
+  DATUM_EINGABE_BIS_F("filter_eingabedatum_bis_f"),
+  DATUM_ABBUCHUNG_VON_F("filter_abbuchungsdatum_von_f"),
+  DATUM_ABBUCHUNG_BIS_F("filter_abbuchungsdatum_bis_f");
 
   private String name;
 

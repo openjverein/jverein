@@ -382,6 +382,9 @@ public class VorlageUtil
         case JAHRESABSCHLUESSE_DATEINAME:
         case JAHRESABSCHLUESSE_TITEL:
         case JAHRESABSCHLUESSE_SUBTITEL:
+        case MAILVORLAGEN_DATEINAME:
+        case MAILVORLAGEN_TITEL:
+        case MAILVORLAGEN_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -689,6 +692,9 @@ public class VorlageUtil
         case JAHRESABSCHLUESSE_DATEINAME:
         case JAHRESABSCHLUESSE_TITEL:
         case JAHRESABSCHLUESSE_SUBTITEL:
+        case MAILVORLAGEN_DATEINAME:
+        case MAILVORLAGEN_TITEL:
+        case MAILVORLAGEN_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;

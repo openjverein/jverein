@@ -242,6 +242,9 @@ public enum VorlageTyp
   // Reports Druck und Mail
   MAILS_DATEINAME("mails-dateiname", "Mails Dateiname",
       "Mails-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
+  MAILVORLAGEN_DATEINAME("mailvorlagen-dateiname", "Mailvorlagen Dateiname",
+      "Mailvorlagen-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Auswertung
   AUSWERTUNG_MITGLIED_DATEINAME("auswertung-mitglied-dateiname",
@@ -543,6 +546,10 @@ public enum VorlageTyp
   MAILS_TITEL("mails-titel", "Mails Titel", "Mails",
       Vorlageart.TITEL.getKey()),
   MAILS_SUBTITEL("mails-subtitel", "Mails Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  MAILVORLAGEN_TITEL("mailvorlagen-titel", "Mailvorlagen Titel", "Mailvorlagen",
+      Vorlageart.TITEL.getKey()),
+  MAILVORLAGEN_SUBTITEL("mailvorlagen-subtitel", "Mailvorlagen Subtitel", "",
       Vorlageart.TITEL.getKey()),
 
   // Reports aus Auswertung
