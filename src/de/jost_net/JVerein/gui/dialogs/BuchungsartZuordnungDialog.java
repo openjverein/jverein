@@ -235,8 +235,7 @@ public class BuchungsartZuordnungDialog extends AbstractDialog<Buchungsart>
       return buchungsartInput;
     }
     buchungsartInput = new BuchungsartInput().getBuchungsartInput(
-        buchungsartInput, null, buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+        null, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     if (buchungsartInput instanceof SelectInput)
     {

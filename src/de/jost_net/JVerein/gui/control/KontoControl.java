@@ -690,9 +690,8 @@ public class KontoControl extends FilterControl implements Savable
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
-        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
-        (Integer) Einstellungen
+    anlagenart = new BuchungsartInput().getBuchungsartInput(getKonto().getAnlagenart(),
+        buchungsarttyp.ANLAGENART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -776,8 +775,8 @@ public class KontoControl extends FilterControl implements Savable
     {
       return afaart;
     }
-    afaart = new BuchungsartInput().getBuchungsartInput(afaart,
-        getKonto().getAfaart(), buchungsarttyp.AFAART, (Integer) Einstellungen
+    afaart = new BuchungsartInput().getBuchungsartInput(getKonto().getAfaart(),
+        buchungsarttyp.AFAART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     afaart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)

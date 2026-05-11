@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -154,8 +155,9 @@ public class SteuerControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getSteuer().getBuchungsart(), null, (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
+        getSteuer().getBuchungsart(), buchungsarttyp.STEUERART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.setMandatory(true);
     buchungsart.setComment("");

@@ -21,8 +21,8 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Altersstaffel;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -280,6 +280,12 @@ public class BeitragsgruppeImpl extends AbstractJVereinDBObject
           throw new ApplicationException(
               "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
         }
+      }
+
+      if (getBuchungsart() != null && getBuchungsart().isSteuerBuchungsart())
+      {
+        throw new ApplicationException(
+            "Keine manuelle Buchung auf Steuerbuchungsart möglich.");
       }
     }
     catch (RemoteException e)
