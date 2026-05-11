@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.willuhn.jameica.gui.AbstractView;
@@ -78,6 +79,8 @@ public class KursteilnehmerListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(KursteilnehmerDetailView.class, Kursteilnehmer.class),
         null, false, "document-new.png");

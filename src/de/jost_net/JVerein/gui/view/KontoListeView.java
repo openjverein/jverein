@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.HibiscusKontenImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KontoControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -61,6 +62,8 @@ public class KontoListeView extends AbstractView
         DokumentationUtil.KONTEN, false, "question-circle.png");
     buttons.addButton("Hibiscus-Konten-Import",
         new HibiscusKontenImportAction(control), null, false, "walking.png");
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu", new NewAction(KontoDetailView.class, Konto.class),
         null, false, "document-new.png");
     buttons.paint(this.getParent());

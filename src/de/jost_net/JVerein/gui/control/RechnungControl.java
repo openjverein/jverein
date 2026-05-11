@@ -40,14 +40,16 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
-import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.SuchVersand;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -55,11 +57,12 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Sollbuchung;
-import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -928,5 +931,22 @@ public class RechnungControl extends DruckMailControl implements Savable
       }
     }
     return map;
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (rechnungList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      rechnungList.export(
+          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this),
+          "rechnungen", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

@@ -68,6 +68,7 @@ import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -656,5 +657,22 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         VorlageUtil.getName(dateiname, getAbrechnungslauf()), settingPrefix,
         art);
     GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (abrechnungslaufList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      abrechnungslaufList.export(
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this),
+          "abrechnungslaeufe", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }
