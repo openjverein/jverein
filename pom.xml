@@ -234,6 +234,12 @@
       <artifactId>${swt.artifactId}</artifactId>
       <version>${swt.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.swt</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
