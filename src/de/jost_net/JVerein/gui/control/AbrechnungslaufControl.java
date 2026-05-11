@@ -602,7 +602,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         new TabelleSpaltenAuswahlDialog(getBuchungList(), getSollbuchungList(),
             getLastschriftList(), getZusatzbetraegeList()).open();
       }
-      catch (OperationCanceledException e)
+      catch (OperationCanceledException | ApplicationException e)
       {
         throw e;
       }

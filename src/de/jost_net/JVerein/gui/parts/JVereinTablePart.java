@@ -217,15 +217,18 @@ public class JVereinTablePart extends TablePart
       return tablePartId;
     }
     List<?> items = getItems();
+
+    if (items.size() == 0)
+    {
+      return "";
+    }
     StringBuilder sb = new StringBuilder();
 
     sb.append(GUI.getCurrentView().getClass().getSimpleName());
     sb.append(".");
-    if (items.size() > 0)
-    {
-      sb.append(getItems().get(0).getClass().getSimpleName());
-      sb.append(".");
-    }
+    sb.append(items.get(0).getClass().getSimpleName());
+    sb.append(".");
+
     tablePartId = sb.toString();
     return tablePartId;
   }

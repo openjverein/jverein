@@ -41,10 +41,25 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   private JVereinTablePart[] tableParts;
 
   public TabelleSpaltenAuswahlDialog(JVereinTablePart... tableParts)
+      throws RemoteException, ApplicationException
   {
     super(TabelleSpaltenAuswahlDialog.POSITION_CENTER);
 
     this.tableParts = tableParts;
+
+    boolean leer = true;
+    for (JVereinTablePart table : tableParts)
+    {
+      if (table.getItems().size() > 0)
+      {
+        leer = false;
+        break;
+      }
+    }
+    if (leer)
+    {
+      throw new ApplicationException("Tabelle ist leer");
+    }
     setTitle("Spalten auswählen");
     setSize(400, SWT.DEFAULT);
   }
@@ -58,6 +73,10 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     int nummer = 1;
     for (JVereinTablePart table : tableParts)
     {
+      if (table.getItems().size() > 0)
+      {
+        continue;
+      }
       JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null);
       part.addColumn("Name", "name");
       part.setCheckable(true);
