@@ -64,6 +64,8 @@ public class JVereinTablePart extends TablePart
 
   private List<Column> allColumns = new LinkedList<Column>();
 
+  private String tablePartId;
+
   public enum ExportArt
   {
     PDF,
@@ -210,6 +212,10 @@ public class JVereinTablePart extends TablePart
    */
   private String getTablePartID() throws RemoteException
   {
+    if (tablePartId != null)
+    {
+      return tablePartId;
+    }
     List<?> items = getItems();
     StringBuilder sb = new StringBuilder();
 
@@ -220,7 +226,8 @@ public class JVereinTablePart extends TablePart
       sb.append(getItems().get(0).getClass().getSimpleName());
       sb.append(".");
     }
-    return sb.toString();
+    tablePartId = sb.toString();
+    return tablePartId;
   }
 
   /**
