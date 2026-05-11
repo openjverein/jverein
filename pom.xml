@@ -37,6 +37,8 @@
     <icu4j.version>52.2</icu4j.version>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
     <bytebuddy.agent.version>1.18.8-jdk5</bytebuddy.agent.version>
+    <jackson.version>2.21.3</jackson.version>
+    <jackson-annotations.version>2.21</jackson-annotations.version>
     <release.root>${project.build.directory}/releases</release.root>
     <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
     <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
@@ -87,7 +89,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.21.3</version>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson-annotations.version}</version>
     </dependency>
     <dependency>
       <groupId>jakarta.activation</groupId>
