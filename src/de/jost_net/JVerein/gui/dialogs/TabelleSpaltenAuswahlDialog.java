@@ -73,7 +73,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     int nummer = 1;
     for (JVereinTablePart table : tableParts)
     {
-      if (table.getItems().size() > 0)
+      if (table.getItems().size() == 0)
       {
         continue;
       }

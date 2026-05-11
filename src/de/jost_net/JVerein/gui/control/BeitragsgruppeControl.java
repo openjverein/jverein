@@ -135,7 +135,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
       {
         new TabelleSpaltenAuswahlDialog(getBeitragsgruppeTable()).open();
       }
-      catch (OperationCanceledException e)
+      catch (OperationCanceledException | ApplicationException e)
       {
         throw e;
       }
