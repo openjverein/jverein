@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -70,7 +71,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   {
     TabFolder folder = null;
     List<JVereinTablePart> parts = new ArrayList<>();
-    int nummer = 1;
     for (JVereinTablePart table : tableParts)
     {
       if (table.getItems().size() == 0)
@@ -89,7 +89,13 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
           folder.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
 
-        TabGroup tab = new TabGroup(folder, "Tabelle " + nummer++, true, 1);
+        String name = "Tabelle";
+        Object o = table.getItems().get(0);
+        if (o instanceof JVereinDBObject)
+        {
+          name = ((JVereinDBObject) o).getObjektNameMehrzahl();
+        }
+        TabGroup tab = new TabGroup(folder, name, true, 1);
         tab.addPart(part);
       }
       else
