@@ -75,6 +75,8 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     {
       if (table.getItems().size() == 0)
       {
+        // Demit die Nummerierung stimmt, hier auch ohne Part hinzufügen
+        parts.add(null);
         continue;
       }
       JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null);
@@ -118,6 +120,10 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       {
         for (int i = 0; i < tableParts.length; i++)
         {
+          if (parts.get(i) == null)
+          {
+            continue;
+          }
           tableParts[i].saveSpalten(parts.get(i).getItems());
         }
         GUI.getCurrentView().reload();
