@@ -44,6 +44,7 @@ import de.willuhn.jameica.gui.util.Container;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -232,18 +233,19 @@ public class ExportDialog extends AbstractDialog<Object>
         }
         catch (ApplicationException ae)
         {
-          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-          monitor.setStatusText(ae.getMessage());
           GUI.getStatusBar().setErrorText(ae.getMessage());
           throw ae;
         }
+        catch (OperationCanceledException oce)
+        {
+          GUI.getStatusBar().setErrorText(oce.getMessage());
+          throw oce;
+        }
         catch (Exception e)
         {
-          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
           Logger.error("error while writing objects to " + s, e);
           ApplicationException ae = new ApplicationException(
               String.format("Fehler beim Exportieren der Daten in %s", s), e);
-          monitor.setStatusText(ae.getMessage());
           GUI.getStatusBar().setErrorText(ae.getMessage());
           throw ae;
         }

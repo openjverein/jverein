@@ -194,6 +194,9 @@ public class VorlageUtil
           map = new SpendenbescheinigungListeFilterMap()
               .getMap((FilterControl) obj, map);
           break;
+        case BUCHUNGEN_DATEINAME:
+        case BUCHUNGEN_TITEL:
+        case BUCHUNGEN_SUBTITEL:
         case BUCHUNGSJOURNAL_DATEINAME:
         case BUCHUNGSJOURNAL_TITEL:
         case BUCHUNGSJOURNAL_SUBTITEL:
@@ -206,6 +209,9 @@ public class VorlageUtil
         case CSVBUCHUNGEN_DATEINAME:
           map = new BuchungListeFilterMap().getMap((BuchungsControl) obj, map);
           break;
+        case ANLAGEN_BUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_TITEL:
+        case ANLAGEN_BUCHUNGEN_SUBTITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
         case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
@@ -465,6 +471,9 @@ public class VorlageUtil
         case SPENDENBESCHEINIGUNGEN_SUBTITEL:
           map = SpendenbescheinigungListeFilterMap.getDummyMap(map);
           break;
+        case BUCHUNGEN_DATEINAME:
+        case BUCHUNGEN_TITEL:
+        case BUCHUNGEN_SUBTITEL:
         case BUCHUNGSJOURNAL_DATEINAME:
         case BUCHUNGSJOURNAL_TITEL:
         case BUCHUNGSJOURNAL_SUBTITEL:
@@ -477,6 +486,9 @@ public class VorlageUtil
         case CSVBUCHUNGEN_DATEINAME:
           map = BuchungListeFilterMap.getDummyMap(map);
           break;
+        case ANLAGEN_BUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_TITEL:
+        case ANLAGEN_BUCHUNGEN_SUBTITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
         case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:

@@ -179,91 +179,161 @@ public class ImportDialog extends AbstractDialog<Object>
 
     settings.setAttribute("lastformat", imp.format.getName());
 
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN);
-    fd.setText(i18n.tr(
-        "Bitte wählen Sie die Datei aus, welche für den Import verwendet werden soll."));
-    fd.setFilterNames(getFilterNames(imp));
-    fd.setFilterExtensions(imp.format.getFileExtensions());
-
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-      fd.setFilterPath(path);
-
-    final String s = fd.open();
-
-    if (s == null || s.length() == 0)
+    if (imp.getFileExtensions() != null)
     {
+      // Import aus Datei
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN);
+      fd.setText(i18n.tr(
+          "Bitte wählen Sie die Datei aus, welche für den Import verwendet werden soll."));
+      fd.setFilterNames(getFilterNames(imp));
+      fd.setFilterExtensions(imp.format.getFileExtensions());
+
+      String path = settings.getString("lastdir",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+        fd.setFilterPath(path);
+
+      final String s = fd.open();
+
+      if (s == null || s.length() == 0)
+      {
+        close();
+        return;
+      }
+
+      final File file = new File(s);
+      if (!file.exists() || !file.isFile())
+        throw new ApplicationException(
+            "Datei existiert nicht oder ist nicht lesbar");
+
+      // Wir merken uns noch das Verzeichnis vom letzten mal
+      settings.setAttribute("lastdir", file.getParent());
+
+      if (encoding != null)
+      {
+        settings.setAttribute("encoding", encoding.getText());
+      }
+      final String enc = encoding != null ? encoding.getText() : null;
+      // Dialog schliessen
       close();
-      return;
+
+
+      final Importer importer = imp.importer;
+      final IOFormat format = imp.format;
+
+      BackgroundTask t = new BackgroundTask()
+      {
+
+        @Override
+        public void run(ProgressMonitor monitor) throws ApplicationException
+        {
+          try
+          {
+            monitor.setPercentComplete(0);
+            importer.doImport(context, format, file, enc, monitor);
+            monitor.setPercentComplete(100);
+            monitor.setStatus(ProgressMonitor.STATUS_DONE);
+            GUI.getCurrentView().reload();
+            GUI.getStatusBar()
+                .setSuccessText(String.format("Daten importiert aus %s", s));
+          }
+          catch (ApplicationException ae)
+          {
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+          catch (OperationCanceledException oce)
+          {
+            String text = "Import abgebrochen";
+            GUI.getStatusBar().setErrorText(text);
+            throw new OperationCanceledException(text);
+          }
+          catch (Exception e)
+          {
+            Logger.error("error while reading objects from " + s, e);
+            ApplicationException ae = new ApplicationException(
+                String.format("Fehler beim Importieren der Daten aus %s", s),
+                e);
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+        }
+
+        @Override
+        public void interrupt()
+        {
+          //
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+          return false;
+        }
+      };
+
+      Application.getController().start(t);
     }
-
-    final File file = new File(s);
-    if (!file.exists() || !file.isFile())
-      throw new ApplicationException(
-          "Datei existiert nicht oder ist nicht lesbar");
-
-    // Wir merken uns noch das Verzeichnis vom letzten mal
-    settings.setAttribute("lastdir", file.getParent());
-    if (encoding != null)
+    else
     {
-      settings.setAttribute("encoding", encoding.getText());
+      // Kein Datei Import!
+      close();
+
+      final Importer importer = imp.importer;
+      final IOFormat format = imp.format;
+
+      BackgroundTask t = new BackgroundTask()
+      {
+
+        @Override
+        public void run(ProgressMonitor monitor) throws ApplicationException
+        {
+          try
+          {
+            monitor.setPercentComplete(0);
+            importer.doImport(context, format, null, null, monitor);
+            monitor.setPercentComplete(100);
+            monitor.setStatus(ProgressMonitor.STATUS_DONE);
+            GUI.getCurrentView().reload();
+            GUI.getStatusBar()
+                .setSuccessText("Daten importiert");
+          }
+          catch (ApplicationException ae)
+          {
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+          catch (OperationCanceledException oce)
+          {
+            String text = "Import abgebrochen";
+            GUI.getStatusBar().setErrorText(text);
+            throw new OperationCanceledException(text);
+          }
+          catch (Exception e)
+          {
+            Logger.error("error while reading objects", e);
+            ApplicationException ae = new ApplicationException(
+                "Fehler beim Importieren der Daten", e);
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+        }
+
+        @Override
+        public void interrupt()
+        {
+          //
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+          return false;
+        }
+      };
+
+      Application.getController().start(t);
     }
-    final String enc = encoding != null ? encoding.getText() : null;
-    // Dialog schliessen
-    close();
-
-    final Importer importer = imp.importer;
-    final IOFormat format = imp.format;
-
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          monitor.setPercentComplete(0);
-          importer.doImport(context, format, file, enc, monitor);
-          monitor.setPercentComplete(100);
-          monitor.setStatus(ProgressMonitor.STATUS_DONE);
-          GUI.getStatusBar()
-              .setSuccessText(String.format("Daten importiert aus %s", s));
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-        catch (Exception e)
-        {
-          monitor.setStatus(ProgressMonitor.STATUS_ERROR);
-          Logger.error("error while reading objects from " + s, e);
-          ApplicationException ae = new ApplicationException(
-              String.format("Fehler beim Importieren der Daten aus %s", s), e);
-          monitor.setStatusText(ae.getMessage());
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-
-    Application.getController().start(t);
   }
 
   /**
@@ -343,6 +413,11 @@ public class ImportDialog extends AbstractDialog<Object>
     {
       this.importer = importer;
       this.format = format;
+    }
+
+    public String[] getFileExtensions()
+    {
+      return format.getFileExtensions();
     }
 
     /**

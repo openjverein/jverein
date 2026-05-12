@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -33,7 +32,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -44,7 +42,6 @@ import de.jost_net.JVerein.Messaging.SplitbuchungMessage;
 import de.jost_net.JVerein.Queries.BuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAutomatischAction;
-import de.jost_net.JVerein.gui.dialogs.BuchungsjournalSortDialog;
 import de.jost_net.JVerein.gui.dialogs.SammelueberweisungAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
@@ -61,12 +58,10 @@ import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
-import de.jost_net.JVerein.io.BuchungAuswertungCSV;
-import de.jost_net.JVerein.io.BuchungAuswertungPDF;
-import de.jost_net.JVerein.io.BuchungsjournalPDF;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -119,12 +114,10 @@ import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class BuchungsControl extends VorZurueckControl implements Savable
 {
@@ -1257,68 +1250,12 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return ungeprueft != null;
   }
 
-  public Button getStartAuswertungEinzelbuchungenButton()
-  {
-    Button b = new Button("PDF Einzelbuchungen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        starteAuswertung(true);
-      }
-    }, null, false, "file-pdf.png");
-    return b;
-  }
-
-  public Button getStartCSVAuswertungButton()
-  {
-    Button b = new Button("CSV", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        starteCSVExport();
-      }
-    }, null, false, "xsd.png");
-    return b;
-  }
-
-  public Button getStartAuswertungSummenButton()
-  {
-    Button b = new Button("PDF Summen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        starteAuswertung(false);
-      }
-    }, null, false, "file-pdf.png");
-    return b;
-  }
-
   public Button getStarteBuchungSollbuchungZuordnungAutomatischButton()
   {
     Button b = new Button("Zuordnung",
         new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(),
             getBisdatum()),
         null, false, "user-friends.png");
-    return b;
-  }
-
-  public Button getStartAuswertungBuchungsjournalButton()
-  {
-    Button b = new Button("PDF Buchungsjournal", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        starteAuswertungBuchungsjournal();
-      }
-    }, null, false, "file-pdf.png");
     return b;
   }
 
@@ -1903,314 +1840,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     splitbuchungsList.sort();
   }
 
-  private void starteAuswertung(boolean einzelbuchungen)
-  {
-
-    try
-    {
-      ArrayList<Buchungsart> buchungsarten = new ArrayList<>();
-      if (!(query.getBuchungsart() != null
-          && query.getBuchungsart().getID() == null))
-      {
-        DBIterator<Buchungsart> list = Einstellungen.getDBService()
-            .createList(Buchungsart.class);
-        if (query.getBuchungsart() != null
-            && query.getBuchungsart().getID() != null)
-        {
-          list.addFilter("id = ?",
-              new Object[] { query.getBuchungsart().getID() });
-        }
-
-        list.setOrder("ORDER BY nummer");
-
-        while (list.hasNext())
-        {
-          buchungsarten.add(list.next());
-        }
-      }
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      String title = "";
-      String subtitle = "";
-      if (geldkonto && einzelbuchungen)
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_DATEINAME, this)
-                + ".pdf");
-        title = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, this);
-        subtitle = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL,
-            this);
-      }
-      else if (geldkonto && !einzelbuchungen)
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_DATEINAME, this)
-                + ".pdf");
-        title = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_TITEL, this);
-        subtitle = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_SUBTITEL,
-            this);
-      }
-      else if (!geldkonto && einzelbuchungen)
-      {
-        fd.setFileName(VorlageUtil.getName(
-            VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_DATEINAME, this) + ".pdf");
-        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_TITEL,
-            this);
-        subtitle = VorlageUtil
-            .getName(VorlageTyp.ANLAGEN_EINZELBUCHUNGEN_SUBTITEL, this);
-      }
-      else if (!geldkonto && !einzelbuchungen)
-      {
-        fd.setFileName(VorlageUtil.getName(
-            VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_DATEINAME, this) + ".pdf");
-        title = VorlageUtil.getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_TITEL,
-            this);
-        subtitle = VorlageUtil
-            .getName(VorlageTyp.ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL, this);
-      }
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      auswertungBuchungPDF(buchungsarten, file, einzelbuchungen, title,
-          subtitle);
-    }
-    catch (RemoteException e)
-    {
-      e.printStackTrace();
-    }
-  }
-
-  private void starteCSVExport()
-  {
-
-    try
-    {
-      final List<Buchung> buchungen = query.get();
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      if (geldkonto)
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.CSVBUCHUNGEN_DATEINAME, this)
-                + ".csv");
-      }
-      else
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.ANLAGEN_CSVBUCHUNGEN_DATEINAME, this)
-                + ".csv");
-      }
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            new BuchungAuswertungCSV(buchungen, file, monitor);
-            GUI.getCurrentView().reload();
-          }
-          catch (Exception ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw new ApplicationException(ae);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
-
-  private void starteAuswertungBuchungsjournal()
-  {
-
-    try
-    {
-
-      BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
-          BuchungsjournalSortDialog.POSITION_CENTER);
-
-      // 20220823: sbuer: Statische Variablen fuer neue Sortiermöglichkeiten
-      String sort = djs.open();
-      if (djs.getClosed())
-        return;
-      query.setOrdername(sort);
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      if (geldkonto)
-      {
-        fd.setFileName(
-            VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_DATEINAME, this)
-                + ".pdf");
-      }
-      else
-      {
-        fd.setFileName(VorlageUtil.getName(
-            VorlageTyp.ANLAGEN_BUCHUNGSJOURNAL_DATEINAME, this) + ".pdf");
-      }
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_TITEL,
-          this);
-      final String subtitle = VorlageUtil
-          .getName(VorlageTyp.BUCHUNGSJOURNAL_SUBTITEL, this);
-
-      auswertungBuchungsjournalPDF(query, file, params, title, subtitle);
-    }
-    catch (Exception e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
-
-  private void auswertungBuchungPDF(final ArrayList<Buchungsart> buchungsarten,
-      final File file, final boolean einzelbuchungen, String title,
-      String subtitle)
-  {
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          GUI.getStatusBar().setSuccessText("Auswertung gestartet");
-          new BuchungAuswertungPDF(buchungsarten, file, query, einzelbuchungen,
-              params, title, subtitle);
-        }
-        catch (ApplicationException ae)
-        {
-          Logger.error("Fehler", ae);
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-  }
-
   public Settings getSettings()
   {
     return settings;
-  }
-
-  private void auswertungBuchungsjournalPDF(final BuchungQuery query,
-      final File file, final TreeMap<String, String> params, String title,
-      String subtitle)
-  {
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          new BuchungsjournalPDF(query, file, params, title, subtitle);
-          GUI.getCurrentView().reload();
-        }
-        catch (ApplicationException ae)
-        {
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
   }
 
   public class FilterListener implements Listener
@@ -2735,6 +2367,16 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
+  public BuchungQuery getQuery()
+  {
+    return query;
+  }
+
+  public TreeMap<String, String> getParams()
+  {
+    return params;
+  }
+
   /**
    * Wird benachrichtigt um die Anzeige zu aktualisieren.
    */
@@ -2791,5 +2433,36 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   {
     Application.getMessagingFactory()
         .unRegisterMessageConsumer(splitbuchungConsumer);
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (buchungsList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    if (geldkonto)
+    {
+      return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+        buchungsList.export(
+            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this),
+            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this),
+            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this),
+            "buchungen", art);
+        GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+      }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    }
+    else
+    {
+      return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+        buchungsList.export(
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this),
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL, this),
+            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this),
+            "anlagenbuchungen", art);
+        GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+      }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    }
   }
 }

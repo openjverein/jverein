@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,37 +10,37 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.dialogs.BuchungsuebernahmeDialog;
-import de.jost_net.JVerein.io.Buchungsuebernahme;
+import de.jost_net.JVerein.gui.dialogs.ExportDialog;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsuebernahmeAction implements Action
+public class BuchungExportAction implements Action
 {
+
+  /**
+   * @see de.willuhn.jameica.gui.Action#handleAction(java.lang.Object)
+   */
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
-
     try
     {
-      BuchungsuebernahmeDialog d = new BuchungsuebernahmeDialog(
-          BuchungsuebernahmeDialog.POSITION_CENTER);
-      if (d.open())
-      {
-        new Buchungsuebernahme(true);
-        GUI.getCurrentView().reload();
-      }
+      ExportDialog d = new ExportDialog(new Object[] { context },
+          BuchungListeView.class, DokumentationUtil.BUCHUNGEN,
+          context);
+      d.open();
     }
     catch (OperationCanceledException oce)
     {
+      Logger.info(oce.getMessage());
       return;
     }
     catch (ApplicationException ae)
@@ -50,10 +49,9 @@ public class BuchungsuebernahmeAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("Error while importing from Hibiscus", e);
+      Logger.error("Fehler", e);
       GUI.getStatusBar()
-          .setErrorText("Fehler beim Importieren von Hibiscus Buchungen");
+          .setErrorText("Fehler beim exportieren der Buchungen");
     }
   }
-
 }

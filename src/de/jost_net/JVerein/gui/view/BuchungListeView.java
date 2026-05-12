@@ -22,14 +22,15 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.BuchungExportAction;
 import de.jost_net.JVerein.gui.action.BuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
-import de.jost_net.JVerein.gui.action.BuchungsuebernahmeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -143,16 +144,14 @@ public class BuchungListeView extends AbstractView
     buttons.addButton("Buchungskorrektur",
         new StartViewAction(BuchungsTextKorrekturView.class), null, false,
         "emblem-documents.png");
-    buttons.addButton("Hibiscus-Import", new BuchungsuebernahmeAction(), null,
-        false, "file-import.png");
-    buttons.addButton("Import", new BuchungImportAction(), null, false,
-        "file-import.png");
-    buttons.addButton(control.getStartCSVAuswertungButton());
-    buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
-    buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
-    buttons.addButton(control.getStartAuswertungSummenButton());
     buttons.addButton(
         control.getStarteBuchungSollbuchungZuordnungAutomatischButton());
+    buttons.addButton("Import", new BuchungImportAction(), null, false,
+        "file-import.png");
+    buttons.addButton(new Button("Export", new BuchungExportAction(), control,
+        false, "document-save.png"));
+    buttons.addButton(control.exportButton(ExportArt.CSV));
+    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

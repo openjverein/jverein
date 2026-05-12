@@ -41,13 +41,15 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 /**
  * Ein Dialog, ueber den man ein Konto auswaehlen kann.
  */
-public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
+public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Boolean>
 {
   private ArrayList<Buchung> buchungen;
 
   private Buchung fehlerbuchung;
 
   private Exception exception;
+
+  Boolean start = false;
 
   public BuchungUebernahmeProtokollDialog(ArrayList<Buchung> buchungen,
       Buchung fehlerbuchung, Exception exeption)
@@ -115,6 +117,7 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
       @Override
       public void handleAction(Object context)
       {
+        start = true;
         close();
       }
     }, null, true, "ok.png");
@@ -122,9 +125,9 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
   }
 
   @Override
-  protected Buchung getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return null;
+    return start;
   }
 
 }
