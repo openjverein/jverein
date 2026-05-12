@@ -399,4 +399,33 @@ public class FormularControl extends FormularPartControl implements Savable
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
     }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
+
+  public ButtonRtoL exportButtonRtoL(ExportArt art) throws ApplicationException
+  {
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          if (formularfelderList == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+          String bezeichnung = "";
+          try
+          {
+            bezeichnung = getBezeichnung(false).getValue().toString();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Kann Bezeichnung nicht lesen", e);
+          }
+          formularfelderList.export(
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_TITEL, bezeichnung),
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_SUBTITEL,
+                  bezeichnung),
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
+                  bezeichnung),
+              "formularfelder", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
 }

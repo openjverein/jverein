@@ -44,6 +44,7 @@ import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzUeberpruefungList;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.io.FileViewer;
@@ -702,4 +703,20 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     return arbeitseinsaetze;
   }
 
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (arbeitseinsatzList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      arbeitseinsatzList.export(
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
+          "arbeitseinsaetze", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
 }
