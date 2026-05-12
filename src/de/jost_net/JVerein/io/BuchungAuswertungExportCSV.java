@@ -85,7 +85,7 @@ public class BuchungAuswertungExportCSV implements Exporter
       @Override
       public String[] getFileExtensions()
       {
-        return new String[] { "*.pdf" };
+        return new String[] { "*.csv" };
       }
     };
     return new IOFormat[] { f };
