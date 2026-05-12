@@ -238,7 +238,6 @@ public class ExportDialog extends AbstractDialog<Object>
         }
         catch (OperationCanceledException oce)
         {
-          GUI.getStatusBar().setErrorText(oce.getMessage());
           throw oce;
         }
         catch (Exception e)
