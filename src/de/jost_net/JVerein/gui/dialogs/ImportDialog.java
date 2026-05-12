@@ -244,9 +244,7 @@ public class ImportDialog extends AbstractDialog<Object>
           }
           catch (OperationCanceledException oce)
           {
-            String text = "Import abgebrochen";
-            GUI.getStatusBar().setErrorText(text);
-            throw new OperationCanceledException(text);
+            throw new OperationCanceledException();
           }
           catch (Exception e)
           {
