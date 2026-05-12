@@ -102,15 +102,12 @@ public class Buchungsuebernahme
       {
         BuchungUebernahmeProtokollDialog bup = new BuchungUebernahmeProtokollDialog(
             buchungen, fehlerbuchung, exception);
-        if (!bup.open())
-        {
-          throw new OperationCanceledException();
-        }
+        bup.open();
       }
     }
     catch (OperationCanceledException oce)
     {
-      throw oce;
+      // Keine Ausgabe einer Fehlermeldung
     }
     catch (Exception e)
     {
