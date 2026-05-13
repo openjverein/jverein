@@ -17,8 +17,10 @@
 package de.jost_net.JVerein.gui.dialogs;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -39,22 +41,24 @@ import de.willuhn.util.ApplicationException;
 
 public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
 {
-  private JVereinTablePart[] tableParts;
+  /**
+   * Map mit dem TablePart aus der View als Key, und dem TablePart im Dialog als
+   * Value.
+   */
+  private Map<JVereinTablePart, JVereinTablePart> tableMap = new LinkedHashMap<>();
 
   public TabelleSpaltenAuswahlDialog(JVereinTablePart... tableParts)
       throws RemoteException, ApplicationException
   {
     super(TabelleSpaltenAuswahlDialog.POSITION_CENTER);
 
-    this.tableParts = tableParts;
-
     boolean leer = true;
     for (JVereinTablePart table : tableParts)
     {
+      tableMap.put(table, null);
       if (table.getItems().size() > 0)
       {
         leer = false;
-        break;
       }
     }
     if (leer)
@@ -70,39 +74,35 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   protected void paint(Composite parent) throws Exception
   {
     TabFolder folder = null;
-    List<JVereinTablePart> parts = new ArrayList<>();
-    for (JVereinTablePart table : tableParts)
+    for (JVereinTablePart table : tableMap.keySet())
     {
       if (table.getItems().size() == 0)
       {
-        // Demit die Nummerierung stimmt, hier auch ohne Part hinzufügen
-        parts.add(null);
         continue;
       }
       JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null);
       part.addColumn("Name", "name");
       part.setCheckable(true);
 
-      if (tableParts.length > 1)
+      String name = "Tabelle";
+      Object o = table.getItems().get(0);
+      if (o instanceof JVereinDBObject)
+      {
+        name = ((JVereinDBObject) o).getObjektNameMehrzahl();
+      }
+      if (tableMap.size() > 1)
       {
         if (folder == null)
         {
           folder = new TabFolder(parent, SWT.BORDER);
           folder.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
-
-        String name = "Tabelle";
-        Object o = table.getItems().get(0);
-        if (o instanceof JVereinDBObject)
-        {
-          name = ((JVereinDBObject) o).getObjektNameMehrzahl();
-        }
         TabGroup tab = new TabGroup(folder, name, true, 1);
         tab.addPart(part);
       }
       else
       {
-        LabelGroup group = new LabelGroup(parent, "Tabelle");
+        LabelGroup group = new LabelGroup(parent, name);
         group.addPart(part);
       }
 
@@ -111,20 +111,21 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       {
         part.setChecked(col, auswahl.contains(col));
       }
-      parts.add(part);
+      tableMap.put(table, part);
     }
 
     ButtonArea b = new ButtonArea();
     b.addButton("Speichern", c -> {
       try
       {
-        for (int i = 0; i < tableParts.length; i++)
+        for (Entry<JVereinTablePart, JVereinTablePart> entry : tableMap
+            .entrySet())
         {
-          if (parts.get(i) == null)
+          if (entry.getValue() == null)
           {
             continue;
           }
-          tableParts[i].saveSpalten(parts.get(i).getItems());
+          entry.getKey().saveSpalten(entry.getValue().getItems());
         }
         GUI.getCurrentView().reload();
       }
