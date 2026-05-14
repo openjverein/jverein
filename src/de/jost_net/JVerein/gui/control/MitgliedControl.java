@@ -72,6 +72,7 @@ import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
@@ -81,6 +82,7 @@ import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
@@ -164,7 +166,7 @@ import de.willuhn.util.ProgressMonitor;
 public class MitgliedControl extends FilterControl implements Savable
 {
 
-  private JVereinTablePart part;
+  private JVereinTablePart mitgliedList;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -324,6 +326,10 @@ public class MitgliedControl extends FilterControl implements Savable
     if (view instanceof AbstractMitgliedDetailView)
     {
       isMitglied = ((AbstractMitgliedDetailView) view).isMitgliedDetail();
+    }
+    if (view instanceof MitgliedListeView)
+    {
+      isMitglied = true;
     }
   }
 
@@ -2146,21 +2152,21 @@ public class MitgliedControl extends FilterControl implements Savable
   public JVereinTablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
-    part = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
-    new MitgliedSpaltenauswahl().setColumns(part, atyp);
-    part.setContextMenu(new MitgliedMenu(detailaction, part));
-    part.setMulti(true);
-    part.setRememberState(true);
+    mitgliedList = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
+    new MitgliedSpaltenauswahl().setColumns(mitgliedList, atyp);
+    mitgliedList.setContextMenu(new MitgliedMenu(detailaction, mitgliedList));
+    mitgliedList.setMulti(true);
+    mitgliedList.setRememberState(true);
     if (detailaction instanceof MitgliedDetailAction)
     {
-      part.setAction(new EditAction(MitgliedDetailView.class, part));
+      mitgliedList.setAction(new EditAction(MitgliedDetailView.class, mitgliedList));
     }
     else if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      part.setAction(new EditAction(NichtMitgliedDetailView.class, part));
+      mitgliedList.setAction(new EditAction(NichtMitgliedDetailView.class, mitgliedList));
     }
     VorZurueckControl.setObjektListe(null, null);
-    return part;
+    return mitgliedList;
   }
 
   public JVereinTablePart refreshMitgliedTable(int atyp) throws RemoteException
@@ -2169,17 +2175,17 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       Logger.debug(String.format("Zeit zwischen den Refreshs: %s",
           (System.currentTimeMillis() - lastrefresh)));
-      return part;
+      return mitgliedList;
     }
     lastrefresh = System.currentTimeMillis();
-    part.removeAll();
+    mitgliedList.removeAll();
     ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
     for (Mitglied m : mitglieder)
     {
-      part.addItem(m);
+      mitgliedList.addItem(m);
     }
-    part.sort();
-    return part;
+    mitgliedList.sort();
+    return mitgliedList;
   }
 
   public TreePart getEigenschaftenTree() throws RemoteException
@@ -3047,7 +3053,7 @@ public class MitgliedControl extends FilterControl implements Savable
   @Override
   public void TabRefresh()
   {
-    if (part != null)
+    if (mitgliedList != null)
     {
       try
       {
@@ -3189,5 +3195,33 @@ public class MitgliedControl extends FilterControl implements Savable
   public void deregisterAlternativerZahlerConsumer()
   {
     Application.getMessagingFactory().unRegisterMessageConsumer(azc);
+  }
+
+  public Button exportButton(ExportArt art) throws ApplicationException
+  {
+    if (mitgliedList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      if (isMitglied)
+      {
+        mitgliedList.export(
+            VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this),
+            VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this),
+            VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this),
+            "mitglieder", art);
+      }
+      else
+      {
+        mitgliedList.export(
+            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this),
+            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this),
+            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME, this),
+            "nichtmitglieder", art);
+      }
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }
 }

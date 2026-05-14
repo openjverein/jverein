@@ -16,15 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.util;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.List;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.formatter.Formatter;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.Settings;
 
 public abstract class Spaltenauswahl
@@ -33,8 +29,6 @@ public abstract class Spaltenauswahl
   private Settings settings;
 
   private String tabelle;
-
-  private JVereinTablePart spaltendefinitionList;
 
   private ArrayList<Spalte> spalten;
 
@@ -62,19 +56,16 @@ public abstract class Spaltenauswahl
         formatter, align, auchNichtMitglied));
   }
 
-  public void setColumns(TablePart part, int mitgliedstyp)
+  public void setColumns(JVereinTablePart part, int mitgliedstyp)
   {
     for (Spalte spalte : spalten)
     {
-      if (spalte.isChecked())
+      if (mitgliedstyp == Integer.valueOf(Mitgliedstyp.MITGLIED)
+          || spalte.isAuchNichtMitglied())
       {
-        if (mitgliedstyp == Integer.valueOf(Mitgliedstyp.MITGLIED)
-            || spalte.isAuchNichtMitglied())
-        {
-          part.addColumn(spalte.getSpaltenbezeichnung(),
-              spalte.getSpaltenname(), spalte.getFormatter(), false,
-              spalte.getAlign());
-        }
+        part.addColumn(spalte.getSpaltenbezeichnung(), spalte.getSpaltenname(),
+            spalte.getFormatter(), false, spalte.getAlign(),
+            spalte.isChecked());
       }
     }
   }
@@ -84,46 +75,4 @@ public abstract class Spaltenauswahl
     return spalten;
   }
 
-  public JVereinTablePart paintSpaltenpaintSpaltendefinitionTable()
-      throws RemoteException
-  {
-    if (spaltendefinitionList != null)
-    {
-      return spaltendefinitionList;
-    }
-    spaltendefinitionList = new JVereinTablePart(new ArrayList<Spalte>(), null);
-    spaltendefinitionList.addColumn("Spalte", "spaltenbezeichnung");
-    spaltendefinitionList.setCheckable(true);
-    spaltendefinitionList.setMulti(true);
-    spaltendefinitionList.removeFeature(FeatureSummary.class);
-    for (Spalte sp : spalten)
-    {
-      spaltendefinitionList.addItem(sp, sp.isChecked());
-    }
-
-    return spaltendefinitionList;
-  }
-
-  public void setCheckSpalten()
-  {
-    for (Spalte spalte : spalten)
-    {
-      spaltendefinitionList.setChecked(spalte, spalte.isChecked());
-    }
-  }
-
-  @SuppressWarnings("unchecked")
-  public void save() throws RemoteException
-  {
-    for (Spalte spalte : spalten)
-    {
-      settings.setAttribute(tabelle + "." + spalte.getSpaltenname(), false);
-    }
-    List<Spalte> trues = spaltendefinitionList.getItems();
-    for (int i = 0; i < trues.size(); i++)
-    {
-      Spalte spalte = trues.get(i);
-      settings.setAttribute(tabelle + "." + spalte.getSpaltenname(), true);
-    }
-  }
 }

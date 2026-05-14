@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -106,6 +107,8 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     {
       buttons.addButton("Import", new MitgliederImportAction(), null, false,
           "file-import.png");
+      buttons.addButton(control.exportButton(ExportArt.CSV));
+      buttons.addButton(control.exportButton(ExportArt.PDF));
       buttons.addButton("Neu", getDetailAction(), null, false,
           "document-new.png");
     }

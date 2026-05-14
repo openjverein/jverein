@@ -48,7 +48,9 @@ import de.jost_net.JVerein.io.Reporter;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.TableChangeListener;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -158,6 +160,41 @@ public class JVereinTablePart extends TablePart
     else
     {
       super.orderBy(index);
+    }
+  }
+
+  /**
+   * Fuegt der Tabelle eine neue Spalte hinzu und dazu noch einen Formatierer.
+   * 
+   * @param title
+   *          Name der Spaltenueberschrift.
+   * @param field
+   *          Name des Feldes aus dem dbObject, der angezeigt werden soll.
+   * @param f
+   *          Formatter, der fuer die Anzeige des Wertes verwendet werden soll.
+   * @param changeable
+   *          legt fest, ob die Werte in dieser Spalte direkt editierbar sein
+   *          sollen. Wenn der Parameter {@code true} ist, dann sollte der
+   *          Tabelle via
+   *          {@link TablePart#addChangeListener(TableChangeListener)} ein
+   *          Listener hinzugefuegt werden, der benachrichtigt wird, wenn der
+   *          Benutzer einen Wert geaendert hat. Es ist anschliessend Aufgabe
+   *          des Listeners, den geaenderten Wert im Fachobjekt zu uebernehmen.
+   * @param align
+   *          die Ausrichtung
+   * @param defaultvisible
+   *          visible by default
+   * @see Column#ALIGN_AUTO
+   * @see Column#ALIGN_CENTER
+   * @see Column#ALIGN_LEFT
+   * @see Column#ALIGN_RIGHT
+   */
+  public void addColumn(String title, String field, Formatter f,
+      boolean changeable, int align, boolean defaultvisible)
+  {
+    if (defaultvisible)
+    {
+      super.addColumn(new Column(field, title, f, changeable, align));
     }
   }
 
