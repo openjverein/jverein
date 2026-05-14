@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -471,6 +472,24 @@ public class JahresabschlussControl extends KontensaldoControl
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
           "jahresabschluesse", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+  }
+
+  public ButtonRtoL exportButtonRtoL(ExportArt art) throws ApplicationException
+  {
+    if (saldoList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+        context -> {
+          saldoList.export(
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
+          "jahresabschluss", art);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
     }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
   }

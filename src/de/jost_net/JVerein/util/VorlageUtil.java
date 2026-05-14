@@ -33,6 +33,7 @@ import de.jost_net.JVerein.Variable.AuswertungMitgliederstatistikFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
+import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.ProjektListeFilterMap;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.ProjektControl;
@@ -227,6 +229,12 @@ public class VorlageUtil
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = new AnlagenbuchungListeFilterMap().getMap((BuchungsControl) obj,
               map);
+          break;
+        case JAHRESABSCHLUSS_DATEINAME:
+        case JAHRESABSCHLUSS_TITEL:
+        case JAHRESABSCHLUSS_SUBTITEL:
+          map = new JahresabschlussListeFilterMap()
+              .getMap((JahresabschlussControl) obj, map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
@@ -510,6 +518,11 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = AnlagenbuchungListeFilterMap.getDummyMap(map);
+          break;
+        case JAHRESABSCHLUSS_DATEINAME:
+        case JAHRESABSCHLUSS_TITEL:
+        case JAHRESABSCHLUSS_SUBTITEL:
+          map = JahresabschlussListeFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
