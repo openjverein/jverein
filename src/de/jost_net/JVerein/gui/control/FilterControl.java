@@ -48,12 +48,12 @@ import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.EigenschaftenNode;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.GenericObjectNode;
@@ -1581,14 +1581,10 @@ public abstract class FilterControl extends VorZurueckControl
   public class FilterListener implements Listener
   {
 
-    FilterListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      if (event.type != SWT.Selection)
       {
         return;
       }

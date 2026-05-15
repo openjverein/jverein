@@ -1703,7 +1703,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     @Override
     public void handleEvent(Event event)
     {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      if (event.type != SWT.Selection)
       {
         return;
       }
