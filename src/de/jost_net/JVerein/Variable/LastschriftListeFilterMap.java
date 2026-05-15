@@ -55,7 +55,15 @@ public class LastschriftListeFilterMap extends AbstractMap
           value = control.getSuchtext().getValue().toString();
           break;
         case ABRECHNUNGSLAUF_AB:
-          value = control.getIntegerAusw().getValue().toString();
+          Object o = control.getIntegerAusw().getValue();
+          if (o != null)
+          {
+            value = o.toString();
+          }
+          else
+          {
+            value = "";
+          }
           break;
         case DATUM_FAELLIGKEI_VON_F:
           value = fromDate((Date) control.getDatumvon().getValue());
