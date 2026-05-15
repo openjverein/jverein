@@ -72,11 +72,12 @@ public class ArbeitseinsatzListeView extends AbstractView
     buttons.addButton("Auswertung",
         new StartViewAction(ArbeitseinsatzUeberpruefungView.class), control,
         false, "screwdriver.png");
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class),
         control, false, "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

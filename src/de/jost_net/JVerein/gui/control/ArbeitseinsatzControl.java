@@ -72,6 +72,7 @@ import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -703,20 +704,21 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     return arbeitseinsaetze;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (arbeitseinsatzList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
       arbeitseinsatzList.export(
           VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
           VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
           VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
           "arbeitseinsaetze", art);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

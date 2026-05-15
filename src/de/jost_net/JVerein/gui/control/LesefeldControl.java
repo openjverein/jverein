@@ -48,7 +48,7 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -567,19 +567,20 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (lesefeldList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      lesefeldList.export(VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL),
-          VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME),
-          "lesefelder", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lesefeldList.export(VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL),
+              VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME),
+              "lesefelder", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

@@ -28,7 +28,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -55,7 +54,7 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -459,31 +458,34 @@ public class JahresabschlussControl extends KontensaldoControl
     return text;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (jahresabschlussList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
+        context -> {
       jahresabschlussList.export(
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
           "jahresabschluesse", art);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public ButtonRtoL exportButtonRtoL(ExportArt art) throws ApplicationException
+  public PanelButton exportButton2(ExportArt art) throws ApplicationException
   {
     if (saldoList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
         context -> {
           saldoList.export(
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
@@ -491,6 +493,6 @@ public class JahresabschlussControl extends KontensaldoControl
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
           "jahresabschluss", art);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

@@ -63,8 +63,6 @@ public class FormularDetailView extends AbstractDetailView
     ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
     buttons1.addButton(control.getExportButton());
     buttons1.addButton(control.getImportButton());
-    buttons1.addButton(control.exportButtonRtoL(ExportArt.CSV));
-    buttons1.addButton(control.exportButtonRtoL(ExportArt.PDF));
     buttons1.addButton(control.getNeuButton());
 
     // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
@@ -89,6 +87,9 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.CSV));
   }
 
   @Override

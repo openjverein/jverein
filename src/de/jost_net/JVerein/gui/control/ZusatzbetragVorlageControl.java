@@ -58,8 +58,8 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.hbci.HBCIProperties;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -473,20 +473,21 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     return mitgliedZahltSelbst;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (zusatzbetragVorlageList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      zusatzbetragVorlageList.export(
-          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_TITEL),
-          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_DATEINAME),
-          "zusatzbetraegevorlagen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          zusatzbetragVorlageList.export(
+              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_TITEL),
+              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_DATEINAME),
+              "zusatzbetraegevorlagen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

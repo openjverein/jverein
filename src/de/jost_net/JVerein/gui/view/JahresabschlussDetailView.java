@@ -92,8 +92,6 @@ public class JahresabschlussDetailView extends AbstractView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
-    buttons.addButton(control.exportButtonRtoL(ExportArt.CSV));
-    buttons.addButton(control.exportButtonRtoL(ExportArt.PDF));
     ButtonRtoL save = new ButtonRtoL("Speichern", new Action()
     {
       @Override
@@ -105,5 +103,8 @@ public class JahresabschlussDetailView extends AbstractView
     save.setEnabled(control.isSaveEnabled());
     buttons.addButton(save);
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.CSV));
   }
 }

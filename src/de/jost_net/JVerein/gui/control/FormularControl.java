@@ -54,8 +54,8 @@ import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -384,25 +384,27 @@ public class FormularControl extends FormularPartControl implements Savable
     formularList.sort();
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (formularList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
-          VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
-          art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
+              VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public ButtonRtoL exportButtonRtoL(ExportArt art) throws ApplicationException
+  public PanelButton exportButton2(ExportArt art) throws ApplicationException
   {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
         context -> {
           if (formularfelderList == null)
           {
@@ -426,6 +428,6 @@ public class FormularControl extends FormularPartControl implements Savable
                   bezeichnung),
               "formularfelder", art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }
