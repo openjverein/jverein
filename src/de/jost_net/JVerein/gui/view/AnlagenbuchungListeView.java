@@ -138,10 +138,11 @@ public class AnlagenbuchungListeView extends AbstractView
     buttons.addButton(new Button("Export", new AnlagenbuchungExportAction(),
         control,
         false, "document-save.png"));
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

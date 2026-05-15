@@ -109,6 +109,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -2435,7 +2436,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         .unRegisterMessageConsumer(splitbuchungConsumer);
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (buchungsList == null)
     {
@@ -2444,25 +2445,28 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     if (geldkonto)
     {
-      return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      return new PanelButton(
+          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
         buchungsList.export(
             VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this),
             VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this),
             VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this),
             "buchungen", art);
         GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-      }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+          }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
     }
     else
     {
-      return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+      return new PanelButton(
+          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
+          context -> {
         buchungsList.export(
             VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this),
             VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL, this),
             VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this),
             "anlagenbuchungen", art);
         GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-      }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+      }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
     }
   }
 }
