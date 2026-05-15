@@ -96,11 +96,8 @@ public class MitgliedListeFilterMap extends AbstractMap
             if ((Boolean) Einstellungen
                 .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
             {
-              Object o = control.getSuchExterneMitgliedsnummer().getValue();
-              if (o != null)
-              {
-                value = o.toString();
-              }
+              value = control.getSuchExterneMitgliedsnummer().getValue()
+                  .toString();
             }
           }
           catch (RemoteException e)
@@ -127,6 +124,10 @@ public class MitgliedListeFilterMap extends AbstractMap
               if (o != null)
               {
                 value = o.toString();
+              }
+              else
+              {
+                value = "";
               }
             }
           }
