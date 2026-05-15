@@ -1731,11 +1731,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         buchungsList.addItem(bu);
       }
-
       // Summenzeile neu laden
       buchungsList.featureEvent(
           de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
       buchungsList.sort();
+      informKontoChangeListener();
     }
     catch (RemoteException e)
     {
