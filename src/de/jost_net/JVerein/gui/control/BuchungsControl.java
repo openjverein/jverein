@@ -223,6 +223,31 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private SollbuchungAuswahlDialog sollbuchungDialog = null;
 
+  // Query Parameter
+  private Date filter_dv;
+
+  private Date filter_db;
+
+  private Konto filter_konto;
+
+  private Boolean filter_mvalue;
+
+  private Buchungsart filter_buchungsart;
+
+  private Projekt filter_projekt;
+
+  private Boolean filter_ungeprueft;
+
+  private String filter_suchtext;
+
+  private String filter_suchbetrag;
+
+  private String filter_mitglied;
+
+  private Steuer filter_steuer;
+
+  private SplitFilter filter_split;
+
   public enum Kontenfilter
   {
     GELDKONTO, // Beinhaltet Rückstellungen
@@ -1423,303 +1448,130 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public BuchungListTablePart getBuchungsList() throws RemoteException
   {
-    params = new TreeMap<>();
-
-    // Werte speichern und Parameter füllen
-    Date dv = null;
-    if (isVondatumAktiv())
+    if (buchungsList != null)
     {
-      dv = (Date) getVondatum().getValue();
-    }
-    if (dv == null)
-    {
-      throw new RemoteException("Bitte Von Datum eingeben!");
-    }
-    settings.setAttribute(settingsprefix + "vondatum",
-        new JVDateFormatTTMMJJJJ().format(dv));
-
-    Date db = null;
-    if (isBisdatumAktiv())
-    {
-      db = (Date) getBisdatum().getValue();
-    }
-    if (db == null)
-    {
-      throw new RemoteException("Bitte Bis Datum eingeben!");
-    }
-    settings.setAttribute(settingsprefix + "bisdatum",
-        new JVDateFormatTTMMJJJJ().format(db));
-
-    Konto k = null;
-    if (isSuchKontoAktiv())
-    {
-      if (getSuchKonto().getValue() != null)
-      {
-        k = (Konto) getSuchKonto().getValue();
-        settings.setAttribute(settingsprefix + "suchkontoid", k.getID());
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "suchkontoid", "");
-      }
-    }
-    Boolean mvalue = null;
-    if (isSuchMitgliedZugeordnetAktiv()
-        && getSuchMitgliedZugeordnet().getValue() != null)
-    {
-      MitgliedZustand m = (MitgliedZustand) getSuchMitgliedZugeordnet()
-          .getValue();
-      mvalue = m.getValue();
-      settings.setAttribute(settingsprefix + MITGLIEDZUGEORDNET, m.getText());
-      if (!m.getText().equalsIgnoreCase("Beide"))
-      {
-        params.put("Mitglied zugeordnet? ", m.getText());
-      }
-    }
-    Buchungsart b = null;
-    if (isSuchBuchungsartAktiv())
-    {
-      b = (Buchungsart) getSuchBuchungsart().getValue();
-    }
-    if (b != null)
-    {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
-          b.getNummer());
-      params.put("Buchungsart ", b.getBezeichnung());
-    }
-    else
-    {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
-          "-99");
-    }
-    Projekt p = null;
-    if (isSuchProjektAktiv())
-    {
-      if (getSuchProjekt().getValue() != null)
-      {
-        p = (Projekt) getSuchProjekt().getValue();
-        if (p.isNewObject())
-        {
-          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
-        }
-        else
-        {
-          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
-              p.getID());
-        }
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
-      }
-    }
-    Boolean ungeprueft = null;
-    if (isUngeprueftAktiv())
-    {
-      ungeprueft = (Boolean) getUngeprueft().getValue();
-      settings.setAttribute(settingsprefix + "ungeprueft", ungeprueft);
-      if (ungeprueft)
-      {
-        params.put("Nur ungeprüfte ", ungeprueft.toString());
-      }
-    }
-    String suchtext = null;
-    if (isSuchtextAktiv())
-    {
-      suchtext = (String) getSuchtext().getValue();
-      settings.setAttribute(settingsprefix + "suchtext", suchtext);
-      if (suchtext != null && !suchtext.isEmpty())
-      {
-        params.put("Enthaltener Text ", suchtext);
-      }
-    }
-    String suchbetrag = null;
-    if (isSuchBetragAktiv())
-    {
-      suchbetrag = (String) getSuchBetrag().getValue();
-      settings.setAttribute(settingsprefix + "suchbetrag", suchbetrag);
-      if (suchbetrag != null && !suchbetrag.isEmpty())
-      {
-        params.put("Betrag ", suchbetrag);
-      }
-    }
-    String mitglied = null;
-    if (isMitgliedAktiv())
-    {
-      mitglied = (String) getMitglied().getValue();
-      settings.setAttribute(settingsprefix + "mitglied", mitglied);
-      if (mitglied != null && !mitglied.isEmpty())
-      {
-        params.put("Mitglied Name ", mitglied);
-      }
-    }
-    SplitFilter split = null;
-    if (isSuchSplibuchungAktiv())
-    {
-      split = (SplitFilter) getSuchSplibuchung().getValue();
-      settings.setAttribute(settingsprefix + "split", (int) split.getKey());
-      if (split != SplitFilter.ALLE)
-      {
-        params.put("Splitbuchung ", split.getText());
-      }
+      return buchungsList;
     }
 
-    Steuer steuer = null;
-    if (isSuchSteuerAktiv())
-    {
-      if (getSuchSteuer().getValue() != null)
-      {
-        steuer = (Steuer) getSuchSteuer().getValue();
-        if (steuer.isNewObject())
-        {
-          settings.setAttribute(settingsprefix + SUCHSTEUER, 0);
-        }
-        else
-        {
-          settings.setAttribute(settingsprefix + SUCHSTEUER, steuer.getID());
-        }
-        params.put("Steuer ", steuer.getName());
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + SUCHSTEUER, -2);
-      }
-    }
+    saveFilterUndParams();
 
-    query = new BuchungQuery(dv, db, k, b, p, suchtext, suchbetrag, mvalue,
-        mitglied, geldkonto, split, ungeprueft, steuer);
+    query = new BuchungQuery(filter_dv, filter_db, filter_konto,
+        filter_buchungsart, filter_projekt, filter_suchtext,
+        filter_suchbetrag, filter_mvalue,
+        filter_mitglied, geldkonto, filter_split, filter_ungeprueft,
+        filter_steuer);
 
     List<Buchung> buchungen = query.get();
 
-    if (buchungsList == null)
+    buchungsList = new BuchungListTablePart(buchungen,
+        new BuchungAction(false, null));
+    buchungsList.addColumn("Nr", "id-int");
+    buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
     {
-      buchungsList = new BuchungListTablePart(buchungen,
-          new BuchungAction(false, null));
-      buchungsList.addColumn("Nr", "id-int");
-      buchungsList.addColumn("Geprüft", "geprueft", new Formatter()
+      @Override
+      public String format(Object o)
       {
-        @Override
-        public String format(Object o)
-        {
-          return (Boolean) o ? "\u2705" : "";
-        }
-      });
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
-      {
-        buchungsList.addColumn("D", "document");
+        return (Boolean) o ? "\u2705" : "";
       }
-      buchungsList.addColumn("S", "splittyp", new Formatter()
+    });
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      buchungsList.addColumn("D", "document");
+    }
+    buchungsList.addColumn("S", "splittyp", new Formatter()
+    {
+      @Override
+      public String format(Object o)
       {
-        @Override
-        public String format(Object o)
-        {
-          Integer typ = (Integer) o;
-          return SplitbuchungTyp.get(typ).substring(0, 1);
-        }
-      });
-
-      buchungsList.addColumn("Konto", "konto");
-      buchungsList.addColumn("Datum", "datum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-
-      if (geldkonto)
-      {
-        buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
-        buchungsList.addColumn("Blatt", "blattnummer");
+        Integer typ = (Integer) o;
+        return SplitbuchungTyp.get(typ).substring(0, 1);
       }
+    });
 
-      buchungsList.addColumn("Name", "name");
-      if (geldkonto)
-        buchungsList.addColumn("IBAN oder Kontonummer", "iban",
-            new IBANFormatter());
-      buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
+    buchungsList.addColumn("Konto", "konto");
+    buchungsList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+
+    if (geldkonto)
+    {
+      buchungsList.addColumn("Auszugsnummer", "auszugsnummer");
+      buchungsList.addColumn("Blatt", "blattnummer");
+    }
+
+    buchungsList.addColumn("Name", "name");
+    if (geldkonto)
+      buchungsList.addColumn("IBAN oder Kontonummer", "iban",
+          new IBANFormatter());
+    buchungsList.addColumn("Verwendungszweck", "zweck", new Formatter()
+    {
+      @Override
+      public String format(Object value)
       {
-        @Override
-        public String format(Object value)
+        if (value == null)
         {
-          if (value == null)
-          {
-            return null;
-          }
-          String s = value.toString();
-          s = s.replaceAll("\r\n", " ");
-          s = s.replaceAll("\r", " ");
-          s = s.replaceAll("\n", " ");
-          return s;
+          return null;
         }
-      });
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-      {
-        buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
+        String s = value.toString();
+        s = s.replaceAll("\r\n", " ");
+        s = s.replaceAll("\r", " ");
+        s = s.replaceAll("\n", " ");
+        return s;
       }
+    });
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      buchungsList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
 
-      buchungsList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      buchungsList.addColumn("Betrag", "betrag",
+    buchungsList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    buchungsList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT) && geldkonto)
+    {
+      buchungsList.addColumn("Netto", "netto",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT) && geldkonto)
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
-        buchungsList.addColumn("Netto", "netto",
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-        if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-        {
-          buchungsList.addColumn("Steuer", "steuer", o -> {
-            if (o == null)
-            {
-              return "";
-            }
-            try
-            {
-              return ((Steuer) o).getName();
-            }
-            catch (RemoteException e)
-            {
-              Logger.error("Fehler", e);
-            }
+        buchungsList.addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
             return "";
-          }, false, Column.ALIGN_RIGHT);
-        }
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
       }
-      if (geldkonto)
-        buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG,
-            "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
-            Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-      if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
-      {
-        buchungsList.addColumn("Projekt", "projekt");
-      }
-      buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
-      {
-        buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
-      }
-      buchungsList.setMulti(true);
-      buchungsList.setContextMenu(new BuchungMenu(this));
-      buchungsList.setRememberState(true);
-      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
-      buchungsList.setAction(new BuchungAction(false, buchungsList));
-      VorZurueckControl.setObjektListe(null, null);
     }
-    else
+    if (geldkonto)
+      buchungsList.addColumn(new Column(Buchung.SOLLBUCHUNG,
+          "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
+          Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
+    if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
-      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
-
-      buchungsList.removeAll();
-
-      for (Buchung bu : buchungen)
-      {
-        buchungsList.addItem(bu);
-      }
-
-      // Summenzeile neu laden
-      buchungsList.featureEvent(
-          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
-      buchungsList.sort();
+      buchungsList.addColumn("Projekt", "projekt");
     }
+    buchungsList.addColumn("Abrechnungslauf", "abrechnungslauf");
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.SPENDENBESCHEINIGUNGENANZEIGEN))
+    {
+      buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
+    }
+    buchungsList.setMulti(true);
+    buchungsList.setContextMenu(new BuchungMenu(this));
+    buchungsList.setRememberState(true);
+    buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+    buchungsList.setAction(new BuchungAction(false, buchungsList));
+    VorZurueckControl.setObjektListe(null, null);
     informKontoChangeListener();
 
     return buchungsList;
@@ -1848,11 +1700,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   public class FilterListener implements Listener
   {
-
-    FilterListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -1860,27 +1707,37 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       {
         return;
       }
-
-      try
-      {
-        getBuchungsList();
-      }
-      catch (RemoteException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getMessage());
-      }
+      refreshBuchungsList();
     }
-
   }
 
   public void refreshBuchungsList()
   {
     try
     {
-      getBuchungsList();
+      saveFilterUndParams();
+
+      query = new BuchungQuery(filter_dv, filter_db, filter_konto,
+          filter_buchungsart, filter_projekt, filter_suchtext,
+          filter_suchbetrag, filter_mvalue, filter_mitglied, geldkonto,
+          filter_split, filter_ungeprueft, filter_steuer);
+
+      List<Buchung> buchungen = query.get();
+
+      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+      buchungsList.removeAll();
+
+      for (Buchung bu : buchungen)
+      {
+        buchungsList.addItem(bu);
+      }
+
+      // Summenzeile neu laden
+      buchungsList.featureEvent(
+          de.willuhn.jameica.gui.parts.table.Feature.Event.REFRESH, null);
+      buchungsList.sort();
     }
     catch (RemoteException e)
-
     {
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
@@ -2434,6 +2291,175 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   {
     Application.getMessagingFactory()
         .unRegisterMessageConsumer(splitbuchungConsumer);
+  }
+
+  public void saveFilterUndParams() throws RemoteException
+  {
+    params = new TreeMap<>();
+
+    // Werte speichern und Parameter füllen
+    filter_dv = null;
+    if (isVondatumAktiv())
+    {
+      filter_dv = (Date) getVondatum().getValue();
+    }
+    if (filter_dv == null)
+    {
+      throw new RemoteException("Bitte Von Datum eingeben!");
+    }
+    settings.setAttribute(settingsprefix + "vondatum",
+        new JVDateFormatTTMMJJJJ().format(filter_dv));
+
+    filter_db = null;
+    if (isBisdatumAktiv())
+    {
+      filter_db = (Date) getBisdatum().getValue();
+    }
+    if (filter_db == null)
+    {
+      throw new RemoteException("Bitte Bis Datum eingeben!");
+    }
+    settings.setAttribute(settingsprefix + "bisdatum",
+        new JVDateFormatTTMMJJJJ().format(filter_db));
+
+    filter_konto = null;
+    if (isSuchKontoAktiv())
+    {
+      if (getSuchKonto().getValue() != null)
+      {
+        filter_konto = (Konto) getSuchKonto().getValue();
+        settings.setAttribute(settingsprefix + "suchkontoid",
+            filter_konto.getID());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + "suchkontoid", "");
+      }
+    }
+    filter_mvalue = null;
+    if (isSuchMitgliedZugeordnetAktiv()
+        && getSuchMitgliedZugeordnet().getValue() != null)
+    {
+      MitgliedZustand m = (MitgliedZustand) getSuchMitgliedZugeordnet()
+          .getValue();
+      filter_mvalue = m.getValue();
+      settings.setAttribute(settingsprefix + MITGLIEDZUGEORDNET, m.getText());
+      if (!m.getText().equalsIgnoreCase("Beide"))
+      {
+        params.put("Mitglied zugeordnet? ", m.getText());
+      }
+    }
+    filter_buchungsart = null;
+    if (isSuchBuchungsartAktiv())
+    {
+      filter_buchungsart = (Buchungsart) getSuchBuchungsart().getValue();
+    }
+    if (filter_buchungsart != null)
+    {
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
+          filter_buchungsart.getNummer());
+      params.put("Buchungsart ", filter_buchungsart.getBezeichnung());
+    }
+    else
+    {
+      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
+          "-99");
+    }
+    filter_projekt = null;
+    if (isSuchProjektAktiv())
+    {
+      if (getSuchProjekt().getValue() != null)
+      {
+        filter_projekt = (Projekt) getSuchProjekt().getValue();
+        if (filter_projekt.isNewObject())
+        {
+          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
+        }
+        else
+        {
+          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
+              filter_projekt.getID());
+        }
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
+      }
+    }
+    filter_ungeprueft = null;
+    if (isUngeprueftAktiv())
+    {
+      filter_ungeprueft = (Boolean) getUngeprueft().getValue();
+      settings.setAttribute(settingsprefix + "ungeprueft", filter_ungeprueft);
+      if (filter_ungeprueft)
+      {
+        params.put("Nur ungeprüfte ", filter_ungeprueft.toString());
+      }
+    }
+    filter_suchtext = null;
+    if (isSuchtextAktiv())
+    {
+      filter_suchtext = (String) getSuchtext().getValue();
+      settings.setAttribute(settingsprefix + "suchtext", filter_suchtext);
+      if (filter_suchtext != null && !filter_suchtext.isEmpty())
+      {
+        params.put("Enthaltener Text ", filter_suchtext);
+      }
+    }
+    filter_suchbetrag = null;
+    if (isSuchBetragAktiv())
+    {
+      filter_suchbetrag = (String) getSuchBetrag().getValue();
+      settings.setAttribute(settingsprefix + "suchbetrag", filter_suchbetrag);
+      if (filter_suchbetrag != null && !filter_suchbetrag.isEmpty())
+      {
+        params.put("Betrag ", filter_suchbetrag);
+      }
+    }
+    filter_mitglied = null;
+    if (isMitgliedAktiv())
+    {
+      filter_mitglied = (String) getMitglied().getValue();
+      settings.setAttribute(settingsprefix + "mitglied", filter_mitglied);
+      if (filter_mitglied != null && !filter_mitglied.isEmpty())
+      {
+        params.put("Mitglied Name ", filter_mitglied);
+      }
+    }
+    filter_split = null;
+    if (isSuchSplibuchungAktiv())
+    {
+      filter_split = (SplitFilter) getSuchSplibuchung().getValue();
+      settings.setAttribute(settingsprefix + "split",
+          (int) filter_split.getKey());
+      if (filter_split != SplitFilter.ALLE)
+      {
+        params.put("Splitbuchung ", filter_split.getText());
+      }
+    }
+
+    filter_steuer = null;
+    if (isSuchSteuerAktiv())
+    {
+      if (getSuchSteuer().getValue() != null)
+      {
+        filter_steuer = (Steuer) getSuchSteuer().getValue();
+        if (filter_steuer.isNewObject())
+        {
+          settings.setAttribute(settingsprefix + SUCHSTEUER, 0);
+        }
+        else
+        {
+          settings.setAttribute(settingsprefix + SUCHSTEUER,
+              filter_steuer.getID());
+        }
+        params.put("Steuer ", filter_steuer.getName());
+      }
+      else
+      {
+        settings.setAttribute(settingsprefix + SUCHSTEUER, -2);
+      }
+    }
   }
 
   public PanelButton exportButton(ExportArt art) throws ApplicationException
