@@ -2153,6 +2153,10 @@ public class MitgliedControl extends FilterControl implements Savable
   public JVereinTablePart getMitgliedTable(int atyp, Action detailaction)
       throws RemoteException
   {
+    if (mitgliedList != null)
+    {
+      return mitgliedList;
+    }
     mitgliedList = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
     new MitgliedSpaltenauswahl().setColumns(mitgliedList, atyp);
     mitgliedList.setContextMenu(new MitgliedMenu(detailaction, mitgliedList));
@@ -2170,13 +2174,13 @@ public class MitgliedControl extends FilterControl implements Savable
     return mitgliedList;
   }
 
-  public JVereinTablePart refreshMitgliedTable(int atyp) throws RemoteException
+  public void refreshMitgliedTable(int atyp) throws RemoteException
   {
     if (System.currentTimeMillis() - lastrefresh < 500)
     {
       Logger.debug(String.format("Zeit zwischen den Refreshs: %s",
           (System.currentTimeMillis() - lastrefresh)));
-      return mitgliedList;
+      return;
     }
     lastrefresh = System.currentTimeMillis();
     mitgliedList.removeAll();
@@ -2186,7 +2190,6 @@ public class MitgliedControl extends FilterControl implements Savable
       mitgliedList.addItem(m);
     }
     mitgliedList.sort();
-    return mitgliedList;
   }
 
   public TreePart getEigenschaftenTree() throws RemoteException
