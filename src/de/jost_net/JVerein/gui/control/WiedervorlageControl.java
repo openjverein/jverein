@@ -44,7 +44,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -230,7 +230,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
     wiedervorlageList.refresh();
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (wiedervorlageList == null)
     {
@@ -252,13 +252,14 @@ public class WiedervorlageControl extends FilterControl implements Savable
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      liste.export(
-          VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_DATEINAME, this),
-          "wiedervorlagen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          liste.export(
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_DATEINAME, this),
+              "wiedervorlagen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

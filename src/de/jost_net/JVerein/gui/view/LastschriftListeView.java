@@ -71,8 +71,9 @@ public class LastschriftListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

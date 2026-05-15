@@ -80,6 +80,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -1322,19 +1323,20 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (kontenList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      kontenList.export(VorlageUtil.getName(VorlageTyp.KONTEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.KONTEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.KONTEN_DATEINAME, this),
-          "konten", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          kontenList.export(VorlageUtil.getName(VorlageTyp.KONTEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.KONTEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.KONTEN_DATEINAME, this), "konten",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

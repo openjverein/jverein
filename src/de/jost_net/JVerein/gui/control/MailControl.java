@@ -73,7 +73,7 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -926,19 +926,20 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .unRegisterMessageConsumer(mailDeleteConsumer);
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (mailsList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      mailsList.export(VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this),
-          "mails", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          mailsList.export(VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this), "mails",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

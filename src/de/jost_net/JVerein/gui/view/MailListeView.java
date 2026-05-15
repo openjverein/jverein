@@ -62,10 +62,11 @@ public class MailListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MAIL, false, "question-circle.png");
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu", new MailNeuAction(), null, false,
         "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

@@ -71,11 +71,12 @@ public class LehrgangListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.LEHRGANG, false, "question-circle.png");
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(LehrgangDetailView.class, Lehrgang.class), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

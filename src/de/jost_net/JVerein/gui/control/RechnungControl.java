@@ -78,6 +78,7 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -933,20 +934,21 @@ public class RechnungControl extends DruckMailControl implements Savable
     return map;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (rechnungList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      rechnungList.export(
-          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this),
-          "rechnungen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          rechnungList.export(
+              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this),
+              "rechnungen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

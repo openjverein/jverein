@@ -39,7 +39,7 @@ import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -240,20 +240,21 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     return anfangsbestaende;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (anfangsbestandList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      anfangsbestandList.export(
-          VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_DATEINAME, this),
-          "anfangsbestaende", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          anfangsbestandList.export(
+              VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.ANFANGSBESTAENDE_DATEINAME, this),
+              "anfangsbestaende", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

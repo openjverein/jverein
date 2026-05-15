@@ -48,7 +48,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -376,20 +376,21 @@ public class LehrgangControl extends FilterControl implements Savable
     return mitglied;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (lehrgaengeList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      lehrgaengeList.export(
-          VorlageUtil.getName(VorlageTyp.LEHRGAENGE_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.LEHRGAENGE_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.LEHRGAENGE_DATEINAME, this),
-          "lehrgaenge", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lehrgaengeList.export(
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_DATEINAME, this),
+              "lehrgaenge", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }
