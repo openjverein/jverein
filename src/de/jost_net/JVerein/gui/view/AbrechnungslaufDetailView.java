@@ -24,18 +24,15 @@
 package de.jost_net.JVerein.gui.view;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufControl.Folderselection;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
@@ -78,31 +75,6 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
 
     TabFolder folder = new TabFolder(getParent(), SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-    folder.addSelectionListener(new SelectionAdapter()
-    {
-
-      @Override
-      public void widgetSelected(SelectionEvent evt)
-      {
-        TabItem item = folder.getSelection()[0];
-        if (item.getText().startsWith("Buch"))
-        {
-          control.setFolderSelection(Folderselection.BUCHUNGEN);
-        }
-        else if (item.getText().startsWith("Soll"))
-        {
-          control.setFolderSelection(Folderselection.SOLLBUCHUNGEN);
-        }
-        else if (item.getText().startsWith("Last"))
-        {
-          control.setFolderSelection(Folderselection.LASTSCHRIFTEN);
-        }
-        else if (item.getText().startsWith("Zus"))
-        {
-          control.setFolderSelection(Folderselection.ZUSATZBETRAEGE);
-        }
-      }
-    });
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
     control.getBuchungList().paint(tabBuchung.getComposite());
@@ -124,6 +96,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
+      control.setFolderSelection(tabindex);
     }
     folder.addSelectionListener(new SelectionListener()
     {
@@ -131,6 +104,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
       public void widgetSelected(SelectionEvent evt)
       {
         tabindex = folder.getSelectionIndex();
+        control.setFolderSelection(tabindex);
       }
 
       @Override

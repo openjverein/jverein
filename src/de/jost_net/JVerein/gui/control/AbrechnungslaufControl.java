@@ -106,19 +106,19 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
   private BetragSummaryTablePart zusatzbetraegeList;
 
-  private Folderselection selectedFolder = Folderselection.BUCHUNGEN;
+  public final static int TAB_BUCHUNGEN = 0;
 
-  public enum Folderselection
-  {
-    BUCHUNGEN,
-    LASTSCHRIFTEN,
-    SOLLBUCHUNGEN,
-    ZUSATZBETRAEGE
-  }
+  public final static int TAB_SOLLBUCHUNGEN = 1;
 
-  public void setFolderSelection(Folderselection selection)
+  public final static int TAB_LASTSCHRIFTEN = 2;
+
+  public final static int TAB_ZUSATZBETRAEGE = 3;
+
+  private int selectedTab = TAB_BUCHUNGEN;
+
+  public void setFolderSelection(int selection)
   {
-    selectedFolder = selection;
+    selectedTab = selection;
   }
 
   public AbrechnungslaufControl(AbstractView view)
@@ -611,18 +611,18 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return new PanelButton(
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
           final JVereinTablePart liste;
-          switch (selectedFolder)
+          switch (selectedTab)
           {
-            case BUCHUNGEN:
+            case TAB_BUCHUNGEN:
               liste = buchungList;
               break;
-            case LASTSCHRIFTEN:
+            case TAB_LASTSCHRIFTEN:
               liste = lastschriftList;
               break;
-            case SOLLBUCHUNGEN:
+            case TAB_SOLLBUCHUNGEN:
               liste = sollbuchungList;
               break;
-            case ZUSATZBETRAEGE:
+            case TAB_ZUSATZBETRAEGE:
               liste = zusatzbetraegeList;
               break;
             default:
@@ -634,9 +634,9 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                 "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
           }
 
-          switch (selectedFolder)
+          switch (selectedTab)
           {
-            case BUCHUNGEN:
+            case TAB_BUCHUNGEN:
               liste.export(
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
@@ -649,7 +649,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                       getAbrechnungslauf()),
                   "abrechnungslauf.buchung", art);
               break;
-            case LASTSCHRIFTEN:
+            case TAB_LASTSCHRIFTEN:
               liste.export(
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
@@ -662,7 +662,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                       getAbrechnungslauf()),
                   "abrechnungslauf.lastschrift", art);
               break;
-            case SOLLBUCHUNGEN:
+            case TAB_SOLLBUCHUNGEN:
               liste.export(
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
@@ -675,7 +675,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                       getAbrechnungslauf()),
                   "abrechnungslauf.sollbuchung", art);
               break;
-            case ZUSATZBETRAEGE:
+            case TAB_ZUSATZBETRAEGE:
               liste.export(
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
