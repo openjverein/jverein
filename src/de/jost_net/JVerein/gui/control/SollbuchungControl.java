@@ -79,6 +79,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -1051,21 +1052,22 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (sollbuchungenList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      sollbuchungenList.export(
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this),
-          "sollbuchungen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          sollbuchungenList.export(
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this),
+              "sollbuchungen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
   public void deregisterSollbuchungConsumer()

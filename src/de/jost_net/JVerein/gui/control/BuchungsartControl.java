@@ -50,8 +50,8 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -477,20 +477,21 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (buchungsartList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      buchungsartList.export(
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this),
-          "buchungsarten", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          buchungsartList.export(
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this),
+              "buchungsarten", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }
