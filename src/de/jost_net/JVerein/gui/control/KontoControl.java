@@ -68,7 +68,6 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -331,8 +330,13 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  public Part getKontenList() throws RemoteException
+  public JVereinTablePart getKontenList() throws RemoteException
   {
+    if (kontenList != null)
+    {
+      return kontenList;
+    }
+
     kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
@@ -398,7 +402,6 @@ public class KontoControl extends FilterControl implements Savable
     {
       return;
     }
-    kontenList.removeAll();
     try
     {
       kontenList.removeAll();

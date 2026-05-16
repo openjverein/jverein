@@ -34,7 +34,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -167,8 +166,12 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getLehrgangsartList() throws RemoteException
+  public JVereinTablePart getLehrgangsartList() throws RemoteException
   {
+    if (lehrgangsartList != null)
+    {
+      return lehrgangsartList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Lehrgangsart> lehrgangsarten = service
         .createList(Lehrgangsart.class);

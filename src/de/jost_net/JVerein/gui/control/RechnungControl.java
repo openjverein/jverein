@@ -70,7 +70,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -160,7 +159,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @SuppressWarnings("unchecked")
-  public Part getRechnungList() throws RemoteException
+  public BetragSummaryTablePart getRechnungList() throws RemoteException
   {
     if (rechnungList != null)
     {

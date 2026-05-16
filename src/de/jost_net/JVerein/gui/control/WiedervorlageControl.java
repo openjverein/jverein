@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
@@ -38,7 +39,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -213,8 +213,12 @@ public class WiedervorlageControl extends FilterControl implements Savable
     }
   }
 
-  public Part getWiedervorlageList() throws RemoteException
+  public AutoUpdateTablePart getWiedervorlageList() throws RemoteException
   {
+    if (wiedervorlageList != null)
+    {
+      return wiedervorlageList.getWiedervorlageList();
+    }
     wiedervorlageList = new WiedervorlageList(
         new StartViewAction(WiedervorlageListeView.class), this);
     return wiedervorlageList.getWiedervorlageList();

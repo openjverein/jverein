@@ -41,7 +41,6 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -320,37 +319,30 @@ public class LehrgangControl extends FilterControl implements Savable
     return lehrgaenge;
   }
 
-  public Part getLehrgaengeList() throws RemoteException
+  public JVereinTablePart getLehrgaengeList() throws RemoteException
   {
+    if (lehrgaengeList != null)
+    {
+      return lehrgaengeList;
+    }
     DBIterator<Lehrgang> lehrgaenge = getIterator();
-    if (lehrgaengeList == null)
-    {
-      lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
-      lehrgaengeList.addColumn("Nr", "id-int");
-      lehrgaengeList.addColumn("Name", "mitglied");
-      lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
-      lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
-      lehrgaengeList.addColumn("Von/am", "von",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      lehrgaengeList.addColumn("Bis", "bis",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      lehrgaengeList.addColumn("Veranstalter", "veranstalter");
-      lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-      lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
-      lehrgaengeList.setMulti(true);
-      lehrgaengeList
-          .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      lehrgaengeList.removeAll();
-      while (lehrgaenge.hasNext())
-      {
-        lehrgaengeList.addItem(lehrgaenge.next());
-      }
-      lehrgaengeList.sort();
-    }
+    lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
+    lehrgaengeList.addColumn("Nr", "id-int");
+    lehrgaengeList.addColumn("Name", "mitglied");
+    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+    lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
+    lehrgaengeList.addColumn("Von/am", "von",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lehrgaengeList.addColumn("Bis", "bis",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lehrgaengeList.addColumn("Veranstalter", "veranstalter");
+    lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
+    lehrgaengeList.setMulti(true);
+    lehrgaengeList
+        .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
+    VorZurueckControl.setObjektListe(null, null);
+
     return lehrgaengeList;
   }
 

@@ -67,7 +67,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -666,7 +665,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   }
 
-  public Part getMailList() throws RemoteException
+  public JVereinTablePart getMailList() throws RemoteException
   {
     if (mailsList != null)
     {
