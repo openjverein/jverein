@@ -49,7 +49,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -350,8 +349,12 @@ public class FormularControl extends FormularPartControl implements Savable
     }
   }
 
-  public Part getFormularList() throws RemoteException
+  public JVereinTablePart getFormularList() throws RemoteException
   {
+    if (formularList != null)
+    {
+      return formularList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Formular> formulare = service.createList(Formular.class);
     formulare.setOrder("ORDER BY art, bezeichnung");
@@ -373,15 +376,18 @@ public class FormularControl extends FormularPartControl implements Savable
 
   public void refreshFormularTable() throws RemoteException
   {
-    formularList.removeAll();
-    DBIterator<Formular> formulare = Einstellungen.getDBService()
-        .createList(Formular.class);
-    formulare.setOrder("ORDER BY art, bezeichnung");
-    while (formulare.hasNext())
+    if (formularList != null)
     {
-      formularList.addItem(formulare.next());
+      formularList.removeAll();
+      DBIterator<Formular> formulare = Einstellungen.getDBService()
+          .createList(Formular.class);
+      formulare.setOrder("ORDER BY art, bezeichnung");
+      while (formulare.hasNext())
+      {
+        formularList.addItem(formulare.next());
+      }
+      formularList.sort();
     }
-    formularList.sort();
   }
 
   public PanelButton exportButton(ExportArt art) throws ApplicationException

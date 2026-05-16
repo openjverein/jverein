@@ -49,7 +49,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -390,73 +389,67 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     }
   }
 
-  public Part getZusatzbetraegeVorlageList() throws RemoteException
+  public BetragSummaryTablePart getZusatzbetraegeVorlageList()
+      throws RemoteException
   {
+    if (zusatzbetragVorlageList != null)
+    {
+      return zusatzbetragVorlageList;
+    }
     DBIterator<ZusatzbetragVorlage> zusatzbetragsvorlagen = Einstellungen
         .getDBService().createList(ZusatzbetragVorlage.class);
     zusatzbetragsvorlagen.setOrder("ORDER BY buchungstext");
 
-    if (zusatzbetragVorlageList == null)
+    zusatzbetragVorlageList = new BetragSummaryTablePart(zusatzbetragsvorlagen,
+        null);
+    zusatzbetragVorlageList.addColumn("Nr", "id-int");
+    zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
+    zusatzbetragVorlageList.addColumn("Nicht mehr ausführen ab", "endedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
+    zusatzbetragVorlageList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
+        o -> new Zahlungsweg((Integer) o).getText());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      zusatzbetragVorlageList = new BetragSummaryTablePart(
-          zusatzbetragsvorlagen, null);
-      zusatzbetragVorlageList.addColumn("Nr", "id-int");
-      zusatzbetragVorlageList.addColumn("Erste Fälligkeit", "startdatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetragVorlageList.addColumn("Nächste Fälligkeit", "faelligkeit",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetragVorlageList.addColumn("Intervall", "intervalltext");
-      zusatzbetragVorlageList.addColumn("Nicht mehr ausführen ab", "endedatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetragVorlageList.addColumn("Buchungstext", "buchungstext");
-      zusatzbetragVorlageList.addColumn("Betrag", "betrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetragVorlageList.addColumn("Zahlungsweg", "zahlungsweg",
-          o -> new Zahlungsweg((Integer) o).getText());
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-      {
-        zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
-      }
-      zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-      {
-        zusatzbetragVorlageList.addColumn("Steuer", "steuer", o -> {
-          if (o == null)
-          {
-            return "";
-          }
-          try
-          {
-            return ((Steuer) o).getName();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
+      zusatzbetragVorlageList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+    zusatzbetragVorlageList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      zusatzbetragVorlageList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
           return "";
-        }, false, Column.ALIGN_RIGHT);
-      }
-      zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
-          new JaNeinFormatter(), false, Column.ALIGN_LEFT);
-      zusatzbetragVorlageList
-          .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
-      zusatzbetragVorlageList.setMulti(true);
-      zusatzbetragVorlageList.setAction(new EditAction(
-          ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));
-      VorZurueckControl.setObjektListe(null, null);
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
     }
-    else
-    {
-      zusatzbetragVorlageList.removeAll();
-      while (zusatzbetragsvorlagen.hasNext())
-      {
-        zusatzbetragVorlageList.addItem(zusatzbetragsvorlagen.next());
-      }
-      zusatzbetragVorlageList.sort();
-    }
+    zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+        new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    zusatzbetragVorlageList
+        .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
+    zusatzbetragVorlageList.setMulti(true);
+    zusatzbetragVorlageList.setAction(new EditAction(
+        ZusatzbetragVorlageDetailView.class, zusatzbetragVorlageList));
+    VorZurueckControl.setObjektListe(null, null);
+
     return zusatzbetragVorlageList;
   }
 

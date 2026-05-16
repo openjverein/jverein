@@ -48,7 +48,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -367,8 +366,12 @@ public class JahresabschlussControl extends KontensaldoControl
     }
   }
 
-  public Part getJahresabschlussList() throws RemoteException
+  public JVereinTablePart getJahresabschlussList() throws RemoteException
   {
+    if (jahresabschlussList != null)
+    {
+      return jahresabschlussList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Jahresabschluss> jahresabschluesse = service
         .createList(Jahresabschluss.class);

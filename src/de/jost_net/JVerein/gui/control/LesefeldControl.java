@@ -429,20 +429,21 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    */
   public JVereinTablePart getLesefelderList() throws RemoteException
   {
-    if (lesefeldList == null)
+    if (lesefeldList != null)
     {
-      // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
-      // evaluierte Ausgabe gesetzt ist
-      lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
-          null);
-      lesefeldList.addColumn("Skript-Name", "bezeichnung");
-      lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
-      lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
-      lesefeldList.setMulti(true);
-      lesefeldList
-          .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
-      VorZurueckControl.setObjektListe(null, null);
+      return lesefeldList;
     }
+    // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
+    // evaluierte Ausgabe gesetzt ist
+    lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
+        null);
+    lesefeldList.addColumn("Skript-Name", "bezeichnung");
+    lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
+    lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
+    lesefeldList.setMulti(true);
+    lesefeldList
+        .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
+    VorZurueckControl.setObjektListe(null, null);
     return lesefeldList;
   }
 
@@ -468,7 +469,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      Logger.error("Fehler", ex);
+      Logger.error("Fehler beim Refresh der Tabelle", ex);
     }
   }
 
