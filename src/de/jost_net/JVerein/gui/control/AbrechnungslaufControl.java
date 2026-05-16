@@ -36,7 +36,6 @@ import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
@@ -60,7 +59,6 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -69,6 +67,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -106,6 +105,21 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   private BetragSummaryTablePart lastschriftList;
 
   private BetragSummaryTablePart zusatzbetraegeList;
+
+  private Folderselection selectedFolder = Folderselection.BUCHUNGEN;
+
+  public enum Folderselection
+  {
+    BUCHUNGEN,
+    LASTSCHRIFTEN,
+    SOLLBUCHUNGEN,
+    ZUSATZBETRAEGE
+  }
+
+  public void setFolderSelection(Folderselection selection)
+  {
+    selectedFolder = selection;
+  }
 
   public AbrechnungslaufControl(AbstractView view)
   {
@@ -591,70 +605,91 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public ButtonRtoL exportLastschriftButton(ExportArt art)
-      throws ApplicationException
+  public PanelButton exportButton2(ExportArt art) throws ApplicationException
   {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(lastschriftList,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
-              "abrechnungslauf.lastschrift", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          final JVereinTablePart liste;
+          switch (selectedFolder)
+          {
+            case BUCHUNGEN:
+              liste = buchungList;
+              break;
+            case LASTSCHRIFTEN:
+              liste = lastschriftList;
+              break;
+            case SOLLBUCHUNGEN:
+              liste = sollbuchungList;
+              break;
+            case ZUSATZBETRAEGE:
+              liste = zusatzbetraegeList;
+              break;
+            default:
+              liste = null;
+          }
+          if (liste == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+
+          switch (selectedFolder)
+          {
+            case BUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.buchung", art);
+              break;
+            case LASTSCHRIFTEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.lastschrift", art);
+              break;
+            case SOLLBUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.sollbuchung", art);
+              break;
+            case ZUSATZBETRAEGE:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.zusatzbetrag", art);
+              break;
+          }
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public ButtonRtoL exportZusatzbetragButton(ExportArt art)
-      throws ApplicationException
-  {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(zusatzbetraegeList,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
-              "abrechnungslauf.zusatzbetrag", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
-  }
-
-  public ButtonRtoL exportBuchungButton(ExportArt art)
-      throws ApplicationException
-  {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(buchungList, VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
-              "abrechnungslauf.buchung", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
-  }
-
-  public ButtonRtoL exportSollbuchungButton(ExportArt art)
-      throws ApplicationException
-  {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(sollbuchungList,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
-              "abrechnungslauf.sollbuchung", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
-  }
-
-  private void doExport(JVereinTablePart tabelle, VorlageTyp titel,
-      VorlageTyp subtitel, VorlageTyp dateiname, String settingPrefix,
-      ExportArt art) throws ApplicationException
-  {
-    if (tabelle == null)
-    {
-      throw new ApplicationException(
-          "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
-    }
-    tabelle.export(VorlageUtil.getName(titel, getAbrechnungslauf()),
-        VorlageUtil.getName(subtitel, getAbrechnungslauf()),
-        VorlageUtil.getName(dateiname, getAbrechnungslauf()), settingPrefix,
-        art);
-    GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-  }
 }

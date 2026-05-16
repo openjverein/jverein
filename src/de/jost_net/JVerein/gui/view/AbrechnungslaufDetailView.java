@@ -24,15 +24,18 @@
 package de.jost_net.JVerein.gui.view;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
+import de.jost_net.JVerein.gui.control.AbrechnungslaufControl.Folderselection;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
@@ -75,36 +78,45 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
 
     TabFolder folder = new TabFolder(getParent(), SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+    folder.addSelectionListener(new SelectionAdapter()
+    {
+
+      @Override
+      public void widgetSelected(SelectionEvent evt)
+      {
+        TabItem item = folder.getSelection()[0];
+        if (item.getText().startsWith("Buch"))
+        {
+          control.setFolderSelection(Folderselection.BUCHUNGEN);
+        }
+        else if (item.getText().startsWith("Soll"))
+        {
+          control.setFolderSelection(Folderselection.SOLLBUCHUNGEN);
+        }
+        else if (item.getText().startsWith("Last"))
+        {
+          control.setFolderSelection(Folderselection.LASTSCHRIFTEN);
+        }
+        else if (item.getText().startsWith("Zus"))
+        {
+          control.setFolderSelection(Folderselection.ZUSATZBETRAEGE);
+        }
+      }
+    });
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
-    ButtonAreaRtoL buchbuttons = new ButtonAreaRtoL();
-    buchbuttons.addButton(control.exportBuchungButton(ExportArt.PDF));
-    buchbuttons.addButton(control.exportBuchungButton(ExportArt.CSV));
-    buchbuttons.paint(tabBuchung.getComposite());
     control.getBuchungList().paint(tabBuchung.getComposite());
 
     TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
-    ButtonAreaRtoL sollbbuttons = new ButtonAreaRtoL();
-    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.PDF));
-    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.CSV));
-    sollbbuttons.paint(tabSollbuchung.getComposite());
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
-    ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
-    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.PDF));
-    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.CSV));
-    lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
           1);
-      ButtonAreaRtoL zusatzbuttons = new ButtonAreaRtoL();
-      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.PDF));
-      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.CSV));
-      zusatzbuttons.paint(tabZusatzbetraege.getComposite());
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
@@ -135,6 +147,9 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton2(ExportArt.CSV));
   }
 
   @Override
