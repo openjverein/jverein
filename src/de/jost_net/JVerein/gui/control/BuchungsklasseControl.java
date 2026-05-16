@@ -32,7 +32,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.PanelButton;
@@ -126,8 +125,12 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getBuchungsklasseList() throws RemoteException
+  public JVereinTablePart getBuchungsklasseList() throws RemoteException
   {
+    if (buchungsklassenList != null)
+    {
+      return buchungsklassenList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsklasse> buchungsklassen = service
         .createList(Buchungsklasse.class);

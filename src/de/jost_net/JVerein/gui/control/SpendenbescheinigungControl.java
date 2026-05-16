@@ -565,7 +565,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
       }
       catch (RemoteException e1)
       {
-        Logger.error("Fehler", e1);
+        Logger.error("Fehler beim Refresh der Tabelle", e1);
       }
     }
   }

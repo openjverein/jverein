@@ -35,7 +35,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -155,35 +154,27 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getEigenschaftList() throws RemoteException
+  public JVereinTablePart getEigenschaftList() throws RemoteException
   {
+    if (eigenschaftList != null)
+    {
+      return eigenschaftList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Eigenschaft> eigenschaften = service
         .createList(Eigenschaft.class);
     eigenschaften.setOrder("ORDER BY bezeichnung");
 
-    if (eigenschaftList == null)
-    {
-      eigenschaftList = new JVereinTablePart(eigenschaften, null);
-      eigenschaftList.addColumn("Name", "name");
-      eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
-      eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
-      eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
-      eigenschaftList.setRememberState(true);
-      eigenschaftList.setMulti(true);
-      eigenschaftList.setAction(
-          new EditAction(EigenschaftDetailView.class, eigenschaftList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      eigenschaftList.removeAll();
-      while (eigenschaften.hasNext())
-      {
-        eigenschaftList.addItem(eigenschaften.next());
-      }
-      eigenschaftList.sort();
-    }
+    eigenschaftList = new JVereinTablePart(eigenschaften, null);
+    eigenschaftList.addColumn("Name", "name");
+    eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
+    eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
+    eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
+    eigenschaftList.setRememberState(true);
+    eigenschaftList.setMulti(true);
+    eigenschaftList.setAction(
+        new EditAction(EigenschaftDetailView.class, eigenschaftList));
+    VorZurueckControl.setObjektListe(null, null);
     return eigenschaftList;
   }
 

@@ -33,7 +33,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
@@ -148,7 +147,7 @@ public class ProjektControl extends FilterControl implements Savable
     }
   }
 
-  public Part getProjektList() throws RemoteException
+  public JVereinTablePart getProjektList() throws RemoteException
   {
     if (projektList != null)
     {
@@ -186,7 +185,7 @@ public class ProjektControl extends FilterControl implements Savable
     }
     catch (RemoteException e1)
     {
-      Logger.error("Fehler", e1);
+      Logger.error("Fehler beim Refresh der Tabelle", e1);
     }
   }
 

@@ -32,7 +32,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.PanelButton;
@@ -135,8 +134,12 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getMitgliedstypList() throws RemoteException
+  public JVereinTablePart getMitgliedstypList() throws RemoteException
   {
+    if (mitgliedstypList != null)
+    {
+      return mitgliedstypList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Mitgliedstyp> mtIt = service.createList(Mitgliedstyp.class);
     mtIt.setOrder("ORDER BY " + Mitgliedstyp.BEZEICHNUNG);

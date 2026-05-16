@@ -163,14 +163,7 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
       @Override
       public void handleEvent(Event event)
       {
-        try
-        {
-          getZusatzbetraegeList();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler", e);
-        }
+        TabRefresh();
       }
     });
 
@@ -260,82 +253,101 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
 
   public Part getZusatzbetraegeList() throws RemoteException
   {
+    if (zusatzbetraegeList != null)
+    {
+      return zusatzbetraegeList;
+    }
+
     DBIterator<Zusatzbetrag> zusatzbetraege = getIterator();
 
-    if (zusatzbetraegeList == null)
+    zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege, null);
+    zusatzbetraegeList.addColumn("Nr", "id-int");
+    zusatzbetraegeList.addColumn("Name", "mitglied");
+    zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+        "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Intervall", "intervalltext");
+    zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
+    zusatzbetraegeList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
     {
-      zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege, null);
-      zusatzbetraegeList.addColumn("Nr", "id-int");
-      zusatzbetraegeList.addColumn("Name", "mitglied");
-      zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
-          "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Intervall", "intervalltext");
-      zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
-      zusatzbetraegeList.addColumn("Betrag", "betrag",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+      @Override
+      public String format(Object o)
       {
-        @Override
-        public String format(Object o)
+        return new Zahlungsweg((Integer) o).getText();
+      }
+    });
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+    zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
         {
-          return new Zahlungsweg((Integer) o).getText();
-        }
-      });
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-      {
-        zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
-      }
-      zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
-      {
-        zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
-          if (o == null)
-          {
-            return "";
-          }
-          try
-          {
-            return ((Steuer) o).getName();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
           return "";
-        }, false, Column.ALIGN_RIGHT);
-      }
-      zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
-          new JaNeinFormatter(), false, Column.ALIGN_LEFT);
-      zusatzbetraegeList
-          .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
-      zusatzbetraegeList.setMulti(true);
-      zusatzbetraegeList.setAction(
-          new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
-      VorZurueckControl.setObjektListe(null, null);
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
     }
-    else
-    {
-      zusatzbetraegeList.removeAll();
-      while (zusatzbetraege.hasNext())
-      {
-        zusatzbetraegeList.addItem(zusatzbetraege.next());
-      }
-      zusatzbetraegeList.sort();
-    }
+    zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+        new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    zusatzbetraegeList
+        .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
+    zusatzbetraegeList.setMulti(true);
+    zusatzbetraegeList.setAction(
+        new EditAction(ZusatzbetragDetailView.class, zusatzbetraegeList));
+    VorZurueckControl.setObjektListe(null, null);
+
     if (this.ausfuehrungSuch.getText().equals("Aktive"))
     {
       nichtAktiveEliminieren(zusatzbetraegeList);
     }
     return zusatzbetraegeList;
+  }
+
+  public void TabRefresh()
+  {
+    try
+    {
+      if (zusatzbetraegeList != null)
+      {
+        DBIterator<Zusatzbetrag> zusatzbetraege = getIterator();
+        zusatzbetraegeList.removeAll();
+        while (zusatzbetraege.hasNext())
+        {
+          zusatzbetraegeList.addItem(zusatzbetraege.next());
+        }
+        if (this.ausfuehrungSuch.getText().equals("Aktive"))
+        {
+          nichtAktiveEliminieren(zusatzbetraegeList);
+        }
+        zusatzbetraegeList.sort();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Refresh der Tabelle", e);
+    }
   }
 
   private DBIterator<Zusatzbetrag> getIterator() throws RemoteException
