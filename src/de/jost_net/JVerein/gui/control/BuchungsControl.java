@@ -1455,10 +1455,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     saveFilterUndParams();
 
     query = new BuchungQuery(filter_dv, filter_db, filter_konto,
-        filter_buchungsart, filter_projekt, filter_suchtext,
-        filter_suchbetrag, filter_mvalue,
-        filter_mitglied, geldkonto, filter_split, filter_ungeprueft,
-        filter_steuer);
+        filter_buchungsart, filter_projekt, filter_suchtext, filter_suchbetrag,
+        filter_mvalue, filter_mitglied, geldkonto, filter_split,
+        filter_ungeprueft, filter_steuer);
 
     List<Buchung> buchungen = query.get();
 
@@ -2472,26 +2471,27 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return new PanelButton(
           art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-        buchungsList.export(
-            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this),
-            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this),
-            VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this),
-            "buchungen", art);
-        GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+            buchungsList.export(
+                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this),
+                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this),
+                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this),
+                "buchungen", art);
+            GUI.getStatusBar().setSuccessText("Auswertung fertig.");
           }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
     }
     else
     {
       return new PanelButton(
-          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
-          context -> {
-        buchungsList.export(
-            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this),
-            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL, this),
-            VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this),
-            "anlagenbuchungen", art);
-        GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-      }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+            buchungsList.export(
+                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this),
+                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL,
+                    this),
+                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME,
+                    this),
+                "anlagenbuchungen", art);
+            GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
     }
   }
 }

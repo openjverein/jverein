@@ -217,7 +217,6 @@ public class ImportDialog extends AbstractDialog<Object>
       // Dialog schliessen
       close();
 
-
       final Importer importer = imp.importer;
       final IOFormat format = imp.format;
 
@@ -293,8 +292,7 @@ public class ImportDialog extends AbstractDialog<Object>
             monitor.setPercentComplete(100);
             monitor.setStatus(ProgressMonitor.STATUS_DONE);
             GUI.getCurrentView().reload();
-            GUI.getStatusBar()
-                .setSuccessText("Daten importiert");
+            GUI.getStatusBar().setSuccessText("Daten importiert");
           }
           catch (ApplicationException ae)
           {

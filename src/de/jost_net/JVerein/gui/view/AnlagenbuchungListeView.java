@@ -136,8 +136,7 @@ public class AnlagenbuchungListeView extends AbstractView
     buttons.addButton("Import", new AnlagenbuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(new Button("Export", new AnlagenbuchungExportAction(),
-        control,
-        false, "document-save.png"));
+        control, false, "document-save.png"));
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());

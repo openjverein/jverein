@@ -34,8 +34,7 @@ public class BuchungExportAction implements Action
     try
     {
       ExportDialog d = new ExportDialog(new Object[] { context },
-          BuchungListeView.class, DokumentationUtil.BUCHUNGEN,
-          context);
+          BuchungListeView.class, DokumentationUtil.BUCHUNGEN, context);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -50,8 +49,7 @@ public class BuchungExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar()
-          .setErrorText("Fehler beim exportieren der Buchungen");
+      GUI.getStatusBar().setErrorText("Fehler beim exportieren der Buchungen");
     }
   }
 }

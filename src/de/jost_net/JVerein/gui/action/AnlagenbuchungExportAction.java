@@ -50,8 +50,7 @@ public class AnlagenbuchungExportAction implements Action
     catch (Exception e)
     {
       Logger.error("Fehler", e);
-      GUI.getStatusBar()
-          .setErrorText("Fehler beim exportieren der Buchungen");
+      GUI.getStatusBar().setErrorText("Fehler beim exportieren der Buchungen");
     }
   }
 }
