@@ -893,7 +893,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
         getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
@@ -1129,8 +1129,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
 
     suchbuchungsart = (SelectInput) new BuchungsartInput().getBuchungsartInput(
-        suchbuchungsart, null, buchungsarttyp.BUCHUNGSART,
-        AbstractInputAuswahl.ComboBox);
+        null, buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
 
     @SuppressWarnings("unchecked")
     List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();

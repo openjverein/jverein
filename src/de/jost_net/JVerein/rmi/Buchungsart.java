@@ -64,4 +64,8 @@ public interface Buchungsart extends JVereinDBObject
 
   public void setSteuerId(Integer id) throws RemoteException;
 
+  boolean isSteuerBuchungsart() throws RemoteException;
+
+  boolean hasBuchungen() throws RemoteException;
+
 }

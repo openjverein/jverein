@@ -144,9 +144,8 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getPosition().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(getPosition().getBuchungsart(),
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
 
     buchungsart.addListener(new Listener()

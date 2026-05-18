@@ -240,7 +240,7 @@ public class MitgliedQuery
       else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
       {
         addCondition(
-            "austritt is not null and austritt <= ? or eintritt is not null and eintritt > ?");
+            "((austritt is not null and austritt <= ?) or (eintritt is not null and eintritt > ?))");
         bedingungen.add(stichtag);
         bedingungen.add(stichtag);
       }

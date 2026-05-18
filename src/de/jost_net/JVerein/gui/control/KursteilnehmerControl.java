@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -62,6 +63,7 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -112,7 +114,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
   private Kursteilnehmer ktn;
 
-  private BetragSummaryTablePart part;
+  private BetragSummaryTablePart kursteilnehmerList;
 
   public KursteilnehmerControl(AbstractView view)
   {
@@ -391,34 +393,36 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
   public Part getKursteilnehmerTable() throws RemoteException
   {
-    if (part != null)
+    if (kursteilnehmerList != null)
     {
-      return part;
+      return kursteilnehmerList;
     }
     DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
-    part = new BetragSummaryTablePart(kursteilnehmer, null);
-    part.addColumn("Nr", "id-int");
-    part.addColumn("Name", "name");
-    part.addColumn("Vorname", "vorname");
-    part.addColumn("Straße", "strasse");
-    part.addColumn("PLZ", "plz");
-    part.addColumn("Ort", "ort");
-    part.addColumn("Verwendungszweck", "vzweck1");
-    part.addColumn("BIC", "bic");
-    part.addColumn("IBAN", "iban", new IBANFormatter());
-    part.addColumn("Kontoinhaber", "kontoinhaber");
-    part.addColumn("Betrag", "betrag",
+    kursteilnehmerList = new BetragSummaryTablePart(kursteilnehmer, null);
+    kursteilnehmerList.addColumn("Nr", "id-int");
+    kursteilnehmerList.addColumn("Name", "name");
+    kursteilnehmerList.addColumn("Vorname", "vorname");
+    kursteilnehmerList.addColumn("Straße", "strasse");
+    kursteilnehmerList.addColumn("PLZ", "plz");
+    kursteilnehmerList.addColumn("Ort", "ort");
+    kursteilnehmerList.addColumn("Verwendungszweck", "vzweck1");
+    kursteilnehmerList.addColumn("BIC", "bic");
+    kursteilnehmerList.addColumn("IBAN", "iban", new IBANFormatter());
+    kursteilnehmerList.addColumn("Kontoinhaber", "kontoinhaber");
+    kursteilnehmerList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-    part.addColumn("Mandats-ID", "mandatid");
-    part.addColumn("Eingabedatum", "eingabedatum",
+    kursteilnehmerList.addColumn("Mandats-ID", "mandatid");
+    kursteilnehmerList.addColumn("Eingabedatum", "eingabedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    part.addColumn("Abbuchungsdatum", "abbudatum",
+    kursteilnehmerList.addColumn("Abbuchungsdatum", "abbudatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-    part.setContextMenu(new KursteilnehmerMenu(part));
-    part.setMulti(true);
-    part.setAction(new EditAction(KursteilnehmerDetailView.class, part));
+    kursteilnehmerList
+        .setContextMenu(new KursteilnehmerMenu(kursteilnehmerList));
+    kursteilnehmerList.setMulti(true);
+    kursteilnehmerList.setAction(
+        new EditAction(KursteilnehmerDetailView.class, kursteilnehmerList));
     VorZurueckControl.setObjektListe(null, null);
-    return part;
+    return kursteilnehmerList;
   }
 
   @Override
@@ -427,18 +431,18 @@ public class KursteilnehmerControl extends FilterControl implements Savable
 
     try
     {
-      if (part == null)
+      if (kursteilnehmerList == null)
       {
         return;
       }
-      part.removeAll();
+      kursteilnehmerList.removeAll();
       DBIterator<Kursteilnehmer> kursteilnehmer = getIterator();
       while (kursteilnehmer.hasNext())
       {
         Kursteilnehmer kt = kursteilnehmer.next();
-        part.addItem(kt);
+        kursteilnehmerList.addItem(kt);
       }
-      part.sort();
+      kursteilnehmerList.sort();
     }
     catch (RemoteException e1)
     {
@@ -683,4 +687,21 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return kursteilnehmer;
   }
 
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (kursteilnehmerList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          kursteilnehmerList.export(
+              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_DATEINAME, this),
+              "kursteilnehmer", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
 }

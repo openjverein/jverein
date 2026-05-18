@@ -49,6 +49,8 @@ public class Abrechnungsmodi
 
   public static final int FORDERUNG = 201;
 
+  public static final int ARBEITSEINSATZ = 202;
+
   private int abrechnungsmodus;
 
   public Abrechnungsmodi(int abrechnungsmodus)
@@ -98,6 +100,8 @@ public class Abrechnungsmodi
         return "Gutschrift";
       case FORDERUNG:
         return "Forderung";
+      case ARBEITSEINSATZ:
+        return "Abrechnung Arbeitseinsatz";
       default:
         return null;
     }

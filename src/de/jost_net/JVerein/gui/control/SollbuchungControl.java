@@ -911,7 +911,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   {
     return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
         getOhneAbbucher().getValue(), getDatumvon().getValue(),
-        getDatumbis().getValue(), getMailauswahl().getValue() };
+        getDatumbis().getValue(), getMailauswahl().getValue(),
+        getSuchtext().getValue(), getDoubleAusw().getValue() };
   }
 
   private ArrayList<Mitglied> getMitglieder(Object object)

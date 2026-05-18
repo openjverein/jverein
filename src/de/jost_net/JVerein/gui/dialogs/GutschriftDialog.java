@@ -114,7 +114,7 @@ public class GutschriftDialog extends AbstractDialog<Boolean>
           control.getRechnung());
       if (einstellungSpeicherungAnzeigen)
       {
-        bleft.addLabelPair("Rechnung als Buchungsdokument speichern",
+        bleft.addLabelPair("Als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());
       }
       bleft.addLabelPair("Erstattungsformular", control.getRechnungsformular());

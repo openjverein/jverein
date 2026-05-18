@@ -223,9 +223,8 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(getZusatzbetragVorlage().getBuchungsart(),
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
