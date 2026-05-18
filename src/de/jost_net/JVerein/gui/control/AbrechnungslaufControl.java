@@ -611,7 +611,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public PanelButton exportButton2(ExportArt art) throws ApplicationException
+  public PanelButton exportAbrechnungslaufTabsButton(ExportArt art) throws ApplicationException
   {
 
     return new PanelButton(
