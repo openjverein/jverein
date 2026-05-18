@@ -33,12 +33,11 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -148,7 +147,7 @@ public class ProjektControl extends FilterControl implements Savable
     }
   }
 
-  public Part getProjektList() throws RemoteException
+  public JVereinTablePart getProjektList() throws RemoteException
   {
     if (projektList != null)
     {
@@ -186,7 +185,7 @@ public class ProjektControl extends FilterControl implements Savable
     }
     catch (RemoteException e1)
     {
-      Logger.error("Fehler", e1);
+      Logger.error("Fehler beim Refresh der Tabelle", e1);
     }
   }
 
@@ -228,19 +227,21 @@ public class ProjektControl extends FilterControl implements Savable
     return projekte;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (projektList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      projektList.export(VorlageUtil.getName(VorlageTyp.PROJEKTE_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.PROJEKTE_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.PROJEKTE_DATEINAME, this), "projekte",
-          art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          projektList.export(
+              VorlageUtil.getName(VorlageTyp.PROJEKTE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.PROJEKTE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.PROJEKTE_DATEINAME, this),
+              "projekte", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

@@ -61,7 +61,7 @@ import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -693,20 +693,21 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     tableChanged = true;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (wirtschaftsplaene == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      wirtschaftsplaene.export(
-          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL),
-          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME),
-          "wirtschaftsplaene", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          wirtschaftsplaene.export(
+              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL),
+              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME),
+              "wirtschaftsplaene", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

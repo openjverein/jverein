@@ -44,8 +44,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -430,20 +430,21 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (felddefinitionList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      felddefinitionList.export(
-          VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL),
-          VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME),
-          "zusatzfelder", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          felddefinitionList.export(
+              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL),
+              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME),
+              "zusatzfelder", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

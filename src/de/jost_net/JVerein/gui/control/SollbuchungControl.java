@@ -79,6 +79,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
@@ -426,66 +427,86 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   public JVereinTablePart getSollbuchungenList(Action action, boolean umwandeln,
       boolean multi) throws RemoteException, ApplicationException
   {
+    if (sollbuchungenList != null)
+    {
+      return sollbuchungenList;
+    }
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
     GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln, null)
         .get();
-    if (sollbuchungenList == null)
-    {
-      sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
-      sollbuchungenList.addColumn("Nr", "id-int");
-      sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      sollbuchungenList.addColumn("Abrechnungslauf",
-          Sollbuchung.ABRECHNUNGSLAUF);
-      sollbuchungenList.addColumn("Mitglied", Sollbuchung.MITGLIED);
-      sollbuchungenList.addColumn("Zahler", Sollbuchung.ZAHLER);
-      sollbuchungenList.addColumn("Zweck", Sollbuchung.ZWECK1);
-      sollbuchungenList.addColumn("Betrag", Sollbuchung.BETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
-          new Formatter()
-          {
-            @Override
-            public String format(Object o)
-            {
-              return new Zahlungsweg((Integer) o).getText();
-            }
-          });
-      sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-      if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
-      {
-        sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
-      }
-      sollbuchungenList.setMulti(multi);
-      if (action == null)
-      {
-        sollbuchungenList
-            .setContextMenu(new SollbuchungMenu(sollbuchungenList));
-        sollbuchungenList.setAction(
-            new EditAction(SollbuchungDetailView.class, sollbuchungenList));
-        VorZurueckControl.setObjektListe(null, null);
-      }
-      else
-      {
-        sollbuchungenList.setAction(action);
-      }
 
+    sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
+    sollbuchungenList.addColumn("Nr", "id-int");
+    sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    sollbuchungenList.addColumn("Abrechnungslauf", Sollbuchung.ABRECHNUNGSLAUF);
+    sollbuchungenList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+    sollbuchungenList.addColumn("Zahler", Sollbuchung.ZAHLER);
+    sollbuchungenList.addColumn("Zweck", Sollbuchung.ZWECK1);
+    sollbuchungenList.addColumn("Betrag", Sollbuchung.BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
+        new Formatter()
+        {
+          @Override
+          public String format(Object o)
+          {
+            return new Zahlungsweg((Integer) o).getText();
+          }
+        });
+    sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+    }
+    sollbuchungenList.setMulti(multi);
+    if (action == null)
+    {
+      sollbuchungenList.setContextMenu(new SollbuchungMenu(sollbuchungenList));
+      sollbuchungenList.setAction(
+          new EditAction(SollbuchungDetailView.class, sollbuchungenList));
+      VorZurueckControl.setObjektListe(null, null);
     }
     else
     {
-      sollbuchungenList.removeAll();
-      if (sollbuchungen != null)
-      {
-        while (sollbuchungen.hasNext())
-        {
-          sollbuchungenList.addItem(sollbuchungen.next());
-        }
-      }
-      sollbuchungenList.sort();
+      sollbuchungenList.setAction(action);
     }
+
     return sollbuchungenList;
+  }
+
+  // Für Sollbuchungen View
+  @Override
+  public void TabRefresh()
+  {
+    if (sollbuchungenList != null)
+    {
+      try
+      {
+        @SuppressWarnings("rawtypes")
+        GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
+            null).get();
+        sollbuchungenList.removeAll();
+        if (sollbuchungen != null)
+        {
+          while (sollbuchungen.hasNext())
+          {
+            sollbuchungenList.addItem(sollbuchungen.next());
+          }
+        }
+        sollbuchungenList.sort();
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler beim Refresh der Tabelle", e);
+      }
+      catch (ApplicationException e)
+      {
+        GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
+      }
+    }
   }
 
   public JVereinTablePart getMitgliederList(Action action, ContextMenu menu)
@@ -668,27 +689,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       }
     }, null, true, "walking.png");
     return button;
-  }
-
-  // Für Sollbuchungen View
-  @Override
-  public void TabRefresh()
-  {
-    if (sollbuchungenList != null)
-    {
-      try
-      {
-        getSollbuchungenList(null, umwandeln, true);
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler", e);
-      }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-      }
-    }
   }
 
   public static class MitgliedskontoTreeFormatter implements TreeFormatter
@@ -1051,21 +1051,22 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (sollbuchungenList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      sollbuchungenList.export(
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this),
-          "sollbuchungen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          sollbuchungenList.export(
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this),
+              "sollbuchungen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
   public void deregisterSollbuchungConsumer()
