@@ -173,9 +173,14 @@ public class JVereinTablePart extends TablePart
   @Override
   public void addColumn(Column col)
   {
+    addColumn(col, true);
+  }
+
+  public void addColumn(Column col, boolean defaultVisible)
+  {
     try
     {
-      if (settings.getBoolean(getTablePartID() + col.getName(), true))
+      if (settings.getBoolean(getTablePartID() + col.getName(), defaultVisible))
       {
         super.addColumn(col);
       }

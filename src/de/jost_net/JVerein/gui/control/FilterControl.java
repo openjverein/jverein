@@ -395,6 +395,10 @@ public abstract class FilterControl extends VorZurueckControl
 
   public DialogInput getEigenschaftenAuswahl() throws RemoteException
   {
+    if (eigenschaftenabfrage != null)
+    {
+      return eigenschaftenabfrage;
+    }
     String tmp = settings.getString(settingsprefix + "eigenschaften", "");
     StringTokenizer stt = new StringTokenizer(tmp, ",");
     StringBuilder text = new StringBuilder();
@@ -907,11 +911,18 @@ public abstract class FilterControl extends VorZurueckControl
     }
     DIFFERENZ defaultwert = DIFFERENZ.fromString(settings
         .getString(settingsprefix + "differenz", DIFFERENZ.EGAL.toString()));
-    return getDifferenz(defaultwert);
+    differenz = new SelectInput(DIFFERENZ.values(), defaultwert);
+    differenz.setName("Differenz");
+    differenz.addListener(new DifferenzListener());
+    return differenz;
   }
 
   public SelectInput getDifferenz(DIFFERENZ defaultvalue)
   {
+    if (differenz != null)
+    {
+      return differenz;
+    }
     differenz = new SelectInput(DIFFERENZ.values(), defaultvalue);
     differenz.setName("Differenz");
     differenz.addListener(new DifferenzListener());

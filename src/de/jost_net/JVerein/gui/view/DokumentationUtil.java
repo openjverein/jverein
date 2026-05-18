@@ -197,8 +197,6 @@ public class DokumentationUtil
   public static final String EINSTELLUNGEN_RECHNUNGEN = ADMEINSTELLUNG
       + "rechnungen";
 
-  public static final String EINSTELLUNGEN_SPALTEN = ADMEINSTELLUNG + "spalten";
-
   public static final String EINSTELLUNGEN_SPENDENBESCHEINIGUNGEN = ADMEINSTELLUNG
       + "spendenbescheinigungen";
 

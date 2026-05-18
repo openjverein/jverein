@@ -42,7 +42,9 @@ import de.jost_net.JVerein.Variable.LastschriftListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.LehrgangListeFilterMap;
 import de.jost_net.JVerein.Variable.MailListeFilterMap;
+import de.jost_net.JVerein.Variable.MitgliedListeFilterMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.NichtMitgliedListeFilterMap;
 import de.jost_net.JVerein.Variable.ProjektListeFilterMap;
 import de.jost_net.JVerein.Variable.RechnungListeFilterMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -161,6 +163,17 @@ public class VorlageUtil
             map = new MitgliedMap().getMap(mitglied, map);
           }
           break;
+        case MITGLIEDER_DATEINAME:
+        case MITGLIEDER_TITEL:
+        case MITGLIEDER_SUBTITEL:
+          map = new MitgliedListeFilterMap().getMap((FilterControl) obj, map);
+          break;
+        case NICHT_MITGLIEDER_DATEINAME:
+        case NICHT_MITGLIEDER_TITEL:
+        case NICHT_MITGLIEDER_SUBTITEL:
+          map = new NichtMitgliedListeFilterMap().getMap((FilterControl) obj,
+              map);
+          break;
         case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED_DATEINAME:
           // Ein Dokument pro Mitglied
@@ -255,8 +268,8 @@ public class VorlageUtil
         case ARBEITSEINSAETZE_DATEINAME:
         case ARBEITSEINSAETZE_TITEL:
         case ARBEITSEINSAETZE_SUBTITEL:
-          map = new ArbeitseinsatzListeFilterMap()
-              .getMap((FilterControl) obj, map);
+          map = new ArbeitseinsatzListeFilterMap().getMap((FilterControl) obj,
+              map);
           break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
         case SPENDENBESCHEINIGUNGEN_TITEL:
@@ -501,6 +514,16 @@ public class VorlageUtil
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = SpendenbescheinigungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
+          break;
+        case MITGLIEDER_DATEINAME:
+        case MITGLIEDER_TITEL:
+        case MITGLIEDER_SUBTITEL:
+          map = MitgliedListeFilterMap.getDummyMap(map);
+          break;
+        case NICHT_MITGLIEDER_DATEINAME:
+        case NICHT_MITGLIEDER_TITEL:
+        case NICHT_MITGLIEDER_SUBTITEL:
+          map = NichtMitgliedListeFilterMap.getDummyMap(map);
           break;
         case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED_DATEINAME:

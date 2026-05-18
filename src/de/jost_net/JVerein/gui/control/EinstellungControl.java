@@ -43,7 +43,6 @@ import de.jost_net.JVerein.gui.input.SEPALandInput;
 import de.jost_net.JVerein.gui.input.SEPALandObject;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.navigation.MyItem;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.MailSender.IMAPCopyData;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -62,8 +61,6 @@ import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.util.SteuerUtil;
-
-import de.jost_net.JVerein.util.MitgliedSpaltenauswahl;
 import de.jost_net.OBanToo.SEPA.Land.SEPALaender;
 import de.jost_net.OBanToo.SEPA.Land.SEPALand;
 import de.willuhn.jameica.gui.AbstractControl;
@@ -274,8 +271,6 @@ public class EinstellungControl extends AbstractControl
   private IntegerInput jubilarStartAlter;
 
   private Settings settings;
-
-  private MitgliedSpaltenauswahl spalten;
 
   private IntegerInput AnzahlSpaltenStammdatenInput;
 
@@ -1687,20 +1682,6 @@ public class EinstellungControl extends AbstractControl
     return jubilarStartAlter;
   }
 
-  public JVereinTablePart getSpaltendefinitionTable() throws RemoteException
-  {
-    if (spalten == null)
-    {
-      spalten = new MitgliedSpaltenauswahl();
-    }
-    return spalten.paintSpaltenpaintSpaltendefinitionTable();
-  }
-
-  public void setCheckSpalten()
-  {
-    spalten.setCheckSpalten();
-  }
-
   public IntegerInput getAnzahlSpaltenStammdatenInput() throws RemoteException
   {
     {
@@ -2859,21 +2840,6 @@ public class EinstellungControl extends AbstractControl
     catch (RemoteException | ApplicationException e)
     {
       DBTransaction.rollback();
-      Logger.error("Speichern fehlgeschlagen", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
-  public void handleStoreMitgliederSpalten()
-  {
-    try
-    {
-      spalten.save();
-
-      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
-    }
-    catch (RemoteException e)
-    {
       Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }
