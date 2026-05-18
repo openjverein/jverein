@@ -2162,7 +2162,8 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mitgliedList;
     }
-    mitgliedList = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null), null);
+    mitgliedList = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null),
+        null);
     add("Status", "status", false, new Formatter()
     {
       @Override
@@ -2328,11 +2329,13 @@ public class MitgliedControl extends FilterControl implements Savable
     mitgliedList.setRememberState(true);
     if (detailaction instanceof MitgliedDetailAction)
     {
-      mitgliedList.setAction(new EditAction(MitgliedDetailView.class, mitgliedList));
+      mitgliedList
+          .setAction(new EditAction(MitgliedDetailView.class, mitgliedList));
     }
     else if (detailaction instanceof NichtMitgliedDetailAction)
     {
-      mitgliedList.setAction(new EditAction(NichtMitgliedDetailView.class, mitgliedList));
+      mitgliedList.setAction(
+          new EditAction(NichtMitgliedDetailView.class, mitgliedList));
     }
     VorZurueckControl.setObjektListe(null, null);
     return mitgliedList;
@@ -2346,13 +2349,14 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   private void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, Formatter formatter, int align,
+      boolean defaultVisible, Formatter formatter, int align,
       boolean auchNichtMitglied)
   {
     if (isMitglied || auchNichtMitglied)
     {
-      mitgliedList.addColumn(spaltenbezeichnung, spaltenname, formatter, false,
-          align, defaultvalue);
+      mitgliedList.addColumn(
+          new Column(spaltenname, spaltenbezeichnung, formatter, false, align),
+          defaultVisible);
     }
   }
 
@@ -3392,23 +3396,24 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     return new PanelButton(
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-      if (isMitglied)
-      {
-        mitgliedList.export(
-            VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this),
-            VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this),
-            VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this),
-            "mitglieder", art);
-      }
-      else
-      {
-        mitgliedList.export(
-            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this),
-            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this),
-            VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME, this),
-            "nichtmitglieder", art);
-      }
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          if (isMitglied)
+          {
+            mitgliedList.export(
+                VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this),
+                VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this),
+                VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this),
+                "mitglieder", art);
+          }
+          else
+          {
+            mitgliedList.export(
+                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this),
+                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this),
+                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME,
+                    this),
+                "nichtmitglieder", art);
+          }
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }
