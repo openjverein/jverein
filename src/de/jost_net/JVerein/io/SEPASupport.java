@@ -12,7 +12,6 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Variable.AbrechnungsParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -21,7 +20,6 @@ import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.messaging.QueryMessage;
