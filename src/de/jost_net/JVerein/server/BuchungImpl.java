@@ -21,6 +21,7 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -33,8 +34,8 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -240,6 +241,11 @@ public class BuchungImpl extends AbstractJVereinDBObject
         throw new ApplicationException(
             "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
+    }
+    if (getBuchungsart() != null && getBuchungsart().isSteuerBuchungsart())
+    {
+      throw new ApplicationException(
+          "Keine manuelle Buchung auf Steuerbuchungsart möglich.");
     }
 
     if (getVerzicht() && (getUnterlagenWertermittlung()

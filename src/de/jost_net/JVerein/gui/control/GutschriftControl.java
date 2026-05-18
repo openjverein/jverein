@@ -165,8 +165,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
       }
     }
     buchungsartInput = new BuchungsartInput().getBuchungsartInput(
-        buchungsartInput, ba, buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+        ba, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsartInput.addListener(e -> {
       try

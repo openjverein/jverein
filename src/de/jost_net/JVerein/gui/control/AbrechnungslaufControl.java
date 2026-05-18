@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -36,7 +37,6 @@ import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
-import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
@@ -61,7 +61,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -69,6 +68,8 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -106,6 +107,21 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   private BetragSummaryTablePart lastschriftList;
 
   private BetragSummaryTablePart zusatzbetraegeList;
+
+  public final static int TAB_BUCHUNGEN = 0;
+
+  public final static int TAB_SOLLBUCHUNGEN = 1;
+
+  public final static int TAB_LASTSCHRIFTEN = 2;
+
+  public final static int TAB_ZUSATZBETRAEGE = 3;
+
+  private int selectedTab = TAB_BUCHUNGEN;
+
+  public void setFolderSelection(int selection)
+  {
+    selectedTab = selection;
+  }
 
   public AbrechnungslaufControl(AbstractView view)
   {
@@ -287,7 +303,73 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
   }
 
-  public Part getAbrechnungslaeufeList() throws RemoteException
+  public JVereinTablePart getAbrechnungslaeufeList() throws RemoteException
+  {
+    if (abrechnungslaufList != null)
+    {
+      return abrechnungslaufList;
+    }
+
+    abrechnungslaufList = new JVereinTablePart(getAbrechnungslaeufe(),
+        new EditAction(AbrechnungslaufDetailView.class));
+    abrechnungslaufList.addColumn("Nr", "nr");
+    abrechnungslaufList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Modus", "modus",
+        new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
+    abrechnungslaufList.addColumn("Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Stichtag", "stichtag",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+    {
+      abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
+          new JaNeinFormatter());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
+    {
+      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
+          new JaNeinFormatter());
+    }
+    abrechnungslaufList
+        .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
+    abrechnungslaufList.setAction(
+        new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
+    VorZurueckControl.setObjektListe(null, null);
+
+    return abrechnungslaufList;
+  }
+
+  @Override
+  public void TabRefresh()
+  {
+    if (abrechnungslaufList == null)
+    {
+      return;
+    }
+    try
+    {
+      DBIterator<Abrechnungslauf> abrechnungslaeufe = getAbrechnungslaeufe();
+      abrechnungslaufList.removeAll();
+      while (abrechnungslaeufe.hasNext())
+      {
+        abrechnungslaufList.addItem(abrechnungslaeufe.next());
+      }
+      abrechnungslaufList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Abrechnungslauf> getAbrechnungslaeufe()
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Abrechnungslauf> abrechnungslaeufe = service
@@ -303,72 +385,11 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           new Object[] { (Date) getDatumbis().getValue() });
     }
     abrechnungslaeufe.setOrder("ORDER BY datum DESC");
-
-    if (abrechnungslaufList == null)
-    {
-      abrechnungslaufList = new JVereinTablePart(abrechnungslaeufe,
-          new EditAction(AbrechnungslaufDetailView.class));
-      abrechnungslaufList.addColumn("Nr", "nr");
-      abrechnungslaufList.addColumn("Datum", "datum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Modus", "modus",
-          new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
-      abrechnungslaufList.addColumn("Fälligkeit", "faelligkeit",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Stichtag", "stichtag",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
-      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
-      {
-        abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
-            new JaNeinFormatter());
-      }
-      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-      {
-        abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
-            new JaNeinFormatter());
-      }
-      abrechnungslaufList
-          .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
-      abrechnungslaufList.setAction(
-          new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      abrechnungslaufList.removeAll();
-      while (abrechnungslaeufe.hasNext())
-      {
-        abrechnungslaufList.addItem(abrechnungslaeufe.next());
-      }
-      abrechnungslaufList.sort();
-    }
-    return abrechnungslaufList;
-  }
-
-  @Override
-  public void TabRefresh()
-  {
-    if (abrechnungslaufList == null)
-    {
-      return;
-    }
-    try
-    {
-      getAbrechnungslaeufeList();
-    }
-    catch (RemoteException e1)
-    {
-      Logger.error("Fehler", e1);
-    }
+    return abrechnungslaeufe;
   }
 
   @SuppressWarnings("unchecked")
-  public Part getBuchungList() throws RemoteException
+  public JVereinTablePart getBuchungList() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -451,7 +472,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return buchungList;
   }
 
-  public Part getSollbuchungList() throws RemoteException
+  public JVereinTablePart getSollbuchungList() throws RemoteException
   {
     if (sollbuchungList != null)
     {
@@ -487,7 +508,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return sollbuchungList;
   }
 
-  public Part getLastschriftList() throws RemoteException
+  public JVereinTablePart getLastschriftList() throws RemoteException
   {
     if (lastschriftList != null)
     {
@@ -520,7 +541,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return lastschriftList;
   }
 
-  public Part getZusatzbetraegeList() throws RemoteException
+  public JVereinTablePart getZusatzbetraegeList() throws RemoteException
   {
     if (zusatzbetraegeList != null)
     {
@@ -591,70 +612,130 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public ButtonRtoL exportLastschriftButton(ExportArt art)
-      throws ApplicationException
+  public PanelButton getPanelButton()
   {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(lastschriftList,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
-              "abrechnungslauf.lastschrift", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getBuchungList(), getSollbuchungList(),
+            getLastschriftList(), getZusatzbetraegeList()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 
-  public ButtonRtoL exportZusatzbetragButton(ExportArt art)
+  public PanelButton exportAbrechnungslaufTabsButton(ExportArt art)
       throws ApplicationException
   {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(zusatzbetraegeList,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
-              "abrechnungslauf.zusatzbetrag", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          final JVereinTablePart liste;
+          switch (selectedTab)
+          {
+            case TAB_BUCHUNGEN:
+              liste = buchungList;
+              break;
+            case TAB_LASTSCHRIFTEN:
+              liste = lastschriftList;
+              break;
+            case TAB_SOLLBUCHUNGEN:
+              liste = sollbuchungList;
+              break;
+            case TAB_ZUSATZBETRAEGE:
+              liste = zusatzbetraegeList;
+              break;
+            default:
+              liste = null;
+          }
+          if (liste == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+
+          switch (selectedTab)
+          {
+            case TAB_BUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.buchung", art);
+              break;
+            case TAB_LASTSCHRIFTEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.lastschrift", art);
+              break;
+            case TAB_SOLLBUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.sollbuchung", art);
+              break;
+            case TAB_ZUSATZBETRAEGE:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
+                      getAbrechnungslauf()),
+                  "abrechnungslauf.zusatzbetrag", art);
+              break;
+          }
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public ButtonRtoL exportBuchungButton(ExportArt art)
-      throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(buchungList, VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
-              "abrechnungslauf.buchung", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
-  }
-
-  public ButtonRtoL exportSollbuchungButton(ExportArt art)
-      throws ApplicationException
-  {
-    return new ButtonRtoL(art.equals(ExportArt.PDF) ? "PDF" : "CSV",
-        context -> {
-          doExport(sollbuchungList,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
-              VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
-              "abrechnungslauf.sollbuchung", art);
-        }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
-  }
-
-  private void doExport(JVereinTablePart tabelle, VorlageTyp titel,
-      VorlageTyp subtitel, VorlageTyp dateiname, String settingPrefix,
-      ExportArt art) throws ApplicationException
-  {
-    if (tabelle == null)
+    if (abrechnungslaufList == null)
     {
       throw new ApplicationException(
-          "Der Export kann nicht durchgeführt werden, Tabelle ist nicht geladen.");
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    tabelle.export(VorlageUtil.getName(titel, getAbrechnungslauf()),
-        VorlageUtil.getName(subtitel, getAbrechnungslauf()),
-        VorlageUtil.getName(dateiname, getAbrechnungslauf()), settingPrefix,
-        art);
-    GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          abrechnungslaufList.export(
+              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this),
+              "abrechnungslaeufe", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
+
 }

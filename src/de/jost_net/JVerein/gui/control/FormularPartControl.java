@@ -44,6 +44,10 @@ public abstract class FormularPartControl extends VorZurueckControl
 
   public JVereinTablePart getFormularfeldList() throws RemoteException
   {
+    if (formularfelderList != null)
+    {
+      return formularfelderList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Formularfeld> formularfelder = service
         .createList(Formularfeld.class);

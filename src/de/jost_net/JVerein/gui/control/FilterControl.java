@@ -67,7 +67,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -320,7 +319,7 @@ public abstract class FilterControl extends VorZurueckControl
     return status != null;
   }
 
-  public Input getMitgliedArt()
+  public SelectInput getMitgliedArt()
   {
     if (art != null)
     {

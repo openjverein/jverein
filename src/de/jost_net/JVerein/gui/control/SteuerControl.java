@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.menu.SteuerMenue;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -50,8 +51,8 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -154,8 +155,9 @@ public class SteuerControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        getSteuer().getBuchungsart(), null, (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
+        getSteuer().getBuchungsart(), buchungsarttyp.STEUERART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.setMandatory(true);
     buchungsart.setComment("");
@@ -266,18 +268,20 @@ public class SteuerControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (steuerList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      steuerList.export(VorlageUtil.getName(VorlageTyp.STEUERN_TITEL),
-          VorlageUtil.getName(VorlageTyp.STEUERN_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.STEUERN_DATEINAME), "steuern", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          steuerList.export(VorlageUtil.getName(VorlageTyp.STEUERN_TITEL),
+              VorlageUtil.getName(VorlageTyp.STEUERN_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.STEUERN_DATEINAME), "steuern",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

@@ -62,7 +62,8 @@ public abstract class SollbuchungExport implements Exporter
     this.control.getDatumbis().setValue(objects[4]);
     this.control.getMailauswahl()
         .setValue(new MailAuswertungObject((int) objects[5]));
-
+    this.control.getSuchtext().setValue(objects[6]);
+    this.control.getDoubleAusw().setValue(objects[7]);
     open();
 
     DBIterator<Mitglied> mitgl = Einstellungen.getDBService()

@@ -32,7 +32,6 @@ import de.jost_net.JVerein.gui.view.AnfangsbestandListeView;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
-import de.jost_net.JVerein.gui.view.ArbeitseinsatzUeberpruefungView;
 import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
 import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
@@ -274,12 +273,6 @@ public class MyExtension implements Extension
       auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
           new StartViewAction(StatistikJahrgaengeView.class),
           "chart-line.png"));
-      if ((Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
-      {
-        auswertung.addChild(new MyItem(mitglieder, "Arbeitseinsätze",
-            new StartViewAction(ArbeitseinsatzUeberpruefungView.class),
-            "screwdriver.png"));
-      }
       jverein.addChild(auswertung);
 
       NavigationItem mail = new MyItem(jverein, "Druck & Mail", null);
