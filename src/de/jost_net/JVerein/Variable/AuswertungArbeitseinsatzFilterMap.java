@@ -21,12 +21,12 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
+import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 
 public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(ArbeitseinsatzControl control,
+  public Map<String, Object> getMap(ArbeitseinsatzAbrechnungControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
