@@ -28,18 +28,20 @@ import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
-
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.SuchVersand;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -51,6 +53,7 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -577,5 +580,23 @@ public class LastschriftControl extends FilterControl implements Savable
       GUI.startView(PreNotificationMailView.class, new Lastschrift[] { la });
     }, getLastschrift(), false, "document-print.png");
     return b;
+  }
+
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (lastschriftList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lastschriftList.export(
+              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_DATEINAME, this),
+              "lastschriften", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

@@ -59,6 +59,7 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -301,7 +302,73 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
   }
 
-  public Part getAbrechnungslaeufeList() throws RemoteException
+  public JVereinTablePart getAbrechnungslaeufeList() throws RemoteException
+  {
+    if (abrechnungslaufList != null)
+    {
+      return abrechnungslaufList;
+    }
+
+    abrechnungslaufList = new JVereinTablePart(getAbrechnungslaeufe(),
+        new EditAction(AbrechnungslaufDetailView.class));
+    abrechnungslaufList.addColumn("Nr", "nr");
+    abrechnungslaufList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Modus", "modus",
+        new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
+    abrechnungslaufList.addColumn("Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Stichtag", "stichtag",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+    {
+      abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
+          new JaNeinFormatter());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
+    {
+      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
+          new JaNeinFormatter());
+    }
+    abrechnungslaufList
+        .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
+    abrechnungslaufList.setAction(
+        new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
+    VorZurueckControl.setObjektListe(null, null);
+
+    return abrechnungslaufList;
+  }
+
+  @Override
+  public void TabRefresh()
+  {
+    if (abrechnungslaufList == null)
+    {
+      return;
+    }
+    try
+    {
+      DBIterator<Abrechnungslauf> abrechnungslaeufe = getAbrechnungslaeufe();
+      abrechnungslaufList.removeAll();
+      while (abrechnungslaeufe.hasNext())
+      {
+        abrechnungslaufList.addItem(abrechnungslaeufe.next());
+      }
+      abrechnungslaufList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Abrechnungslauf> getAbrechnungslaeufe()
+      throws RemoteException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Abrechnungslauf> abrechnungslaeufe = service
@@ -317,68 +384,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
           new Object[] { (Date) getDatumbis().getValue() });
     }
     abrechnungslaeufe.setOrder("ORDER BY datum DESC");
-
-    if (abrechnungslaufList == null)
-    {
-      abrechnungslaufList = new JVereinTablePart(abrechnungslaeufe,
-          new EditAction(AbrechnungslaufDetailView.class));
-      abrechnungslaufList.addColumn("Nr", "nr");
-      abrechnungslaufList.addColumn("Datum", "datum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Modus", "modus",
-          new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
-      abrechnungslaufList.addColumn("Fälligkeit", "faelligkeit",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Stichtag", "stichtag",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
-      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
-      {
-        abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
-            new JaNeinFormatter());
-      }
-      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-      {
-        abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
-            new JaNeinFormatter());
-      }
-      abrechnungslaufList
-          .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
-      abrechnungslaufList.setAction(
-          new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      abrechnungslaufList.removeAll();
-      while (abrechnungslaeufe.hasNext())
-      {
-        abrechnungslaufList.addItem(abrechnungslaeufe.next());
-      }
-      abrechnungslaufList.sort();
-    }
-    return abrechnungslaufList;
-  }
-
-  @Override
-  public void TabRefresh()
-  {
-    if (abrechnungslaufList == null)
-    {
-      return;
-    }
-    try
-    {
-      getAbrechnungslaeufeList();
-    }
-    catch (RemoteException e1)
-    {
-      Logger.error("Fehler", e1);
-    }
+    return abrechnungslaeufe;
   }
 
   @SuppressWarnings("unchecked")
@@ -689,6 +695,24 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   "abrechnungslauf.zusatzbetrag", art);
               break;
           }
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (abrechnungslaufList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+      abrechnungslaufList.export(
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this),
+          "abrechnungslaeufe", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 

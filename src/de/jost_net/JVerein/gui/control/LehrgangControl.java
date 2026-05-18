@@ -28,22 +28,26 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -315,37 +319,30 @@ public class LehrgangControl extends FilterControl implements Savable
     return lehrgaenge;
   }
 
-  public Part getLehrgaengeList() throws RemoteException
+  public JVereinTablePart getLehrgaengeList() throws RemoteException
   {
+    if (lehrgaengeList != null)
+    {
+      return lehrgaengeList;
+    }
     DBIterator<Lehrgang> lehrgaenge = getIterator();
-    if (lehrgaengeList == null)
-    {
-      lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
-      lehrgaengeList.addColumn("Nr", "id-int");
-      lehrgaengeList.addColumn("Name", "mitglied");
-      lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
-      lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
-      lehrgaengeList.addColumn("Von/am", "von",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      lehrgaengeList.addColumn("Bis", "bis",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      lehrgaengeList.addColumn("Veranstalter", "veranstalter");
-      lehrgaengeList.addColumn("Ergebnis", "ergebnis");
-      lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
-      lehrgaengeList.setMulti(true);
-      lehrgaengeList
-          .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      lehrgaengeList.removeAll();
-      while (lehrgaenge.hasNext())
-      {
-        lehrgaengeList.addItem(lehrgaenge.next());
-      }
-      lehrgaengeList.sort();
-    }
+    lehrgaengeList = new JVereinTablePart(lehrgaenge, null);
+    lehrgaengeList.addColumn("Nr", "id-int");
+    lehrgaengeList.addColumn("Name", "mitglied");
+    lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
+    lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
+    lehrgaengeList.addColumn("Von/am", "von",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lehrgaengeList.addColumn("Bis", "bis",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lehrgaengeList.addColumn("Veranstalter", "veranstalter");
+    lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
+    lehrgaengeList.setMulti(true);
+    lehrgaengeList
+        .setAction(new EditAction(LehrgangDetailView.class, lehrgaengeList));
+    VorZurueckControl.setObjektListe(null, null);
+
     return lehrgaengeList;
   }
 
@@ -371,4 +368,21 @@ public class LehrgangControl extends FilterControl implements Savable
     return mitglied;
   }
 
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (lehrgaengeList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lehrgaengeList.export(
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.LEHRGAENGE_DATEINAME, this),
+              "lehrgaenge", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
 }

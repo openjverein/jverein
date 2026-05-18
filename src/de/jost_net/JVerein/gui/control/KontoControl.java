@@ -40,6 +40,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
@@ -48,6 +49,7 @@ import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -56,6 +58,7 @@ import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -65,7 +68,6 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -77,6 +79,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.hbci.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -327,8 +330,13 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  public Part getKontenList() throws RemoteException
+  public JVereinTablePart getKontenList() throws RemoteException
   {
+    if (kontenList != null)
+    {
+      return kontenList;
+    }
+
     kontenList = new JVereinTablePart(getKonten(), null);
     kontenList.addColumn("Nummer", "nummer");
     kontenList.addColumn("Bezeichnung", "bezeichnung");
@@ -394,7 +402,6 @@ public class KontoControl extends FilterControl implements Savable
     {
       return;
     }
-    kontenList.removeAll();
     try
     {
       kontenList.removeAll();
@@ -1318,4 +1325,20 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (kontenList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          kontenList.export(VorlageUtil.getName(VorlageTyp.KONTEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.KONTEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.KONTEN_DATEINAME, this), "konten",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
 }
