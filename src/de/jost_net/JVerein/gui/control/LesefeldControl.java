@@ -32,11 +32,14 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LesefeldMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.LesefeldDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lesefeld;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.LesefeldAuswerter;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -45,6 +48,7 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -423,22 +427,23 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * @return Die Lesefelder Tabelle für den LesefeldListeView.
    * 
    */
-  public Part getLesefelderList() throws RemoteException
+  public JVereinTablePart getLesefelderList() throws RemoteException
   {
-    if (lesefeldList == null)
+    if (lesefeldList != null)
     {
-      // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
-      // evaluierte Ausgabe gesetzt ist
-      lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
-          null);
-      lesefeldList.addColumn("Skript-Name", "bezeichnung");
-      lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
-      lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
-      lesefeldList.setMulti(true);
-      lesefeldList
-          .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
-      VorZurueckControl.setObjektListe(null, null);
+      return lesefeldList;
     }
+    // Wir holen die Lesefelder vom lesefeldAuswerter weil bei denen auch die
+    // evaluierte Ausgabe gesetzt ist
+    lesefeldList = new JVereinTablePart(lesefeldAuswerter.getLesefelder(),
+        null);
+    lesefeldList.addColumn("Skript-Name", "bezeichnung");
+    lesefeldList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
+    lesefeldList.setContextMenu(new LesefeldMenu(lesefeldList));
+    lesefeldList.setMulti(true);
+    lesefeldList
+        .setAction(new EditAction(LesefeldDetailView.class, lesefeldList));
+    VorZurueckControl.setObjektListe(null, null);
     return lesefeldList;
   }
 
@@ -464,7 +469,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     }
     catch (RemoteException ex)
     {
-      Logger.error("Fehler", ex);
+      Logger.error("Fehler beim Refresh der Tabelle", ex);
     }
   }
 
@@ -561,5 +566,22 @@ public class LesefeldControl extends VorZurueckControl implements Savable
         }
       }
     }
+  }
+
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (lesefeldList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lesefeldList.export(VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL),
+              VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME),
+              "lesefelder", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

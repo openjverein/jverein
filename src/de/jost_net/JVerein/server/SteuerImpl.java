@@ -220,6 +220,18 @@ public class SteuerImpl extends AbstractJVereinDBObject implements Steuer
         throw new ApplicationException(
             "Steuer-Buchungsart mit Art Umbuchung ist nicht möglich.");
       }
+
+      if (getBuchungsart().hasBuchungen())
+      {
+        throw new ApplicationException(
+            "Buchungsart enthält bereit Buchungen. Kann nicht als Steuer-Buchungsart verwendet werden.");
+      }
+
+      if (getBuchungsart().getSteuer() != null)
+      {
+        throw new ApplicationException(
+            "Buchungsart hat eine Steuer gesetzt. Kann nicht als Steuer-Buchungsart verwendet werden.");
+      }
     }
     catch (RemoteException e)
     {

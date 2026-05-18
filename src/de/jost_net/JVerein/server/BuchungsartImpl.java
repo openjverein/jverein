@@ -137,6 +137,12 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         throw new ApplicationException(
             "Bei Spenden und Abschreibungen ist keine Steuer möglich.");
       }
+
+      if (getSteuer() != null && isSteuerBuchungsart())
+      {
+        throw new ApplicationException(
+            "Steuerbuchungsart kann keine Steuer haben.");
+      }
     }
     catch (RemoteException e)
     {
@@ -456,5 +462,28 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Buchungsarten";
+  }
+
+  @Override
+  public boolean isSteuerBuchungsart() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("steuer");
+    it.addColumn("id");
+    it.setLimit(1);
+    it.addFilter("buchungsart = ?", getID());
+    return it.hasNext();
+  }
+
+  @Override
+  public boolean hasBuchungen() throws RemoteException
+  {
+    // TODO auch andere Tabellen prüfen?
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addColumn("id");
+    it.setLimit(1);
+    it.addFilter("buchungsart = ?", getID());
+    // Alte Steuerbuchungen zählen nicht
+    it.addFilter("dependencyid is NUll OR dependencyid = -1");
+    return it.hasNext();
   }
 }

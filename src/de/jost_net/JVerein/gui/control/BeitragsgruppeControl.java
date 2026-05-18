@@ -68,7 +68,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -375,7 +374,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
         getBeitragsgruppe().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
@@ -713,20 +712,21 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     return beitragsgruppeList;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (beitragsgruppeList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      beitragsgruppeList.export(
-          VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_TITEL),
-          VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_DATEINAME),
-          "beitragsgruppen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          beitragsgruppeList.export(
+              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_TITEL),
+              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_DATEINAME),
+              "beitragsgruppen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

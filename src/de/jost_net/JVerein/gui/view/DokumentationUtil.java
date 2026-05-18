@@ -152,9 +152,6 @@ public class DokumentationUtil
   public static final String STATISTIKJAHRGAENGE = AUSWERTUNGEN
       + "statistik-jahrgange";
 
-  public static final String ARBEITSEINSATZPRUEFEN = AUSWERTUNGEN
-      + "arbeitseinsatz";
-
   // Druck und Mail
   public static final String RECHNUNG_MAIL = DRUCKMAIL + "rechnungen";
 

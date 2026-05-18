@@ -280,9 +280,8 @@ public class ZusatzbetragPart implements Part
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(buchungsart,
-        zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART,
-        (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(zusatzbetrag.getBuchungsart(),
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {

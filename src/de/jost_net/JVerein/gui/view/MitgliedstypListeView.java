@@ -43,8 +43,6 @@ public class MitgliedstypListeView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSTYPEN, false, "question-circle.png");
-    buttons.addButton(control.exportButton(ExportArt.CSV));
-    buttons.addButton(control.exportButton(ExportArt.PDF));
     buttons.addButton("Neu",
         new NewAction(MitgliedstypDetailView.class, Mitgliedstyp.class), null,
         false, "document-new.png");
@@ -59,5 +57,8 @@ public class MitgliedstypListeView extends AbstractView
           new MitgliedstypDefaultAction());
     }
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

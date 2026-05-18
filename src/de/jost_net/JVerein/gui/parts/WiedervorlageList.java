@@ -32,8 +32,8 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.logging.Logger;
 
 public class WiedervorlageList extends JVereinTablePart
 {
@@ -48,35 +48,28 @@ public class WiedervorlageList extends JVereinTablePart
     this.control = control;
   }
 
-  public Part getWiedervorlageList() throws RemoteException
+  public AutoUpdateTablePart getWiedervorlageList() throws RemoteException
   {
+    if (wiedervorlageList != null)
+    {
+      return wiedervorlageList;
+    }
     DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
-    if (wiedervorlageList == null)
-    {
-      wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen, null);
-      wiedervorlageList.addColumn("Nr", "id-int");
-      wiedervorlageList.addColumn("Name", "mitglied");
-      wiedervorlageList.addColumn("Datum", "datum",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      wiedervorlageList.addColumn("Vermerk", "vermerk");
-      wiedervorlageList.addColumn("Erledigung", "erledigung",
-          new DateFormatter(new JVDateFormatTTMMJJJJ()));
-      wiedervorlageList
-          .setContextMenu(new WiedervorlageMenu(wiedervorlageList));
-      wiedervorlageList.setMulti(true);
-      wiedervorlageList.setAction(
-          new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      wiedervorlageList.removeAll();
-      while (wiedervorlagen.hasNext())
-      {
-        wiedervorlageList.addItem(wiedervorlagen.next());
-      }
-      wiedervorlageList.sort();
-    }
+
+    wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen, null);
+    wiedervorlageList.addColumn("Nr", "id-int");
+    wiedervorlageList.addColumn("Name", "mitglied");
+    wiedervorlageList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    wiedervorlageList.addColumn("Vermerk", "vermerk");
+    wiedervorlageList.addColumn("Erledigung", "erledigung",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    wiedervorlageList.setContextMenu(new WiedervorlageMenu(wiedervorlageList));
+    wiedervorlageList.setMulti(true);
+    wiedervorlageList.setAction(
+        new EditAction(WiedervorlageDetailView.class, wiedervorlageList));
+    VorZurueckControl.setObjektListe(null, null);
+
     return wiedervorlageList;
   }
 
@@ -151,12 +144,21 @@ public class WiedervorlageList extends JVereinTablePart
   {
     try
     {
-      getWiedervorlageList();
+      if (wiedervorlageList == null)
+      {
+        return;
+      }
+      DBIterator<Wiedervorlage> wiedervorlagen = getIterator();
+      wiedervorlageList.removeAll();
+      while (wiedervorlagen.hasNext())
+      {
+        wiedervorlageList.addItem(wiedervorlagen.next());
+      }
+      wiedervorlageList.sort();
     }
     catch (RemoteException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.error("Fehler beim Refresh der Tabelle", e);
     }
   }
 }

@@ -32,10 +32,9 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -126,8 +125,12 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getBuchungsklasseList() throws RemoteException
+  public JVereinTablePart getBuchungsklasseList() throws RemoteException
   {
+    if (buchungsklassenList != null)
+    {
+      return buchungsklassenList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsklasse> buchungsklassen = service
         .createList(Buchungsklasse.class);
@@ -145,20 +148,21 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     return buchungsklassenList;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (buchungsklassenList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      buchungsklassenList.export(
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_TITEL),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_DATEINAME),
-          "buchungsklassen", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          buchungsklassenList.export(
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_TITEL),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSEN_DATEINAME),
+              "buchungsklassen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

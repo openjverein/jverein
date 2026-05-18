@@ -23,11 +23,12 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
+import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -78,14 +79,19 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FORMULARE, false, "question-circle.png");
 
-    buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
-        getCurrentObject(), false, "edit-copy.png");
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton("Anzeigen", new FormularAnzeigeAction(),
+        getCurrentObject(), false, "edit-copy.png");
     buttons.addButton(new SaveButton(control));
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView()
+        .addPanelButton(control.exportFormularFelderButton(ExportArt.PDF));
+    GUI.getView()
+        .addPanelButton(control.exportFormularFelderButton(ExportArt.CSV));
   }
 
   @Override

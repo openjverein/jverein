@@ -26,19 +26,25 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.WiedervorlageList;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -207,8 +213,12 @@ public class WiedervorlageControl extends FilterControl implements Savable
     }
   }
 
-  public Part getWiedervorlageList() throws RemoteException
+  public AutoUpdateTablePart getWiedervorlageList() throws RemoteException
   {
+    if (wiedervorlageList != null)
+    {
+      return wiedervorlageList.getWiedervorlageList();
+    }
     wiedervorlageList = new WiedervorlageList(
         new StartViewAction(WiedervorlageListeView.class), this);
     return wiedervorlageList.getWiedervorlageList();
@@ -224,4 +234,36 @@ public class WiedervorlageControl extends FilterControl implements Savable
     wiedervorlageList.refresh();
   }
 
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (wiedervorlageList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    JVereinTablePart liste;
+    try
+    {
+      liste = (JVereinTablePart) wiedervorlageList.getWiedervorlageList();
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    if (liste == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          liste.export(
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.WIEDERVORLAGEN_DATEINAME, this),
+              "wiedervorlagen", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
 }

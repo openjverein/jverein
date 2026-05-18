@@ -200,9 +200,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput(anlagenart,
-        buchung.getBuchungsart(), buchungsarttyp.ANLAGENART,
-        (Integer) Einstellungen
+    anlagenart = new BuchungsartInput().getBuchungsartInput(buchung.getBuchungsart(),
+        buchungsarttyp.ANLAGENART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
@@ -278,8 +277,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     {
       return afaart;
     }
-    afaart = new BuchungsartInput().getBuchungsartInput(afaart, null,
-        buchungsarttyp.AFAART, (Integer) Einstellungen
+    afaart = new BuchungsartInput().getBuchungsartInput(null, buchungsarttyp.AFAART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     return afaart;
   }

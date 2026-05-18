@@ -49,13 +49,12 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -350,8 +349,12 @@ public class FormularControl extends FormularPartControl implements Savable
     }
   }
 
-  public Part getFormularList() throws RemoteException
+  public JVereinTablePart getFormularList() throws RemoteException
   {
+    if (formularList != null)
+    {
+      return formularList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Formular> formulare = service.createList(Formular.class);
     formulare.setOrder("ORDER BY art, bezeichnung");
@@ -373,30 +376,65 @@ public class FormularControl extends FormularPartControl implements Savable
 
   public void refreshFormularTable() throws RemoteException
   {
-    formularList.removeAll();
-    DBIterator<Formular> formulare = Einstellungen.getDBService()
-        .createList(Formular.class);
-    formulare.setOrder("ORDER BY art, bezeichnung");
-    while (formulare.hasNext())
+    if (formularList != null)
     {
-      formularList.addItem(formulare.next());
+      formularList.removeAll();
+      DBIterator<Formular> formulare = Einstellungen.getDBService()
+          .createList(Formular.class);
+      formulare.setOrder("ORDER BY art, bezeichnung");
+      while (formulare.hasNext())
+      {
+        formularList.addItem(formulare.next());
+      }
+      formularList.sort();
     }
-    formularList.sort();
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (formularList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
-          VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
-          art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
+              VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
+              art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton exportFormularFelderButton(ExportArt art)
+      throws ApplicationException
+  {
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
+        context -> {
+          if (formularfelderList == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+          String bezeichnung = "";
+          try
+          {
+            bezeichnung = getBezeichnung(false).getValue().toString();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Kann Bezeichnung nicht lesen", e);
+          }
+          formularfelderList.export(
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_TITEL, bezeichnung),
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_SUBTITEL,
+                  bezeichnung),
+              VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
+                  bezeichnung),
+              "formularfelder", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }
