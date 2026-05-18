@@ -88,8 +88,10 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportButton2(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportButton2(ExportArt.CSV));
+    GUI.getView()
+        .addPanelButton(control.exportFormularFelderButton(ExportArt.PDF));
+    GUI.getView()
+        .addPanelButton(control.exportFormularFelderButton(ExportArt.CSV));
   }
 
   @Override
