@@ -268,8 +268,8 @@ public class VorlageUtil
         case ARBEITSEINSAETZE_DATEINAME:
         case ARBEITSEINSAETZE_TITEL:
         case ARBEITSEINSAETZE_SUBTITEL:
-          map = new ArbeitseinsatzListeFilterMap()
-              .getMap((FilterControl) obj, map);
+          map = new ArbeitseinsatzListeFilterMap().getMap((FilterControl) obj,
+              map);
           break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
         case SPENDENBESCHEINIGUNGEN_TITEL:
