@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
@@ -282,14 +281,12 @@ public class JVereinTablePart extends TablePart
                 col.getWidth(), BaseColor.LIGHT_GRAY);
           }
           reporter.createHeader();
-          ArrayList<Rectangle> r = new ArrayList<>();
 
           for (TableItem row : rows)
           {
             for (TableColumn col : listeAuswahl)
             {
               int index = listeOrig.indexOf(col);
-              r.add(row.getTextBounds(index));
               reporter.addColumn(row.getText(index),
                   col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                       : Element.ALIGN_RIGHT);
