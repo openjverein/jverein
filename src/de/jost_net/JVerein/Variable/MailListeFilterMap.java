@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
@@ -11,22 +10,20 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 
-public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
+public class MailListeFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(ArbeitseinsatzAbrechnungControl control,
+  public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
@@ -39,17 +36,29 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
       map = inma;
     }
 
-    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+    for (MailListeFilterVar var : MailListeFilterVar
         .values())
     {
       Object value = null;
       switch (var)
       {
-        case FILTER_AUSWERTUNG:
-          value = control.getAuswertungSchluessel().getText();
+        case MAIL_EMPFAENGER:
+          value = control.getSuchname().getValue().toString();
           break;
-        case FILTER_JAHR:
-          value = control.getSuchJahr().getText();
+        case BETREFF:
+          value = control.getSuchtext().getValue().toString();
+          break;
+        case DATUM_BEARBEITUNG_VON_F:
+          value = fromDate((Date) control.getEingabedatumvon().getValue());
+          break;
+        case DATUM_BEARBEITUNG_BIS_F:
+          value = fromDate((Date) control.getEingabedatumbis().getValue());
+          break;
+        case DATUM_VERSAND_VON_F:
+          value = fromDate((Date) control.getDatumvon().getValue());
+          break;
+        case DATUM_VERSAND_BIS_F:
+          value = fromDate((Date) control.getDatumbis().getValue());
           break;
       }
       map.put(var.getName(), value);
@@ -68,22 +77,33 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
     {
       map = inMap;
     }
-    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+    for (MailListeFilterVar var : MailListeFilterVar
         .values())
     {
       Object value = null;
       switch (var)
       {
-        case FILTER_AUSWERTUNG:
-          value = "ALLE";
+        case MAIL_EMPFAENGER:
+          value = "Meier";
           break;
-        case FILTER_JAHR:
-          value = "2024";
+        case BETREFF:
+          value = "Betreff";
+          break;
+        case DATUM_BEARBEITUNG_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BEARBEITUNG_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_VERSAND_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_VERSAND_BIS_F:
+          value = "20241231";
           break;
       }
       map.put(var.getName(), value);
     }
-
     return map;
   }
 }

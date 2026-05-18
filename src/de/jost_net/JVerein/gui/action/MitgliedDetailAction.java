@@ -23,7 +23,6 @@ import de.jost_net.JVerein.gui.control.FamilienbeitragNode;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.io.ArbeitseinsatzZeile;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
@@ -64,11 +63,6 @@ public class MitgliedDetailAction implements Action
       {
         Arbeitseinsatz aeins = (Arbeitseinsatz) context;
         mitglied = aeins.getMitglied();
-      }
-      else if (context instanceof ArbeitseinsatzZeile)
-      {
-        ArbeitseinsatzZeile aez = (ArbeitseinsatzZeile) context;
-        mitglied = (Mitglied) aez.getAttribute("mitglied");
       }
       else if (context instanceof Mitglied)
       {

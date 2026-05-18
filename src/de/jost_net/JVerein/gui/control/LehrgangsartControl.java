@@ -34,11 +34,10 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -167,8 +166,12 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getLehrgangsartList() throws RemoteException
+  public JVereinTablePart getLehrgangsartList() throws RemoteException
   {
+    if (lehrgangsartList != null)
+    {
+      return lehrgangsartList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Lehrgangsart> lehrgangsarten = service
         .createList(Lehrgangsart.class);
@@ -201,20 +204,21 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsartList.sort();
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (lehrgangsartList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      lehrgangsartList.export(
-          VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_TITEL),
-          VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_DATEINAME),
-          "lehrgangsarten", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          lehrgangsartList.export(
+              VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_TITEL),
+              VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.LEHRGANGSARTEN_DATEINAME),
+              "lehrgangsarten", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

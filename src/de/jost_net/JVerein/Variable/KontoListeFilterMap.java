@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
@@ -11,22 +10,19 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not,
  * see <http://www.gnu.org/licenses/>.
  *
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 
-public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
+public class KontoListeFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(ArbeitseinsatzAbrechnungControl control,
+  public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;
@@ -39,17 +35,23 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
       map = inma;
     }
 
-    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+    for (KontoListeFilterVar var : KontoListeFilterVar
         .values())
     {
       Object value = null;
       switch (var)
       {
-        case FILTER_AUSWERTUNG:
-          value = control.getAuswertungSchluessel().getText();
+        case NUMMER:
+          value = control.getSuchtext().getValue().toString();
           break;
-        case FILTER_JAHR:
-          value = control.getSuchJahr().getText();
+        case BEZEICHNUNG:
+          value = control.getSuchname().getValue().toString();
+          break;
+        case STATUS:
+          value = control.getSuchStatus("Nur aktive Konten").getText();
+          break;
+        case KONTOART:
+          value = control.getSuchKontoart().getText();
           break;
       }
       map.put(var.getName(), value);
@@ -68,22 +70,27 @@ public class AuswertungArbeitseinsatzFilterMap extends AbstractMap
     {
       map = inMap;
     }
-    for (AuswertungArbeitseinsatzFilterVar var : AuswertungArbeitseinsatzFilterVar
+    for (KontoListeFilterVar var : KontoListeFilterVar
         .values())
     {
       Object value = null;
       switch (var)
       {
-        case FILTER_AUSWERTUNG:
-          value = "ALLE";
+        case NUMMER:
+          value = "1234";
           break;
-        case FILTER_JAHR:
-          value = "2024";
+        case BEZEICHNUNG:
+          value = "Giro";
+          break;
+        case KONTOART:
+          value = "Alle";
+          break;
+        case STATUS:
+          value = "Nur aktive Konten";
           break;
       }
       map.put(var.getName(), value);
     }
-
     return map;
   }
 }
