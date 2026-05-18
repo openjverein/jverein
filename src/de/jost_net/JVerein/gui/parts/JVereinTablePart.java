@@ -285,10 +285,21 @@ public class JVereinTablePart extends TablePart
   public void addColumn(String title, String field, Formatter f,
       boolean changeable, int align, boolean defaultvisible)
   {
-    if (defaultvisible)
+    Column col = new Column(field, title, f, changeable, align);
+    try
     {
-      super.addColumn(new Column(field, title, f, changeable, align));
+      if (settings.getBoolean(getTablePartID() + col.getName(), defaultvisible))
+      {
+        super.addColumn(col);
+      }
     }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim ermitteln der TablePartID", e);
+      // Dann zeigen wir sie mit an
+      super.addColumn(col);
+    }
+    this.allColumns.add(col);
   }
 
   /**
