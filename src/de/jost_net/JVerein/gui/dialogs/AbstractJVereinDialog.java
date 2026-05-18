@@ -30,6 +30,7 @@ public abstract class AbstractJVereinDialog<T> extends AbstractDialog<T>
     super(position);
   }
 
+  @Override
   protected Shell createShell(Shell parent, int flags)
   {
     Shell activeShell = parent.getDisplay().getActiveShell();

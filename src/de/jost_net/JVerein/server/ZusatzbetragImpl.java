@@ -565,6 +565,7 @@ public class ZusatzbetragImpl extends AbstractJVereinDBObject
     return "Mitglieder.Zusatzbeträge";
   }
 
+  @Override
   public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
       throws RemoteException
   {

@@ -498,6 +498,7 @@ public class KursteilnehmerImpl extends AbstractJVereinDBObject
     return d;
   }
 
+  @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
     switch (art)

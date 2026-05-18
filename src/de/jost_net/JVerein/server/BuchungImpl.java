@@ -922,6 +922,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
     super.delete();
   }
 
+  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");

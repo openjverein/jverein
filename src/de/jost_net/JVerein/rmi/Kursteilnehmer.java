@@ -49,6 +49,7 @@ public interface Kursteilnehmer extends JVereinDBObject, ILastschrift
 
   public void setStaat(String staat) throws RemoteException;
 
+  @Override
   public String getEmail() throws RemoteException;
 
   public void setEmail(String email) throws RemoteException;

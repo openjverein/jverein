@@ -49,6 +49,7 @@ public class DBVersionTest extends AbstractBox
   /**
    * @see de.willuhn.jameica.gui.boxes.Box#setEnabled(boolean)
    */
+  @Override
   public void setEnabled(boolean enabled)
   {
     // Das darf der User nicht.

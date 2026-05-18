@@ -449,6 +449,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   // Prüft die gespeicherten Eigenschaften aus der DB
+  @Override
   public void checkEigenschaften() throws RemoteException, ApplicationException
   {
     TreePart eigenschaftenTree = new TreePart(new EigenschaftenNode(this),
@@ -457,6 +458,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   }
 
   // Prüft die Eigenschaften aus dem TreePart
+  @Override
   public void checkEigenschaften(TreePart eigenschaftenTree)
       throws RemoteException, ApplicationException
   {
@@ -878,6 +880,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     setAttribute("iban", iban);
   }
 
+  @Override
   public String getKontoinhaber(namenformat art) throws RemoteException
   {
     switch (art)
@@ -1603,6 +1606,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     }
   }
 
+  @Override
   public void clearKtoi() throws RemoteException
   {
     setAttribute("ktoiname", "");

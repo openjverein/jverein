@@ -71,6 +71,7 @@ public interface Sollbuchung extends JVereinDBObject, IGutschriftProvider
   public void setAbrechnungslauf(Abrechnungslauf abrechnungslauf)
       throws RemoteException;
 
+  @Override
   public Mitglied getMitglied() throws RemoteException;
 
   public String getMitgliedId() throws RemoteException;
