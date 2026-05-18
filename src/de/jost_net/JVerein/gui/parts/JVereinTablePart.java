@@ -220,7 +220,8 @@ public class JVereinTablePart extends TablePart
 
     if (items.size() == 0)
     {
-      return "";
+      tablePartId = "";
+      return tablePartId;
     }
     StringBuilder sb = new StringBuilder();
 

@@ -611,7 +611,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
-    }, "Spalten asuwählen");
+    }, "Spalten auswählen");
   }
 
   public ButtonRtoL exportLastschriftButton(ExportArt art)

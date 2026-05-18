@@ -144,7 +144,7 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
         Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
-    }, "Spalten asuwählen");
+    }, "Spalten auswählen");
   }
 
   public Input getBezeichnung(boolean withFocus) throws RemoteException
