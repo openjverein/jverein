@@ -48,13 +48,12 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -367,8 +366,12 @@ public class JahresabschlussControl extends KontensaldoControl
     }
   }
 
-  public Part getJahresabschlussList() throws RemoteException
+  public JVereinTablePart getJahresabschlussList() throws RemoteException
   {
+    if (jahresabschlussList != null)
+    {
+      return jahresabschlussList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<Jahresabschluss> jahresabschluesse = service
         .createList(Jahresabschluss.class);
@@ -458,20 +461,41 @@ public class JahresabschlussControl extends KontensaldoControl
     return text;
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (jahresabschlussList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
+        context -> {
       jahresabschlussList.export(
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
           VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
           "jahresabschluesse", art);
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton exportJahresabschlussButton(ExportArt art) throws ApplicationException
+  {
+    if (saldoList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
+        context -> {
+          saldoList.export(
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
+          "jahresabschluss", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

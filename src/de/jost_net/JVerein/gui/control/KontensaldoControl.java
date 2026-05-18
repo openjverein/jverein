@@ -18,14 +18,15 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -51,7 +52,7 @@ public class KontensaldoControl extends AbstractSaldoControl
 
   public static final String KONTO_NUMMER = "konto_nummer";
 
-  private SaldoListTablePart saldoList;
+  protected SaldoListTablePart saldoList;
 
   protected boolean summensaldo;
 
