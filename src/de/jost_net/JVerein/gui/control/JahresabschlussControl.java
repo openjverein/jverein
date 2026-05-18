@@ -480,7 +480,7 @@ public class JahresabschlussControl extends KontensaldoControl
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public PanelButton exportButton2(ExportArt art) throws ApplicationException
+  public PanelButton exportJahresabschlussButton(ExportArt art) throws ApplicationException
   {
     if (saldoList == null)
     {
