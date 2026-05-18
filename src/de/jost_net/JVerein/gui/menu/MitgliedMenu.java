@@ -22,21 +22,20 @@ import org.eclipse.swt.SWT;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
-import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.ForderungAction;
+import de.jost_net.JVerein.gui.action.GutschriftAction;
 import de.jost_net.JVerein.gui.action.MitgliedArbeitseinsatzZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDeleteAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedEigenschaftZuordnungAction;
-import de.jost_net.JVerein.gui.action.MitgliedInZwischenablageKopierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedLastschriftAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardDateiAction;
 import de.jost_net.JVerein.gui.action.MitgliedVCardQRCodeAction;
 import de.jost_net.JVerein.gui.action.MitgliedZusatzbetraegeZuordnungAction;
+import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SpendenbescheinigungNeuAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -92,8 +91,6 @@ public class MitgliedMenu extends ContextMenu
     }
     addItem(new CheckedSingleContextMenuItem("Duplizieren",
         new MitgliedDuplizierenAction(), "edit-copy.png"));
-    addItem(new CheckedContextMenuItem("In Zwischenablage kopieren",
-        new MitgliedInZwischenablageKopierenAction(), "edit-copy.png"));
     addItem(new CheckedContextMenuItem("Eigenschaften",
         new MitgliedEigenschaftZuordnungAction(), "document-properties.png"));
     addItem(new CheckedContextMenuItem("Zusatzbetrag zuordnen",
