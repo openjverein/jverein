@@ -19,6 +19,13 @@ package de.jost_net.JVerein.keys;
 public enum VorlageTyp
 {
   // Dateinamen
+  MITGLIEDER_DATEINAME("mitglieder-dateiname", "Mitglieder Dateiname",
+      "Mitglieder-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  NICHT_MITGLIEDER_DATEINAME("nichtmitglieder-dateiname",
+      "Nicht-Miglieder Dateiname",
+      "Nicht-Miglieder-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
   SPENDENBESCHEINIGUNG_DATEINAME("spendenbescheinigung-dateiname",
       "Spendenbescheinigung Dateiname",
       "Spendenbescheinigung-$aktuellesdatum-$aktuellezeit",
@@ -358,11 +365,20 @@ public enum VorlageTyp
       "Steuern-$aktuellesdatum-$aktuellezeit", Vorlageart.DATEINAME.getKey()),
 
   // Titel Mitglieder
+  MITGLIEDER_TITEL("mitglieder-titel", "Mitglieder Titel", "Mitglieder",
+      Vorlageart.TITEL.getKey()),
+  MITGLIEDER_SUBTITEL("mitglieder-subtitel", "Mitglieder Subtitel", "",
+      Vorlageart.TITEL.getKey()),
+  NICHT_MITGLIEDER_TITEL("nichtmitglieder-titel", "Nicht-Mitglieder Titel",
+      "Nicht-Mitglieder", Vorlageart.TITEL.getKey()),
+  NICHT_MITGLIEDER_SUBTITEL("nichtmitglieder-subtitel",
+      "Nicht-Mitglieder Subtitel", "", Vorlageart.TITEL.getKey()),
   KONTOAUSZUG_TITEL("kontoauszug-titel", "Kontoauszug Titel", "$verein_name",
       Vorlageart.TITEL.getKey()),
   KONTOAUSZUG_SUBTITEL("kontoauszug-subtitel", "Kontoauszug Subtitel",
       "Kontoauszug $mitglied_vornamename, Stand: $udateformat.format(\"dd.MM.yyyy\",$udateformat.parse(\"yyyyMMdd\",$aktuellesdatum))",
       Vorlageart.TITEL.getKey()),
+
   // Reports aus Mitglieder
   PERSONALBOGEN_TITEL("personalbogen-titel", "Personalbogen Titel",
       "Personalbogen $mitglied_name $mitglied_vorname",

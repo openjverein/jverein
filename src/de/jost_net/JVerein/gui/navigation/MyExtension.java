@@ -26,8 +26,8 @@ import de.jost_net.JVerein.gui.action.KontenrahmenExportAction;
 import de.jost_net.JVerein.gui.action.KontenrahmenImportAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
-import de.jost_net.JVerein.gui.view.AbweichendeZahlerView;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufListeView;
+import de.jost_net.JVerein.gui.view.AbweichendeZahlerView;
 import de.jost_net.JVerein.gui.view.AnfangsbestandListeView;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
@@ -36,11 +36,10 @@ import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
 import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseListeView;
 import de.jost_net.JVerein.gui.view.BuchungsklasseSaldoView;
-import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
-import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.DbBereinigenView;
 import de.jost_net.JVerein.gui.view.EigenschaftGruppeListeView;
 import de.jost_net.JVerein.gui.view.EigenschaftListeView;
@@ -48,22 +47,21 @@ import de.jost_net.JVerein.gui.view.EinstellungenAbrechnungView;
 import de.jost_net.JVerein.gui.view.EinstellungenAllgemeinView;
 import de.jost_net.JVerein.gui.view.EinstellungenAnzeigeView;
 import de.jost_net.JVerein.gui.view.EinstellungenBuchfuehrungView;
-import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
 import de.jost_net.JVerein.gui.view.EinstellungenMailView;
 import de.jost_net.JVerein.gui.view.EinstellungenMitgliedAnsichtView;
-import de.jost_net.JVerein.gui.view.EinstellungenMitgliederSpaltenView;
 import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
+import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
+import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
-import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
 import de.jost_net.JVerein.gui.view.JubilaeenView;
-import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
+import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
 import de.jost_net.JVerein.gui.view.KursteilnehmerListeView;
 import de.jost_net.JVerein.gui.view.LastschriftListeView;
@@ -95,6 +93,7 @@ import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanListeView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragListeView;
+import de.jost_net.JVerein.gui.view.ZusatzfeldListeView;
 import de.willuhn.jameica.gui.NavigationItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
@@ -320,10 +319,6 @@ public class MyExtension implements Extension
       administrationEinstellungen.addChild(new MyItem(
           administrationEinstellungen, "Anzeige",
           new StartViewAction(EinstellungenAnzeigeView.class), "wrench.png"));
-      administrationEinstellungen.addChild(
-          new MyItem(administrationEinstellungen, "Mitglieder Spalten",
-              new StartViewAction(EinstellungenMitgliederSpaltenView.class),
-              "wrench.png"));
       administrationEinstellungen.addChild(
           new MyItem(administrationEinstellungen, "Mitglieder Ansicht",
               new StartViewAction(EinstellungenMitgliedAnsichtView.class),
