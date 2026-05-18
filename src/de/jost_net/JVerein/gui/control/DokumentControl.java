@@ -262,6 +262,7 @@ public class DokumentControl extends AbstractControl
     target.addDropListener(new DropTargetListener()
     {
 
+      @Override
       public void dragEnter(DropTargetEvent event)
       {
         if (event.detail == DND.DROP_DEFAULT)
@@ -284,6 +285,7 @@ public class DokumentControl extends AbstractControl
         }
       }
 
+      @Override
       public void drop(DropTargetEvent event)
       {
         if (event.data == null)

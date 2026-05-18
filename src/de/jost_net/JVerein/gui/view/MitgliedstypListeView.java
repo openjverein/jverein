@@ -38,7 +38,7 @@ public class MitgliedstypListeView extends AbstractView
 
     MitgliedstypControl control = new MitgliedstypControl(this);
 
-    control.getMitgliedstypList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -60,5 +60,6 @@ public class MitgliedstypListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

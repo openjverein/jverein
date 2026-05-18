@@ -31,7 +31,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -131,8 +130,8 @@ public class MailVorlageControl extends VorZurueckControl
     }
   }
 
-  public JVereinTablePart getMailVorlageTable(Action action)
-      throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (mailvorlageList != null)
     {
@@ -143,16 +142,10 @@ public class MailVorlageControl extends VorZurueckControl
     mailvorlageList = new JVereinTablePart(fdef, null);
     mailvorlageList.addColumn("Betreff", "betreff");
     mailvorlageList.setContextMenu(new MailVorlageMenu(mailvorlageList));
-    if (action != null)
-    {
-      mailvorlageList.setAction(action);
-    }
-    else
-    {
-      mailvorlageList.setMulti(true);
-      mailvorlageList.setAction(
-          new EditAction(MailVorlageDetailView.class, mailvorlageList));
-    }
+    mailvorlageList.setMulti(true);
+    mailvorlageList.setAction(
+        new EditAction(MailVorlageDetailView.class, mailvorlageList));
+
     VorZurueckControl.setObjektListe(null, null);
     return mailvorlageList;
   }

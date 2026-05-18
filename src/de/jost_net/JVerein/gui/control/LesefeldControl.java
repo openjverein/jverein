@@ -173,13 +173,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * Listener, der Änderungen bei suchMitglied überwacht.
    * 
    */
-  public class SuchMitgliedListener implements Listener
+  private class SuchMitgliedListener implements Listener
   {
-
-    SuchMitgliedListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -231,13 +226,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * Listener, der Änderungen bei mitglied überwacht.
    * 
    */
-  public class MitgliedListener implements Listener
+  private class MitgliedListener implements Listener
   {
-
-    MitgliedListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
@@ -427,7 +417,8 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * @return Die Lesefelder Tabelle für den LesefeldListeView.
    * 
    */
-  public JVereinTablePart getLesefelderList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (lesefeldList != null)
     {

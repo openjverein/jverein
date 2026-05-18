@@ -84,7 +84,7 @@ public class JahresabschlussDetailView extends AbstractView
           control.getZwanghafteWeitergabe());
     }
 
-    control.getSaldoList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),

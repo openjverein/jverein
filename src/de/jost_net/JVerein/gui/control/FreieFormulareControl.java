@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FreiesFormularAusgabe;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -125,6 +126,7 @@ public class FreieFormulareControl extends DruckMailControl
     return getMitglieder(this.view.getCurrentObject());
   }
 
+  @Override
   public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;
@@ -167,5 +169,12 @@ public class FreieFormulareControl extends DruckMailControl
   protected void TabRefresh()
   {
     // Nichts tun, hier ist keine Tabelle implementiert
+  }
+
+  @Override
+  protected JVereinTablePart getTablePart() throws RemoteException
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
   }
 }

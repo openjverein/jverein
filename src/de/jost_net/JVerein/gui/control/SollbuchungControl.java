@@ -34,6 +34,7 @@ import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartBearbeitenMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedskontoMenu;
@@ -85,6 +86,7 @@ import de.willuhn.jameica.gui.util.SWTUtil;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -424,8 +426,15 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return mitgliedskontoTree;
   }
 
-  public JVereinTablePart getSollbuchungenList(Action action, boolean umwandeln,
-      boolean multi) throws RemoteException, ApplicationException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    // TODO richtig so?
+    return getTablePart(null, false, false);
+  }
+
+  public JVereinTablePart getTablePart(Action action, boolean umwandeln,
+      boolean multi) throws RemoteException
   {
     if (sollbuchungenList != null)
     {
@@ -502,10 +511,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       {
         Logger.error("Fehler beim Refresh der Tabelle", e);
       }
-      catch (ApplicationException e)
-      {
-        GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-      }
     }
   }
 
@@ -551,7 +556,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public Part getSollbuchungPositionListPart() throws RemoteException
+  public JVereinTablePart getSollbuchungList() throws RemoteException
   {
     if (buchungList != null)
     {
@@ -581,7 +586,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return buchungList;
   }
 
-  public Part getBuchungListPart() throws RemoteException
+  public JVereinTablePart getBuchungList() throws RemoteException
   {
     if (istbuchungList != null)
     {
@@ -655,10 +660,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       Logger.error("Fehler", e);
     }
-    catch (ApplicationException e)
-    {
-      GUI.getStatusBar().setErrorText(e.getLocalizedMessage());
-    }
   }
 
   public Button getStartKontoauszugButton(final Object currentObject)
@@ -691,7 +692,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return button;
   }
 
-  public static class MitgliedskontoTreeFormatter implements TreeFormatter
+  private static class MitgliedskontoTreeFormatter implements TreeFormatter
   {
     @Override
     public void format(TreeItem item)
@@ -1067,6 +1068,26 @@ public class SollbuchungControl extends DruckMailControl implements Savable
               "sollbuchungen", art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getSollbuchungList(), getBuchungList())
+            .open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 
   public void deregisterSollbuchungConsumer()

@@ -78,11 +78,11 @@ public class SollbuchungDetailView extends AbstractDetailView
     comp.setLayoutData(new GridData(GridData.END));
 
     buttons1.paint(cont.getComposite());
-    cont.addPart(control.getSollbuchungPositionListPart());
+    cont.addPart(control.getSollbuchungList());
 
     LabelGroup buch = new LabelGroup(scrolled.getComposite(),
         "Zugeordnete Buchungen");
-    buch.addPart(control.getBuchungListPart());
+    buch.addPart(control.getBuchungList());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -96,6 +96,8 @@ public class SollbuchungDetailView extends AbstractDetailView
     buttons.addButton(save);
 
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override

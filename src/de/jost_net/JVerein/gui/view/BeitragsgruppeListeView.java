@@ -35,7 +35,7 @@ public class BeitragsgruppeListeView extends AbstractView
 
     BeitragsgruppeControl control = new BeitragsgruppeControl(this);
 
-    control.getBeitragsgruppeTable().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -45,8 +45,8 @@ public class BeitragsgruppeListeView extends AbstractView
         null, false, "document-new.png");
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getPanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

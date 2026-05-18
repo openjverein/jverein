@@ -88,42 +88,35 @@ public class SteuerControl extends VorZurueckControl implements Savable
     return steuer;
   }
 
-  public JVereinTablePart getSteuerList() throws ApplicationException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    try
+    if (steuerList != null)
     {
-      if (steuerList != null)
-      {
-        return steuerList;
-      }
-      DBIterator<Steuer> steuern = Einstellungen.getDBService()
-          .createList(Steuer.class);
-
-      steuerList = new JVereinTablePart(steuern, null);
-      steuerList.addColumn("Name", "name");
-      steuerList.addColumn("Steuersatz", "satz", o -> {
-        return Einstellungen.DECIMALFORMAT.format(o) + "%";
-      }, false, Column.ALIGN_RIGHT);
-      steuerList.addColumn("Buchungsart", "buchungsart",
-          new BuchungsartFormatter());
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
-      {
-        steuerList.addColumn("Buchungsklasse", "buchungsklasse",
-            new BuchungsklasseFormatter());
-      }
-      steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
-      steuerList.setContextMenu(new SteuerMenue(steuerList));
-      steuerList.setMulti(true);
-      steuerList.setCheckable(false);
-      steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));
       return steuerList;
     }
-    catch (RemoteException e)
+    DBIterator<Steuer> steuern = Einstellungen.getDBService()
+        .createList(Steuer.class);
+
+    steuerList = new JVereinTablePart(steuern, null);
+    steuerList.addColumn("Name", "name");
+    steuerList.addColumn("Steuersatz", "satz", o -> {
+      return Einstellungen.DECIMALFORMAT.format(o) + "%";
+    }, false, Column.ALIGN_RIGHT);
+    steuerList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      throw new ApplicationException(
-          String.format("Fehler aufgetreten %s", e.getMessage()));
+      steuerList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
     }
+    steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
+    steuerList.setContextMenu(new SteuerMenue(steuerList));
+    steuerList.setMulti(true);
+    steuerList.setCheckable(false);
+    steuerList.setAction(new EditAction(SteuerDetailView.class, steuerList));
+    return steuerList;
   }
 
   public TextInput getName() throws RemoteException

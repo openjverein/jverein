@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
@@ -174,15 +173,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   }
 
   /**
-   * Erstellt den TablePart mit allen Spalten, die Liste wird aus getList()
-   * geholt.
-   * 
-   * @return der TablePart
-   * @throws ApplicationException
-   */
-  public abstract JVereinTablePart getSaldoList() throws ApplicationException;
-
-  /**
    * Liefert die Liste
    * 
    * @return die Liste der Einträge
@@ -211,10 +201,10 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
       }
 
       ArrayList<PseudoDBObject> zeile = getList();
-      getSaldoList().removeAll();
+      getTablePart().removeAll();
       for (PseudoDBObject sz : zeile)
       {
-        getSaldoList().addItem(sz);
+        getTablePart().addItem(sz);
       }
     }
     catch (RemoteException re)

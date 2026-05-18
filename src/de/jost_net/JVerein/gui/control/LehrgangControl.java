@@ -319,7 +319,8 @@ public class LehrgangControl extends FilterControl implements Savable
     return lehrgaenge;
   }
 
-  public JVereinTablePart getLehrgaengeList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (lehrgaengeList != null)
     {

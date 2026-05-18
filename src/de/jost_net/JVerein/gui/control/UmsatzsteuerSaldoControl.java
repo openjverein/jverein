@@ -62,39 +62,32 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public SaldoListTablePart getSaldoList() throws ApplicationException
+  public SaldoListTablePart getTablePart() throws RemoteException
   {
-    try
+    if (saldoList != null)
     {
-      if (saldoList != null)
+      return saldoList;
+    }
+    saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
+    {
+      @Override
+      protected void orderBy(int index)
       {
-        return saldoList;
+        return;
       }
-      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
-      {
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
-      saldoList.addColumn("Steuer Name", STEUER);
-      saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Steuerbetrag", STEUERBETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Anzahl", ANZAHL);
-      saldoList.setMulti(true);
-      saldoList.setFormatter(new SaldoFormatter());
-      saldoList.setContextMenu(new SaldoMenu(this));
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
-    }
+    };
+    saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
+    saldoList.addColumn("Steuer Name", STEUER);
+    saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Steuerbetrag", STEUERBETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Anzahl", ANZAHL);
+    saldoList.setMulti(true);
+    saldoList.setFormatter(new SaldoFormatter());
+    saldoList.setContextMenu(new SaldoMenu(this));
     return saldoList;
   }
 

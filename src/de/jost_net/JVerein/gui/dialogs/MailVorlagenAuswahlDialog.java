@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.MailVorlage;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -64,8 +65,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
       {
         try
         {
-          retval = (MailVorlage) control.getMailVorlageTable(null)
-              .getSelection();
+          retval = (MailVorlage) control.getTablePart().getSelection();
         }
         catch (RemoteException e)
         {
@@ -75,7 +75,9 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
         close();
       }
     };
-    control.getMailVorlageTable(action).paint(parent);
+    JVereinTablePart tablepart = control.getTablePart();
+    tablepart.setAction(action);
+    tablepart.paint(parent);
 
     ButtonArea b = new ButtonArea();
 

@@ -135,7 +135,7 @@ public class BuchungListeView extends AbstractView
     left2.addLabelPair("Saldo:", headerControl.getAktJahrSaldoInput());
     right2.addLabelPair("Saldo:", headerControl.getVorJahrSaldoInput());
 
-    control.getBuchungsList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

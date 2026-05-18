@@ -88,6 +88,8 @@ public class RechnungDetailView extends AbstractDetailView
     buttons.addButton(control.getMahnungDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override
