@@ -18,22 +18,27 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -111,7 +116,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
   }
 
-  public Part getArbeitseinsatzTable() throws RemoteException
+  public JVereinTablePart getArbeitseinsatzTable() throws RemoteException
   {
     if (arbeitseinsatzList != null)
     {
@@ -201,4 +206,23 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     return arbeitseinsaetze;
   }
+
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  {
+    if (arbeitseinsatzList == null)
+    {
+      throw new ApplicationException(
+          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+    }
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+      arbeitseinsatzList.export(
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
+          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
+          "arbeitseinsaetze", art);
+      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
 }

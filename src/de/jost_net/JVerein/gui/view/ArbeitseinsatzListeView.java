@@ -22,6 +22,7 @@ import de.jost_net.JVerein.gui.action.ArbeitseinsatzZusatzbetraegeAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.willuhn.jameica.gui.AbstractView;
@@ -81,5 +82,8 @@ public class ArbeitseinsatzListeView extends AbstractView
         new NewAction(ArbeitseinsatzDetailView.class, Arbeitseinsatz.class),
         control, false, "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
   }
 }

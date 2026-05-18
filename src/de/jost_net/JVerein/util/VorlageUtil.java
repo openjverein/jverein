@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AnfangsbestandListeFilterMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
+import de.jost_net.JVerein.Variable.ArbeitseinsatzListeFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungJubilareFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungKursteilnehmerFilterMap;
@@ -34,6 +35,7 @@ import de.jost_net.JVerein.Variable.AuswertungMitgliederstatistikFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
+import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
 import de.jost_net.JVerein.Variable.KontoListeFilterMap;
 import de.jost_net.JVerein.Variable.KursteilnehmerListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftListeFilterMap;
@@ -58,6 +60,7 @@ import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.ProjektControl;
@@ -196,6 +199,8 @@ public class VorlageUtil
         case FREIES_FORMULAR_DATEINAME:
         case FORMULAR_DATEINAME:
         case FORMULARFELDER_DATEINAME:
+        case FORMULARFELDER_TITEL:
+        case FORMULARFELDER_SUBTITEL:
           map.put("formular_name", (String) obj);
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
@@ -260,6 +265,12 @@ public class VorlageUtil
           map = new ZusatzbetragListeFilterMap()
               .getMap((ZusatzbetragControl) obj, map);
           break;
+        case ARBEITSEINSAETZE_DATEINAME:
+        case ARBEITSEINSAETZE_TITEL:
+        case ARBEITSEINSAETZE_SUBTITEL:
+          map = new ArbeitseinsatzListeFilterMap()
+              .getMap((FilterControl) obj, map);
+          break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
         case SPENDENBESCHEINIGUNGEN_TITEL:
         case SPENDENBESCHEINIGUNGEN_SUBTITEL:
@@ -290,6 +301,12 @@ public class VorlageUtil
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = new AnlagenbuchungListeFilterMap().getMap((BuchungsControl) obj,
               map);
+          break;
+        case JAHRESABSCHLUSS_DATEINAME:
+        case JAHRESABSCHLUSS_TITEL:
+        case JAHRESABSCHLUSS_SUBTITEL:
+          map = new JahresabschlussListeFilterMap()
+              .getMap((JahresabschlussControl) obj, map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
@@ -380,6 +397,9 @@ public class VorlageUtil
         case ZUSATZFELDER_DATEINAME:
         case ZUSATZFELDER_TITEL:
         case ZUSATZFELDER_SUBTITEL:
+        case LESEFELDER_DATEINAME:
+        case LESEFELDER_TITEL:
+        case LESEFELDER_SUBTITEL:
         case FORMULARE_DATEINAME:
         case FORMULARE_TITEL:
         case FORMULARE_SUBTITEL:
@@ -395,6 +415,9 @@ public class VorlageUtil
         case JAHRESABSCHLUESSE_DATEINAME:
         case JAHRESABSCHLUESSE_TITEL:
         case JAHRESABSCHLUESSE_SUBTITEL:
+        case ZUSATZBETRAEGE_VORLAGEN_DATEINAME:
+        case ZUSATZBETRAEGE_VORLAGEN_TITEL:
+        case ZUSATZBETRAEGE_VORLAGEN_SUBTITEL:
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
@@ -530,6 +553,8 @@ public class VorlageUtil
           map.put("formular_name", "Rechnung");
           break;
         case FORMULARFELDER_DATEINAME:
+        case FORMULARFELDER_TITEL:
+        case FORMULARFELDER_SUBTITEL:
           map.put("formular_name", "Rechnung");
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
@@ -590,6 +615,11 @@ public class VorlageUtil
         case ZUSATZBETRAEGE_SUBTITEL:
           map = ZusatzbetragListeFilterMap.getDummyMap(map);
           break;
+        case ARBEITSEINSAETZE_DATEINAME:
+        case ARBEITSEINSAETZE_TITEL:
+        case ARBEITSEINSAETZE_SUBTITEL:
+          map = ArbeitseinsatzListeFilterMap.getDummyMap(map);
+          break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
         case SPENDENBESCHEINIGUNGEN_TITEL:
         case SPENDENBESCHEINIGUNGEN_SUBTITEL:
@@ -618,6 +648,11 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = AnlagenbuchungListeFilterMap.getDummyMap(map);
+          break;
+        case JAHRESABSCHLUSS_DATEINAME:
+        case JAHRESABSCHLUSS_TITEL:
+        case JAHRESABSCHLUSS_SUBTITEL:
+          map = JahresabschlussListeFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
@@ -700,6 +735,9 @@ public class VorlageUtil
         case ZUSATZFELDER_DATEINAME:
         case ZUSATZFELDER_TITEL:
         case ZUSATZFELDER_SUBTITEL:
+        case LESEFELDER_DATEINAME:
+        case LESEFELDER_TITEL:
+        case LESEFELDER_SUBTITEL:
         case FORMULARE_DATEINAME:
         case FORMULARE_TITEL:
         case FORMULARE_SUBTITEL:
@@ -715,6 +753,9 @@ public class VorlageUtil
         case JAHRESABSCHLUESSE_DATEINAME:
         case JAHRESABSCHLUESSE_TITEL:
         case JAHRESABSCHLUESSE_SUBTITEL:
+        case ZUSATZBETRAEGE_VORLAGEN_DATEINAME:
+        case ZUSATZBETRAEGE_VORLAGEN_TITEL:
+        case ZUSATZBETRAEGE_VORLAGEN_SUBTITEL:
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:

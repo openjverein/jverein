@@ -44,14 +44,13 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -341,86 +340,77 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
   }
 
-  public Part getBuchungsartList() throws RemoteException
+  public JVereinTablePart getBuchungsartList() throws RemoteException
   {
-    if (buchungsartList == null)
+    if (buchungsartList != null)
     {
-      buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
-      buchungsartList.addColumn("Nummer", "nummer");
-      buchungsartList.addColumn("Bezeichnung", "bezeichnung");
-      buchungsartList.addColumn("Art", "art", new Formatter()
+      return buchungsartList;
+    }
+    buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
+    buchungsartList.addColumn("Nummer", "nummer");
+    buchungsartList.addColumn("Bezeichnung", "bezeichnung");
+    buchungsartList.addColumn("Art", "art", new Formatter()
+    {
+      @Override
+      public String format(Object o)
       {
-        @Override
-        public String format(Object o)
+        if (o == null)
         {
-          if (o == null)
-          {
-            return "";
-          }
-          if (o instanceof Integer)
-          {
-            return ArtBuchungsart.get((Integer) o);
-          }
-          return "ungültig";
-        }
-      }, false, Column.ALIGN_LEFT);
-      buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
-          new BuchungsklasseFormatter());
-      buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
-      buchungsartList.addColumn("Abschreibung", "abschreibung",
-          new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
-      if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
-      {
-        buchungsartList.addColumn("Steuer", "steuer", o -> {
-          if (o == null)
-          {
-            return "";
-          }
-          try
-          {
-            return ((Steuer) o).getName();
-          }
-          catch (RemoteException e)
-          {
-            Logger.error("Fehler", e);
-          }
           return "";
-        }, false, Column.ALIGN_RIGHT);
-      }
-      buchungsartList.addColumn("Status", "status", new Formatter()
-      {
-        @Override
-        public String format(Object o)
-        {
-          if (o == null)
-          {
-            return "";
-          }
-          if (o instanceof Integer)
-          {
-            return StatusBuchungsart.get((Integer) o);
-          }
-          return "ungültig";
         }
-      }, false, Column.ALIGN_LEFT);
-      buchungsartList.addColumn("Suchtext", "suchbegriff");
-      buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
-      buchungsartList.setMulti(true);
-      buchungsartList.setRememberState(true);
-      buchungsartList.setAction(
-          new EditAction(BuchungsartDetailView.class, buchungsartList));
-      VorZurueckControl.setObjektListe(null, null);
-    }
-    else
-    {
-      buchungsartList.removeAll();
-      DBIterator<Buchungsart> buchungsarten = getBuchungsarten();
-      while (buchungsarten.hasNext())
-      {
-        buchungsartList.addItem(buchungsarten.next());
+        if (o instanceof Integer)
+        {
+          return ArtBuchungsart.get((Integer) o);
+        }
+        return "ungültig";
       }
-      buchungsartList.sort();
+    }, false, Column.ALIGN_LEFT);
+    buchungsartList.addColumn("Buchungsklasse", "buchungsklasse",
+        new BuchungsklasseFormatter());
+    buchungsartList.addColumn("Spende", "spende", new JaNeinFormatter());
+    buchungsartList.addColumn("Abschreibung", "abschreibung",
+        new JaNeinFormatter(), false, Column.ALIGN_RIGHT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    {
+      buchungsartList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
     }
+    buchungsartList.addColumn("Status", "status", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        if (o == null)
+        {
+          return "";
+        }
+        if (o instanceof Integer)
+        {
+          return StatusBuchungsart.get((Integer) o);
+        }
+        return "ungültig";
+      }
+    }, false, Column.ALIGN_LEFT);
+    buchungsartList.addColumn("Suchtext", "suchbegriff");
+    buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
+    buchungsartList.setMulti(true);
+    buchungsartList.setRememberState(true);
+    buchungsartList.setAction(
+        new EditAction(BuchungsartDetailView.class, buchungsartList));
+    VorZurueckControl.setObjektListe(null, null);
     return buchungsartList;
   }
 
@@ -469,28 +459,38 @@ public class BuchungsartControl extends FilterControl implements Savable
   {
     try
     {
-      getBuchungsartList();
+      if (buchungsartList != null)
+      {
+        buchungsartList.removeAll();
+        DBIterator<Buchungsart> buchungsarten = getBuchungsarten();
+        while (buchungsarten.hasNext())
+        {
+          buchungsartList.addItem(buchungsarten.next());
+        }
+        buchungsartList.sort();
+      }
     }
     catch (RemoteException e)
     {
-      //
+      Logger.error("Fehler beim Refresh der Tabelle", e);
     }
   }
 
-  public Button exportButton(ExportArt art) throws ApplicationException
+  public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (buchungsartList == null)
     {
       throw new ApplicationException(
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
-    return new Button(art.equals(ExportArt.PDF) ? "PDF" : "CSV", context -> {
-      buchungsartList.export(
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this),
-          "buchungsarten", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-    }, null, false, art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png");
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          buchungsartList.export(
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this),
+              "buchungsarten", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

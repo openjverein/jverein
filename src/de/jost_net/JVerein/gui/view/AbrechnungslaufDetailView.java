@@ -77,34 +77,18 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
     TabGroup tabBuchung = new TabGroup(folder, "Buchungen", true, 1);
-    ButtonAreaRtoL buchbuttons = new ButtonAreaRtoL();
-    buchbuttons.addButton(control.exportBuchungButton(ExportArt.PDF));
-    buchbuttons.addButton(control.exportBuchungButton(ExportArt.CSV));
-    buchbuttons.paint(tabBuchung.getComposite());
     control.getBuchungList().paint(tabBuchung.getComposite());
 
     TabGroup tabSollbuchung = new TabGroup(folder, "Sollbuchungen", true, 1);
-    ButtonAreaRtoL sollbbuttons = new ButtonAreaRtoL();
-    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.PDF));
-    sollbbuttons.addButton(control.exportSollbuchungButton(ExportArt.CSV));
-    sollbbuttons.paint(tabSollbuchung.getComposite());
     control.getSollbuchungList().paint(tabSollbuchung.getComposite());
 
     TabGroup tabLastschriften = new TabGroup(folder, "Lastschriften", true, 1);
-    ButtonAreaRtoL lastbuttons = new ButtonAreaRtoL();
-    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.PDF));
-    lastbuttons.addButton(control.exportLastschriftButton(ExportArt.CSV));
-    lastbuttons.paint(tabLastschriften.getComposite());
     control.getLastschriftList().paint(tabLastschriften.getComposite());
 
     if ((boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
       TabGroup tabZusatzbetraege = new TabGroup(folder, "Zusatzbeträge", true,
           1);
-      ButtonAreaRtoL zusatzbuttons = new ButtonAreaRtoL();
-      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.PDF));
-      zusatzbuttons.addButton(control.exportZusatzbetragButton(ExportArt.CSV));
-      zusatzbuttons.paint(tabZusatzbetraege.getComposite());
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
@@ -112,6 +96,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     if (tabindex != -1)
     {
       folder.setSelection(tabindex);
+      control.setFolderSelection(tabindex);
     }
     folder.addSelectionListener(new SelectionListener()
     {
@@ -119,6 +104,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
       public void widgetSelected(SelectionEvent evt)
       {
         tabindex = folder.getSelectionIndex();
+        control.setFolderSelection(tabindex);
       }
 
       @Override
@@ -135,6 +121,9 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportAbrechnungslaufTabsButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportAbrechnungslaufTabsButton(ExportArt.CSV));
   }
 
   @Override
