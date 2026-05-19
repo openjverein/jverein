@@ -60,9 +60,6 @@ import de.willuhn.jameica.system.Application;
  */
 public class Reporter
 {
-
-  // private I18N i18n = null;
-
   private ArrayList<PdfPCell> headers;
 
   private ArrayList<Integer> widths;
@@ -95,6 +92,17 @@ public class Reporter
   {
     return FontFactory.getFont("/fonts/FreeSans.ttf", BaseFont.IDENTITY_H, size,
         Font.UNDERLINE, color);
+  }
+
+  public static Font getFreeSansItalic(float size, BaseColor color)
+  {
+    return FontFactory.getFont("/fonts/FreeSansItalic.ttf", BaseFont.IDENTITY_H,
+        size, Font.ITALIC, color);
+  }
+
+  public static Font getFreeSansItalic(float size)
+  {
+    return getFreeSansItalic(size, null);
   }
 
   public static Font getFreeSans(float size)
@@ -359,6 +367,12 @@ public class Reporter
   public void addColumn(String text, int align, Font font)
   {
     addColumn(getDetailCell(text, align, zellenColor, true, font));
+  }
+
+  public void addColumn(String text, int align, BaseColor color, Font font)
+  {
+    addColumn(getDetailCell(text, align, zellenTransparent ? null : color, true,
+        font));
   }
 
   /**

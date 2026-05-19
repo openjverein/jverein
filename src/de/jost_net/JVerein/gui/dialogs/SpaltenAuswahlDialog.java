@@ -27,11 +27,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -39,9 +36,6 @@ import de.willuhn.util.ApplicationException;
 
 public class SpaltenAuswahlDialog extends AbstractDialog<List<TableColumn>>
 {
-
-  private TablePart spaltenList;
-
   private List<TableColumn> list;
 
   private List<TableColumn> listOrig;
@@ -66,8 +60,20 @@ public class SpaltenAuswahlDialog extends AbstractDialog<List<TableColumn>>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    LabelGroup options = new LabelGroup(parent, "");
-    options.addPart(getList());
+    JVereinTablePart spaltenList = new JVereinTablePart(listOrig, null)
+    {
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    // TODO breiten
+    spaltenList.addColumn("Name", "text");
+    spaltenList.setCheckable(true);
+    spaltenList.paint(parent);
+
+    // TODO Formular, Ränder (Ränder ab 2. Seite), Querformat?
 
     List<String> auswahl = Arrays
         .asList(settings.getString(settingPrefix + "auswahl", "").split(","));
@@ -84,6 +90,7 @@ public class SpaltenAuswahlDialog extends AbstractDialog<List<TableColumn>>
       try
       {
         list = spaltenList.getItems();
+        // TODO spaltenList.getTablePartID()
         settings.setAttribute(settingPrefix + "auswahl", list.stream()
             .map(item -> item.getText()).collect(Collectors.joining(",")));
       }
@@ -98,20 +105,6 @@ public class SpaltenAuswahlDialog extends AbstractDialog<List<TableColumn>>
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     b.paint(parent);
-  }
-
-  private Part getList()
-  {
-    if (spaltenList != null)
-    {
-      return spaltenList;
-    }
-    spaltenList = new JVereinTablePart(listOrig, null);
-    spaltenList.addColumn("Name", "text");
-    spaltenList.setCheckable(true);
-    spaltenList.setRememberColWidths(true);
-
-    return spaltenList;
   }
 
   @Override

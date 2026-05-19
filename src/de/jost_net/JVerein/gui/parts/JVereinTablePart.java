@@ -28,7 +28,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
@@ -42,6 +43,7 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.dialogs.SpaltenAuswahlDialog;
 import de.jost_net.JVerein.io.FileViewer;
@@ -215,7 +217,7 @@ public class JVereinTablePart extends TablePart
    * @return
    * @throws RemoteException
    */
-  private String getTablePartID() throws RemoteException
+  public String getTablePartID() throws RemoteException
   {
     if (tablePartId != null)
     {
@@ -307,6 +309,7 @@ public class JVereinTablePart extends TablePart
       }
       settingPrefix += extension + ".";
 
+      // TODO nicht nur Liste, auch Breite, Formular etc
       List<TableColumn> listeAuswahl = new SpaltenAuswahlDialog(listeSortiert,
           settingPrefix).open();
       List<TableColumn> listeOrig = Arrays.asList(t.getColumns());
@@ -370,6 +373,7 @@ public class JVereinTablePart extends TablePart
         case PDF:
           FileOutputStream fos = new FileOutputStream(file);
           Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
+              // TODO ränder aus Dialog
               20, 20, 20, 20);
 
           for (TableColumn col : listeAuswahl)
@@ -377,22 +381,42 @@ public class JVereinTablePart extends TablePart
             reporter.addHeaderColumn(col.getText(),
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
+                // TODO Breite aus Dialog
+                // TODO letze Spalte schmaler?
                 col.getWidth(), BaseColor.LIGHT_GRAY);
           }
           reporter.createHeader();
-          ArrayList<Rectangle> r = new ArrayList<>();
 
           for (TableItem row : rows)
           {
             for (TableColumn col : listeAuswahl)
             {
               int index = listeOrig.indexOf(col);
-              r.add(row.getTextBounds(index));
+              Color bg = row.getBackground(index);
+              Font font = null;
+              for (FontData data : row.getFont(index).getFontData())
+              {
+                switch (data.getStyle())
+                {
+                  case SWT.BOLD:
+                    font = Reporter.getFreeSansBold(8);
+                    break;
+                  case SWT.ITALIC:
+                    font = Reporter.getFreeSansItalic(8);
+                    break;
+                  case SWT.NORMAL:
+                    font = Reporter.getFreeSans(8);
+                    break;
+                }
+              }
               reporter.addColumn(row.getText(index),
                   col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                      : Element.ALIGN_RIGHT);
+                      : Element.ALIGN_RIGHT,
+                  new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()),
+                  font);
             }
           }
+          // TODO Filter ausgeben?
           reporter.closeTable();
           reporter.close();
           fos.close();
@@ -400,11 +424,7 @@ public class JVereinTablePart extends TablePart
       }
       FileViewer.show(file);
     }
-    catch (OperationCanceledException e)
-    {
-      throw e;
-    }
-    catch (ApplicationException e)
+    catch (OperationCanceledException | ApplicationException e)
     {
       throw e;
     }
