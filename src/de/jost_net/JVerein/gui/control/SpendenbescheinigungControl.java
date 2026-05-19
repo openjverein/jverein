@@ -150,7 +150,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     settings.setStoreWhenRead(true);
   }
 
-  public Spendenbescheinigung getSpendenbescheinigung()
+  private Spendenbescheinigung getSpendenbescheinigung()
   {
     if (spendenbescheinigung != null)
     {
@@ -552,7 +552,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (spbList != null)
     {

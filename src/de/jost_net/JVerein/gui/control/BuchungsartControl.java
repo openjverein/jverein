@@ -49,6 +49,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -81,7 +82,7 @@ public class BuchungsartControl extends FilterControl implements Savable
   public BuchungsartControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -454,7 +455,7 @@ public class BuchungsartControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     try
     {

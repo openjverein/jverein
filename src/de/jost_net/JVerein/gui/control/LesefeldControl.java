@@ -52,7 +52,7 @@ import de.willuhn.util.ApplicationException;
 
 public class LesefeldControl extends VorZurueckControl implements Savable
 {
-  private de.willuhn.jameica.system.Settings settings;
+  private Settings settings;
 
   private JVereinTablePart lesefeldList;
 

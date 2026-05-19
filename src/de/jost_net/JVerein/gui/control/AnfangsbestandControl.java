@@ -62,7 +62,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Anfangsbestand getAnfangsbestand()
+  private Anfangsbestand getAnfangsbestand()
   {
     if (anfangsbestand != null)
     {
@@ -178,7 +178,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (anfangsbestandList == null)
     {

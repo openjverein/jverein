@@ -129,7 +129,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Abrechnungslauf getAbrechnungslauf()
+  private Abrechnungslauf getAbrechnungslauf()
   {
     if (abrl != null)
     {
@@ -339,7 +339,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (abrechnungslaufList == null)
     {

@@ -106,7 +106,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Mail getMail()
+  private Mail getMail()
   {
     if (mail != null)
     {
@@ -686,7 +686,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     try
     {

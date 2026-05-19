@@ -177,7 +177,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     sollbuchung = sollb;
   }
 
-  public Sollbuchung getSollbuchung() throws RemoteException
+  private Sollbuchung getSollbuchung() throws RemoteException
   {
     if (sollbuchung != null)
     {
@@ -493,7 +493,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   // Für Sollbuchungen View
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (sollbuchungenList != null)
     {

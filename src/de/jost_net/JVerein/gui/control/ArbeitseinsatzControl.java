@@ -140,7 +140,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     try
     {

@@ -256,7 +256,7 @@ public abstract class DruckMailControl extends FilterControl
     return button;
   }
 
-  public class DruckMailEmpfaenger
+  protected class DruckMailEmpfaenger
   {
     private List<DruckMailEmpfaengerEntry> liste;
 

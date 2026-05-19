@@ -282,7 +282,7 @@ public class PreNotificationControl extends DruckMailControl
     // Nichts tun, hier ist keine Tabelle implementiert
   }
 
-  ArrayList<Lastschrift> getLastschriften(Object currentObject)
+  private ArrayList<Lastschrift> getLastschriften(Object currentObject)
       throws RemoteException, ApplicationException
   {
     if (currentObject == null)

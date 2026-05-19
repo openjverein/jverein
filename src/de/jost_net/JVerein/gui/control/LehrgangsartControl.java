@@ -57,7 +57,7 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     super(view);
   }
 
-  public Lehrgangsart getLehrgangsart()
+  private Lehrgangsart getLehrgangsart()
   {
     if (lehrgangsart != null)
     {

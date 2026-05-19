@@ -75,7 +75,7 @@ public class SteuerControl extends VorZurueckControl implements Savable
     super(view);
   }
 
-  public Steuer getSteuer()
+  private Steuer getSteuer()
   {
     if (steuer != null)
     {

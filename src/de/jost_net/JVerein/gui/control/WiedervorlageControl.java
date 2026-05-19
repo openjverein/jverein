@@ -222,7 +222,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (wiedervorlageList == null)
     {
