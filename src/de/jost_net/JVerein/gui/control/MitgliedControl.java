@@ -171,6 +171,7 @@ import de.willuhn.util.ProgressMonitor;
 
 public class MitgliedControl extends FilterControl implements Savable
 {
+  final LesefeldControl lesefeldControl = new LesefeldControl(null);
 
   private JVereinTablePart mitgliedList;
 
@@ -322,6 +323,24 @@ public class MitgliedControl extends FilterControl implements Savable
   private boolean isMitglied = false;
 
   private JVereinTablePart zahtlFuer;
+
+  private TabSelection tabSelection = TabSelection.NO_TAB;
+
+  public enum TabSelection
+  {
+    TAB_ZUSATZBETRAEGE,
+    TAB_WIEDERVORLAGEN,
+    TAB_MAILS,
+    TAB_LEHRGAENGE,
+    TAB_LESEFELDER,
+    TAB_ARBEITSEINSAETZE,
+    NO_TAB;
+  }
+
+  public void setTabSelection(TabSelection selection)
+  {
+    tabSelection = selection;
+  }
 
   public MitgliedControl(AbstractView view)
   {
@@ -3387,6 +3406,11 @@ public class MitgliedControl extends FilterControl implements Savable
     Application.getMessagingFactory().unRegisterMessageConsumer(azc);
   }
 
+  public LesefeldControl getLesefeldControl()
+  {
+    return lesefeldControl;
+  }
+
   public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (mitgliedList == null)
@@ -3414,6 +3438,126 @@ public class MitgliedControl extends FilterControl implements Savable
                 "nichtmitglieder", art);
           }
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton exportDetailButton(ExportArt art)
+      throws ApplicationException
+  {
+
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          final JVereinTablePart liste;
+          switch (tabSelection)
+          {
+            case TAB_ZUSATZBETRAEGE:
+              liste = zusatzbetraegeList;
+              break;
+            case TAB_WIEDERVORLAGEN:
+              liste = wiedervorlageList;
+              break;
+            case TAB_MAILS:
+              liste = mailList;
+              break;
+            case TAB_LEHRGAENGE:
+              liste = lehrgaengeList;
+              break;
+            case TAB_LESEFELDER:
+              try
+              {
+                liste = lesefeldControl.getLesefeldMitgliedList();
+              }
+              catch (RemoteException e)
+              {
+                throw new ApplicationException(e.getMessage());
+              }
+              break;
+            case TAB_ARBEITSEINSAETZE:
+              liste = arbeitseinsatzList;
+              break;
+            case NO_TAB:
+              return;
+            default:
+              liste = null;
+          }
+          if (liste == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+
+          switch (tabSelection)
+          {
+            case TAB_ZUSATZBETRAEGE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.zusatzbetraege", art);
+              break;
+            case TAB_WIEDERVORLAGEN:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.wiedervorlagen", art);
+              break;
+            case TAB_MAILS:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.mails", art);
+              break;
+            case TAB_LEHRGAENGE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.lehrgaenge", art);
+              break;
+            case TAB_LESEFELDER:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.lesefelder", art);
+              break;
+            case TAB_ARBEITSEINSAETZE:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.arbeitseinsaetze", art);
+              break;
+            case NO_TAB:
+              break;
+          }
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

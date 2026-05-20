@@ -26,6 +26,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TabItem;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.JVereinPlugin;
@@ -40,9 +42,11 @@ import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.gui.control.LesefeldControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedControl.TabSelection;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Lesefeld;
@@ -70,6 +74,20 @@ import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 {
+  private static final String ZUSATZBETRAEGE = "Zusatzbeträge";
+
+  private static final String WIEDERVORLAGEN = "Wiedervorlagen";
+
+  private static final String MAILS = "Mails";
+
+  private static final String LEHRGAENGE = "Lehrgänge";
+
+  private static final String LESEFELDER = "Lesefelder";
+
+  private static final String ARBEITSEINSAETZE = "Arbeitseinsätze";
+
+  private static final String DOKUMENTE = "Dokumente";
+
   // Statische Variable, die den zuletzt ausgewählten Tab speichert.
   private static int tabindex = -1;
 
@@ -78,7 +96,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
   final MitgliedControl control = new MitgliedControl(this);
 
-  final LesefeldControl lesefeldControl = new LesefeldControl(null);
+  final LesefeldControl lesefeldControl = control.getLesefeldControl();
 
   final SollbuchungControl controlSollb = new SollbuchungControl(this);
 
@@ -222,6 +240,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       folder.setSelection(tabindex);
       checkLesefelder(folder);
+      updateControl(folder);
     }
     folder.addSelectionListener(new SelectionListener()
     {
@@ -233,6 +252,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       {
         tabindex = folder.getSelectionIndex();
         checkLesefelder(folder);
+        updateControl(folder);
       }
 
       @Override
@@ -244,6 +264,39 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     zeichneButtonArea(getParent());
 
+  }
+
+  private void updateControl(TabFolder folder)
+  {
+    TabItem item = folder.getSelection()[0];
+    if (item.getText().equals(ZUSATZBETRAEGE))
+    {
+      control.setTabSelection(TabSelection.TAB_ZUSATZBETRAEGE);
+    }
+    else if (item.getText().equals(WIEDERVORLAGEN))
+    {
+      control.setTabSelection(TabSelection.TAB_WIEDERVORLAGEN);
+    }
+    else if (item.getText().equals(MAILS))
+    {
+      control.setTabSelection(TabSelection.TAB_MAILS);
+    }
+    else if (item.getText().equals(LEHRGAENGE))
+    {
+      control.setTabSelection(TabSelection.TAB_LEHRGAENGE);
+    }
+    else if (item.getText().equals(LESEFELDER))
+    {
+      control.setTabSelection(TabSelection.TAB_LESEFELDER);
+    }
+    else if (item.getText().equals(ARBEITSEINSAETZE))
+    {
+      control.setTabSelection(TabSelection.TAB_ARBEITSEINSAETZE);
+    }
+    else
+    {
+      control.setTabSelection(TabSelection.NO_TAB);
+    }
   }
 
   private int getComputetTabHeight(Container container)
@@ -269,7 +322,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     // Index kann außerhalb dem Range liegen wenn Lesefelder selektiert waren
     // und dann auf Anzeige außerhalb der Tabs umgeschaltet wurde.
     if (tabindex < folder.getItemCount()
-        && folder.getItem(tabindex).getText().equals("Lesefelder"))
+        && folder.getItem(tabindex).getText().equals(LESEFELDER))
     {
       try
       {
@@ -283,7 +336,8 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     }
   }
 
-  private void zeichneButtonArea(Composite parent) throws RemoteException
+  private void zeichneButtonArea(Composite parent)
+      throws RemoteException, ApplicationException
   {
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -365,6 +419,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     });
 
     buttons.paint(parent);
+
+    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
   }
 
   private void zeichneDokumente(Composite parentComposite)
@@ -372,7 +429,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if (JVereinPlugin.isArchiveServiceActive())
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Dokumente");
+      Container cont = getTabOrLabelContainer(parentComposite, DOKUMENTE);
 
       MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
           .createObject(MitgliedDokument.class, null);
@@ -402,7 +459,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         && (Boolean) Einstellungen.getEinstellung(Property.ARBEITSEINSATZ))
     {
       Container cont = getTabOrLabelContainer(parentComposite,
-          "Arbeitseinsatz");
+          ARBEITSEINSAETZE);
 
       ButtonArea buttonsarbeins = new ButtonArea();
       buttonsarbeins.addButton(control.getArbeitseinsatzNeu());
@@ -420,7 +477,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if ((Boolean) Einstellungen.getEinstellung(Property.USELESEFELDER))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Lesefelder");
+      Container cont = getTabOrLabelContainer(parentComposite, LESEFELDER);
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -457,7 +514,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if ((Boolean) Einstellungen.getEinstellung(Property.LEHRGAENGE))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Lehrgänge");
+      Container cont = getTabOrLabelContainer(parentComposite, LEHRGAENGE);
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -500,7 +557,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if ((Boolean) Einstellungen.getEinstellung(Property.WIEDERVORLAGE))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Wiedervorlage");
+      Container cont = getTabOrLabelContainer(parentComposite, WIEDERVORLAGEN);
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
@@ -518,7 +575,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         && ((String) Einstellungen.getEinstellung(Property.SMTPSERVER))
             .length() > 0)
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Mails");
+      Container cont = getTabOrLabelContainer(parentComposite, MAILS);
 
       control.getMailTable().paint(cont.getComposite());
     }
@@ -576,7 +633,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   {
     if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
     {
-      Container cont = getTabOrLabelContainer(parentComposite, "Zusatzbeträge");
+      Container cont = getTabOrLabelContainer(parentComposite, ZUSATZBETRAEGE);
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));

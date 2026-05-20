@@ -43,7 +43,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
@@ -479,7 +478,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
    * @return Die Lesefelder Tabelle für den Tab im MitgliedDetailView.
    * 
    */
-  public Part getLesefeldMitgliedList() throws RemoteException
+  public JVereinTablePart getLesefeldMitgliedList() throws RemoteException
   {
     if (lesefeldMitgliedList != null)
     {
