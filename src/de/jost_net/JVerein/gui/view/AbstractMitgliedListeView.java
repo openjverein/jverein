@@ -117,14 +117,6 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
-  // TODO Warum ist das hier???
-  @Override
-  public void unbind()
-  {
-    if (p != null)
-      p.removeAll();
-  }
-
   public abstract String getTitle();
 
   public abstract void getFilter() throws RemoteException;

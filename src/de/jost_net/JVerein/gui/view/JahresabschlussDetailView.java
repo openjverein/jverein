@@ -83,8 +83,7 @@ public class JahresabschlussDetailView extends AbstractView
       right.addLabelPair("Zwanghafte satzungsgemäße\nWeitergabe von Mitteln",
           control.getZwanghafteWeitergabe());
     }
-
-    control.getTablePart().paint(this.getParent());
+    control.getSaldoList().paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -104,7 +103,10 @@ public class JahresabschlussDetailView extends AbstractView
     buttons.addButton(save);
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportJahresabschlussButton(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportJahresabschlussButton(ExportArt.CSV));
+    GUI.getView()
+        .addPanelButton(control.exportJahresabschlussButton(ExportArt.PDF));
+    GUI.getView()
+        .addPanelButton(control.exportJahresabschlussButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenDetailPanelButton());
   }
 }

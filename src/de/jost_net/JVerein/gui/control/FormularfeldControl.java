@@ -264,7 +264,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
   @Override
   protected JVereinTablePart getTablePart() throws RemoteException
   {
-    // TODO ist das so richtig?
-    return super.getFormularfeldList();
+    // Es gitb keine FormularfeldListe View
+    return null;
   }
 }

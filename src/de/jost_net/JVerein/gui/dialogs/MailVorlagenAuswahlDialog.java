@@ -77,6 +77,7 @@ public class MailVorlagenAuswahlDialog extends AbstractDialog<MailVorlage>
     };
     JVereinTablePart tablepart = control.getTablePart();
     tablepart.setAction(action);
+    tablepart.setMulti(false);
     tablepart.paint(parent);
 
     ButtonArea b = new ButtonArea();

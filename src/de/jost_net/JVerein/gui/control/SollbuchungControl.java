@@ -429,8 +429,9 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   @Override
   public JVereinTablePart getTablePart() throws RemoteException
   {
-    // TODO richtig so?
-    return getTablePart(null, false, false);
+    // dieser Aufruf wird nur für den Spalten-PanelButton gebraucht, da muss die
+    // Tabelle schon existieren
+    return sollbuchungenList;
   }
 
   public JVereinTablePart getTablePart(Action action, boolean umwandeln,
