@@ -156,5 +156,6 @@ public class BuchungListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }
