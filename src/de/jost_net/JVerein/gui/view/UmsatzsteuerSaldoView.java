@@ -42,7 +42,7 @@ public class UmsatzsteuerSaldoView extends AbstractView
     part.paint(this.getParent());
 
     LabelGroup group2 = new LabelGroup(getParent(), "Saldo", true);
-    group2.addPart(control.getSaldoList());
+    group2.addPart(control.getTablePart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

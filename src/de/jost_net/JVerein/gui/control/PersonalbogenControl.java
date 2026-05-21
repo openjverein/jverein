@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.PersonalbogenAusgabe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -189,6 +190,7 @@ public class PersonalbogenControl extends DruckMailControl
     return getMitglieder(this.view.getCurrentObject());
   }
 
+  @Override
   public String getInfoText(Object selection) throws RemoteException
   {
     Mitglied[] mitglieder = null;
@@ -326,5 +328,12 @@ public class PersonalbogenControl extends DruckMailControl
   protected void TabRefresh()
   {
     // Nichts tun, hier ist keine Tabelle implementiert
+  }
+
+  @Override
+  protected JVereinTablePart getTablePart() throws RemoteException
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
   }
 }

@@ -665,7 +665,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   }
 
-  public JVereinTablePart getMailList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (mailsList != null)
     {
@@ -781,6 +782,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     target.addDropListener(new DropTargetListener()
     {
 
+      @Override
       public void dragEnter(DropTargetEvent event)
       {
         if (event.detail == DND.DROP_DEFAULT)
@@ -803,6 +805,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         }
       }
 
+      @Override
       public void drop(DropTargetEvent event)
       {
         if (event.data == null)

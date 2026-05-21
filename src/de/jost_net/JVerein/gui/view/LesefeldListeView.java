@@ -39,7 +39,7 @@ public class LesefeldListeView extends AbstractView
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
     group.addLabelPair("Mitglied", control.getSuchMitglied());
 
-    control.getLesefelderList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -51,5 +51,6 @@ public class LesefeldListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

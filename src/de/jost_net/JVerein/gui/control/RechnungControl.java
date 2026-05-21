@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -78,6 +79,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -158,8 +160,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  @SuppressWarnings("unchecked")
-  public BetragSummaryTablePart getRechnungList() throws RemoteException
+  @Override
+  public BetragSummaryTablePart getTablePart() throws RemoteException
   {
     if (rechnungList != null)
     {
@@ -256,7 +258,6 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void TabRefresh()
   {
     try
@@ -278,8 +279,8 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
   }
 
-  @SuppressWarnings("rawtypes")
-  public GenericIterator getRechnungIterator() throws RemoteException
+  @SuppressWarnings("unchecked")
+  public GenericIterator<Rechnung> getRechnungIterator() throws RemoteException
   {
     DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
         .createList(Rechnung.class);
@@ -931,6 +932,27 @@ public class RechnungControl extends DruckMailControl implements Savable
       }
     }
     return map;
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+
+        new TabelleSpaltenAuswahlDialog(getSollbuchungPositionListPart())
+            .open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 
   public PanelButton exportButton(ExportArt art) throws ApplicationException

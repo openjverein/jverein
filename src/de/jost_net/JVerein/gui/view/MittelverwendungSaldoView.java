@@ -42,7 +42,7 @@ public class MittelverwendungSaldoView extends AbstractView
     qpart.paint(this.getParent());
 
     LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
-    group.addPart(control.getSaldoList());
+    group.addPart(control.getTablePart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

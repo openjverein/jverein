@@ -76,7 +76,7 @@ public class WiedervorlageListeView extends AbstractView
     zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
     vor2.setToolTipText("Erledigung Datumsbereich vowärts");
 
-    control.getWiedervorlageList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
@@ -87,5 +87,6 @@ public class WiedervorlageListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

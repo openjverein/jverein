@@ -1482,7 +1482,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public BuchungListTablePart getBuchungsList() throws RemoteException
+  @Override
+  public BuchungListTablePart getTablePart() throws RemoteException
   {
     params = new TreeMap<>();
 
@@ -2229,7 +2230,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
       try
       {
-        getBuchungsList();
+        getTablePart();
       }
       catch (RemoteException e)
       {
@@ -2243,7 +2244,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   {
     try
     {
-      getBuchungsList();
+      getTablePart();
     }
     catch (RemoteException e)
 
@@ -2645,7 +2646,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
         try
         {
-          getBuchungsList();
+          getTablePart();
         }
         catch (RemoteException ex)
         {
@@ -2693,7 +2694,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
         try
         {
-          getBuchungsList();
+          getTablePart();
         }
         catch (RemoteException ex)
         {

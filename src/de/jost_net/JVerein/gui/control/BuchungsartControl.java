@@ -213,7 +213,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     return steuer;
   }
 
-  public String getBuchungartAttribute()
+  private String getBuchungartAttribute()
   {
     try
     {
@@ -238,7 +238,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     return "bezeichnung";
   }
 
-  public String getBuchungartSortOrder()
+  private String getBuchungartSortOrder()
   {
     try
     {
@@ -340,7 +340,8 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
   }
 
-  public JVereinTablePart getBuchungsartList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (buchungsartList != null)
     {

@@ -75,7 +75,7 @@ public class KursteilnehmerListeView extends AbstractView
     zurueck2.setToolTipText("Abbuchung Datumsbereich zurück");
     vor2.setToolTipText("Abbuchung Datumsbereich vowärts");
 
-    control.getKursteilnehmerTable().paint(getParent());
+    control.getTablePart().paint(getParent());
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.KURSTEILNEHMER, false, "question-circle.png");
@@ -86,5 +86,6 @@ public class KursteilnehmerListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

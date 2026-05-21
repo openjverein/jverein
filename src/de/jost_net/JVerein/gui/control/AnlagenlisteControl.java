@@ -72,63 +72,55 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
-  public SaldoListTablePart getSaldoList() throws ApplicationException
+  public SaldoListTablePart getTablePart() throws RemoteException
   {
-    try
+    if (saldoList != null)
     {
-      if (saldoList != null)
-      {
-        return saldoList;
-      }
-      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
-      {
-        // Sortieren verhindern
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn("Anlagenart", GRUPPE);
-      saldoList.addColumn("Bezeichnung", KONTO);
-      saldoList.addColumn("Nutzungsdauer", NUTZUNGSDAUER, null, false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Afa Art", AFAART);
-      saldoList.addColumn("Anschaffung", ANSCHAFFUNG_DATUM,
-          new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Anschaffungskosten", BETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Buchwert Start GJ", STARTWERT,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Zugang", ZUGANG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Abschreibung", ABSCHREIBUNG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Abgang", ABGANG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Buchwert Ende GJ", ENDWERT,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      // Dummy Spalte, damit endwert nicht am rechten Rand klebt
-      saldoList.addColumn(" ", " ",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_LEFT);
-      saldoList.setFormatter(new SaldoFormatter());
-      saldoList.setMulti(true);
-      saldoList.setContextMenu(new SaldoMenu(this));
       return saldoList;
     }
-    catch (RemoteException e)
+    saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
     {
-      throw new ApplicationException(
-          String.format("Fehler aufgetreten %s", e.getMessage()));
-    }
+      // Sortieren verhindern
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    saldoList.addColumn("Anlagenart", GRUPPE);
+    saldoList.addColumn("Bezeichnung", KONTO);
+    saldoList.addColumn("Nutzungsdauer", NUTZUNGSDAUER, null, false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Afa Art", AFAART);
+    saldoList.addColumn("Anschaffung", ANSCHAFFUNG_DATUM,
+        new DateFormatter(new JVDateFormatTTMMJJJJ()), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Anschaffungskosten", BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Buchwert Start GJ", STARTWERT,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Zugang", ZUGANG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Abschreibung", ABSCHREIBUNG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Abgang", ABGANG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Buchwert Ende GJ", ENDWERT,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    // Dummy Spalte, damit endwert nicht am rechten Rand klebt
+    saldoList.addColumn(" ", " ",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_LEFT);
+    saldoList.setFormatter(new SaldoFormatter());
+    saldoList.setMulti(true);
+    saldoList.setContextMenu(new SaldoMenu(this));
+    return saldoList;
   }
 
   protected ExtendedDBIterator<PseudoDBObject> getIterator()

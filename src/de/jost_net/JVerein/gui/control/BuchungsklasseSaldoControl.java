@@ -106,53 +106,46 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public JVereinTablePart getSaldoList() throws ApplicationException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    try
+    if (saldoList != null)
     {
-      if (saldoList != null)
-      {
-        return saldoList;
-      }
-      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
-      {
-        // Sortieren verhindern
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
-      if (mitBuchungsklasseSpalte)
-      {
-        saldoList.addColumn("Buchungsklasse", BUCHUNGSKLASSE_TEXT);
-      }
-      saldoList.addColumn("Buchungsart", BUCHUNGSART_TEXT);
-      saldoList.addColumn("Einnahmen", EINNAHMEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Ausgaben", AUSGABEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      if (mitUmbuchung)
-      {
-        saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
-            new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-            Column.ALIGN_RIGHT);
-      }
-      saldoList.addColumn("Anzahl", ANZAHL);
-      saldoList.setMulti(true);
-      saldoList.setRememberState(true);
-      saldoList.setContextMenu(new SaldoMenu(this));
-      saldoList.setFormatter(new SaldoFormatter());
-
       return saldoList;
     }
-    catch (RemoteException e)
+    saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
     {
-      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
+      // Sortieren verhindern
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
+    if (mitBuchungsklasseSpalte)
+    {
+      saldoList.addColumn("Buchungsklasse", BUCHUNGSKLASSE_TEXT);
     }
+    saldoList.addColumn("Buchungsart", BUCHUNGSART_TEXT);
+    saldoList.addColumn("Einnahmen", EINNAHMEN,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Ausgaben", AUSGABEN,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    if (mitUmbuchung)
+    {
+      saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+          Column.ALIGN_RIGHT);
+    }
+    saldoList.addColumn("Anzahl", ANZAHL);
+    saldoList.setMulti(true);
+    saldoList.setRememberState(true);
+    saldoList.setContextMenu(new SaldoMenu(this));
+    saldoList.setFormatter(new SaldoFormatter());
+
+    return saldoList;
   }
 
   @SuppressWarnings("unchecked")

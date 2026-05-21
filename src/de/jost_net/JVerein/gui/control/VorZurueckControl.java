@@ -24,11 +24,10 @@ import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 
-public class VorZurueckControl extends AbstractControl
+public abstract class VorZurueckControl extends AbstractJVereinControl
 {
   static Class<? extends AbstractView> viewClass;
 

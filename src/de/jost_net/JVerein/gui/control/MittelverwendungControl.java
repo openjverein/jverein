@@ -274,7 +274,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  public JVereinTablePart getSaldoList() throws ApplicationException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     switch (selectedTab)
     {
@@ -292,87 +292,71 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * Den TablePart für die Saldobasierte Mittelverwendung holen
    * 
    * @return TablePart
-   * @throws ApplicationException
+   * @throws RemoteException
    */
-  public JVereinTablePart getMittelverwendungSaldoTable()
-      throws ApplicationException
+  public JVereinTablePart getMittelverwendungSaldoTable() throws RemoteException
   {
-    try
+    if (saldoList != null)
     {
-      if (saldoList != null)
-      {
-        return saldoList;
-      }
-      saldoList = new JVereinTablePart(getMittelverwendungSaldoList(), null)
-      {
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn("Art", GRUPPE);
-      saldoList.addColumn("Konto", BEZEICHNUNG);
-      saldoList.addColumn("Betrag", BETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Summe", SUMME,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Kommentar", KOMMENTAR);
-      saldoList.removeFeature(FeatureSummary.class);
-      saldoList.setFormatter(new SaldoFormatter());
       return saldoList;
     }
-    catch (RemoteException e)
+    saldoList = new JVereinTablePart(getMittelverwendungSaldoList(), null)
     {
-      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
-    }
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    saldoList.addColumn("Art", GRUPPE);
+    saldoList.addColumn("Konto", BEZEICHNUNG);
+    saldoList.addColumn("Betrag", BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Summe", SUMME,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Kommentar", KOMMENTAR);
+    saldoList.removeFeature(FeatureSummary.class);
+    saldoList.setFormatter(new SaldoFormatter());
+    return saldoList;
   }
 
   /**
    * Den TablePart für die Zuflussbsiere Mittelverwendung holen
    * 
    * @return TablePart
-   * @throws ApplicationException
+   * @throws RemoteException
    */
-  public JVereinTablePart getMittelverwendungFlowTable()
-      throws ApplicationException
+  public JVereinTablePart getMittelverwendungFlowTable() throws RemoteException
   {
-    try
+    if (zuflussList != null)
     {
-      if (zuflussList != null)
-      {
-        return zuflussList;
-      }
-      zuflussList = new JVereinTablePart(getMittelverwendungFlowList(
-          getDatumvon().getDate(), getDatumbis().getDate()), null)
-      {
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      zuflussList.addColumn("Nr", NR);
-      zuflussList.addColumn("Mittel", GRUPPE);
-      zuflussList.addColumn("Betrag", BETRAG,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      zuflussList.addColumn("Summe", SUMME,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      // Dummy Spalte, damit Summe nicht am rechten Rand klebt
-      zuflussList.addColumn(" ", " ",
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_LEFT);
-      zuflussList.removeFeature(FeatureSummary.class);
       return zuflussList;
     }
-    catch (RemoteException e)
+    zuflussList = new JVereinTablePart(getMittelverwendungFlowList(
+        getDatumvon().getDate(), getDatumbis().getDate()), null)
     {
-      throw new ApplicationException("Fehler aufgetreten" + e.getMessage());
-    }
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    zuflussList.addColumn("Nr", NR);
+    zuflussList.addColumn("Mittel", GRUPPE);
+    zuflussList.addColumn("Betrag", BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    zuflussList.addColumn("Summe", SUMME,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    // Dummy Spalte, damit Summe nicht am rechten Rand klebt
+    zuflussList.addColumn(" ", " ",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_LEFT);
+    zuflussList.removeFeature(FeatureSummary.class);
+    return zuflussList;
   }
 
   @Override
