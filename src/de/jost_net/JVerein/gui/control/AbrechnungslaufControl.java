@@ -626,7 +626,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }, "Spalten auswählen");
   }
 
-  public PanelButton exportAbrechnungslaufTabsButton(ExportArt art)
+  public PanelButton exportDetailButton(ExportArt art)
       throws ApplicationException
   {
 
