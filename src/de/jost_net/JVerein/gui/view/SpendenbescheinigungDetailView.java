@@ -93,6 +93,9 @@ public class SpendenbescheinigungDetailView extends AbstractDetailView
     buttons.addButton(control.getDruckUndMailButton());
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+
   }
 
   @Override

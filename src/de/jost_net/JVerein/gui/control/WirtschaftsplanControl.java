@@ -57,7 +57,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -98,9 +97,6 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
   public WirtschaftsplanControl(AbstractView view) throws RemoteException
   {
     super(view);
-    de.willuhn.jameica.system.Settings settings = new de.willuhn.jameica.system.Settings(
-        this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   /**
@@ -110,7 +106,8 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
    * @throws RemoteException
    *           wenn ein Fehler beim Zugriff auf die Datenbank auftritt.
    */
-  public Part getWirtschaftsplanungList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (wirtschaftsplaene != null)
     {

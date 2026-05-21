@@ -31,6 +31,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.PreNotificationAusgabe;
 import de.jost_net.JVerein.io.Ueberweisung;
 import de.jost_net.JVerein.keys.Ausgabeart;
@@ -486,5 +487,12 @@ public class PreNotificationControl extends DruckMailControl
     text.setName("Abrechnungslauf");
     text.disable();
     return text;
+  }
+
+  @Override
+  protected JVereinTablePart getTablePart() throws RemoteException
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
   }
 }

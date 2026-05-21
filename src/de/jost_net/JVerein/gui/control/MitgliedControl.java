@@ -2155,7 +2155,14 @@ public class MitgliedControl extends FilterControl implements Savable
         null, false, "document-new.png");
   }
 
-  public JVereinTablePart getMitgliedTable(int atyp, Action detailaction)
+  // TODO nötig?
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    return getTablePart(0, null);
+  }
+
+  public JVereinTablePart getTablePart(int atyp, Action detailaction)
       throws RemoteException
   {
     if (mitgliedList != null)

@@ -41,7 +41,7 @@ public class AnlagenverzeichnisView extends AbstractView
     qpart.paint(this.getParent());
 
     LabelGroup group = new LabelGroup(getParent(), "Liste", true);
-    group.addPart(control.getSaldoList());
+    group.addPart(control.getTablePart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

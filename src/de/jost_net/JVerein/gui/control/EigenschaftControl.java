@@ -44,9 +44,6 @@ import de.willuhn.util.ApplicationException;
 
 public class EigenschaftControl extends VorZurueckControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart eigenschaftList;
 
   private Input bezeichnung;
@@ -60,8 +57,6 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
   public EigenschaftControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Eigenschaft getEigenschaft() throws RemoteException
@@ -154,7 +149,8 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     }
   }
 
-  public JVereinTablePart getEigenschaftList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (eigenschaftList != null)
     {

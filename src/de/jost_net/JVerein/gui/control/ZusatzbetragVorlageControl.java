@@ -66,9 +66,6 @@ import de.willuhn.util.ApplicationException;
 public class ZusatzbetragVorlageControl extends VorZurueckControl
     implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private DateInput faelligkeit = null;
 
   private TextInput buchungstext;
@@ -100,8 +97,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
   public ZusatzbetragVorlageControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public ZusatzbetragVorlage getZusatzbetragVorlage()
@@ -126,18 +121,6 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     this.faelligkeit = new DateInput(d, new JVDateFormatTTMMJJJJ());
     this.faelligkeit.setTitle("Fälligkeit");
     this.faelligkeit.setText("Bitte Fälligkeitsdatum wählen");
-    this.faelligkeit.addListener(new Listener()
-    {
-      @Override
-      public void handleEvent(Event event)
-      {
-        Date date = (Date) faelligkeit.getValue();
-        if (date == null)
-        {
-          return;
-        }
-      }
-    });
     return faelligkeit;
   }
 
@@ -223,8 +206,9 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(getZusatzbetragVorlage().getBuchungsart(),
-        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
+        getZusatzbetragVorlage().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {
@@ -388,8 +372,8 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     }
   }
 
-  public BetragSummaryTablePart getZusatzbetraegeVorlageList()
-      throws RemoteException
+  @Override
+  public BetragSummaryTablePart getTablePart() throws RemoteException
   {
     if (zusatzbetragVorlageList != null)
     {

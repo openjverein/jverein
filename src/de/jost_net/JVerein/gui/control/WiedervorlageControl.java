@@ -213,7 +213,8 @@ public class WiedervorlageControl extends FilterControl implements Savable
     }
   }
 
-  public AutoUpdateTablePart getWiedervorlageList() throws RemoteException
+  @Override
+  public AutoUpdateTablePart getTablePart() throws RemoteException
   {
     if (wiedervorlageList != null)
     {

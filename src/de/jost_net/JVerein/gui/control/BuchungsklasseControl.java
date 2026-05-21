@@ -40,8 +40,6 @@ import de.willuhn.util.ApplicationException;
 
 public class BuchungsklasseControl extends VorZurueckControl implements Savable
 {
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart buchungsklassenList;
 
   private TextInput nummer;
@@ -53,8 +51,6 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
   public BuchungsklasseControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Buchungsklasse getBuchungsklasse()
@@ -125,7 +121,8 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     }
   }
 
-  public JVereinTablePart getBuchungsklasseList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (buchungsklassenList != null)
     {

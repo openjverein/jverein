@@ -34,6 +34,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
@@ -42,6 +43,7 @@ import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
@@ -71,7 +73,6 @@ import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.AbstractInput;
@@ -85,6 +86,7 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -435,7 +437,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return versanddatum;
   }
 
-  public Part getBuchungListPart() throws RemoteException
+  public JVereinTablePart getBuchungListPart() throws RemoteException
   {
     return new BuchungListPart(getSpendenbescheinigung().getBuchungen(),
         new BuchungAction(false), new BuchungPartAnzeigenMenu());
@@ -514,7 +516,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return b;
   }
 
-  public Part getSpendenbescheinigungList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (spbList != null)
     {
@@ -844,7 +847,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
     }, null, true, "walking.png");
   }
 
-  public class MitgliedListener implements Listener
+  private class MitgliedListener implements Listener
   {
     @Override
     public void handleEvent(Event event)
@@ -1008,5 +1011,24 @@ public class SpendenbescheinigungControl extends DruckMailControl
               "spendenbescheinigungen", art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getBuchungListPart()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 }

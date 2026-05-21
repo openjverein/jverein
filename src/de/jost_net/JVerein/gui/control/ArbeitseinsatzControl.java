@@ -116,7 +116,8 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
   }
 
-  public JVereinTablePart getArbeitseinsatzTable() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (arbeitseinsatzList != null)
     {

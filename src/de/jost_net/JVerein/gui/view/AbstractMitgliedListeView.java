@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
 import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -35,13 +36,12 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.logging.Logger;
 
 public abstract class AbstractMitgliedListeView extends AbstractView
 {
 
-  private TablePart p;
+  private JVereinTablePart p;
 
   final MitgliedControl control = new MitgliedControl(this);
 
@@ -92,12 +92,12 @@ public abstract class AbstractMitgliedListeView extends AbstractView
       if (mt != null)
       {
         Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
-        p = control.getMitgliedTable(Integer.parseInt(mt.getID()),
+        p = control.getTablePart(Integer.parseInt(mt.getID()),
             getDetailAction());
       }
       else
       {
-        p = control.getMitgliedTable(0, getDetailAction());
+        p = control.getTablePart(0, getDetailAction());
       }
       p.paint(getParent());
     }
@@ -114,13 +114,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
-  }
-
-  @Override
-  public void unbind()
-  {
-    if (p != null)
-      p.removeAll();
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   public abstract String getTitle();

@@ -28,6 +28,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -42,9 +43,6 @@ import de.willuhn.util.ApplicationException;
 
 public class FormularfeldControl extends FormularPartControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private TextAreaInput name;
 
   private IntegerInput seite;
@@ -64,8 +62,6 @@ public class FormularfeldControl extends FormularPartControl implements Savable
   public FormularfeldControl(AbstractView view, Formular formular)
   {
     super(view, formular);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Formularfeld getFormularfeld()
@@ -263,5 +259,12 @@ public class FormularfeldControl extends FormularPartControl implements Savable
         break;
     }
     return map;
+  }
+
+  @Override
+  protected JVereinTablePart getTablePart() throws RemoteException
+  {
+    // Es gitb keine FormularfeldListe View
+    return null;
   }
 }

@@ -43,9 +43,6 @@ import de.willuhn.util.ApplicationException;
 
 public class LehrgangsartControl extends VorZurueckControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart lehrgangsartList;
 
   private TextInput bezeichnung;
@@ -61,8 +58,6 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
   public LehrgangsartControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Lehrgangsart getLehrgangsart()
@@ -166,7 +161,8 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     }
   }
 
-  public JVereinTablePart getLehrgangsartList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (lehrgangsartList != null)
     {
@@ -190,18 +186,6 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
         new EditAction(LehrgangsartDetailView.class, lehrgangsartList));
     VorZurueckControl.setObjektListe(null, null);
     return lehrgangsartList;
-  }
-
-  public void refreshTable() throws RemoteException
-  {
-    lehrgangsartList.removeAll();
-    DBIterator<Lehrgangsart> lehrgangsarten = Einstellungen.getDBService()
-        .createList(Lehrgangsart.class);
-    while (lehrgangsarten.hasNext())
-    {
-      lehrgangsartList.addItem(lehrgangsarten.next());
-    }
-    lehrgangsartList.sort();
   }
 
   public PanelButton exportButton(ExportArt art) throws ApplicationException

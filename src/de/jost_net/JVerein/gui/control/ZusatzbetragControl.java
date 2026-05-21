@@ -56,7 +56,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -68,9 +67,6 @@ import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragControl extends VorZurueckControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private Zusatzbetrag zuab;
 
   private ZusatzbetragPart part;
@@ -90,8 +86,6 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
   public ZusatzbetragControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Zusatzbetrag getZusatzbetrag()
@@ -251,7 +245,8 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     }
   }
 
-  public Part getZusatzbetraegeList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (zusatzbetraegeList != null)
     {

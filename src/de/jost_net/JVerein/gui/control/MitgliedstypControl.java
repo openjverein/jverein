@@ -40,8 +40,6 @@ import de.willuhn.util.ApplicationException;
 
 public class MitgliedstypControl extends VorZurueckControl implements Savable
 {
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart mitgliedstypList;
 
   private Input bezeichnung;
@@ -55,8 +53,6 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
   public MitgliedstypControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Mitgliedstyp getMitgliedstyp()
@@ -134,7 +130,8 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     }
   }
 
-  public JVereinTablePart getMitgliedstypList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (mitgliedstypList != null)
     {

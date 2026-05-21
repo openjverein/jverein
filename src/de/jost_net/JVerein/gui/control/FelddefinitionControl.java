@@ -158,7 +158,8 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     }
   }
 
-  public JVereinTablePart getFelddefinitionTable() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (felddefinitionList != null)
     {

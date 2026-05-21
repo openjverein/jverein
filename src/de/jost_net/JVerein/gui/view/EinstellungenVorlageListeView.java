@@ -42,7 +42,7 @@ public class EinstellungenVorlageListeView extends AbstractView
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);
 
-    control.getDateinamenList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

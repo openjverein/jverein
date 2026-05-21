@@ -38,7 +38,6 @@ import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
-import de.willuhn.util.ApplicationException;
 
 public class SollbuchungQuery
 {
@@ -58,8 +57,7 @@ public class SollbuchungQuery
   }
 
   @SuppressWarnings("unchecked")
-  public GenericIterator<Sollbuchung> get()
-      throws RemoteException, ApplicationException
+  public GenericIterator<Sollbuchung> get() throws RemoteException
   {
     Date d1 = null;
     java.sql.Date vd = null;
