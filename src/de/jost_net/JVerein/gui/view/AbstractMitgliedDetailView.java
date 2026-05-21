@@ -293,7 +293,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
         control.setTabSelection(TabSelection.TAB_DOKUMENTE);
         break;
       default:
-        control.setTabSelection(TabSelection.NO_TAB);
+        control.setTabSelection(TabSelection.NO_LIST_TAB);
     }
   }
 

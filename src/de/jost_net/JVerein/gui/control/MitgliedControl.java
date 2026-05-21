@@ -327,7 +327,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private JVereinTablePart zahtlFuer;
 
-  private TabSelection tabSelection = TabSelection.NO_TAB;
+  private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
 
   public enum TabSelection
   {
@@ -338,7 +338,7 @@ public class MitgliedControl extends FilterControl implements Savable
     TAB_LESEFELDER,
     TAB_ARBEITSEINSAETZE,
     TAB_DOKUMENTE,
-    NO_TAB;
+    NO_LIST_TAB;
   }
 
   public void setTabSelection(TabSelection selection)
@@ -3557,7 +3557,7 @@ public class MitgliedControl extends FilterControl implements Savable
                       null, getMitglied()),
                   "mitglied.dokumente", art);
               break;
-            case NO_TAB:
+            case NO_LIST_TAB:
               break;
           }
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
@@ -3566,22 +3566,17 @@ public class MitgliedControl extends FilterControl implements Savable
   public PanelButton getSpaltenDetailPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
-      JVereinTablePart liste = null;
       try
       {
-        liste = getDetailTablePart();
-      }
-      catch (ObjectNotFoundException ex)
-      {
-        return;
-      }
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(liste).open();
+        new TabelleSpaltenAuswahlDialog(getDetailTablePart()).open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
         throw e;
+      }
+      catch (ObjectNotFoundException e)
+      {
+        return;
       }
       catch (Exception e)
       {
@@ -3594,49 +3589,39 @@ public class MitgliedControl extends FilterControl implements Savable
   private JVereinTablePart getDetailTablePart()
       throws ApplicationException, ObjectNotFoundException
   {
-    final JVereinTablePart liste;
     switch (tabSelection)
     {
       case TAB_ZUSATZBETRAEGE:
-        liste = zusatzbetraegeList;
-        break;
+        return zusatzbetraegeList;
       case TAB_WIEDERVORLAGEN:
-        liste = wiedervorlageList;
-        break;
+        return wiedervorlageList;
       case TAB_MAILS:
-        liste = mailList;
-        break;
+        return mailList;
       case TAB_LEHRGAENGE:
-        liste = lehrgaengeList;
-        break;
+        return lehrgaengeList;
       case TAB_LESEFELDER:
         try
         {
-          liste = lesefeldControl.getLesefeldMitgliedList();
+          return lesefeldControl.getLesefeldMitgliedList();
         }
         catch (RemoteException e)
         {
           throw new ApplicationException(e.getMessage());
         }
-        break;
       case TAB_ARBEITSEINSAETZE:
-        liste = arbeitseinsatzList;
-        break;
+        return arbeitseinsatzList;
       case TAB_DOKUMENTE:
         try
         {
-          liste = dcontrol.getDokumenteList();
+          return dcontrol.getDokumenteList();
         }
         catch (RemoteException e)
         {
           throw new ApplicationException(e.getMessage());
         }
-        break;
-      case NO_TAB:
+      case NO_LIST_TAB:
         throw new ObjectNotFoundException();
-      default:
-        liste = null;
     }
-    return liste;
+    return null;
   }
 }
