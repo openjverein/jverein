@@ -348,18 +348,6 @@ public class KontensaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
-  {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new KontenSaldoPDF();
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
-  }
-
-  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.KONTENSALDO_TITEL, this);
@@ -381,5 +369,17 @@ public class KontensaldoControl extends AbstractSaldoControl
   protected String getTableSettingPrefix()
   {
     return "kontensaldo";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungPDF:
+        return new KontenSaldoPDF();
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
   }
 }

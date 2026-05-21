@@ -364,18 +364,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
-  {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new AnlagenverzeichnisPDF();
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
-  }
-
-  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
@@ -397,5 +385,17 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   protected String getTableSettingPrefix()
   {
     return "anlagenverzeichnis";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungPDF:
+        return new AnlagenverzeichnisPDF();
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
   }
 }

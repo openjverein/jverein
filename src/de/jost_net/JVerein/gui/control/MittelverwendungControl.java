@@ -1079,58 +1079,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
-  {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new MittelverwendungExportPDF(selectedTab);
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
-  }
-
-  /**
-   * Liefert den Rückstand des VOrjahres
-   * 
-   * @return
-   */
-  public Double getRueckstandVorjahrNeu()
-  {
-    return rueckstandVorjahrNeu;
-  }
-
-  /**
-   * Liefert die Zwandhafte Weitergabe
-   * 
-   * @return
-   */
-  public Double getZwanghafteWeitergabeNeu()
-  {
-    return zwanghafteWeitergabeNeu;
-  }
-
-  public PanelButton getDetailSpaltenPanelButton()
-  {
-    return new PanelButton("document-properties.png", context -> {
-      try
-      {
-        new TabelleSpaltenAuswahlDialog(getMittelverwendungFlowTable(),
-            getMittelverwendungSaldoTable()).open();
-      }
-      catch (OperationCanceledException | ApplicationException e)
-      {
-        throw e;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
-      }
-    }, "Spalten auswählen");
-  }
-
-  @Override
   protected String getTableTitle()
   {
     if (selectedTab == 0)
@@ -1186,5 +1134,57 @@ public class MittelverwendungControl extends AbstractSaldoControl
     {
       return "mittelverwendungsreport.saldo";
     }
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungPDF:
+        return new MittelverwendungExportPDF(selectedTab);
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
+  }
+
+  /**
+   * Liefert den Rückstand des VOrjahres
+   * 
+   * @return
+   */
+  public Double getRueckstandVorjahrNeu()
+  {
+    return rueckstandVorjahrNeu;
+  }
+
+  /**
+   * Liefert die Zwandhafte Weitergabe
+   * 
+   * @return
+   */
+  public Double getZwanghafteWeitergabeNeu()
+  {
+    return zwanghafteWeitergabeNeu;
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getMittelverwendungFlowTable(),
+            getMittelverwendungSaldoTable()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 }

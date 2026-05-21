@@ -691,18 +691,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
-  {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung);
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
-  }
-
-  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_TITEL, this);
@@ -724,5 +712,17 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   protected String getTableSettingPrefix()
   {
     return "buchungsklassensaldo";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungPDF:
+        return new BuchungsklassesaldoPDF(mitUmbuchung);
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
   }
 }

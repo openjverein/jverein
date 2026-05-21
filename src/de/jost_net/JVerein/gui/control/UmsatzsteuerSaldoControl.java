@@ -267,18 +267,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
-  {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new UmsatzsteuerSaldoPDF();
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
-  }
-
-  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_TITEL,
@@ -303,5 +291,17 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   protected String getTableSettingPrefix()
   {
     return "umsatzsteuervoranmeldung";
+  }
+
+  @Override
+  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  {
+    switch (type)
+    {
+      case AuswertungPDF:
+        return new UmsatzsteuerSaldoPDF();
+      default:
+        throw new ApplicationException("Ausgabetyp nicht implementiert");
+    }
   }
 }
