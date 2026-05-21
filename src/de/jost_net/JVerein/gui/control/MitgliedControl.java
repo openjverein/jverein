@@ -174,6 +174,8 @@ public class MitgliedControl extends FilterControl implements Savable
 {
   final LesefeldControl lesefeldControl = new LesefeldControl(null);
 
+  private DokumentControl dcontrol;
+
   private JVereinTablePart mitgliedList;
 
   private SelectNoScrollInput mitgliedstyp;
@@ -335,6 +337,7 @@ public class MitgliedControl extends FilterControl implements Savable
     TAB_LEHRGAENGE,
     TAB_LESEFELDER,
     TAB_ARBEITSEINSAETZE,
+    TAB_DOKUMENTE,
     NO_TAB;
   }
 
@@ -3419,6 +3422,11 @@ public class MitgliedControl extends FilterControl implements Savable
     return lesefeldControl;
   }
 
+  public void setDokumentControl(DokumentControl dcontrol)
+  {
+    this.dcontrol = dcontrol;
+  }
+
   public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (mitgliedList == null)
@@ -3539,6 +3547,16 @@ public class MitgliedControl extends FilterControl implements Savable
                       getMitglied()),
                   "mitglied.arbeitseinsaetze", art);
               break;
+            case TAB_DOKUMENTE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.dokumente", art);
+              break;
             case NO_TAB:
               break;
           }
@@ -3603,6 +3621,16 @@ public class MitgliedControl extends FilterControl implements Savable
         break;
       case TAB_ARBEITSEINSAETZE:
         liste = arbeitseinsatzList;
+        break;
+      case TAB_DOKUMENTE:
+        try
+        {
+          liste = dcontrol.getDokumenteList();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
         break;
       case NO_TAB:
         throw new ObjectNotFoundException();

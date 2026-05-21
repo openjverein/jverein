@@ -289,6 +289,9 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       case ARBEITSEINSAETZE:
         control.setTabSelection(TabSelection.TAB_ARBEITSEINSAETZE);
         break;
+      case DOKUMENTE:
+        control.setTabSelection(TabSelection.TAB_DOKUMENTE);
+        break;
       default:
         control.setTabSelection(TabSelection.NO_TAB);
     }
@@ -445,6 +448,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
       dcontrol.getDokumenteList(mido).paint(cont.getComposite());
       dcontrol.setDragDrop(cont.getComposite(), MitgliedDokument.class);
+      control.setDokumentControl(dcontrol);
     }
   }
 

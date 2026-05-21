@@ -212,6 +212,9 @@ public class VorlageUtil
         case MITGLIED_ARBEITSEINSAETZE_DATEINAME:
         case MITGLIED_ARBEITSEINSAETZE_TITEL:
         case MITGLIED_ARBEITSEINSAETZE_SUBTITEL:
+        case MITGLIED_DOKUMENTE_DATEINAME:
+        case MITGLIED_DOKUMENTE_TITEL:
+        case MITGLIED_DOKUMENTE_SUBTITEL:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -580,6 +583,9 @@ public class VorlageUtil
         case MITGLIED_ARBEITSEINSAETZE_DATEINAME:
         case MITGLIED_ARBEITSEINSAETZE_TITEL:
         case MITGLIED_ARBEITSEINSAETZE_SUBTITEL:
+        case MITGLIED_DOKUMENTE_DATEINAME:
+        case MITGLIED_DOKUMENTE_TITEL:
+        case MITGLIED_DOKUMENTE_SUBTITEL:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:
