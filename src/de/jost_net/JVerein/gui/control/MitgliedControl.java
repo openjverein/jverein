@@ -3470,7 +3470,8 @@ public class MitgliedControl extends FilterControl implements Savable
           }
           catch (ObjectNotFoundException ex)
           {
-            return;
+            throw new ApplicationException(
+                "Es ist kein Tab mit einer Tabelle ausgewählt.");
           }
           if (liste == null)
           {
@@ -3568,7 +3569,9 @@ public class MitgliedControl extends FilterControl implements Savable
     return new PanelButton("document-properties.png", context -> {
       try
       {
-        new TabelleSpaltenAuswahlDialog(getDetailTablePart()).open();
+        new TabelleSpaltenAuswahlDialog(zusatzbetraegeList, wiedervorlageList,
+            mailList, lehrgaengeList, lesefeldControl.getLesefeldMitgliedList(),
+            arbeitseinsatzList, getDocumentPart()).open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
@@ -3623,5 +3626,14 @@ public class MitgliedControl extends FilterControl implements Savable
         throw new ObjectNotFoundException();
     }
     return null;
+  }
+
+  private JVereinTablePart getDocumentPart() throws RemoteException
+  {
+    if (dcontrol == null)
+    {
+      return null;
+    }
+    return dcontrol.getDokumenteList();
   }
 }
