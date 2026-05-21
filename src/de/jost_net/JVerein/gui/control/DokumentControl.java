@@ -50,7 +50,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -231,8 +230,18 @@ public class DokumentControl extends AbstractControl
     }
   }
 
-  public Part getDokumenteList(AbstractDokument doc) throws RemoteException
+  public JVereinTablePart getDokumenteList() throws RemoteException
   {
+    return docsList;
+  }
+
+  public JVereinTablePart getDokumenteList(AbstractDokument doc)
+      throws RemoteException
+  {
+    if (docsList != null)
+    {
+      return docsList;
+    }
     DBService service = Einstellungen.getDBService();
     DBIterator<AbstractDokument> docs = service.createList(doc.getClass());
     docs.addFilter("referenz = ?", new Object[] { doc.getReferenz() });
