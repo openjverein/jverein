@@ -36,7 +36,7 @@ public class FormularListeView extends AbstractView
 
     FormularControl control = new FormularControl(this, null);
 
-    control.getFormularList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -50,5 +50,6 @@ public class FormularListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

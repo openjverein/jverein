@@ -36,7 +36,7 @@ public class ZusatzbetragVorlageListeView extends AbstractView
     final ZusatzbetragVorlageControl control = new ZusatzbetragVorlageControl(
         this);
 
-    control.getZusatzbetraegeVorlageList().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -47,5 +47,6 @@ public class ZusatzbetragVorlageListeView extends AbstractView
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }

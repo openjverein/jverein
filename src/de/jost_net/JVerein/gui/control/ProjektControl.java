@@ -147,7 +147,8 @@ public class ProjektControl extends FilterControl implements Savable
     }
   }
 
-  public JVereinTablePart getProjektList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (projektList != null)
     {

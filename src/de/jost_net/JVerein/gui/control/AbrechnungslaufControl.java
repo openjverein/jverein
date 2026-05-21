@@ -272,13 +272,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return bemerkung;
   }
 
-  final class StatData
-  {
-    Double summe;
-
-    Integer anzahl;
-  }
-
   @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
@@ -303,7 +296,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
   }
 
-  public JVereinTablePart getAbrechnungslaeufeList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (abrechnungslaufList != null)
     {
@@ -612,7 +606,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public PanelButton getPanelButton()
+  public PanelButton getDetailPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
       try

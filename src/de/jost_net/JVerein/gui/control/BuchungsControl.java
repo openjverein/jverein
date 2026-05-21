@@ -1445,7 +1445,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public BuchungListTablePart getBuchungsList() throws RemoteException
+  @Override
+  public BuchungListTablePart getTablePart() throws RemoteException
   {
     if (buchungsList != null)
     {
@@ -2134,7 +2135,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
         try
         {
-          getBuchungsList();
+          getTablePart();
         }
         catch (RemoteException ex)
         {
@@ -2182,7 +2183,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         }
         try
         {
-          getBuchungsList();
+          getTablePart();
         }
         catch (RemoteException ex)
         {

@@ -27,6 +27,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
@@ -54,13 +55,15 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class JahresabschlussControl extends KontensaldoControl
 {
 
-  private de.willuhn.jameica.system.Settings settings;
+  private Settings settings;
 
   private JVereinTablePart jahresabschlussList;
 
@@ -85,7 +88,7 @@ public class JahresabschlussControl extends KontensaldoControl
   public JahresabschlussControl(AbstractView view) throws RemoteException
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     summensaldo = false;
   }
@@ -366,7 +369,8 @@ public class JahresabschlussControl extends KontensaldoControl
     }
   }
 
-  public JVereinTablePart getJahresabschlussList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (jahresabschlussList != null)
     {
@@ -392,6 +396,12 @@ public class JahresabschlussControl extends KontensaldoControl
         new EditAction(JahresabschlussDetailView.class, jahresabschlussList));
     VorZurueckControl.setObjektListe(null, null);
     return jahresabschlussList;
+  }
+
+  public JVereinTablePart getSaldoList() throws RemoteException
+  {
+    // TablePart von Kontosaldo verwenden
+    return super.getTablePart();
   }
 
   /**
@@ -461,6 +471,25 @@ public class JahresabschlussControl extends KontensaldoControl
     return text;
   }
 
+  public PanelButton getSpaltenDetailPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getSaldoList()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
   public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (jahresabschlussList == null)
@@ -469,18 +498,18 @@ public class JahresabschlussControl extends KontensaldoControl
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
     return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
-        context -> {
-      jahresabschlussList.export(
-          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
-          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
-          VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
-          "jahresabschluesse", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          jahresabschlussList.export(
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
+              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
+              "jahresabschluesse", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public PanelButton exportJahresabschlussButton(ExportArt art) throws ApplicationException
+  public PanelButton exportJahresabschlussButton(ExportArt art)
+      throws ApplicationException
   {
     if (saldoList == null)
     {
@@ -488,14 +517,13 @@ public class JahresabschlussControl extends KontensaldoControl
           "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
     }
     return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
-        context -> {
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
           saldoList.export(
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this),
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
-          "jahresabschluss", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+              "jahresabschluss", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 }

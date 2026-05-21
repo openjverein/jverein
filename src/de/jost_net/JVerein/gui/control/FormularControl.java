@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
@@ -55,14 +56,12 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class FormularControl extends FormularPartControl implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart formularList;
 
   private TextInput bezeichnung;
@@ -86,8 +85,6 @@ public class FormularControl extends FormularPartControl implements Savable
   public FormularControl(AbstractView view, Formular formular)
   {
     super(view, formular);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Formular getFormular()
@@ -349,7 +346,8 @@ public class FormularControl extends FormularPartControl implements Savable
     }
   }
 
-  public JVereinTablePart getFormularList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (formularList != null)
     {
@@ -411,8 +409,7 @@ public class FormularControl extends FormularPartControl implements Savable
       throws ApplicationException
   {
     return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png",
-        context -> {
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
           if (formularfelderList == null)
           {
             throw new ApplicationException(
@@ -436,5 +433,24 @@ public class FormularControl extends FormularPartControl implements Savable
               "formularfelder", art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getFormularfeldList()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
   }
 }

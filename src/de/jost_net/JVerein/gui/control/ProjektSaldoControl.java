@@ -84,19 +84,15 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
         }
         saveProjektSettings();
         ArrayList<PseudoDBObject> zeile = getList();
-        getSaldoList().removeAll();
+        getTablePart().removeAll();
         for (PseudoDBObject sz : zeile)
         {
-          getSaldoList().addItem(sz);
+          getTablePart().addItem(sz);
         }
       }
       catch (RemoteException e1)
       {
         Logger.error("Fehler", e1);
-      }
-      catch (ApplicationException e)
-      {
-        Logger.error("Fehler bei neu laden der Liste.");
       }
     }
   }

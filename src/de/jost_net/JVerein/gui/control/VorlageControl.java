@@ -36,7 +36,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
@@ -143,7 +142,8 @@ public class VorlageControl extends FilterControl implements Savable
     }
   }
 
-  public Part getDateinamenList() throws RemoteException, ApplicationException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (namenList != null)
     {
@@ -178,14 +178,13 @@ public class VorlageControl extends FilterControl implements Savable
       }
       namenList.sort();
     }
-    catch (RemoteException | ApplicationException e1)
+    catch (RemoteException e1)
     {
       Logger.error("Fehler", e1);
     }
   }
 
-  private List<Vorlage> getVorlagenList()
-      throws RemoteException, ApplicationException
+  private List<Vorlage> getVorlagenList() throws RemoteException
   {
     String tmpSuchtext = ((String) getSuchtext().getValue()).toLowerCase();
     Vorlageart art = (Vorlageart) getVorlagenart().getValue();
@@ -211,7 +210,16 @@ public class VorlageControl extends FilterControl implements Savable
             null);
         vorlage.setAttribute(Vorlage.KEY, typ.getKey());
         vorlage.setMuster(typ.getDefault());
-        vorlage.store();
+        try
+        {
+          vorlage.store();
+        }
+        catch (ApplicationException e)
+        {
+          // kann nicht vorkommen, da es nur von insertCheck geworfen wird, und
+          // da ist bei VorlageImpl nichts implementiert
+          throw new RemoteException(e.getMessage());
+        }
       }
       // ggf. Filtern
       if (art != null && art.getKey() != typ.getArtkey())

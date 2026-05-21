@@ -33,7 +33,6 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -44,9 +43,6 @@ import de.willuhn.util.ApplicationException;
 public class EigenschaftGruppeControl extends VorZurueckControl
     implements Savable
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private JVereinTablePart eigenschaftgruppeList;
 
   private Input bezeichnung;
@@ -62,8 +58,6 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   public EigenschaftGruppeControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private EigenschaftGruppe getEigenschaftGruppe()
@@ -149,7 +143,8 @@ public class EigenschaftGruppeControl extends VorZurueckControl
     }
   }
 
-  public Part getEigenschaftGruppeList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (eigenschaftgruppeList != null)
     {

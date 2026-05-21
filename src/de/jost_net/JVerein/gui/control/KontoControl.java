@@ -330,7 +330,8 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  public JVereinTablePart getKontenList() throws RemoteException
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
   {
     if (kontenList != null)
     {
@@ -697,8 +698,9 @@ public class KontoControl extends FilterControl implements Savable
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput(getKonto().getAnlagenart(),
-        buchungsarttyp.ANLAGENART, (Integer) Einstellungen
+    anlagenart = new BuchungsartInput().getBuchungsartInput(
+        getKonto().getAnlagenart(), buchungsarttyp.ANLAGENART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
@@ -1071,13 +1073,8 @@ public class KontoControl extends FilterControl implements Savable
     return "bezeichnung";
   }
 
-  public class AnlagenartListener implements Listener
+  private class AnlagenartListener implements Listener
   {
-
-    AnlagenartListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {

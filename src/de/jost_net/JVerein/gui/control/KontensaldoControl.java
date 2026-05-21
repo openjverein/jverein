@@ -64,49 +64,42 @@ public class KontensaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  public JVereinTablePart getSaldoList() throws ApplicationException
+  public JVereinTablePart getTablePart() throws RemoteException
   {
-    try
+    if (saldoList != null)
     {
-      if (saldoList != null)
+      return saldoList;
+    }
+    saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
+    {
+      @Override
+      protected void orderBy(int index)
       {
-        return saldoList;
+        return;
       }
-      saldoList = new SaldoListTablePart(getList(), new SaldoDetailAction())
-      {
-        @Override
-        protected void orderBy(int index)
-        {
-          return;
-        }
-      };
-      saldoList.addColumn("Kontonummer", KONTO_NUMMER, null, false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Bezeichnung", GRUPPE);
-      saldoList.addColumn("Anfangsbestand", ANFANGSBESTAND,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Einnahmen", EINNAHMEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Ausgaben", AUSGABEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Endbestand", ENDBESTAND,
-          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-          Column.ALIGN_RIGHT);
-      saldoList.addColumn("Bemerkung", BEMERKUNG);
-      saldoList.setMulti(true);
-      saldoList.setFormatter(new SaldoFormatter());
-      saldoList.setContextMenu(new SaldoMenu(this));
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException("Fehler aufgetreten " + e.getMessage());
-    }
+    };
+    saldoList.addColumn("Kontonummer", KONTO_NUMMER, null, false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Bezeichnung", GRUPPE);
+    saldoList.addColumn("Anfangsbestand", ANFANGSBESTAND,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Einnahmen", EINNAHMEN,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Ausgaben", AUSGABEN,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Umbuchungen", UMBUCHUNGEN,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Endbestand", ENDBESTAND,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
+        Column.ALIGN_RIGHT);
+    saldoList.addColumn("Bemerkung", BEMERKUNG);
+    saldoList.setMulti(true);
+    saldoList.setFormatter(new SaldoFormatter());
+    saldoList.setContextMenu(new SaldoMenu(this));
     return saldoList;
   }
 

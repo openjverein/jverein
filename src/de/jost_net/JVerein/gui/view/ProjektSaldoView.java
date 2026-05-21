@@ -45,7 +45,7 @@ public class ProjektSaldoView extends AbstractView
     projekt.addLabelPair("Projekt", control.getProjekt());
 
     LabelGroup group = new LabelGroup(getParent(), "Saldo", true);
-    group.addPart(control.getSaldoList());
+    group.addPart(control.getTablePart());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
