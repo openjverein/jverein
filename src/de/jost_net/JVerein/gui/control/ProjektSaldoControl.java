@@ -237,24 +237,6 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_TITEL, this);
-  }
-
-  @Override
-  protected String getAuswertungSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_SUBTITEL, this);
-  }
-
-  @Override
-  protected String getDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_DATEINAME, this);
-  }
-
-  @Override
   protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_TITEL, this);

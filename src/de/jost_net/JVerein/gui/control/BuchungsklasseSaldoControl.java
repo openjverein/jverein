@@ -691,24 +691,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_TITEL, this);
-  }
-
-  @Override
-  protected String getAuswertungSubtitle()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_SUBTITEL, this);
-  }
-
-  @Override
-  protected String getDateiname()
-  {
-    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)

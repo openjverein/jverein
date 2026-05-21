@@ -1079,51 +1079,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
-  {
-    if (selectedTab == 0)
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_TITEL, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_TITEL,
-          this);
-    }
-  }
-
-  @Override
-  protected String getAuswertungSubtitle()
-  {
-    if (selectedTab == 0)
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_SUBTITEL, this);
-    }
-    else
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_SUBTITEL, this);
-    }
-  }
-
-  @Override
-  protected String getDateiname()
-  {
-    if (selectedTab == 0)
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME, this);
-    }
-    else
-    {
-      return VorlageUtil
-          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_DATEINAME, this);
-    }
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)
