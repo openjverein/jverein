@@ -269,33 +269,28 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void updateControl(TabFolder folder)
   {
     TabItem item = folder.getSelection()[0];
-    if (item.getText().equals(ZUSATZBETRAEGE))
+    switch (item.getText())
     {
-      control.setTabSelection(TabSelection.TAB_ZUSATZBETRAEGE);
-    }
-    else if (item.getText().equals(WIEDERVORLAGEN))
-    {
-      control.setTabSelection(TabSelection.TAB_WIEDERVORLAGEN);
-    }
-    else if (item.getText().equals(MAILS))
-    {
-      control.setTabSelection(TabSelection.TAB_MAILS);
-    }
-    else if (item.getText().equals(LEHRGAENGE))
-    {
-      control.setTabSelection(TabSelection.TAB_LEHRGAENGE);
-    }
-    else if (item.getText().equals(LESEFELDER))
-    {
-      control.setTabSelection(TabSelection.TAB_LESEFELDER);
-    }
-    else if (item.getText().equals(ARBEITSEINSAETZE))
-    {
-      control.setTabSelection(TabSelection.TAB_ARBEITSEINSAETZE);
-    }
-    else
-    {
-      control.setTabSelection(TabSelection.NO_TAB);
+      case ZUSATZBETRAEGE:
+        control.setTabSelection(TabSelection.TAB_ZUSATZBETRAEGE);
+        break;
+      case WIEDERVORLAGEN:
+        control.setTabSelection(TabSelection.TAB_WIEDERVORLAGEN);
+        break;
+      case MAILS:
+        control.setTabSelection(TabSelection.TAB_MAILS);
+        break;
+      case LEHRGAENGE:
+        control.setTabSelection(TabSelection.TAB_LEHRGAENGE);
+        break;
+      case LESEFELDER:
+        control.setTabSelection(TabSelection.TAB_LESEFELDER);
+        break;
+      case ARBEITSEINSAETZE:
+        control.setTabSelection(TabSelection.TAB_ARBEITSEINSAETZE);
+        break;
+      default:
+        control.setTabSelection(TabSelection.NO_TAB);
     }
   }
 
@@ -422,6 +417,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenDetailPanelButton());
   }
 
   private void zeichneDokumente(Composite parentComposite)

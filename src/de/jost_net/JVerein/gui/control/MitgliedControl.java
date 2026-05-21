@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -3454,38 +3455,14 @@ public class MitgliedControl extends FilterControl implements Savable
 
     return new PanelButton(
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          final JVereinTablePart liste;
-          switch (tabSelection)
+          JVereinTablePart liste = null;
+          try
           {
-            case TAB_ZUSATZBETRAEGE:
-              liste = zusatzbetraegeList;
-              break;
-            case TAB_WIEDERVORLAGEN:
-              liste = wiedervorlageList;
-              break;
-            case TAB_MAILS:
-              liste = mailList;
-              break;
-            case TAB_LEHRGAENGE:
-              liste = lehrgaengeList;
-              break;
-            case TAB_LESEFELDER:
-              try
-              {
-                liste = lesefeldControl.getLesefeldMitgliedList();
-              }
-              catch (RemoteException e)
-              {
-                throw new ApplicationException(e.getMessage());
-              }
-              break;
-            case TAB_ARBEITSEINSAETZE:
-              liste = arbeitseinsatzList;
-              break;
-            case NO_TAB:
-              return;
-            default:
-              liste = null;
+            liste = getDetailTablePart();
+          }
+          catch (ObjectNotFoundException ex)
+          {
+            return;
           }
           if (liste == null)
           {
@@ -3566,5 +3543,72 @@ public class MitgliedControl extends FilterControl implements Savable
               break;
           }
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton getSpaltenDetailPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      JVereinTablePart liste = null;
+      try
+      {
+        liste = getDetailTablePart();
+      }
+      catch (ObjectNotFoundException ex)
+      {
+        return;
+      }
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(liste).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  private JVereinTablePart getDetailTablePart()
+      throws ApplicationException, ObjectNotFoundException
+  {
+    final JVereinTablePart liste;
+    switch (tabSelection)
+    {
+      case TAB_ZUSATZBETRAEGE:
+        liste = zusatzbetraegeList;
+        break;
+      case TAB_WIEDERVORLAGEN:
+        liste = wiedervorlageList;
+        break;
+      case TAB_MAILS:
+        liste = mailList;
+        break;
+      case TAB_LEHRGAENGE:
+        liste = lehrgaengeList;
+        break;
+      case TAB_LESEFELDER:
+        try
+        {
+          liste = lesefeldControl.getLesefeldMitgliedList();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
+        break;
+      case TAB_ARBEITSEINSAETZE:
+        liste = arbeitseinsatzList;
+        break;
+      case NO_TAB:
+        throw new ObjectNotFoundException();
+      default:
+        liste = null;
+    }
+    return liste;
   }
 }
