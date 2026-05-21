@@ -283,6 +283,7 @@ public class JVereinTablePart extends TablePart
     try
     {
       Table t = (Table) tableControl;
+      // TODO hier Dialog aufrufen, Dialog ruft Export auf?
       TableItem[] rows = t.getItems();
       if (rows == null || rows.length == 0)
       {
@@ -340,86 +341,86 @@ public class JVereinTablePart extends TablePart
       switch (art)
       {
         case CSV:
-          ICsvMapWriter writer = null;
-
-          writer = new CsvMapWriter(new FileWriter(file),
-              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-
-          CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl
-              .size()];
-          String[] header = new String[listeAuswahl.size()];
-
-          int n = 0;
-          for (TableColumn col : listeAuswahl)
+          // TODO für CSV wirklich auch Spalten auswählen?
+          try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
+              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
           {
-            header[n] = col.getText();
-            cellProcessor[n++] = new ConvertNullTo("");
-          }
-          writer.writeHeader(header);
+            CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl
+                .size()];
+            String[] header = new String[listeAuswahl.size()];
 
-          for (TableItem row : rows)
-          {
-            Map<String, Object> csvzeile = new HashMap<>();
-            int i = 0;
+            int n = 0;
             for (TableColumn col : listeAuswahl)
             {
-              int index = listeOrig.indexOf(col);
-              csvzeile.put(header[i++], row.getText(index));
+              header[n] = col.getText();
+              cellProcessor[n++] = new ConvertNullTo("");
             }
-            writer.write(csvzeile, header, cellProcessor);
+            writer.writeHeader(header);
+
+            for (TableItem row : rows)
+            {
+              Map<String, Object> csvzeile = new HashMap<>();
+              int i = 0;
+              for (TableColumn col : listeAuswahl)
+              {
+                int index = listeOrig.indexOf(col);
+                csvzeile.put(header[i++], row.getText(index));
+              }
+              writer.write(csvzeile, header, cellProcessor);
+            }
           }
-          writer.close();
           break;
         case PDF:
-          FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
-              // TODO ränder aus Dialog
-              20, 20, 20, 20);
-
-          for (TableColumn col : listeAuswahl)
+          try (FileOutputStream fos = new FileOutputStream(file);)
           {
-            reporter.addHeaderColumn(col.getText(),
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
-                // TODO Breite aus Dialog
-                // TODO letze Spalte schmaler?
-                col.getWidth(), BaseColor.LIGHT_GRAY);
-          }
-          reporter.createHeader();
+            Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
+                // TODO ränder aus Dialog
+                20, 20, 20, 20);
 
-          for (TableItem row : rows)
-          {
             for (TableColumn col : listeAuswahl)
             {
-              int index = listeOrig.indexOf(col);
-              Color bg = row.getBackground(index);
-              Font font = null;
-              for (FontData data : row.getFont(index).getFontData())
-              {
-                switch (data.getStyle())
-                {
-                  case SWT.BOLD:
-                    font = Reporter.getFreeSansBold(8);
-                    break;
-                  case SWT.ITALIC:
-                    font = Reporter.getFreeSansItalic(8);
-                    break;
-                  case SWT.NORMAL:
-                    font = Reporter.getFreeSans(8);
-                    break;
-                }
-              }
-              reporter.addColumn(row.getText(index),
+              reporter.addHeaderColumn(col.getText(),
                   col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                       : Element.ALIGN_RIGHT,
-                  new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()),
-                  font);
+                  // TODO Breite aus Dialog
+                  // TODO letze Spalte schmaler?
+                  col.getWidth(), BaseColor.LIGHT_GRAY);
             }
+            reporter.createHeader();
+
+            for (TableItem row : rows)
+            {
+              for (TableColumn col : listeAuswahl)
+              {
+                int index = listeOrig.indexOf(col);
+                Color bg = row.getBackground(index);
+                Font font = null;
+                for (FontData data : row.getFont(index).getFontData())
+                {
+                  switch (data.getStyle())
+                  {
+                    case SWT.BOLD:
+                      font = Reporter.getFreeSansBold(8);
+                      break;
+                    case SWT.ITALIC:
+                      font = Reporter.getFreeSansItalic(8);
+                      break;
+                    case SWT.NORMAL:
+                      font = Reporter.getFreeSans(8);
+                      break;
+                  }
+                }
+                reporter.addColumn(row.getText(index),
+                    col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
+                        : Element.ALIGN_RIGHT,
+                    new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()),
+                    font);
+              }
+            }
+            // TODO Filter ausgeben?
+            reporter.closeTable();
+            reporter.close();
           }
-          // TODO Filter ausgeben?
-          reporter.closeTable();
-          reporter.close();
-          fos.close();
           break;
       }
       FileViewer.show(file);

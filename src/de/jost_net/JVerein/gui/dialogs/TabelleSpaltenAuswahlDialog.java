@@ -157,5 +157,4 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   {
     return null;
   }
-
 }
