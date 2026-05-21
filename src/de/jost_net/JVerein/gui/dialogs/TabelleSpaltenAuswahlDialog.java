@@ -84,11 +84,15 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       part.addColumn("Name", "name");
       part.setCheckable(true);
 
-      String name = "Tabelle";
+      String name = table.getTableName();
       Object o = table.getItems().get(0);
-      if (o instanceof JVereinDBObject)
+      if (o instanceof JVereinDBObject && name == null)
       {
         name = ((JVereinDBObject) o).getObjektNameMehrzahl();
+      }
+      if (name == null)
+      {
+        name = "Tabelle";
       }
       if (tableMap.size() > 1)
       {

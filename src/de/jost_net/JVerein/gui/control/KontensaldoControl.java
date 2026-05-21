@@ -27,7 +27,6 @@ import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
-import de.jost_net.JVerein.io.KontenSaldoCSV;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -78,6 +77,7 @@ public class KontensaldoControl extends AbstractSaldoControl
         return;
       }
     };
+    saldoList.setTableName("Saldo");
     saldoList.addColumn("Kontonummer", KONTO_NUMMER, null, false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Bezeichnung", GRUPPE);
@@ -370,8 +370,6 @@ public class KontensaldoControl extends AbstractSaldoControl
   {
     switch (type)
     {
-      case AuswertungCSV:
-        return new KontenSaldoCSV();
       case AuswertungPDF:
         return new KontenSaldoPDF();
       default:
@@ -379,4 +377,27 @@ public class KontensaldoControl extends AbstractSaldoControl
     }
   }
 
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.KONTENSALDO_DATEINAME, this);
+  }
+
+  @Override
+  protected String getTableSettingPrefix()
+  {
+    return "kontensaldo";
+  }
 }

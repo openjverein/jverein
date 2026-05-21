@@ -27,10 +27,10 @@ import org.apache.commons.lang.time.DateUtils;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.MittelverwendungDialog;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
-import de.jost_net.JVerein.io.MittelverwendungExportCSV;
 import de.jost_net.JVerein.io.MittelverwendungExportPDF;
 import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -49,8 +49,10 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MittelverwendungControl extends AbstractSaldoControl
@@ -308,6 +310,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         return;
       }
     };
+    saldoList.setTableName("Saldo-basiert");
     saldoList.addColumn("Art", GRUPPE);
     saldoList.addColumn("Konto", BEZEICHNUNG);
     saldoList.addColumn("Betrag", BETRAG,
@@ -343,6 +346,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
         return;
       }
     };
+    zuflussList.setTableName("Zufluss-basiert");
     zuflussList.addColumn("Nr", NR);
     zuflussList.addColumn("Mittel", GRUPPE);
     zuflussList.addColumn("Betrag", BETRAG,
@@ -1124,8 +1128,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
   {
     switch (type)
     {
-      case AuswertungCSV:
-        return new MittelverwendungExportCSV(selectedTab);
       case AuswertungPDF:
         return new MittelverwendungExportPDF(selectedTab);
       default:
@@ -1153,4 +1155,81 @@ public class MittelverwendungControl extends AbstractSaldoControl
     return zwanghafteWeitergabeNeu;
   }
 
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getMittelverwendungFlowTable(),
+            getMittelverwendungSaldoTable()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_TITEL, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_TITEL,
+          this);
+    }
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_SUBTITEL, this);
+    }
+    else
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_SUBTITEL, this);
+    }
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    if (selectedTab == 0)
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_ZUFLUSS_DATEINAME, this);
+    }
+    else
+    {
+      return VorlageUtil
+          .getName(VorlageTyp.MITTELVERWENDUNGSREPORT_SALDO_DATEINAME, this);
+    }
+  }
+
+  @Override
+  protected String getTableSettingPrefix()
+  {
+    if (selectedTab == 0)
+    {
+      return "mittelverwendungsreport.zufluss";
+    }
+    else
+    {
+      return "mittelverwendungsreport.saldo";
+    }
+  }
 }

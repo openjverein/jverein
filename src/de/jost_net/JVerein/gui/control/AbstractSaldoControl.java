@@ -321,12 +321,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
         false, "file-pdf.png");
   }
 
-  public Button getStartAuswertungCSVButton()
-  {
-    return new Button("CSV", context -> starteAuswertung(AuswertungCSV), null,
-        false, "xsd.png");
-  }
-
   public DateLabel getDatumvon()
   {
     if (datumvon != null)

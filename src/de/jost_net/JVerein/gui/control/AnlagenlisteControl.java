@@ -25,7 +25,6 @@ import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
-import de.jost_net.JVerein.io.AnlagenverzeichnisCSV;
 import de.jost_net.JVerein.io.AnlagenverzeichnisPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
@@ -87,6 +86,7 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         return;
       }
     };
+    saldoList.setTableName("Liste");
     saldoList.addColumn("Anlagenart", GRUPPE);
     saldoList.addColumn("Bezeichnung", KONTO);
     saldoList.addColumn("Nutzungsdauer", NUTZUNGSDAUER, null, false,
@@ -386,8 +386,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   {
     switch (type)
     {
-      case AuswertungCSV:
-        return new AnlagenverzeichnisCSV();
       case AuswertungPDF:
         return new AnlagenverzeichnisPDF();
       default:
@@ -395,4 +393,27 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     }
   }
 
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
+  }
+
+  @Override
+  protected String getTableSettingPrefix()
+  {
+    return "anlagenverzeichnis";
+  }
 }

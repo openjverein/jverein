@@ -66,6 +66,8 @@ public class JVereinTablePart extends TablePart
 
   private String tablePartId;
 
+  private String tableName = null;
+
   public enum ExportArt
   {
     PDF,
@@ -232,7 +234,14 @@ public class JVereinTablePart extends TablePart
 
     sb.append(GUI.getCurrentView().getClass().getSimpleName());
     sb.append(".");
-    sb.append(items.get(0).getClass().getSimpleName());
+    if (tableName != null)
+    {
+      sb.append(tableName);
+    }
+    else
+    {
+      sb.append(items.get(0).getClass().getSimpleName());
+    }
     sb.append(".");
 
     tablePartId = sb.toString();
@@ -413,5 +422,15 @@ public class JVereinTablePart extends TablePart
       Logger.error("Fehler beim Erstellen der Auswertung.", e);
       throw new ApplicationException("Fehler beim Erstellen der Auswertung.");
     }
+  }
+
+  public void setTableName(String name)
+  {
+    tableName = name;
+  }
+
+  public String getTableName()
+  {
+    return tableName;
   }
 }

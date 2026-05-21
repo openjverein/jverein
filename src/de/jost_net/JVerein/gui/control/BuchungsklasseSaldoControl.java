@@ -28,7 +28,6 @@ import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.io.BuchungsklassesaldoCSV;
 import de.jost_net.JVerein.io.BuchungsklassesaldoPDF;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
@@ -121,6 +120,7 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         return;
       }
     };
+    saldoList.setTableName("Saldo");
     saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
     if (mitBuchungsklasseSpalte)
     {
@@ -713,8 +713,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   {
     switch (type)
     {
-      case AuswertungCSV:
-        return new BuchungsklassesaldoCSV(mitUmbuchung);
       case AuswertungPDF:
         return new BuchungsklassesaldoPDF(mitUmbuchung);
       default:
@@ -722,4 +720,27 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
     }
   }
 
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.BUCHUNGSKLASSENSALDO_DATEINAME, this);
+  }
+
+  @Override
+  protected String getTableSettingPrefix()
+  {
+    return "buchungsklassensaldo";
+  }
 }
