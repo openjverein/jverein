@@ -75,7 +75,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.setTableName("Saldo");
     saldoList.addColumn("Steuerart", GRUPPE, null, false, Column.ALIGN_RIGHT);
     saldoList.addColumn("Steuer Name", STEUER);
     saldoList.addColumn("Bemessungsgrundlage", BEMESSUNGSGRUNDLAGE,
