@@ -214,28 +214,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   }
 
   /**
-   * Holt den Titel für die Auswertungen
-   * 
-   * @return
-   */
-  protected abstract String getAuswertungTitle();
-
-  /**
-   * 
-   * Holt den Titel für die Auswertungen
-   * 
-   * @return
-   */
-  protected abstract String getAuswertungSubtitle();
-
-  /**
-   * Holt den Dateinamen für die Auswertungen
-   * 
-   * @return
-   */
-  protected abstract String getDateiname();
-
-  /**
    * Git ein Object, dass das Interface ISaldoExport implementiert zurück.
    * 
    * @param type
@@ -270,7 +248,7 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
       {
         fd.setFilterPath(path);
       }
-      fd.setFileName(getDateiname() + type);
+      fd.setFileName(getTableDateiname() + type);
 
       final String s = fd.open();
 
@@ -282,8 +260,8 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
       final File file = new File(s);
       settings.setAttribute("lastdir", file.getParent());
 
-      final String title = getAuswertungTitle();
-      final String subtitle = getAuswertungSubtitle();
+      final String title = getTableTitle();
+      final String subtitle = getTableSubtitle();
 
       BackgroundTask t = new BackgroundTask()
       {
@@ -319,12 +297,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
   {
     return new Button("PDF", context -> starteAuswertung(AuswertungPDF), null,
         false, "file-pdf.png");
-  }
-
-  public Button getStartAuswertungCSVButton()
-  {
-    return new Button("CSV", context -> starteAuswertung(AuswertungCSV), null,
-        false, "xsd.png");
   }
 
   public DateLabel getDatumvon()

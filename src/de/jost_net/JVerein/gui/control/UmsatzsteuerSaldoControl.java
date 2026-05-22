@@ -26,7 +26,6 @@ import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
-import de.jost_net.JVerein.io.UmsatzsteuerSaldoCSV;
 import de.jost_net.JVerein.io.UmsatzsteuerSaldoPDF;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -267,24 +266,30 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getAuswertungTitle()
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_TITEL,
         this);
   }
 
   @Override
-  protected String getAuswertungSubtitle()
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_SUBTITEL,
         this);
   }
 
   @Override
-  protected String getDateiname()
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.UMSATZSTEUER_VORANMELDUNG_DATEINAME,
         this);
+  }
+
+  @Override
+  protected String getTableSettingPrefix()
+  {
+    return "umsatzsteuervoranmeldung";
   }
 
   @Override
@@ -292,13 +297,10 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   {
     switch (type)
     {
-      case AuswertungCSV:
-        return new UmsatzsteuerSaldoCSV();
       case AuswertungPDF:
         return new UmsatzsteuerSaldoPDF();
       default:
         throw new ApplicationException("Ausgabetyp nicht implementiert");
     }
   }
-
 }
