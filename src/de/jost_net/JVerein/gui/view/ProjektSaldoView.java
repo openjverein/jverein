@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.control.ProjektSaldoControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -50,9 +51,12 @@ public class ProjektSaldoView extends AbstractView
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.PROJEKTSALDO, false, "question-circle.png");
-    buttons.addButton(control.getStartAuswertungCSVButton());
     buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
 }

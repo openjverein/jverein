@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MittelverwendungControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -88,8 +89,11 @@ public class MittelverwendungReportView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.MITTELVERWENDUNG, false, "question-circle.png");
     buttons.addButton(control.getConfigButton());
-    buttons.addButton(control.getStartAuswertungCSVButton());
     buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 }
