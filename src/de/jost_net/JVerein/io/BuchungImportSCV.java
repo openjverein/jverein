@@ -28,6 +28,8 @@ import java.util.Properties;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.BuchungVar;
+import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
+import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
@@ -37,7 +39,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class CSVBuchungsImport implements Importer
+public class BuchungImportSCV implements Importer
 {
 
   @Override
@@ -261,15 +263,11 @@ public class CSVBuchungsImport implements Importer
     return "CSV-Buchungsimport";
   }
 
-  public boolean hasFileDialog()
-  {
-    return true;
-  }
-
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Buchung.class)
+    if (objectType != BuchungListeView.class
+        && objectType != AnlagenbuchungListeView.class)
     {
       return null;
     }
@@ -279,7 +277,7 @@ public class CSVBuchungsImport implements Importer
       @Override
       public String getName()
       {
-        return CSVBuchungsImport.this.getName();
+        return BuchungImportSCV.this.getName();
       }
 
       /**

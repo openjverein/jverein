@@ -1591,14 +1591,10 @@ public abstract class FilterControl extends VorZurueckControl
   public class FilterListener implements Listener
   {
 
-    FilterListener()
-    {
-    }
-
     @Override
     public void handleEvent(Event event)
     {
-      if (event.type != SWT.Selection && event.type != SWT.FocusOut)
+      if (event.type != SWT.Selection)
       {
         return;
       }

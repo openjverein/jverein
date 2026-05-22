@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.dialogs.ImportDialog;
-import de.jost_net.JVerein.gui.view.BuchungListeView;
+import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -25,7 +25,7 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungImportAction implements Action
+public class AnlagenbuchungImportAction implements Action
 {
 
   /**
@@ -36,8 +36,8 @@ public class BuchungImportAction implements Action
   {
     try
     {
-      ImportDialog d = new ImportDialog(null, BuchungListeView.class, true,
-          DokumentationUtil.BUCHUNGSIMPORT);
+      ImportDialog d = new ImportDialog(null, AnlagenbuchungListeView.class,
+          true, DokumentationUtil.BUCHUNGSIMPORT);
       d.open();
     }
     catch (OperationCanceledException oce)

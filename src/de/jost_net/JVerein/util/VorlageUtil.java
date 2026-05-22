@@ -194,6 +194,27 @@ public class VorlageUtil
         case KONTOAUSZUG_MITGLIED_DATEINAME:
         case KONTOAUSZUG_TITEL:
         case KONTOAUSZUG_SUBTITEL:
+        case MITGLIED_ZUSATZBETRAEGE_DATEINAME:
+        case MITGLIED_ZUSATZBETRAEGE_TITEL:
+        case MITGLIED_ZUSATZBETRAEGE_SUBTITEL:
+        case MITGLIED_WIEDERVORLAGEN_DATEINAME:
+        case MITGLIED_WIEDERVORLAGEN_TITEL:
+        case MITGLIED_WIEDERVORLAGEN_SUBTITEL:
+        case MITGLIED_MAILS_DATEINAME:
+        case MITGLIED_MAILS_TITEL:
+        case MITGLIED_MAILS_SUBTITEL:
+        case MITGLIED_LEHRGAENGE_DATEINAME:
+        case MITGLIED_LEHRGAENGE_TITEL:
+        case MITGLIED_LEHRGAENGE_SUBTITEL:
+        case MITGLIED_LESEFELDER_DATEINAME:
+        case MITGLIED_LESEFELDER_TITEL:
+        case MITGLIED_LESEFELDER_SUBTITEL:
+        case MITGLIED_ARBEITSEINSAETZE_DATEINAME:
+        case MITGLIED_ARBEITSEINSAETZE_TITEL:
+        case MITGLIED_ARBEITSEINSAETZE_SUBTITEL:
+        case MITGLIED_DOKUMENTE_DATEINAME:
+        case MITGLIED_DOKUMENTE_TITEL:
+        case MITGLIED_DOKUMENTE_SUBTITEL:
           map = new MitgliedMap().getMap(mitglied, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -277,6 +298,9 @@ public class VorlageUtil
           map = new SpendenbescheinigungListeFilterMap()
               .getMap((FilterControl) obj, map);
           break;
+        case BUCHUNGEN_DATEINAME:
+        case BUCHUNGEN_TITEL:
+        case BUCHUNGEN_SUBTITEL:
         case BUCHUNGSJOURNAL_DATEINAME:
         case BUCHUNGSJOURNAL_TITEL:
         case BUCHUNGSJOURNAL_SUBTITEL:
@@ -289,6 +313,9 @@ public class VorlageUtil
         case CSVBUCHUNGEN_DATEINAME:
           map = new BuchungListeFilterMap().getMap((BuchungsControl) obj, map);
           break;
+        case ANLAGEN_BUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_TITEL:
+        case ANLAGEN_BUCHUNGEN_SUBTITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
         case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
@@ -544,6 +571,27 @@ public class VorlageUtil
         case KONTOAUSZUG_MITGLIED_DATEINAME:
         case KONTOAUSZUG_TITEL:
         case KONTOAUSZUG_SUBTITEL:
+        case MITGLIED_ZUSATZBETRAEGE_DATEINAME:
+        case MITGLIED_ZUSATZBETRAEGE_TITEL:
+        case MITGLIED_ZUSATZBETRAEGE_SUBTITEL:
+        case MITGLIED_WIEDERVORLAGEN_DATEINAME:
+        case MITGLIED_WIEDERVORLAGEN_TITEL:
+        case MITGLIED_WIEDERVORLAGEN_SUBTITEL:
+        case MITGLIED_MAILS_DATEINAME:
+        case MITGLIED_MAILS_TITEL:
+        case MITGLIED_MAILS_SUBTITEL:
+        case MITGLIED_LEHRGAENGE_DATEINAME:
+        case MITGLIED_LEHRGAENGE_TITEL:
+        case MITGLIED_LEHRGAENGE_SUBTITEL:
+        case MITGLIED_LESEFELDER_DATEINAME:
+        case MITGLIED_LESEFELDER_TITEL:
+        case MITGLIED_LESEFELDER_SUBTITEL:
+        case MITGLIED_ARBEITSEINSAETZE_DATEINAME:
+        case MITGLIED_ARBEITSEINSAETZE_TITEL:
+        case MITGLIED_ARBEITSEINSAETZE_SUBTITEL:
+        case MITGLIED_DOKUMENTE_DATEINAME:
+        case MITGLIED_DOKUMENTE_TITEL:
+        case MITGLIED_DOKUMENTE_SUBTITEL:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -625,6 +673,9 @@ public class VorlageUtil
         case SPENDENBESCHEINIGUNGEN_SUBTITEL:
           map = SpendenbescheinigungListeFilterMap.getDummyMap(map);
           break;
+        case BUCHUNGEN_DATEINAME:
+        case BUCHUNGEN_TITEL:
+        case BUCHUNGEN_SUBTITEL:
         case BUCHUNGSJOURNAL_DATEINAME:
         case BUCHUNGSJOURNAL_TITEL:
         case BUCHUNGSJOURNAL_SUBTITEL:
@@ -637,6 +688,9 @@ public class VorlageUtil
         case CSVBUCHUNGEN_DATEINAME:
           map = BuchungListeFilterMap.getDummyMap(map);
           break;
+        case ANLAGEN_BUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_TITEL:
+        case ANLAGEN_BUCHUNGEN_SUBTITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
         case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
         case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:

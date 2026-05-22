@@ -45,6 +45,7 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -171,6 +172,9 @@ import de.willuhn.util.ProgressMonitor;
 
 public class MitgliedControl extends FilterControl implements Savable
 {
+  final LesefeldControl lesefeldControl = new LesefeldControl(null);
+
+  private DokumentControl dcontrol;
 
   private JVereinTablePart mitgliedList;
 
@@ -322,6 +326,25 @@ public class MitgliedControl extends FilterControl implements Savable
   private boolean isMitglied = false;
 
   private JVereinTablePart zahtlFuer;
+
+  private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
+
+  public enum TabSelection
+  {
+    TAB_ZUSATZBETRAEGE,
+    TAB_WIEDERVORLAGEN,
+    TAB_MAILS,
+    TAB_LEHRGAENGE,
+    TAB_LESEFELDER,
+    TAB_ARBEITSEINSAETZE,
+    TAB_DOKUMENTE,
+    NO_LIST_TAB;
+  }
+
+  public void setTabSelection(TabSelection selection)
+  {
+    tabSelection = selection;
+  }
 
   public MitgliedControl(AbstractView view)
   {
@@ -3394,6 +3417,16 @@ public class MitgliedControl extends FilterControl implements Savable
     Application.getMessagingFactory().unRegisterMessageConsumer(azc);
   }
 
+  public LesefeldControl getLesefeldControl()
+  {
+    return lesefeldControl;
+  }
+
+  public void setDokumentControl(DokumentControl dcontrol)
+  {
+    this.dcontrol = dcontrol;
+  }
+
   public PanelButton exportButton(ExportArt art) throws ApplicationException
   {
     if (mitgliedList == null)
@@ -3422,5 +3455,185 @@ public class MitgliedControl extends FilterControl implements Savable
           }
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton exportDetailButton(ExportArt art)
+      throws ApplicationException
+  {
+
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          JVereinTablePart liste = null;
+          try
+          {
+            liste = getDetailTablePart();
+          }
+          catch (ObjectNotFoundException ex)
+          {
+            throw new ApplicationException(
+                "Es ist kein Tab mit einer Tabelle ausgewählt.");
+          }
+          if (liste == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+
+          switch (tabSelection)
+          {
+            case TAB_ZUSATZBETRAEGE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.zusatzbetraege", art);
+              break;
+            case TAB_WIEDERVORLAGEN:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.wiedervorlagen", art);
+              break;
+            case TAB_MAILS:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.mails", art);
+              break;
+            case TAB_LEHRGAENGE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.lehrgaenge", art);
+              break;
+            case TAB_LESEFELDER:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_TITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.lesefelder", art);
+              break;
+            case TAB_ARBEITSEINSAETZE:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME, null,
+                      getMitglied()),
+                  "mitglied.arbeitseinsaetze", art);
+              break;
+            case TAB_DOKUMENTE:
+              liste.export(
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL, null,
+                      getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_SUBTITEL,
+                      null, getMitglied()),
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
+                      null, getMitglied()),
+                  "mitglied.dokumente", art);
+              break;
+            case NO_LIST_TAB:
+              break;
+          }
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  public PanelButton getSpaltenDetailPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(zusatzbetraegeList, wiedervorlageList,
+            mailList, lehrgaengeList, lesefeldControl.getLesefeldMitgliedList(),
+            arbeitseinsatzList, getDocumentPart()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (ObjectNotFoundException e)
+      {
+        return;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  private JVereinTablePart getDetailTablePart()
+      throws ApplicationException, ObjectNotFoundException
+  {
+    switch (tabSelection)
+    {
+      case TAB_ZUSATZBETRAEGE:
+        return zusatzbetraegeList;
+      case TAB_WIEDERVORLAGEN:
+        return wiedervorlageList;
+      case TAB_MAILS:
+        return mailList;
+      case TAB_LEHRGAENGE:
+        return lehrgaengeList;
+      case TAB_LESEFELDER:
+        try
+        {
+          return lesefeldControl.getLesefeldMitgliedList();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
+      case TAB_ARBEITSEINSAETZE:
+        return arbeitseinsatzList;
+      case TAB_DOKUMENTE:
+        try
+        {
+          return dcontrol.getDokumenteList();
+        }
+        catch (RemoteException e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
+      case NO_LIST_TAB:
+        throw new ObjectNotFoundException();
+    }
+    return null;
+  }
+
+  private JVereinTablePart getDocumentPart() throws RemoteException
+  {
+    if (dcontrol == null)
+    {
+      return null;
+    }
+    return dcontrol.getDokumenteList();
   }
 }
