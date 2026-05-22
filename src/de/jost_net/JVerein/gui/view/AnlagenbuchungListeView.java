@@ -22,12 +22,14 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.BuchungImportAction;
+import de.jost_net.JVerein.gui.action.AnlagenbuchungExportAction;
+import de.jost_net.JVerein.gui.action.AnlagenbuchungImportAction;
 import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -131,14 +133,16 @@ public class AnlagenbuchungListeView extends AbstractView
     if (!control.getGeldkonto() && !(Boolean) Einstellungen
         .getEinstellung(Property.AFAINJAHRESABSCHLUSS))
       buttons.addButton(control.getAfaButton());
-    buttons.addButton("Import", new BuchungImportAction(), null, false,
+    buttons.addButton("Import", new AnlagenbuchungImportAction(), null, false,
         "file-import.png");
-    buttons.addButton(control.getStartCSVAuswertungButton());
-    buttons.addButton(control.getStartAuswertungBuchungsjournalButton());
-    buttons.addButton(control.getStartAuswertungEinzelbuchungenButton());
-    buttons.addButton(control.getStartAuswertungSummenButton());
+    buttons.addButton(new Button("Export", new AnlagenbuchungExportAction(),
+        control, false, "document-save.png"));
     buttons.addButton("Neu", new BuchungNeuAction(control), control, false,
         "document-new.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 }
