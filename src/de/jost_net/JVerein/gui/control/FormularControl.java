@@ -405,7 +405,7 @@ public class FormularControl extends FormularPartControl implements Savable
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public PanelButton exportFormularFelderButton(ExportArt art)
+  public PanelButton exportDetailButton(ExportArt art)
       throws ApplicationException
   {
     return new PanelButton(

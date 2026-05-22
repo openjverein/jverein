@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,13 +10,11 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.gui.dialogs.ImportDialog;
-import de.jost_net.JVerein.gui.view.BuchungListeView;
+import de.jost_net.JVerein.gui.dialogs.ExportDialog;
+import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -25,7 +22,7 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungImportAction implements Action
+public class AnlagenbuchungExportAction implements Action
 {
 
   /**
@@ -36,8 +33,9 @@ public class BuchungImportAction implements Action
   {
     try
     {
-      ImportDialog d = new ImportDialog(null, BuchungListeView.class, true,
-          DokumentationUtil.BUCHUNGSIMPORT);
+      ExportDialog d = new ExportDialog(new Object[] { context },
+          AnlagenbuchungListeView.class, DokumentationUtil.ANLAGENBUCHUNGEN,
+          context);
       d.open();
     }
     catch (OperationCanceledException oce)
@@ -51,9 +49,8 @@ public class BuchungImportAction implements Action
     }
     catch (Exception e)
     {
-      Logger.error("error while importing transfers", e);
-      GUI.getStatusBar().setErrorText("Fehler beim Importieren von Buchungen");
+      Logger.error("Fehler", e);
+      GUI.getStatusBar().setErrorText("Fehler beim exportieren der Buchungen");
     }
   }
-
 }

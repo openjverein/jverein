@@ -54,6 +54,10 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     boolean leer = true;
     for (JVereinTablePart table : tableParts)
     {
+      if (table == null)
+      {
+        continue;
+      }
       tableMap.put(table, null);
       if (table.getItems().size() > 0)
       {
