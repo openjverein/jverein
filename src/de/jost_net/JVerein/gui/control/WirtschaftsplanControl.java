@@ -37,7 +37,6 @@ import de.jost_net.JVerein.gui.control.WirtschaftsplanNode.Type;
 import de.jost_net.JVerein.gui.menu.WirtschaftsplanListMenu;
 import de.jost_net.JVerein.gui.parts.EditTreePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.WirtschaftsplanUebersichtPart;
 import de.jost_net.JVerein.gui.view.WirtschaftsplanDetailView;
 import de.jost_net.JVerein.keys.BuchungsartSort;
@@ -60,7 +59,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.SelectInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
@@ -690,21 +688,21 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     tableChanged = true;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (wirtschaftsplaene == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          wirtschaftsplaene.export(
-              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL),
-              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME),
-              "wirtschaftsplaene", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.WIRTSCHAFTSPLAENE_DATEINAME);
   }
 }

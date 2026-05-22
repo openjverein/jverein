@@ -46,6 +46,7 @@ import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -78,7 +79,6 @@ import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
@@ -3427,36 +3427,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.dcontrol = dcontrol;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
-  {
-    if (mitgliedList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          if (isMitglied)
-          {
-            mitgliedList.export(
-                VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this),
-                VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this),
-                VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this),
-                "mitglieder", art);
-          }
-          else
-          {
-            mitgliedList.export(
-                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this),
-                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this),
-                VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME,
-                    this),
-                "nichtmitglieder", art);
-          }
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton exportDetailButton(ExportArt art)
       throws ApplicationException
   {
@@ -3491,7 +3461,7 @@ public class MitgliedControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME, null,
                       getMitglied()),
-                  "mitglied.zusatzbetraege", art);
+                  art);
               break;
             case TAB_WIEDERVORLAGEN:
               liste.export(
@@ -3503,7 +3473,7 @@ public class MitgliedControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME, null,
                       getMitglied()),
-                  "mitglied.wiedervorlagen", art);
+                  art);
               break;
             case TAB_MAILS:
               liste.export(
@@ -3513,7 +3483,7 @@ public class MitgliedControl extends FilterControl implements Savable
                       getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME, null,
                       getMitglied()),
-                  "mitglied.mails", art);
+                  art);
               break;
             case TAB_LEHRGAENGE:
               liste.export(
@@ -3523,7 +3493,7 @@ public class MitgliedControl extends FilterControl implements Savable
                       null, getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
                       null, getMitglied()),
-                  "mitglied.lehrgaenge", art);
+                  art);
               break;
             case TAB_LESEFELDER:
               liste.export(
@@ -3533,7 +3503,7 @@ public class MitgliedControl extends FilterControl implements Savable
                       null, getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
                       null, getMitglied()),
-                  "mitglied.lesefelder", art);
+                  art);
               break;
             case TAB_ARBEITSEINSAETZE:
               liste.export(
@@ -3546,7 +3516,7 @@ public class MitgliedControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME, null,
                       getMitglied()),
-                  "mitglied.arbeitseinsaetze", art);
+                  art);
               break;
             case TAB_DOKUMENTE:
               liste.export(
@@ -3556,7 +3526,7 @@ public class MitgliedControl extends FilterControl implements Savable
                       null, getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
                       null, getMitglied()),
-                  "mitglied.dokumente", art);
+                  art);
               break;
             case NO_LIST_TAB:
               break;
@@ -3635,5 +3605,44 @@ public class MitgliedControl extends FilterControl implements Savable
       return null;
     }
     return dcontrol.getDokumenteList();
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    if (isMitglied)
+    {
+      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this);
+    }
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    if (isMitglied)
+    {
+      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this);
+    }
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    if (isMitglied)
+    {
+      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME);
+    }
   }
 }

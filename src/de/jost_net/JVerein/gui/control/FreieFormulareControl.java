@@ -177,4 +177,25 @@ public class FreieFormulareControl extends DruckMailControl
     // Nichts tun, hier ist keine Tabelle implementiert
     return null;
   }
+
+  @Override
+  protected String getTableTitle()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    // Nichts tun, hier ist keine Tabelle implementiert
+    return null;
+  }
 }

@@ -20,9 +20,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -103,10 +103,8 @@ public class JahresabschlussDetailView extends AbstractView
     buttons.addButton(save);
     buttons.paint(this.getParent());
 
-    GUI.getView()
-        .addPanelButton(control.exportDetailButton(ExportArt.PDF));
-    GUI.getView()
-        .addPanelButton(control.exportDetailButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenDetailPanelButton());
   }
 }

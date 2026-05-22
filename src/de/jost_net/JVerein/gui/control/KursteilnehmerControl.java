@@ -42,7 +42,6 @@ import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -63,7 +62,6 @@ import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.Settings;
@@ -688,21 +686,21 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     return kursteilnehmer;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (kursteilnehmerList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          kursteilnehmerList.export(
-              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_DATEINAME, this),
-              "kursteilnehmer", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_DATEINAME, this);
   }
 }

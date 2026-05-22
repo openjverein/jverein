@@ -381,12 +381,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSettingPrefix()
-  {
-    return "anlagenverzeichnis";
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)
