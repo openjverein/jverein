@@ -16,38 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.supercsv.cellprocessor.ConvertNullTo;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-
-import de.jost_net.JVerein.gui.dialogs.SpaltenAuswahlDialog;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -69,12 +46,6 @@ public class JVereinTablePart extends TablePart
   private String tablePartId;
 
   private String tableName = null;
-
-  public enum ExportArt
-  {
-    PDF,
-    CSV
-  }
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -276,163 +247,16 @@ public class JVereinTablePart extends TablePart
    * @param title
    * @param subtitle
    * @param filename
-   * @param settingPrefix
    * @param art
    * @throws ApplicationException
    */
   public void export(String title, String subtitle, String filename,
-      String settingPrefix, ExportArt art) throws ApplicationException
+      ExportArt art) throws ApplicationException
   {
-    if (tableControl.isDisposed())
-      return;
-
-    if (!(tableControl instanceof Table))
-      return;
-
     try
     {
-      Table t = (Table) tableControl;
-      // TODO hier Dialog aufrufen, Dialog ruft Export auf?
-      TableItem[] rows = t.getItems();
-      if (rows == null || rows.length == 0)
-      {
-        throw new ApplicationException("Tabelle enthält keine Daten");
-      }
-
-      // Spalten so wie angezeigt sortieren
-      List<TableColumn> listeSortiert = new ArrayList<>();
-      int[] order = t.getColumnOrder();
-      for (int i = 0; i < t.getColumnCount(); i++)
-      {
-        listeSortiert.add(t.getColumn(order[i]));
-      }
-
-      String extension = "";
-      switch (art)
-      {
-        case CSV:
-          extension = ".csv";
-          break;
-        case PDF:
-          extension = ".pdf";
-          break;
-      }
-      settingPrefix += extension + ".";
-
-      // TODO nicht nur Liste, auch Breite, Formular etc
-      List<TableColumn> listeAuswahl = new SpaltenAuswahlDialog(listeSortiert,
-          settingPrefix).open();
-      List<TableColumn> listeOrig = Arrays.asList(t.getColumns());
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString(settingPrefix + "lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-
-      fd.setFileName(filename);
-      fd.setFilterExtensions(new String[] { "*" + extension });
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        throw new OperationCanceledException("Abgebrochen");
-      }
-
-      File file = new File(s);
-      settings.setAttribute(settingPrefix + "lastdir", file.getParent());
-
-      switch (art)
-      {
-        case CSV:
-          // TODO für CSV wirklich auch Spalten auswählen?
-          try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
-              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
-          {
-            CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl
-                .size()];
-            String[] header = new String[listeAuswahl.size()];
-
-            int n = 0;
-            for (TableColumn col : listeAuswahl)
-            {
-              header[n] = col.getText();
-              cellProcessor[n++] = new ConvertNullTo("");
-            }
-            writer.writeHeader(header);
-
-            for (TableItem row : rows)
-            {
-              Map<String, Object> csvzeile = new HashMap<>();
-              int i = 0;
-              for (TableColumn col : listeAuswahl)
-              {
-                int index = listeOrig.indexOf(col);
-                csvzeile.put(header[i++], row.getText(index));
-              }
-              writer.write(csvzeile, header, cellProcessor);
-            }
-          }
-          break;
-        case PDF:
-          try (FileOutputStream fos = new FileOutputStream(file);)
-          {
-            Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
-                // TODO ränder aus Dialog
-                20, 20, 20, 20);
-
-            for (TableColumn col : listeAuswahl)
-            {
-              reporter.addHeaderColumn(col.getText(),
-                  col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                      : Element.ALIGN_RIGHT,
-                  // TODO Breite aus Dialog
-                  // TODO letze Spalte schmaler?
-                  col.getWidth(), BaseColor.LIGHT_GRAY);
-            }
-            reporter.createHeader();
-
-            for (TableItem row : rows)
-            {
-              for (TableColumn col : listeAuswahl)
-              {
-                int index = listeOrig.indexOf(col);
-                Color bg = row.getBackground(index);
-                Font font = null;
-                for (FontData data : row.getFont(index).getFontData())
-                {
-                  switch (data.getStyle())
-                  {
-                    case SWT.BOLD:
-                      font = Reporter.getFreeSansBold(8);
-                      break;
-                    case SWT.ITALIC:
-                      font = Reporter.getFreeSansItalic(8);
-                      break;
-                    case SWT.NORMAL:
-                      font = Reporter.getFreeSans(8);
-                      break;
-                  }
-                }
-                reporter.addColumn(row.getText(index),
-                    col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                        : Element.ALIGN_RIGHT,
-                    new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()),
-                    font);
-              }
-            }
-            // TODO Filter ausgeben?
-            reporter.closeTable();
-            reporter.close();
-          }
-          break;
-      }
-      FileViewer.show(file);
+      new TablePartExportDialog((Table) tableControl, getTablePartID(), art,
+          title, subtitle, filename).open();
     }
     catch (OperationCanceledException | ApplicationException e)
     {
