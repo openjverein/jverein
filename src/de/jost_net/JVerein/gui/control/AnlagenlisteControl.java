@@ -86,7 +86,6 @@ public class AnlagenlisteControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.setTableName("Liste");
     saldoList.addColumn("Anlagenart", GRUPPE);
     saldoList.addColumn("Bezeichnung", KONTO);
     saldoList.addColumn("Nutzungsdauer", NUTZUNGSDAUER, null, false,

@@ -77,7 +77,6 @@ public class KontensaldoControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.setTableName("Saldo");
     saldoList.addColumn("Kontonummer", KONTO_NUMMER, null, false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Bezeichnung", GRUPPE);

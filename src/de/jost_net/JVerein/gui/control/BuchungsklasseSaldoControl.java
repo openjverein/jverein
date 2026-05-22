@@ -120,7 +120,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.setTableName("Saldo");
     saldoList.addColumn(gruppenBezeichnung, GRUPPE, null, false);
     if (mitBuchungsklasseSpalte)
     {

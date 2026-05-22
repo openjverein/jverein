@@ -49,11 +49,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
             getTablePart().export(getTableTitle(), getTableSubtitle(),
                 getTableDateiname(), getTableSettingPrefix(), art);
           }
-          catch (OperationCanceledException e)
-          {
-            throw e;
-          }
-          catch (ApplicationException e)
+          catch (OperationCanceledException | ApplicationException e)
           {
             throw e;
           }
