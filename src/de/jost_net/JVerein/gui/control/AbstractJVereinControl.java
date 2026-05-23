@@ -53,7 +53,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
           {
             throw e;
           }
-          catch (Exception e)
+          catch (RemoteException e)
           {
             Logger.error("Fehler beim Tabellen-Export", e);
             throw new ApplicationException("Fehler beim Tabellen-Export");

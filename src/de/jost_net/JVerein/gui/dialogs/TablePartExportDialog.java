@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -54,6 +53,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
@@ -125,7 +125,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     this.subtitle = subtitle;
     this.filename = filename;
     this.art = art;
-    settingPrefix = settingPrefix + art.toString() + ".";
+    this.settingPrefix = settingPrefix + art.toString() + ".";
 
     setTitle("Tabelle exportiere");
     setSize(400, SWT.DEFAULT);
@@ -144,7 +144,8 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     {
       TableColumn col = table.getColumn(order[i]);
       // TODO letze Spalte schmaler?
-      col.setData("width", col.getWidth());
+      col.setData(settings.getInt(settingPrefix + "breite." + col.getText(),
+          col.getWidth()));
       listeSortiert.add(col);
     }
 
@@ -164,12 +165,12 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       }
     };
     spaltenList.addColumn("Name", "text");
-    spaltenList.addColumn("Breite", "width", null, true);
+    spaltenList.addColumn("Breite", "data", null, true);
     spaltenList.setCheckable(true);
     spaltenList.addChangeListener((object, attribute, newValue) -> {
       try
       {
-        ((TableColumn) object).setData(attribute, Integer.parseInt(newValue));
+        ((TableColumn) object).setData(Integer.parseInt(newValue));
       }
       catch (Exception e)
       {
@@ -213,8 +214,8 @@ public class TablePartExportDialog extends AbstractDialog<Object>
 
     for (TableColumn col : table.getColumns())
     {
-      spaltenList.setChecked(col,
-          settings.getBoolean(settingPrefix + "spalte." + col.getText(), true));
+      spaltenList.setChecked(col, settings
+          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
     }
 
     ButtonArea b = new ButtonArea();
@@ -343,7 +344,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
         reporter.addHeaderColumn(col.getText(),
             col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                 : Element.ALIGN_RIGHT,
-            (int) col.getData("width"), BaseColor.LIGHT_GRAY);
+            (int) col.getData(), BaseColor.LIGHT_GRAY);
       }
       reporter.createHeader();
 
@@ -384,10 +385,27 @@ public class TablePartExportDialog extends AbstractDialog<Object>
   @SuppressWarnings("unchecked")
   private void saveSettings() throws RemoteException
   {
-    for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+    List<TableColumn> itemsChecked = spaltenList.getItems();
+    for (TableColumn col : (List<TableColumn>) spaltenList.getItems(false))
     {
-      settings.setAttribute(settingPrefix + "spalte." + col.getText(), true);
+      settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
+          itemsChecked.contains(col));
+      settings.setAttribute(settingPrefix + "breite." + col.getText(),
+          (Integer) col.getData());
     }
+
+    settings.setAttribute(settingPrefix + "links", (Integer) links.getValue());
+    settings.setAttribute(settingPrefix + "rechts",
+        (Integer) rechts.getValue());
+    settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
+    settings.setAttribute(settingPrefix + "unten", (Integer) unten.getValue());
+
+    settings.setAttribute(settingPrefix + "hintergrund",
+        ((Formular) hintergrund.getValue()).getID());
+    settings.setAttribute(settingPrefix + "vordergrund",
+        ((Formular) vordergrund.getValue()).getID());
+    settings.setAttribute(settingPrefix + "quer",
+        (Boolean) querformat.getValue());
   }
 
   @Override

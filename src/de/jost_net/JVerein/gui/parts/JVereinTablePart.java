@@ -190,7 +190,7 @@ public class JVereinTablePart extends TablePart
    * @return
    * @throws RemoteException
    */
-  public String getTablePartID() throws RemoteException
+  private String getTablePartID() throws RemoteException
   {
     if (tablePartId != null)
     {
