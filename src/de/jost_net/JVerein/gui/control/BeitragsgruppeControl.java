@@ -652,6 +652,10 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
       });
     }
     beitragsgruppeList.addColumn("Notiz", "notiz", new NotizFormatter(40));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      beitragsgruppeList.addColumn(" ", " ");
+    }
     beitragsgruppeList
         .setContextMenu(new BeitragsgruppeMenu(beitragsgruppeList));
     beitragsgruppeList.setFormatter(new TableFormatter()

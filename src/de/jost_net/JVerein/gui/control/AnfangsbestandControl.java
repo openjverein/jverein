@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -170,6 +171,10 @@ public class AnfangsbestandControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     anfangsbestandList.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      anfangsbestandList.addColumn(" ", " ");
+    }
     anfangsbestandList
         .setContextMenu(new AnfangsbestandMenu(anfangsbestandList));
     anfangsbestandList.setMulti(true);

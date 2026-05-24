@@ -258,6 +258,10 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
       arbeitseinsatzueberpruefungList.addColumn("Gesamtbetrag", GESAMTBETRAG,
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
           Column.ALIGN_RIGHT);
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        arbeitseinsatzueberpruefungList.addColumn(" ", " ");
+      }
       return arbeitseinsatzueberpruefungList;
     }
   }

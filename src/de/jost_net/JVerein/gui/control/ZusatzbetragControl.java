@@ -306,6 +306,10 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     }
     zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
         new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      zusatzbetraegeList.addColumn(" ", " ");
+    }
     zusatzbetraegeList
         .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
     zusatzbetraegeList.setMulti(true);

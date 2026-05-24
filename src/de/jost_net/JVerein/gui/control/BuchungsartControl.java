@@ -406,6 +406,10 @@ public class BuchungsartControl extends FilterControl implements Savable
       }
     }, false, Column.ALIGN_LEFT);
     buchungsartList.addColumn("Suchtext", "suchbegriff");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      buchungsartList.addColumn(" ", " ");
+    }
     buchungsartList.setContextMenu(new BuchungsartMenu(buchungsartList));
     buchungsartList.setMulti(true);
     buchungsartList.setRememberState(true);

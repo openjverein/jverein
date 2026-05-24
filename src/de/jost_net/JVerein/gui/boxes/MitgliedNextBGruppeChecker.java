@@ -24,6 +24,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
@@ -153,7 +154,10 @@ public class MitgliedNextBGruppeChecker extends AbstractBox
           MitgliedNextBGruppe.VIEW_AKT_BEITRAGSGRUPPE);
       aenderungsListenPart.addColumn("Nach Beitragsgruppe",
           MitgliedNextBGruppe.VIEW_BEITRAGSGRUPPE);
-
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        aenderungsListenPart.addColumn(" ", " ");
+      }
       aenderungsListenPart.setContextMenu(new ListenContextMenu());
     }
     listeAktuallisieren();

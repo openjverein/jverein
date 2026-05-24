@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
@@ -135,6 +136,10 @@ public class LastschriftControl extends FilterControl implements Savable
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      lastschriftList.addColumn(" ", " ");
+    }
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
     lastschriftList.setMulti(true);
     lastschriftList.setAction(

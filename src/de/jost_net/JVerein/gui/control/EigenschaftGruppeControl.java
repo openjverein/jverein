@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.EigenschaftGruppeMenu;
@@ -163,6 +164,10 @@ public class EigenschaftGruppeControl extends VorZurueckControl
         new JaNeinFormatter());
     eigenschaftgruppeList.addColumn("Max. 1 Eigenschaft", "max1",
         new JaNeinFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      eigenschaftgruppeList.addColumn(" ", " ");
+    }
     eigenschaftgruppeList
         .setContextMenu(new EigenschaftGruppeMenu(eigenschaftgruppeList));
     eigenschaftgruppeList.setMulti(true);

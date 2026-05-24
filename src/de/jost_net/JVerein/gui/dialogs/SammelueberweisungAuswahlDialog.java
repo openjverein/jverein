@@ -23,6 +23,7 @@ import java.util.Calendar;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -118,6 +119,10 @@ public class SammelueberweisungAuswahlDialog
     this.sammelueberweisung.addColumn("Bezeichnung", "bezeichnung");
     this.sammelueberweisung.addColumn("Summe", "summe",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      this.sammelueberweisung.addColumn(" ", " ");
+    }
     return this.sammelueberweisung;
   }
 }

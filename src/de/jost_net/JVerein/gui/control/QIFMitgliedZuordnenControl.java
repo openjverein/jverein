@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.QIFImportPos;
@@ -172,6 +173,10 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
       posBeispielListTable.addColumn("Name", QIFImportPos.COL_NAME);
       posBeispielListTable.addColumn("Zweck", QIFImportPos.COL_ZWECK);
       posBeispielListTable.addColumn("Konto", QIFImportPos.VIEW_QIFKONTO_NAME);
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        posBeispielListTable.addColumn(" ", " ");
+      }
     }
     else
     {
@@ -394,7 +399,10 @@ public class QIFMitgliedZuordnenControl extends AbstractControl
       distinctExternNameListTable.addColumn("Status", "Status");
       distinctExternNameListTable.addColumn("JVerein Mitglied",
           QIFImportPos.VIEW_MITGLIEDS_NAME);
-
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        distinctExternNameListTable.addColumn(" ", " ");
+      }
       distinctExternNameListTable.setFormatter(new NamensListTableFormater());
       distinctExternNameListTable
           .addSelectionListener(new ExterneNamensListSelectionListener());

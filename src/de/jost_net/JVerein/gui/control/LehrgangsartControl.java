@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.LehrgangsartMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -180,6 +181,10 @@ public class LehrgangsartControl extends VorZurueckControl implements Savable
     lehrgangsartList.addColumn("Bis", "bis",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgangsartList.addColumn("Veranstalter", "veranstalter");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      lehrgangsartList.addColumn(" ", " ");
+    }
     lehrgangsartList.setContextMenu(new LehrgangsartMenu(lehrgangsartList));
     lehrgangsartList.setMulti(true);
     lehrgangsartList.setAction(

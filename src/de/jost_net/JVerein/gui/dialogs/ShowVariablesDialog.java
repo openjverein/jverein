@@ -26,6 +26,9 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.jameica.gui.Action;
@@ -92,6 +95,10 @@ public class ShowVariablesDialog extends AbstractJVereinDialog<Object>
     tab = new JVereinTablePart(list, getCopyAction());
     tab.addColumn("Name", "name");
     tab.addColumn("Wert", "wert");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      tab.addColumn(" ", " ");
+    }
     tab.paint(parent);
 
     ButtonArea buttons = new ButtonArea();

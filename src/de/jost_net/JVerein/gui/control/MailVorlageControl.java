@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -141,6 +142,10 @@ public class MailVorlageControl extends VorZurueckControl
     DBIterator<MailVorlage> fdef = service.createList(MailVorlage.class);
     mailvorlageList = new JVereinTablePart(fdef, null);
     mailvorlageList.addColumn("Betreff", "betreff");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mailvorlageList.addColumn(" ", " ");
+    }
     mailvorlageList.setContextMenu(new MailVorlageMenu(mailvorlageList));
     mailvorlageList.setMulti(true);
     mailvorlageList.setAction(

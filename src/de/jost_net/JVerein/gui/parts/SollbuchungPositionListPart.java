@@ -78,6 +78,10 @@ public class SollbuchungPositionListPart extends BetragSummaryTablePart
       addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      addColumn(" ", " ");
+    }
     setMulti(true);
   }
 }

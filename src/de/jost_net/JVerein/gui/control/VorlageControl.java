@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.VorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -152,6 +153,10 @@ public class VorlageControl extends FilterControl implements Savable
     namenList = new JVereinTablePart(getVorlagenList(), null);
     namenList.addColumn("Vorlage Art", "art");
     namenList.addColumn("Vorlagenmuster", Vorlage.MUSTER);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      namenList.addColumn(" ", " ");
+    }
     namenList.setContextMenu(new VorlageMenu(namenList));
     namenList.setRememberState(true);
     namenList.removeFeature(FeatureSummary.class);

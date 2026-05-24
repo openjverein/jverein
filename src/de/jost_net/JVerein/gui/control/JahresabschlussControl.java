@@ -390,6 +390,10 @@ public class JahresabschlussControl extends KontensaldoControl
     jahresabschlussList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     jahresabschlussList.addColumn("Name", "name");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      jahresabschlussList.addColumn(" ", " ");
+    }
     jahresabschlussList
         .setContextMenu(new JahresabschlussMenu(jahresabschlussList));
     jahresabschlussList.setAction(

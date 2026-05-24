@@ -139,6 +139,10 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
           Column.ALIGN_RIGHT);
     }
     saldoList.addColumn("Anzahl", ANZAHL);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      saldoList.addColumn(" ", " ");
+    }
     saldoList.setMulti(true);
     saldoList.setRememberState(true);
     saldoList.setContextMenu(new SaldoMenu(this));

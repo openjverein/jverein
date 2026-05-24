@@ -417,6 +417,10 @@ public class KursteilnehmerControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kursteilnehmerList.addColumn("Abbuchungsdatum", "abbudatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      kursteilnehmerList.addColumn(" ", " ");
+    }
     kursteilnehmerList
         .setContextMenu(new KursteilnehmerMenu(kursteilnehmerList));
     kursteilnehmerList.setMulti(true);

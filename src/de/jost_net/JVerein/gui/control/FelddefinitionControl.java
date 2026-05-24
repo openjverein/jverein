@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
 import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
@@ -173,6 +174,10 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     felddefinitionList.addColumn("Datentyp", "datentyp",
         new DatentypFormatter(), false, Column.ALIGN_LEFT);
     felddefinitionList.addColumn("Länge", "laenge");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      felddefinitionList.addColumn(" ", " ");
+    }
     felddefinitionList
         .setContextMenu(new FelddefinitionMenu(felddefinitionList));
     felddefinitionList.setAction(

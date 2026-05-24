@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.eclipse.swt.widgets.Composite;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.DruckMailControl.DruckMailEmpfaengerEntry;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -60,6 +62,10 @@ public class DruckMailMitgliedDialog extends AbstractDialog<Object>
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Vorname", "vorname");
     empfaenger.addColumn("Mitgliedstyp", "mitgliedstyp");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      empfaenger.addColumn(" ", " ");
+    }
     empfaenger.setMulti(true);
     empfaenger.paint(parent);
 

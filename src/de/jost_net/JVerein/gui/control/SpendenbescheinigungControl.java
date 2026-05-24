@@ -543,7 +543,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
     spbList.addColumn("Zeile 5", "zeile5");
     spbList.addColumn("Zeile 6", "zeile6");
     spbList.addColumn("Zeile 7", "zeile7");
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      spbList.addColumn(" ", " ");
+    }
     spbList.setContextMenu(new SpendenbescheinigungMenu(spbList));
     spbList.setMulti(true);
     spbList.setAction(

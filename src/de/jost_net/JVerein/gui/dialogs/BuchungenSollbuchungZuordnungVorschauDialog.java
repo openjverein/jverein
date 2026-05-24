@@ -148,9 +148,11 @@ public class BuchungenSollbuchungZuordnungVorschauDialog
                 .replaceAll("\n", " "));
     buchungList.addColumn("Sollbuchung Datum", "sollbuchung_datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
-
     buchungList.addColumn("Zuordnungsart", "art");
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      buchungList.addColumn(" ", " ");
+    }
     buchungList.setCheckable(true);
     buchungList.setChecked(list.toArray(), true);
     buchungList.paint(parent);

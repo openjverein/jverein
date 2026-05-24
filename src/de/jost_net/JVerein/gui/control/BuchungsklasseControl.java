@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.BuchungsklasseMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -136,6 +137,10 @@ public class BuchungsklasseControl extends VorZurueckControl implements Savable
     buchungsklassenList = new JVereinTablePart(buchungsklassen, null);
     buchungsklassenList.addColumn("Nummer", "nummer");
     buchungsklassenList.addColumn("Bezeichnung", "bezeichnung");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      buchungsklassenList.addColumn(" ", " ");
+    }
     buchungsklassenList
         .setContextMenu(new BuchungsklasseMenu(buchungsklassenList));
     buchungsklassenList.setMulti(true);

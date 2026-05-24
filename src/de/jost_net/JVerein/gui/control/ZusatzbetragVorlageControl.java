@@ -426,6 +426,10 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     }
     zusatzbetragVorlageList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
         new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      zusatzbetragVorlageList.addColumn(" ", " ");
+    }
     zusatzbetragVorlageList
         .setContextMenu(new ZusatzbetragVorlageMenu(zusatzbetragVorlageList));
     zusatzbetragVorlageList.setMulti(true);

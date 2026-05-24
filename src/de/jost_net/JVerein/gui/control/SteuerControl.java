@@ -112,6 +112,10 @@ public class SteuerControl extends VorZurueckControl implements Savable
           new BuchungsklasseFormatter());
     }
     steuerList.addColumn("Aktiv", "aktiv", new JaNeinFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      steuerList.addColumn(" ", " ");
+    }
     steuerList.setContextMenu(new SteuerMenue(steuerList));
     steuerList.setMulti(true);
     steuerList.setCheckable(false);

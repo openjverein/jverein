@@ -134,7 +134,10 @@ public class WirtschaftsplanControl extends VorZurueckControl implements Savable
     wirtschaftsplaene.addColumn("Ausgaben Ist", "istMinus", formatter);
     wirtschaftsplaene.addColumn("Saldo Ist", "istSaldo", formatter);
     wirtschaftsplaene.addColumn("Saldo Differenz", "differenz", formatter);
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      wirtschaftsplaene.addColumn(" ", " ");
+    }
     wirtschaftsplaene
         .setContextMenu(new WirtschaftsplanListMenu(wirtschaftsplaene));
     wirtschaftsplaene.setAction(

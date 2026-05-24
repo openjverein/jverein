@@ -96,6 +96,10 @@ public class KontensaldoControl extends AbstractSaldoControl
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
     saldoList.addColumn("Bemerkung", BEMERKUNG);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      saldoList.addColumn(" ", " ");
+    }
     saldoList.setMulti(true);
     saldoList.setFormatter(new SaldoFormatter());
     saldoList.setContextMenu(new SaldoMenu(this));

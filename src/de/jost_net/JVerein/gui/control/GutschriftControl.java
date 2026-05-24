@@ -164,8 +164,8 @@ public class GutschriftControl extends AbstractAbrechnungControl
         // Dann erste aus der Liste
       }
     }
-    buchungsartInput = new BuchungsartInput().getBuchungsartInput(
-        ba, buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsartInput = new BuchungsartInput().getBuchungsartInput(ba,
+        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsartInput.addListener(e -> {
       try
@@ -538,7 +538,7 @@ public class GutschriftControl extends AbstractAbrechnungControl
   }
 
   @Override
-  public JVereinTablePart getBugsList()
+  public JVereinTablePart getBugsList() throws RemoteException
   {
     if (bugsList != null)
     {
@@ -551,6 +551,10 @@ public class GutschriftControl extends AbstractAbrechnungControl
     bugsList.addColumn("Zahler", "zahlerName");
     bugsList.addColumn("Meldung", "meldung");
     bugsList.addColumn("Klassifikation", "klassifikationText");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      bugsList.addColumn(" ", " ");
+    }
     bugsList.setContextMenu(new BugListMenu());
     return bugsList;
   }

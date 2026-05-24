@@ -22,6 +22,7 @@ import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.VorZurueckControl;
@@ -64,6 +65,10 @@ public class WiedervorlageList extends JVereinTablePart
     wiedervorlageList.addColumn("Vermerk", "vermerk");
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      wiedervorlageList.addColumn(" ", " ");
+    }
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(wiedervorlageList));
     wiedervorlageList.setMulti(true);
     wiedervorlageList.setAction(

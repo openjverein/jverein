@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MitgliedstypMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -146,6 +147,10 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     mitgliedstypList.addColumn("Bezeichnung Plural",
         Mitgliedstyp.BEZEICHNUNG_PLURAL);
     mitgliedstypList.addColumn("ID", "id");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mitgliedstypList.addColumn(" ", " ");
+    }
     mitgliedstypList.setContextMenu(new MitgliedstypMenu(mitgliedstypList));
     mitgliedstypList.setMulti(true);
     mitgliedstypList.setAction(

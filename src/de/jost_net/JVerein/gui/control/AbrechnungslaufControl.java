@@ -330,6 +330,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
           new JaNeinFormatter());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      abrechnungslaufList.addColumn(" ", " ");
+    }
     abrechnungslaufList
         .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
     abrechnungslaufList.setAction(
@@ -459,6 +463,11 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     buchungList.addColumn(new Column(Buchung.SOLLBUCHUNG,
         "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
         Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      buchungList.addColumn(" ", " ");
+    }
+
     buchungList.setMulti(true);
 
     buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
@@ -496,6 +505,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     {
       sollbuchungList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      sollbuchungList.addColumn(" ", " ");
+    }
     sollbuchungList.setContextMenu(new SollbuchungMenu(null));
     sollbuchungList.setMulti(true);
 
@@ -530,6 +543,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     lastschriftList.addColumn("Mandat", "mandatid");
     lastschriftList.addColumn("Mandatdatum", "mandatdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      lastschriftList.addColumn(" ", " ");
+    }
     lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
     lastschriftList.setMulti(true);
     return lastschriftList;
@@ -599,6 +616,10 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     }
     zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
         new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      zusatzbetraegeList.addColumn(" ", " ");
+    }
     zusatzbetraegeList
         .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
     zusatzbetraegeList.setMulti(true);

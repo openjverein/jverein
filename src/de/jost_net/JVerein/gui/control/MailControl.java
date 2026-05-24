@@ -154,6 +154,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     empfaenger.addColumn("Name", "name");
     empfaenger.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      empfaenger.addColumn(" ", " ");
+    }
     empfaenger.setContextMenu(new MailEmpfaengerMenu(this));
     empfaenger.setMulti(true);
     return empfaenger;
@@ -213,6 +217,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mitgliedmitmail.addColumn("Name", "name");
     mitgliedmitmail.addColumn("Vorname", "vorname");
     mitgliedmitmail.addColumn("Mitgliedstyp", Mitglied.MITGLIEDSTYP);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mitgliedmitmail.addColumn(" ", " ");
+    }
     mitgliedmitmail.setCheckable(true);
     mitgliedmitmail.removeFeature(FeatureSummary.class);
     return mitgliedmitmail;
@@ -258,6 +266,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .registerMessageConsumer(this.mailDeleteConsumer);
     anhang = new JVereinTablePart(anhang2, new MailAnhangAnzeigeAction());
     anhang.addColumn("Dateiname", "dateiname");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      anhang.addColumn(" ", " ");
+    }
     anhang.setContextMenu(new MailAnhangMenu(this));
     anhang.setMulti(true);
     return anhang;
@@ -680,6 +692,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mailsList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
     mailsList.addColumn("Anhänge", "anhaenge");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mailsList.addColumn(" ", " ");
+    }
     mailsList.setContextMenu(new MailMenu(mailsList));
     mailsList.setMulti(true);
     mailsList.setAction(new EditAction(MailDetailView.class, mailsList));

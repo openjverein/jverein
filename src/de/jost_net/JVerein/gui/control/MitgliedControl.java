@@ -1562,7 +1562,10 @@ public class MitgliedControl extends FilterControl implements Savable
           return "Familienmitglied";
       }
     });
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      familienangehoerige.addColumn(" ", " ");
+    }
     return familienangehoerige;
   }
 
@@ -1587,7 +1590,10 @@ public class MitgliedControl extends FilterControl implements Savable
     zahtlFuer = new JVereinTablePart(mitglieder, new MitgliedDetailAction());
     zahtlFuer.addColumn("Name", "name");
     zahtlFuer.addColumn("Vorname", "vorname");
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      zahtlFuer.addColumn(" ", " ");
+    }
     return zahtlFuer;
   }
 
@@ -1644,6 +1650,10 @@ public class MitgliedControl extends FilterControl implements Savable
         return "";
       }, false, Column.ALIGN_RIGHT);
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      zusatzbetraegeList.addColumn(" ", " ");
+    }
     zusatzbetraegeList.setContextMenu(new ZusatzbetraegeMenu(null));
     return zusatzbetraegeList;
   }
@@ -1666,6 +1676,10 @@ public class MitgliedControl extends FilterControl implements Savable
     wiedervorlageList.addColumn("Vermerk", "vermerk");
     wiedervorlageList.addColumn("Erledigung", "erledigung",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      wiedervorlageList.addColumn(" ", " ");
+    }
     wiedervorlageList.setContextMenu(new WiedervorlageMenu(null));
     wiedervorlageList.setMulti(true);
     return wiedervorlageList;
@@ -1690,6 +1704,10 @@ public class MitgliedControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "betreff");
     mailList.addColumn("Anhänge", "anhaenge");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mailList.addColumn(" ", " ");
+    }
     mailList.setContextMenu(new MailMenu(null));
     return mailList;
   }
@@ -1714,6 +1732,10 @@ public class MitgliedControl extends FilterControl implements Savable
     arbeitseinsatzList.addColumn("Stunden", "stunden",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      arbeitseinsatzList.addColumn(" ", " ");
+    }
     // wiedervorlageList.setContextMenu(new
     // WiedervorlageMenu(wiedervorlageList));
     return arbeitseinsatzList;
@@ -1739,6 +1761,10 @@ public class MitgliedControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      lehrgaengeList.addColumn(" ", " ");
+    }
     lehrgaengeList.setContextMenu(new LehrgangMenu(null));
     return lehrgaengeList;
   }
@@ -2348,6 +2374,10 @@ public class MitgliedControl extends FilterControl implements Savable
 
         add(eg.getBezeichnung(), "eigenschaften_" + eg.getName(), false, true);
       }
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        add(" ", " ", true, true);
+      }
     }
     catch (RemoteException e)
     {
@@ -2372,10 +2402,10 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   private void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, boolean auchNichtMitglied)
+      boolean defaultVisible, boolean auchNichtMitglied)
   {
-    add(spaltenbezeichnung, spaltenname, defaultvalue, null, Column.ALIGN_AUTO,
-        auchNichtMitglied);
+    add(spaltenbezeichnung, spaltenname, defaultVisible, null,
+        Column.ALIGN_AUTO, auchNichtMitglied);
   }
 
   private void add(String spaltenbezeichnung, String spaltenname,
@@ -2774,6 +2804,10 @@ public class MitgliedControl extends FilterControl implements Savable
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
     familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
     familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      familienbeitragtree.addColumn(" ", " ");
+    }
     familienbeitragtree.setRememberColWidths(true);
 
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2820,6 +2854,10 @@ public class MitgliedControl extends FilterControl implements Savable
     abweichenderzahlertree.addColumn("Name", "name");
     abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
     abweichenderzahlertree.addColumn("IBAN", "iban", new IBANFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      abweichenderzahlertree.addColumn(" ", " ");
+    }
     abweichenderzahlertree.setRememberColWidths(true);
 
     abweichenderzahlertree.setContextMenu(new AbweichenderZahlerMenu());
@@ -3245,6 +3283,10 @@ public class MitgliedControl extends FilterControl implements Savable
     beitragsTabelle.addColumn("Beitragsgruppe",
         MitgliedNextBGruppe.VIEW_BEITRAGSGRUPPE);
     beitragsTabelle.addColumn("Bemerkung", MitgliedNextBGruppe.COL_BEMERKUNG);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      beitragsTabelle.addColumn(" ", " ");
+    }
     refreshMitgliedBeitraegeTabelle();
     return beitragsTabelle;
   }

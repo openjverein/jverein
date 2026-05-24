@@ -18,7 +18,9 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.BuchungsKorrekturQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -91,6 +93,10 @@ public class BuchungsTextKorrekturControl extends AbstractControl
           return s;
         }
       });
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        buchungsList.addColumn(" ", " ");
+      }
       buchungsList.setMulti(true);
       buchungsList.setRememberState(true);
     }

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -92,6 +93,10 @@ public class BuchungUebernahmeProtokollDialog extends AbstractDialog<Buchung>
     bu.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     bu.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      bu.addColumn(" ", " ");
+    }
     bu.paint(parent);
 
     if (exception != null)

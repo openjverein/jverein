@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.FormularfeldMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -73,7 +74,10 @@ public abstract class FormularPartControl extends VorZurueckControl
     formularfelderList.addColumn("Schriftart", "font");
     formularfelderList.addColumn("Schriftgröße", "fontsize");
     formularfelderList.addColumn("Ausrichtung", "ausrichtung");
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      formularfelderList.addColumn(" ", " ");
+    }
     formularfelderList.setContextMenu(new FormularfeldMenu());
     formularfelderList.removeFeature(FeatureSummary.class);
     formularfelderList.setMulti(true);

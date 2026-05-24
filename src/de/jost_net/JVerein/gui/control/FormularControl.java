@@ -364,6 +364,10 @@ public class FormularControl extends FormularPartControl implements Savable
     formularList.addColumn("Fortlaufende Nr.", "zaehler");
     formularList.addColumn("Verknüpft mit", "formlink",
         new FormularLinkFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      formularList.addColumn(" ", " ");
+    }
     formularList.setContextMenu(new FormularMenu(this, formularList));
     formularList.setMulti(true);
     formularList

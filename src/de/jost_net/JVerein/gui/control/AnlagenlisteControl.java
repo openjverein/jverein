@@ -112,10 +112,10 @@ public class AnlagenlisteControl extends AbstractSaldoControl
     saldoList.addColumn("Buchwert Ende GJ", ENDWERT,
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
-    // Dummy Spalte, damit endwert nicht am rechten Rand klebt
-    saldoList.addColumn(" ", " ",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-        Column.ALIGN_LEFT);
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      saldoList.addColumn(" ", " ");
+    }
     saldoList.setFormatter(new SaldoFormatter());
     saldoList.setMulti(true);
     saldoList.setContextMenu(new SaldoMenu(this));

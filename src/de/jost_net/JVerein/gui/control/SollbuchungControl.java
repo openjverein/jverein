@@ -417,6 +417,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mitgliedskontoTree.addColumn(" ", " ");
+    }
     mitgliedskontoTree.setContextMenu(new MitgliedskontoMenu());
     mitgliedskontoTree.setFormatter(new MitgliedskontoTreeFormatter());
     mitgliedskontoTree.setRememberColWidths(true);
@@ -471,6 +475,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      sollbuchungenList.addColumn(" ", " ");
+    }
     sollbuchungenList.setMulti(multi);
     if (action == null)
     {
@@ -524,6 +532,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       mitgliederList = new JVereinTablePart(mitglieder, action);
       mitgliederList.addColumn("Name", "name");
       mitgliederList.addColumn("Vorname", "vorname");
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        mitgliederList.addColumn(" ", " ");
+      }
       mitgliederList.setContextMenu(menu);
       mitgliederList.setMulti(true);
     }

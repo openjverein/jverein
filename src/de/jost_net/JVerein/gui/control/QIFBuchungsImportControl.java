@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.QIFImportHeaderMessage;
 import de.jost_net.JVerein.gui.input.JVereinKontoInput;
 import de.jost_net.JVerein.gui.input.QIFExternKontenInput;
@@ -286,7 +287,10 @@ public class QIFBuchungsImportControl extends AbstractControl
     qifImportPosList.addColumn("Gesperrt", QIFImportPos.COL_SPERRE,
         new PosStatusFormater());
     qifImportPosList.addColumn("Mitglied", QIFImportPos.VIEW_MITGLIEDS_NAME);
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      qifImportPosList.addColumn(" ", " ");
+    }
     qifImportPosList.setFormatter(new QIFImportPosListTableFormater());
     return qifImportPosList;
 

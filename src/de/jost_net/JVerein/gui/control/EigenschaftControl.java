@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.EigenschaftMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -165,6 +166,10 @@ public class EigenschaftControl extends VorZurueckControl implements Savable
     eigenschaftList.addColumn("Name", "name");
     eigenschaftList.addColumn("Bezeichnung", "bezeichnung");
     eigenschaftList.addColumn("Gruppe", "eigenschaftgruppe");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      eigenschaftList.addColumn(" ", " ");
+    }
     eigenschaftList.setContextMenu(new EigenschaftMenu(eigenschaftList));
     eigenschaftList.setRememberState(true);
     eigenschaftList.setMulti(true);

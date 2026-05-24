@@ -384,6 +384,10 @@ public class KontoControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     kontenList.addColumn("Gegenbuchung-Buchungsart", "buchungsart",
         new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      kontenList.addColumn(" ", " ");
+    }
     kontenList.setContextMenu(new KontoMenu(kontenList));
     kontenList.setMulti(true);
     kontenList.setAction(new EditAction(KontoDetailView.class, kontenList));

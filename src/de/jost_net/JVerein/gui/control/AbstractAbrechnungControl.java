@@ -622,7 +622,7 @@ public abstract class AbstractAbrechnungControl
     return b;
   }
 
-  public JVereinTablePart getBugsList()
+  public JVereinTablePart getBugsList() throws RemoteException
   {
     if (bugsList != null)
     {
@@ -633,6 +633,10 @@ public abstract class AbstractAbrechnungControl
     bugsList.addColumn("Name", "name");
     bugsList.addColumn("Meldung", "meldung");
     bugsList.addColumn("Klassifikation", "klassifikationText");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      bugsList.addColumn(" ", " ");
+    }
     bugsList.setContextMenu(new BugListMenu());
     return bugsList;
   }

@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.util.Properties;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.SuchprofilMessage;
 import de.jost_net.JVerein.gui.action.SuchprofilLadenAction;
 import de.jost_net.JVerein.gui.menu.SuchprofilMenu;
@@ -82,6 +83,10 @@ public class MitgliedSuchProfilControl extends AbstractControl
 
     profillist = new JVereinTablePart(profile, new SuchprofilLadenAction());
     profillist.addColumn("Bezeichnung", "bezeichnung");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      profillist.addColumn(" ", " ");
+    }
     profillist.setContextMenu(new SuchprofilMenu(this));
     profillist.setMulti(true);
     this.mc = new SuchprofilMessageConsumer();

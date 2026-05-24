@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.QIFImportPos;
@@ -176,7 +177,10 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
       posBeispielListTable.addColumn("Name", QIFImportPos.COL_NAME);
       posBeispielListTable.addColumn("Zweck", QIFImportPos.COL_ZWECK);
       posBeispielListTable.addColumn("Konto", QIFImportPos.VIEW_QIFKONTO_NAME);
-
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        posBeispielListTable.addColumn(" ", " ");
+      }
     }
     else
     {
@@ -381,7 +385,10 @@ public class QIFBuchungsartZuordnenControl extends AbstractControl
           QIFImportPos.VIEW_BUCHART_BEZEICHNER);
       distinctBuchartListTable.addColumn("Mitgliedskonto",
           QIFImportPos.VIEW_MITGLIED_BAR);
-
+      if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+      {
+        distinctBuchartListTable.addColumn(" ", " ");
+      }
       distinctBuchartListTable.setFormatter(new BuchartListTableFormater());
       distinctBuchartListTable
           .addSelectionListener(new BuchartListSelectionListener());

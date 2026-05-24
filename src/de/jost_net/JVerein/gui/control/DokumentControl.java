@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
@@ -251,6 +252,10 @@ public class DokumentControl extends AbstractControl
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      docsList.addColumn(" ", " ");
+    }
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setMulti(true);
     this.mc = new DokumentMessageConsumer();

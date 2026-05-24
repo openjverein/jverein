@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ProjektMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -160,6 +161,10 @@ public class ProjektControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     projektList.addColumn("Endedatum", "endedatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      projektList.addColumn(" ", " ");
+    }
     projektList.setContextMenu(new ProjektMenu(projektList));
     projektList.setMulti(true);
     projektList.setAction(new EditAction(ProjektDetailView.class, projektList));

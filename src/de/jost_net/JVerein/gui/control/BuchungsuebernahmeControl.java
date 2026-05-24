@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -130,7 +131,10 @@ public class BuchungsuebernahmeControl
     kontenlist.addColumn("Hibiscus max. Buchungsnummer",
         "hibiscusMaxBuchungID");
     kontenlist.addColumn("Bemerkung", "bemerkung");
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      kontenlist.addColumn(" ", " ");
+    }
     return kontenlist;
   }
 

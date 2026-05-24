@@ -338,6 +338,10 @@ public class LehrgangControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     lehrgaengeList.addColumn("Veranstalter", "veranstalter");
     lehrgaengeList.addColumn("Ergebnis", "ergebnis");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      lehrgaengeList.addColumn(" ", " ");
+    }
     lehrgaengeList.setContextMenu(new LehrgangMenu(lehrgaengeList));
     lehrgaengeList.setMulti(true);
     lehrgaengeList

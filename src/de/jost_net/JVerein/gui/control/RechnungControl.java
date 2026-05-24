@@ -187,7 +187,10 @@ public class RechnungControl extends DruckMailControl implements Savable
     rechnungList.addColumn("Referenz Rechnung", "refrechnung");
     rechnungList.addColumn("Erstattungsbetrag", "erstattungsbetrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
-
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      rechnungList.addColumn(" ", " ");
+    }
     rechnungList.setContextMenu(new RechnungMenu(rechnungList));
     rechnungList.setMulti(true);
     rechnungList

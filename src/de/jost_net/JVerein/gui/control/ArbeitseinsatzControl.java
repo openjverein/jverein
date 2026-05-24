@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
@@ -136,6 +137,10 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsatzList.addColumn("Stunden", "stunden",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     arbeitseinsatzList.addColumn("Bemerkung", "bemerkung");
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      arbeitseinsatzList.addColumn(" ", " ");
+    }
     arbeitseinsatzList.setAction(
         new EditAction(ArbeitseinsatzDetailView.class, arbeitseinsatzList));
     VorZurueckControl.setObjektListe(null, null);
@@ -217,12 +222,12 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     }
     return new PanelButton(
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-      arbeitseinsatzList.export(
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
-          "arbeitseinsaetze", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
+          arbeitseinsatzList.export(
+              VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
+              VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
+              VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
+              "arbeitseinsaetze", art);
+          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
