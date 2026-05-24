@@ -120,8 +120,8 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
                 Element.ALIGN_LEFT);
-            reporter.addColumn(
-                bkz.getInteger(BuchungsklasseSaldoControl.EINNAHMEN));
+            reporter
+                .addColumn(bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN));
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
