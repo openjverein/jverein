@@ -97,6 +97,8 @@ public class EinstellungenAnzeigeView extends AbstractView
         control.getUnterdrueckungOhneBuchung());
     cont4.addLabelPair("Summen Anlagenkonto in Kontensaldo",
         control.getSummenAnlagenkonto());
+    cont4.addLabelPair("Leere letzte Spalte in Tabellen",
+        control.getLeereSpalte());
 
     cont.addSeparator();
     ColumnLayout cols2 = new ColumnLayout(cont.getComposite(), 2);

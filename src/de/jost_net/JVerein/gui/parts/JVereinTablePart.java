@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
@@ -42,6 +43,8 @@ import org.supercsv.prefs.CsvPreference;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.SpaltenAuswahlDialog;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
@@ -115,6 +118,16 @@ public class JVereinTablePart extends TablePart
   public void setAction(Action action)
   {
     this.action = action;
+  }
+
+  @Override
+  public synchronized void paint(Composite parent) throws RemoteException
+  {
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      addColumn(new Column("leer", ""));
+    }
+    super.paint(parent);
   }
 
   @Override

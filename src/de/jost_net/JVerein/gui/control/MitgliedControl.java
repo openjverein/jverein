@@ -2774,6 +2774,10 @@ public class MitgliedControl extends FilterControl implements Savable
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
     familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
     familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      familienbeitragtree.addColumn(new Column("leer", ""));
+    }
     familienbeitragtree.setRememberColWidths(true);
 
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2820,6 +2824,10 @@ public class MitgliedControl extends FilterControl implements Savable
     abweichenderzahlertree.addColumn("Name", "name");
     abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
     abweichenderzahlertree.addColumn("IBAN", "iban", new IBANFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      abweichenderzahlertree.addColumn(new Column("leer", ""));
+    }
     abweichenderzahlertree.setRememberColWidths(true);
 
     abweichenderzahlertree.setContextMenu(new AbweichenderZahlerMenu());
