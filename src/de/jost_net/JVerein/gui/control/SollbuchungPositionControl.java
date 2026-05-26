@@ -118,7 +118,7 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       return zweck;
     }
-    zweck = new TextAreaInput(getPosition().getZweck(), 500);
+    zweck = new TextAreaInput(getPosition().getZweck(), 140);
     zweck.setHeight(50);
     zweck.setMandatory(true);
     return zweck;
@@ -144,8 +144,9 @@ public class SollbuchungPositionControl extends AbstractControl
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(getPosition().getBuchungsart(),
-        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
+        getPosition().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
 
     buchungsart.addListener(new Listener()

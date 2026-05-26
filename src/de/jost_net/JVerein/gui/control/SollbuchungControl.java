@@ -232,7 +232,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       z = getSollbuchung().getZweck1();
     }
-    zweck1 = new TextAreaInput(z, 500);
+    zweck1 = new TextAreaInput(z, 140);
     zweck1.setHeight(30);
     zweck1.setMandatory(true);
     zweck1.setEnabled(editable);
