@@ -148,7 +148,7 @@ public class ZusatzbetragPart implements Part
     {
       return buchungstext;
     }
-    buchungstext = new TextInput(zusatzbetrag.getBuchungstext(), 140);
+    buchungstext = new TextInput(zusatzbetrag.getBuchungstext(), 500);
     buchungstext.setMandatory(true);
     return buchungstext;
   }
@@ -280,8 +280,9 @@ public class ZusatzbetragPart implements Part
     {
       return buchungsart;
     }
-    buchungsart = new BuchungsartInput().getBuchungsartInput(zusatzbetrag.getBuchungsart(),
-        buchungsarttyp.BUCHUNGSART, (Integer) Einstellungen
+    buchungsart = new BuchungsartInput().getBuchungsartInput(
+        zusatzbetrag.getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     buchungsart.addListener(new Listener()
     {

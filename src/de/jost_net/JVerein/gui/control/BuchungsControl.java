@@ -539,7 +539,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       return zweck;
     }
-    zweck = new TextAreaInput(getBuchung().getZweck(), 140);
+    zweck = new TextAreaInput(getBuchung().getZweck(), 500);
     zweck.setHeight(50);
     zweck.setEnabled(editable);
     return zweck;
