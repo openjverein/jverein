@@ -181,8 +181,8 @@ public class Reporter implements AutoCloseable
     if (hintergrund != null)
     {
       PdfReader reader = new PdfReader(hintergrund.getInhalt());
+      writer.setPageEvent(new ReportHintergrund(reader));
       PdfImportedPage page = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportHintergrund(page));
       // Hintergrund für erste Seite hier setzen da kein neuPage Event
       PdfContentByte contentByte = writer.getDirectContentUnder();
       contentByte.addTemplate(page, 0, 0);
@@ -190,8 +190,7 @@ public class Reporter implements AutoCloseable
     if (vordergrund != null)
     {
       PdfReader reader = new PdfReader(vordergrund.getInhalt());
-      PdfImportedPage page = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportVordergrund(page));
+      writer.setPageEvent(new ReportVordergrund(reader));
     }
     if (zellenTransparent)
     {
@@ -707,20 +706,26 @@ public class Reporter implements AutoCloseable
    */
   private class ReportHintergrund extends PdfPageEventHelper
   {
-    private PdfImportedPage importedPage;
+    private PdfReader reader;
 
-    public ReportHintergrund(PdfImportedPage importedPage)
+    public ReportHintergrund(PdfReader reader)
     {
-      this.importedPage = importedPage;
+      this.reader = reader;
     }
 
     @Override
     public void onStartPage(PdfWriter writer, Document document)
     {
-      if (importedPage != null)
+      if (reader != null)
       {
+        int number = writer.getPageNumber() <= reader.getNumberOfPages()
+            ? writer.getPageNumber()
+            : reader.getNumberOfPages();
+
+        PdfImportedPage page = writer.getImportedPage(reader, number);
+
         PdfContentByte contentByte = writer.getDirectContentUnder();
-        contentByte.addTemplate(importedPage, 0, 0);
+        contentByte.addTemplate(page, 0, 0);
       }
     }
   }
@@ -731,21 +736,26 @@ public class Reporter implements AutoCloseable
   private class ReportVordergrund extends PdfPageEventHelper
   {
 
-    private PdfImportedPage importedPage;
+    private PdfReader reader;
 
-    public ReportVordergrund(PdfImportedPage importedPage)
+    public ReportVordergrund(PdfReader reader)
     {
-      this.importedPage = importedPage;
+      this.reader = reader;
     }
 
     @Override
     public void onEndPage(PdfWriter writer, Document document)
     {
-      if (importedPage != null)
+      if (reader != null)
       {
+        int number = writer.getPageNumber() <= reader.getNumberOfPages()
+            ? writer.getPageNumber()
+            : reader.getNumberOfPages();
+        PdfImportedPage page = writer.getImportedPage(reader, number);
+
         PdfContentByte contentByte = writer.getDirectContent();
         contentByte.saveState();
-        contentByte.addTemplate(importedPage, 0, 0);
+        contentByte.addTemplate(page, 0, 0);
         contentByte.restoreState();
       }
     }
@@ -788,8 +798,7 @@ public class Reporter implements AutoCloseable
       pc.stroke();
 
       ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
-          new Phrase(footer + " " + writer.getPageNumber(),
-              Reporter.getFreeSans(7)),
+          new Phrase(footer + " " + writer.getPageNumber(), getFreeSans(7)),
           (left + right) / 2, bottom - 18, 0);
     }
   }
