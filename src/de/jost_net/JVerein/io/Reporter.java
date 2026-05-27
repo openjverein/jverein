@@ -126,15 +126,23 @@ public class Reporter
     return getFreeSansBold(size, null);
   }
 
-  public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords) throws DocumentException, IOException
+  public Reporter(OutputStream out, String title, String subtitle)
+      throws DocumentException, IOException
   {
-    this(out, title, subtitle, maxRecords, 80, 30, 20, 20);
+    this(out, title, subtitle, 80, 30, 20, 20, false);
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
       float obererRand, float untererRand, boolean encrypt)
       throws DocumentException, IOException
+  {
+    this(out, null, null, linkerRand, rechterRand, obererRand, untererRand,
+        encrypt);
+  }
+
+  public Reporter(OutputStream out, String title, String subtitle,
+      float linkerRand, float rechterRand, float obererRand, float untererRand,
+      boolean encrypt) throws DocumentException, IOException
   {
     this.out = out;
     rpt = new Document();
@@ -180,39 +188,35 @@ public class Reporter
     {
       zellenColor = null;
     }
-  }
 
-  public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords, float linkerRand, float rechterRand, float obererRand,
-      float untererRand) throws DocumentException, IOException
-  {
-    this(out, linkerRand, rechterRand, obererRand, untererRand, false);
-
-    StringBuilder fuss = new StringBuilder();
-    if (title != null && title.length() > 0)
+    if (title != null || subtitle != null)
     {
-      Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
-      pTitle.setAlignment(Element.ALIGN_CENTER);
-      rpt.add(pTitle);
-      fuss.append(title + " | ");
+      StringBuilder fuss = new StringBuilder();
+      if (title != null && title.length() > 0)
+      {
+        Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
+        pTitle.setAlignment(Element.ALIGN_CENTER);
+        rpt.add(pTitle);
+        fuss.append(title + " | ");
+      }
+      if (subtitle != null && subtitle.length() > 0)
+      {
+        rpt.addTitle(subtitle);
+        Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
+        psubTitle.setAlignment(Element.ALIGN_CENTER);
+        rpt.add(psubTitle);
+        fuss.append(subtitle + " | ");
+      }
+      fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
+          + " | Seite: ");
+      HeaderFooter hf = new HeaderFooter();
+      hf.setFooter(fuss.toString());
+      writer.setPageEvent(hf);
+      // Fusszeile wird onStartPage gesetzt damit später bei EndPage der
+      // Vordergrund darüber gelegt werden kann
+      // Fusszeile für erste Seite hier setzen da kein neuPage Event
+      hf.onStartPage(writer, rpt);
     }
-    if (subtitle != null && subtitle.length() > 0)
-    {
-      rpt.addTitle(subtitle);
-      Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
-      psubTitle.setAlignment(Element.ALIGN_CENTER);
-      rpt.add(psubTitle);
-      fuss.append(subtitle + " | ");
-    }
-    fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
-        + " | Seite: ");
-    HeaderFooter hf = new HeaderFooter();
-    hf.setFooter(fuss.toString());
-    writer.setPageEvent(hf);
-    // Fusszeile wird onStartPage gesetzt damit später bei EndPage der
-    // Vordergrund darüber gelegt werden kann
-    // Fusszeile für erste Seite hier setzen da kein neuPage Event
-    hf.onStartPage(writer, rpt);
   }
 
   /**

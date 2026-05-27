@@ -122,8 +122,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
 
     FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fileOutputStream, title, subtitle, 1, 40,
-        20, 20, 20);
+    Reporter reporter = new Reporter(fileOutputStream, title, subtitle, 40, 20,
+        20, 20, false);
 
     // Header erstellen
     // Leider kann der Header kein Colspan, daher erst Soll/Ist anzeigen

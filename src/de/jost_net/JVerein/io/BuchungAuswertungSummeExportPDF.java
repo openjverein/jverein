@@ -135,12 +135,10 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     kontonummer_in_buchungsliste = getKontonummer();
     FileOutputStream fos = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fos, title, subtitle,
-        buchungsarten.size());
+    Reporter reporter = new Reporter(fos, title, subtitle);
     if (kontonummer_in_buchungsliste)
     {
-      reporter = new Reporter(fos, title, subtitle, buchungsarten.size(), 50,
-          30, 20, 20);
+      reporter = new Reporter(fos, title, subtitle, 50, 30, 20, 20, false);
     }
 
     createTableHeader(reporter);
@@ -189,8 +187,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       {
         anzahlBuchungsarten += 1;
       }
-      nichtLeer = createTableContent(reporter, bua, null, liste)
-          || nichtLeer;
+      nichtLeer = createTableContent(reporter, bua, null, liste) || nichtLeer;
     }
     // Buchungen ohne Buchungsarten, wenn explizite Buchungsart angegeben ist,
     // dann nur wenn auch ohne Buchungsart ausgewählt ist (ID == null)
@@ -205,8 +202,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       Buchungsart bua = (Buchungsart) Einstellungen.getDBService()
           .createObject(Buchungsart.class, null);
       bua.setBezeichnung("Ohne Buchungsart");
-      nichtLeer = createTableContent(reporter, bua, null, liste)
-          || nichtLeer;
+      nichtLeer = createTableContent(reporter, bua, null, liste) || nichtLeer;
     }
 
     if (anzahlBuchungsarten > 1)
@@ -242,8 +238,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     fos.close();
   }
 
-  private void createTableHeader(Reporter reporter)
-      throws DocumentException
+  private void createTableHeader(Reporter reporter) throws DocumentException
   {
     reporter.addHeaderColumn("Buchungsklasse", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);

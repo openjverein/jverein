@@ -66,7 +66,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       }
 
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, zeilen.size());
+      Reporter reporter = new Reporter(fos, title, subtitle);
       makeHeader(reporter, anzahlSpalten, hasZugang, hasAbgang);
 
       for (PseudoDBObject akz : zeilen)

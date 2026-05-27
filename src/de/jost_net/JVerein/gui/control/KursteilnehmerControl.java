@@ -580,7 +580,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
           try
           {
             Reporter rpt = new Reporter(new FileOutputStream(file), title,
-                subtitle, list.size());
+                subtitle);
 
             GUI.getCurrentView().reload();
 

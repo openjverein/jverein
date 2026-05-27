@@ -127,7 +127,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
 
-    setTitle("Tabelle exportiere");
+    setTitle("Tabelle exportieren");
     setSize(400, SWT.DEFAULT);
 
     settings = new Settings(this.getClass());
@@ -335,9 +335,9 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       TableItem[] rows = table.getItems();
 
       // TODO Reporter überarbeiten: Formular, Querforamt übergeben
-      Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
+      Reporter reporter = new Reporter(fos, title, subtitle,
           (Integer) links.getValue(), (Integer) rechts.getValue(),
-          (Integer) oben.getValue(), (Integer) unten.getValue());
+          (Integer) oben.getValue(), (Integer) unten.getValue(), false);
 
       for (TableColumn col : listeAuswahl)
       {

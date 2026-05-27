@@ -137,12 +137,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     kontonummer_in_buchungsliste = getKontonummer();
     FileOutputStream fos = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fos, title, subtitle,
-        buchungsarten.size());
+    Reporter reporter = new Reporter(fos, title, subtitle);
     if (kontonummer_in_buchungsliste)
     {
-      reporter = new Reporter(fos, title, subtitle, buchungsarten.size(), 50,
-          30, 20, 20);
+      reporter = new Reporter(fos, title, subtitle, 50, 30, 20, 20, false);
     }
 
     boolean nichtLeer = false;

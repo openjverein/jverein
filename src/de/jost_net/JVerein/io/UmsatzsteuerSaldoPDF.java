@@ -41,7 +41,7 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
+      Reporter reporter = new Reporter(fos, title, subtitle);
       makeHeader(reporter);
 
       for (PseudoDBObject bkz : zeile)
