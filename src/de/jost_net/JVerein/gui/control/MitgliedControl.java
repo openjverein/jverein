@@ -605,7 +605,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return leitwegID;
     }
-    leitwegID = new TextInput(getMitglied().getLeitwegID());
+    leitwegID = new TextInput(getMitglied().getLeitwegID(), 50);
     leitwegID.setName("LeitwegID");
     return leitwegID;
   }
@@ -874,7 +874,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mandatid;
     }
-    mandatid = new TextInput(getMitglied().getMandatID());
+    mandatid = new TextInput(getMitglied().getMandatID(), 35);
     mandatid.setName("Mandats-ID");
     if (((Zahlungsweg) getZahlungsweg().getValue())
         .getKey() != Zahlungsweg.BASISLASTSCHRIFT)

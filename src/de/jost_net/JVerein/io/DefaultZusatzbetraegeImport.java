@@ -206,10 +206,10 @@ public class DefaultZusatzbetraegeImport implements Importer
           double betrag = results.getDouble("Betrag");
           zus.setBetrag(betrag);
           String buchungstext = results.getString("Buchungstext");
-          if (buchungstext.length() > 140)
+          if (buchungstext.length() > 500)
           {
             throw new ApplicationException(
-                "Buchungstextes zu lang (max 140 Zeichen).");
+                "Buchungstextes zu lang (max 500 Zeichen).");
           }
           zus.setBuchungstext(buchungstext);
           try
