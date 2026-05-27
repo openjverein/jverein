@@ -155,13 +155,6 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       listeSortiert.add(col);
     }
 
-    TabFolder folder = new TabFolder(parent, SWT.BORDER);
-    folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-    TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
-    TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
-    TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
-
     spaltenList = new JVereinTablePart(listeSortiert, null)
     {
       // Sortieren verhindern
@@ -172,76 +165,96 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       }
     };
     spaltenList.addColumn("Name", "text");
-    spaltenList.addColumn("Breite", "data", null, true);
+    if (art.equals(ExportArt.PDF))
+    {
+      spaltenList.addColumn("Breite", "data", null, true);
+      spaltenList.addChangeListener((object, attribute, newValue) -> {
+        try
+        {
+          ((TableColumn) object).setData(Integer.parseInt(newValue));
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException("Ungültiger Wert");
+        }
+      });
+    }
     spaltenList.setCheckable(true);
-    spaltenList.addChangeListener((object, attribute, newValue) -> {
-      try
-      {
-        ((TableColumn) object).setData(Integer.parseInt(newValue));
-      }
-      catch (Exception e)
-      {
-        throw new ApplicationException("Ungültiger Wert");
-      }
-    });
-    tabSpalten.addPart(spaltenList);
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
-      try
-      {
-        for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+
+    if (art.equals(ExportArt.CSV))
+    {
+      spaltenList.paint(parent);
+    }
+    else if (art.equals(ExportArt.PDF))
+    {
+      TabFolder folder = new TabFolder(parent, SWT.BORDER);
+      folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+      TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
+      TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
+
+      tabSpalten.addPart(spaltenList);
+      ButtonArea buttons = new ButtonArea();
+      buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
+        try
         {
-          col.setData(col.getWidth());
+          for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+          {
+            col.setData(col.getWidth());
+          }
+          spaltenList.removeAll();
+          for (TableColumn col : listeSortiert)
+          {
+            spaltenList.addItem(col);
+            spaltenList.setChecked(col, settings
+                .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+          }
         }
-        spaltenList.removeAll();
-        for (TableColumn col : listeSortiert)
+        catch (RemoteException re)
         {
-          spaltenList.addItem(col);
-          spaltenList.setChecked(col, settings
-              .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+          Logger.error("Fehler beim zurücksetzen der Breiten", re);
+          throw new ApplicationException(
+              "Fehler beim zurücksetzen der Breiten");
         }
-      }
-      catch (RemoteException re)
-      {
-        Logger.error("Fehler beim zurücksetzen der Breiten", re);
-        throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
-      }
 
-    }, null, false, "eraser.png"));
-    tabSpalten.addButtonArea(buttons);
+      }, null, false, "eraser.png"));
+      tabSpalten.addButtonArea(buttons);
 
-    links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
-    rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
-    oben = new IntegerInput(settings.getInt(settingPrefix + "oben", 20));
-    unten = new IntegerInput(settings.getInt(settingPrefix + "unten", 20));
-    tabRaender.addLabelPair("Links", links);
-    tabRaender.addLabelPair("Rechts", rechts);
-    tabRaender.addLabelPair("Oben", oben);
-    tabRaender.addLabelPair("Unten", unten);
+      links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
+      rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
+      oben = new IntegerInput(settings.getInt(settingPrefix + "oben", 20));
+      unten = new IntegerInput(settings.getInt(settingPrefix + "unten", 20));
+      tabRaender.addLabelPair("Links", links);
+      tabRaender.addLabelPair("Rechts", rechts);
+      tabRaender.addLabelPair("Oben", oben);
+      tabRaender.addLabelPair("Unten", unten);
 
-    // IntegerInput links2 = new IntegerInput(settings.getInt(id + "links2",
-    // 20));
-    // IntegerInput rechts2 = new IntegerInput(
-    // settings.getInt(id + "rechts2", 20));
-    // IntegerInput oben2 = new IntegerInput(settings.getInt(id + "oben2", 20));
-    // IntegerInput unten2 = new IntegerInput(settings.getInt(id + "unten2",
-    // 20));
-    // tabRaender.addLabelPair("Links ab 2. Seite", links2);
-    // tabRaender.addLabelPair("Rechts ab 2. Seite", rechts2);
-    // tabRaender.addLabelPair("Oben ab 2. Seite", oben2);
-    // tabRaender.addLabelPair("Unten ab 2. Seite", unten2);
+      // IntegerInput links2 = new IntegerInput(settings.getInt(id + "links2",
+      // 20));
+      // IntegerInput rechts2 = new IntegerInput(
+      // settings.getInt(id + "rechts2", 20));
+      // IntegerInput oben2 = new IntegerInput(settings.getInt(id + "oben2",
+      // 20));
+      // IntegerInput unten2 = new IntegerInput(settings.getInt(id + "unten2",
+      // 20));
+      // tabRaender.addLabelPair("Links ab 2. Seite", links2);
+      // tabRaender.addLabelPair("Rechts ab 2. Seite", rechts2);
+      // tabRaender.addLabelPair("Oben ab 2. Seite", oben2);
+      // tabRaender.addLabelPair("Unten ab 2. Seite", unten2);
 
-    hintergrund = new FormularInput(FormularArt.HINTERGRUND,
-        settings.getString(settingPrefix + "hintergrund", ""));
-    hintergrund.setPleaseChoose("Kein Formular");
-    vordergrund = new FormularInput(FormularArt.HINTERGRUND,
-        settings.getString(settingPrefix + "vordergrund", ""));
-    vordergrund.setPleaseChoose("Kein Formular");
-    querformat = new CheckboxInput(
-        settings.getBoolean(settingPrefix + "quer", false));
-    tabFormular.addLabelPair("Formular Hintergrund", hintergrund);
-    tabFormular.addLabelPair("Formular Vordergrund", vordergrund);
-    tabFormular.addLabelPair("Querformat", querformat);
+      hintergrund = new FormularInput(FormularArt.HINTERGRUND,
+          settings.getString(settingPrefix + "hintergrund", ""));
+      hintergrund.setPleaseChoose("Kein Formular");
+      vordergrund = new FormularInput(FormularArt.HINTERGRUND,
+          settings.getString(settingPrefix + "vordergrund", ""));
+      vordergrund.setPleaseChoose("Kein Formular");
+      querformat = new CheckboxInput(
+          settings.getBoolean(settingPrefix + "quer", false));
+      tabFormular.addLabelPair("Formular Hintergrund", hintergrund);
+      tabFormular.addLabelPair("Formular Vordergrund", vordergrund);
+      tabFormular.addLabelPair("Querformat", querformat);
+    }
 
     for (TableColumn col : table.getColumns())
     {
@@ -322,7 +335,6 @@ public class TablePartExportDialog extends AbstractDialog<Object>
 
   private void exportCSV(File file) throws IOException
   {
-    // TODO für CSV wirklich auch Spalten auswählen?
     try (ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
@@ -423,20 +435,25 @@ public class TablePartExportDialog extends AbstractDialog<Object>
           (Integer) col.getData());
     }
 
-    settings.setAttribute(settingPrefix + "links", (Integer) links.getValue());
-    settings.setAttribute(settingPrefix + "rechts",
-        (Integer) rechts.getValue());
-    settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
-    settings.setAttribute(settingPrefix + "unten", (Integer) unten.getValue());
+    if (art.equals(ExportArt.PDF))
+    {
+      settings.setAttribute(settingPrefix + "links",
+          (Integer) links.getValue());
+      settings.setAttribute(settingPrefix + "rechts",
+          (Integer) rechts.getValue());
+      settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
+      settings.setAttribute(settingPrefix + "unten",
+          (Integer) unten.getValue());
 
-    settings.setAttribute(settingPrefix + "hintergrund",
-        hintergrund.getValue() == null ? null
-            : ((Formular) hintergrund.getValue()).getID());
-    settings.setAttribute(settingPrefix + "vordergrund",
-        vordergrund.getValue() == null ? null
-            : ((Formular) vordergrund.getValue()).getID());
-    settings.setAttribute(settingPrefix + "quer",
-        (Boolean) querformat.getValue());
+      settings.setAttribute(settingPrefix + "hintergrund",
+          hintergrund.getValue() == null ? null
+              : ((Formular) hintergrund.getValue()).getID());
+      settings.setAttribute(settingPrefix + "vordergrund",
+          vordergrund.getValue() == null ? null
+              : ((Formular) vordergrund.getValue()).getID());
+      settings.setAttribute(settingPrefix + "quer",
+          (Boolean) querformat.getValue());
+    }
   }
 
   @Override
