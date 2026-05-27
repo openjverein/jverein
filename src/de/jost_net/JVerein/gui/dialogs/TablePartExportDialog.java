@@ -59,6 +59,7 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.util.TabGroup;
@@ -133,6 +134,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     settings = new Settings(this.getClass());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
@@ -143,7 +145,11 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     for (int i = 0; i < table.getColumnCount(); i++)
     {
       TableColumn col = table.getColumn(order[i]);
-      // TODO letze Spalte schmaler?
+      // Leere Dummy-Spalte am ende überspringen
+      if (col.getText().isBlank())
+      {
+        continue;
+      }
       col.setData(settings.getInt(settingPrefix + "breite." + col.getText(),
           col.getWidth()));
       listeSortiert.add(col);
@@ -158,6 +164,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
 
     spaltenList = new JVereinTablePart(listeSortiert, null)
     {
+      // Sortieren verhindern
       @Override
       protected void orderBy(int index)
       {
@@ -178,6 +185,30 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       }
     });
     tabSpalten.addPart(spaltenList);
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
+      try
+      {
+        for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+        {
+          col.setData(col.getWidth());
+        }
+        spaltenList.removeAll();
+        for (TableColumn col : listeSortiert)
+        {
+          spaltenList.addItem(col);
+          spaltenList.setChecked(col, settings
+              .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+        }
+      }
+      catch (RemoteException re)
+      {
+        Logger.error("Fehler beim zurücksetzen der Breiten", re);
+        throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
+      }
+
+    }, null, false, "eraser.png"));
+    tabSpalten.addButtonArea(buttons);
 
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
     rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
