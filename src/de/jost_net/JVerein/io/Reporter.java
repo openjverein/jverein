@@ -44,6 +44,7 @@ import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -696,6 +697,56 @@ public class Reporter implements AutoCloseable
         addColumn(params.get(key), Element.ALIGN_LEFT);
       }
       closeTable();
+    }
+  }
+
+  /**
+   * Setzen eines Hintergrundes bei Reports.
+   */
+  private class ReportHintergrund extends PdfPageEventHelper
+  {
+
+    private PdfImportedPage importedPage;
+
+    public ReportHintergrund(PdfImportedPage importedPage)
+    {
+      this.importedPage = importedPage;
+    }
+
+    @Override
+    public void onStartPage(PdfWriter writer, Document document)
+    {
+      if (importedPage != null)
+      {
+        PdfContentByte contentByte = writer.getDirectContentUnder();
+        contentByte.addTemplate(importedPage, 0, 0);
+      }
+    }
+  }
+
+  /**
+   * Setzen eines Hintergrundes bei Reports.
+   */
+  private class ReportVordergrund extends PdfPageEventHelper
+  {
+
+    private PdfImportedPage importedPage;
+
+    public ReportVordergrund(PdfImportedPage importedPage)
+    {
+      this.importedPage = importedPage;
+    }
+
+    @Override
+    public void onEndPage(PdfWriter writer, Document document)
+    {
+      if (importedPage != null)
+      {
+        PdfContentByte contentByte = writer.getDirectContent();
+        contentByte.saveState();
+        contentByte.addTemplate(importedPage, 0, 0);
+        contentByte.restoreState();
+      }
     }
   }
 }
