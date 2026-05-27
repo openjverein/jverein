@@ -327,18 +327,18 @@ public class TablePartExportDialog extends AbstractDialog<Object>
 
   private void exportPDF(File file) throws IOException, DocumentException
   {
-    try (FileOutputStream fos = new FileOutputStream(file);)
+    try (FileOutputStream fos = new FileOutputStream(file);
+        Reporter reporter = new Reporter(fos, title, subtitle,
+            (Integer) links.getValue(), (Integer) rechts.getValue(),
+            (Integer) oben.getValue(), (Integer) unten.getValue(), false,
+            (Formular) vordergrund.getValue(),
+            (Formular) hintergrund.getValue(),
+            (Boolean) querformat.getValue());)
     {
       @SuppressWarnings("unchecked")
       List<TableColumn> listeAuswahl = spaltenList.getItems();
       List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
       TableItem[] rows = table.getItems();
-
-      Reporter reporter = new Reporter(fos, title, subtitle,
-          (Integer) links.getValue(), (Integer) rechts.getValue(),
-          (Integer) oben.getValue(), (Integer) unten.getValue(), false,
-          (Formular) vordergrund.getValue(), (Formular) hintergrund.getValue(),
-          (Boolean) querformat.getValue());
 
       for (TableColumn col : listeAuswahl)
       {
@@ -377,9 +377,6 @@ public class TablePartExportDialog extends AbstractDialog<Object>
               new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
         }
       }
-      // TODO Filter ausgeben?
-      reporter.closeTable();
-      reporter.close();
     }
   }
 

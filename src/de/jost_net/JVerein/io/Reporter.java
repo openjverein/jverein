@@ -52,14 +52,13 @@ import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.plugin.AbstractPlugin;
 import de.willuhn.jameica.system.Application;
 
 /**
  * Kapselt den Export von Daten im PDF-Format.
  */
-public class Reporter
+public class Reporter implements AutoCloseable
 {
   private ArrayList<PdfPCell> headers;
 
@@ -549,11 +548,11 @@ public class Reporter
    * @throws IOException
    * @throws DocumentException
    */
+  @Override
   public void close() throws IOException, DocumentException
   {
     try
     {
-      GUI.getStatusBar().setSuccessText("PDF-Export beendet");
       if (table != null)
       {
         rpt.add(table);
