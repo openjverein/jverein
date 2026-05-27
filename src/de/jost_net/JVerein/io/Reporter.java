@@ -38,7 +38,9 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.HyphenationAuto;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
@@ -705,7 +707,6 @@ public class Reporter implements AutoCloseable
    */
   private class ReportHintergrund extends PdfPageEventHelper
   {
-
     private PdfImportedPage importedPage;
 
     public ReportHintergrund(PdfImportedPage importedPage)
@@ -747,6 +748,49 @@ public class Reporter implements AutoCloseable
         contentByte.addTemplate(importedPage, 0, 0);
         contentByte.restoreState();
       }
+    }
+  }
+
+  /**
+   * Ersatz für die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
+   * nur für den Footer gebraucht.
+   */
+  private class HeaderFooter extends PdfPageEventHelper
+  {
+
+    String footer = null;
+
+    public void setFooter(String footer)
+    {
+      this.footer = footer;
+    }
+
+    /**
+     * Adds the header and the footer.
+     * 
+     */
+    @Override
+    public void onStartPage(PdfWriter writer, Document document)
+    {
+      Rectangle rect = document.getPageSize();
+
+      float left = rect.getLeft() + document.leftMargin();
+      float right = rect.getRight() - document.rightMargin();
+      float bottom = rect.getBottom() + document.bottomMargin();
+      PdfContentByte pc = writer.getDirectContent();
+      pc.setColorStroke(BaseColor.BLACK);
+      pc.setLineWidth(0.5f);
+      pc.moveTo(left, bottom - 5);
+      pc.lineTo(right, bottom - 5);
+      pc.stroke();
+      pc.moveTo(left, bottom - 25);
+      pc.lineTo(right, bottom - 25);
+      pc.stroke();
+
+      ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
+          new Phrase(footer + " " + writer.getPageNumber(),
+              Reporter.getFreeSans(7)),
+          (left + right) / 2, bottom - 18, 0);
     }
   }
 }
