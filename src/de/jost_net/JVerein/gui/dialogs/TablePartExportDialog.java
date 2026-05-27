@@ -399,9 +399,11 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     settings.setAttribute(settingPrefix + "unten", (Integer) unten.getValue());
 
     settings.setAttribute(settingPrefix + "hintergrund",
-        ((Formular) hintergrund.getValue()).getID());
+        hintergrund.getValue() == null ? null
+            : ((Formular) hintergrund.getValue()).getID());
     settings.setAttribute(settingPrefix + "vordergrund",
-        ((Formular) vordergrund.getValue()).getID());
+        vordergrund.getValue() == null ? null
+            : ((Formular) vordergrund.getValue()).getID());
     settings.setAttribute(settingPrefix + "quer",
         (Boolean) querformat.getValue());
   }
