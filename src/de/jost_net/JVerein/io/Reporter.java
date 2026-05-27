@@ -20,6 +20,7 @@ package de.jost_net.JVerein.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,6 +35,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.BaseFont;
@@ -48,7 +50,6 @@ import com.itextpdf.text.pdf.PdfWriter;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
@@ -144,8 +145,18 @@ public class Reporter
       float linkerRand, float rechterRand, float obererRand, float untererRand,
       boolean encrypt) throws DocumentException, IOException
   {
+    this(out, subtitle, subtitle, linkerRand, rechterRand, obererRand,
+        untererRand, encrypt, getDefaultFormular(Property.FORMULAR_VORDERGRUND),
+        getDefaultFormular(Property.FORMULAR_HINTERGRUND), false);
+  }
+
+  public Reporter(OutputStream out, String title, String subtitle,
+      float linkerRand, float rechterRand, float obererRand, float untererRand,
+      boolean encrypt, Formular vordergrund, Formular hintergrund,
+      boolean querformat) throws DocumentException, IOException
+  {
     this.out = out;
-    rpt = new Document();
+    rpt = new Document(querformat ? PageSize.A4.rotate() : PageSize.A4);
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
     writer = PdfWriter.getInstance(rpt, out);
@@ -165,30 +176,28 @@ public class Reporter
     widths = new ArrayList<>();
 
     // Hintergrund und Vordergrund initialisieren
-    Formular formular = (Formular) FormularInput.initdefault(
-        (String) Einstellungen.getEinstellung(Property.FORMULAR_HINTERGRUND));
-    if (formular != null)
+    if (hintergrund != null)
     {
-      PdfReader reader = new PdfReader(formular.getInhalt());
-      PdfImportedPage hintergrund = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportHintergrund(hintergrund));
+      PdfReader reader = new PdfReader(hintergrund.getInhalt());
+      PdfImportedPage page = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportHintergrund(page));
       // Hintergrund für erste Seite hier setzen da kein neuPage Event
       PdfContentByte contentByte = writer.getDirectContentUnder();
-      contentByte.addTemplate(hintergrund, 0, 0);
+      contentByte.addTemplate(page, 0, 0);
     }
-    formular = (Formular) FormularInput.initdefault(
-        (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
-    if (formular != null)
+    if (vordergrund != null)
     {
-      PdfReader reader = new PdfReader(formular.getInhalt());
-      PdfImportedPage vordergrund = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportVordergrund(vordergrund));
+      PdfReader reader = new PdfReader(vordergrund.getInhalt());
+      PdfImportedPage page = writer.getImportedPage(reader, 1);
+      writer.setPageEvent(new ReportVordergrund(page));
     }
     if (zellenTransparent)
     {
       zellenColor = null;
     }
 
+    // Fuss und Kopfzeile werden nur ausgegeben, wenn auch Titel oder Subtitel
+    // gesetzt sind
     if (title != null || subtitle != null)
     {
       StringBuilder fuss = new StringBuilder();
@@ -217,6 +226,18 @@ public class Reporter
       // Fusszeile für erste Seite hier setzen da kein neuPage Event
       hf.onStartPage(writer, rpt);
     }
+  }
+
+  private static Formular getDefaultFormular(Property einstellung)
+      throws RemoteException
+  {
+    String id = (String) Einstellungen.getEinstellung(einstellung);
+    if (id != null && !id.isBlank())
+    {
+      return (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, id);
+    }
+    return null;
   }
 
   /**

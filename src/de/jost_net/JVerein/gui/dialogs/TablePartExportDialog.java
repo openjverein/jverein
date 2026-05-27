@@ -334,10 +334,11 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
       TableItem[] rows = table.getItems();
 
-      // TODO Reporter überarbeiten: Formular, Querforamt übergeben
       Reporter reporter = new Reporter(fos, title, subtitle,
           (Integer) links.getValue(), (Integer) rechts.getValue(),
-          (Integer) oben.getValue(), (Integer) unten.getValue(), false);
+          (Integer) oben.getValue(), (Integer) unten.getValue(), false,
+          (Formular) vordergrund.getValue(), (Formular) hintergrund.getValue(),
+          (Boolean) querformat.getValue());
 
       for (TableColumn col : listeAuswahl)
       {
