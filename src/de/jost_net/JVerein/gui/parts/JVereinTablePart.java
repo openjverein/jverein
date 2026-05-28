@@ -19,12 +19,15 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -89,6 +92,16 @@ public class JVereinTablePart extends TablePart
   public void setAction(Action action)
   {
     this.action = action;
+  }
+
+  @Override
+  public synchronized void paint(Composite parent) throws RemoteException
+  {
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      addColumn(new Column("leer", ""));
+    }
+    super.paint(parent);
   }
 
   @Override

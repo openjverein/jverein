@@ -346,6 +346,8 @@ public class EinstellungControl extends AbstractControl
 
   private CheckboxInput summenAnlagenkonto;
 
+  private CheckboxInput leerespalte;
+
   private IntegerInput qrcodesize;
 
   private CheckboxInput qrcodeptext;
@@ -2164,6 +2166,17 @@ public class EinstellungControl extends AbstractControl
     return summenAnlagenkonto;
   }
 
+  public CheckboxInput getLeereSpalte() throws RemoteException
+  {
+    if (leerespalte != null)
+    {
+      return leerespalte;
+    }
+    leerespalte = new CheckboxInput(
+        (Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE));
+    return leerespalte;
+  }
+
   public DecimalInput getAfaRestwert() throws RemoteException
   {
     if (afarestwert != null)
@@ -2486,6 +2499,8 @@ public class EinstellungControl extends AbstractControl
           (Boolean) externemitgliedsnummer.getValue());
       Einstellungen.setEinstellung(Property.SUMMENANLAGENKONTO,
           (Boolean) summenAnlagenkonto.getValue());
+      Einstellungen.setEinstellung(Property.LEERESPALTE,
+          (Boolean) leerespalte.getValue());
       Altermodel amValue = (Altermodel) altersmodel.getValue();
       Einstellungen.setEinstellung(Property.ALTERSMODEL, amValue.getKey());
       AbstractInputAuswahl bbaAuswahl = (AbstractInputAuswahl) buchungBuchungsartAuswahl

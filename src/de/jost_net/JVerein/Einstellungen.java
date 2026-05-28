@@ -232,6 +232,10 @@ public class Einstellungen
     EXTERNEMITGLIEDSNUMMER("externemitgliedsnummer", Boolean.class, "0"),
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
     SUMMENANLAGENKONTO("summenanlagenkonto", Boolean.class, "0"),
+    LEERESPALTE("leerespalte", Boolean.class,
+        System.getProperty("os.name").indexOf("windows") != -1 ? "0" : "1"),
+
+    // Felder unten
     ALTERSMODEL("altermodel", Integer.class,
         ((Integer) Altermodel.AKTUELLES_DATUM).toString()),
     BUCHUNGBUCHUNGSARTAUSWAHL("buchungbuchungsartauswahl", Integer.class,

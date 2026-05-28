@@ -128,7 +128,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
       return buchungstext;
     }
     buchungstext = new TextInput(getZusatzbetragVorlage().getBuchungstext(),
-        140);
+        500);
     buchungstext.setMandatory(true);
     buchungstext.setValidChars(HBCIProperties.HBCI_DTAUS_VALIDCHARS);
     return buchungstext;

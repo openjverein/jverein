@@ -605,7 +605,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return leitwegID;
     }
-    leitwegID = new TextInput(getMitglied().getLeitwegID());
+    leitwegID = new TextInput(getMitglied().getLeitwegID(), 50);
     leitwegID.setName("LeitwegID");
     return leitwegID;
   }
@@ -874,7 +874,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mandatid;
     }
-    mandatid = new TextInput(getMitglied().getMandatID());
+    mandatid = new TextInput(getMitglied().getMandatID(), 35);
     mandatid.setName("Mandats-ID");
     if (((Zahlungsweg) getZahlungsweg().getValue())
         .getKey() != Zahlungsweg.BASISLASTSCHRIFT)
@@ -2773,6 +2773,10 @@ public class MitgliedControl extends FilterControl implements Savable
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
     familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
     familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      familienbeitragtree.addColumn(new Column("leer", ""));
+    }
     familienbeitragtree.setRememberColWidths(true);
 
     familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
@@ -2819,6 +2823,10 @@ public class MitgliedControl extends FilterControl implements Savable
     abweichenderzahlertree.addColumn("Name", "name");
     abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
     abweichenderzahlertree.addColumn("IBAN", "iban", new IBANFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      abweichenderzahlertree.addColumn(new Column("leer", ""));
+    }
     abweichenderzahlertree.setRememberColWidths(true);
 
     abweichenderzahlertree.setContextMenu(new AbweichenderZahlerMenu());

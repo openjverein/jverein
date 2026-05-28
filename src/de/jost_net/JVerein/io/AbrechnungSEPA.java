@@ -678,6 +678,10 @@ public class AbrechnungSEPA extends SEPASupport
         try
         {
           vzweck = VelocityTool.eval(map, vzweck);
+          if (vzweck.length() >= 140)
+          {
+            vzweck = vzweck.substring(0, 136) + "...";
+          }
         }
         catch (IOException e)
         {
