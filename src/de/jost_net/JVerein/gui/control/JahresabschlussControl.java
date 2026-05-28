@@ -512,18 +512,18 @@ public class JahresabschlussControl extends KontensaldoControl
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME, this);
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME);
   }
 }
