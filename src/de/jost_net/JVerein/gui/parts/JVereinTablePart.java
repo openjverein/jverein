@@ -97,7 +97,8 @@ public class JVereinTablePart extends TablePart
   @Override
   public synchronized void paint(Composite parent) throws RemoteException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    if (columns.size() > 1
+        && (Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
     {
       addColumn(new Column("leer", ""));
     }
@@ -179,7 +180,11 @@ public class JVereinTablePart extends TablePart
       // Dann zeigen wir sie mit an
       super.addColumn(col);
     }
-    this.allColumns.add(col);
+    // Leere Dummy-Spalte brauchen wir hier nicht
+    if (!col.getName().isBlank())
+    {
+      this.allColumns.add(col);
+    }
   }
 
   /**
