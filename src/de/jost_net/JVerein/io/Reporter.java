@@ -147,8 +147,8 @@ public class Reporter implements AutoCloseable
       float linkerRand, float rechterRand, float obererRand, float untererRand,
       boolean encrypt) throws DocumentException, IOException
   {
-    this(out, subtitle, subtitle, linkerRand, rechterRand, obererRand,
-        untererRand, encrypt, getDefaultFormular(Property.FORMULAR_VORDERGRUND),
+    this(out, title, subtitle, linkerRand, rechterRand, obererRand, untererRand,
+        encrypt, getDefaultFormular(Property.FORMULAR_VORDERGRUND),
         getDefaultFormular(Property.FORMULAR_HINTERGRUND), false, null, null);
   }
 
@@ -201,7 +201,7 @@ public class Reporter implements AutoCloseable
       PdfReader reader = new PdfReader(vordergrund.getInhalt());
       writer.setPageEvent(new ReportVordergrund(reader));
     }
-    if (zellenTransparent)
+    if (this.zellenTransparent)
     {
       zellenColor = null;
     }
