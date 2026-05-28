@@ -303,7 +303,6 @@ public class Reporter implements AutoCloseable
    * 
    * @param cell
    */
-  // TODO public nur Spendenbescheinigung
   public void addColumn(PdfPCell cell)
   {
     table.addCell(cell);
