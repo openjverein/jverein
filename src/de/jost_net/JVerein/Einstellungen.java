@@ -44,7 +44,6 @@ import de.willuhn.jameica.hbci.rmi.HBCIDBService;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.Platform;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -234,10 +233,7 @@ public class Einstellungen
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
     SUMMENANLAGENKONTO("summenanlagenkonto", Boolean.class, "0"),
     LEERESPALTE("leerespalte", Boolean.class,
-        (Application.getPlatform().getOS() == Platform.OS_WINDOWS
-            || Application.getPlatform().getOS() == Platform.OS_WINDOWS_64)
-                ? "0"
-                : "1"),
+        System.getProperty("os.name").indexOf("windows") != -1 ? "0" : "1"),
 
     // Felder unten
     ALTERSMODEL("altermodel", Integer.class,
