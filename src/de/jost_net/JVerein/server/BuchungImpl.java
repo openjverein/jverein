@@ -189,7 +189,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
       }
     }
 
-    if (!getSpeicherung() && getBuchungsart() == null)
+    if (isSplitbuchung() && getBuchungsart() == null)
     {
       throw new ApplicationException("Buchungsart fehlt bei Splitbuchung!");
     }
@@ -882,13 +882,13 @@ public class BuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setSpeicherung(boolean speicherung)
+  public void setSplitbuchung(boolean splitbuchung)
   {
-    this.speicherung = speicherung;
+    this.speicherung = splitbuchung;
   }
 
   @Override
-  public boolean getSpeicherung()
+  public boolean isSplitbuchung()
   {
     return speicherung;
   }

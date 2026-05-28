@@ -51,7 +51,7 @@ public class SplitbuchungNeuAction implements Action
       buch.setBuchungsartId(master.getBuchungsartId());
       buch.setBuchungsklasseId(master.getBuchungsklasseId());
       buch.setIban(master.getIban());
-      buch.setSpeicherung(false);
+      buch.setSplitbuchung(true);
       buch.setSplitTyp(SplitbuchungTyp.SPLIT);
       buch.setSteuer(master.getSteuer());
       buch.setBetrag(

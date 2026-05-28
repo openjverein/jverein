@@ -132,7 +132,7 @@ public class SplitbuchungsContainer
 
   public static void add(Buchung b) throws RemoteException, ApplicationException
   {
-    b.setSpeicherung(false);
+    b.setSplitbuchung(true);
     for (Buchung buchung : splitbuchungen)
     {
       if (BeanUtil.equals(buchung, b))
