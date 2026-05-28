@@ -145,7 +145,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     for (int i = 0; i < table.getColumnCount(); i++)
     {
       TableColumn col = table.getColumn(order[i]);
-      // Leere Dummy-Spalte am ende überspringen
+      // Leere Dummy-Spalte am Ende überspringen
       if (col.getText().isBlank())
       {
         continue;
@@ -181,11 +181,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     }
     spaltenList.setCheckable(true);
 
-    if (art.equals(ExportArt.CSV))
-    {
-      spaltenList.paint(parent);
-    }
-    else if (art.equals(ExportArt.PDF))
+    if (art.equals(ExportArt.PDF))
     {
       TabFolder folder = new TabFolder(parent, SWT.BORDER);
       folder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -254,6 +250,10 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       tabFormular.addLabelPair("Formular Hintergrund", hintergrund);
       tabFormular.addLabelPair("Formular Vordergrund", vordergrund);
       tabFormular.addLabelPair("Querformat", querformat);
+    }
+    else
+    {
+      spaltenList.paint(parent);
     }
 
     for (TableColumn col : table.getColumns())
@@ -397,7 +397,9 @@ public class TablePartExportDialog extends AbstractDialog<Object>
         for (TableColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
-          Color bg = row.getBackground(index);
+          // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
+          // vom verwendeten Theme ab.
+          Color bg = (Color) row.getData("background");
           Font font = null;
           for (FontData data : row.getFont(index).getFontData())
           {
@@ -414,10 +416,20 @@ public class TablePartExportDialog extends AbstractDialog<Object>
                 break;
             }
           }
-          reporter.addColumn(row.getText(index),
-              col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                  : Element.ALIGN_RIGHT,
-              new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
+          if (bg == null)
+          {
+            reporter.addColumn(row.getText(index),
+                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
+                    : Element.ALIGN_RIGHT,
+                font);
+          }
+          else
+          {
+            reporter.addColumn(row.getText(index),
+                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
+                    : Element.ALIGN_RIGHT,
+                new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
+          }
         }
       }
     }
@@ -431,8 +443,11 @@ public class TablePartExportDialog extends AbstractDialog<Object>
     {
       settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
           itemsChecked.contains(col));
-      settings.setAttribute(settingPrefix + "breite." + col.getText(),
-          (Integer) col.getData());
+      if (art.equals(ExportArt.PDF))
+      {
+        settings.setAttribute(settingPrefix + "breite." + col.getText(),
+            (Integer) col.getData());
+      }
     }
 
     if (art.equals(ExportArt.PDF))
