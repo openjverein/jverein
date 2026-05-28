@@ -273,8 +273,11 @@ public class JVereinTablePart extends TablePart
   {
     try
     {
-      new TablePartExportDialog((Table) tableControl, getTablePartID(), art,
-          title, subtitle, filename).open();
+      if (!new TablePartExportDialog((Table) tableControl, getTablePartID(),
+          art, title, subtitle, filename).open())
+      {
+        throw new OperationCanceledException();
+      }
     }
     catch (OperationCanceledException | ApplicationException e)
     {

@@ -70,13 +70,15 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class TablePartExportDialog extends AbstractDialog<Object>
+public class TablePartExportDialog extends AbstractDialog<Boolean>
 {
   public enum ExportArt
   {
     PDF,
     CSV
   }
+
+  private boolean sucsess = false;
 
   private Settings settings;
 
@@ -339,6 +341,7 @@ public class TablePartExportDialog extends AbstractDialog<Object>
 
       FileViewer.show(file);
 
+      sucsess = true;
       close();
     }
     catch (IOException | DocumentException e)
@@ -495,9 +498,9 @@ public class TablePartExportDialog extends AbstractDialog<Object>
   }
 
   @Override
-  protected List<TableColumn> getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return null;
+    return sucsess;
   }
 
 }
