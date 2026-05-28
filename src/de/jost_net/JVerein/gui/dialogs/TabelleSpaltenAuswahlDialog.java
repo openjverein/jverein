@@ -33,7 +33,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
@@ -84,22 +83,30 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       {
         continue;
       }
-      JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null);
+      JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null)
+      {
+        @Override
+        protected void orderBy(int index)
+        {
+          return;
+        }
+      };
+
       part.addColumn("Name", "name");
       part.setCheckable(true);
 
-      String name = table.getTableName();
-      Object o = table.getItems().get(0);
-      if (o instanceof JVereinDBObject && name == null)
-      {
-        name = ((JVereinDBObject) o).getObjektNameMehrzahl();
-      }
-      if (name == null)
-      {
-        name = "Tabelle";
-      }
       if (tableMap.size() > 1)
       {
+        String name = table.getTableName();
+        Object o = table.getItems().get(0);
+        if (o instanceof JVereinDBObject && name == null)
+        {
+          name = ((JVereinDBObject) o).getObjektNameMehrzahl();
+        }
+        if (name == null)
+        {
+          name = "Tabelle";
+        }
         if (folder == null)
         {
           folder = new TabFolder(parent, SWT.BORDER);
@@ -110,8 +117,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       }
       else
       {
-        LabelGroup group = new LabelGroup(parent, name);
-        group.addPart(part);
+        part.paint(parent);
       }
 
       List<Column> auswahl = table.getColums();
@@ -122,8 +128,9 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       tableMap.put(table, part);
     }
 
-    ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", c -> {
+    ButtonArea buttons = new ButtonArea();
+
+    buttons.addButton("Speichern", c -> {
       try
       {
         for (Entry<JVereinTablePart, JVereinTablePart> entry : tableMap
@@ -143,11 +150,14 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
         throw new ApplicationException("Serverfehler");
       }
       close();
+
     }, null, true, "ok.png");
-    b.addButton("Abbrechen", c -> {
+
+    buttons.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
-    b.paint(parent);
+
+    buttons.paint(parent);
   }
 
   @Override
@@ -155,5 +165,4 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   {
     return null;
   }
-
 }

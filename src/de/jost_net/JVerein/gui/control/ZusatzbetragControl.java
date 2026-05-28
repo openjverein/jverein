@@ -37,7 +37,6 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.IntervallZusatzzahlung;
@@ -55,13 +54,11 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -397,21 +394,21 @@ public class ZusatzbetragControl extends VorZurueckControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (zusatzbetraegeList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          zusatzbetraegeList.export(
-              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_DATEINAME, this),
-              "zusatzbetraege", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_DATEINAME, this);
   }
 }

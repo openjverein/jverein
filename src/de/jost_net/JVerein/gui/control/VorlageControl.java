@@ -235,4 +235,22 @@ public class VorlageControl extends FilterControl implements Savable
     }
     return list;
   }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return "";
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return "";
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return "";
+  }
 }

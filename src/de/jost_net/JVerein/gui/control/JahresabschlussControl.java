@@ -28,9 +28,9 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.menu.JahresabschlussMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.gui.view.JahresabschlussDetailView;
 import de.jost_net.JVerein.keys.Kontoart;
@@ -490,24 +490,6 @@ public class JahresabschlussControl extends KontensaldoControl
     }, "Spalten auswählen");
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
-  {
-    if (jahresabschlussList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          jahresabschlussList.export(
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL),
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME),
-              "jahresabschluesse", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton exportDetailButton(ExportArt art)
       throws ApplicationException
   {
@@ -522,8 +504,26 @@ public class JahresabschlussControl extends KontensaldoControl
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_TITEL, this),
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_SUBTITEL, this),
               VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUSS_DATEINAME, this),
-              "jahresabschluss", art);
+              art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.JAHRESABSCHLUESSE_DATEINAME);
   }
 }

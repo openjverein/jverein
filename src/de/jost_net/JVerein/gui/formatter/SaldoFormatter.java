@@ -43,6 +43,8 @@ public class SaldoFormatter implements TableFormatter
       switch ((Integer) o.getAttribute(AbstractSaldoControl.ART))
       {
         case AbstractSaldoControl.ART_HEADER:
+          // Für Export Farbe in Data speichern
+          item.setData("background", Color.COMMENT.getSWTColor());
           item.setBackground(Color.COMMENT.getSWTColor());
           break;
         case AbstractSaldoControl.ART_SALDOFOOTER:

@@ -22,7 +22,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.MailVorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.MailVorlageDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -31,10 +30,8 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -150,21 +147,21 @@ public class MailVorlageControl extends VorZurueckControl
     return mailvorlageList;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (mailvorlageList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          mailvorlageList.export(
-              VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL),
-              VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME), "mails",
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME);
   }
 }

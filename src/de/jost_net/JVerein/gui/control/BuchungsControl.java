@@ -58,7 +58,6 @@ import de.jost_net.JVerein.gui.menu.BuchungMenu;
 import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
@@ -109,7 +108,6 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisung;
 import de.willuhn.jameica.hbci.rmi.SepaSammelUeberweisungBuchung;
 import de.willuhn.jameica.messaging.Message;
@@ -2461,38 +2459,42 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (buchungsList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
     if (geldkonto)
     {
-      return new PanelButton(
-          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-            buchungsList.export(
-                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this),
-                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this),
-                VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this),
-                "buchungen", art);
-            GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-          }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_TITEL, this);
     }
     else
     {
-      return new PanelButton(
-          art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-            buchungsList.export(
-                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this),
-                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL,
-                    this),
-                VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME,
-                    this),
-                "anlagenbuchungen", art);
-            GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-          }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_TITEL, this);
+    }
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    if (geldkonto)
+    {
+      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_SUBTITEL, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_SUBTITEL, this);
+    }
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    if (geldkonto)
+    {
+      return VorlageUtil.getName(VorlageTyp.BUCHUNGEN_DATEINAME, this);
+    }
+    else
+    {
+      return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this);
     }
   }
 }

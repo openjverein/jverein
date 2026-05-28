@@ -1120,19 +1120,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSettingPrefix()
-  {
-    if (selectedTab == 0)
-    {
-      return "mittelverwendungsreport.zufluss";
-    }
-    else
-    {
-      return "mittelverwendungsreport.saldo";
-    }
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)

@@ -365,12 +365,6 @@ public class KontensaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSettingPrefix()
-  {
-    return "kontensaldo";
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)

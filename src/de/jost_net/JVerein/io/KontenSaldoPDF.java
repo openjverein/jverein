@@ -43,7 +43,7 @@ public class KontenSaldoPDF implements ISaldoExport
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, zeile.size());
+      Reporter reporter = new Reporter(fos, title, subtitle);
 
       reporter.addHeaderColumn("Konto-\nnummer", Element.ALIGN_CENTER, 50,
           BaseColor.LIGHT_GRAY);

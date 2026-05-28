@@ -53,7 +53,7 @@ public class MitgliederStatistik
         throw new ApplicationException("Stichtag ist leer");
       }
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, 3);
+      Reporter reporter = new Reporter(fos, title, subtitle);
 
       Paragraph pAltersgruppen = new Paragraph("\n" + "Altersgruppen",
           Reporter.getFreeSans(11));

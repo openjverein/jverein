@@ -32,7 +32,6 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LesefeldMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.LesefeldDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -47,7 +46,6 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -558,20 +556,21 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (lesefeldList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          lesefeldList.export(VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL),
-              VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME),
-              "lesefelder", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME);
   }
 }

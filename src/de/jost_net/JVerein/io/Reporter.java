@@ -20,6 +20,7 @@ package de.jost_net.JVerein.io;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -34,35 +35,34 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.HyphenationAuto;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
 import com.itextpdf.text.pdf.PdfReader;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.plugin.AbstractPlugin;
 import de.willuhn.jameica.system.Application;
 
 /**
  * Kapselt den Export von Daten im PDF-Format.
  */
-public class Reporter
+public class Reporter implements AutoCloseable
 {
-
-  // private I18N i18n = null;
-
   private ArrayList<PdfPCell> headers;
 
   private ArrayList<Integer> widths;
@@ -97,6 +97,17 @@ public class Reporter
         Font.UNDERLINE, color);
   }
 
+  public static Font getFreeSansItalic(float size, BaseColor color)
+  {
+    return FontFactory.getFont("/fonts/FreeSansItalic.ttf", BaseFont.IDENTITY_H,
+        size, Font.ITALIC, color);
+  }
+
+  public static Font getFreeSansItalic(float size)
+  {
+    return getFreeSansItalic(size, null);
+  }
+
   public static Font getFreeSans(float size)
   {
     return getFreeSans(size, null);
@@ -118,18 +129,45 @@ public class Reporter
     return getFreeSansBold(size, null);
   }
 
-  public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords) throws DocumentException, IOException
+  public Reporter(OutputStream out, String title, String subtitle)
+      throws DocumentException, IOException
   {
-    this(out, title, subtitle, maxRecords, 80, 30, 20, 20);
+    this(out, title, subtitle, 80, 30, 20, 20, false);
   }
 
   public Reporter(OutputStream out, float linkerRand, float rechterRand,
       float obererRand, float untererRand, boolean encrypt)
       throws DocumentException, IOException
   {
+    this(out, null, null, linkerRand, rechterRand, obererRand, untererRand,
+        encrypt);
+  }
+
+  public Reporter(OutputStream out, String title, String subtitle,
+      float linkerRand, float rechterRand, float obererRand, float untererRand,
+      boolean encrypt) throws DocumentException, IOException
+  {
+    this(out, title, subtitle, linkerRand, rechterRand, obererRand, untererRand,
+        encrypt, getDefaultFormular(Property.FORMULAR_VORDERGRUND),
+        getDefaultFormular(Property.FORMULAR_HINTERGRUND), false, null, null);
+  }
+
+  public Reporter(OutputStream out, String title, String subtitle,
+      float linkerRand, float rechterRand, float obererRand, float untererRand,
+      boolean encrypt, Formular vordergrund, Formular hintergrund,
+      boolean querformat, Boolean headerTransparent, Boolean zellenTransparent)
+      throws DocumentException, IOException
+  {
+    if (headerTransparent != null)
+    {
+      this.headerTransparent = headerTransparent;
+    }
+    if (zellenTransparent != null)
+    {
+      this.zellenTransparent = zellenTransparent;
+    }
     this.out = out;
-    rpt = new Document();
+    rpt = new Document(querformat ? PageSize.A4.rotate() : PageSize.A4);
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
     hyph = new HyphenationAuto("de", "DE", 2, 2);
     writer = PdfWriter.getInstance(rpt, out);
@@ -149,62 +187,67 @@ public class Reporter
     widths = new ArrayList<>();
 
     // Hintergrund und Vordergrund initialisieren
-    Formular formular = (Formular) FormularInput.initdefault(
-        (String) Einstellungen.getEinstellung(Property.FORMULAR_HINTERGRUND));
-    if (formular != null)
+    if (hintergrund != null)
     {
-      PdfReader reader = new PdfReader(formular.getInhalt());
-      PdfImportedPage hintergrund = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportHintergrund(hintergrund));
+      PdfReader reader = new PdfReader(hintergrund.getInhalt());
+      writer.setPageEvent(new ReportHintergrund(reader));
+      PdfImportedPage page = writer.getImportedPage(reader, 1);
       // Hintergrund für erste Seite hier setzen da kein neuPage Event
       PdfContentByte contentByte = writer.getDirectContentUnder();
-      contentByte.addTemplate(hintergrund, 0, 0);
+      contentByte.addTemplate(page, 0, 0);
     }
-    formular = (Formular) FormularInput.initdefault(
-        (String) Einstellungen.getEinstellung(Property.FORMULAR_VORDERGRUND));
-    if (formular != null)
+    if (vordergrund != null)
     {
-      PdfReader reader = new PdfReader(formular.getInhalt());
-      PdfImportedPage vordergrund = writer.getImportedPage(reader, 1);
-      writer.setPageEvent(new ReportVordergrund(vordergrund));
+      PdfReader reader = new PdfReader(vordergrund.getInhalt());
+      writer.setPageEvent(new ReportVordergrund(reader));
     }
-    if (zellenTransparent)
+    if (this.zellenTransparent)
     {
       zellenColor = null;
     }
+
+    // Fuss und Kopfzeile werden nur ausgegeben, wenn auch Titel oder Subtitel
+    // gesetzt sind
+    if (title != null || subtitle != null)
+    {
+      StringBuilder fuss = new StringBuilder();
+      if (title != null && title.length() > 0)
+      {
+        Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
+        pTitle.setAlignment(Element.ALIGN_CENTER);
+        rpt.add(pTitle);
+        fuss.append(title + " | ");
+      }
+      if (subtitle != null && subtitle.length() > 0)
+      {
+        rpt.addTitle(subtitle);
+        Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
+        psubTitle.setAlignment(Element.ALIGN_CENTER);
+        rpt.add(psubTitle);
+        fuss.append(subtitle + " | ");
+      }
+      fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
+          + " | Seite: ");
+      HeaderFooter hf = new HeaderFooter();
+      hf.setFooter(fuss.toString());
+      writer.setPageEvent(hf);
+      // Fusszeile wird onStartPage gesetzt damit später bei EndPage der
+      // Vordergrund darüber gelegt werden kann
+      // Fusszeile für erste Seite hier setzen da kein neuPage Event
+      hf.onStartPage(writer, rpt);
+    }
   }
 
-  public Reporter(OutputStream out, String title, String subtitle,
-      int maxRecords, float linkerRand, float rechterRand, float obererRand,
-      float untererRand) throws DocumentException, IOException
+  private static Formular getDefaultFormular(Property einstellung)
+      throws RemoteException
   {
-    this(out, linkerRand, rechterRand, obererRand, untererRand, false);
-
-    StringBuilder fuss = new StringBuilder();
-    if (title != null && title.length() > 0)
+    String id = (String) Einstellungen.getEinstellung(einstellung);
+    if (id != null && !id.isBlank())
     {
-      Paragraph pTitle = new Paragraph(title, getFreeSansBold(13));
-      pTitle.setAlignment(Element.ALIGN_CENTER);
-      rpt.add(pTitle);
-      fuss.append(title + " | ");
+      return (Formular) Einstellungen.getDBService()
+          .createObject(Formular.class, id);
     }
-    if (subtitle != null && subtitle.length() > 0)
-    {
-      rpt.addTitle(subtitle);
-      Paragraph psubTitle = new Paragraph(subtitle, getFreeSansBold(10));
-      psubTitle.setAlignment(Element.ALIGN_CENTER);
-      rpt.add(psubTitle);
-      fuss.append(subtitle + " | ");
-    }
-    fuss.append("erstellt am " + new JVDateFormatTTMMJJJJ().format(new Date())
-        + " | Seite: ");
-    HeaderFooter hf = new HeaderFooter();
-    hf.setFooter(fuss.toString());
-    writer.setPageEvent(hf);
-    // Fusszeile wird onStartPage gesetzt damit später bei EndPage der
-    // Vordergrund darüber gelegt werden kann
-    // Fusszeile für erste Seite hier setzen da kein neuPage Event
-    hf.onStartPage(writer, rpt);
+    return null;
   }
 
   /**
@@ -250,9 +293,7 @@ public class Reporter
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color)
   {
-    BaseColor bcolor = headerTransparent ? null : color;
-    headers.add(getDetailCell(text, align, bcolor, true));
-    widths.add(Integer.valueOf(width));
+    addHeaderColumn(text, align, width, color, true);
   }
 
   /**
@@ -262,6 +303,7 @@ public class Reporter
    * @param align
    * @param width
    * @param color
+   * @param silbentrennung
    */
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color, boolean silbentrennung)
@@ -359,6 +401,12 @@ public class Reporter
   public void addColumn(String text, int align, Font font)
   {
     addColumn(getDetailCell(text, align, zellenColor, true, font));
+  }
+
+  public void addColumn(String text, int align, BaseColor color, Font font)
+  {
+    addColumn(getDetailCell(text, align, zellenTransparent ? null : color, true,
+        font));
   }
 
   /**
@@ -510,11 +558,11 @@ public class Reporter
    * @throws IOException
    * @throws DocumentException
    */
+  @Override
   public void close() throws IOException, DocumentException
   {
     try
     {
-      GUI.getStatusBar().setSuccessText("PDF-Export beendet");
       if (table != null)
       {
         rpt.add(table);
@@ -658,6 +706,108 @@ public class Reporter
         addColumn(params.get(key), Element.ALIGN_LEFT);
       }
       closeTable();
+    }
+  }
+
+  /**
+   * Setzen eines Hintergrundes bei Reports.
+   */
+  private class ReportHintergrund extends PdfPageEventHelper
+  {
+    private PdfReader reader;
+
+    public ReportHintergrund(PdfReader reader)
+    {
+      this.reader = reader;
+    }
+
+    @Override
+    public void onStartPage(PdfWriter writer, Document document)
+    {
+      if (reader != null)
+      {
+        int number = writer.getPageNumber() <= reader.getNumberOfPages()
+            ? writer.getPageNumber()
+            : reader.getNumberOfPages();
+
+        PdfImportedPage page = writer.getImportedPage(reader, number);
+
+        PdfContentByte contentByte = writer.getDirectContentUnder();
+        contentByte.addTemplate(page, 0, 0);
+      }
+    }
+  }
+
+  /**
+   * Setzen eines Hintergrundes bei Reports.
+   */
+  private class ReportVordergrund extends PdfPageEventHelper
+  {
+
+    private PdfReader reader;
+
+    public ReportVordergrund(PdfReader reader)
+    {
+      this.reader = reader;
+    }
+
+    @Override
+    public void onEndPage(PdfWriter writer, Document document)
+    {
+      if (reader != null)
+      {
+        int number = writer.getPageNumber() <= reader.getNumberOfPages()
+            ? writer.getPageNumber()
+            : reader.getNumberOfPages();
+        PdfImportedPage page = writer.getImportedPage(reader, number);
+
+        PdfContentByte contentByte = writer.getDirectContent();
+        contentByte.saveState();
+        contentByte.addTemplate(page, 0, 0);
+        contentByte.restoreState();
+      }
+    }
+  }
+
+  /**
+   * Ersatz für die HeaderFooter-Klasse, die es bis iText 1.x gab. Wird zur Zeit
+   * nur für den Footer gebraucht.
+   */
+  private class HeaderFooter extends PdfPageEventHelper
+  {
+
+    String footer = null;
+
+    public void setFooter(String footer)
+    {
+      this.footer = footer;
+    }
+
+    /**
+     * Adds the header and the footer.
+     * 
+     */
+    @Override
+    public void onStartPage(PdfWriter writer, Document document)
+    {
+      Rectangle rect = document.getPageSize();
+
+      float left = rect.getLeft() + document.leftMargin();
+      float right = rect.getRight() - document.rightMargin();
+      float bottom = rect.getBottom() + document.bottomMargin();
+      PdfContentByte pc = writer.getDirectContent();
+      pc.setColorStroke(BaseColor.BLACK);
+      pc.setLineWidth(0.5f);
+      pc.moveTo(left, bottom - 5);
+      pc.lineTo(right, bottom - 5);
+      pc.stroke();
+      pc.moveTo(left, bottom - 25);
+      pc.lineTo(right, bottom - 25);
+      pc.stroke();
+
+      ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
+          new Phrase(footer + " " + writer.getPageNumber(), getFreeSans(7)),
+          (left + right) / 2, bottom - 18, 0);
     }
   }
 }

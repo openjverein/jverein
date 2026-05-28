@@ -41,7 +41,6 @@ import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.MahnungMailView;
 import de.jost_net.JVerein.gui.view.RechnungDetailView;
@@ -955,21 +954,21 @@ public class RechnungControl extends DruckMailControl implements Savable
     }, "Spalten auswählen");
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (rechnungList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          rechnungList.export(
-              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this),
-              "rechnungen", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this);
   }
 }

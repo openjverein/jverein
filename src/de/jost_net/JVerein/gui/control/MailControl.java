@@ -49,7 +49,6 @@ import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.VelocityTool;
@@ -72,7 +71,6 @@ import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.table.FeatureSummary;
 import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
@@ -928,20 +926,21 @@ public class MailControl extends FilterControl implements IMailControl, Savable
         .unRegisterMessageConsumer(mailDeleteConsumer);
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (mailsList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          mailsList.export(VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this), "mails",
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this);
   }
 }

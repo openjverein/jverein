@@ -32,13 +32,13 @@ import de.jost_net.JVerein.gui.action.FormularfeldNeuAction;
 import de.jost_net.JVerein.gui.action.FormularfelderExportAction;
 import de.jost_net.JVerein.gui.action.FormularfelderImportAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.formatter.FormularLinkFormatter;
 import de.jost_net.JVerein.gui.formatter.FormularartFormatter;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.menu.FormularMenu;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.FormularDetailView;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -388,23 +388,6 @@ public class FormularControl extends FormularPartControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
-  {
-    if (formularList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          formularList.export(VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL),
-              VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME), "formulare",
-              art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton exportDetailButton(ExportArt art)
       throws ApplicationException
   {
@@ -430,7 +413,7 @@ public class FormularControl extends FormularPartControl implements Savable
                   bezeichnung),
               VorlageUtil.getName(VorlageTyp.FORMULARFELDER_DATEINAME,
                   bezeichnung),
-              "formularfelder", art);
+              art);
           GUI.getStatusBar().setSuccessText("Auswertung fertig.");
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
@@ -452,5 +435,23 @@ public class FormularControl extends FormularPartControl implements Savable
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
     }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME);
   }
 }

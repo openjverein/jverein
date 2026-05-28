@@ -16,38 +16,18 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.supercsv.cellprocessor.ConvertNullTo;
-import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvMapWriter;
-import org.supercsv.prefs.CsvPreference;
 
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
-
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.dialogs.SpaltenAuswahlDialog;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -69,12 +49,6 @@ public class JVereinTablePart extends TablePart
   private String tablePartId;
 
   private String tableName = null;
-
-  public enum ExportArt
-  {
-    PDF,
-    CSV
-  }
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -123,7 +97,8 @@ public class JVereinTablePart extends TablePart
   @Override
   public synchronized void paint(Composite parent) throws RemoteException
   {
-    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    if (columns.size() > 1
+        && (Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
     {
       addColumn(new Column("leer", ""));
     }
@@ -205,7 +180,11 @@ public class JVereinTablePart extends TablePart
       // Dann zeigen wir sie mit an
       super.addColumn(col);
     }
-    this.allColumns.add(col);
+    // Leere Dummy-Spalte brauchen wir hier nicht
+    if (!col.getName().isBlank())
+    {
+      this.allColumns.add(col);
+    }
   }
 
   /**
@@ -286,144 +265,21 @@ public class JVereinTablePart extends TablePart
    * @param title
    * @param subtitle
    * @param filename
-   * @param settingPrefix
    * @param art
    * @throws ApplicationException
    */
   public void export(String title, String subtitle, String filename,
-      String settingPrefix, ExportArt art) throws ApplicationException
+      ExportArt art) throws ApplicationException
   {
-    if (tableControl.isDisposed())
-      return;
-
-    if (!(tableControl instanceof Table))
-      return;
-
     try
     {
-      Table t = (Table) tableControl;
-      TableItem[] rows = t.getItems();
-      if (rows == null || rows.length == 0)
+      if (!new TablePartExportDialog((Table) tableControl, getTablePartID(),
+          art, title, subtitle, filename).open())
       {
-        throw new ApplicationException("Tabelle enthält keine Daten");
+        throw new OperationCanceledException();
       }
-
-      // Spalten so wie angezeigt sortieren
-      List<TableColumn> listeSortiert = new ArrayList<>();
-      int[] order = t.getColumnOrder();
-      for (int i = 0; i < t.getColumnCount(); i++)
-      {
-        listeSortiert.add(t.getColumn(order[i]));
-      }
-
-      String extension = "";
-      switch (art)
-      {
-        case CSV:
-          extension = ".csv";
-          break;
-        case PDF:
-          extension = ".pdf";
-          break;
-      }
-      settingPrefix += extension + ".";
-
-      List<TableColumn> listeAuswahl = new SpaltenAuswahlDialog(listeSortiert,
-          settingPrefix).open();
-      List<TableColumn> listeOrig = Arrays.asList(t.getColumns());
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString(settingPrefix + "lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-
-      fd.setFileName(filename);
-      fd.setFilterExtensions(new String[] { "*" + extension });
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        throw new OperationCanceledException("Abgebrochen");
-      }
-
-      File file = new File(s);
-      settings.setAttribute(settingPrefix + "lastdir", file.getParent());
-
-      switch (art)
-      {
-        case CSV:
-          ICsvMapWriter writer = null;
-
-          writer = new CsvMapWriter(new FileWriter(file),
-              CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-
-          CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl
-              .size()];
-          String[] header = new String[listeAuswahl.size()];
-
-          int n = 0;
-          for (TableColumn col : listeAuswahl)
-          {
-            header[n] = col.getText();
-            cellProcessor[n++] = new ConvertNullTo("");
-          }
-          writer.writeHeader(header);
-
-          for (TableItem row : rows)
-          {
-            Map<String, Object> csvzeile = new HashMap<>();
-            int i = 0;
-            for (TableColumn col : listeAuswahl)
-            {
-              int index = listeOrig.indexOf(col);
-              csvzeile.put(header[i++], row.getText(index));
-            }
-            writer.write(csvzeile, header, cellProcessor);
-          }
-          writer.close();
-          break;
-        case PDF:
-          FileOutputStream fos = new FileOutputStream(file);
-          Reporter reporter = new Reporter(fos, title, subtitle, rows.length,
-              20, 20, 20, 20);
-
-          for (TableColumn col : listeAuswahl)
-          {
-            reporter.addHeaderColumn(col.getText(),
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
-                col.getWidth(), BaseColor.LIGHT_GRAY);
-          }
-          reporter.createHeader();
-
-          for (TableItem row : rows)
-          {
-            for (TableColumn col : listeAuswahl)
-            {
-              int index = listeOrig.indexOf(col);
-              reporter.addColumn(row.getText(index),
-                  col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                      : Element.ALIGN_RIGHT);
-            }
-          }
-          reporter.closeTable();
-          reporter.close();
-          fos.close();
-          break;
-      }
-      FileViewer.show(file);
     }
-    catch (OperationCanceledException e)
-    {
-      throw e;
-    }
-    catch (ApplicationException e)
+    catch (OperationCanceledException | ApplicationException e)
     {
       throw e;
     }

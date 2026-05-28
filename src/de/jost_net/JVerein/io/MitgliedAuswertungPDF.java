@@ -53,8 +53,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, title, subtitle, list.size(), 50, 10,
-          20, 25);
+      Reporter report = new Reporter(fos, title, subtitle, 50, 10, 20, 25, false);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
           BaseColor.LIGHT_GRAY);

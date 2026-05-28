@@ -253,10 +253,4 @@ public class ProjektSaldoControl extends BuchungsklasseSaldoControl
   {
     return VorlageUtil.getName(VorlageTyp.PROJEKTSALDO_DATEINAME, this);
   }
-
-  @Override
-  protected String getTableSettingPrefix()
-  {
-    return "projektsaldo";
-  }
 }

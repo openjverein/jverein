@@ -39,7 +39,6 @@ import de.jost_net.JVerein.gui.input.BuchungsklasseInput;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BeitragsgruppeMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeDetailView;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
@@ -56,7 +55,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
 import de.willuhn.jameica.gui.formatter.TableFormatter;
@@ -68,7 +66,6 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -692,21 +689,21 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
     return beitragsgruppeList;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (beitragsgruppeList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          beitragsgruppeList.export(
-              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_TITEL),
-              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_DATEINAME),
-              "beitragsgruppen", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_DATEINAME);
   }
 }

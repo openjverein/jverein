@@ -150,7 +150,7 @@ public class BuchungsjournalExportPDF implements Exporter
     }
 
     FileOutputStream fos = new FileOutputStream(file);
-    Reporter reporter = new Reporter(fos, title, subtitle, 1);
+    Reporter reporter = new Reporter(fos, title, subtitle);
 
     double einnahmen = 0;
     double ausgaben = 0;

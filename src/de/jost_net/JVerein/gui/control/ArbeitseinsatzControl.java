@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
@@ -35,10 +34,8 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -208,22 +205,22 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     return arbeitseinsaetze;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (arbeitseinsatzList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-      arbeitseinsatzList.export(
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this),
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this),
-          VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this),
-          "arbeitseinsaetze", art);
-      GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ARBEITSEINSAETZE_DATEINAME, this);
   }
 
 }

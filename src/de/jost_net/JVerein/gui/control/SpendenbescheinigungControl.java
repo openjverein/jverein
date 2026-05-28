@@ -44,7 +44,6 @@ import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungDetailView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
@@ -992,27 +991,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
     return map;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
-  {
-    if (spbList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          spbList.export(
-              VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL,
-                  this),
-              VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL,
-                  this),
-              VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME,
-                  this),
-              "spendenbescheinigungen", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -1030,5 +1008,25 @@ public class SpendenbescheinigungControl extends DruckMailControl
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
     }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL,
+        this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME,
+        this);
   }
 }

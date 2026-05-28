@@ -83,7 +83,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, title, subtitle, 3);
+    reporter = new Reporter(fos, title, subtitle);
     reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 50,
         BaseColor.LIGHT_GRAY);
     reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,

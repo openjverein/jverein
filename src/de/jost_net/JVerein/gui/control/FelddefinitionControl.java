@@ -27,7 +27,6 @@ import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.formatter.DatentypFormatter;
 import de.jost_net.JVerein.gui.menu.FelddefinitionMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.ZusatzfeldDetailView;
 import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -39,13 +38,11 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -431,21 +428,21 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (felddefinitionList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          felddefinitionList.export(
-              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL),
-              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL),
-              VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME),
-              "zusatzfelder", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME);
   }
 }

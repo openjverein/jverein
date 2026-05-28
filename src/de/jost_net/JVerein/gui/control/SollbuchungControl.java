@@ -43,7 +43,6 @@ import de.jost_net.JVerein.gui.menu.SollbuchungPositionMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -1058,24 +1057,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
-  {
-    if (sollbuchungenList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          sollbuchungenList.export(
-              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this),
-              "sollbuchungen", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -1094,6 +1075,24 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
       }
     }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this);
   }
 
   public void deregisterSollbuchungConsumer()

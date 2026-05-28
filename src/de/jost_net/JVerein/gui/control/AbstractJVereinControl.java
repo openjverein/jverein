@@ -3,8 +3,8 @@ package de.jost_net.JVerein.gui.control;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -47,13 +47,13 @@ public abstract class AbstractJVereinControl extends AbstractControl
           try
           {
             getTablePart().export(getTableTitle(), getTableSubtitle(),
-                getTableDateiname(), getTableSettingPrefix(), art);
+                getTableDateiname(), art);
           }
           catch (OperationCanceledException | ApplicationException e)
           {
             throw e;
           }
-          catch (Exception e)
+          catch (RemoteException e)
           {
             Logger.error("Fehler beim Tabellen-Export", e);
             throw new ApplicationException("Fehler beim Tabellen-Export");
@@ -75,38 +75,19 @@ public abstract class AbstractJVereinControl extends AbstractControl
    * 
    * @return
    */
-  protected String getTableTitle()
-  {
-    return "";
-  }
+  abstract protected String getTableTitle();
 
   /**
    * Liefert den Subtitel für die Tabellenreports
    * 
    * @return
    */
-  protected String getTableSubtitle()
-  {
-    return "";
-  }
+  abstract protected String getTableSubtitle();
 
   /**
    * Liefert den Dateinamen für die Tabellenreports
    * 
    * @return
    */
-  protected String getTableDateiname()
-  {
-    return "";
-  }
-
-  /**
-   * Liefert den Settingsprefix für die Tabellenreports
-   * 
-   * @return
-   */
-  protected String getTableSettingPrefix()
-  {
-    return "";
-  }
+  abstract protected String getTableDateiname();
 }

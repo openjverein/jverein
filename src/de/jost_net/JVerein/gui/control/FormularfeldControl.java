@@ -267,4 +267,25 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     // Es gitb keine FormularfeldListe View
     return null;
   }
+
+  @Override
+  protected String getTableTitle()
+  {
+    // Es gitb keine FormularfeldListe View
+    return null;
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    // Es gitb keine FormularfeldListe View
+    return null;
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    // Es gitb keine FormularfeldListe View
+    return null;
+  }
 }

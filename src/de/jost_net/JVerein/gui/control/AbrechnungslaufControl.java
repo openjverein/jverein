@@ -24,6 +24,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.formatter.AbrechnungsmodusFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -38,7 +39,6 @@ import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.AbrechnungslaufDetailView;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
@@ -60,7 +60,6 @@ import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -669,7 +668,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
                       getAbrechnungslauf()),
-                  "abrechnungslauf.buchung", art);
+                  art);
               break;
             case TAB_LASTSCHRIFTEN:
               liste.export(
@@ -682,7 +681,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
                       getAbrechnungslauf()),
-                  "abrechnungslauf.lastschrift", art);
+                  art);
               break;
             case TAB_SOLLBUCHUNGEN:
               liste.export(
@@ -695,7 +694,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
                       getAbrechnungslauf()),
-                  "abrechnungslauf.sollbuchung", art);
+                  art);
               break;
             case TAB_ZUSATZBETRAEGE:
               liste.export(
@@ -708,28 +707,28 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
                       getAbrechnungslauf()),
-                  "abrechnungslauf.zusatzbetrag", art);
+                  art);
               break;
           }
         }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (abrechnungslaufList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          abrechnungslaufList.export(
-              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this),
-              "abrechnungslaeufe", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this);
   }
 
 }

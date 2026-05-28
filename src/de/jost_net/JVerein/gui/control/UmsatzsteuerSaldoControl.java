@@ -287,12 +287,6 @@ public class UmsatzsteuerSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSettingPrefix()
-  {
-    return "umsatzsteuervoranmeldung";
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)

@@ -169,7 +169,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
 
       if (rpt == null)
       {
-        rpt = new Reporter(fos, "", "", 1);
+        rpt = new Reporter(fos, "", "");
       }
       else
       {

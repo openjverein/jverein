@@ -708,12 +708,6 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSettingPrefix()
-  {
-    return "buchungsklassensaldo";
-  }
-
-  @Override
   protected ISaldoExport getAuswertung(String type) throws ApplicationException
   {
     switch (type)

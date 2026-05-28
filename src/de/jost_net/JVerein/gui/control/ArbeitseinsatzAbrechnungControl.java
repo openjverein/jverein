@@ -26,9 +26,9 @@ import org.kapott.hbci.sepa.SepaVersion;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.DBTools.DBTransaction;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.input.ArbeitseinsatzUeberpruefungInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.parts.ZusatzbetragPart;
 import de.jost_net.JVerein.io.AbrechnungSEPA;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -162,7 +162,7 @@ public class ArbeitseinsatzAbrechnungControl extends AbstractAbrechnungControl
                 this),
             VorlageUtil.getName(
                 VorlageTyp.AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME, this),
-            "arbeitseinsatz.abrechnung", art);
+            art);
       }
       catch (OperationCanceledException ex)
       {

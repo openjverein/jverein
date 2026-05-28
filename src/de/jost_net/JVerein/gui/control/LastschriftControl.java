@@ -31,7 +31,6 @@ import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart.ExportArt;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -53,7 +52,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -583,21 +581,21 @@ public class LastschriftControl extends FilterControl implements Savable
     return b;
   }
 
-  public PanelButton exportButton(ExportArt art) throws ApplicationException
+  @Override
+  protected String getTableTitle()
   {
-    if (lastschriftList == null)
-    {
-      throw new ApplicationException(
-          "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-    }
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          lastschriftList.export(
-              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_TITEL, this),
-              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_SUBTITEL, this),
-              VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_DATEINAME, this),
-              "lastschriften", art);
-          GUI.getStatusBar().setSuccessText("Auswertung fertig.");
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+    return VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.LASTSCHRIFTEN_DATEINAME, this);
   }
 }
