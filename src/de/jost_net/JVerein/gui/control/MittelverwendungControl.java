@@ -355,10 +355,6 @@ public class MittelverwendungControl extends AbstractSaldoControl
     zuflussList.addColumn("Summe", SUMME,
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
         Column.ALIGN_RIGHT);
-    // Dummy Spalte, damit Summe nicht am rechten Rand klebt
-    zuflussList.addColumn(" ", " ",
-        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,
-        Column.ALIGN_LEFT);
     zuflussList.removeFeature(FeatureSummary.class);
     return zuflussList;
   }

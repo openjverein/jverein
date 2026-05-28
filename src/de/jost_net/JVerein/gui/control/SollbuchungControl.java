@@ -79,6 +79,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
@@ -417,6 +418,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     mitgliedskontoTree.addColumn("Differenz", "differenz",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mitgliedskontoTree.addColumn(new Column("leer", ""));
+    }
     mitgliedskontoTree.setContextMenu(new MitgliedskontoMenu());
     mitgliedskontoTree.setFormatter(new MitgliedskontoTreeFormatter());
     mitgliedskontoTree.setRememberColWidths(true);
