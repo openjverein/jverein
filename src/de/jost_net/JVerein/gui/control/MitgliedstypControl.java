@@ -155,18 +155,18 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_TITEL, this);
+    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_SUBTITEL, this);
+    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_DATEINAME, this);
+    return VorlageUtil.getName(VorlageTyp.MITGLIEDSTYPEN_DATEINAME);
   }
 }

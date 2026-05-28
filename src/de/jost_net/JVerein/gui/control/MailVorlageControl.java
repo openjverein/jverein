@@ -150,18 +150,18 @@ public class MailVorlageControl extends VorZurueckControl
   @Override
   protected String getTableTitle()
   {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL, this);
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_TITEL);
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL, this);
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_SUBTITEL);
   }
 
   @Override
   protected String getTableDateiname()
   {
-    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME, this);
+    return VorlageUtil.getName(VorlageTyp.MAILVORLAGEN_DATEINAME);
   }
 }
