@@ -149,14 +149,23 @@ public class Reporter implements AutoCloseable
   {
     this(out, subtitle, subtitle, linkerRand, rechterRand, obererRand,
         untererRand, encrypt, getDefaultFormular(Property.FORMULAR_VORDERGRUND),
-        getDefaultFormular(Property.FORMULAR_HINTERGRUND), false);
+        getDefaultFormular(Property.FORMULAR_HINTERGRUND), false, null, null);
   }
 
   public Reporter(OutputStream out, String title, String subtitle,
       float linkerRand, float rechterRand, float obererRand, float untererRand,
       boolean encrypt, Formular vordergrund, Formular hintergrund,
-      boolean querformat) throws DocumentException, IOException
+      boolean querformat, Boolean headerTransparent, Boolean zellenTransparent)
+      throws DocumentException, IOException
   {
+    if (headerTransparent != null)
+    {
+      this.headerTransparent = headerTransparent;
+    }
+    if (zellenTransparent != null)
+    {
+      this.zellenTransparent = zellenTransparent;
+    }
     this.out = out;
     rpt = new Document(querformat ? PageSize.A4.rotate() : PageSize.A4);
     rpt.setMargins(linkerRand, rechterRand, obererRand, untererRand);
@@ -284,9 +293,7 @@ public class Reporter implements AutoCloseable
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color)
   {
-    BaseColor bcolor = headerTransparent ? null : color;
-    headers.add(getDetailCell(text, align, bcolor, true));
-    widths.add(Integer.valueOf(width));
+    addHeaderColumn(text, align, width, color, true);
   }
 
   /**
@@ -296,6 +303,7 @@ public class Reporter implements AutoCloseable
    * @param align
    * @param width
    * @param color
+   * @param silbentrennung
    */
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color, boolean silbentrennung)

@@ -48,6 +48,8 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
@@ -105,6 +107,10 @@ public class TablePartExportDialog extends AbstractDialog<Object>
   private SelectInput hintergrund;
 
   private JVereinTablePart spaltenList;
+
+  private CheckboxInput headerTransparent;
+
+  private CheckboxInput zellenTransparent;
 
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
@@ -245,10 +251,20 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       vordergrund = new FormularInput(FormularArt.HINTERGRUND,
           settings.getString(settingPrefix + "vordergrund", ""));
       vordergrund.setPleaseChoose("Kein Formular");
+      headerTransparent = new CheckboxInput(settings.getBoolean(
+          settingPrefix + "headerTransparent", (Boolean) Einstellungen
+              .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
+      zellenTransparent = new CheckboxInput(settings.getBoolean(
+          settingPrefix + "zellenTransparent", (Boolean) Einstellungen
+              .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
       querformat = new CheckboxInput(
           settings.getBoolean(settingPrefix + "quer", false));
       tabFormular.addLabelPair("Formular Hintergrund", hintergrund);
       tabFormular.addLabelPair("Formular Vordergrund", vordergrund);
+      tabFormular.addLabelPair("Tabellen Header transparent",
+          headerTransparent);
+      tabFormular.addLabelPair("Tabellen Zellen transparent",
+          zellenTransparent);
       tabFormular.addLabelPair("Querformat", querformat);
     }
     else
@@ -375,8 +391,9 @@ public class TablePartExportDialog extends AbstractDialog<Object>
             (Integer) links.getValue(), (Integer) rechts.getValue(),
             (Integer) oben.getValue(), (Integer) unten.getValue(), false,
             (Formular) vordergrund.getValue(),
-            (Formular) hintergrund.getValue(),
-            (Boolean) querformat.getValue());)
+            (Formular) hintergrund.getValue(), (Boolean) querformat.getValue(),
+            (Boolean) headerTransparent.getValue(),
+            (Boolean) zellenTransparent.getValue());)
     {
       @SuppressWarnings("unchecked")
       List<TableColumn> listeAuswahl = spaltenList.getItems();
@@ -466,6 +483,12 @@ public class TablePartExportDialog extends AbstractDialog<Object>
       settings.setAttribute(settingPrefix + "vordergrund",
           vordergrund.getValue() == null ? null
               : ((Formular) vordergrund.getValue()).getID());
+
+      settings.setAttribute(settingPrefix + "headerTransparent",
+          (Boolean) headerTransparent.getValue());
+      settings.setAttribute(settingPrefix + "zellenTransparent",
+          (Boolean) zellenTransparent.getValue());
+
       settings.setAttribute(settingPrefix + "quer",
           (Boolean) querformat.getValue());
     }
