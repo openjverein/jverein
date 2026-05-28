@@ -42,7 +42,7 @@ jobs:
 
     # Update tag
     - name: Tag repo
-      uses: richardsimko/update-tag@v1
+      uses: richardsimko/update-tag@v2
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
       env:

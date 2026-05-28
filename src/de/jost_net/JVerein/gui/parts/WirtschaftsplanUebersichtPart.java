@@ -77,7 +77,8 @@ public class WirtschaftsplanUebersichtPart implements Part
 
     SimpleContainer bezeichnungContainer = new SimpleContainer(
         baseData.getComposite());
-    bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung());
+    bezeichnung = new TextInput(control.getWirtschaftsplan().getBezeichung(),
+        200);
     bezeichnungContainer.addLabelPair("Bezeichnung", bezeichnung);
 
     SimpleContainer vonContainer = new SimpleContainer(baseData.getComposite());

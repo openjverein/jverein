@@ -261,7 +261,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return scriptName;
     }
-    scriptName = new TextInput(getLesefeld().getBezeichnung());
+    scriptName = new TextInput(getLesefeld().getBezeichnung(), 50);
     scriptName.setMandatory(true);
     return scriptName;
   }
@@ -279,7 +279,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     {
       return scriptCode;
     }
-    scriptCode = new TextAreaInput(getLesefeld().getScript());
+    scriptCode = new TextAreaInput(getLesefeld().getScript(), 1000);
     scriptCode.setMandatory(true);
     scriptCode.setHeight(200);
     return scriptCode;
