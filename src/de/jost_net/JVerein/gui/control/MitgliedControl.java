@@ -2178,7 +2178,6 @@ public class MitgliedControl extends FilterControl implements Savable
         null, false, "document-new.png");
   }
 
-  // TODO nötig?
   @Override
   public JVereinTablePart getTablePart() throws RemoteException
   {
@@ -3642,7 +3641,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     else
     {
-      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME);
+      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME, this);
     }
   }
 }
