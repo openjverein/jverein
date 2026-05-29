@@ -490,6 +490,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
     return (Date) getAttribute("versanddatum");
   }
 
+  @Override
   public void setZahler(Mitglied zahler) throws RemoteException
   {
     setAttribute("zahler", zahler);

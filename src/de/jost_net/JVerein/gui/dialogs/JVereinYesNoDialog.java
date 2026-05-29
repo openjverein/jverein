@@ -31,6 +31,7 @@ public class JVereinYesNoDialog extends YesNoDialog
     super(position);
   }
 
+  @Override
   protected Shell createShell(Shell parent, int flags)
   {
     Shell activeShell = parent.getDisplay().getActiveShell();

@@ -57,7 +57,7 @@ public class BuchungDetailView extends AbstractDetailView
     control = new BuchungsControl(this, art);
 
     final boolean editable = control.isBuchungEditable();
-    final boolean speicherung = control.getBuchung().getSpeicherung();
+    final boolean splitbuchung = control.getBuchung().isSplitbuchung();
 
     part = new BuchungPart(control, this, !editable);
     part.paint(this.getParent());
@@ -75,7 +75,7 @@ public class BuchungDetailView extends AbstractDetailView
         control.buchungSpeichern();
 
         // Bei Splitbuchungen nach dem Speichern zurück zu Splitübersicht
-        if (!speicherung)
+        if (splitbuchung)
         {
           GUI.startPreviousView();
         }
@@ -94,7 +94,7 @@ public class BuchungDetailView extends AbstractDetailView
         control.buchungSpeichern();
 
         // Bei Splitbuchungen neue Splitbuchung
-        if (!speicherung)
+        if (splitbuchung)
         {
           if (Math.abs(SplitbuchungsContainer.getSumme(SplitbuchungTyp.HAUPT)
               .doubleValue()
@@ -138,7 +138,7 @@ public class BuchungDetailView extends AbstractDetailView
     // direkt gespeichert wird.
     try
     {
-      if (control.getBuchung().getSpeicherung())
+      if (!control.getBuchung().isSplitbuchung())
       {
         super.unbind();
       }

@@ -53,7 +53,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = 1L;
 
-  private transient boolean speicherung = true;
+  private transient boolean splittbuchung = false;
 
   private transient boolean delete = false;
 
@@ -189,7 +189,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
       }
     }
 
-    if (!getSpeicherung() && getBuchungsart() == null)
+    if (isSplitbuchung() && getBuchungsart() == null)
     {
       throw new ApplicationException("Buchungsart fehlt bei Splitbuchung!");
     }
@@ -882,15 +882,15 @@ public class BuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setSpeicherung(boolean speicherung)
+  public void setSplitbuchung(boolean splitbuchung)
   {
-    this.speicherung = speicherung;
+    this.splittbuchung = splitbuchung;
   }
 
   @Override
-  public boolean getSpeicherung()
+  public boolean isSplitbuchung()
   {
-    return speicherung;
+    return splittbuchung;
   }
 
   @Override
@@ -922,6 +922,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
     super.delete();
   }
 
+  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");

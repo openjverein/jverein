@@ -237,7 +237,7 @@ public class LehrgangControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     try
     {

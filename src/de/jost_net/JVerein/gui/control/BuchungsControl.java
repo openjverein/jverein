@@ -914,7 +914,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
-    if (!getBuchung().getSpeicherung())
+    if (getBuchung().isSplitbuchung())
     {
       buchungsart.setMandatory(true);
     }
@@ -961,7 +961,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
     buchungsklasse = new BuchungsklasseInput().getBuchungsklasseInput(
         buchungsklasse, getBuchung().getBuchungsklasse());
-    if (!getBuchung().getSpeicherung() && (Boolean) Einstellungen
+    if (getBuchung().isSplitbuchung() && (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
       buchungsklasse.setMandatory(true);
@@ -1044,7 +1044,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
               b.setDatum(su.getAusfuehrungsdatum());
               b.setKonto(master.getKonto());
               b.setName(ssub.getGegenkontoName());
-              b.setSpeicherung(true);
+              b.setSplitbuchung(false);
               b.setSplitId(master.getSplitId());
               b.setSplitTyp(SplitbuchungTyp.SPLIT);
               b.setZweck(ssub.getZweck());
@@ -1316,7 +1316,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
       Buchung b = (Buchung) prepareStore();
 
-      if (b.getSpeicherung())
+      if (!b.isSplitbuchung())
       {
         b.store();
         getID().setValue(b.getID());
@@ -1778,7 +1778,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           return editable = false;
         }
         // Aufruf einer Splitbuchung aus Vor Zurueck
-        if (getBuchung().getSpeicherung() && getBuchung().getSplitId() != null)
+        if (!getBuchung().isSplitbuchung() && getBuchung().getSplitId() != null)
         {
           GUI.getStatusBar().setErrorText(
               "Buchung kann nicht bearbeitet werden. Sie ist einer Splitbuchung zugeordnet.");

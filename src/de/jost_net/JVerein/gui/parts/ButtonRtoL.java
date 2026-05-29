@@ -55,6 +55,7 @@ public class ButtonRtoL extends Button implements Part
   /**
    * @see de.willuhn.jameica.gui.Part#paint(org.eclipse.swt.widgets.Composite)
    */
+  @Override
   public void paint(Composite parent) throws RemoteException
   {
     super.paint(parent);

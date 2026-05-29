@@ -87,7 +87,7 @@ public class FormularControl extends FormularPartControl implements Savable
     super(view, formular);
   }
 
-  public Formular getFormular()
+  private Formular getFormular()
   {
     if (formular != null)
     {

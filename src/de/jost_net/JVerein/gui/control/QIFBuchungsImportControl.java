@@ -1052,7 +1052,7 @@ public class QIFBuchungsImportControl extends AbstractControl
       {
         throw new ApplicationException("Betrag fehlt!");
       }
-      if (!getSpeicherung() && getBuchungsart() == null)
+      if (isSplitbuchung() && getBuchungsart() == null)
       {
         throw new ApplicationException("Buchungsart fehlt bei Splitbuchung!");
       }

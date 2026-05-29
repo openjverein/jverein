@@ -116,6 +116,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 
   public void setIBAN(String iban) throws RemoteException;
 
+  @Override
   public Double getIstSumme() throws RemoteException;
 
   public Zahlungsweg getZahlungsweg() throws RemoteException;

@@ -165,7 +165,7 @@ public class ProjektControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (projektList == null)
     {

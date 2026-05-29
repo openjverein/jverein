@@ -28,6 +28,7 @@ public class IBANFormatter implements Formatter
    *          die IBAN.
    * @return die formatierte Darstellung.
    */
+  @Override
   public String format(Object o)
   {
     if (!(o instanceof String))

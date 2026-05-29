@@ -142,7 +142,7 @@ public class LastschriftControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     if (lastschriftList == null)
     {
@@ -245,7 +245,7 @@ public class LastschriftControl extends FilterControl implements Savable
     return lastschriften;
   }
 
-  public Lastschrift getLastschrift()
+  private Lastschrift getLastschrift()
   {
     if (lastschrift != null)
     {

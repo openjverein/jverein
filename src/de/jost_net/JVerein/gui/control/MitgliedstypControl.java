@@ -53,7 +53,7 @@ public class MitgliedstypControl extends VorZurueckControl implements Savable
     super(view);
   }
 
-  public Mitgliedstyp getMitgliedstyp()
+  private Mitgliedstyp getMitgliedstyp()
   {
     if (mitgliedstyp != null)
     {

@@ -257,7 +257,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
     try
     {
@@ -279,7 +279,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @SuppressWarnings("unchecked")
-  public GenericIterator<Rechnung> getRechnungIterator() throws RemoteException
+  private GenericIterator<Rechnung> getRechnungIterator() throws RemoteException
   {
     DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
         .createList(Rechnung.class);

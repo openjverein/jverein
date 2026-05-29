@@ -762,7 +762,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
    * @return Die Liste der Einträge
    * @throws RemoteException
    */
-  public ArrayList<PseudoDBObject> getMittelverwendungSaldoList()
+  private ArrayList<PseudoDBObject> getMittelverwendungSaldoList()
       throws RemoteException
   {
     ExtendedDBIterator<PseudoDBObject> it = getIterator();

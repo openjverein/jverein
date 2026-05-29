@@ -24,7 +24,6 @@ import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.UmsatzMessageConsumer;
 import de.jost_net.JVerein.rmi.JVereinDBService;
 import de.jost_net.JVerein.server.JVereinDBServiceImpl;
-import de.jost_net.JVerein.util.MemoryAnalyzer;
 import de.willuhn.jameica.gui.extension.ExtensionRegistry;
 import de.willuhn.jameica.messaging.BootMessage;
 import de.willuhn.jameica.messaging.LookupService;
@@ -61,11 +60,6 @@ public class JVereinPlugin extends AbstractPlugin
     super();
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
-    if (settings.getBoolean("memlogger", false))
-    {
-      MemoryAnalyzer mem = new MemoryAnalyzer();
-      mem.start();
-    }
   }
 
   /**

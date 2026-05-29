@@ -52,9 +52,6 @@ import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 {
-
-  private de.willuhn.jameica.system.Settings settings;
-
   private SelectInput jahr;
 
   private TreePart spbTree;
@@ -62,8 +59,6 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
   public SpendenbescheinigungAutoNeuControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public SelectInput getJahr()
@@ -96,14 +91,6 @@ public class SpendenbescheinigungAutoNeuControl extends AbstractControl
 
     });
     return jahr;
-  }
-
-  /**
-   * This method stores the project using the current values.
-   */
-  public void handleStore()
-  {
-    //
   }
 
   public Button getSpendenbescheinigungErstellenButton()

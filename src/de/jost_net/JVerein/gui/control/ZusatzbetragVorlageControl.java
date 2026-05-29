@@ -96,7 +96,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     super(view);
   }
 
-  public ZusatzbetragVorlage getZusatzbetragVorlage()
+  private ZusatzbetragVorlage getZusatzbetragVorlage()
   {
     if (zbv != null)
     {
@@ -252,12 +252,7 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
     return buchungsklasse;
   }
 
-  public boolean isBuchungsklasseActive()
-  {
-    return buchungsklasse != null;
-  }
-
-  public Long getSelectedBuchungsKlasseId() throws ApplicationException
+  private Long getSelectedBuchungsKlasseId() throws ApplicationException
   {
     try
     {

@@ -511,6 +511,7 @@ public class JVereinDateInput implements Input
     /**
      * @see de.willuhn.jameica.gui.dialogs.CalendarDialog#paint(org.eclipse.swt.widgets.Composite)
      */
+    @Override
     protected void paint(Composite parent) throws Exception
     {
       try
@@ -524,6 +525,7 @@ public class JVereinDateInput implements Input
       super.paint(parent);
     }
 
+    @Override
     protected Shell createShell(Shell parent, int flags)
     {
       Shell activeShell = parent.getDisplay().getActiveShell();

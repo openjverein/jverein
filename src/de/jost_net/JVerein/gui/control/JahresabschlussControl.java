@@ -93,7 +93,7 @@ public class JahresabschlussControl extends KontensaldoControl
     summensaldo = false;
   }
 
-  public Jahresabschluss getJahresabschluss()
+  private Jahresabschluss getJahresabschluss()
       throws RemoteException, ParseException
   {
     if (jahresabschluss != null)

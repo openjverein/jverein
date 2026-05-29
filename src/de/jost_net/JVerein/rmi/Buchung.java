@@ -155,9 +155,9 @@ public interface Buchung extends JVereinDBObject
    *          false: nein, bei Splitbuchungen werden die Datensätze zunächst in
    *          einer ArrayList gehalten und später in die Datenbank geschrieben.
    */
-  public void setSpeicherung(boolean speicherung) throws RemoteException;
+  public void setSplitbuchung(boolean speicherung) throws RemoteException;
 
-  public boolean getSpeicherung() throws RemoteException;
+  public boolean isSplitbuchung() throws RemoteException;
 
   public void setDelete(boolean delete) throws RemoteException;
 

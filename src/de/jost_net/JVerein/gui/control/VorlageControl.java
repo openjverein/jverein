@@ -60,7 +60,7 @@ public class VorlageControl extends FilterControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Vorlage getVorlage() throws RemoteException, ApplicationException
+  public Vorlage getVorlage() throws ApplicationException
   {
     if (vorlage != null)
     {

@@ -121,7 +121,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     settings.setStoreWhenRead(true);
   }
 
-  public Kursteilnehmer getKursteilnehmer()
+  private Kursteilnehmer getKursteilnehmer()
   {
     if (ktn != null)
     {
@@ -425,7 +425,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  protected void TabRefresh()
   {
 
     try

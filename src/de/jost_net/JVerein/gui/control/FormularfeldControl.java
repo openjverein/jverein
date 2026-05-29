@@ -64,7 +64,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     super(view, formular);
   }
 
-  public Formularfeld getFormularfeld()
+  private Formularfeld getFormularfeld()
   {
     if (formularfeld != null)
     {
@@ -74,7 +74,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     return formularfeld;
   }
 
-  public Formular getFormular()
+  private Formular getFormular()
   {
     return formular;
   }
