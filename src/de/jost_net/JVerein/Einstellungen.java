@@ -233,7 +233,9 @@ public class Einstellungen
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
     SUMMENANLAGENKONTO("summenanlagenkonto", Boolean.class, "0"),
     LEERESPALTE("leerespalte", Boolean.class,
-        System.getProperty("os.name").indexOf("windows") != -1 ? "0" : "1"),
+        System.getProperty("os.name").toLowerCase().indexOf("windows") != -1
+            ? "0"
+            : "1"),
 
     // Felder unten
     ALTERSMODEL("altermodel", Integer.class,
