@@ -1,0 +1,979 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ *
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.control;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.JVerein.gui.formatter.IBANFormatter;
+import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
+import de.jost_net.JVerein.gui.input.BICInput;
+import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.gui.input.IBANInput;
+import de.jost_net.JVerein.gui.input.PersonenartInput;
+import de.jost_net.JVerein.gui.menu.RechnungMenu;
+import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
+import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.SollbuchungPositionListPart;
+import de.jost_net.JVerein.gui.view.MahnungMailView;
+import de.jost_net.JVerein.gui.view.RechnungDetailView;
+import de.jost_net.JVerein.gui.view.RechnungMailView;
+import de.jost_net.JVerein.io.Rechnungsausgabe;
+import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.Differenz;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.MailAuswahl;
+import de.jost_net.JVerein.keys.SuchVersand;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.keys.Zahlungsweg;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Rechnung;
+import de.jost_net.JVerein.rmi.Sollbuchung;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
+import de.jost_net.JVerein.util.Datum;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.JVerein.util.StringTool;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class RechnungControl extends DruckMailControl implements Savable
+{
+
+  private BetragSummaryTablePart rechnungList;
+
+  private Rechnung rechnung;
+
+  private DateInput rechnungsDatum;
+
+  private TextInput mitglied;
+
+  private DecimalInput betrag;
+
+  private JVereinTablePart buchungList;
+
+  private TextInput anrede;
+
+  private TextInput titel;
+
+  private TextInput name;
+
+  private TextInput vorname;
+
+  private TextInput strasse;
+
+  private TextInput adressierungszusatz;
+
+  private TextInput ort;
+
+  private TextInput plz;
+
+  private TextInput staat;
+
+  private GeschlechtInput geschlecht;
+
+  private FormularInput rechnungFormular;
+
+  private TextInput nummer;
+
+  private IBANInput iban;
+
+  private BICInput bic;
+
+  private TextInput mandatid;
+
+  private DateInput mandatdatum;
+
+  private TextInput personenart;
+
+  private TextInput zahlungsweg;
+
+  private TextInput leitwegID;
+
+  private TextAreaInput kommentar;
+
+  private DateInput versanddatum;
+
+  private TextInput zahler;
+
+  private TextInput rechnungstext;
+
+  private DecimalInput erstattungsbetrag;
+
+  public enum TYP
+  {
+    RECHNUNG,
+    MAHNUNG
+  }
+
+  public RechnungControl(AbstractView view)
+  {
+    super(view);
+  }
+
+  @Override
+  public BetragSummaryTablePart getTablePart()
+      throws RemoteException, ApplicationException
+  {
+    if (rechnungList != null)
+    {
+      return rechnungList;
+    }
+    GenericIterator<Rechnung> rechnungen = getRechnungIterator();
+    rechnungList = new BetragSummaryTablePart(rechnungen, null);
+    rechnungList.addColumn("Nr", "id-int");
+    rechnungList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    rechnungList.addColumn("Rechnungsdatum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    rechnungList.addColumn("Mitglied", "mitglied");
+    rechnungList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Ist", "ist",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Differenz", "differenz",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    rechnungList.addColumn("Zahlungsweg", "zahlungsweg",
+        new ZahlungswegFormatter());
+    rechnungList.addColumn("Rechnungstext", "rechnungstext");
+    rechnungList.addColumn("Referenz Rechnung", "refrechnung");
+    rechnungList.addColumn("Erstattungsbetrag", "erstattungsbetrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+
+    rechnungList.setContextMenu(new RechnungMenu(rechnungList));
+    rechnungList.setMulti(true);
+    rechnungList
+        .setAction(new EditAction(RechnungDetailView.class, rechnungList));
+    VorZurueckControl.setObjektListe(null, null);
+    return rechnungList;
+  }
+
+  public Button getStartRechnungButton(final Object currentObject)
+  {
+    Button button = new Button("Starten", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          saveFilterSettings();
+          new Rechnungsausgabe(TYP.RECHNUNG, null).aufbereiten(
+              getRechnungen(currentObject),
+              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+              getTxtString(), true, false, (Boolean) versand.getValue());
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler bei der Rechnung Ausgabe.", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
+      }
+    }, null, true, "walking.png");
+    return button;
+  }
+
+  public Button getStartMahnungButton(final Object currentObject)
+  {
+    Button button = new Button("Starten", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          saveFilterSettings();
+          new Rechnungsausgabe(TYP.MAHNUNG,
+              (Formular) RechnungControl.this.getFormular(null).getValue())
+                  .aufbereiten(getRechnungen(currentObject),
+                      (Ausgabeart) getAusgabeart().getValue(),
+                      getBetreffString(), getTxtString(), true, false, false);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler bei der Mahnung Ausgabe.", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
+      }
+    }, null, true, "walking.png");
+    return button;
+  }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    try
+    {
+      if (rechnungList != null)
+      {
+        rechnungList.removeAll();
+        GenericIterator<Rechnung> rechnungen = getRechnungIterator();
+        while (rechnungen.hasNext())
+        {
+          rechnungList.addItem(rechnungen.next());
+        }
+        rechnungList.sort();
+      }
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private GenericIterator<Rechnung> getRechnungIterator()
+      throws RemoteException, ApplicationException
+  {
+    DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
+        .createList(Rechnung.class);
+
+    boolean joinMitglied = false;
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
+    {
+      Object value = entry.getValue();
+
+      switch (entry.getKey())
+      {
+        case VERSAND:
+          switch ((SuchVersand) value)
+          {
+            case VERSAND:
+              rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
+              break;
+            case NICHT_VERSAND:
+              rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
+              break;
+          }
+          break;
+        case DATUM_VON:
+          rechnungenIt.addFilter("rechnung.datum >= ? ", value);
+          break;
+        case DATUM_BIS:
+          rechnungenIt.addFilter("rechnung.datum <= ? ", value);
+          break;
+        case NAME:
+          joinMitglied = true;
+          rechnungenIt.addFilter(
+              "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
+              "%" + ((String) value).toLowerCase() + "%",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        case MAIL:
+          switch ((MailAuswahl) value)
+          {
+            case OHNE:
+              joinMitglied = true;
+              rechnungenIt.addFilter(
+                  "(mitglied.email is null or length(mitglied.email) = 0)");
+              break;
+            case MIT:
+              joinMitglied = true;
+              rechnungenIt.addFilter(
+                  "(mitglied.email is  not null and length(mitglied.email) > 0)");
+          }
+          break;
+        case OHNE_ABBUCHER:
+          if ((boolean) value)
+          {
+            rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
+                Zahlungsweg.BASISLASTSCHRIFT);
+          }
+          break;
+        case DIFFERENZ:
+          Double limit = (Double) getFilter().get(Filter.DIFFERENZ_LIMIT);
+          if (limit == null)
+          {
+            limit = 0.005d;
+          }
+          // Es ist egal ob der Betrag positiv oder negativ eingetragen
+          // wurde
+          limit = Math.abs(limit);
+
+          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+              Sollbuchung.TABLE_NAME);
+          it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
+          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+          it.leftJoin(
+              "(SELECT sum(COALESCE((betrag),0)) AS ist,"
+                  + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
+                  + Buchung.T_SOLLBUCHUNG + ") AS buchung",
+              Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+
+          if (value == Differenz.FEHLBETRAG)
+          {
+            it.addHaving("dif < ?", -limit);
+          }
+          else
+          {
+            it.addHaving("dif > ?", limit);
+          }
+          it.addGroupBy(Sollbuchung.T_RECHNUNG);
+          ArrayList<String> diffIds = new ArrayList<>();
+          while (it.hasNext())
+          {
+            diffIds.add(String.valueOf(it.next().getAttribute("rid")));
+          }
+          if (diffIds.size() == 0)
+          {
+            return PseudoIterator.fromArray(new GenericObject[] {});
+          }
+          rechnungenIt
+              .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
+          break;
+        case DIFFERENZ_LIMIT:
+          // Wird oben getestet
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
+      }
+    }
+    if (joinMitglied)
+    {
+      rechnungenIt.join("mitglied");
+      rechnungenIt.addFilter("mitglied.id = rechnung.mitglied");
+    }
+
+    return rechnungenIt;
+  }
+
+  @Override
+  public String getInfoText(Object selection) throws RemoteException
+  {
+    Rechnung[] rechnungen = null;
+    String text = "";
+
+    if (selection instanceof Rechnung)
+    {
+      rechnungen = new Rechnung[] { (Rechnung) selection };
+    }
+    else if (selection instanceof Rechnung[])
+    {
+      rechnungen = (Rechnung[]) selection;
+    }
+    else
+    {
+      return "";
+    }
+
+    if (rechnungen != null)
+    {
+      text = "Es wurden " + rechnungen.length + " Rechnungen ausgewählt";
+      String fehlen = "";
+      for (Rechnung re : rechnungen)
+      {
+        Mitglied m = re.getMitglied();
+        if (m != null && (m.getEmail() == null || m.getEmail().isEmpty()))
+        {
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
+        }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+    }
+    return text;
+  }
+
+  private Rechnung getRechnung()
+  {
+    if (rechnung != null)
+    {
+      return rechnung;
+    }
+    rechnung = (Rechnung) getCurrentObject();
+    return rechnung;
+  }
+
+  public DateInput getRechnungsdatum() throws RemoteException
+  {
+    if (rechnungsDatum != null)
+    {
+      return rechnungsDatum;
+    }
+
+    Date d = getRechnung().getDatum();
+    if (d.equals(Einstellungen.NODATE))
+    {
+      d = null;
+    }
+    rechnungsDatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    rechnungsDatum.setName("Rechnungsdatum");
+    rechnungsDatum.disable();
+    return rechnungsDatum;
+  }
+
+  public TextInput getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    mitglied = new TextInput(getRechnung().getMitglied().getName() + ", "
+        + getRechnung().getMitglied().getVorname());
+    mitglied.setName("Mitglied");
+    mitglied.disable();
+    return mitglied;
+  }
+
+  public FormularInput getRechnungFormular() throws RemoteException
+  {
+    if (rechnungFormular != null)
+    {
+      return rechnungFormular;
+    }
+
+    rechnungFormular = new FormularInput(FormularArt.RECHNUNG,
+        getRechnung().getFormular().getID());
+    rechnungFormular.setName("Formular");
+    return rechnungFormular;
+  }
+
+  public TextInput getNummer() throws RemoteException
+  {
+    if (nummer != null)
+    {
+      return nummer;
+    }
+
+    nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
+        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
+    nummer.setName("Rechnungsnummer");
+    nummer.disable();
+
+    return nummer;
+  }
+
+  public DecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+
+    betrag = new DecimalInput(getRechnung().getBetrag(),
+        Einstellungen.DECIMALFORMAT);
+    betrag.setName("Betrag");
+    betrag.disable();
+    return betrag;
+  }
+
+  public TextInput getAnrede() throws RemoteException
+  {
+    if (anrede != null)
+    {
+      return anrede;
+    }
+
+    anrede = new TextInput(getRechnung().getAnrede());
+    anrede.setName("Anrede");
+    anrede.disable();
+    return anrede;
+  }
+
+  public TextInput getTitel() throws RemoteException
+  {
+    if (titel != null)
+    {
+      return titel;
+    }
+
+    titel = new TextInput(getRechnung().getTitel());
+    titel.setName("Titel");
+    titel.disable();
+    return titel;
+  }
+
+  public TextInput getName() throws RemoteException
+  {
+    if (name != null)
+    {
+      return name;
+    }
+
+    name = new TextInput(getRechnung().getName());
+    name.setName("Name");
+    name.disable();
+    return name;
+  }
+
+  public TextInput getVorname() throws RemoteException
+  {
+    if (vorname != null)
+    {
+      return vorname;
+    }
+
+    vorname = new TextInput(getRechnung().getVorname());
+    vorname.setName("Vorname");
+    vorname.disable();
+    return vorname;
+  }
+
+  public TextInput getStrasse() throws RemoteException
+  {
+    if (strasse != null)
+    {
+      return strasse;
+    }
+
+    strasse = new TextInput(getRechnung().getStrasse());
+    strasse.setName("Strasse");
+    strasse.disable();
+    return strasse;
+  }
+
+  public TextInput getAdressierungszusatz() throws RemoteException
+  {
+    if (adressierungszusatz != null)
+    {
+      return adressierungszusatz;
+    }
+
+    adressierungszusatz = new TextInput(getRechnung().getAdressierungszusatz());
+    adressierungszusatz.setName("Adressierungszusatz");
+    adressierungszusatz.disable();
+    return adressierungszusatz;
+  }
+
+  public TextInput getOrt() throws RemoteException
+  {
+    if (ort != null)
+    {
+      return ort;
+    }
+
+    ort = new TextInput(getRechnung().getOrt());
+    ort.setName("Ort");
+    ort.disable();
+    return ort;
+  }
+
+  public TextInput getPlz() throws RemoteException
+  {
+    if (plz != null)
+    {
+      return plz;
+    }
+
+    plz = new TextInput(getRechnung().getPlz());
+    plz.setName("Plz");
+    plz.disable();
+    return plz;
+  }
+
+  public TextInput getStaat() throws RemoteException
+  {
+    if (staat != null)
+    {
+      return staat;
+    }
+
+    staat = new TextInput(getRechnung().getStaat());
+    staat.setName("Staat");
+    staat.disable();
+    return staat;
+  }
+
+  public GeschlechtInput getGeschlecht() throws RemoteException
+  {
+    if (geschlecht != null)
+    {
+      return geschlecht;
+    }
+
+    geschlecht = new GeschlechtInput(getRechnung().getGeschlecht());
+    geschlecht.setName("Geschlecht");
+    geschlecht.disable();
+    return geschlecht;
+  }
+
+  public TextInput getPersonenart() throws RemoteException
+  {
+    if (personenart != null)
+    {
+      return personenart;
+    }
+
+    personenart = new TextInput(
+        getRechnung().getPersonenart().equalsIgnoreCase("n")
+            ? PersonenartInput.NATUERLICHE_PERSON
+            : PersonenartInput.JURISTISCHE_PERSON);
+    personenart.setName("Personenart");
+    personenart.disable();
+    return personenart;
+  }
+
+  public DateInput getMandatdatum() throws RemoteException
+  {
+    if (mandatdatum != null)
+    {
+      return mandatdatum;
+    }
+
+    Date d = getRechnung().getMandatDatum();
+
+    mandatdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    mandatdatum.setName("Mandatdatum");
+    mandatdatum.disable();
+    return mandatdatum;
+  }
+
+  public TextInput getMandatid() throws RemoteException
+  {
+    if (mandatid != null)
+    {
+      return mandatid;
+    }
+
+    mandatid = new TextInput(getRechnung().getMandatID());
+    mandatid.setName("Mandatid");
+    mandatid.disable();
+    return mandatid;
+  }
+
+  public BICInput getBic() throws RemoteException
+  {
+    if (bic != null)
+    {
+      return bic;
+    }
+
+    bic = new BICInput(getRechnung().getBIC());
+    bic.setName("BIC");
+    bic.disable();
+    return bic;
+  }
+
+  public IBANInput getIban() throws RemoteException
+  {
+    if (iban != null)
+    {
+      return iban;
+    }
+
+    iban = new IBANInput(new IBANFormatter().format(getRechnung().getIBAN()),
+        getBic());
+    iban.setName("IBAN");
+    iban.disable();
+    return iban;
+  }
+
+  public TextInput getLeitwegID() throws RemoteException
+  {
+    if (leitwegID != null)
+    {
+      return leitwegID;
+    }
+    leitwegID = new TextInput(getRechnung().getLeitwegID());
+    leitwegID.setName("LeitwegID");
+    leitwegID.disable();
+    return leitwegID;
+  }
+
+  public DateInput getVersanddatum() throws RemoteException
+  {
+    if (versanddatum != null)
+    {
+      return versanddatum;
+    }
+    versanddatum = new DateInput(getRechnung().getVersanddatum());
+    return versanddatum;
+  }
+
+  public JVereinTablePart getSollbuchungPositionListPart()
+      throws RemoteException
+  {
+    if (buchungList != null)
+    {
+      return buchungList;
+    }
+    buchungList = new SollbuchungPositionListPart(
+        getRechnung().getSollbuchungPositionList(), null);
+    return buchungList;
+  }
+
+  public TextInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+
+    zahlungsweg = new TextInput(getRechnung().getZahlungsweg().getText());
+    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.disable();
+    return zahlungsweg;
+  }
+
+  public TextAreaInput getKommentar() throws RemoteException
+  {
+    if (kommentar != null)
+    {
+      return kommentar;
+    }
+
+    kommentar = new TextAreaInput(getRechnung().getKommentar(), 1024);
+    kommentar.setName("Kommentar");
+    kommentar.setHeight(50);
+    return kommentar;
+  }
+
+  public TextInput getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+
+    zahler = new TextInput(getRechnung().getZahler().getName() + ", "
+        + getRechnung().getZahler().getVorname());
+    zahler.setName("Zahler");
+    zahler.disable();
+    return zahler;
+  }
+
+  public TextInput getRechnungstext() throws RemoteException
+  {
+    if (rechnungstext != null)
+    {
+      return rechnungstext;
+    }
+    rechnungstext = new TextInput(getRechnung().getRechnungstext());
+    rechnungstext.setName("Rechnungstext");
+    rechnungstext.disable();
+    return rechnungstext;
+  }
+
+  public DecimalInput getErstattungsbetrag() throws RemoteException
+  {
+    if (erstattungsbetrag != null)
+    {
+      return erstattungsbetrag;
+    }
+
+    erstattungsbetrag = new DecimalInput(getRechnung().getErstattungsbetrag(),
+        Einstellungen.DECIMALFORMAT);
+    erstattungsbetrag.setName("Erstattungsbetrag");
+    erstattungsbetrag.disable();
+    return erstattungsbetrag;
+  }
+
+  public ButtonRtoL getRechnungDruckUndMailButton()
+  {
+    return new ButtonRtoL("Druck und Mail",
+        context -> GUI.startView(RechnungMailView.class,
+            new Rechnung[] { getRechnung() }),
+        getRechnung(), false, "document-print.png");
+  }
+
+  public ButtonRtoL getMahnungDruckUndMailButton()
+  {
+    return new ButtonRtoL("Mahnung Druck und Mail",
+        context -> GUI.startView(MahnungMailView.class,
+            new Rechnung[] { getRechnung() }),
+        getRechnung(), false, "document-print.png");
+  }
+
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Rechnung re = getRechnung();
+    re.setFormular((Formular) getRechnungFormular().getValue());
+    re.setKommentar((String) getKommentar().getValue());
+    re.setVersanddatum((Date) getVersanddatum().getValue());
+    return re;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler bei speichern der Rechnung";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private ArrayList<Rechnung> getRechnungen(Object currentObject)
+      throws RemoteException, ApplicationException
+  {
+    if (currentObject instanceof Rechnung)
+    {
+      currentObject = (new Rechnung[] { (Rechnung) currentObject });
+    }
+    if (currentObject instanceof Rechnung[])
+    {
+      return new ArrayList<Rechnung>(Arrays.asList((Rechnung[]) currentObject));
+    }
+
+    ArrayList<Rechnung> rechn = (ArrayList<Rechnung>) PseudoIterator
+        .asList(getRechnungIterator());
+
+    if (rechn == null || rechn.size() == 0)
+    {
+      throw new ApplicationException("Keine passende Rechnung gefunden.");
+    }
+    return rechn;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+    for (Rechnung r : getRechnungen(object))
+    {
+      Mitglied m = r.getZahler();
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      String dokument = "Rechnung " + r.getID() + " vom "
+          + Datum.formatDate(r.getDatum()) + " über "
+          + Einstellungen.DECIMALFORMAT.format(r.getBetrag())
+          + "€ und Fehlbetrag " + Einstellungen.DECIMALFORMAT
+              .format((r.getBetrag() - r.getIstSumme()))
+          + "€";
+      liste.add(new DruckMailEmpfaengerEntry(dokument, mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Rechnung hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Rechnungen haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public Map<Mitglied, Object> getDruckMailList()
+      throws RemoteException, ApplicationException
+  {
+    Map<Mitglied, Object> map = new HashMap<>();
+    ArrayList<Rechnung> rechnungen = getRechnungen(
+        this.view.getCurrentObject());
+    for (Rechnung r : rechnungen)
+    {
+      if (r.getZahler() != null)
+      {
+        map.put(r.getZahler(), r);
+      }
+    }
+    return map;
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+
+        new TabelleSpaltenAuswahlDialog(getSollbuchungPositionListPart())
+            .open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.RECHNUNGEN_DATEINAME, this);
+  }
+}

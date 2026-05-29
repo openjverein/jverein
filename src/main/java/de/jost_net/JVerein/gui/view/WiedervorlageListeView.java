@@ -1,0 +1,96 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.JVerein.gui.view;
+
+import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.NewAction;
+import de.jost_net.JVerein.gui.control.WiedervorlageControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.rmi.Wiedervorlage;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.SimpleContainer;
+
+public class WiedervorlageListeView extends AbstractView
+{
+
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Wiedervorlagen");
+
+    final WiedervorlageControl control = new WiedervorlageControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Filter");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getFilterInput(Filter.NAME));
+    left.addLabelPair("Vermerk", control.getFilterInput(Filter.VERMERK));
+
+    SimpleContainer middle = new SimpleContainer(cl.getComposite());
+    Input von = control.getFilterInput(Filter.DATUM_VON);
+    middle.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_BIS);
+    middle.addInput(bis);
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    Input erledigungVon = control.getFilterInput(Filter.DATUM_ERLEDIGUNG_VON);
+    right.addInput(erledigungVon);
+    Input erledigungBis = control.getFilterInput(Filter.DATUM_ERLEDIGUNG_BIS);
+    right.addInput(erledigungBis);
+    right.addLabelPair("Ohne Erledigung",
+        control.getFilterInput(Filter.OHNE_ERLEDIGUNG));
+
+    ButtonArea fbuttons = new ButtonArea();
+    ToolTipButton zurueck1 = control.getZurueckButton(von, bis);
+    fbuttons.addButton(zurueck1);
+    ToolTipButton vor1 = control.getVorButton(von, bis);
+    fbuttons.addButton(vor1);
+    ToolTipButton zurueck2 = control.getZurueckButton(erledigungVon,
+        erledigungBis);
+    fbuttons.addButton(zurueck2);
+    ToolTipButton vor2 = control.getVorButton(erledigungVon, erledigungBis);
+    fbuttons.addButton(vor2);
+    fbuttons.addButton(control.getResetButton());
+    fbuttons.addButton(control.getSuchenButton());
+    group.addButtonArea(fbuttons);
+    zurueck1.setToolTipText("Datumsbereich zurück");
+    vor1.setToolTipText("Datumsbereich vowärts");
+    zurueck2.setToolTipText("Erledigung Datumsbereich zurück");
+    vor2.setToolTipText("Erledigung Datumsbereich vowärts");
+
+    control.getTablePart().paint(this.getParent());
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.WIEDERVORLAGE, false, "question-circle.png");
+    buttons.addButton("Neu",
+        new NewAction(WiedervorlageDetailView.class, Wiedervorlage.class), null,
+        false, "document-new.png");
+    buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
+  }
+}
