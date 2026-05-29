@@ -40,7 +40,6 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.PersonalbogenControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
-import de.jost_net.JVerein.keys.Ausgabeart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -82,15 +81,6 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   public PersonalbogenAusgabe(PersonalbogenControl control)
   {
     this.control = control;
-  }
-
-  @Override
-  public void aufbereiten(ArrayList<? extends DBObject> list, Ausgabeart art,
-      String betreff, String text, boolean pdfa, boolean encrypt,
-      boolean versanddatum)
-      throws IOException, ApplicationException, DocumentException
-  {
-    super.aufbereiten(list, art, betreff, text, pdfa, encrypt, versanddatum);
   }
 
   @Override

@@ -39,9 +39,9 @@ import de.willuhn.datasource.rmi.DBObject;
 
 public class Kontoauszug extends AbstractAusgabe
 {
-  private Reporter rpt;
+  private FileOutputStream fos;
 
-  private boolean first = true;
+  private Reporter rpt;
 
   private SollbuchungControl control;
 
@@ -50,18 +50,27 @@ public class Kontoauszug extends AbstractAusgabe
     this.control = control;
   }
 
-  private void generiereMitglied(Mitglied m)
-      throws RemoteException, DocumentException
+  private void generiereMitglied(File file, Mitglied m)
+      throws DocumentException, IOException
   {
     MitgliedskontoNode node = new MitgliedskontoNode(m,
         (Date) control.getDatumvon().getValue(),
         (Date) control.getDatumbis().getValue());
 
-    if (!first)
+    if (fos == null)
+    {
+      fos = new FileOutputStream(file);
+    }
+
+    if (rpt == null)
+    {
+      rpt = new Reporter(fos, "", "", 60, 30, 20, 20, false);
+    }
+    else
     {
       rpt.newPage();
     }
-    first = false;
+
     String title = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_TITEL, null, m);
     String subtitle = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_SUBTITEL, null,
         m);
@@ -72,7 +81,7 @@ public class Kontoauszug extends AbstractAusgabe
     psubTitle.setAlignment(Element.ALIGN_CENTER);
     rpt.add(psubTitle);
 
-    rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 20, BaseColor.LIGHT_GRAY);
+    rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 15, BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Datum", Element.ALIGN_CENTER, 20,
         BaseColor.LIGHT_GRAY);
     rpt.addHeaderColumn("Zweck", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
@@ -136,12 +145,7 @@ public class Kontoauszug extends AbstractAusgabe
   protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
       File file, DBObject object) throws IOException, DocumentException
   {
-    if (rpt == null)
-    {
-      rpt = new Reporter(new FileOutputStream(file, true), 40, 20, 20, 40,
-          false);
-    }
-    generiereMitglied((Mitglied) object);
+    generiereMitglied(file, (Mitglied) object);
   }
 
   @Override
@@ -149,9 +153,9 @@ public class Kontoauszug extends AbstractAusgabe
       DBObject object) throws IOException, DocumentException
   {
     rpt.close();
-    // auf null setzen, damit beim nächsten createPDF ein neues Dokument erzeugt
-    // wird
+    fos.close();
     rpt = null;
+    fos = null;
   }
 
   @Override
