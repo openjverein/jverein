@@ -53,7 +53,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = 1L;
 
-  private transient boolean speicherung = true;
+  private transient boolean splittbuchung = false;
 
   private transient boolean delete = false;
 
@@ -884,13 +884,13 @@ public class BuchungImpl extends AbstractJVereinDBObject
   @Override
   public void setSplitbuchung(boolean splitbuchung)
   {
-    this.speicherung = splitbuchung;
+    this.splittbuchung = splitbuchung;
   }
 
   @Override
   public boolean isSplitbuchung()
   {
-    return speicherung;
+    return splittbuchung;
   }
 
   @Override
