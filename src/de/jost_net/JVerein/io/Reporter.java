@@ -293,24 +293,9 @@ public class Reporter implements AutoCloseable
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color)
   {
-    addHeaderColumn(text, align, width, color, true);
-  }
-
-  /**
-   * Fuegt der Tabelle einen neuen Spaltenkopf hinzu.
-   * 
-   * @param text
-   * @param align
-   * @param width
-   * @param color
-   * @param silbentrennung
-   */
-  public void addHeaderColumn(String text, int align, int width,
-      BaseColor color, boolean silbentrennung)
-  {
-    BaseColor bcolor = headerTransparent ? null : color;
-    headers.add(getDetailCell(text, align, bcolor, silbentrennung));
-    widths.add(Integer.valueOf(width));
+    headers.add(getDetailCell(text, align, headerTransparent ? null : color,
+        true, getFreeSans(8), 1));
+    widths.add(width);
   }
 
   /**
@@ -371,28 +356,22 @@ public class Reporter implements AutoCloseable
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.
    */
-  public void addColumn(String text, int align, BaseColor backgroundcolor)
+  public void addColumn(String text, int align)
   {
-    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
-    addColumn(getDetailCell(text, align, bcolor, true));
+    addColumn(text, align, true);
+  }
+
+  public void addColumn(String text, int align, int colspan)
+  {
+    addColumn(text, align, zellenColor, colspan);
   }
 
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.
    */
-  public void addColumn(String text, int align, BaseColor backgroundcolor,
-      boolean silbentrennung)
+  public void addColumn(String text, int align, BaseColor backgroundcolor)
   {
-    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
-    addColumn(getDetailCell(text, align, bcolor, silbentrennung));
-  }
-
-  /**
-   * Fuegt eine neue Zelle mit einem boolean-Value zur Tabelle hinzu
-   */
-  public void addColumn(boolean value)
-  {
-    addColumn(value ? "X" : "", Element.ALIGN_CENTER, zellenColor, true);
+    addColumn(text, align, backgroundcolor, null);
   }
 
   /**
@@ -400,21 +379,7 @@ public class Reporter implements AutoCloseable
    */
   public void addColumn(String text, int align, Font font)
   {
-    addColumn(getDetailCell(text, align, zellenColor, true, font));
-  }
-
-  public void addColumn(String text, int align, BaseColor color, Font font)
-  {
-    addColumn(getDetailCell(text, align, zellenTransparent ? null : color, true,
-        font));
-  }
-
-  /**
-   * Fuegt eine neue Zelle zur Tabelle hinzu.
-   */
-  public void addColumn(String text, int align)
-  {
-    addColumn(getDetailCell(text, align, zellenColor, true));
+    addColumn(text, align, zellenColor, font);
   }
 
   /**
@@ -422,19 +387,25 @@ public class Reporter implements AutoCloseable
    */
   public void addColumn(String text, int align, boolean silbentrennung)
   {
-    addColumn(getDetailCell(text, align, zellenColor, silbentrennung));
+    addColumn(text, align, zellenColor, silbentrennung, null, 1);
   }
 
-  public void addColumn(String text, int align, int colspan)
+  public void addColumn(String text, int align, BaseColor color, Font font)
   {
-    addColumn(getDetailCell(text, align, zellenColor, colspan));
+    addColumn(text, align, color, true, font, 1);
   }
 
   public void addColumn(String text, int align, BaseColor backgroundcolor,
       int colspan)
   {
-    BaseColor bcolor = zellenTransparent ? null : backgroundcolor;
-    addColumn(getDetailCell(text, align, bcolor, colspan));
+    addColumn(text, align, backgroundcolor, true, null, colspan);
+  }
+
+  public void addColumn(String text, int align, BaseColor color,
+      boolean silbentrennung, Font font, int colspan)
+  {
+    addColumn(getDetailCell(text, align, zellenTransparent ? null : color,
+        silbentrennung, font, colspan));
   }
 
   /**
@@ -442,40 +413,22 @@ public class Reporter implements AutoCloseable
    */
   public void addColumn(Double value)
   {
+    addColumn(value, zellenColor);
+  }
+
+  public void addColumn(Double value, BaseColor backgroundcolor)
+  {
+    Font font = getFreeSans(8, BaseColor.BLACK);
+    String text = "";
     if (value != null)
     {
-      addColumn(getDetailCell(value.doubleValue(), zellenColor));
+      if (value < 0)
+      {
+        font = getFreeSans(8, BaseColor.RED);
+      }
+      text = Einstellungen.DECIMALFORMAT.format(value);
     }
-    else
-    {
-      addColumn(getDetailCell("", Element.ALIGN_LEFT, zellenColor, false));
-    }
-  }
-
-  public void addColumn(double value, BaseColor backgroundcolor)
-  {
-    Font f = null;
-    if (value >= 0)
-    {
-      f = getFreeSans(8, BaseColor.BLACK);
-    }
-    else
-    {
-      f = getFreeSans(8, BaseColor.RED);
-    }
-    PdfPCell cell = new PdfPCell(
-        new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
-    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-    cell.setBackgroundColor(zellenTransparent ? null : backgroundcolor);
-    addColumn(cell);
-  }
-
-  /**
-   * Fuegt eine neue Zelle zur Tabelle hinzu.
-   */
-  public void addColumn(double value)
-  {
-    addColumn(getDetailCell(value, zellenColor));
+    addColumn(text, Element.ALIGN_RIGHT, backgroundcolor, font);
   }
 
   /**
@@ -483,14 +436,12 @@ public class Reporter implements AutoCloseable
    */
   public void addColumn(Date value, int align)
   {
-    if (value != null)
+    String text = "";
+    if (value != null && !value.equals(Einstellungen.NODATE))
     {
-      addColumn(getDetailCell(value, align, zellenColor));
+      text = new SimpleDateFormat("dd.MM.yyyy").format(value);
     }
-    else
-    {
-      addColumn("", Element.ALIGN_LEFT, false);
-    }
+    addColumn(text, align, zellenColor, false, null, 1);
   }
 
   /**
@@ -521,25 +472,32 @@ public class Reporter implements AutoCloseable
     float[] w = new float[headers.size()];
     for (int i = 0; i < headers.size(); i++)
     {
-      Integer breite = widths.get(i);
-      w[i] = breite.intValue();
+      w[i] = widths.get(i);
     }
     table.setWidths(w);
     table.setSpacingBefore(10);
     table.setSpacingAfter(0);
     for (int i = 0; i < headers.size(); i++)
     {
-      PdfPCell cell = headers.get(i);
-      table.addCell(cell);
+      table.addCell(headers.get(i));
     }
     table.setHeaderRows(1);
   }
 
+  /**
+   * Neue Seite hinzufügen
+   */
   public void newPage()
   {
     rpt.newPage();
   }
 
+  /**
+   * Schreibt die Tabelle ins PDF. Nötig um weiteren Text oder Tabellen
+   * hinzuzufügen
+   * 
+   * @throws DocumentException
+   */
   public void closeTable() throws DocumentException
   {
     if (table == null)
@@ -571,8 +529,6 @@ public class Reporter implements AutoCloseable
     }
     finally
     {
-      // Es muss sichergestellt sein, dass der OutputStream
-      // immer geschlossen wird
       out.close();
     }
   }
@@ -589,46 +545,18 @@ public class Reporter implements AutoCloseable
    * @return die erzeugte Zelle.
    */
   private PdfPCell getDetailCell(String text, int align,
-      BaseColor backgroundcolor, boolean silbentrennung)
+      BaseColor backgroundcolor, boolean silbentrennung, Font font, int colspan)
   {
     PdfPCell cell = null;
+    Chunk chunk = new Chunk(text == null ? "" : text,
+        font == null ? getFreeSans(8) : font);
+    cell = new PdfPCell(new Phrase(chunk));
     if (silbentrennung)
     {
-      cell = new PdfPCell(new Phrase(
-          new Chunk(notNull(text), getFreeSans(8)).setHyphenation(hyph)));
+      chunk.setHyphenation(hyph);
     }
-    else
-    {
-      cell = new PdfPCell(new Phrase(new Chunk(notNull(text), getFreeSans(8))));
-    }
-    cell.setHorizontalAlignment(align);
-    cell.setBackgroundColor(backgroundcolor);
-    return cell;
-  }
+    cell = new PdfPCell(new Phrase(chunk));
 
-  private PdfPCell getDetailCell(String text, int align,
-      BaseColor backgroundcolor, boolean silbentrennung, Font font)
-  {
-    PdfPCell cell = null;
-    if (silbentrennung)
-    {
-      cell = new PdfPCell(
-          new Phrase(new Chunk(notNull(text), font).setHyphenation(hyph)));
-    }
-    else
-    {
-      cell = new PdfPCell(new Phrase(new Chunk(notNull(text), font)));
-    }
-    cell.setHorizontalAlignment(align);
-    cell.setBackgroundColor(backgroundcolor);
-    return cell;
-  }
-
-  private PdfPCell getDetailCell(String text, int align,
-      BaseColor backgroundcolor, int colspan)
-  {
-    PdfPCell cell = new PdfPCell(new Phrase(
-        new Chunk(notNull(text), getFreeSans(8)).setHyphenation(hyph)));
     cell.setHorizontalAlignment(align);
     cell.setBackgroundColor(backgroundcolor);
     cell.setColspan(colspan);
@@ -636,60 +564,11 @@ public class Reporter implements AutoCloseable
   }
 
   /**
-   * Erzeugt eine Zelle fuer die uebergebene Zahl.
+   * Gibt die Parameter als Tablelle aus
    * 
-   * @param value
-   *          die Zahl.
-   * @return die erzeugte Zelle.
+   * @param params
+   * @throws DocumentException
    */
-  private PdfPCell getDetailCell(double value, BaseColor backgroundcolor)
-  {
-    Font f = null;
-    if (value >= 0)
-    {
-      f = getFreeSans(8, BaseColor.BLACK);
-    }
-    else
-    {
-      f = getFreeSans(8, BaseColor.RED);
-    }
-    PdfPCell cell = new PdfPCell(
-        new Phrase(Einstellungen.DECIMALFORMAT.format(value), f));
-    cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-    cell.setBackgroundColor(backgroundcolor);
-    return cell;
-  }
-
-  /**
-   * Erzeugt eine Zelle fuer das uebergebene Datum.
-   * 
-   * @param value
-   *          das Datum.
-   * @return die erzeugte Zelle.
-   */
-  private PdfPCell getDetailCell(Date value, int align,
-      BaseColor backgroundcolor)
-  {
-    if (value.equals(Einstellungen.NODATE))
-    {
-      return getDetailCell("", Element.ALIGN_LEFT, backgroundcolor, false);
-    }
-    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-    return getDetailCell(sdf.format(value), align, backgroundcolor, false);
-  }
-
-  /**
-   * Gibt einen Leerstring aus, falls der Text null ist.
-   * 
-   * @param text
-   *          der Text.
-   * @return der Text oder Leerstring - niemals null.
-   */
-  public String notNull(String text)
-  {
-    return text == null ? "" : text;
-  }
-
   public void addParams(final TreeMap<String, String> params)
       throws DocumentException
   {
