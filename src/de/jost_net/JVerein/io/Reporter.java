@@ -199,8 +199,7 @@ public class Reporter implements AutoCloseable
       contentByte.addTemplate(page, 0, 0);
     }
     // Vordergrund Event immer setzen weil es für das Rücksetzen der
-    // Seitennummer
-    // gebraucht wird
+    // Seitennummer gebraucht wird
     PdfReader reader = vordergrund != null
         ? new PdfReader(vordergrund.getInhalt())
         : null;
