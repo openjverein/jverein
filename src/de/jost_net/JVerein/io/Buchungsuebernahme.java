@@ -180,7 +180,19 @@ public class Buchungsuebernahme
         b.setUmsatzid(Integer.valueOf(u.getID()));
         b.setKonto(kto);
         b.setName(u.getGegenkontoName());
-        b.setIban(u.getGegenkontoNummer());
+        String gegenkonto = u.getGegenkontoNummer();
+        if (gegenkonto != null && gegenkonto.length() > 34)
+        {
+          // Hibiscus liefert in Gegenkontonummer nicht immer eine IBAN
+          // (z. B. bei PayPal/Alibaba eine E-Mail-Adresse). Die Spalte ist
+          // auf 34 Zeichen begrenzt, daher übernehmen wir den Wert in
+          // diesem Fall nicht als IBAN.
+          Logger.warn("Gegenkontonummer '" + gegenkonto
+              + "' ist keine gültige IBAN (länger als 34 Zeichen), "
+              + "wird nicht als IBAN übernommen.");
+          gegenkonto = null;
+        }
+        b.setIban(gegenkonto);
         b.setBetrag(u.getBetrag());
         b.setZweck(u.getZweck());
         String[] moreLines = u.getWeitereVerwendungszwecke();
