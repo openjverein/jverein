@@ -68,6 +68,7 @@ public class Kontoauszug extends AbstractAusgabe
     }
     else
     {
+      rpt.resetPageCount();
       rpt.newPage();
     }
 

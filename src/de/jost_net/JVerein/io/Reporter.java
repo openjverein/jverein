@@ -79,6 +79,8 @@ public class Reporter implements AutoCloseable
 
   private BaseColor zellenColor = BaseColor.WHITE;
 
+  private boolean resetPageCount = false;
+
   private boolean headerTransparent = (Boolean) Einstellungen
       .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT);
 
@@ -196,11 +198,14 @@ public class Reporter implements AutoCloseable
       PdfContentByte contentByte = writer.getDirectContentUnder();
       contentByte.addTemplate(page, 0, 0);
     }
-    if (vordergrund != null)
-    {
-      PdfReader reader = new PdfReader(vordergrund.getInhalt());
-      writer.setPageEvent(new ReportVordergrund(reader));
-    }
+    // Vordergrund Event immer setzen weil es für das Rücksetzen der
+    // Seitennummer
+    // gebraucht wird
+    PdfReader reader = vordergrund != null
+        ? new PdfReader(vordergrund.getInhalt())
+        : null;
+    writer.setPageEvent(new ReportVordergrund(reader));
+
     if (this.zellenTransparent)
     {
       zellenColor = null;
@@ -618,7 +623,7 @@ public class Reporter implements AutoCloseable
   }
 
   /**
-   * Setzen eines Hintergrundes bei Reports.
+   * Setzen eines Vordergrund bei Reports.
    */
   private class ReportVordergrund extends PdfPageEventHelper
   {
@@ -644,6 +649,11 @@ public class Reporter implements AutoCloseable
         contentByte.saveState();
         contentByte.addTemplate(page, 0, 0);
         contentByte.restoreState();
+      }
+      if (resetPageCount)
+      {
+        document.resetPageCount();
+        resetPageCount = false;
       }
     }
   }
@@ -683,10 +693,14 @@ public class Reporter implements AutoCloseable
       pc.moveTo(left, bottom - 25);
       pc.lineTo(right, bottom - 25);
       pc.stroke();
-
       ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
           new Phrase(footer + " " + writer.getPageNumber(), getFreeSans(7)),
           (left + right) / 2, bottom - 18, 0);
     }
+  }
+
+  public void resetPageCount()
+  {
+    resetPageCount = true;
   }
 }

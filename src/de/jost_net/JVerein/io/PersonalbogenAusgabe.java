@@ -163,6 +163,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       }
       else
       {
+        rpt.resetPageCount();
         rpt.newPage();
       }
 
