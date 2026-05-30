@@ -232,7 +232,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
       rpt.addColumn(
           "Genaue Bezeichnung der Sachzuwendung mit Alter, Zustand, Kaufpreis usw.\n\n"
               + spb.getBezeichnungSachzuwendung(),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, (BaseColor) null);
       rpt.closeTable();
 
       Paragraph p = new Paragraph();
