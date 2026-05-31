@@ -689,12 +689,9 @@ public class Reporter implements AutoCloseable
       pc.moveTo(left, bottom - 5);
       pc.lineTo(right, bottom - 5);
       pc.stroke();
-      pc.moveTo(left, bottom - 25);
-      pc.lineTo(right, bottom - 25);
-      pc.stroke();
       ColumnText.showTextAligned(pc, Element.ALIGN_CENTER,
           new Phrase(footer + " " + writer.getPageNumber(), getFreeSans(7)),
-          (left + right) / 2, bottom - 18, 0);
+          (left + right) / 2, bottom - 15, 0);
     }
   }
 
