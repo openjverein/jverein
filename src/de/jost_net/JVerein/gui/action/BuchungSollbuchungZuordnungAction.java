@@ -21,6 +21,7 @@ import java.rmi.RemoteException;
 import java.util.Arrays;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.SollbuchungAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.YesNoCancelDialog;
@@ -45,6 +46,12 @@ public class BuchungSollbuchungZuordnungAction implements Action
 {
   private BuchungsControl control;
 
+  private Buchung[] buchungen = null;
+
+  private Sollbuchung[] sollbuchungen = null;
+
+  private Mitglied mitglied;
+
   public BuchungSollbuchungZuordnungAction(BuchungsControl control)
   {
     this.control = control;
@@ -60,244 +67,269 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
     try
     {
-      Buchung[] b = null;
       if (context instanceof Buchung)
       {
-        b = new Buchung[1];
-        b[0] = (Buchung) context;
+        buchungen = new Buchung[1];
+        buchungen[0] = (Buchung) context;
       }
       if (context instanceof Buchung[])
       {
-        b = (Buchung[]) context;
+        buchungen = (Buchung[]) context;
       }
-      if (b.length == 0)
+      if (buchungen.length == 0)
       {
         return;
       }
-      if (b[0].isNewObject())
+      if (buchungen[0].isNewObject())
       {
         return;
       }
-      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(b[0], true);
+
+      DBTransaction.starten();
+      SollbuchungAuswahlDialog mkaz = new SollbuchungAuswahlDialog(buchungen[0],
+          true);
       Object open = mkaz.open();
-      Sollbuchung sollb = null;
 
       if (!mkaz.getAbort())
       {
-        if (open instanceof Sollbuchung)
-        {
-          sollb = (Sollbuchung) open;
-        }
-        else if (open instanceof Mitglied)
-        {
-          Mitglied m = (Mitglied) open;
-          sollb = (Sollbuchung) Einstellungen.getDBService()
-              .createObject(Sollbuchung.class, null);
-
-          Double betrag = 0d;
-          for (Buchung buchung : b)
-          {
-            betrag += buchung.getBetrag();
-          }
-
-          sollb.setBetrag(betrag);
-          sollb.setDatum(b[0].getDatum());
-          sollb.setMitglied(m);
-          sollb.setZahler(m);
-          sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
-          sollb.setZweck1(b[0].getZweck());
-          sollb.store();
-
-          for (Buchung buchung : b)
-          {
-            SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
-                .getDBService().createObject(SollbuchungPosition.class, null);
-            sbp.setBetrag(buchung.getBetrag());
-            sbp.setBuchungsartId(buchung.getBuchungsartId());
-            sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
-            sbp.setSteuer(buchung.getSteuer());
-            sbp.setDatum(buchung.getDatum());
-            sbp.setZweck(buchung.getZweck());
-            sbp.setSollbuchung(sollb.getID());
-            sbp.store();
-          }
-        }
-
         // Sollbuchung entfernen
         if (open == null)
         {
-          for (Buchung buchung : b)
-          {
-            buchung.setSollbuchung(null);
-            buchung.store();
-          }
-          GUI.getStatusBar().setSuccessText("Sollbuchung von Buchung gelöst");
+          zuordnungLoeschen();
         }
-        // Buchung mehreren Sollbuchungen zuordnen
-        else if (open instanceof Sollbuchung[])
+        else if (open instanceof Mitglied)
         {
-          if (b.length > 1)
-          {
-            throw new ApplicationException(
-                "Mehrere Buchungen mehreren Sollbuchungen zuordnen nicht möglich!");
-          }
-          if (b[0].getSplitTyp() != null
-              && (b[0].getSplitTyp() == SplitbuchungTyp.GEGEN
-                  || b[0].getSplitTyp() == SplitbuchungTyp.HAUPT))
-          {
-            throw new ApplicationException(
-                "Haupt- oder Gegen-Buchungen können nicht mehreren Sollbuchungen zugeordnet werden!");
-          }
-
-          Sollbuchung[] sollbs = (Sollbuchung[]) open;
-          // Nach Datum sortieren, so dass die ältesten Buchngen als erstes
-          // ausgeglichen werden
-          Arrays.sort(sollbs, (s1, s2) -> {
-            try
-            {
-              return s1.getDatum().compareTo(s2.getDatum());
-            }
-            catch (RemoteException e)
-            {
-              return 0;
-            }
-          });
-
-          sollb = sollbs[0];
-          Buchung buchung = b[0];
-
-          try
-          {
-            b[0].transactionBegin();
-            for (Sollbuchung s : sollbs)
-            {
-              if (buchung == null)
-              {
-                // Wenn keine Restbuchung existiert wurde alles zugewiesen und
-                // es ist nichts mehr für die restlichen Sollbuchungen übrig.
-                break;
-              }
-              buchung = SplitbuchungsContainer.autoSplit(buchung, s, false);
-            }
-            if (buchung != null)
-            {
-              YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-              dialog.setTitle("Buchung splitten");
-              dialog.setText(
-                  "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchungen.\n"
-                      + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
-              try
-              {
-                if ((Boolean) dialog.open())
-                {
-                  buchung.setSollbuchung(sollbs[sollbs.length - 1]);
-                  buchung.store();
-                }
-              }
-              catch (OperationCanceledException ignore)
-              {
-              }
-            }
-            b[0].transactionCommit();
-          }
-          catch (Exception e)
-          {
-            b[0].transactionRollback();
-            Logger.error("Fehler", e);
-            throw new ApplicationException(
-                "Fehler beim Splitten der Buchung: " + e.getLocalizedMessage());
-          }
+          mitglied = (Mitglied) open;
+          zuordnungMitglied();
         }
-        // Buchung einer Sollbuchung zuordnen
-        else
+        else if (open instanceof Sollbuchung)
         {
-          if (b.length == 1)
+          sollbuchungen = new Sollbuchung[1];
+          sollbuchungen[0] = (Sollbuchung) open;
+          if (buchungen.length == 1)
           {
-            Buchung buchung = b[0];
-            if (Math.abs(buchung.getBetrag()
-                - (sollb.getBetrag() - sollb.getIstSumme())) >= 0.01d)
-            {
-              YesNoCancelDialog dialog = new YesNoCancelDialog(
-                  YesNoDialog.POSITION_CENTER, true);
-              dialog.setTitle("Buchung splitten");
-              dialog.setText(
-                  "Die Fehlbetrag der Sollbuchung und der Betrag der Buchung stimmen nicht überein.\n"
-                      + "Soll die Buchung automatisch gesplittet werden?\n"
-                      + "Bei 'Nein' wird die Sollbuchung ohne Splitten zugeordnet.");
-              int ret = dialog.open();
-              if (ret == YesNoCancelDialog.YES)
-              {
-                Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung,
-                    sollb, false);
-                if (restbuchung != null)
-                {
-                  YesNoDialog restbuchungDialog = new YesNoDialog(
-                      YesNoDialog.POSITION_CENTER);
-                  restbuchungDialog.setTitle("Restbuchung zuordnen");
-                  restbuchungDialog.setText(
-                      "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchung.\n"
-                          + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
-                  try
-                  {
-                    if ((Boolean) restbuchungDialog.open())
-                    {
-                      restbuchung.setSollbuchung(sollb);
-                      restbuchung.store();
-                    }
-                  }
-                  catch (OperationCanceledException ignore)
-                  {
-                  }
-                }
-              }
-              else if (ret == YesNoCancelDialog.NO)
-              {
-                // Bei NEIN ohne Splitten zuordnen
-                buchung.setSollbuchung(sollb);
-                buchung.store();
-              }
-              else if (ret == YesNoCancelDialog.CANCEL)
-              {
-                throw new OperationCanceledException();
-              }
-
-            }
-            else
-            {
-              // Fehlbetrag und Buchungs-Betrag stimmen überein
-              SplitbuchungsContainer.autoSplit(buchung, sollb, true);
-            }
+            zuordnungBuchungZuSollbuchung();
           }
           else
           {
-            // Mehrere Buchungen einer Sollbuchung zuordnen geht nur ohne
-            // Splitten.
-            for (Buchung buchung : b)
-            {
-              buchung.setSollbuchung(sollb);
-              buchung.store();
-            }
+            zuordnungBuchungenZuSollbuchung();
+          }
+        }
+        else if (open instanceof Sollbuchung[])
+        {
+          sollbuchungen = (Sollbuchung[]) open;
+          if (buchungen.length == 1)
+          {
+            zuordnungBuchungZuSollbuchungen();
+          }
+          else
+          {
+            throw new ApplicationException(
+                "Mehrere Buchungen mehreren Sollbuchungen zuordnen ist nicht möglich!");
           }
         }
 
-        GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
+        if (open == null)
+        {
+          GUI.getStatusBar()
+              .setSuccessText("Sollbuchung von Buchung(en) gelöst");
+        }
+        else
+        {
+          GUI.getStatusBar().setSuccessText("Sollbuchung zugeordnet");
+        }
         control.refreshBuchungsList();
       }
+      DBTransaction.commit();
     }
     catch (OperationCanceledException oce)
     {
+      DBTransaction.rollback();
       throw oce;
     }
     catch (ApplicationException ae)
     {
+      DBTransaction.rollback();
       GUI.getStatusBar().setErrorText(
-          "Fehler bei der Zuordnung der Sollbuchung. " + ae.getMessage());
+          "Fehler bei der Zuordnung der Sollbuchung: " + ae.getMessage());
     }
     catch (Exception e)
     {
+      DBTransaction.rollback();
       Logger.error("Fehler bei der Zuordnung der Sollbuchung", e);
       GUI.getStatusBar()
           .setErrorText("Fehler bei der Zuordnung der Sollbuchung");
     }
   }
+
+  private void zuordnungLoeschen() throws RemoteException, ApplicationException
+  {
+    for (Buchung buchung : buchungen)
+    {
+      buchung.setSollbuchung(null);
+      buchung.store();
+    }
+  }
+
+  private void zuordnungMitglied() throws RemoteException, ApplicationException
+  {
+    Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+        .createObject(Sollbuchung.class, null);
+
+    Double betrag = 0d;
+    for (Buchung buchung : buchungen)
+    {
+      betrag += buchung.getBetrag();
+    }
+
+    sollb.setBetrag(betrag);
+    sollb.setDatum(buchungen[0].getDatum());
+    sollb.setMitglied(mitglied);
+    sollb.setZahler(mitglied);
+    sollb.setZahlungsweg(Zahlungsweg.ÜBERWEISUNG);
+    sollb.setZweck1(buchungen[0].getZweck());
+    sollb.store();
+
+    for (Buchung buchung : buchungen)
+    {
+      SollbuchungPosition sbp = (SollbuchungPosition) Einstellungen
+          .getDBService().createObject(SollbuchungPosition.class, null);
+      sbp.setBetrag(buchung.getBetrag());
+      sbp.setBuchungsartId(buchung.getBuchungsartId());
+      sbp.setBuchungsklasseId(buchung.getBuchungsklasseId());
+      sbp.setSteuer(buchung.getSteuer());
+      sbp.setDatum(buchung.getDatum());
+      sbp.setZweck(buchung.getZweck());
+      sbp.setSollbuchung(sollb.getID());
+      sbp.store();
+    }
+  }
+
+  private void zuordnungBuchungZuSollbuchung()
+      throws RemoteException, ApplicationException, Exception
+  {
+    Buchung buchung = buchungen[0];
+    Sollbuchung sollb = sollbuchungen[0];
+
+    if (Math.abs(buchung.getBetrag()
+        - (sollb.getBetrag() - sollb.getIstSumme())) >= 0.01d)
+    {
+      YesNoCancelDialog dialog = new YesNoCancelDialog(
+          YesNoDialog.POSITION_CENTER, true);
+      dialog.setTitle("Buchung splitten");
+      dialog.setText(
+          "Die Fehlbetrag der Sollbuchung und der Betrag der Buchung stimmen nicht überein.\n"
+              + "Soll die Buchung automatisch gesplittet werden?\n"
+              + "Bei 'Nein' wird die Sollbuchung ohne Splitten zugeordnet.");
+      int ret = dialog.open();
+      if (ret == YesNoCancelDialog.YES)
+      {
+        Buchung restbuchung = SplitbuchungsContainer.autoSplit(buchung, sollb,
+            false);
+        if (restbuchung != null)
+        {
+          YesNoDialog restbuchungDialog = new YesNoDialog(
+              YesNoDialog.POSITION_CENTER);
+          restbuchungDialog.setTitle("Restbuchung zuordnen");
+          restbuchungDialog.setText(
+              "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchung.\n"
+                  + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
+          try
+          {
+            if ((Boolean) restbuchungDialog.open())
+            {
+              restbuchung.setSollbuchung(sollb);
+              restbuchung.store();
+            }
+          }
+          catch (OperationCanceledException ignore)
+          {
+          }
+        }
+      }
+      else if (ret == YesNoCancelDialog.NO)
+      {
+        // Bei NEIN ohne Splitten zuordnen
+        buchung.setSollbuchung(sollb);
+        buchung.store();
+      }
+      else if (ret == YesNoCancelDialog.CANCEL)
+      {
+        throw new OperationCanceledException();
+      }
+    }
+    else
+    {
+      // Fehlbetrag und Buchungs-Betrag stimmen überein
+      SplitbuchungsContainer.autoSplit(buchung, sollb, true);
+    }
+  }
+
+  private void zuordnungBuchungenZuSollbuchung()
+      throws RemoteException, ApplicationException
+  {
+    // Mehrere Buchungen einer Sollbuchung zuordnen geht nur ohne Splitten.
+    for (Buchung buchung : buchungen)
+    {
+      buchung.setSollbuchung(sollbuchungen[0]);
+      buchung.store();
+    }
+  }
+
+  private void zuordnungBuchungZuSollbuchungen() throws Exception
+  {
+    if (buchungen[0].getSplitTyp() != null
+        && (buchungen[0].getSplitTyp() == SplitbuchungTyp.GEGEN
+            || buchungen[0].getSplitTyp() == SplitbuchungTyp.HAUPT))
+    {
+      throw new ApplicationException(
+          "Haupt- oder Gegen-Buchungen können nicht mehreren Sollbuchungen zugeordnet werden!");
+    }
+
+    // Nach Datum sortieren, so dass die ältesten Buchngen als erstes
+    // ausgeglichen werden
+    Arrays.sort(sollbuchungen, (s1, s2) -> {
+      try
+      {
+        return s1.getDatum().compareTo(s2.getDatum());
+      }
+      catch (RemoteException e)
+      {
+        return 0;
+      }
+    });
+
+    Buchung buchung = buchungen[0];
+
+    for (Sollbuchung s : sollbuchungen)
+    {
+      if (buchung == null)
+      {
+        // Wenn keine Restbuchung existiert wurde alles zugewiesen und
+        // es ist nichts mehr für die restlichen Sollbuchungen übrig.
+        break;
+      }
+      buchung = SplitbuchungsContainer.autoSplit(buchung, s, false);
+    }
+    if (buchung != null)
+    {
+      YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+      dialog.setTitle("Buchung splitten");
+      dialog.setText(
+          "Der Betrag der Buchung ist größer als der Fehlbetrag der Sollbuchungen.\n"
+              + "Soll die Restbuchung auch der Sollbuchung zugewiesen werden?");
+      try
+      {
+        if ((Boolean) dialog.open())
+        {
+          buchung.setSollbuchung(sollbuchungen[sollbuchungen.length - 1]);
+          buchung.store();
+        }
+      }
+      catch (OperationCanceledException ignore)
+      {
+      }
+    }
+  }
+
 }
