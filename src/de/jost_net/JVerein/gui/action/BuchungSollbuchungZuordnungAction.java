@@ -46,12 +46,6 @@ public class BuchungSollbuchungZuordnungAction implements Action
 {
   private BuchungsControl control;
 
-  private Buchung[] buchungen = null;
-
-  private Sollbuchung[] sollbuchungen = null;
-
-  private Mitglied mitglied;
-
   public BuchungSollbuchungZuordnungAction(BuchungsControl control)
   {
     this.control = control;
@@ -67,6 +61,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
     try
     {
+      Buchung[] buchungen = null;
       if (context instanceof Buchung)
       {
         buchungen = new Buchung[1];
@@ -95,32 +90,28 @@ public class BuchungSollbuchungZuordnungAction implements Action
         // Sollbuchung entfernen
         if (open == null)
         {
-          zuordnungLoeschen();
+          zuordnungLoeschen(buchungen);
         }
         else if (open instanceof Mitglied)
         {
-          mitglied = (Mitglied) open;
-          zuordnungMitglied();
+          zuordnungMitglied(buchungen, (Mitglied) open);
         }
         else if (open instanceof Sollbuchung)
         {
-          sollbuchungen = new Sollbuchung[1];
-          sollbuchungen[0] = (Sollbuchung) open;
           if (buchungen.length == 1)
           {
-            zuordnungBuchungZuSollbuchung();
+            zuordnungBuchungZuSollbuchung(buchungen[0], (Sollbuchung) open);
           }
           else
           {
-            zuordnungBuchungenZuSollbuchung();
+            zuordnungBuchungenZuSollbuchung(buchungen, (Sollbuchung) open);
           }
         }
         else if (open instanceof Sollbuchung[])
         {
-          sollbuchungen = (Sollbuchung[]) open;
           if (buchungen.length == 1)
           {
-            zuordnungBuchungZuSollbuchungen();
+            zuordnungBuchungZuSollbuchungen(buchungen[0], (Sollbuchung[]) open);
           }
           else
           {
@@ -162,7 +153,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
   }
 
-  private void zuordnungLoeschen() throws RemoteException, ApplicationException
+  private void zuordnungLoeschen(Buchung[] buchungen)
+      throws RemoteException, ApplicationException
   {
     for (Buchung buchung : buchungen)
     {
@@ -171,7 +163,8 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
   }
 
-  private void zuordnungMitglied() throws RemoteException, ApplicationException
+  private void zuordnungMitglied(Buchung[] buchungen, Mitglied mitglied)
+      throws RemoteException, ApplicationException
   {
     Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
         .createObject(Sollbuchung.class, null);
@@ -205,12 +198,9 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
   }
 
-  private void zuordnungBuchungZuSollbuchung()
+  private void zuordnungBuchungZuSollbuchung(Buchung buchung, Sollbuchung sollb)
       throws RemoteException, ApplicationException, Exception
   {
-    Buchung buchung = buchungen[0];
-    Sollbuchung sollb = sollbuchungen[0];
-
     if (Math.abs(buchung.getBetrag()
         - (sollb.getBetrag() - sollb.getIstSumme())) >= 0.01d)
     {
@@ -265,22 +255,23 @@ public class BuchungSollbuchungZuordnungAction implements Action
     }
   }
 
-  private void zuordnungBuchungenZuSollbuchung()
-      throws RemoteException, ApplicationException
+  private void zuordnungBuchungenZuSollbuchung(Buchung[] buchungen,
+      Sollbuchung sollb) throws RemoteException, ApplicationException
   {
     // Mehrere Buchungen einer Sollbuchung zuordnen geht nur ohne Splitten.
     for (Buchung buchung : buchungen)
     {
-      buchung.setSollbuchung(sollbuchungen[0]);
+      buchung.setSollbuchung(sollb);
       buchung.store();
     }
   }
 
-  private void zuordnungBuchungZuSollbuchungen() throws Exception
+  private void zuordnungBuchungZuSollbuchungen(Buchung buch,
+      Sollbuchung[] sollbuchungen) throws Exception
   {
-    if (buchungen[0].getSplitTyp() != null
-        && (buchungen[0].getSplitTyp() == SplitbuchungTyp.GEGEN
-            || buchungen[0].getSplitTyp() == SplitbuchungTyp.HAUPT))
+    if (buch.getSplitTyp() != null
+        && (buch.getSplitTyp() == SplitbuchungTyp.GEGEN
+            || buch.getSplitTyp() == SplitbuchungTyp.HAUPT))
     {
       throw new ApplicationException(
           "Haupt- oder Gegen-Buchungen können nicht mehreren Sollbuchungen zugeordnet werden!");
@@ -299,7 +290,7 @@ public class BuchungSollbuchungZuordnungAction implements Action
       }
     });
 
-    Buchung buchung = buchungen[0];
+    Buchung buchung = buch;
 
     for (Sollbuchung s : sollbuchungen)
     {
