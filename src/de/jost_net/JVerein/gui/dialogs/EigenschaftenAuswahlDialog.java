@@ -184,7 +184,7 @@ public class EigenschaftenAuswahlDialog
     werte.add(ODER);
     eigenschaftenverknuepfung = new SelectInput(werte,
         control.getEigenschaftenVerknuepfung());
-    eigenschaftenverknuepfung.setName("Gruppen-Verknüpfung");
+    eigenschaftenverknuepfung.setName("Eigenschaften-Verknüpfung");
     return eigenschaftenverknuepfung;
   }
 
