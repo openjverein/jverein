@@ -778,6 +778,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       }
       try
       {
+        DBTransaction.starten();
         String b = "";
         String message = "";
         Sollbuchung sollb = null;
@@ -853,19 +854,29 @@ public class BuchungsControl extends VorZurueckControl implements Savable
               + Einstellungen.DECIMALFORMAT.format(sollb.getBetrag());
         }
         getSollbuchungInput().setText(b);
+        DBTransaction.commit();
         GUI.getStatusBar().setSuccessText(message);
       }
       catch (ApplicationException ae)
       {
+        DBTransaction.rollback();
         String error = ae.getMessage();
         Logger.error(error, ae);
         GUI.getStatusBar().setErrorText(error);
       }
       catch (RemoteException er)
       {
+        DBTransaction.rollback();
         String error = "Fehler bei Zuordnung der Sollbuchung";
         Logger.error(error, er);
         GUI.getStatusBar().setErrorText(error);
+      }
+      catch (Exception e)
+      {
+        DBTransaction.rollback();
+        Logger.error("Fehler bei der Zuordnung der Sollbuchung", e);
+        GUI.getStatusBar()
+            .setErrorText("Fehler bei der Zuordnung der Sollbuchung");
       }
     }
   }

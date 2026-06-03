@@ -83,12 +83,12 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
     this.setTitle("Sollbuchung Auswahl");
     this.buchung = buchung;
     this.multi = multi;
-    control = new SollbuchungControl(null);
   }
 
   @Override
   protected void paint(Composite parent) throws Exception
   {
+    control = new SollbuchungControl(null);
     final TabFolder folder = new TabFolder(parent, SWT.NONE);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
     folder.addSelectionListener(new SelectionAdapter()
