@@ -16,17 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.UniversalDateFormat;
@@ -47,8 +42,7 @@ public class VelocityTool
   }
 
   public static String eval(Map<String, Object> map, String text)
-      throws ParseErrorException, MethodInvocationException,
-      ResourceNotFoundException, IOException
+      throws Exception
   {
     VelocityContext context = new VelocityContext(
         new HashMap<String, Object>(map));
@@ -57,7 +51,9 @@ public class VelocityTool
     context.put("udateformat", new UniversalDateFormat());
 
     StringWriter wtext = new StringWriter();
+
     Velocity.evaluate(context, wtext, "LOG", text);
+
     return wtext.getBuffer().toString();
   }
 }

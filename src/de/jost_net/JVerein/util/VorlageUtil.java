@@ -843,8 +843,8 @@ public class VorlageUtil
     }
     catch (Exception e)
     {
-      Logger.error(
-          "Format Fehler bei der Dateinamen Ersetzung: " + e.getMessage());
+      Logger.error("Format Fehler bei der Dateinamen Ersetzung: "
+          + e.getMessage().split("\n")[0]);
       return "Format Fehler bei der Dateinamen Ersetzung.";
     }
   }

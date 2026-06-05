@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.Variable;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
+import de.willuhn.logging.Logger;
 
 public class RechnungMap extends AbstractMap
 {
@@ -316,10 +316,10 @@ public class RechnungMap extends AbstractMap
             value = VelocityTool.eval(new AllgemeineMap().getMap(map),
                 zahlungsweg);
           }
-          catch (IOException e)
+          catch (Exception e)
           {
-            e.printStackTrace();
-            value = zahlungsweg;
+            String text = "Fehler bei der Aufbereitung des Zahlungsweg-Textes";
+            Logger.error(text, e);
           }
           break;
       }

@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -367,16 +366,19 @@ public class Gutschrift extends SEPASupport
     try
     {
       zweck = VelocityTool.eval(map, params.verwendungszweck);
-      if (zweck.length() >= 140)
-      {
-        zweck = zweck.substring(0, 136) + "...";
-      }
-      ueberweisung.setVerwendungszweck(zweck);
     }
-    catch (IOException e)
+    catch (Exception e)
     {
-      Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+      String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+      Logger.error(text, e);
+      throw new ApplicationException(
+          text + ": " + e.getMessage().split("\n")[0]);
     }
+    if (zweck.length() >= 140)
+    {
+      zweck = zweck.substring(0, 136) + "...";
+    }
+    ueberweisung.setVerwendungszweck(zweck);
 
     double betrag = 0;
     if (params.fixerBetragAbrechnen)
@@ -411,17 +413,21 @@ public class Gutschrift extends SEPASupport
         rmap = new MitgliedMap().getMap(sollbuchung.getZahler(), rmap,
             ohneLesefelder);
         rmap = new RechnungMap().getMap(rechnung, rmap);
+
         try
         {
           zweck = VelocityTool.eval(rmap, zweck);
-          if (zweck.length() >= 140)
-          {
-            zweck = zweck.substring(0, 136) + "...";
-          }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+          String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+          Logger.error(text, e);
+          throw new ApplicationException(
+              text + ": " + e.getMessage().split("\n")[0]);
+        }
+        if (zweck.length() >= 140)
+        {
+          zweck = zweck.substring(0, 136) + "...";
         }
         sollbuchung.setZweck1(zweck);
       }

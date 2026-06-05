@@ -276,14 +276,36 @@ public class ZipMailer
                     }
                     break;
                   default:
-                    finaldateiname = VelocityTool.eval(map, dateiname);
+                    try
+                    {
+                      finaldateiname = VelocityTool.eval(map, dateiname);
+                    }
+                    catch (Exception ex)
+                    {
+                      String errorText = "Fehler bei der Aufbereitung des Dateinamens";
+                      Logger.error(errorText, ex);
+                      throw new ApplicationException(
+                          errorText + ": " + ex.getMessage().split("\n")[0]);
+                    }
                     break;
                 }
                 ma.setDateiname(finaldateiname);
                 anhang.add(ma);
               }
-              String betr = VelocityTool.eval(map, betreff);
-              String text = VelocityTool.eval(map, txt);
+              String betr = "";
+              String text = "";
+              try
+              {
+                betr = VelocityTool.eval(map, betreff);
+                text = VelocityTool.eval(map, txt);
+              }
+              catch (Exception ex)
+              {
+                String errorText = "Fehler bei der Aufbereitung des Mailtextes";
+                Logger.error(errorText, ex);
+                throw new ApplicationException(
+                    errorText + ": " + ex.getMessage());
+              }
 
               monitor.log("Versende an " + mail);
               try

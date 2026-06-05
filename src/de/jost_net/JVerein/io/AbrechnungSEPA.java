@@ -597,9 +597,12 @@ public class AbrechnungSEPA extends SEPASupport
             vzweck = vzweck.substring(0, 136) + "...";
           }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+          String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+          Logger.error(text, e);
+          throw new ApplicationException(
+              text + ": " + e.getMessage().split("\n")[0]);
         }
         zahler.setVerwendungszweck(vzweck);
       }
@@ -683,9 +686,12 @@ public class AbrechnungSEPA extends SEPASupport
             vzweck = vzweck.substring(0, 136) + "...";
           }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+          String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+          Logger.error(text, e);
+          throw new ApplicationException(
+              text + ": " + e.getMessage().split("\n")[0]);
         }
 
         try
@@ -981,7 +987,7 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private String getVerwendungszweck(AbrechnungSEPAParam param)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new AbrechnungsParameterMap().getMap(param, map);
@@ -989,10 +995,12 @@ public class AbrechnungSEPA extends SEPASupport
     {
       return VelocityTool.eval(map, param.verwendungszweck);
     }
-    catch (IOException e)
+    catch (Exception e)
     {
-      Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-      return param.verwendungszweck;
+      String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+      Logger.error(text, e);
+      throw new ApplicationException(
+          text + ": " + e.getMessage().split("\n")[0]);
     }
   }
 
@@ -1209,9 +1217,12 @@ public class AbrechnungSEPA extends SEPASupport
               zweck = zweck.substring(0, 136) + "...";
             }
           }
-          catch (IOException e)
+          catch (Exception e)
           {
-            Logger.error("Fehler bei der Aufbereitung der Variablen", e);
+            String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
+            Logger.error(text, e);
+            throw new ApplicationException(
+                text + ": " + e.getMessage().split("\n")[0]);
           }
 
           sollb.setZweck1(zweck);

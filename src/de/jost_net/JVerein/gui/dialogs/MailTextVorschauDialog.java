@@ -17,12 +17,10 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.velocity.exception.ParseErrorException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -160,7 +158,7 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       container.addLabelPair("Text", text);
 
     }
-    catch (ParseErrorException e)
+    catch (Exception e)
     {
       // erste Zeile der Fehlermeldung ausgeben
       GUI.getStatusBar().setErrorText(
@@ -222,9 +220,12 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
         betreff.setValue(VelocityTool.eval(map, betreffString));
         text.setValue(VelocityTool.eval(map, textString));
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-        Logger.error("Fehler", e);
+        String text = "Fehler bei der Aufbereitung des Mailtextes";
+        Logger.error(text, e);
+        GUI.getStatusBar()
+            .setErrorText(text + ": " + e.getMessage().split("\n")[0]);
       }
     }
   }

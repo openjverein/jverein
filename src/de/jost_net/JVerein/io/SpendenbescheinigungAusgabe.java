@@ -53,6 +53,7 @@ import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Base64;
 
@@ -125,10 +126,11 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
    *          Der Dateiname, wohin das Dokument geschrieben werden soll
    * @throws IOException
    * @throws DocumentException
+   * @throws ApplicationException
    */
   private void generiereSpendenbescheinigungStandardAb2014(
       Spendenbescheinigung spb, File file, Adressblatt adressblatt)
-      throws IOException, DocumentException
+      throws IOException, DocumentException, ApplicationException
   {
     if (fos == null)
     {
@@ -639,7 +641,17 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
         if (m.getEmail() != null)
           map.put("email", m.getEmail());
 
-        rpt.addLight(VelocityTool.eval(mmap, text), 10);
+        try
+        {
+          rpt.addLight(VelocityTool.eval(mmap, text), 10);
+        }
+        catch (Exception e)
+        {
+          String text = "Fehler bei der Aufbereitung des Anschreibens";
+          Logger.error(text, e);
+          throw new ApplicationException(
+              text + ": " + e.getMessage().split("\n")[0]);
+        }
       }
       else
       {

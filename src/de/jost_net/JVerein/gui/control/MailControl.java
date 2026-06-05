@@ -501,7 +501,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
-                  monitor.log(empf.getMailAdresse() + " - " + ae.getMessage());
+                  monitor.log(empf.getMailAdresse() + " - "
+                      + ae.getMessage().split("\n")[0]);
                 }
                 sentCount++;
                 monitor.log(empf.getMailAdresse() + " - versendet");

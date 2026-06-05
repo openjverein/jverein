@@ -420,7 +420,8 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Map<String, Object> map) throws DocumentException, IOException
+      Map<String, Object> map)
+      throws DocumentException, IOException, ApplicationException
   {
     String filename = String.format("/fonts/%s.ttf", feld.getFont());
     BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
@@ -442,8 +443,18 @@ public class FormularAufbereitung
     }
     else
     {
-      // Felder mit Text und Variablen
-      val = VelocityTool.eval(map, inhalt);
+      try
+      {
+        // Felder mit Text und Variablen
+        val = VelocityTool.eval(map, inhalt);
+      }
+      catch (Exception ex)
+      {
+        String errorText = "Fehler bei der Aufbereitung des Feldes";
+        Logger.error(errorText, ex);
+        throw new ApplicationException(
+            errorText + ": " + ex.getMessage().split("\n")[0]);
+      }
     }
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
@@ -579,7 +590,7 @@ public class FormularAufbereitung
   }
 
   public void printAnschreiben(Spendenbescheinigung spb, String text)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     // Anschreiben drucken
     try
@@ -594,9 +605,18 @@ public class FormularAufbereitung
         mmap = new SpendenbescheinigungMap().getMap(spb, mmap);
         if (m.getEmail() != null)
           mmap.put("email", m.getEmail());
-
-        p = new Paragraph(VelocityTool.eval(mmap, text),
-            Reporter.getFreeSans(10));
+        try
+        {
+          p = new Paragraph(VelocityTool.eval(mmap, text),
+              Reporter.getFreeSans(10));
+        }
+        catch (Exception e)
+        {
+          String errorText = "Fehler bei der Aufbereitung des Anschreibens";
+          Logger.error(errorText, e);
+          throw new ApplicationException(
+              errorText + ": " + e.getMessage().split("\n")[0]);
+        }
       }
       else
       {
