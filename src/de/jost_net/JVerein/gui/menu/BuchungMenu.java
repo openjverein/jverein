@@ -444,6 +444,18 @@ public class BuchungMenu extends ContextMenu
                 && b.getSpendenbescheinigung() == null;
           }
         }
+        if (o instanceof Buchung[])
+        {
+          for (Buchung bu : ((Buchung[]) o))
+          {
+            if (bu.getBuchungsart() == null || !bu.getBuchungsart().getSpende()
+                || bu.getSpendenbescheinigung() != null)
+            {
+              return false;
+            }
+          }
+          return true;
+        }
       }
       catch (RemoteException e)
       {
