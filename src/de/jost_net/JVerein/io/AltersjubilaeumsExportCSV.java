@@ -69,7 +69,7 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
   }
 
   @Override
-  public String getDateiname(Object object)
+  public String getDateiname(Object object) throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
         (MitgliedControl) object) + ".csv";

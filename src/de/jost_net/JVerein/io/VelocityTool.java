@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.UniversalDateFormat;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class VelocityTool
 {
@@ -42,7 +43,13 @@ public class VelocityTool
   }
 
   public static String eval(Map<String, Object> map, String text)
-      throws Exception
+      throws ApplicationException
+  {
+    return eval(map, text, false);
+  }
+
+  public static String eval(Map<String, Object> map, String text,
+      boolean kuerzen) throws ApplicationException
   {
     VelocityContext context = new VelocityContext(
         new HashMap<String, Object>(map));
@@ -51,9 +58,21 @@ public class VelocityTool
     context.put("udateformat", new UniversalDateFormat());
 
     StringWriter wtext = new StringWriter();
-
-    Velocity.evaluate(context, wtext, "LOG", text);
-
-    return wtext.getBuffer().toString();
+    try
+    {
+      Velocity.evaluate(context, wtext, "LOG", text);
+    }
+    catch (Exception e)
+    {
+      String t = "Fehler bei der Aufbereitung des Verwedungszwecks";
+      Logger.error(t, e);
+      throw new ApplicationException(t + ": " + e.getMessage().split("\n")[0]);
+    }
+    String txt = wtext.getBuffer().toString();
+    if (kuerzen && txt.length() >= 140)
+    {
+      txt = txt.substring(0, 136) + "...";
+    }
+    return txt;
   }
 }

@@ -1011,20 +1011,20 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_SUBTITEL,
         this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SPENDENBESCHEINIGUNGEN_DATEINAME,
         this);

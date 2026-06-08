@@ -443,18 +443,8 @@ public class FormularAufbereitung
     }
     else
     {
-      try
-      {
-        // Felder mit Text und Variablen
-        val = VelocityTool.eval(map, inhalt);
-      }
-      catch (Exception ex)
-      {
-        String errorText = "Fehler bei der Aufbereitung des Feldes";
-        Logger.error(errorText, ex);
-        throw new ApplicationException(
-            errorText + ": " + ex.getMessage().split("\n")[0]);
-      }
+      // Felder mit Text und Variablen
+      val = VelocityTool.eval(map, inhalt);
     }
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
@@ -605,18 +595,9 @@ public class FormularAufbereitung
         mmap = new SpendenbescheinigungMap().getMap(spb, mmap);
         if (m.getEmail() != null)
           mmap.put("email", m.getEmail());
-        try
-        {
-          p = new Paragraph(VelocityTool.eval(mmap, text),
-              Reporter.getFreeSans(10));
-        }
-        catch (Exception e)
-        {
-          String errorText = "Fehler bei der Aufbereitung des Anschreibens";
-          Logger.error(errorText, e);
-          throw new ApplicationException(
-              errorText + ": " + e.getMessage().split("\n")[0]);
-        }
+
+        p = new Paragraph(VelocityTool.eval(mmap, text),
+            Reporter.getFreeSans(10));
       }
       else
       {

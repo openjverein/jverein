@@ -477,19 +477,19 @@ public class BuchungsartControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_SUBTITEL, this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BUCHUNGSARTEN_DATEINAME, this);
   }

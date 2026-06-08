@@ -1075,7 +1075,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     if (selectedTab == 0)
     {
@@ -1090,7 +1090,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     if (selectedTab == 0)
     {
@@ -1105,7 +1105,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     if (selectedTab == 0)
     {

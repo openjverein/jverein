@@ -53,7 +53,6 @@ import de.jost_net.JVerein.util.JVDateFormatJJJJ;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Base64;
 
@@ -641,17 +640,8 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
         if (m.getEmail() != null)
           map.put("email", m.getEmail());
 
-        try
-        {
-          rpt.addLight(VelocityTool.eval(mmap, text), 10);
-        }
-        catch (Exception e)
-        {
-          String text = "Fehler bei der Aufbereitung des Anschreibens";
-          Logger.error(text, e);
-          throw new ApplicationException(
-              text + ": " + e.getMessage().split("\n")[0]);
-        }
+        rpt.addLight(VelocityTool.eval(mmap, text), 10);
+
       }
       else
       {
@@ -690,7 +680,8 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object) throws RemoteException
+  protected String getDateiname(DBObject object)
+      throws RemoteException, ApplicationException
   {
     if (object != null)
     {

@@ -490,11 +490,12 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 map.put("email", empf.getMitglied().getEmail());
                 map.put("empf", empf.getMitglied());
 
+                String betreffParsed = VelocityTool.eval(map, betr);
+                String textParsed = VelocityTool.eval(map, txt);
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(),
-                      VelocityTool.eval(map, betr), VelocityTool.eval(map, txt),
-                      getMail().getAnhang());
+                  sender.sendMail(empf.getMailAdresse(), textParsed,
+                      betreffParsed, getMail().getAnhang());
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
@@ -928,19 +929,19 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.MAILS_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.MAILS_SUBTITEL, this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.MAILS_DATEINAME, this);
   }

@@ -2869,7 +2869,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return abweichenderzahlertree;
   }
 
-  private void starteAuswertung() throws RemoteException
+  private void starteAuswertung() throws RemoteException, ApplicationException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
@@ -2963,7 +2963,8 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAdressAuswertung() throws RemoteException
+  private void starteAdressAuswertung()
+      throws RemoteException, ApplicationException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
@@ -3057,7 +3058,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  private void starteStatistik() throws RemoteException
+  private void starteStatistik() throws RemoteException, ApplicationException
   {
     FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
     fd.setText("Ausgabedatei wählen.");
@@ -3615,7 +3616,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     if (isMitglied)
     {
@@ -3628,7 +3629,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     if (isMitglied)
     {
@@ -3641,7 +3642,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     if (isMitglied)
     {

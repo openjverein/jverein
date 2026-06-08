@@ -455,7 +455,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     {
 
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) throws ApplicationException
       {
         starteAuswertung();
       }
@@ -535,7 +535,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAuswertung()
+  private void starteAuswertung() throws ApplicationException
   {
     // Alle Kursteilnehmer lesen
 
@@ -687,19 +687,19 @@ public class KursteilnehmerControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_SUBTITEL, this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.KURSTEILNEHMER_DATEINAME, this);
   }

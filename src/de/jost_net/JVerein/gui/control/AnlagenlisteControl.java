@@ -359,19 +359,19 @@ public class AnlagenlisteControl extends AbstractSaldoControl
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_SUBTITEL, this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.ANLAGENVERZEICHNIS_DATEINAME, this);
   }

@@ -1078,19 +1078,19 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this);
   }

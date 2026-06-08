@@ -265,19 +265,9 @@ public class Ueberweisung
   private String eval(Lastschrift ls, String verwendungszweck)
       throws ApplicationException, RemoteException
   {
-    try
-    {
-      Map<String, Object> map = new LastschriftMap().getMap(ls, null);
-      map = new AllgemeineMap().getMap(map);
-      return VelocityTool.eval(map, verwendungszweck).toUpperCase();
-    }
-    catch (Exception e)
-    {
-      String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
-      Logger.error(text, e);
-      throw new ApplicationException(
-          text + ": " + e.getMessage().split("\n")[0]);
-    }
+    Map<String, Object> map = new LastschriftMap().getMap(ls, null);
+    map = new AllgemeineMap().getMap(map);
+    return VelocityTool.eval(map, verwendungszweck).toUpperCase();
   }
 
 }

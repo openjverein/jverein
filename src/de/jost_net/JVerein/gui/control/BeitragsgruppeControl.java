@@ -690,19 +690,19 @@ public class BeitragsgruppeControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.BEITRAGSGRUPPEN_DATEINAME);
   }

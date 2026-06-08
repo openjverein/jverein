@@ -148,22 +148,12 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       container.addLabelPair("Empfänger", mitglied);
     }
 
-    try
-    {
-      betreff = new TextInput(VelocityTool.eval(map, betreffString));
-      betreff.setEnabled(false);
-      container.addLabelPair("Betreff", betreff);
-      text = new TextAreaInput(VelocityTool.eval(map, textString));
-      text.setEnabled(false);
-      container.addLabelPair("Text", text);
-
-    }
-    catch (Exception e)
-    {
-      // erste Zeile der Fehlermeldung ausgeben
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim parsen des Textes: " + e.getMessage().split("\n")[0]);
-    }
+    betreff = new TextInput(VelocityTool.eval(map, betreffString));
+    betreff.setEnabled(false);
+    container.addLabelPair("Betreff", betreff);
+    text = new TextAreaInput(VelocityTool.eval(map, textString));
+    text.setEnabled(false);
+    container.addLabelPair("Text", text);
 
     ButtonArea b = new ButtonArea();
     b.addButton("Schließen", context -> close(), null, false,

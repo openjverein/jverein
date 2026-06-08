@@ -170,19 +170,19 @@ public class EigenschaftGruppeControl extends VorZurueckControl
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     return VorlageUtil.getName(VorlageTyp.EIGENSCHAFTENGRUPPEN_DATEINAME);
   }

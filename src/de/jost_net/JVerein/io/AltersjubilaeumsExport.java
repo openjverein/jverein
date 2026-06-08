@@ -111,14 +111,14 @@ public abstract class AltersjubilaeumsExport implements Exporter
       throws IOException, DocumentException, ApplicationException;
 
   @Override
-  public void calculateTitle(Object object)
+  public void calculateTitle(Object object) throws ApplicationException
   {
     title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public void calculateSubitle(Object object) throws ApplicationException
   {
     subtitle = VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL, object);

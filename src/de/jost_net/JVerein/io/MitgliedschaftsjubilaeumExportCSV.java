@@ -70,7 +70,7 @@ public class MitgliedschaftsjubilaeumExportCSV
   }
 
   @Override
-  public String getDateiname(Object object)
+  public String getDateiname(Object object) throws ApplicationException
   {
     return VorlageUtil.getName(
         VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,

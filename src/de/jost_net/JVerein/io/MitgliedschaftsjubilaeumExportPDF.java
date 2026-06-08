@@ -31,6 +31,7 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.util.ApplicationException;
 
 public class MitgliedschaftsjubilaeumExportPDF
     extends MitgliedschaftsjubilaeumsExport
@@ -77,7 +78,7 @@ public class MitgliedschaftsjubilaeumExportPDF
   }
 
   @Override
-  public String getDateiname(Object object)
+  public String getDateiname(Object object) throws ApplicationException
   {
     return VorlageUtil.getName(
         VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,

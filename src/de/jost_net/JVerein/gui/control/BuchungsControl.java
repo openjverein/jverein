@@ -2471,7 +2471,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableTitle()
+  protected String getTableTitle() throws ApplicationException
   {
     if (geldkonto)
     {
@@ -2484,7 +2484,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableSubtitle()
+  protected String getTableSubtitle() throws ApplicationException
   {
     if (geldkonto)
     {
@@ -2497,7 +2497,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableDateiname()
+  protected String getTableDateiname() throws ApplicationException
   {
     if (geldkonto)
     {

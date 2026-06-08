@@ -363,21 +363,8 @@ public class Gutschrift extends SEPASupport
       map = new MitgliedMap().getMap(ueberweisung.getMitglied(), map,
           ohneLesefelder);
     }
-    try
-    {
-      zweck = VelocityTool.eval(map, params.verwendungszweck);
-    }
-    catch (Exception e)
-    {
-      String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
-      Logger.error(text, e);
-      throw new ApplicationException(
-          text + ": " + e.getMessage().split("\n")[0]);
-    }
-    if (zweck.length() >= 140)
-    {
-      zweck = zweck.substring(0, 136) + "...";
-    }
+
+    zweck = VelocityTool.eval(map, params.verwendungszweck, true);
     ueberweisung.setVerwendungszweck(zweck);
 
     double betrag = 0;
@@ -414,21 +401,7 @@ public class Gutschrift extends SEPASupport
             ohneLesefelder);
         rmap = new RechnungMap().getMap(rechnung, rmap);
 
-        try
-        {
-          zweck = VelocityTool.eval(rmap, zweck);
-        }
-        catch (Exception e)
-        {
-          String text = "Fehler bei der Aufbereitung des Verwedungszwecks";
-          Logger.error(text, e);
-          throw new ApplicationException(
-              text + ": " + e.getMessage().split("\n")[0]);
-        }
-        if (zweck.length() >= 140)
-        {
-          zweck = zweck.substring(0, 136) + "...";
-        }
+        zweck = VelocityTool.eval(rmap, zweck, true);
         sollbuchung.setZweck1(zweck);
       }
       sollbuchung.setRechnung(rechnung);

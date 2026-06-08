@@ -36,6 +36,7 @@ import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public class Kontoauszug extends AbstractAusgabe
 {
@@ -51,7 +52,7 @@ public class Kontoauszug extends AbstractAusgabe
   }
 
   private void generiereMitglied(File file, Mitglied m)
-      throws DocumentException, IOException
+      throws DocumentException, IOException, ApplicationException
   {
     MitgliedskontoNode node = new MitgliedskontoNode(m,
         (Date) control.getDatumvon().getValue(),
@@ -144,7 +145,8 @@ public class Kontoauszug extends AbstractAusgabe
 
   @Override
   protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
-      File file, DBObject object) throws IOException, DocumentException
+      File file, DBObject object)
+      throws IOException, DocumentException, ApplicationException
   {
     generiereMitglied(file, (Mitglied) object);
   }
@@ -176,7 +178,7 @@ public class Kontoauszug extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object)
+  protected String getDateiname(DBObject object) throws ApplicationException
   {
     if (object != null)
     {

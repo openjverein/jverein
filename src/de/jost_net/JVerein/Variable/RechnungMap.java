@@ -37,14 +37,14 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Bank;
 import de.jost_net.OBanToo.SEPA.BankenDaten.Banken;
-import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class RechnungMap extends AbstractMap
 {
 
   @SuppressWarnings("deprecation")
   public Map<String, Object> getMap(Rechnung re, Map<String, Object> inMap)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     Map<String, Object> map = null;
     if (inMap == null)
@@ -311,16 +311,9 @@ public class RechnungMap extends AbstractMap
             zahlungsweg = (String) Einstellungen
                 .getEinstellung(Property.RECHNUNGTEXTGUTSCHRIFT);
           }
-          try
-          {
-            value = VelocityTool.eval(new AllgemeineMap().getMap(map),
-                zahlungsweg);
-          }
-          catch (Exception e)
-          {
-            String text = "Fehler bei der Aufbereitung des Zahlungsweg-Textes";
-            Logger.error(text, e);
-          }
+          value = VelocityTool.eval(new AllgemeineMap().getMap(map),
+              zahlungsweg);
+
           break;
       }
       map.put(var.getName(), value);
