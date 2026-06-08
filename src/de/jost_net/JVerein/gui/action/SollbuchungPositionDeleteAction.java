@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
+import java.util.List;
 
 import de.jost_net.JVerein.Messaging.SollbuchungMessage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -54,8 +54,7 @@ public class SollbuchungPositionDeleteAction extends DeleteAction
     {
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
-      ArrayList<SollbuchungPosition> sollbpList = sollb
-          .getSollbuchungPositionList();
+      List<SollbuchungPosition> sollbpList = sollb.getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)
       {
         betrag += sollp.getBetrag();

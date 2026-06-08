@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import de.jost_net.JVerein.io.IAdresse;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -123,7 +123,7 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 
   public void setZahlungsweg(Integer zahlungsweg) throws RemoteException;
 
-  public ArrayList<Sollbuchung> getSollbuchungList() throws RemoteException;
+  public List<Sollbuchung> getSollbuchungList() throws RemoteException;
 
   public String getLeitwegID() throws RemoteException;
 

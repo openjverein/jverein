@@ -25,13 +25,11 @@ package de.jost_net.JVerein.gui.action;
 
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -57,10 +55,7 @@ public class FormularfelderExportAction implements Action
 
     try
     {
-      DBService service = Einstellungen.getDBService();
-      DBIterator<Formularfeld> formularfelder = service
-          .createList(Formularfeld.class);
-      formularfelder.addFilter("formular = ?", new Object[] { f.getID() });
+      GenericIterator<Formularfeld> formularfelder = f.getFormularfelder(0);
       ArrayList<Formularfeld> fflist = new ArrayList<>();
       while (formularfelder.hasNext())
       {

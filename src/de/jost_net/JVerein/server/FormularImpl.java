@@ -21,8 +21,10 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -306,6 +308,21 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
   public String getObjektNameMehrzahl()
   {
     return "Formulare";
+  }
+
+  @Override
+  public GenericIterator<Formularfeld> getFormularfelder(int seite)
+      throws RemoteException
+  {
+    DBIterator<Formularfeld> it = Einstellungen.getDBService()
+        .createList(Formularfeld.class);
+    it.addFilter("formular = ?", getID());
+
+    if (seite > 0)
+    {
+      it.addFilter("seite = ?", seite);
+    }
+    return it;
   }
 
 }

@@ -19,6 +19,7 @@ package de.jost_net.JVerein.rmi;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.keys.FormularArt;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 
 public interface Formular extends JVereinDBObject
@@ -50,5 +51,8 @@ public interface Formular extends JVereinDBObject
   public DBIterator<Formular> getLinked() throws RemoteException;
 
   public void setZaehlerToFormlink(int zaehler) throws RemoteException;
+
+  public GenericIterator<Formularfeld> getFormularfelder(int i)
+      throws RemoteException;
 
 }

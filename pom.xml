@@ -128,7 +128,7 @@
           <groupId>org.threeten</groupId>
           <artifactId>threeten-extra</artifactId>
         </exclusion>
-        <exclusion>
+         <exclusion>
           <groupId>javax.xml.bind</groupId>
           <artifactId>jaxb-api</artifactId>
         </exclusion>
@@ -153,20 +153,12 @@
           <artifactId>angus-activation</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>net.sf.saxon</groupId>
-          <artifactId>Saxon-HE</artifactId>
-        </exclusion>
-        <exclusion>
           <groupId>com.helger</groupId>
           <artifactId>en16931-cii2ubl</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.pdfbox</groupId>
           <artifactId>preflight</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.glassfish.jaxb</groupId>
@@ -227,6 +219,12 @@
       <artifactId>${swt.artifactId}</artifactId>
       <version>${swt.version}</version>
       <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.platform</groupId>
+          <artifactId>org.eclipse.swt</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.ibm.icu</groupId>
