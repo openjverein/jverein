@@ -364,7 +364,7 @@ public class SpendenbescheinigungNeuAction implements Action
               "Die Kontoinhaber der Buchungen sind nicht gleich!");
         }
       }
-      else
+      else if (kontoinhaber == null)
       {
         kontoinhaber = bu.getName();
       }
@@ -381,7 +381,7 @@ public class SpendenbescheinigungNeuAction implements Action
                 "Die Zahler bei den zugeordeneten Sollbuchungen sind nicht gleich!");
           }
         }
-        else
+        else if (zahler == null)
         {
           zahler = z;
         }
