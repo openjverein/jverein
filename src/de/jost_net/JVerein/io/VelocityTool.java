@@ -64,7 +64,8 @@ public class VelocityTool
     }
     catch (Exception e)
     {
-      String t = "Fehler bei der Aufbereitung des Verwedungszwecks";
+      String t = "Fehler bei der Aufbereitung des Textes ("
+          + text.split("\n")[0] + ")";
       Logger.error(t, e);
       throw new ApplicationException(t + ": " + e.getMessage().split("\n")[0]);
     }
