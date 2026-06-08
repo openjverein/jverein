@@ -17,8 +17,8 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -260,8 +260,7 @@ public class SollbuchungPositionControl extends AbstractControl
       // Betrag in Sollbuchung neu berechnen
       Double betrag = 0.0;
       Sollbuchung sollb = pos.getSollbuchung();
-      ArrayList<SollbuchungPosition> sollbpList = sollb
-          .getSollbuchungPositionList();
+      List<SollbuchungPosition> sollbpList = sollb.getSollbuchungPositionList();
       for (SollbuchungPosition sollp : sollbpList)
       {
         betrag += sollp.getBetrag();

@@ -567,7 +567,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       return buchungList;
     }
-    ArrayList<SollbuchungPosition> list = getSollbuchung()
+    List<SollbuchungPosition> list = getSollbuchung()
         .getSollbuchungPositionList();
 
     if (!editable)

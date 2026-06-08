@@ -36,7 +36,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -60,9 +60,7 @@ public class FormularfelderImportCSV implements Importer
   {
     try
     {
-      DBIterator<Formularfeld> list = Einstellungen.getDBService()
-          .createList(Formularfeld.class);
-      list.addFilter("formular = ?", f.getID());
+      GenericIterator<Formularfeld> list = f.getFormularfelder(0);
       while (list.hasNext())
       {
         Formularfeld ff = (Formularfeld) list.next();

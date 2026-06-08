@@ -26,12 +26,11 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.serialize.XmlWriter;
 import de.willuhn.util.ApplicationException;
@@ -102,12 +101,11 @@ public class FormularExporterXML implements Exporter
     }
     for (Object o : objects)
     {
-      DBObject dbObject = (DBObject) o;
+      Formular dbObject = (Formular) o;
       writer.write(dbObject);
 
-      DBIterator<Formularfeld> formularfeldIt = Einstellungen.getDBService()
-          .createList(Formularfeld.class);
-      formularfeldIt.addFilter("formular = ?", dbObject.getID());
+      GenericIterator<Formularfeld> formularfeldIt = dbObject
+          .getFormularfelder(0);
       while (formularfeldIt.hasNext())
       {
         writer.write(formularfeldIt.next());

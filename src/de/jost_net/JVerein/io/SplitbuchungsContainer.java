@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import de.jost_net.JVerein.Einstellungen;
@@ -449,7 +450,7 @@ public class SplitbuchungsContainer
         .getEinstellung(Property.STEUERINBUCHUNG);
     boolean klasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
-    ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
+    List<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
     if (spArray.size() == 0)
     {
       throw new ApplicationException("Sollbuchung enthält keine Positionen");
@@ -787,7 +788,7 @@ public class SplitbuchungsContainer
     boolean klasseInBuchung = (Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG);
 
-    ArrayList<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
+    List<SollbuchungPosition> spArray = sollb.getSollbuchungPositionList();
 
     for (SollbuchungPosition sp : spArray)
     {

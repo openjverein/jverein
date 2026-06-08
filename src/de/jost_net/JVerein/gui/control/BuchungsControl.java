@@ -826,7 +826,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
             getZweck().setValue(sollb.getZweck1());
             getBetrag().setValue(sollb.getBetrag());
           }
-          ArrayList<SollbuchungPosition> sbpList = sollb
+          List<SollbuchungPosition> sbpList = sollb
               .getSollbuchungPositionList();
           if (sbpList.size() > 0)
           {

@@ -22,6 +22,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.logging.Logger;
@@ -52,9 +53,8 @@ public class FormularDuplizierenAction implements Action
       f2.setID(null);
       f2.setBezeichnung(findeBezeichnung(f1.getBezeichnung()));
       f2.store();
-      DBIterator<Formularfeld> it = Einstellungen.getDBService()
-          .createList(Formularfeld.class);
-      it.addFilter("formular=?", f1.getID());
+
+      GenericIterator<Formularfeld> it = f1.getFormularfelder(0);
       while (it.hasNext())
       {
         Formularfeld ff1 = it.next();

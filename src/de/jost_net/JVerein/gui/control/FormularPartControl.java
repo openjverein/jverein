@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.FormularfeldDetailView;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
@@ -83,10 +84,8 @@ public abstract class FormularPartControl extends VorZurueckControl
   public void refreshTable() throws RemoteException
   {
     formularfelderList.removeAll();
-    DBIterator<Formularfeld> formularfelder = Einstellungen.getDBService()
-        .createList(Formularfeld.class);
-    formularfelder.addFilter("formular = ?", new Object[] { formular.getID() });
-    formularfelder.setOrder("ORDER BY x, y");
+    GenericIterator<Formularfeld> formularfelder = formular
+        .getFormularfelder(0);
     while (formularfelder.hasNext())
     {
       formularfelderList.addItem(formularfelder.next());

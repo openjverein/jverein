@@ -27,9 +27,9 @@ import java.math.RoundingMode;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.mustangproject.BankDetails;
@@ -82,7 +82,7 @@ import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.StringTool;
-import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.internal.action.Program;
 import de.willuhn.jameica.messaging.StatusBarMessage;
@@ -192,9 +192,7 @@ public class FormularAufbereitung
       PdfContentByte contentByte = writer.getDirectContent();
       contentByte.addTemplate(page, 0, 0);
 
-      DBIterator<Formularfeld> it = Einstellungen.getDBService()
-          .createList(Formularfeld.class);
-      it.addFilter("formular = ? and seite = ?", formular.getID(), i);
+      GenericIterator<Formularfeld> it = formular.getFormularfelder(i);
 
       Boolean increased = false;
 
@@ -614,7 +612,7 @@ public class FormularAufbereitung
   @SuppressWarnings("resource")
   public void addZUGFeRD(Rechnung re, boolean mahnung) throws IOException
   {
-    ArrayList<Sollbuchung> sollbs = re.getSollbuchungList();
+    List<Sollbuchung> sollbs = re.getSollbuchungList();
     if (sollbs.isEmpty())
     {
       return;
