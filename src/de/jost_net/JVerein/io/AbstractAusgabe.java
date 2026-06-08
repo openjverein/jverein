@@ -124,7 +124,9 @@ public abstract class AbstractAusgabe
             versand.store();
           }
         }
-        closeDocument(formularaufbereitung, null);
+
+        closeDocument(formularaufbereitung,
+            list.size() == 1 ? list.get(0) : null);
         formularaufbereitung.showFormular();
         break;
       case PDF_EINZELN:
