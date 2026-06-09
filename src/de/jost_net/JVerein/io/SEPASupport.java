@@ -52,7 +52,6 @@ public class SEPASupport
   {
     if (re != null && buchung != null)
     {
-      FileInputStream fis = null;
       try
       {
         Map<String, Object> map = new AllgemeineMap().getMap(null);
@@ -68,51 +67,43 @@ public class SEPASupport
         aufbereitung.writeForm(re.getFormular(), map);
         aufbereitung.closeFormular();
 
-        fis = new FileInputStream(file);
-        if (fis.available() <= 0)
+        try (FileInputStream fis = new FileInputStream(file);)
         {
-          throw new ApplicationException("Datei ist leer");
+          if (fis.available() <= 0)
+          {
+            throw new ApplicationException("Datei ist leer");
+          }
+          AbstractDokument doc = Einstellungen.getDBService()
+              .createObject(BuchungDokument.class, null);
+          doc.setReferenz(Long.valueOf(buchung.getID()));
+
+          // Dokument speichern
+          String locverz = "buchungen" + doc.getReferenz();
+          QueryMessage qm = new QueryMessage(locverz, fis);
+          Application.getMessagingFactory()
+              .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
+
+          // Satz in die DB schreiben
+          doc.setBemerkung(
+              dateiname.length() > 50 ? dateiname.substring(0, 50) : dateiname);
+          String uuid = qm.getData().toString();
+          doc.setUUID(uuid);
+          doc.setDatum(datum);
+          doc.store();
+
+          // Zusätzliche Eigenschaft speichern
+          Map<String, String> filenameMap = new HashMap<>();
+          filenameMap.put("filename", file.getName());
+          qm = new QueryMessage(uuid, filenameMap);
+          Application.getMessagingFactory()
+              .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
+          file.delete();
         }
-        AbstractDokument doc = Einstellungen.getDBService()
-            .createObject(BuchungDokument.class, null);
-        doc.setReferenz(Long.valueOf(buchung.getID()));
-
-        // Dokument speichern
-        String locverz = "buchungen" + doc.getReferenz();
-        QueryMessage qm = new QueryMessage(locverz, fis);
-        Application.getMessagingFactory()
-            .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
-
-        // Satz in die DB schreiben
-        doc.setBemerkung(
-            dateiname.length() > 50 ? dateiname.substring(0, 50) : dateiname);
-        String uuid = qm.getData().toString();
-        doc.setUUID(uuid);
-        doc.setDatum(datum);
-        doc.store();
-
-        // Zusätzliche Eigenschaft speichern
-        Map<String, String> filenameMap = new HashMap<>();
-        filenameMap.put("filename", file.getName());
-        qm = new QueryMessage(uuid, filenameMap);
-        Application.getMessagingFactory()
-            .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
-        file.delete();
       }
       catch (IOException | DocumentException e)
       {
         Logger.error("Fehler beim Speichern der Rechnung als Buchungsdokument",
             e);
-      }
-      finally
-      {
-        try
-        {
-          fis.close();
-        }
-        catch (IOException ignore)
-        {
-        }
       }
     }
   }

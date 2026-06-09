@@ -418,7 +418,8 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Map<String, Object> map) throws DocumentException, IOException
+      Map<String, Object> map)
+      throws DocumentException, IOException, ApplicationException
   {
     String filename = String.format("/fonts/%s.ttf", feld.getFont());
     BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
@@ -577,7 +578,7 @@ public class FormularAufbereitung
   }
 
   public void printAnschreiben(Spendenbescheinigung spb, String text)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     // Anschreiben drucken
     try

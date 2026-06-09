@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -364,19 +363,9 @@ public class Gutschrift extends SEPASupport
       map = new MitgliedMap().getMap(ueberweisung.getMitglied(), map,
           ohneLesefelder);
     }
-    try
-    {
-      zweck = VelocityTool.eval(map, params.verwendungszweck);
-      if (zweck.length() >= 140)
-      {
-        zweck = zweck.substring(0, 136) + "...";
-      }
-      ueberweisung.setVerwendungszweck(zweck);
-    }
-    catch (IOException e)
-    {
-      Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-    }
+
+    zweck = VelocityTool.eval(map, params.verwendungszweck, true);
+    ueberweisung.setVerwendungszweck(zweck);
 
     double betrag = 0;
     if (params.fixerBetragAbrechnen)
@@ -411,18 +400,8 @@ public class Gutschrift extends SEPASupport
         rmap = new MitgliedMap().getMap(sollbuchung.getZahler(), rmap,
             ohneLesefelder);
         rmap = new RechnungMap().getMap(rechnung, rmap);
-        try
-        {
-          zweck = VelocityTool.eval(rmap, zweck);
-          if (zweck.length() >= 140)
-          {
-            zweck = zweck.substring(0, 136) + "...";
-          }
-        }
-        catch (IOException e)
-        {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-        }
+
+        zweck = VelocityTool.eval(rmap, zweck, true);
         sollbuchung.setZweck1(zweck);
       }
       sollbuchung.setRechnung(rechnung);

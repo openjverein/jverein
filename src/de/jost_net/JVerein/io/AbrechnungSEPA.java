@@ -589,18 +589,8 @@ public class AbrechnungSEPA extends SEPASupport
         Map<String, Object> map = new AllgemeineMap().getMap(null);
         map = new MitgliedMap().getMap(m, map, ohneLesefelder);
         map = new AbrechnungsParameterMap().getMap(param, map);
-        try
-        {
-          vzweck = VelocityTool.eval(map, vzweck);
-          if (vzweck.length() >= 140)
-          {
-            vzweck = vzweck.substring(0, 136) + "...";
-          }
-        }
-        catch (IOException e)
-        {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-        }
+
+        vzweck = VelocityTool.eval(map, vzweck, true);
         zahler.setVerwendungszweck(vzweck);
       }
       else
@@ -675,18 +665,8 @@ public class AbrechnungSEPA extends SEPASupport
         Map<String, Object> map = new AllgemeineMap().getMap(null);
         map = new MitgliedMap().getMap(m, map, ohneLesefelder);
         map = new AbrechnungsParameterMap().getMap(param, map);
-        try
-        {
-          vzweck = VelocityTool.eval(map, vzweck);
-          if (vzweck.length() >= 140)
-          {
-            vzweck = vzweck.substring(0, 136) + "...";
-          }
-        }
-        catch (IOException e)
-        {
-          Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-        }
+
+        vzweck = VelocityTool.eval(map, vzweck, true);
 
         try
         {
@@ -981,19 +961,11 @@ public class AbrechnungSEPA extends SEPASupport
   }
 
   private String getVerwendungszweck(AbrechnungSEPAParam param)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = new AbrechnungsParameterMap().getMap(param, map);
-    try
-    {
-      return VelocityTool.eval(map, param.verwendungszweck);
-    }
-    catch (IOException e)
-    {
-      Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-      return param.verwendungszweck;
-    }
+    return VelocityTool.eval(map, param.verwendungszweck);
   }
 
   private String getVerwendungszweckName(ILastschrift adr,
@@ -1201,19 +1173,8 @@ public class AbrechnungSEPA extends SEPASupport
               ohneLesefelder);
           map = new RechnungMap().getMap(re, map);
           map = new AbrechnungsParameterMap().getMap(param, map);
-          try
-          {
-            zweck = VelocityTool.eval(map, zweck);
-            if (zweck.length() >= 140)
-            {
-              zweck = zweck.substring(0, 136) + "...";
-            }
-          }
-          catch (IOException e)
-          {
-            Logger.error("Fehler bei der Aufbereitung der Variablen", e);
-          }
 
+          zweck = VelocityTool.eval(map, zweck, true);
           sollb.setZweck1(zweck);
         }
       }

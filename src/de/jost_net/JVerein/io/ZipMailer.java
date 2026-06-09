@@ -284,7 +284,6 @@ public class ZipMailer
               }
               String betr = VelocityTool.eval(map, betreff);
               String text = VelocityTool.eval(map, txt);
-
               monitor.log("Versende an " + mail);
               try
               {

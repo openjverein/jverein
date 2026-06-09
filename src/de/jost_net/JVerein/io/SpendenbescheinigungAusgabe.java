@@ -125,10 +125,11 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
    *          Der Dateiname, wohin das Dokument geschrieben werden soll
    * @throws IOException
    * @throws DocumentException
+   * @throws ApplicationException
    */
   private void generiereSpendenbescheinigungStandardAb2014(
       Spendenbescheinigung spb, File file, Adressblatt adressblatt)
-      throws IOException, DocumentException
+      throws IOException, DocumentException, ApplicationException
   {
     if (fos == null)
     {
@@ -640,6 +641,7 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
           map.put("email", m.getEmail());
 
         rpt.addLight(VelocityTool.eval(mmap, text), 10);
+
       }
       else
       {
@@ -678,7 +680,8 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object) throws RemoteException
+  protected String getDateiname(DBObject object)
+      throws RemoteException
   {
     if (object != null)
     {
