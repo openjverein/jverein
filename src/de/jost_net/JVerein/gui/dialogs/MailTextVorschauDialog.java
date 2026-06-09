@@ -17,12 +17,10 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.velocity.exception.ParseErrorException;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -50,6 +48,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog zur Vorschau einer Mail.
@@ -149,7 +148,6 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       }
       container.addLabelPair("Empfänger", mitglied);
     }
-
     try
     {
       betreff = new TextInput(VelocityTool.eval(map, betreffString));
@@ -158,13 +156,10 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       text = new TextAreaInput(VelocityTool.eval(map, textString));
       text.setEnabled(false);
       container.addLabelPair("Text", text);
-
     }
-    catch (ParseErrorException e)
+    catch (ApplicationException e)
     {
-      // erste Zeile der Fehlermeldung ausgeben
-      GUI.getStatusBar().setErrorText(
-          "Fehler beim parsen des Textes: " + e.getMessage().split("\n")[0]);
+      GUI.getStatusBar().setErrorText(e.getMessage());
     }
 
     ButtonArea b = new ButtonArea();
@@ -222,9 +217,12 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
         betreff.setValue(VelocityTool.eval(map, betreffString));
         text.setValue(VelocityTool.eval(map, textString));
       }
-      catch (IOException e)
+      catch (Exception e)
       {
-        Logger.error("Fehler", e);
+        String text = "Fehler bei der Aufbereitung des Mailtextes";
+        Logger.error(text, e);
+        GUI.getStatusBar()
+            .setErrorText(text + ": " + e.getMessage().split("\n")[0]);
       }
     }
   }

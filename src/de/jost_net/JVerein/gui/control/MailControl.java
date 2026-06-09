@@ -490,18 +490,20 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 map.put("email", empf.getMitglied().getEmail());
                 map.put("empf", empf.getMitglied());
 
+                String betreffParsed = VelocityTool.eval(map, betr);
+                String textParsed = VelocityTool.eval(map, txt);
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(),
-                      VelocityTool.eval(map, betr), VelocityTool.eval(map, txt),
-                      getMail().getAnhang());
+                  sender.sendMail(empf.getMailAdresse(), textParsed,
+                      betreffParsed, getMail().getAnhang());
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
-                  monitor.log(empf.getMailAdresse() + " - " + ae.getMessage());
+                  monitor.log(empf.getMailAdresse() + " - "
+                      + ae.getMessage().split("\n")[0]);
                 }
                 sentCount++;
                 monitor.log(empf.getMailAdresse() + " - versendet");

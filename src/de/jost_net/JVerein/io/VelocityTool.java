@@ -16,21 +16,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.UniversalDateFormat;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class VelocityTool
 {
@@ -47,8 +43,13 @@ public class VelocityTool
   }
 
   public static String eval(Map<String, Object> map, String text)
-      throws ParseErrorException, MethodInvocationException,
-      ResourceNotFoundException, IOException
+      throws ApplicationException
+  {
+    return eval(map, text, false);
+  }
+
+  public static String eval(Map<String, Object> map, String text,
+      boolean kuerzen) throws ApplicationException
   {
     VelocityContext context = new VelocityContext(
         new HashMap<String, Object>(map));
@@ -57,7 +58,22 @@ public class VelocityTool
     context.put("udateformat", new UniversalDateFormat());
 
     StringWriter wtext = new StringWriter();
-    Velocity.evaluate(context, wtext, "LOG", text);
-    return wtext.getBuffer().toString();
+    try
+    {
+      Velocity.evaluate(context, wtext, "LOG", text);
+    }
+    catch (Exception e)
+    {
+      String t = "Fehler bei der Aufbereitung des Textes ("
+          + text.split("\n")[0] + ")";
+      Logger.error(t, e);
+      throw new ApplicationException(t + ": " + e.getMessage().split("\n")[0]);
+    }
+    String txt = wtext.getBuffer().toString();
+    if (kuerzen && txt.length() >= 140)
+    {
+      txt = txt.substring(0, 136) + "...";
+    }
+    return txt;
   }
 }

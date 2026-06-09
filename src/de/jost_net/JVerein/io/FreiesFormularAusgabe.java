@@ -62,7 +62,8 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object) throws RemoteException
+  protected String getDateiname(DBObject object)
+      throws RemoteException
   {
     if (object != null)
     {

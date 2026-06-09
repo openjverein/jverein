@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -31,9 +30,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.velocity.exception.MethodInvocationException;
-import org.apache.velocity.exception.ParseErrorException;
-import org.apache.velocity.exception.ResourceNotFoundException;
 import org.kapott.hbci.GV.SepaUtil;
 import org.kapott.hbci.GV.generators.ISEPAGenerator;
 import org.kapott.hbci.GV.generators.SEPAGeneratorFactory;
@@ -267,8 +263,7 @@ public class Ueberweisung
   }
 
   private String eval(Lastschrift ls, String verwendungszweck)
-      throws ParseErrorException, MethodInvocationException,
-      ResourceNotFoundException, IOException
+      throws ApplicationException, RemoteException
   {
     Map<String, Object> map = new LastschriftMap().getMap(ls, null);
     map = new AllgemeineMap().getMap(map);

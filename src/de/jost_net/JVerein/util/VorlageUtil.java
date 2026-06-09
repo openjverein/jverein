@@ -830,7 +830,6 @@ public class VorlageUtil
   {
     try
     {
-
       String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
       String str = VelocityTool.eval(map, in);
       str = str.replaceAll("\\'\\#\\'", "-");
@@ -843,10 +842,11 @@ public class VorlageUtil
     }
     catch (Exception e)
     {
-      Logger.error(
-          "Format Fehler bei der Dateinamen Ersetzung: " + e.getMessage());
-      return "Format Fehler bei der Dateinamen Ersetzung.";
+      Logger.error("Format Fehler bei der Dateinamen/Titel Ersetzung: "
+          + e.getMessage());
+      return "Format Fehler bei der Dateinamen/Titel Ersetzung.";
     }
+
   }
 
   public static String getVorlageMuster(VorlageTyp typ) throws RemoteException

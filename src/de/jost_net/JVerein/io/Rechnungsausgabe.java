@@ -40,6 +40,7 @@ import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class Rechnungsausgabe extends AbstractAusgabe
 {
@@ -122,7 +123,8 @@ public class Rechnungsausgabe extends AbstractAusgabe
   }
 
   @Override
-  protected Map<String, Object> getMap(DBObject object) throws RemoteException
+  protected Map<String, Object> getMap(DBObject object)
+      throws RemoteException, ApplicationException
   {
     Rechnung re = (Rechnung) object;
     Map<String, Object> map = new RechnungMap().getMap(re, null);
@@ -131,7 +133,8 @@ public class Rechnungsausgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object) throws RemoteException
+  protected String getDateiname(DBObject object)
+      throws RemoteException
   {
     if (object != null)
     {

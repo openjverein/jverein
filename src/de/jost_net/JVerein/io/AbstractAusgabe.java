@@ -286,9 +286,10 @@ public abstract class AbstractAusgabe
    * @param object
    * @return
    * @throws RemoteException
+   * @throws ApplicationException
    */
   protected abstract Map<String, Object> getMap(DBObject object)
-      throws RemoteException;
+      throws RemoteException, ApplicationException;
 
   /**
    * Liefert den Dateinamen für das Object
