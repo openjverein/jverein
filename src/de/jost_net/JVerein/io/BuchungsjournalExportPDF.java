@@ -96,7 +96,7 @@ public class BuchungsjournalExportPDF implements Exporter
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     if (geldkonto)
     {
@@ -111,13 +111,13 @@ public class BuchungsjournalExportPDF implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     title = VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_TITEL, object);
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     subtitle = VorlageUtil.getName(VorlageTyp.BUCHUNGSJOURNAL_SUBTITEL, object);
   }

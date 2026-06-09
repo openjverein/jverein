@@ -80,25 +80,22 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Vorlage;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 public class VorlageUtil
 {
 
   // Namen Generierung aus Vorlagen Muster
-  public static String getName(VorlageTyp typ) throws ApplicationException
+  public static String getName(VorlageTyp typ)
   {
     return getName(typ, null, null);
   }
 
   public static String getName(VorlageTyp typ, Object obj)
-      throws ApplicationException
   {
     return getName(typ, obj, null);
   }
 
   public static String getName(VorlageTyp typ, Object obj, Mitglied mitglied)
-      throws ApplicationException
   {
     Map<String, Object> map = null;
     String muster = "";
@@ -466,7 +463,7 @@ public class VorlageUtil
   }
 
   // Dummy Namen Generierung aus Vorlagen Muster
-  public static String getDummyName(VorlageTyp typ) throws ApplicationException
+  public static String getDummyName(VorlageTyp typ)
   {
     String muster = "";
     try
@@ -483,7 +480,6 @@ public class VorlageUtil
 
   // Dummy Namen Generierung aus Vorlagen Muster
   public static String getDummyName(VorlageTyp typ, String muster)
-      throws ApplicationException
   {
     return translate(getDummyMap(typ), muster,
         typ.getArtkey() == Vorlageart.DATEINAME.getKey());
@@ -830,17 +826,27 @@ public class VorlageUtil
   }
 
   public static String translate(Map<String, Object> map, String inString,
-      boolean dateiname) throws ApplicationException
+      boolean dateiname)
   {
-    String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
-    String str = VelocityTool.eval(map, in);
-    str = str.replaceAll("\\'\\#\\'", "-");
-    if (dateiname)
+    try
     {
-      str = Zeichen.convert(str);
-      str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
+      String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
+      String str = VelocityTool.eval(map, in);
+      str = str.replaceAll("\\'\\#\\'", "-");
+      if (dateiname)
+      {
+        str = Zeichen.convert(str);
+        str = str.replaceAll("[^a-zA-Z0-9_\\-\\. ]", "_");
+      }
+      return str;
     }
-    return str;
+    catch (Exception e)
+    {
+      Logger.error("Format Fehler bei der Dateinamen/Titel Ersetzung: "
+          + e.getMessage());
+      return "Format Fehler bei der Dateinamen/Titel Ersetzung.";
+    }
+
   }
 
   public static String getVorlageMuster(VorlageTyp typ) throws RemoteException

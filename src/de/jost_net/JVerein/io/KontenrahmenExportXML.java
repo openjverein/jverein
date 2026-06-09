@@ -26,7 +26,6 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.util.ApplicationException;
 import net.n3.nanoxml.IXMLElement;
 import net.n3.nanoxml.XMLElement;
 import net.n3.nanoxml.XMLWriter;
@@ -83,7 +82,7 @@ public class KontenrahmenExportXML extends KontenrahmenExport
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil.getName(VorlageTyp.KONTENRAHMEN_DATEINAME_V1) + ".xml";
   }

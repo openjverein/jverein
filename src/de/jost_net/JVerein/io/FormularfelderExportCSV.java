@@ -40,7 +40,6 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.util.ApplicationException;
 
 public class FormularfelderExportCSV extends FormularfelderExport
 {
@@ -86,7 +85,7 @@ public class FormularfelderExportCSV extends FormularfelderExport
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     try
     {

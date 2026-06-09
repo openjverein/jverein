@@ -100,7 +100,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     if (geldkonto)
     {
@@ -115,13 +115,13 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     title = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, object);
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     subtitle = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL, object);
   }

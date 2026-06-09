@@ -36,7 +36,6 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class StatistikJahrgaengeExport implements Exporter
@@ -173,14 +172,14 @@ public abstract class StatistikJahrgaengeExport implements Exporter
   protected abstract void close() throws IOException, DocumentException;
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     subtitle = VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);

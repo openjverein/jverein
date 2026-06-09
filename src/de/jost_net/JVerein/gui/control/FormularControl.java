@@ -438,19 +438,19 @@ public class FormularControl extends FormularPartControl implements Savable
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.FORMULARE_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.FORMULARE_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.FORMULARE_DATEINAME);
   }

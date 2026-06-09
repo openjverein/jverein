@@ -92,7 +92,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_DATEINAME
@@ -478,7 +478,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     title = VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_TITEL
@@ -486,7 +486,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     subtitle = VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL

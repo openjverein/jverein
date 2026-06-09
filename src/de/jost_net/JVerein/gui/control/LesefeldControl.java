@@ -557,19 +557,19 @@ public class LesefeldControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.LESEFELDER_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.LESEFELDER_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.LESEFELDER_DATEINAME);
   }

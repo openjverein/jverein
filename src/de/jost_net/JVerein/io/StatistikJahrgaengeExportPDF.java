@@ -29,7 +29,6 @@ import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.util.ApplicationException;
 
 public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
 {
@@ -73,7 +72,7 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil.getName(
         VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME,

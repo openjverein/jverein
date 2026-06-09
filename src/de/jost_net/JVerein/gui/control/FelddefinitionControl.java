@@ -429,19 +429,19 @@ public class FelddefinitionControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZFELDER_DATEINAME);
   }

@@ -32,7 +32,6 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 
 public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
 {
@@ -76,7 +75,7 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
         (MitgliedControl) object) + ".pdf";

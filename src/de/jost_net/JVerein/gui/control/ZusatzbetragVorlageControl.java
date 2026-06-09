@@ -442,19 +442,19 @@ public class ZusatzbetragVorlageControl extends VorZurueckControl
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_TITEL);
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_SUBTITEL);
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.ZUSATZBETRAEGE_VORLAGEN_DATEINAME);
   }

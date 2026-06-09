@@ -36,7 +36,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
-import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public class SollbuchungExportCSV extends SollbuchungExport
@@ -160,7 +159,7 @@ public class SollbuchungExportCSV extends SollbuchungExport
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME,
         (SollbuchungControl) object) + ".csv";

@@ -90,13 +90,13 @@ public abstract class SollbuchungExport implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     // Kein Titel bei csv
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     // Kein Subtitel bei csv
   }

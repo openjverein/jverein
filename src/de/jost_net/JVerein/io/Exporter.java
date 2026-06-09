@@ -63,22 +63,16 @@ public interface Exporter extends IO
 
   /**
    * Dateiname für Report generieren
-   * 
-   * @throws ApplicationException
    */
-  public String getDateiname(Object object) throws ApplicationException;
+  public String getDateiname(Object object);
 
   /**
    * Titel für Report generieren
-   * 
-   * @throws ApplicationException
    */
-  public void calculateTitle(Object object) throws ApplicationException;
+  public void calculateTitle(Object object);
 
   /**
    * Subtitel für Report generieren
-   * 
-   * @throws ApplicationException
    */
-  public void calculateSubitle(Object object) throws ApplicationException;
+  public void calculateSubitle(Object object);
 }

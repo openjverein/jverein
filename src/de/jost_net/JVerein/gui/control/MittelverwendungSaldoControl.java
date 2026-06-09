@@ -25,7 +25,6 @@ import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.util.ApplicationException;
 
 public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
 {
@@ -131,20 +130,20 @@ public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_TITEL, this);
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_SUBTITEL,
         this);
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_DATEINAME,
         this);

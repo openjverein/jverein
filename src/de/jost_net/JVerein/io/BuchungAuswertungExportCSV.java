@@ -92,7 +92,7 @@ public class BuchungAuswertungExportCSV implements Exporter
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     if (geldkonto)
     {
@@ -107,13 +107,13 @@ public class BuchungAuswertungExportCSV implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     // Kein Titel bei CSV
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     // Kein Subtitel bei CSV
   }

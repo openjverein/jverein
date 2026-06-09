@@ -3616,7 +3616,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableTitle() throws ApplicationException
+  protected String getTableTitle()
   {
     if (isMitglied)
     {
@@ -3629,7 +3629,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableSubtitle() throws ApplicationException
+  protected String getTableSubtitle()
   {
     if (isMitglied)
     {
@@ -3642,7 +3642,7 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  protected String getTableDateiname() throws ApplicationException
+  protected String getTableDateiname()
   {
     if (isMitglied)
     {

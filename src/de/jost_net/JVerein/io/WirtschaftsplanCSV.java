@@ -248,7 +248,7 @@ public class WirtschaftsplanCSV implements Exporter
   }
 
   @Override
-  public String getDateiname(Object object) throws ApplicationException
+  public String getDateiname(Object object)
   {
     return VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_DATEINAME
@@ -257,13 +257,13 @@ public class WirtschaftsplanCSV implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object) throws ApplicationException
+  public void calculateTitle(Object object)
   {
     // Bei CSV nicht nötig
   }
 
   @Override
-  public void calculateSubitle(Object object) throws ApplicationException
+  public void calculateSubitle(Object object)
   {
     // Bei CSV nicht nötig
   }
