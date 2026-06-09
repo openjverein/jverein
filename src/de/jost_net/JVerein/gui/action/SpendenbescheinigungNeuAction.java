@@ -123,6 +123,10 @@ public class SpendenbescheinigungNeuAction implements Action
         Buchung b = (Buchung) context;
         generiereSpendenbescheinigung(b);
       }
+      else if (context instanceof Buchung[])
+      {
+        generiereSammelbescheinigung((Buchung[]) context);
+      }
       else
       {
         throw new ApplicationException(
@@ -312,6 +316,88 @@ public class SpendenbescheinigungNeuAction implements Action
       throw new ApplicationException("Es wurden keine Geldspenden ausgewählt!");
     }
     Mitglied zahler = nodes[0].getMitglied();
+    if (zahler != null)
+    {
+      SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
+    }
+    spb.setSpendedatum(minDatum);
+    spb.setSpendenart(Spendenart.GELDSPENDE);
+    spb.setBezeichnungSachzuwendung("");
+    spb.setHerkunftSpende(HerkunftSpende.KEINEANGABEN);
+    spb.setUnterlagenWertermittlung(false);
+    if (spb.getBuchungen().size() > 1)
+    {
+      spb.setFormular(
+          (Formular) FormularInput.initdefault((String) Einstellungen
+              .getEinstellung(Property.FORMULARSAMMELSPENDE)));
+    }
+    else
+    {
+      spb.setFormular((Formular) FormularInput.initdefault(
+          (String) Einstellungen.getEinstellung(Property.FORMULARGELDSPENDE)));
+    }
+  }
+
+  private void generiereSammelbescheinigung(Buchung[] buchungen)
+      throws RemoteException, ApplicationException
+  {
+    Date minDatum = Calendar.getInstance().getTime();
+    String kontoinhaber = null;
+    Mitglied zahler = null;
+    for (Buchung bu : buchungen)
+    {
+      checkBuchung(bu);
+
+      // Keine Sachspende
+      if (bu.getBezeichnungSachzuwendung() != null
+          && !bu.getBezeichnungSachzuwendung().isEmpty())
+      {
+        throw new ApplicationException(
+            "Sachspenden werden in Sammelbescheinigungen nicht unterstützt!");
+      }
+      // Der Kontoinhaber muss der gleiche sein
+      if (kontoinhaber != null && bu.getName() != null)
+      {
+        if (!kontoinhaber.equals(bu.getName()))
+        {
+          throw new ApplicationException(
+              "Die Kontoinhaber der Buchungen sind nicht gleich!");
+        }
+      }
+      else if (kontoinhaber == null)
+      {
+        kontoinhaber = bu.getName();
+      }
+      // Der Zahler muss der gleiche sein wenn einer gesetzt ist
+      if (bu.getSollbuchung() != null)
+      {
+        // Zahler aus Sollbuchung lesen
+        Mitglied z = bu.getSollbuchung().getZahler();
+        if (zahler != null && z != null)
+        {
+          if (!zahler.getID().equals(z.getID()))
+          {
+            throw new ApplicationException(
+                "Die Zahler bei den zugeordeneten Sollbuchungen sind nicht gleich!");
+          }
+        }
+        else if (zahler == null)
+        {
+          zahler = z;
+        }
+      }
+
+      if (minDatum.after(bu.getDatum()))
+      {
+        minDatum = bu.getDatum();
+      }
+      spb.addBuchung(bu);
+    }
+    if (spb.getBuchungen().size() == 0)
+    {
+      throw new ApplicationException("Es wurden keine Geldspenden ausgewählt!");
+    }
+
     if (zahler != null)
     {
       SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
