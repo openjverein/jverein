@@ -284,6 +284,7 @@ public class SpendenbescheinigungNeuAction implements Action
       throws RemoteException, ApplicationException
   {
     Date minDatum = Calendar.getInstance().getTime();
+    Mitglied zahler = null;
     for (MitgliedskontoNode node : nodes)
     {
       if (node.getType() == MitgliedskontoNode.IST)
@@ -294,20 +295,37 @@ public class SpendenbescheinigungNeuAction implements Action
         {
           Buchung bu = (Buchung) ob;
           checkBuchung(bu);
-          if (bu.getBuchungsart().getSpende())
+
+          // Keine Sachspende
+          if (bu.getBezeichnungSachzuwendung() != null
+              && !bu.getBezeichnungSachzuwendung().isEmpty())
           {
-            // Keine Sachspende
-            if (bu.getBezeichnungSachzuwendung() != null
-                && !bu.getBezeichnungSachzuwendung().isEmpty())
-            {
-              continue;
-            }
-            if (minDatum.after(bu.getDatum()))
-            {
-              minDatum = bu.getDatum();
-            }
-            spb.addBuchung(bu);
+            continue;
           }
+          // Zahler in Sollbuchung muss gesetzt sein und alle müssen gleich sein
+          Mitglied z = bu.getSollbuchung().getZahler();
+          if (z == null)
+          {
+            throw new ApplicationException(
+                "Bei der zugeordeneten Sollbuchung ist kein Zahler eingetragen!");
+          }
+          if (zahler != null)
+          {
+            if (!zahler.getID().equals(z.getID()))
+            {
+              throw new ApplicationException(
+                  "Die Zahler bei den zugeordeneten Sollbuchungen sind nicht gleich!");
+            }
+          }
+          else
+          {
+            zahler = z;
+          }
+          if (minDatum.after(bu.getDatum()))
+          {
+            minDatum = bu.getDatum();
+          }
+          spb.addBuchung(bu);
         }
       }
     }
@@ -315,11 +333,8 @@ public class SpendenbescheinigungNeuAction implements Action
     {
       throw new ApplicationException("Es wurden keine Geldspenden ausgewählt!");
     }
-    Mitglied zahler = nodes[0].getMitglied();
-    if (zahler != null)
-    {
-      SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
-    }
+
+    SpbAdressaufbereitung.adressaufbereitung(zahler, spb);
     spb.setSpendedatum(minDatum);
     spb.setSpendenart(Spendenart.GELDSPENDE);
     spb.setBezeichnungSachzuwendung("");
