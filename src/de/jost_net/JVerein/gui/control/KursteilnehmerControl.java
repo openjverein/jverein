@@ -455,7 +455,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     {
 
       @Override
-      public void handleAction(Object context) throws ApplicationException
+      public void handleAction(Object context)
       {
         starteAuswertung();
       }
@@ -535,7 +535,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAuswertung() throws ApplicationException
+  private void starteAuswertung()
   {
     // Alle Kursteilnehmer lesen
 

@@ -178,7 +178,7 @@ public class Kontoauszug extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object) throws ApplicationException
+  protected String getDateiname(DBObject object)
   {
     if (object != null)
     {

@@ -26,7 +26,6 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBObject;
-import de.willuhn.util.ApplicationException;
 
 public class FreiesFormularAusgabe extends AbstractAusgabe
 {
@@ -64,7 +63,7 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
 
   @Override
   protected String getDateiname(DBObject object)
-      throws RemoteException, ApplicationException
+      throws RemoteException
   {
     if (object != null)
     {

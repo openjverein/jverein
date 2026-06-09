@@ -298,10 +298,9 @@ public abstract class AbstractAusgabe
    * 
    * @return Der Dateiname
    * @throws RemoteException
-   * @throws ApplicationException
    */
   protected abstract String getDateiname(DBObject object)
-      throws RemoteException, ApplicationException;
+      throws RemoteException;
 
   /**
    * Liefert das Formular für das Object

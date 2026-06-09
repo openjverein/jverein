@@ -89,7 +89,7 @@ public class PreNotificationAusgabe extends AbstractAusgabe
 
   @Override
   protected String getDateiname(DBObject object)
-      throws RemoteException, ApplicationException
+      throws RemoteException
   {
     if (object != null)
     {
