@@ -48,6 +48,7 @@ import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog zur Vorschau einer Mail.
@@ -147,13 +148,19 @@ public class MailTextVorschauDialog extends AbstractDialog<Object>
       }
       container.addLabelPair("Empfänger", mitglied);
     }
-
-    betreff = new TextInput(VelocityTool.eval(map, betreffString));
-    betreff.setEnabled(false);
-    container.addLabelPair("Betreff", betreff);
-    text = new TextAreaInput(VelocityTool.eval(map, textString));
-    text.setEnabled(false);
-    container.addLabelPair("Text", text);
+    try
+    {
+      betreff = new TextInput(VelocityTool.eval(map, betreffString));
+      betreff.setEnabled(false);
+      container.addLabelPair("Betreff", betreff);
+      text = new TextAreaInput(VelocityTool.eval(map, textString));
+      text.setEnabled(false);
+      container.addLabelPair("Text", text);
+    }
+    catch (ApplicationException e)
+    {
+      GUI.getStatusBar().setErrorText(e.getMessage());
+    }
 
     ButtonArea b = new ButtonArea();
     b.addButton("Schließen", context -> close(), null, false,
