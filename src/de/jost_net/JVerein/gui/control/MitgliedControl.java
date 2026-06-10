@@ -34,8 +34,6 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Messaging.AbweichenderZahlerMessage;
-import de.jost_net.JVerein.Messaging.FamilienbeitragMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
@@ -66,9 +64,7 @@ import de.jost_net.JVerein.gui.input.SpinnerNoScrollInput;
 import de.jost_net.JVerein.gui.input.StaatSearchInput;
 import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
-import de.jost_net.JVerein.gui.menu.AbweichenderZahlerMenu;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
-import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
@@ -159,9 +155,6 @@ import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.jameica.messaging.Message;
-import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -252,10 +245,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private MitgliedNextBGruppePart zukueftigeBeitraegeView;
 
-  private TreePart familienbeitragtree;
-
-  private TreePart abweichenderzahlertree;
-
   private AbstractInput zahler;
 
   private AbstractInput abweichenderZahlerInput;
@@ -286,10 +275,6 @@ public class MitgliedControl extends FilterControl implements Savable
   private SelectInput jubeljahr;
 
   private Mitglied mitglied;
-
-  private FamilienbeitragMessageConsumer fbc = null;
-
-  private AbweichenderZahlerMessageConsumer azc = null;
 
   // Liste aller Zusatzbeträge
   private BetragSummaryTablePart zusatzbetraegeList;
@@ -2764,111 +2749,6 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  public TreePart getFamilienbeitraegeTree() throws RemoteException
-  {
-    familienbeitragtree = new TreePart(
-        new FamilienbeitragNode(getMitgliedStatus()),
-        new MitgliedDetailAction());
-    familienbeitragtree.addColumn("Name", "name");
-    familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
-    familienbeitragtree.addColumn("IBAN", "iban", new IBANFormatter());
-    familienbeitragtree.addColumn("Austritt", "austritt", new DateFormatter());
-    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
-    {
-      familienbeitragtree.addColumn(new Column("leer", ""));
-    }
-    familienbeitragtree.setRememberColWidths(true);
-
-    familienbeitragtree.setContextMenu(new FamilienbeitragMenu());
-    this.fbc = new FamilienbeitragMessageConsumer();
-    Application.getMessagingFactory().registerMessageConsumer(this.fbc);
-    familienbeitragtree.setFormatter(new TreeFormatter()
-    {
-      @Override
-      public void format(TreeItem item)
-      {
-        FamilienbeitragNode fbn = (FamilienbeitragNode) item.getData();
-        try
-        {
-          if (fbn.getType() == FamilienbeitragNode.ROOT)
-            item.setImage(SWTUtil.getImage("users.png"));
-          if (fbn.getType() == FamilienbeitragNode.ZAHLER
-              && fbn.getMitglied().getAustritt() == null)
-            item.setImage(SWTUtil.getImage("user-friends.png"));
-          if (fbn.getType() == FamilienbeitragNode.ZAHLER
-              && fbn.getMitglied().getAustritt() != null)
-            item.setImage(SWTUtil.getImage("eraser.png"));
-          if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
-              && fbn.getMitglied().getAustritt() == null)
-            item.setImage(SWTUtil.getImage("user.png"));
-          if (fbn.getType() == FamilienbeitragNode.ANGEHOERIGER
-              && fbn.getMitglied().getAustritt() != null)
-            item.setImage(SWTUtil.getImage("eraser.png"));
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim TreeFormatter", e);
-        }
-      }
-    });
-    VorZurueckControl.setObjektListe(null, null);
-    return familienbeitragtree;
-  }
-
-  public TreePart getAbweichenderZahlerTree() throws RemoteException
-  {
-    abweichenderzahlertree = new TreePart(
-        new AbweichenderZahlerNode(getMitgliedStatus()),
-        new MitgliedDetailAction());
-    abweichenderzahlertree.addColumn("Name", "name");
-    abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
-    abweichenderzahlertree.addColumn("IBAN", "iban", new IBANFormatter());
-    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
-    {
-      abweichenderzahlertree.addColumn(new Column("leer", ""));
-    }
-    abweichenderzahlertree.setRememberColWidths(true);
-
-    abweichenderzahlertree.setContextMenu(new AbweichenderZahlerMenu());
-    this.azc = new AbweichenderZahlerMessageConsumer();
-    Application.getMessagingFactory().registerMessageConsumer(this.azc);
-    abweichenderzahlertree.setFormatter(new TreeFormatter()
-    {
-      @Override
-      public void format(TreeItem item)
-      {
-        AbweichenderZahlerNode azn = (AbweichenderZahlerNode) item.getData();
-        try
-        {
-          if (azn.getType() == AbweichenderZahlerNode.ROOT)
-            item.setImage(SWTUtil.getImage("users.png"));
-          if (azn.getType() == AbweichenderZahlerNode.ZAHLER
-              && (azn.getMitglied().getAustritt() == null
-                  || azn.getMitglied().getAustritt().after(new Date())))
-            item.setImage(SWTUtil.getImage("user-friends.png"));
-          if (azn.getType() == AbweichenderZahlerNode.ZAHLER
-              && azn.getMitglied().getAustritt() != null
-              && azn.getMitglied().getAustritt().before(new Date()))
-            item.setImage(SWTUtil.getImage("eraser.png"));
-          if (azn.getType() == AbweichenderZahlerNode.ANGEHOERIGER
-              && (azn.getMitglied().getAustritt() == null
-                  || azn.getMitglied().getAustritt().after(new Date())))
-            item.setImage(SWTUtil.getImage("user.png"));
-          if (azn.getType() == AbweichenderZahlerNode.ANGEHOERIGER
-              && azn.getMitglied().getAustritt() != null
-              && azn.getMitglied().getAustritt().before(new Date()))
-            item.setImage(SWTUtil.getImage("eraser.png"));
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim TreeFormatter", e);
-        }
-      }
-    });
-    VorZurueckControl.setObjektListe(null, null);
-    return abweichenderzahlertree;
-  }
-
   private void starteAuswertung() throws RemoteException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
@@ -3116,126 +2996,6 @@ public class MitgliedControl extends FilterControl implements Savable
 
   }
 
-  /**
-   * Wird benachrichtigt um die Anzeige zu aktualisieren.
-   */
-  private class FamilienbeitragMessageConsumer implements MessageConsumer
-  {
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-     */
-    @Override
-    public boolean autoRegister()
-    {
-      return false;
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-     */
-    @Override
-    public Class<?>[] getExpectedMessageTypes()
-    {
-      return new Class[] { FamilienbeitragMessage.class };
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-     */
-    @Override
-    public void handleMessage(final Message message) throws Exception
-    {
-      GUI.getDisplay().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          try
-          {
-            if (familienbeitragtree == null)
-            {
-              // Eingabe-Feld existiert nicht. Also abmelden
-              Application.getMessagingFactory().unRegisterMessageConsumer(
-                  FamilienbeitragMessageConsumer.this);
-              return;
-            }
-            familienbeitragtree
-                .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
-          }
-          catch (Exception e)
-          {
-            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
-            Logger.error("unable to refresh saldo", e);
-            Application.getMessagingFactory()
-                .unRegisterMessageConsumer(FamilienbeitragMessageConsumer.this);
-          }
-        }
-      });
-    }
-  }
-
-  /**
-   * Wird benachrichtigt um die Anzeige zu aktualisieren.
-   */
-  private class AbweichenderZahlerMessageConsumer implements MessageConsumer
-  {
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
-     */
-    @Override
-    public boolean autoRegister()
-    {
-      return false;
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
-     */
-    @Override
-    public Class<?>[] getExpectedMessageTypes()
-    {
-      return new Class[] { AbweichenderZahlerMessage.class };
-    }
-
-    /**
-     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
-     */
-    @Override
-    public void handleMessage(final Message message) throws Exception
-    {
-      GUI.getDisplay().syncExec(new Runnable()
-      {
-
-        @Override
-        public void run()
-        {
-          try
-          {
-            if (abweichenderzahlertree == null)
-            {
-              // Eingabe-Feld existiert nicht. Also abmelden
-              Application.getMessagingFactory().unRegisterMessageConsumer(
-                  AbweichenderZahlerMessageConsumer.this);
-              return;
-            }
-            abweichenderzahlertree
-                .setRootObject(new AbweichenderZahlerNode(getMitgliedStatus()));
-          }
-          catch (Exception e)
-          {
-            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
-            Logger.error("unable to refresh saldo", e);
-            Application.getMessagingFactory().unRegisterMessageConsumer(
-                AbweichenderZahlerMessageConsumer.this);
-          }
-        }
-      });
-    }
-  }
-
   public JVereinTablePart getMitgliedBeitraegeTabelle() throws RemoteException
   {
     if (beitragsTabelle != null)
@@ -3294,34 +3054,6 @@ public class MitgliedControl extends FilterControl implements Savable
         {
           refreshMitgliedTable(0);
         }
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    }
-
-    if (familienbeitragtree != null)
-    {
-      try
-      {
-        familienbeitragtree.removeAll();
-        familienbeitragtree
-            .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    }
-
-    if (abweichenderzahlertree != null)
-    {
-      try
-      {
-        abweichenderzahlertree.removeAll();
-        abweichenderzahlertree
-            .setRootObject(new AbweichenderZahlerNode(getMitgliedStatus()));
       }
       catch (RemoteException e1)
       {
@@ -3412,16 +3144,6 @@ public class MitgliedControl extends FilterControl implements Savable
         settings.setAttribute("auswertung.vorlagedateicsv", "");
       }
     }
-  }
-
-  public void deregisterFamilienbeitragConsumer()
-  {
-    Application.getMessagingFactory().unRegisterMessageConsumer(fbc);
-  }
-
-  public void deregisterAlternativerZahlerConsumer()
-  {
-    Application.getMessagingFactory().unRegisterMessageConsumer(azc);
   }
 
   public LesefeldControl getLesefeldControl()

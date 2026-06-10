@@ -27,6 +27,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
+import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.GUI;
@@ -44,15 +45,15 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
    * Map mit dem TablePart aus der View als Key, und dem TablePart im Dialog als
    * Value.
    */
-  private Map<JVereinTablePart, JVereinTablePart> tableMap = new LinkedHashMap<>();
+  private Map<IJVereinPart, JVereinTablePart> tableMap = new LinkedHashMap<>();
 
-  public TabelleSpaltenAuswahlDialog(JVereinTablePart... tableParts)
+  public TabelleSpaltenAuswahlDialog(IJVereinPart... tableParts)
       throws RemoteException, ApplicationException
   {
     super(TabelleSpaltenAuswahlDialog.POSITION_CENTER);
 
     boolean leer = true;
-    for (JVereinTablePart table : tableParts)
+    for (IJVereinPart table : tableParts)
     {
       if (table == null)
       {
@@ -77,7 +78,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   protected void paint(Composite parent) throws Exception
   {
     TabFolder folder = null;
-    for (JVereinTablePart table : tableMap.keySet())
+    for (IJVereinPart table : tableMap.keySet())
     {
       if (table.getItems().size() == 0)
       {
@@ -133,8 +134,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     buttons.addButton("Speichern", c -> {
       try
       {
-        for (Entry<JVereinTablePart, JVereinTablePart> entry : tableMap
-            .entrySet())
+        for (Entry<IJVereinPart, JVereinTablePart> entry : tableMap.entrySet())
         {
           if (entry.getValue() == null)
           {

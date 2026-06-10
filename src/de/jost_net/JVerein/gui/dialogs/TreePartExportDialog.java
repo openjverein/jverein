@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +10,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.dialogs;
 
@@ -34,9 +31,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.supercsv.cellprocessor.ConvertNullTo;
 import org.supercsv.cellprocessor.ift.CellProcessor;
 import org.supercsv.io.CsvMapWriter;
@@ -50,6 +47,7 @@ import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
@@ -70,19 +68,14 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class TablePartExportDialog extends AbstractDialog<Boolean>
+public class TreePartExportDialog extends AbstractDialog<Boolean>
 {
-  public enum ExportArt
-  {
-    PDF,
-    CSV
-  }
 
   private boolean success = false;
 
   private Settings settings;
 
-  private Table table;
+  private Tree tree;
 
   private String title;
 
@@ -114,29 +107,44 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
 
   private CheckboxInput zellenTransparent;
 
-  public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
+  public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(TablePartExportDialog.POSITION_CENTER);
+    super(TreePartExportDialog.POSITION_CENTER);
 
-    if (table == null || table.isDisposed() || !(table instanceof Table))
+    if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
       throw new ApplicationException("Tabelle nicht geladen");
     }
-    if (table.getItems().length == 0)
+    TreeItem[] rootItems = tree.getItems();
+    if (rootItems.length == 0)
+    {
+      throw new ApplicationException("Tabelle enthält keine Daten");
+    }
+    // wir haben immer den Root Node, darum prüfen wir die Childs
+    boolean leer = true;
+    for (TreeItem item : rootItems)
+    {
+      if (item.getItems().length > 0)
+      {
+        leer = false;
+        break;
+      }
+    }
+    if (leer)
     {
       throw new ApplicationException("Tabelle enthält keine Daten");
     }
 
-    this.table = table;
+    this.tree = tree;
     this.title = title;
     this.subtitle = subtitle;
     this.filename = filename;
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
 
-    setTitle("Tabelle exportieren");
+    setTitle("Tree exportieren");
     setSize(400, SWT.DEFAULT);
 
     settings = new Settings(this.getClass());
@@ -148,11 +156,11 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
       throws ApplicationException, RemoteException
   {
     // Spalten so wie angezeigt sortieren
-    List<TableColumn> listeSortiert = new ArrayList<>();
-    int[] order = table.getColumnOrder();
-    for (int i = 0; i < table.getColumnCount(); i++)
+    List<TreeColumn> listeSortiert = new ArrayList<>();
+    int[] order = tree.getColumnOrder();
+    for (int i = 0; i < tree.getColumnCount(); i++)
     {
-      TableColumn col = table.getColumn(order[i]);
+      TreeColumn col = tree.getColumn(order[i]);
       // Leere Dummy-Spalte am Ende überspringen
       if (col.getText().isBlank())
       {
@@ -179,7 +187,7 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
       spaltenList.addChangeListener((object, attribute, newValue) -> {
         try
         {
-          ((TableColumn) object).setData(Integer.parseInt(newValue));
+          ((TreeColumn) object).setData(Integer.parseInt(newValue));
         }
         catch (Exception e)
         {
@@ -203,12 +211,12 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
       buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
         try
         {
-          for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+          for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems())
           {
             col.setData(col.getWidth());
           }
           spaltenList.removeAll();
-          for (TableColumn col : listeSortiert)
+          for (TreeColumn col : listeSortiert)
           {
             spaltenList.addItem(col);
             spaltenList.setChecked(col, settings
@@ -274,7 +282,7 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
       spaltenList.paint(parent);
     }
 
-    for (TableColumn col : table.getColumns())
+    for (TreeColumn col : tree.getColumns())
     {
       spaltenList.setChecked(col, settings
           .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
@@ -358,29 +366,70 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
       @SuppressWarnings("unchecked")
-      List<TableColumn> listeAuswahl = spaltenList.getItems();
-      List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
-      TableItem[] rows = table.getItems();
+      List<TreeColumn> listeAuswahl = spaltenList.getItems();
+      List<TreeColumn> listeOrig = Arrays.asList(tree.getColumns());
+      List<MyTreeItem> rows = new ArrayList<>();
 
-      CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl.size()];
-      String[] header = new String[listeAuswahl.size()];
+      for (TreeItem item : tree.getItems())
+      {
+        // Die Root Ebene geben wir nicht aus
+        getItemRekursiv(rows, item, 0);
+      }
+      int ebenen = 0;
+      for (MyTreeItem item : rows)
+      {
+        ebenen = Math.max(ebenen, item.getEbene());
+      }
+      int size = listeAuswahl.size();
+      TreeColumn first = listeAuswahl.get(0);
+      if (listeOrig.indexOf(first) == 0)
+      {
+        size += ebenen;
+      }
+      else
+      {
+        ebenen = 0;
+      }
+
+      CellProcessor[] cellProcessor = new CellProcessor[size];
+      String[] header = new String[size];
 
       int n = 0;
-      for (TableColumn col : listeAuswahl)
+      for (TreeColumn col : listeAuswahl)
       {
-        header[n] = col.getText();
-        cellProcessor[n++] = new ConvertNullTo("");
+        if (listeOrig.indexOf(col) == 0)
+        {
+          for (int i = 0; i <= ebenen; i++)
+          {
+            header[n] = col.getText() + " - " + (i + 1);
+            cellProcessor[n++] = new ConvertNullTo("");
+          }
+        }
+        else
+        {
+          header[n] = col.getText();
+          cellProcessor[n++] = new ConvertNullTo("");
+        }
       }
       writer.writeHeader(header);
 
-      for (TableItem row : rows)
+      for (MyTreeItem row : rows)
       {
         Map<String, Object> csvzeile = new HashMap<>();
         int i = 0;
-        for (TableColumn col : listeAuswahl)
+        for (TreeColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
-          csvzeile.put(header[i++], row.getText(index));
+          if (index == 0)
+          {
+            csvzeile.put(header[row.getEbene() + i++],
+                row.getTreeItem().getText(index));
+          }
+          else
+          {
+            csvzeile.put(header[ebenen + i++],
+                row.getTreeItem().getText(index));
+          }
         }
         writer.write(csvzeile, header, cellProcessor);
       }
@@ -399,11 +448,17 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
             (Boolean) zellenTransparent.getValue());)
     {
       @SuppressWarnings("unchecked")
-      List<TableColumn> listeAuswahl = spaltenList.getItems();
-      List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
-      TableItem[] rows = table.getItems();
+      List<TreeColumn> listeAuswahl = spaltenList.getItems();
+      List<TreeColumn> listeOrig = Arrays.asList(tree.getColumns());
+      List<MyTreeItem> rows = new ArrayList<>();
 
-      for (TableColumn col : listeAuswahl)
+      for (TreeItem item : tree.getItems())
+      {
+        // Die Root Ebene geben wir nicht aus
+        getItemRekursiv(rows, item, 0);
+      }
+
+      for (TreeColumn col : listeAuswahl)
       {
         reporter.addHeaderColumn(col.getText(),
             col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
@@ -412,16 +467,16 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
       }
       reporter.createHeader();
 
-      for (TableItem row : rows)
+      for (MyTreeItem row : rows)
       {
-        for (TableColumn col : listeAuswahl)
+        for (TreeColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
-          Color bg = (Color) row.getData("background");
+          Color bg = (Color) row.getTreeItem().getData("background");
           Font font = null;
-          for (FontData data : row.getFont(index).getFontData())
+          for (FontData data : row.getTreeItem().getFont(index).getFontData())
           {
             switch (data.getStyle())
             {
@@ -436,30 +491,34 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
                 break;
             }
           }
+          int alignment = col.getAlignment() == Column.ALIGN_LEFT
+              ? Element.ALIGN_LEFT
+              : Element.ALIGN_RIGHT;
+          if (row.getEbene() == 1 && index == 0)
+          {
+            alignment = Element.ALIGN_RIGHT;
+          }
           if (bg == null)
           {
-            reporter.addColumn(row.getText(index),
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
+            reporter.addColumn(row.getTreeItem().getText(index), alignment,
                 font);
           }
           else
           {
-            reporter.addColumn(row.getText(index),
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
+            reporter.addColumn(row.getTreeItem().getText(index), alignment,
                 new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
           }
         }
       }
     }
+
   }
 
   @SuppressWarnings("unchecked")
   private void saveSettings() throws RemoteException
   {
-    List<TableColumn> itemsChecked = spaltenList.getItems();
-    for (TableColumn col : (List<TableColumn>) spaltenList.getItems(false))
+    List<TreeColumn> itemsChecked = spaltenList.getItems();
+    for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems(false))
     {
       settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
           itemsChecked.contains(col));
@@ -503,4 +562,36 @@ public class TablePartExportDialog extends AbstractDialog<Boolean>
     return success;
   }
 
+  private void getItemRekursiv(List<MyTreeItem> rows, TreeItem item, int ebene)
+  {
+    // Unterelemente durchlaufen
+    for (TreeItem child : item.getItems())
+    {
+      rows.add(new MyTreeItem(child, ebene));
+      getItemRekursiv(rows, child, ebene + 1);
+    }
+  }
+
+  public class MyTreeItem
+  {
+    private TreeItem treeItem;
+
+    private int ebene;
+
+    private MyTreeItem(TreeItem treeItem, int ebene)
+    {
+      this.treeItem = treeItem;
+      this.ebene = ebene;
+    }
+
+    public TreeItem getTreeItem()
+    {
+      return treeItem;
+    }
+
+    public int getEbene()
+    {
+      return ebene;
+    }
+  }
 }

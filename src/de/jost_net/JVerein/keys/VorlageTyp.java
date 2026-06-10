@@ -109,6 +109,14 @@ public enum VorlageTyp
       "Pre-Notification-Kursteilnehmer Dateiname",
       "Prenotification-$lastschrift_name-$lastschrift_vorname-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
+  ABWEICHENDE_ZAHLER_DATEINAME("abweichende-zahler-dateiname",
+      "Abweichende Zahler Dateiname",
+      "Abweichende-Zahler-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
+  FAMILIENVERBAND_DATEINAME("familienverband-dateiname",
+      "Familienverband Dateiname",
+      "Familienverband-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Mitglieder
   PERSONALBOGEN_DATEINAME("personalbogen-dateiname", "Personalbogen Dateiname",
@@ -484,6 +492,15 @@ public enum VorlageTyp
       "Wiedervorlagen", Vorlageart.TITEL.getKey()),
   WIEDERVORLAGEN_SUBTITEL("wiedervorlagen-subtitel", "Wiedervorlagen Subtitel",
       "", Vorlageart.TITEL.getKey()),
+  ABWEICHENDE_ZAHLER_TITEL("abweichende-zahler-titel",
+      "Abweichende Zahler Titel", "Abweichende Zahler",
+      Vorlageart.TITEL.getKey()),
+  ABWEICHENDE_ZAHLER_SUBTITEL("abweichende-zahler-subtitel",
+      "Abweichende Zahler Subtitel", "", Vorlageart.TITEL.getKey()),
+  FAMILIENVERBAND_TITEL("familienverband-titel", "Familienverband Titel",
+      "Familienverband", Vorlageart.TITEL.getKey()),
+  FAMILIENVERBAND_SUBTITEL("familienverband-subtitel",
+      "Familienverband Subtitel", "", Vorlageart.TITEL.getKey()),
 
   // Reports aus Buchführung
   KONTEN_TITEL("konten-titel", "Konten Titel", "Konten",

@@ -21,28 +21,26 @@ import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
 
-import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
-import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.willuhn.datasource.GenericIterator;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.TreePartExportDialog;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.parts.TablePart;
+import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class JVereinTablePart extends TablePart implements IJVereinPart
+public class JVereinTreePart extends TreePart implements IJVereinPart
 {
 
-  private Control tableControl;
+  private Control treeControl;
 
   private List<Column> allColumns = new LinkedList<Column>();
 
@@ -51,40 +49,16 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   private String tableName = null;
 
   /**
-   * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
+   * Erzeugt einen neuen Tree basierend auf dem uebergebenen Objekt.
    * 
+   * @param object
+   *          Das Objekt, fuer das der Baum erzeugt werden soll.
    * @param action
-   *          die beim Doppelklick auf ein Element ausgefuehrt wird.
+   *          Action, die bei der Auswahl eines Elements ausgeloest werden soll.
    */
-  public JVereinTablePart(Action action)
+  public JVereinTreePart(Object object, Action action)
   {
-    this((List<?>) null, action);
-  }
-
-  /**
-   * Erzeugt eine neue Standard-Tabelle auf dem uebergebenen Composite.
-   * 
-   * @param list
-   *          Liste mit Objekten, die angezeigt werden soll.
-   * @param action
-   *          die beim Doppelklick auf ein Element ausgefuehrt wird.
-   */
-  public JVereinTablePart(GenericIterator<?> list, Action action)
-  {
-    this(asList(list), action);
-  }
-
-  /**
-   * Erzeugt eine neue Standard-Tabelle auf dem uebergebenen Composite.
-   * 
-   * @param list
-   *          Liste mit Objekten, die angezeigt werden soll.
-   * @param action
-   *          die beim Doppelklick auf ein Element ausgefuehrt wird.
-   */
-  public JVereinTablePart(List<?> list, Action action)
-  {
-    super(list, action);
+    super(object, action);
     setRememberColWidths(true);
     setRememberOrder(true);
   }
@@ -110,53 +84,11 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     Context ctx = super.createFeatureEventContext(e, data);
 
-    this.tableControl = ctx.control;
-
-    if (!e.equals(Feature.Event.PAINT))
+    if (e.equals(Feature.Event.PAINT))
     {
-      return ctx;
+      this.treeControl = ctx.control;
     }
-    Table table = (Table) ctx.control;
-
-    // Die letzte Spalte packen wir nach Titelbreite, falls diese kleiner als
-    // der gespeicherte Wert ist. So wird ggf. verhindert, dass eine horizontale
-    // Scrollbar angezeigt wird, wenn es gar nicht nötig ist.
-    if (table.getColumnCount() == 0)
-    {
-      return ctx;
-    }
-    TableColumn c = table.getColumn(table.getColumnCount() - 1);
-    int widthOld = c.getWidth();
-    c.pack();
-    if (c.getWidth() > widthOld)
-    {
-      c.setWidth(widthOld);
-    }
-
     return ctx;
-  }
-
-  // Überschrieben um den Checked-Status beim sortieren beizubehalten
-  @Override
-  protected void orderBy(int index)
-  {
-    if (checkable)
-    {
-      try
-      {
-        List<?> l = getItems();
-        super.orderBy(index);
-        setChecked(l.toArray(), true);
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler beim Sortieren");
-      }
-    }
-    else
-    {
-      super.orderBy(index);
-    }
   }
 
   @Override
@@ -276,8 +208,8 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     try
     {
-      if (!new TablePartExportDialog((Table) tableControl, getTablePartID(),
-          art, title, subtitle, filename).open())
+      if (!new TreePartExportDialog((Tree) treeControl, getTablePartID(), art,
+          title, subtitle, filename).open())
       {
         throw new OperationCanceledException();
       }
@@ -303,4 +235,5 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     return tableName;
   }
+
 }

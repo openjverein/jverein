@@ -4,7 +4,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -68,7 +68,7 @@ public abstract class AbstractJVereinControl extends AbstractControl
    * @return
    * @throws RemoteException
    */
-  protected abstract JVereinTablePart getTablePart() throws RemoteException;
+  protected abstract IJVereinPart getTablePart() throws RemoteException;
 
   /**
    * Liefert den Titel für die Tabellenreports

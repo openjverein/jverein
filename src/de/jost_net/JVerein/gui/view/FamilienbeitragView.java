@@ -17,7 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FamilienbeitragControl;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -27,24 +28,26 @@ import de.willuhn.util.ApplicationException;
 
 public class FamilienbeitragView extends AbstractView
 {
-  final MitgliedControl control = new MitgliedControl(this);
+  final FamilienbeitragControl control = new FamilienbeitragControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Familienverband");
 
-    control.init("familie.", null, null);
-
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getMitgliedStatus());
 
-    control.getFamilienbeitraegeTree().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.FAMILIENBEITRAG, false, "question-circle.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override

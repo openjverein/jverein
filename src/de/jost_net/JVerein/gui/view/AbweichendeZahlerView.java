@@ -17,7 +17,8 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AbweichenderZahlerControl;
+import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -27,24 +28,26 @@ import de.willuhn.util.ApplicationException;
 
 public class AbweichendeZahlerView extends AbstractView
 {
-  final MitgliedControl control = new MitgliedControl(this);
+  final AbweichenderZahlerControl control = new AbweichenderZahlerControl(this);
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Abweichende Zahler");
 
-    control.init("abweichendezahler.", null, null);
-
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getMitgliedStatus());
 
-    control.getAbweichenderZahlerTree().paint(this.getParent());
+    control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ABWEICHENDEZAHLER, false, "question-circle.png");
     buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override
