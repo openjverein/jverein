@@ -381,8 +381,7 @@ public class TreePartExportDialog extends AbstractDialog<Boolean>
         ebenen = Math.max(ebenen, item.getEbene());
       }
       int size = listeAuswahl.size();
-      TreeColumn first = listeAuswahl.get(0);
-      if (listeOrig.indexOf(first) == 0)
+      if (listeOrig.indexOf(listeAuswahl.get(0)) == 0)
       {
         size += ebenen;
       }
