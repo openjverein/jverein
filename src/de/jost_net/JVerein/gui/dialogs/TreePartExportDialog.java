@@ -27,9 +27,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
@@ -47,11 +45,8 @@ import com.itextpdf.text.Font;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.util.TabGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -95,7 +90,6 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     settings = new Settings(this.getClass());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
@@ -125,10 +119,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         return;
       }
     };
-    spaltenList.addColumn("Name", "text");
     if (art.equals(ExportArt.PDF))
     {
-      spaltenList.addColumn("Breite", "data", null, true);
       spaltenList.addChangeListener((object, attribute, newValue) -> {
         try
         {
@@ -140,20 +132,13 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         }
       });
     }
-    spaltenList.setCheckable(true);
-
-    if (art.equals(ExportArt.PDF))
+    createGui(parent, new Action()
     {
-      TabFolder folder = new TabFolder(parent, SWT.BORDER);
-      folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
-      TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
-      TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
-
-      tabSpalten.addPart(spaltenList);
-      ButtonArea buttons = new ButtonArea();
-      buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
+      @SuppressWarnings("unchecked")
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
         try
         {
           for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems())
@@ -174,31 +159,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           throw new ApplicationException(
               "Fehler beim zurücksetzen der Breiten");
         }
-
-      }, null, false, "eraser.png"));
-      tabSpalten.addButtonArea(buttons);
-
-      addRaenderFormularTabs(tabRaender, tabFormular);
-    }
-    else
-    {
-      spaltenList.paint(parent);
-    }
-
-    for (TreeColumn col : tree.getColumns())
-    {
-      spaltenList.setChecked(col, settings
-          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-    }
-
-    ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", c -> export(), null, true, "ok.png");
-
-    b.addButton("Abbrechen", c -> {
-      throw new OperationCanceledException();
-    }, null, false, "process-stop.png");
-
-    b.paint(parent);
+      }
+    });
   }
 
   @Override
@@ -356,23 +318,6 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   }
 
-  @SuppressWarnings("unchecked")
-  protected void saveSettings() throws RemoteException
-  {
-    List<TreeColumn> itemsChecked = spaltenList.getItems();
-    for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems(false))
-    {
-      settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
-          itemsChecked.contains(col));
-      if (art.equals(ExportArt.PDF))
-      {
-        settings.setAttribute(settingPrefix + "breite." + col.getText(),
-            (Integer) col.getData());
-      }
-    }
-    super.saveSettings();
-  }
-
   private void getItemRekursiv(List<MyTreeItem> rows, TreeItem item, int ebene)
   {
     // Unterelemente durchlaufen
@@ -403,6 +348,34 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     public int getEbene()
     {
       return ebene;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  protected void saveSettings() throws RemoteException
+  {
+    List<TreeColumn> itemsChecked = spaltenList.getItems();
+    for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems(false))
+    {
+      settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
+          itemsChecked.contains(col));
+      if (art.equals(ExportArt.PDF))
+      {
+        settings.setAttribute(settingPrefix + "breite." + col.getText(),
+            (Integer) col.getData());
+      }
+    }
+    super.saveSettings();
+  }
+
+  @Override
+  void setChecked()
+  {
+    for (TreeColumn col : tree.getColumns())
+    {
+      spaltenList.setChecked(col, settings
+          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
     }
   }
 }

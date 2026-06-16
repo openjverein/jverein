@@ -17,7 +17,11 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.TabFolder;
+
 import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -26,11 +30,14 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -94,9 +101,49 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     setSize(400, SWT.DEFAULT);
   }
 
-  protected void addRaenderFormularTabs(TabGroup tabRaender,
-      TabGroup tabFormular) throws RemoteException
+  protected void createGui(Composite parent, Action action)
+      throws RemoteException
   {
+    spaltenList.addColumn("Name", "text");
+    spaltenList.setCheckable(true);
+
+    if (art.equals(ExportArt.PDF))
+    {
+      spaltenList.addColumn("Breite", "data", null, true);
+      TabFolder folder = new TabFolder(parent, SWT.BORDER);
+      folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+      tabSpalten.addPart(spaltenList);
+      ButtonArea buttons = new ButtonArea();
+      buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
+          "eraser.png"));
+      tabSpalten.addButtonArea(buttons);
+
+      addRaenderFormularTabs(folder);
+    }
+    else
+    {
+      spaltenList.paint(parent);
+    }
+
+    setChecked();
+
+    ButtonArea b = new ButtonArea();
+    b.addButton("Speichern", c -> export(), null, true, "ok.png");
+
+    b.addButton("Abbrechen", c -> {
+      throw new OperationCanceledException();
+    }, null, false, "process-stop.png");
+
+    b.paint(parent);
+  }
+
+  protected void addRaenderFormularTabs(TabFolder folder) throws RemoteException
+  {
+    TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
+    TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
+
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
     rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
     oben = new IntegerInput(settings.getInt(settingPrefix + "oben", 20));
@@ -236,6 +283,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     return success;
   }
+
+  abstract void setChecked();
 
   abstract void exportCSV(File file) throws IOException;
 

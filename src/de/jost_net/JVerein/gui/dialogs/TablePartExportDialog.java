@@ -27,9 +27,7 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -47,11 +45,8 @@ import com.itextpdf.text.Font;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.gui.util.TabGroup;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -79,7 +74,6 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     settings = new Settings(this.getClass());
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   protected void paint(Composite parent)
       throws ApplicationException, RemoteException
@@ -109,10 +103,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         return;
       }
     };
-    spaltenList.addColumn("Name", "text");
     if (art.equals(ExportArt.PDF))
     {
-      spaltenList.addColumn("Breite", "data", null, true);
       spaltenList.addChangeListener((object, attribute, newValue) -> {
         try
         {
@@ -124,20 +116,13 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         }
       });
     }
-    spaltenList.setCheckable(true);
-
-    if (art.equals(ExportArt.PDF))
+    createGui(parent, new Action()
     {
-      TabFolder folder = new TabFolder(parent, SWT.BORDER);
-      folder.setLayoutData(new GridData(GridData.FILL_BOTH));
 
-      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
-      TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
-      TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
-
-      tabSpalten.addPart(spaltenList);
-      ButtonArea buttons = new ButtonArea();
-      buttons.addButton(new Button("Breiten zurücksetzen", (e) -> {
+      @SuppressWarnings("unchecked")
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
         try
         {
           for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
@@ -158,31 +143,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           throw new ApplicationException(
               "Fehler beim zurücksetzen der Breiten");
         }
-
-      }, null, false, "eraser.png"));
-      tabSpalten.addButtonArea(buttons);
-
-      addRaenderFormularTabs(tabRaender, tabFormular);
-    }
-    else
-    {
-      spaltenList.paint(parent);
-    }
-
-    for (TableColumn col : table.getColumns())
-    {
-      spaltenList.setChecked(col, settings
-          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-    }
-
-    ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", c -> export(), null, true, "ok.png");
-
-    b.addButton("Abbrechen", c -> {
-      throw new OperationCanceledException();
-    }, null, false, "process-stop.png");
-
-    b.paint(parent);
+      }
+    });
   }
 
   @Override
@@ -291,6 +253,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   }
 
   @SuppressWarnings("unchecked")
+  @Override
   protected void saveSettings() throws RemoteException
   {
     List<TableColumn> itemsChecked = spaltenList.getItems();
@@ -305,6 +268,16 @@ public class TablePartExportDialog extends AbstractPartExportDialog
       }
     }
     super.saveSettings();
+  }
+
+  @Override
+  void setChecked()
+  {
+    for (TableColumn col : table.getColumns())
+    {
+      spaltenList.setChecked(col, settings
+          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+    }
   }
 
 }
