@@ -109,18 +109,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     if (art.equals(ExportArt.PDF))
     {
-      spaltenList.addColumn("Breite", "data", null, true);
-      TabFolder folder = new TabFolder(parent, SWT.BORDER);
-      folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-
-      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
-      tabSpalten.addPart(spaltenList);
-      ButtonArea buttons = new ButtonArea();
-      buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
-          "eraser.png"));
-      tabSpalten.addButtonArea(buttons);
-
-      addRaenderFormularTabs(folder);
+      zeichnePDF(parent, action);
     }
     else
     {
@@ -139,10 +128,22 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     b.paint(parent);
   }
 
-  protected void addRaenderFormularTabs(TabFolder folder) throws RemoteException
+  protected void zeichnePDF(Composite parent, Action action)
+      throws RemoteException
   {
+    spaltenList.addColumn("Breite", "data", null, true);
+
+    TabFolder folder = new TabFolder(parent, SWT.BORDER);
+    folder.setLayoutData(new GridData(GridData.FILL_BOTH));
+    TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
     TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
     TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
+
+    tabSpalten.addPart(spaltenList);
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(
+        new Button("Breiten zurücksetzen", action, null, false, "eraser.png"));
+    tabSpalten.addButtonArea(buttons);
 
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
     rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
