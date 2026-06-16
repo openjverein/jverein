@@ -119,6 +119,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     createGui(parent, new Action()
     {
 
+      // Action zum Reset der Spaltenbreiten
       @SuppressWarnings("unchecked")
       @Override
       public void handleAction(Object context) throws ApplicationException
