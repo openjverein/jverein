@@ -17,7 +17,7 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.List;
 
-import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.util.ApplicationException;
 
