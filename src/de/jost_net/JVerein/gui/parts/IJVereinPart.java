@@ -18,7 +18,9 @@ import java.rmi.RemoteException;
 import java.util.List;
 
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.util.ApplicationException;
 
 public interface IJVereinPart
@@ -37,4 +39,55 @@ public interface IJVereinPart
   public void saveSpalten(List<Column> columns) throws RemoteException;
 
   public String getTableName();
+
+  /**
+   * Ermittelt die ID der Tablepart aus der View und dem Objekttyp
+   * 
+   * @param tablePartId
+   * @param tableName
+   * @return
+   * @throws RemoteException
+   */
+  default String getTablePartID(String tablePartId, String tableName)
+      throws RemoteException
+  {
+    if (tablePartId != null)
+    {
+      return tablePartId;
+    }
+    List<?> items = getItems();
+
+    if (items.size() == 0)
+    {
+      tablePartId = "";
+      return tablePartId;
+    }
+    StringBuilder sb = new StringBuilder();
+
+    sb.append(GUI.getCurrentView().getClass().getSimpleName());
+    sb.append(".");
+    if (tableName != null)
+    {
+      sb.append(tableName);
+    }
+    else
+    {
+      sb.append(items.get(0).getClass().getSimpleName());
+    }
+    sb.append(".");
+
+    tablePartId = sb.toString();
+    return tablePartId;
+  }
+
+  default void saveSpalten(List<Column> columns, String tablePartId,
+      String tableName, Settings settings) throws RemoteException
+  {
+    for (Column c : getAllColums())
+    {
+      settings.setAttribute(
+          getTablePartID(tablePartId, tableName) + c.getName(),
+          columns.contains(c));
+    }
+  }
 }

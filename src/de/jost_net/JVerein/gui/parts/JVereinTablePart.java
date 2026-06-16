@@ -30,7 +30,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -169,7 +168,9 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     try
     {
-      if (settings.getBoolean(getTablePartID() + col.getName(), defaultVisible))
+      if (settings.getBoolean(
+          getTablePartID(tablePartId, tableName) + col.getName(),
+          defaultVisible))
       {
         super.addColumn(col);
       }
@@ -196,48 +197,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   @Override
   public void saveSpalten(List<Column> columns) throws RemoteException
   {
-    for (Column c : allColumns)
-    {
-      settings.setAttribute(getTablePartID() + c.getName(),
-          columns.contains(c));
-    }
-  }
-
-  /**
-   * Ermittelt die ID der Tablepart aus der View und dem Objekttyp
-   * 
-   * @return
-   * @throws RemoteException
-   */
-  private String getTablePartID() throws RemoteException
-  {
-    if (tablePartId != null)
-    {
-      return tablePartId;
-    }
-    List<?> items = getItems();
-
-    if (items.size() == 0)
-    {
-      tablePartId = "";
-      return tablePartId;
-    }
-    StringBuilder sb = new StringBuilder();
-
-    sb.append(GUI.getCurrentView().getClass().getSimpleName());
-    sb.append(".");
-    if (tableName != null)
-    {
-      sb.append(tableName);
-    }
-    else
-    {
-      sb.append(items.get(0).getClass().getSimpleName());
-    }
-    sb.append(".");
-
-    tablePartId = sb.toString();
-    return tablePartId;
+    saveSpalten(columns, tablePartId, tableName, settings);
   }
 
   /**
@@ -276,8 +236,9 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     try
     {
-      if (!new TablePartExportDialog((Table) tableControl, getTablePartID(),
-          art, title, subtitle, filename).open())
+      if (!new TablePartExportDialog((Table) tableControl,
+          getTablePartID(tablePartId, tableName), art, title, subtitle,
+          filename).open())
       {
         throw new OperationCanceledException();
       }

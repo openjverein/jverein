@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,8 +10,6 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.parts;
 
@@ -28,7 +25,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.dialogs.TreePartExportDialog;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -101,7 +97,9 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   {
     try
     {
-      if (settings.getBoolean(getTablePartID() + col.getName(), defaultVisible))
+      if (settings.getBoolean(
+          getTablePartID(tablePartId, tableName) + col.getName(),
+          defaultVisible))
       {
         super.addColumn(col);
       }
@@ -128,48 +126,7 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   @Override
   public void saveSpalten(List<Column> columns) throws RemoteException
   {
-    for (Column c : allColumns)
-    {
-      settings.setAttribute(getTablePartID() + c.getName(),
-          columns.contains(c));
-    }
-  }
-
-  /**
-   * Ermittelt die ID der Tablepart aus der View und dem Objekttyp
-   * 
-   * @return
-   * @throws RemoteException
-   */
-  private String getTablePartID() throws RemoteException
-  {
-    if (tablePartId != null)
-    {
-      return tablePartId;
-    }
-    List<?> items = getItems();
-
-    if (items.size() == 0)
-    {
-      tablePartId = "";
-      return tablePartId;
-    }
-    StringBuilder sb = new StringBuilder();
-
-    sb.append(GUI.getCurrentView().getClass().getSimpleName());
-    sb.append(".");
-    if (tableName != null)
-    {
-      sb.append(tableName);
-    }
-    else
-    {
-      sb.append(items.get(0).getClass().getSimpleName());
-    }
-    sb.append(".");
-
-    tablePartId = sb.toString();
-    return tablePartId;
+    saveSpalten(columns, tablePartId, tableName, settings);
   }
 
   /**
@@ -208,8 +165,9 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   {
     try
     {
-      if (!new TreePartExportDialog((Tree) treeControl, getTablePartID(), art,
-          title, subtitle, filename).open())
+      if (!new TreePartExportDialog((Tree) treeControl,
+          getTablePartID(tablePartId, tableName), art, title, subtitle,
+          filename).open())
       {
         throw new OperationCanceledException();
       }
