@@ -448,6 +448,12 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -813,6 +819,12 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
