@@ -35,6 +35,7 @@ import de.willuhn.util.ProgressMonitor;
 public class JVereinDBServiceImpl extends DBServiceImpl
     implements JVereinDBService
 {
+
   private static final long serialVersionUID = 7221618925760171630L;
 
   private DBSupport driver = null;

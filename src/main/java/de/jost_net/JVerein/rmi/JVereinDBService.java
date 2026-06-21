@@ -32,7 +32,7 @@ public interface JVereinDBService extends DBService
   /**
    * Einstellungen fuer die DB-Services.
    */
-  public final static Settings SETTINGS = new Settings(JVereinDBService.class);;
+  public final static Settings SETTINGS = new Settings(JVereinDBService.class);
 
   /**
    * Aktualisiert die Datenbank.

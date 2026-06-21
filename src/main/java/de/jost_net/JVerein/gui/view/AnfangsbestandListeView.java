@@ -44,9 +44,8 @@ public class AnfangsbestandListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Nummer", control.getFilterInput(Filter.NUMMER));
-    left.addLabelPair("Bezeichnung",
-        control.getFilterInput(Filter.BEZEICHNUNG));
+    left.addInput(control.getFilterInput(Filter.NUMMER));
+    left.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
     Input von = control.getFilterInput(Filter.DATUM_VON);
