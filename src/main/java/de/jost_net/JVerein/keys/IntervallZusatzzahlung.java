@@ -43,6 +43,7 @@ public class IntervallZusatzzahlung implements KeyEnum
     this.intervall = key;
   }
 
+  @Override
   public int getKey()
   {
     return intervall;

@@ -41,6 +41,7 @@ public enum Monat implements KeyEnum
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

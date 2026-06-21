@@ -35,6 +35,7 @@ public class Spendenart implements KeyEnum
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;

@@ -36,6 +36,7 @@ public class SplitbuchungTyp implements KeyEnum
     this.typ = key;
   }
 
+  @Override
   public int getKey()
   {
     return typ;

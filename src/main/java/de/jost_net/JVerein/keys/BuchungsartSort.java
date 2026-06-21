@@ -50,6 +50,7 @@ public class BuchungsartSort implements KeyEnum
     }
   }
 
+  @Override
   public int getKey()
   {
     return buchungsartsort;

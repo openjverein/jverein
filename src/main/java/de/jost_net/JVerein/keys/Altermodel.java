@@ -36,6 +36,7 @@ public class Altermodel implements KeyEnum
     this.model = key;
   }
 
+  @Override
   public int getKey()
   {
     return model;

@@ -41,6 +41,7 @@ public class Datentyp implements KeyEnum
     this.datentyp = datentyp;
   }
 
+  @Override
   public int getKey()
   {
     return datentyp;

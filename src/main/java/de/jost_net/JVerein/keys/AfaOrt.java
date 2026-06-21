@@ -32,6 +32,7 @@ public class AfaOrt implements KeyEnum
     this.afaort = key;
   }
 
+  @Override
   public int getKey()
   {
     return afaort;

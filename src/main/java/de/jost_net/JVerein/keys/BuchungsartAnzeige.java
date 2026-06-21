@@ -44,6 +44,7 @@ public class BuchungsartAnzeige implements KeyEnum
     this.buchungsartanzeige = key;
   }
 
+  @Override
   public int getKey()
   {
     return buchungsartanzeige;

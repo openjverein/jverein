@@ -39,6 +39,7 @@ public class Zahlungsrhythmus implements KeyEnum
     this.zahlungsrhytmus = key;
   }
 
+  @Override
   public int getKey()
   {
     return zahlungsrhytmus;

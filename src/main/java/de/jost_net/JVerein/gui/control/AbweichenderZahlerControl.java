@@ -49,6 +49,7 @@ public class AbweichenderZahlerControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
+  @Override
   public JVereinTreePart getTablePart() throws RemoteException
   {
     if (abweichenderzahlertree != null)

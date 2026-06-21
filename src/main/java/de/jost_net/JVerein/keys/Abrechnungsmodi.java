@@ -58,6 +58,7 @@ public class Abrechnungsmodi implements KeyEnum
     this.abrechnungsmodus = abrechnungsmodus;
   }
 
+  @Override
   public int getKey()
   {
     return abrechnungsmodus;

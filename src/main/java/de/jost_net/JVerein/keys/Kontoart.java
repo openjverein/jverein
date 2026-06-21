@@ -73,6 +73,7 @@ public enum Kontoart implements KeyEnum
     this.textVermoegen = textVermoegen;
   }
 
+  @Override
   public int getKey()
   {
     return key;

@@ -34,6 +34,7 @@ public class AbstractInputAuswahl implements KeyEnum
     this.auswahl = key;
   }
 
+  @Override
   public int getKey()
   {
     return auswahl;

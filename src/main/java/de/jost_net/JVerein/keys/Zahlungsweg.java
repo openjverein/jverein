@@ -39,6 +39,7 @@ public class Zahlungsweg implements KeyEnum
     this.zahlungsweg = key;
   }
 
+  @Override
   public int getKey()
   {
     return zahlungsweg;

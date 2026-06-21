@@ -36,6 +36,7 @@ public class ArtBuchungsart implements KeyEnum
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;

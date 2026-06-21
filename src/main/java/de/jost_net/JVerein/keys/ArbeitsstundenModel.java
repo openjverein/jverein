@@ -36,6 +36,7 @@ public class ArbeitsstundenModel implements KeyEnum
     this.arbeitsModel = key;
   }
 
+  @Override
   public int getKey()
   {
     return arbeitsModel;

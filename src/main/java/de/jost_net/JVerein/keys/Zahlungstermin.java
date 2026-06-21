@@ -63,6 +63,7 @@ public enum Zahlungstermin implements KeyEnum
     this.monate = monate;
   }
 
+  @Override
   public int getKey()
   {
     return key;

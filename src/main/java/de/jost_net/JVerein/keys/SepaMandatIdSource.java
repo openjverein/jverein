@@ -38,6 +38,7 @@ public class SepaMandatIdSource implements KeyEnum
     this.mandatIDSource = key;
   }
 
+  @Override
   public int getKey()
   {
     return mandatIDSource;

@@ -39,6 +39,7 @@ public enum Eigenschaftenauswahl implements KeyEnum
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

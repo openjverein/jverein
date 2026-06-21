@@ -49,6 +49,7 @@ public class FamilienbeitragControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
+  @Override
   public JVereinTreePart getTablePart() throws RemoteException
   {
     if (familienbeitragtree != null)

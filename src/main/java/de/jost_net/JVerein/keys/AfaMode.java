@@ -34,6 +34,7 @@ public class AfaMode implements KeyEnum
     this.afamode = key;
   }
 
+  @Override
   public int getKey()
   {
     return afamode;
