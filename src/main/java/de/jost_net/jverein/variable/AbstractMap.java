@@ -1,0 +1,81 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ *
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.variable;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import de.jost_net.jverein.util.JVDateFormatJJJJ;
+import de.jost_net.jverein.util.JVDateFormatJJJJMMTT;
+import de.jost_net.jverein.util.JVDateFormatMM;
+import de.jost_net.jverein.util.JVDateFormatMMJJJJ;
+import de.jost_net.jverein.util.JVDateFormatTT;
+import de.jost_net.jverein.util.JVDateFormatTTMMJJJJ;
+
+public abstract class AbstractMap
+{
+
+  protected JVDateFormatJJJJMMTT jjjjmmtt = new JVDateFormatJJJJMMTT();
+
+  protected JVDateFormatTTMMJJJJ ttmmjjjj = new JVDateFormatTTMMJJJJ();
+
+  protected JVDateFormatMMJJJJ mmjjjj = new JVDateFormatMMJJJJ();
+
+  protected JVDateFormatTT tt = new JVDateFormatTT();
+
+  protected JVDateFormatMM mm = new JVDateFormatMM();
+
+  protected JVDateFormatJJJJ jjjj = new JVDateFormatJJJJ();
+
+  protected static Date toDate(String datum)
+  {
+    Date d = null;
+
+    try
+    {
+      d = new JVDateFormatTTMMJJJJ().parse(datum);
+    }
+    catch (Exception ignored)
+    {
+    }
+    return d;
+  }
+
+  protected static String fromDate(Date date)
+  {
+    String d = "";
+
+    try
+    {
+      d = new SimpleDateFormat("yyyyMMdd").format(date);
+    }
+    catch (Exception ignored)
+    {
+    }
+    return d;
+  }
+
+  protected static String ibanMaskieren(String s)
+  {
+    if (s == null)
+      return null;
+    int n = s.length();
+    if (n <= 4)
+      return s;
+    return "X".repeat(n - 4) + s.substring(n - 4);
+  }
+}

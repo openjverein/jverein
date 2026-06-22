@@ -1,0 +1,105 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.rmi;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.jverein.keys.Zahlungsweg;
+
+public interface Zusatzbetrag extends JVereinDBObject
+{
+
+  public static final String TABLE_NAME = "zusatzbetrag";
+
+  public static final String TABLE_NAME_ID = "zusatzbetrag.id";
+
+  public static final String MITGLIED = "mitglied";
+
+  public static final String T_MITGLIED = TABLE_NAME + "." + MITGLIED;
+
+  public static final String BUCHUNGSART = "buchungsart";
+
+  public static final String T_BUCHUNGSART = TABLE_NAME + "." + BUCHUNGSART;
+
+  public Mitglied getMitglied() throws RemoteException;
+
+  public void setMitglied(Integer mitglied) throws RemoteException;
+
+  public Date getFaelligkeit() throws RemoteException;
+
+  public void setFaelligkeit(Date faelligkeit) throws RemoteException;
+
+  public String getBuchungstext() throws RemoteException;
+
+  public void setBuchungstext(String buchungstext) throws RemoteException;
+
+  public Double getBetrag() throws RemoteException;
+
+  public void setBetrag(Double betrag) throws RemoteException;
+
+  public Date getStartdatum() throws RemoteException;
+
+  public void setStartdatum(Date value) throws RemoteException;
+
+  public Integer getIntervall() throws RemoteException;
+
+  public String getIntervallText() throws RemoteException;
+
+  public void setIntervall(Integer value) throws RemoteException;
+
+  public Date getEndedatum() throws RemoteException;
+
+  public void setEndedatum(Date value) throws RemoteException;
+
+  public Date getAusfuehrung() throws RemoteException;
+
+  public void setAusfuehrung(Date ausfuehrung) throws RemoteException;
+
+  public boolean isAktiv(Date datum) throws RemoteException;
+
+  public boolean isOffen(Date datum) throws RemoteException;
+
+  public void naechsteFaelligkeit() throws RemoteException;
+
+  public void vorherigeFaelligkeit() throws RemoteException;
+
+  public void setBuchungsart(Buchungsart buchungsart) throws RemoteException;
+
+  public Buchungsart getBuchungsart() throws RemoteException;
+
+  public Long getBuchungsartId() throws RemoteException;
+
+  public Buchungsklasse getBuchungsklasse() throws RemoteException;
+
+  public Long getBuchungsklasseId() throws RemoteException;
+
+  public void setBuchungsklasseId(Long buchungsklasseId) throws RemoteException;
+
+  public Zahlungsweg getZahlungsweg() throws RemoteException;
+
+  void setZahlungsweg(Zahlungsweg zahlungsweg) throws RemoteException;
+
+  public Steuer getSteuer() throws RemoteException;
+
+  void setSteuer(Steuer steuer) throws RemoteException;
+
+  public void setMitgliedzahltSelbst(boolean mitgliedzahltselbst)
+      throws RemoteException;
+
+  public boolean getMitgliedzahltSelbst() throws RemoteException;
+}

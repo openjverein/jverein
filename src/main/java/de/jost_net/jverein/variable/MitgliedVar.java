@@ -1,0 +1,119 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.variable;
+
+public enum MitgliedVar
+{
+  ADRESSIERUNGSZUSATZ("mitglied_adressierungszusatz"), //
+  MITGLIEDSTYP("mitglied_adresstyp"), //
+  ANREDE("mitglied_anrede"), //
+  ANREDE_DU("mitglied_anrede_du"), //
+  ANREDE_FOERMLICH("mitglied_anrede_foermlich"), //
+  AUSTRITT("mitglied_austritt"), //
+  AUSTRITT_F("mitglied_austritt_f"), //
+  BEITRAGSGRUPPE_ARBEITSEINSATZ_BETRAG("mitglied_arbeitseinsatz_betrag"), //
+  BEITRAGSGRUPPE_ARBEITSEINSATZ_STUNDEN("mitglied_arbeitseinsatz_stunden"), //
+  BEITRAGSGRUPPE_BEZEICHNUNG("mitglied_beitragsgruppe_bezeichnung"), //
+  BEITRAGSGRUPPE_BETRAG("mitglied_beitragsgruppe_betrag"), //
+  BEITRAGSGRUPPE_ID("mitglied_beitragsgruppe_id"), //
+  MANDATDATUM("mitglied_mandatdatum"), //
+  MANDATDATUM_F("mitglied_mandatdatum_f"), //
+  MANDATID("mitglied_mandatid"), //
+  BIC("mitglied_bic"), //
+  EINTRITT("mitglied_eintritt"), //
+  EINTRITT_F("mitglied_eintritt_f"), //
+  EINGABEDATUM("mitglied_eingabedatum"), //
+  EINGABEDATUM_F("mitglied_eingabedatum_f"), //
+  EMPFAENGER("mitglied_empfaenger"), //
+  EMAIL("mitglied_email"), //
+  EXTERNE_MITGLIEDSNUMMER("mitglied_externe_mitgliedsnummer"), //
+  GEBURTSDATUM("mitglied_geburtsdatum"), //
+  GEBURTSDATUM_F("mitglied_geburtsdatum_f"), //
+  GESCHLECHT("mitglied_geschlecht"), //
+  HANDY("mitglied_handy"), //
+  IBAN("mitglied_iban"), //
+  IBANMASKIERT("mitglied_iban_maskiert"), //
+  ID("mitglied_id"), //
+  INDIVIDUELLERBEITRAG("mitglied_individuellerbeitrag"), //
+  BANKNAME("mitglied_bankname"), //
+  KONTO_KONTOINHABER("mitglied_konto_kontoinhaber"), //
+  KONTOINHABER("mitglied_kontoinhaber"), //
+  @Deprecated
+  KONTOINHABER_VORNAMENAME("mitglied_kontoinhaber_vornamename"), //
+  @Deprecated
+  KONTOINHABER_EMPFAENGER("mitglied_kontoinhaber_empfaenger"), //
+  @Deprecated
+  KONTOINHABER_PERSONENART("mitglied_kontoinhaber_personenart"), //
+  @Deprecated
+  KONTOINHABER_ANREDE("mitglied_kontoinhaber_anrede"), //
+  @Deprecated
+  KONTOINHABER_TITEL("mitglied_kontoinhaber_titel"), //
+  @Deprecated
+  KONTOINHABER_NAME("mitglied_kontoinhaber_name"), //
+  @Deprecated
+  KONTOINHABER_VORNAME("mitglied_kontoinhaber_vorname"), //
+  @Deprecated
+  KONTOINHABER_STRASSE("mitglied_kontoinhaber_strasse"), //
+  @Deprecated
+  KONTOINHABER_ADRESSIERUNGSZUSATZ("mitglied_kontoinhaber_adressierungszusatz"), //
+  @Deprecated
+  KONTOINHABER_PLZ("mitglied_kontoinhaber_plz"), //
+  @Deprecated
+  KONTOINHABER_ORT("mitglied_kontoinhaber_ort"), //
+  @Deprecated
+  KONTOINHABER_STAAT("mitglied_kontoinhaber_staat"), //
+  @Deprecated
+  KONTOINHABER_EMAIL("mitglied_kontoinhaber_email"), //
+  @Deprecated
+  KONTOINHABER_GESCHLECHT("mitglied_kontoinhaber_geschlecht"), //
+  KUENDIGUNG("mitglied_kuendigung"), //
+  LETZTEAENDERUNG("mitglied_letzte.aenderung"), //
+  NAME("mitglied_name"), //
+  NAMEVORNAME("mitglied_namevorname"), //
+  ORT("mitglied_ort"), //
+  PERSONENART("mitglied_personenart"), //
+  PLZ("mitglied_plz"), //
+  STAAT("mitglied_staat"), //
+  STERBETAG("mitglied_sterbetag"), //
+  STRASSE("mitglied_strasse"), //
+  TELEFONDIENSTLICH("mitglied_telefon_dienstlich"), //
+  TELEFONPRIVAT("mitglied_telefon_privat"), //
+  TITEL("mitglied_titel"), //
+  VERMERK1("mitglied_vermerk1"), //
+  VERMERK2("mitglied_vermerk2"), //
+  VORNAME("mitglied_vorname"), //
+  VORNAMENAME("mitglied_vornamename"), //
+  @Deprecated
+  ZAHLUNGSRHYTMUS("mitglied_zahlungsrhytmus"), //
+  ZAHLUNGSRHYTHMUS("mitglied_zahlungsrhythmus"), //
+  ZAHLUNGSTERMIN("mitglied_zahlungstermin"), //
+  ZAHLUNGSWEG("mitglied_zahlungsweg"), //
+  ZAHLERID("mitglied_zahlerid"),
+  ALTERNATIVER_ZAHLER("mitglied_alternativer_zahlerid");
+
+  private String name;
+
+  MitgliedVar(String name)
+  {
+    this.name = name;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
+}

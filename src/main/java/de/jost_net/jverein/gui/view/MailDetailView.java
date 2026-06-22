@@ -1,0 +1,221 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ *
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.view;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.Map;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
+
+import de.jost_net.jverein.Einstellungen;
+import de.jost_net.jverein.gui.action.DokumentationAction;
+import de.jost_net.jverein.gui.action.InsertVariableDialogAction;
+import de.jost_net.jverein.gui.action.MailTextVorschauAction;
+import de.jost_net.jverein.gui.action.MailVorlageUebernehmenAction;
+import de.jost_net.jverein.gui.action.MailVorlageZuweisenAction;
+import de.jost_net.jverein.gui.control.MailControl;
+import de.jost_net.jverein.gui.control.Savable;
+import de.jost_net.jverein.gui.dialogs.MailEmpfaengerAuswahlDialog;
+import de.jost_net.jverein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.jverein.gui.parts.ButtonRtoL;
+import de.jost_net.jverein.gui.parts.SaveButton;
+import de.jost_net.jverein.gui.util.JameicaUtil;
+import de.jost_net.jverein.rmi.MailAnhang;
+import de.jost_net.jverein.variable.AllgemeineMap;
+import de.jost_net.jverein.variable.MitgliedMap;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class MailDetailView extends AbstractDetailView
+{
+  private MailControl control;
+
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Mail");
+
+    control = new MailControl(this);
+
+    Composite comp = new Composite(this.getParent(), SWT.NONE);
+    comp.setLayoutData(new GridData(GridData.FILL_BOTH));
+
+    GridLayout layout = new GridLayout(2, false);
+    comp.setLayout(layout);
+
+    JameicaUtil.addLabel("Empfänger", comp, GridData.VERTICAL_ALIGN_BEGINNING);
+    Composite comp2 = new Composite(comp, SWT.NONE);
+    GridData gd2 = new GridData(GridData.FILL_HORIZONTAL);
+    gd2.heightHint = 100;
+    comp2.setLayoutData(gd2);
+    GridLayout gl2 = new GridLayout();
+    gl2.marginWidth = 0;
+    comp2.setLayout(gl2);
+    control.getEmpfaenger().paint(comp2);
+
+    Composite comp3 = new Composite(comp, SWT.NONE);
+    GridData gd3 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+    gd3.horizontalSpan = 2;
+    comp3.setLayoutData(gd3);
+    GridLayout gl3 = new GridLayout();
+    gl3.marginWidth = 0;
+    comp3.setLayout(gl3);
+    ButtonRtoL add = new ButtonRtoL("Empfänger hinzufügen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        MailEmpfaengerAuswahlDialog mead = new MailEmpfaengerAuswahlDialog(
+            control, MailEmpfaengerAuswahlDialog.POSITION_CENTER);
+        try
+        {
+          mead.open();
+        }
+        catch (OperationCanceledException oce)
+        {
+          throw oce;
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException(e.getMessage());
+        }
+      }
+    }, control, false, "list-add.png");
+    add.paint(comp3);
+
+    JameicaUtil.addLabel("Betreff", comp, GridData.VERTICAL_ALIGN_CENTER);
+    control.getBetreff().paint(comp);
+    JameicaUtil.addLabel("Text", comp, GridData.VERTICAL_ALIGN_BEGINNING);
+    control.getTxt().paint(comp);
+
+    Composite comp6 = new Composite(comp, SWT.NONE);
+    GridData gd6 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+    gd6.horizontalSpan = 2;
+    comp6.setLayoutData(gd6);
+    GridLayout gl6 = new GridLayout();
+    gl6.marginWidth = 0;
+    gl6.numColumns = 4;
+    comp6.setLayout(gl6);
+    (new ButtonRtoL("Mail-Vorlage", new MailVorlageZuweisenAction(), control,
+        false, "view-refresh.png")).paint(comp6);
+
+    Map<String, Object> map = MitgliedMap.getDummyMap(null);
+    map = new AllgemeineMap().getMap(map);
+
+    (new ButtonRtoL("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png")).paint(comp6);
+    (new ButtonRtoL("Vorschau", new MailTextVorschauAction(map, true), control,
+        false, "edit-copy.png")).paint(comp6);
+    (new ButtonRtoL("Als Vorlage übernehmen",
+        new MailVorlageUebernehmenAction(), control, false, "document-new.png"))
+            .paint(comp6);
+
+    JameicaUtil.addLabel("Anhang", comp, GridData.VERTICAL_ALIGN_BEGINNING);
+    Composite comp4 = new Composite(comp, SWT.NONE);
+    control.setDragDrop(comp4);
+    GridData gd4 = new GridData(GridData.FILL_HORIZONTAL);
+    gd4.heightHint = 100;
+    comp4.setLayoutData(gd4);
+    GridLayout gl4 = new GridLayout();
+    gl4.marginWidth = 0;
+    comp4.setLayout(gl4);
+    control.getAnhang().paint(comp4);
+
+    Composite comp5 = new Composite(comp, SWT.NONE);
+    GridData gd5 = new GridData(GridData.HORIZONTAL_ALIGN_END);
+    gd5.horizontalSpan = 2;
+    comp5.setLayoutData(gd5);
+    GridLayout gl5 = new GridLayout();
+    gl5.marginWidth = 0;
+    comp5.setLayout(gl5);
+    ButtonRtoL addAttachment = new ButtonRtoL("Anhang hinzufügen", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        Settings settings = new Settings(this.getClass());
+        settings.setStoreWhenRead(true);
+        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
+        fd.setFilterPath(
+            settings.getString("lastdir", System.getProperty("user.home")));
+        fd.setText("Bitte wählen Sie einen Anhang aus.");
+        if (fd.open() != null)
+        {
+          try
+          {
+            for (String f : fd.getFileNames())
+            {
+              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                  .createObject(MailAnhang.class, null);
+              anh.setDateiname(f);
+              File file = new File(fd.getFilterPath()
+                  + System.getProperty("file.separator") + f);
+              FileInputStream fis = new FileInputStream(file);
+              byte[] buffer = new byte[(int) file.length()];
+              fis.read(buffer);
+              anh.setAnhang(buffer);
+              control.addAnhang(anh);
+              fis.close();
+              settings.setAttribute("lastdir", file.getParent());
+            }
+          }
+          catch (Exception e)
+          {
+            Logger.error("", e);
+            throw new ApplicationException(e);
+          }
+        }
+      }
+    }, control, false, "list-add.png");
+    addAttachment.paint(comp5);
+
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.MAIL, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    buttons.addButton(new SaveButton(control));
+    buttons.addButton(control.getMailReSendButton());
+    buttons.addButton(control.getMailSendButton());
+    buttons.paint(this.getParent());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterMailDeleteConsumer();
+    super.unbind();
+  }
+}

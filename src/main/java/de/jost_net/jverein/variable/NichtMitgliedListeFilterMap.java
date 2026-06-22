@@ -1,0 +1,180 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not,
+ * see <http://www.gnu.org/licenses/>.
+ *
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.variable;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import de.jost_net.jverein.Einstellungen;
+import de.jost_net.jverein.Einstellungen.Property;
+import de.jost_net.jverein.gui.control.FilterControl;
+import de.jost_net.jverein.gui.control.FilterControl.Mitgliedstypen;
+
+public class NichtMitgliedListeFilterMap extends AbstractMap
+{
+
+  public Map<String, Object> getMap(FilterControl control,
+      Map<String, Object> inma) throws RemoteException
+  {
+    Map<String, Object> map = null;
+    if (inma == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inma;
+    }
+
+    for (NichtMitgliedListeFilterVar var : NichtMitgliedListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_BIS_F:
+          value = fromDate((Date) control.getDatumbis().getValue());
+          break;
+        case DATUM_VON_F:
+          value = fromDate((Date) control.getDatumvon().getValue());
+          break;
+        case DIFFERENZ:
+          value = control.getDifferenz().getText();
+          break;
+        case DIFFERENZ_LIMIT:
+          Double limit = (Double) control.getDoubleAusw().getValue();
+          if (limit != null)
+          {
+            value = Einstellungen.DECIMALFORMAT.format(limit);
+          }
+          else
+          {
+            value = "";
+          }
+          break;
+        case EIGENSCHAFTEN:
+          value = control.getEigenschaftenAuswahl().getText();
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = fromDate((Date) control.getGeburtsdatumvon().getValue());
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = fromDate((Date) control.getGeburtsdatumbis().getValue());
+          break;
+        case GESCHLECHT:
+          value = control.getSuchGeschlecht().getText();
+          break;
+        case MAIL:
+          value = control.getMailauswahl().getText();
+          break;
+        case MITGLIEDSTYP:
+          value = control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED)
+              .getText();
+          break;
+        case NAME:
+          value = control.getSuchname().getValue().toString();
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = control.getZusatzfelderAuswahl().getText();
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+      }
+      map.put(var.getName(), value);
+    }
+    return map;
+  }
+
+  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  {
+    Map<String, Object> map = null;
+    if (inMap == null)
+    {
+      map = new HashMap<>();
+    }
+    else
+    {
+      map = inMap;
+    }
+    for (NichtMitgliedListeFilterVar var : NichtMitgliedListeFilterVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case DATUM_VON_F:
+          value = "20240101";
+          break;
+        case DATUM_BIS_F:
+          value = "20241231";
+          break;
+        case DIFFERENZ:
+          value = "Fehlbetrag";
+          break;
+        case DIFFERENZ_LIMIT:
+          value = "100";
+          break;
+        case EIGENSCHAFTEN:
+          value = "+Eigenschaft";
+          break;
+        case DATUM_GEBURT_BIS_F:
+          value = "20241231";
+          break;
+        case DATUM_GEBURT_VON_F:
+          value = "20000101";
+          break;
+        case GESCHLECHT:
+          value = "Alle";
+          break;
+        case MAIL:
+          value = "Alle";
+          break;
+        case MITGLIEDSTYP:
+          value = "Spender/in";
+          break;
+        case NAME:
+          value = "Meier";
+          break;
+        case ZUSATZFELDER:
+          try
+          {
+            if ((Boolean) Einstellungen
+                .getEinstellung(Property.USEZUSATZFELDER))
+            {
+              value = "Kein Feld ausgewählt";
+            }
+          }
+          catch (RemoteException e)
+          {
+            // Keine unterstützen
+          }
+          break;
+      }
+      map.put(var.getName(), value);
+    }
+    return map;
+  }
+}

@@ -1,0 +1,81 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.view;
+
+import de.jost_net.jverein.gui.action.DokumentationAction;
+import de.jost_net.jverein.gui.control.LastschriftControl;
+import de.jost_net.jverein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.jverein.gui.parts.SaveButton;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
+
+public class LastschriftDetailView extends AbstractView
+{
+  private LastschriftControl control;
+
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Lastschrift");
+
+    control = new LastschriftControl(this);
+
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
+
+    LabelGroup group = new LabelGroup(scrolled.getComposite(),
+        "Daten der Lastschrift");
+    ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cl.getComposite());
+    left.addInput(control.getMitglied());
+    left.addInput(control.getPersonenart());
+    left.addInput(control.getMitgliedstyp());
+    left.addInput(control.getGeschlecht());
+    left.addInput(control.getAnrede());
+    left.addInput(control.getTitel());
+    left.addInput(control.getName());
+    left.addInput(control.getVorname());
+    left.addInput(control.getStrasse());
+    left.addInput(control.getAdressierungszusatz());
+
+    SimpleContainer right = new SimpleContainer(cl.getComposite());
+    right.addInput(control.getPLZ());
+    right.addInput(control.getOrt());
+    right.addInput(control.getStaat());
+    right.addInput(control.getEmail());
+    right.addInput(control.getVZweck());
+    right.addInput(control.getMandatDatum());
+    right.addInput(control.getIBAN());
+    right.addInput(control.getBIC());
+    right.addInput(control.getBetrag());
+    right.addLabelPair("Versand Datum", control.getVersanddatum());
+
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.LASTSCHRIFT, false, "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    buttons.addButton(control.getDruckUndMailButton());
+    buttons.addButton(new SaveButton(control));
+    buttons.paint(this.getParent());
+  }
+}

@@ -1,0 +1,181 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.server;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.jverein.Einstellungen;
+import de.jost_net.jverein.Einstellungen.Property;
+import de.jost_net.jverein.keys.ArbeitsstundenModel;
+import de.jost_net.jverein.rmi.Arbeitseinsatz;
+import de.jost_net.jverein.rmi.Mitglied;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class ArbeitseinsatzImpl extends AbstractJVereinDBObject
+    implements Arbeitseinsatz, IMitglied
+{
+
+  private static final long serialVersionUID = 380278347818535726L;
+
+  public ArbeitseinsatzImpl() throws RemoteException
+  {
+    super();
+  }
+
+  @Override
+  protected String getTableName()
+  {
+    return "arbeitseinsatz";
+  }
+
+  @Override
+  public String getPrimaryAttribute()
+  {
+    return "id";
+  }
+
+  @Override
+  protected void deleteCheck()
+  {
+    //
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    updateCheck();
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
+      if (getStunden() == null)
+      {
+        throw new ApplicationException("Bitte Stunden eingeben!");
+      }
+      if (getStunden() <= 0d)
+      {
+        if ((Integer) Einstellungen.getEinstellung(
+            Property.ARBEITSSTUNDENMODEL) == ArbeitsstundenModel.STANDARD)
+        {
+          throw new ApplicationException(
+              "Bitte mehr als 0 Stunden eingeben oder Arbeitsstundenmodel in Einstellung ändern!");
+        }
+      }
+      if (getDatum() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Arbeitseinsatz kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
+  }
+
+  @Override
+  protected Class<?> getForeignObject(String arg0)
+  {
+    if ("mitglied".equals(arg0))
+    {
+      return Mitglied.class;
+    }
+    return null;
+  }
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return (Mitglied) getAttribute("mitglied");
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    setAttribute("mitglied", mitglied);
+  }
+
+  @Override
+  public Date getDatum() throws RemoteException
+  {
+    return (Date) getAttribute("datum");
+  }
+
+  @Override
+  public void setDatum(Date datum) throws RemoteException
+  {
+    setAttribute("datum", datum);
+  }
+
+  @Override
+  public void setStunden(Double stunden) throws RemoteException
+  {
+    setAttribute("stunden", stunden);
+  }
+
+  @Override
+  public Double getStunden() throws RemoteException
+  {
+    return (Double) getAttribute("stunden");
+  }
+
+  @Override
+  public String getBemerkung() throws RemoteException
+  {
+    return (String) getAttribute("bemerkung");
+  }
+
+  @Override
+  public void setBemerkung(String bemerkung) throws RemoteException
+  {
+    setAttribute("bemerkung", bemerkung);
+  }
+
+  @Override
+  public Object getAttributeDefault(String fieldName)
+  {
+    switch (fieldName)
+    {
+      case "bemerkung":
+        return "";
+      default:
+        return null;
+    }
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Arbeitseinsatz";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Arbeitseinsätze";
+  }
+}

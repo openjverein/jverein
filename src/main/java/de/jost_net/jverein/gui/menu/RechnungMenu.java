@@ -1,0 +1,98 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.menu;
+
+import java.rmi.RemoteException;
+
+import de.jost_net.jverein.gui.action.DeleteAction;
+import de.jost_net.jverein.gui.action.EditAction;
+import de.jost_net.jverein.gui.action.GutschriftAction;
+import de.jost_net.jverein.gui.action.MitgliedDetailAction;
+import de.jost_net.jverein.gui.action.RechnungReferenzAnzeigenAction;
+import de.jost_net.jverein.gui.action.StartViewAction;
+import de.jost_net.jverein.gui.action.VersandAction;
+import de.jost_net.jverein.gui.parts.JVereinTablePart;
+import de.jost_net.jverein.gui.view.MahnungMailView;
+import de.jost_net.jverein.gui.view.RechnungDetailView;
+import de.jost_net.jverein.gui.view.RechnungMailView;
+import de.jost_net.jverein.rmi.Rechnung;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.ContextMenuItem;
+import de.willuhn.logging.Logger;
+
+/**
+ * Kontext-Menu zu den Rechnungen.
+ */
+public class RechnungMenu extends ContextMenu
+{
+
+  /**
+   * Erzeugt ein Kontext-Menu fuer die Liste der Rechnungen.
+   */
+  public RechnungMenu(JVereinTablePart table)
+  {
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(RechnungDetailView.class, table), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Versanddatum setzen",
+        new VersandAction(), "office-calendar.png"));
+    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
+        "user-trash-full.png"));
+    addItem(ContextMenuItem.SEPARATOR);
+    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
+        new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new RechnungAnzeigenMenuItem("Referenzrechnung anzeigen",
+        new RechnungReferenzAnzeigenAction(), "file-invoice.png"));
+    addItem(new CheckedContextMenuItem("Gutschrift erstellen",
+        new GutschriftAction(), "ueberweisung.png"));
+    addItem(new CheckedContextMenuItem("Druck und Mail",
+        new StartViewAction(RechnungMailView.class, true),
+        "document-print.png"));
+    addItem(new CheckedContextMenuItem("Mahnung Druck und Mail",
+        new StartViewAction(MahnungMailView.class, true),
+        "document-print.png"));
+  }
+
+  private static class RechnungAnzeigenMenuItem
+      extends CheckedSingleContextMenuItem
+  {
+    private RechnungAnzeigenMenuItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      if (o instanceof Rechnung)
+      {
+        Rechnung re = (Rechnung) o;
+        try
+        {
+          return re.getReferenzrechnungID() != null;
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+      }
+      return false;
+    }
+  }
+}

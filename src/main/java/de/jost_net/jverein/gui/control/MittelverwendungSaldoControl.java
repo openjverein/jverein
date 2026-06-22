@@ -1,0 +1,152 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program. If
+ * not, see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de | www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.control;
+
+import java.rmi.RemoteException;
+
+import de.jost_net.jverein.keys.Anlagenzweck;
+import de.jost_net.jverein.keys.ArtBuchungsart;
+import de.jost_net.jverein.keys.Kontoart;
+import de.jost_net.jverein.keys.VorlageTyp;
+import de.jost_net.jverein.server.ExtendedDBIterator;
+import de.jost_net.jverein.server.PseudoDBObject;
+import de.jost_net.jverein.util.VorlageUtil;
+import de.willuhn.jameica.gui.AbstractView;
+
+public class MittelverwendungSaldoControl extends BuchungsklasseSaldoControl
+{
+  public MittelverwendungSaldoControl(AbstractView view) throws RemoteException
+  {
+    super(view);
+    mitUmbuchung = false;
+  }
+
+  @Override
+  protected ExtendedDBIterator<PseudoDBObject> getIterator()
+      throws RemoteException
+  {
+    // Wir erweitern den Iterator aus BuchungsklassealdoControl
+    ExtendedDBIterator<PseudoDBObject> it = super.getIterator();
+
+    // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
+    // Anlagen.
+    it.addFilter(
+        "konto.kontoart is null OR "
+            + "(buchungsart.art != ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?)))"
+            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?))) ",
+        ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
+        ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
+
+    // Die Umbuchungen der Schulden und zweckgebundenen Anlagen ziehen wir von
+    // den Einnahmen bzw. Ausgaben ab.
+    if (mitSteuer)
+    {
+      // Nettobetrag berechnen
+      it.addColumn("COALESCE(SUM("
+          + "(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0 "
+          + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
+          + "CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer Bruttobeträge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 "
+          + "ELSE COALESCE(steuer.satz,0) END" + ") AS DECIMAL(10,2))),0) AS "
+          + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE,
+          Kontoart.ANLAGE.getKey());
+
+      it.addColumn("COALESCE(SUM("
+          + "(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0 "
+          + "THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END) * "
+          + "CAST(buchung.betrag * 100 / (100 + "
+          // Anlagenkonto immer Bruttobeträge.
+          // Alte Steuerbuchungen mit dependencyid lassen wir bestehen ohne
+          // Netto zu berehnen.
+          + "CASE WHEN konto.kontoart = ? OR buchung.dependencyid > -1 THEN 0 "
+          + "ELSE COALESCE(steuer.satz,0) END" + ") AS DECIMAL(10,2))),0)  AS "
+          + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME,
+          Kontoart.ANLAGE.getKey());
+    }
+    else
+    {
+      it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0"
+          + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
+          + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE);
+
+      it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0"
+          + " THEN -buchung.betrag WHEN buchungsart.art != ? THEN 0 ELSE buchung.betrag END) AS "
+          + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
+    }
+
+    return it;
+  }
+
+  @Override
+  protected ExtendedDBIterator<PseudoDBObject> getSteuerIterator()
+      throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = super.getSteuerIterator();
+
+    // Bei der Mittelverwendung verwenden wir nur Geldkonten und zweckfremde
+    // Anlagen.
+    it.addFilter(
+        "konto.kontoart is null OR "
+            + "(buchungsart.art != ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?)))"
+            + "OR (buchungsart.art = ? AND (konto.kontoart = ? OR "
+            + "(konto.kontoart = ? AND konto.zweck = ?))) ",
+        ArtBuchungsart.UMBUCHUNG, Kontoart.GELD.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.ZWECKFREMD_EINGESETZT.getKey(),
+        ArtBuchungsart.UMBUCHUNG, Kontoart.SCHULDEN.getKey(),
+        Kontoart.ANLAGE.getKey(), Anlagenzweck.NUTZUNGSGEBUNDEN.getKey());
+
+    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag > 0"
+        + " THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END * "
+        + "CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
+        + AUSGABEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.AUSGABE);
+
+    it.addColumn("SUM(CASE WHEN buchungsart.art = ? AND buchung.betrag < 0"
+        + " THEN -1 WHEN buchungsart.art != ? THEN 0 ELSE 1 END * "
+        + "CAST(buchung.betrag * steuer.satz/100 / (1 + steuer.satz/100) AS DECIMAL(10,2))) AS "
+        + EINNAHMEN, ArtBuchungsart.UMBUCHUNG, ArtBuchungsart.EINNAHME);
+
+    return it;
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_SUBTITEL,
+        this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.MITTELVERWENDUNGSSALDO_DATEINAME,
+        this);
+  }
+}

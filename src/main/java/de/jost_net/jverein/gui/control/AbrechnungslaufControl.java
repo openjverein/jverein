@@ -1,0 +1,742 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.control;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.jverein.Einstellungen;
+import de.jost_net.jverein.Einstellungen.Property;
+import de.jost_net.jverein.gui.action.BuchungAction;
+import de.jost_net.jverein.gui.action.EditAction;
+import de.jost_net.jverein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.jverein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.jverein.gui.formatter.AbrechnungsmodusFormatter;
+import de.jost_net.jverein.gui.formatter.BuchungsartFormatter;
+import de.jost_net.jverein.gui.formatter.BuchungsklasseFormatter;
+import de.jost_net.jverein.gui.formatter.IBANFormatter;
+import de.jost_net.jverein.gui.formatter.JaNeinFormatter;
+import de.jost_net.jverein.gui.formatter.SollbuchungFormatter;
+import de.jost_net.jverein.gui.menu.AbrechnungslaufMenu;
+import de.jost_net.jverein.gui.menu.BuchungAbrechnugslaufMenu;
+import de.jost_net.jverein.gui.menu.LastschriftMenu;
+import de.jost_net.jverein.gui.menu.SollbuchungMenu;
+import de.jost_net.jverein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.jverein.gui.parts.BetragSummaryTablePart;
+import de.jost_net.jverein.gui.parts.BuchungListTablePart;
+import de.jost_net.jverein.gui.parts.JVereinTablePart;
+import de.jost_net.jverein.gui.view.AbrechnungslaufDetailView;
+import de.jost_net.jverein.gui.view.LastschriftDetailView;
+import de.jost_net.jverein.gui.view.SollbuchungDetailView;
+import de.jost_net.jverein.gui.view.ZusatzbetragDetailView;
+import de.jost_net.jverein.keys.Abrechnungsmodi;
+import de.jost_net.jverein.keys.SplitbuchungTyp;
+import de.jost_net.jverein.keys.VorlageTyp;
+import de.jost_net.jverein.keys.Zahlungsweg;
+import de.jost_net.jverein.rmi.Abrechnungslauf;
+import de.jost_net.jverein.rmi.Buchung;
+import de.jost_net.jverein.rmi.JVereinDBObject;
+import de.jost_net.jverein.rmi.Lastschrift;
+import de.jost_net.jverein.rmi.Sollbuchung;
+import de.jost_net.jverein.rmi.Steuer;
+import de.jost_net.jverein.rmi.Zusatzbetrag;
+import de.jost_net.jverein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.jverein.util.VorlageUtil;
+import de.willuhn.datasource.pseudo.PseudoIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.LabelInput;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class AbrechnungslaufControl extends FilterControl implements Savable
+{
+
+  private Abrechnungslauf abrl;
+
+  private JVereinTablePart abrechnungslaufList;
+
+  private LabelInput datum;
+
+  private LabelInput abgeschlossen;
+
+  private LabelInput modus;
+
+  private LabelInput faelligkeit;
+
+  private LabelInput astichtag;
+
+  private LabelInput eintrittsdatum;
+
+  private LabelInput austrittsdatum;
+
+  private LabelInput zahlungsgrund;
+
+  private LabelInput zusatzabrechnungen;
+
+  private TextInput bemerkung;
+
+  private JVereinTablePart buchungList;
+
+  private BetragSummaryTablePart sollbuchungList;
+
+  private BetragSummaryTablePart lastschriftList;
+
+  private BetragSummaryTablePart zusatzbetraegeList;
+
+  public final static int TAB_BUCHUNGEN = 0;
+
+  public final static int TAB_SOLLBUCHUNGEN = 1;
+
+  public final static int TAB_LASTSCHRIFTEN = 2;
+
+  public final static int TAB_ZUSATZBETRAEGE = 3;
+
+  private int selectedTab = TAB_BUCHUNGEN;
+
+  public void setFolderSelection(int selection)
+  {
+    selectedTab = selection;
+  }
+
+  public AbrechnungslaufControl(AbstractView view)
+  {
+    super(view);
+    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+  }
+
+  private Abrechnungslauf getAbrechnungslauf()
+  {
+    if (abrl != null)
+    {
+      return abrl;
+    }
+    abrl = (Abrechnungslauf) getCurrentObject();
+    return abrl;
+  }
+
+  public LabelInput getDatum() throws RemoteException
+  {
+    if (datum != null)
+    {
+      return datum;
+    }
+    datum = new LabelInput(
+        new JVDateFormatTTMMJJJJ().format(getAbrechnungslauf().getDatum()));
+    datum.setName("Datum");
+    return datum;
+  }
+
+  public LabelInput getAbgeschlossen() throws RemoteException
+  {
+    if (abgeschlossen != null)
+    {
+      return abgeschlossen;
+    }
+    Boolean b = getAbrechnungslauf().getAbgeschlossen();
+    abgeschlossen = new LabelInput(b ? "Ja" : "Nein");
+    abgeschlossen.setName("Abgeschlossen");
+    return abgeschlossen;
+  }
+
+  public LabelInput getAbrechnungsmodus() throws RemoteException
+  {
+    if (modus != null)
+    {
+      return modus;
+    }
+    String m = Abrechnungsmodi.get(getAbrechnungslauf().getModus());
+    modus = new LabelInput(m);
+    modus.setName("Abrechnungsmodus");
+    return modus;
+  }
+
+  public LabelInput getFaelligkeit() throws RemoteException
+  {
+    if (faelligkeit != null)
+    {
+      return faelligkeit;
+    }
+    faelligkeit = new LabelInput(new JVDateFormatTTMMJJJJ()
+        .format(getAbrechnungslauf().getFaelligkeit()));
+    faelligkeit.setName("Fälligkeit");
+    return faelligkeit;
+  }
+
+  public LabelInput getAbrechnungStichtag() throws RemoteException
+  {
+    if (astichtag != null)
+    {
+      return astichtag;
+    }
+    astichtag = new LabelInput(
+        new JVDateFormatTTMMJJJJ().format(getAbrechnungslauf().getStichtag()));
+    astichtag.setName("Stichtag");
+    return astichtag;
+  }
+
+  public LabelInput getEintrittsdatum() throws RemoteException
+  {
+    if (eintrittsdatum != null)
+    {
+      return eintrittsdatum;
+    }
+    Date ed = getAbrechnungslauf().getEintrittsdatum();
+    if (ed.equals(Einstellungen.NODATE))
+      eintrittsdatum = new LabelInput(null);
+    else
+      eintrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
+    eintrittsdatum.setName("Eintrittsdatum");
+    return eintrittsdatum;
+  }
+
+  public LabelInput getAustrittsdatum() throws RemoteException
+  {
+    if (austrittsdatum != null)
+    {
+      return austrittsdatum;
+    }
+    Date ed = getAbrechnungslauf().getAustrittsdatum();
+    if (ed.equals(Einstellungen.NODATE))
+      austrittsdatum = new LabelInput(null);
+    else
+      austrittsdatum = new LabelInput(new JVDateFormatTTMMJJJJ().format(ed));
+    austrittsdatum.setName("Austrittsdatum");
+    return austrittsdatum;
+  }
+
+  public LabelInput getZahlungsgrund() throws RemoteException
+  {
+    if (zahlungsgrund != null)
+    {
+      return zahlungsgrund;
+    }
+    zahlungsgrund = new LabelInput(getAbrechnungslauf().getZahlungsgrund());
+    zahlungsgrund.setName("Zahlungsgrund");
+    return zahlungsgrund;
+  }
+
+  public LabelInput getZusatzAbrechnungen() throws RemoteException
+  {
+    if (zusatzabrechnungen != null)
+    {
+      return zusatzabrechnungen;
+    }
+    String zs = "";
+    if (getAbrechnungslauf().getZusatzbetraege())
+    {
+      zs += "Zusatzbeträge ";
+    }
+    if (getAbrechnungslauf().getKursteilnehmer())
+    {
+      zs += "Kursteilnehmer ";
+    }
+    zusatzabrechnungen = new LabelInput(zs);
+    zusatzabrechnungen.setName("Weitere Abrechnungen");
+    return zusatzabrechnungen;
+  }
+
+  public Input getBemerkung() throws RemoteException
+  {
+    if (bemerkung != null)
+    {
+      return bemerkung;
+    }
+    bemerkung = new TextInput(getAbrechnungslauf().getBemerkung(), 80);
+    bemerkung.setName("Bemerkung");
+    return bemerkung;
+  }
+
+  @Override
+  public JVereinDBObject prepareStore() throws RemoteException
+  {
+    // Es kann nur die Bemerkung verändert werden
+    Abrechnungslauf al = getAbrechnungslauf();
+    al.setBemerkung((String) getBemerkung().getValue());
+    return al;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Speichern des Abrechnungslaufs";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    if (abrechnungslaufList != null)
+    {
+      return abrechnungslaufList;
+    }
+
+    abrechnungslaufList = new JVereinTablePart(getAbrechnungslaeufe(),
+        new EditAction(AbrechnungslaufDetailView.class));
+    abrechnungslaufList.addColumn("Nr", "nr");
+    abrechnungslaufList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Modus", "modus",
+        new AbrechnungsmodusFormatter(), false, Column.ALIGN_LEFT);
+    abrechnungslaufList.addColumn("Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Stichtag", "stichtag",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Eintrittsdatum", "eingabedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Austrittsdatum", "austrittsdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    abrechnungslaufList.addColumn("Zahlungsgrund", "zahlungsgrund");
+    if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZBETRAG))
+    {
+      abrechnungslaufList.addColumn("Zusatzbeträge", "zusatzbetraege",
+          new JaNeinFormatter());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
+    {
+      abrechnungslaufList.addColumn("Kursteilnehmer", "kursteilnehmer",
+          new JaNeinFormatter());
+    }
+    abrechnungslaufList
+        .setContextMenu(new AbrechnungslaufMenu(abrechnungslaufList));
+    abrechnungslaufList.setAction(
+        new EditAction(AbrechnungslaufDetailView.class, abrechnungslaufList));
+    VorZurueckControl.setObjektListe(null, null);
+
+    return abrechnungslaufList;
+  }
+
+  @Override
+  protected void TabRefresh()
+  {
+    if (abrechnungslaufList == null)
+    {
+      return;
+    }
+    try
+    {
+      DBIterator<Abrechnungslauf> abrechnungslaeufe = getAbrechnungslaeufe();
+      abrechnungslaufList.removeAll();
+      while (abrechnungslaeufe.hasNext())
+      {
+        abrechnungslaufList.addItem(abrechnungslaeufe.next());
+      }
+      abrechnungslaufList.sort();
+    }
+    catch (RemoteException e1)
+    {
+      Logger.error("Fehler", e1);
+    }
+  }
+
+  private DBIterator<Abrechnungslauf> getAbrechnungslaeufe()
+      throws RemoteException
+  {
+    DBService service = Einstellungen.getDBService();
+    DBIterator<Abrechnungslauf> abrechnungslaeufe = service
+        .createList(Abrechnungslauf.class);
+    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+    {
+      abrechnungslaeufe.addFilter("datum >= ?",
+          new Object[] { (Date) getDatumvon().getValue() });
+    }
+    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
+    {
+      abrechnungslaeufe.addFilter("datum <= ?",
+          new Object[] { (Date) getDatumbis().getValue() });
+    }
+    abrechnungslaeufe.setOrder("ORDER BY datum DESC");
+    return abrechnungslaeufe;
+  }
+
+  @SuppressWarnings("unchecked")
+  public JVereinTablePart getBuchungList() throws RemoteException
+  {
+    if (buchungList != null)
+    {
+      return buchungList;
+    }
+    DBIterator<Buchung> it = Einstellungen.getDBService()
+        .createList(Buchung.class);
+    it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
+
+    buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
+        new BuchungAction(false, null));
+    buchungList.setTableName("Buchungen");
+
+    buchungList.addColumn("Nr", "id-int");
+    buchungList.addColumn("Geprüft", "geprueft",
+        o -> (Boolean) o ? "\u2705" : "");
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
+    {
+      buchungList.addColumn("D", "document");
+    }
+    buchungList.addColumn("S", "splittyp",
+        o -> SplitbuchungTyp.get((Integer) o).substring(0, 1));
+
+    buchungList.addColumn("Konto", "konto");
+    buchungList.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+
+    buchungList.addColumn("Name", "name");
+    buchungList.addColumn("IBAN oder Kontonummer", "iban", new IBANFormatter());
+    buchungList.addColumn("Verwendungszweck", "zweck", o -> {
+      if (o == null)
+      {
+        return null;
+      }
+      String s = o.toString();
+      s = s.replaceAll("\r\n", " ");
+      s = s.replaceAll("\r", " ");
+      s = s.replaceAll("\n", " ");
+      return s;
+    });
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+
+    buchungList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    buchungList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
+    {
+      buchungList.addColumn("Netto", "netto",
+          new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        buchungList.addColumn("Steuer", "steuer", o -> {
+          if (o == null)
+          {
+            return "";
+          }
+          try
+          {
+            return ((Steuer) o).getName();
+          }
+          catch (RemoteException e)
+          {
+            Logger.error("Fehler", e);
+          }
+          return "";
+        }, false, Column.ALIGN_RIGHT);
+      }
+    }
+    buchungList.addColumn(new Column(Buchung.SOLLBUCHUNG,
+        "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
+        Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
+    buchungList.setMulti(true);
+
+    buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
+
+    return buchungList;
+  }
+
+  public JVereinTablePart getSollbuchungList() throws RemoteException
+  {
+    if (sollbuchungList != null)
+    {
+      return sollbuchungList;
+    }
+
+    DBIterator<Sollbuchung> it = Einstellungen.getDBService()
+        .createList(Sollbuchung.class);
+    it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
+
+    sollbuchungList = new BetragSummaryTablePart(it,
+        new EditAction(SollbuchungDetailView.class));
+    sollbuchungList.setTableName("Sollbuchungen");
+
+    sollbuchungList.addColumn("Nr", "id-int");
+    sollbuchungList.addColumn("Datum", Sollbuchung.DATUM,
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    sollbuchungList.addColumn("Abrechnungslauf", Sollbuchung.ABRECHNUNGSLAUF);
+    sollbuchungList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+    sollbuchungList.addColumn("Zahler", Sollbuchung.ZAHLER);
+    sollbuchungList.addColumn("Zweck", Sollbuchung.ZWECK1);
+    sollbuchungList.addColumn("Betrag", Sollbuchung.BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    sollbuchungList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
+        o -> new Zahlungsweg((Integer) o).getText());
+    sollbuchungList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      sollbuchungList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+    }
+    sollbuchungList.setContextMenu(new SollbuchungMenu(null));
+    sollbuchungList.setMulti(true);
+
+    return sollbuchungList;
+  }
+
+  public JVereinTablePart getLastschriftList() throws RemoteException
+  {
+    if (lastschriftList != null)
+    {
+      return lastschriftList;
+    }
+    DBIterator<Lastschrift> it = Einstellungen.getDBService()
+        .createList(Lastschrift.class);
+    it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
+
+    lastschriftList = new BetragSummaryTablePart(it,
+        new EditAction(LastschriftDetailView.class));
+    lastschriftList.setTableName("Lastschriften");
+
+    lastschriftList.addColumn("Nr", "id-int");
+    lastschriftList.addColumn("Versanddatum", "versanddatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lastschriftList.addColumn("Abrechnungslauf", "abrechnungslauf");
+    lastschriftList.addColumn("Name", "name");
+    lastschriftList.addColumn("Vorname", "vorname");
+    lastschriftList.addColumn("Email", "email");
+    lastschriftList.addColumn("Zweck", "verwendungszweck");
+    lastschriftList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    lastschriftList.addColumn("Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lastschriftList.addColumn("IBAN", "iban", new IBANFormatter());
+    lastschriftList.addColumn("Mandat", "mandatid");
+    lastschriftList.addColumn("Mandatdatum", "mandatdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    lastschriftList.setContextMenu(new LastschriftMenu(lastschriftList));
+    lastschriftList.setMulti(true);
+    return lastschriftList;
+  }
+
+  public JVereinTablePart getZusatzbetraegeList() throws RemoteException
+  {
+    if (zusatzbetraegeList != null)
+    {
+      return zusatzbetraegeList;
+    }
+    DBIterator<Zusatzbetrag> it = Einstellungen.getDBService()
+        .createList(Zusatzbetrag.class);
+    it.join("zusatzbetragabrechnungslauf");
+    it.addFilter("zusatzbetragabrechnungslauf.zusatzbetrag = zusatzbetrag.id");
+    it.addFilter("abrechnungslauf = ?", getAbrechnungslauf().getID());
+
+    zusatzbetraegeList = new BetragSummaryTablePart(it,
+        new EditAction(ZusatzbetragDetailView.class));
+    zusatzbetraegeList.setTableName("Zusatzbeträge");
+
+    zusatzbetraegeList.addColumn("Nr", "id-int");
+    zusatzbetraegeList.addColumn("Name", "mitglied");
+    zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Nächste Fälligkeit", "faelligkeit",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Letzte abgerechnete Fälligkeit",
+        "ausfuehrung", new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Intervall", "intervalltext");
+    zusatzbetraegeList.addColumn("Nicht mehr ausführen ab", "endedatum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    zusatzbetraegeList.addColumn("Buchungstext", "buchungstext");
+    zusatzbetraegeList.addColumn("Betrag", "betrag",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    zusatzbetraegeList.addColumn("Zahlungsweg", "zahlungsweg", new Formatter()
+    {
+      @Override
+      public String format(Object o)
+      {
+        return new Zahlungsweg((Integer) o).getText();
+      }
+    });
+    if ((Boolean) Einstellungen
+        .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
+    {
+      zusatzbetraegeList.addColumn("Buchungsklasse", "buchungsklasse",
+          new BuchungsklasseFormatter());
+    }
+    zusatzbetraegeList.addColumn("Buchungsart", "buchungsart",
+        new BuchungsartFormatter());
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      zusatzbetraegeList.addColumn("Steuer", "steuer", o -> {
+        if (o == null)
+        {
+          return "";
+        }
+        try
+        {
+          return ((Steuer) o).getName();
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler", e);
+        }
+        return "";
+      }, false, Column.ALIGN_RIGHT);
+    }
+    zusatzbetraegeList.addColumn("Zahlt selbst", "mitgliedzahltselbst",
+        new JaNeinFormatter(), false, Column.ALIGN_LEFT);
+    zusatzbetraegeList
+        .setContextMenu(new ZusatzbetraegeMenu(zusatzbetraegeList));
+    zusatzbetraegeList.setMulti(true);
+
+    return zusatzbetraegeList;
+  }
+
+  public PanelButton getDetailPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getBuchungList(), getSollbuchungList(),
+            getLastschriftList(), getZusatzbetraegeList()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  public PanelButton exportDetailButton(ExportArt art)
+      throws ApplicationException
+  {
+
+    return new PanelButton(
+        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
+          final JVereinTablePart liste;
+          switch (selectedTab)
+          {
+            case TAB_BUCHUNGEN:
+              liste = buchungList;
+              break;
+            case TAB_LASTSCHRIFTEN:
+              liste = lastschriftList;
+              break;
+            case TAB_SOLLBUCHUNGEN:
+              liste = sollbuchungList;
+              break;
+            case TAB_ZUSATZBETRAEGE:
+              liste = zusatzbetraegeList;
+              break;
+            default:
+              liste = null;
+          }
+          if (liste == null)
+          {
+            throw new ApplicationException(
+                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
+          }
+
+          switch (selectedTab)
+          {
+            case TAB_BUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  art);
+              break;
+            case TAB_LASTSCHRIFTEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_LASTSCHRIFTEN2_DATEINAME,
+                      getAbrechnungslauf()),
+                  art);
+              break;
+            case TAB_SOLLBUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_SOLLBUCHUNGEN_DATEINAME,
+                      getAbrechnungslauf()),
+                  art);
+              break;
+            case TAB_ZUSATZBETRAEGE:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
+                      getAbrechnungslauf()),
+                  art);
+              break;
+          }
+        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.ABRECHNUNGSLAEUFE_DATEINAME, this);
+  }
+
+}

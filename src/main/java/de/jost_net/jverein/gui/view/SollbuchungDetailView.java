@@ -1,0 +1,115 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.view;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+
+import de.jost_net.jverein.gui.action.DokumentationAction;
+import de.jost_net.jverein.gui.action.SollbuchungPositionNeuAction;
+import de.jost_net.jverein.gui.control.Savable;
+import de.jost_net.jverein.gui.control.SollbuchungControl;
+import de.jost_net.jverein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.jverein.gui.parts.ButtonRtoL;
+import de.jost_net.jverein.gui.parts.SaveButton;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.util.ColumnLayout;
+import de.willuhn.jameica.gui.util.LabelGroup;
+import de.willuhn.jameica.gui.util.ScrolledContainer;
+import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.util.ApplicationException;
+
+public class SollbuchungDetailView extends AbstractDetailView
+{
+  private SollbuchungControl control;
+
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Sollbuchung");
+
+    control = new SollbuchungControl(this);
+    final boolean isEditable = control.isSollbuchungEditable();
+
+    ScrolledContainer scrolled = new ScrolledContainer(getParent(), 1);
+    LabelGroup group = new LabelGroup(scrolled.getComposite(), "Sollbuchung");
+    ColumnLayout cols = new ColumnLayout(group.getComposite(), 2);
+
+    SimpleContainer left = new SimpleContainer(cols.getComposite());
+    left.addLabelPair("Mitglied", control.getMitglied());
+    left.addLabelPair("Datum", control.getDatum());
+    left.addLabelPair("Zahlungsweg", control.getZahlungsweg());
+
+    SimpleContainer right = new SimpleContainer(cols.getComposite());
+    right.addLabelPair("Zahler", control.getZahler());
+    right.addLabelPair("Verwendungszweck", control.getZweck1());
+    right.addLabelPair("Betrag", control.getBetrag());
+
+    LabelGroup cont = new LabelGroup(scrolled.getComposite(),
+        "Sollbuchungspositionen");
+
+    ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
+    ButtonRtoL neu = new ButtonRtoL("Neu", new SollbuchungPositionNeuAction(),
+        getCurrentObject(), false, "document-new.png");
+    neu.setEnabled(isEditable);
+    buttons1.addButton(neu);
+
+    // Diese Zeilen werden gebraucht um die Buttons rechts zu plazieren
+    GridLayout layout = new GridLayout();
+    Composite comp = new Composite(cont.getComposite(), SWT.NONE);
+    comp.setLayout(layout);
+    comp.setLayoutData(new GridData(GridData.END));
+
+    buttons1.paint(cont.getComposite());
+    cont.addPart(control.getSollbuchungList());
+
+    LabelGroup buch = new LabelGroup(scrolled.getComposite(),
+        "Zugeordnete Buchungen");
+    buch.addPart(control.getBuchungList());
+
+    ButtonAreaRtoL buttons = new ButtonAreaRtoL();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
+        "question-circle.png");
+    buttons.addButton(control.getZurueckButton());
+    buttons.addButton(control.getInfoButton());
+    buttons.addButton(control.getVorButton());
+    SaveButton save = new SaveButton(control);
+    save.setEnabled(isEditable);
+    buttons.addButton(save);
+
+    buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+  }
+
+  @Override
+  protected Savable getControl()
+  {
+    return control;
+  }
+
+  @Override
+  public void unbind() throws OperationCanceledException, ApplicationException
+  {
+    control.deregisterSollbuchungConsumer();
+    super.unbind();
+  }
+}

@@ -1,0 +1,1110 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe, Leonardo Mörlein
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.control;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.TreeItem;
+
+import de.jost_net.jverein.Einstellungen;
+import de.jost_net.jverein.Einstellungen.Property;
+import de.jost_net.jverein.gui.action.BuchungAction;
+import de.jost_net.jverein.gui.action.EditAction;
+import de.jost_net.jverein.gui.dialogs.TabelleSpaltenAuswahlDialog;
+import de.jost_net.jverein.gui.input.MitgliedInput;
+import de.jost_net.jverein.gui.menu.BuchungPartBearbeitenMenu;
+import de.jost_net.jverein.gui.menu.MitgliedskontoMenu;
+import de.jost_net.jverein.gui.menu.SollbuchungMenu;
+import de.jost_net.jverein.gui.menu.SollbuchungPositionMenu;
+import de.jost_net.jverein.gui.parts.BetragSummaryTablePart;
+import de.jost_net.jverein.gui.parts.BuchungListPart;
+import de.jost_net.jverein.gui.parts.JVereinTablePart;
+import de.jost_net.jverein.gui.parts.SollbuchungPositionListPart;
+import de.jost_net.jverein.gui.view.BuchungDetailView;
+import de.jost_net.jverein.gui.view.SollbuchungDetailView;
+import de.jost_net.jverein.gui.view.SollbuchungPositionDetailView;
+import de.jost_net.jverein.io.Kontoauszug;
+import de.jost_net.jverein.keys.Ausgabeart;
+import de.jost_net.jverein.keys.VorlageTyp;
+import de.jost_net.jverein.keys.Zahlungsweg;
+import de.jost_net.jverein.messaging.MitgliedskontoMessage;
+import de.jost_net.jverein.messaging.SollbuchungMessage;
+import de.jost_net.jverein.queries.MitgliedQuery;
+import de.jost_net.jverein.queries.SollbuchungQuery;
+import de.jost_net.jverein.rmi.Buchung;
+import de.jost_net.jverein.rmi.JVereinDBObject;
+import de.jost_net.jverein.rmi.Mitglied;
+import de.jost_net.jverein.rmi.Mitgliedstyp;
+import de.jost_net.jverein.rmi.Sollbuchung;
+import de.jost_net.jverein.rmi.SollbuchungPosition;
+import de.jost_net.jverein.util.JVDateFormatTTMMJJJJ;
+import de.jost_net.jverein.util.VorlageUtil;
+import de.willuhn.datasource.GenericIterator;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.Part;
+import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
+import de.willuhn.jameica.gui.formatter.DateFormatter;
+import de.willuhn.jameica.gui.formatter.Formatter;
+import de.willuhn.jameica.gui.formatter.TreeFormatter;
+import de.willuhn.jameica.gui.input.AbstractInput;
+import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.DecimalInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.parts.Column;
+import de.willuhn.jameica.gui.parts.ContextMenu;
+import de.willuhn.jameica.gui.parts.PanelButton;
+import de.willuhn.jameica.gui.parts.TreePart;
+import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.jameica.messaging.Message;
+import de.willuhn.jameica.messaging.MessageConsumer;
+import de.willuhn.jameica.system.Application;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class SollbuchungControl extends DruckMailControl implements Savable
+{
+  public enum DIFFERENZ
+  {
+    EGAL("Egal"),
+    FEHLBETRAG("Fehlbetrag"),
+    UEBERZAHLUNG("Überzahlung");
+
+    private final String titel;
+
+    private DIFFERENZ(String titel)
+    {
+      this.titel = titel;
+    }
+
+    @Override
+    public String toString()
+    {
+      return titel;
+    }
+
+    public static DIFFERENZ fromString(final String text)
+    {
+      for (DIFFERENZ item : DIFFERENZ.values())
+      {
+        if (item.titel.equals(text))
+          return item;
+      }
+      return null;
+    }
+  }
+
+  // SollbuchungDetailView
+  private DateInput datum = null;
+
+  private TextAreaInput zweck1;
+
+  private SelectInput zahlungsweg;
+
+  private DecimalInput betrag;
+
+  private AbstractInput mitglied;
+
+  private AbstractInput zahler;
+
+  private Sollbuchung sollbuchung;
+
+  private TreePart mitgliedskontoTree;
+
+  // SollbuchungListeView, SollbuchungAuswahldialog
+  private BetragSummaryTablePart sollbuchungenList;
+
+  private JVereinTablePart mitgliederList;
+
+  private TextInput suchname2 = null;
+
+  private CheckboxInput spezialsuche = null;
+
+  private MitgliedskontoMessageConsumer mc = null;
+
+  private boolean umwandeln;
+
+  private JVereinTablePart buchungList;
+
+  private BuchungListPart istbuchungList;
+
+  private boolean editable = false;
+
+  private SollbuchungMessageConsumer sollbuchungConsumer = null;
+
+  public SollbuchungControl(AbstractView view)
+  {
+    super(view);
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+  }
+
+  // Aufruf durch SollbuchungNeuDialog
+  public SollbuchungControl(AbstractView view, Sollbuchung sollb)
+  {
+    super(view);
+    settings = new Settings(this.getClass());
+    settings.setStoreWhenRead(true);
+    sollbuchung = sollb;
+  }
+
+  private Sollbuchung getSollbuchung() throws RemoteException
+  {
+    if (sollbuchung != null)
+    {
+      return sollbuchung;
+    }
+    sollbuchung = Einstellungen.getDBService().createObject(Sollbuchung.class,
+        ((Sollbuchung) getCurrentObject()).getID());
+    GUI.getCurrentView().setCurrentObject(sollbuchung);
+    return sollbuchung;
+  }
+
+  public void setSollbuchung(Sollbuchung sollb)
+  {
+    sollbuchung = sollb;
+  }
+
+  @Override
+  public Settings getSettings()
+  {
+    return settings;
+  }
+
+  public DateInput getDatum() throws RemoteException
+  {
+    if (datum != null)
+    {
+      return datum;
+    }
+
+    Date d = new Date();
+    if (getSollbuchung() != null)
+    {
+      d = getSollbuchung().getDatum();
+    }
+
+    this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.datum.setTitle("Datum");
+    this.datum.setText("Bitte Datum wählen");
+    this.datum.setMandatory(true);
+    datum.setEnabled(editable);
+    return datum;
+  }
+
+  public TextAreaInput getZweck1() throws RemoteException
+  {
+    if (zweck1 != null)
+    {
+      return zweck1;
+    }
+    String z = "";
+    if (getSollbuchung() != null)
+    {
+      z = getSollbuchung().getZweck1();
+    }
+    zweck1 = new TextAreaInput(z, 500);
+    zweck1.setHeight(30);
+    zweck1.setMandatory(true);
+    zweck1.setEnabled(editable);
+    return zweck1;
+  }
+
+  public SelectInput getZahlungsweg() throws RemoteException
+  {
+    if (zahlungsweg != null)
+    {
+      return zahlungsweg;
+    }
+    Integer z = null;
+    if (getSollbuchung() != null)
+    {
+      z = getSollbuchung().getZahlungsweg();
+    }
+    ArrayList<Zahlungsweg> weg = Zahlungsweg.getArray();
+
+    zahlungsweg = new SelectInput(weg,
+        z == null
+            ? new Zahlungsweg(
+                (Integer) Einstellungen.getEinstellung(Property.ZAHLUNGSWEG))
+            : new Zahlungsweg(getSollbuchung().getZahlungsweg()));
+    zahlungsweg.setName("Zahlungsweg");
+    zahlungsweg.setEnabled(editable);
+    return zahlungsweg;
+  }
+
+  public DecimalInput getBetrag() throws RemoteException
+  {
+    if (betrag != null)
+    {
+      return betrag;
+    }
+    Double b = Double.valueOf(0.0d);
+    if (getSollbuchung() != null)
+    {
+      b = getSollbuchung().getBetrag();
+    }
+    betrag = new DecimalInput(b, Einstellungen.DECIMALFORMAT);
+    betrag.setEnabled(false);
+    return betrag;
+  }
+
+  public CheckboxInput getSpezialSuche()
+  {
+    if (spezialsuche != null && !spezialsuche.getControl().isDisposed())
+    {
+      return spezialsuche;
+    }
+    spezialsuche = new CheckboxInput(false);
+    spezialsuche.setName("Erlaube Teilstring Vergleich");
+    spezialsuche.addListener(e -> refreshMitgliederList());
+
+    return spezialsuche;
+  }
+
+  // Für SollbuchungAuswahlDialog
+  public TextInput getSuchName1(boolean newcontrol)
+  {
+    if (!newcontrol && suchname != null)
+    {
+      return suchname;
+    }
+    suchname = new TextInput("", 30);
+    suchname.setName("Name");
+    return suchname;
+  }
+
+  // Für SollbuchungAuswahlDialog
+  public TextInput getSuchName2(boolean newcontrol)
+  {
+    if (!newcontrol && suchname2 != null)
+    {
+      return suchname2;
+    }
+    suchname2 = new TextInput("", 30);
+    suchname2.setName("Name");
+    return suchname2;
+  }
+
+  @Override
+  public JVereinDBObject prepareStore()
+      throws RemoteException, ApplicationException
+  {
+    Sollbuchung sollb = getSollbuchung();
+    sollb.setZahlerId(getSelectedZahlerId());
+    // Betrag hier nicht setzen sonst kann es zu Änderungsmeldungen kommen
+    // wenn Positionen gelöscht werden
+    sollb.setDatum((Date) getDatum().getValue());
+    Zahlungsweg zw = (Zahlungsweg) getZahlungsweg().getValue();
+    sollb.setZahlungsweg(zw.getKey());
+    sollb.setZweck1((String) getZweck1().getValue());
+    sollb.setMitglied((Mitglied) getMitglied().getValue());
+    return sollb;
+  }
+
+  @Override
+  public void handleStore() throws ApplicationException
+  {
+    try
+    {
+      prepareStore().store();
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim speichern der Sollbuchung";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler, e);
+    }
+  }
+
+  public Part getMitgliedskontoTree(Mitglied mitglied) throws RemoteException
+  {
+    mitgliedskontoTree = new TreePart(new MitgliedskontoNode(mitglied),
+        new Action()
+        {
+
+          @Override
+          public void handleAction(Object context) throws ApplicationException
+          {
+            if (context == null || !(context instanceof MitgliedskontoNode))
+            {
+              return;
+            }
+            try
+            {
+              MitgliedskontoNode mkn = (MitgliedskontoNode) context;
+              if (mkn.getType() == MitgliedskontoNode.IST)
+              {
+                Buchung bu = (Buchung) Einstellungen.getDBService()
+                    .createObject(Buchung.class, mkn.getID());
+                GUI.startView(BuchungDetailView.class.getName(), bu);
+              }
+              if (mkn.getType() == MitgliedskontoNode.SOLL)
+              {
+                Sollbuchung sollb = (Sollbuchung) Einstellungen.getDBService()
+                    .createObject(Sollbuchung.class, mkn.getID());
+                GUI.startView(new SollbuchungDetailView(), sollb);
+              }
+            }
+            catch (RemoteException e)
+            {
+              Logger.error(e.getMessage());
+              throw new ApplicationException(
+                  "Fehler beim Editieren der Buchung");
+            }
+          }
+        })
+
+    {
+
+      @SuppressWarnings("unchecked")
+      @Override
+      public void paint(Composite composite) throws RemoteException
+      {
+        super.paint(composite);
+        List<MitgliedskontoNode> items = mitgliedskontoTree.getItems();
+        for (MitgliedskontoNode mkn : items)
+        {
+          @SuppressWarnings("rawtypes")
+          GenericIterator items2 = mkn.getChildren();
+          while (items2.hasNext())
+          {
+            MitgliedskontoNode mkn2 = (MitgliedskontoNode) items2.next();
+            mitgliedskontoTree.setExpanded(mkn2, false);
+          }
+        }
+      }
+
+    };
+    mitgliedskontoTree.setMulti(true);
+    mitgliedskontoTree.addColumn("Name, Vorname", "name");
+    mitgliedskontoTree.addColumn("Datum", "datum",
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    mitgliedskontoTree.addColumn("Zweck1", "zweck1");
+    mitgliedskontoTree.addColumn("Zahlungsweg", "zahlungsweg");
+    mitgliedskontoTree.addColumn("Soll", "soll",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    mitgliedskontoTree.addColumn("Ist", "ist",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    mitgliedskontoTree.addColumn("Differenz", "differenz",
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.LEERESPALTE))
+    {
+      mitgliedskontoTree.addColumn(new Column("leer", ""));
+    }
+    mitgliedskontoTree.setContextMenu(new MitgliedskontoMenu());
+    mitgliedskontoTree.setFormatter(new MitgliedskontoTreeFormatter());
+    mitgliedskontoTree.setRememberColWidths(true);
+    this.mc = new MitgliedskontoMessageConsumer();
+    Application.getMessagingFactory().registerMessageConsumer(this.mc);
+
+    return mitgliedskontoTree;
+  }
+
+  @Override
+  public JVereinTablePart getTablePart() throws RemoteException
+  {
+    // dieser Aufruf wird nur für den Spalten-PanelButton gebraucht, da muss die
+    // Tabelle schon existieren
+    return sollbuchungenList;
+  }
+
+  public JVereinTablePart getTablePart(Action action, boolean umwandeln,
+      boolean multi) throws RemoteException
+  {
+    if (sollbuchungenList != null)
+    {
+      return sollbuchungenList;
+    }
+    this.umwandeln = umwandeln;
+    @SuppressWarnings("rawtypes")
+    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln, null)
+        .get();
+
+    sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
+    sollbuchungenList.addColumn("Nr", "id-int");
+    sollbuchungenList.addColumn("Datum", Sollbuchung.DATUM,
+        new DateFormatter(new JVDateFormatTTMMJJJJ()));
+    sollbuchungenList.addColumn("Abrechnungslauf", Sollbuchung.ABRECHNUNGSLAUF);
+    sollbuchungenList.addColumn("Mitglied", Sollbuchung.MITGLIED);
+    sollbuchungenList.addColumn("Zahler", Sollbuchung.ZAHLER);
+    sollbuchungenList.addColumn("Zweck", Sollbuchung.ZWECK1);
+    sollbuchungenList.addColumn("Betrag", Sollbuchung.BETRAG,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    sollbuchungenList.addColumn("Zahlungsweg", Sollbuchung.ZAHLUNGSWEG,
+        new Formatter()
+        {
+          @Override
+          public String format(Object o)
+          {
+            return new Zahlungsweg((Integer) o).getText();
+          }
+        });
+    sollbuchungenList.addColumn("Zahlungseingang", Sollbuchung.ISTSUMME,
+        new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
+    if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
+    {
+      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+    }
+    sollbuchungenList.setMulti(multi);
+    if (action == null)
+    {
+      sollbuchungenList.setContextMenu(new SollbuchungMenu(sollbuchungenList));
+      sollbuchungenList.setAction(
+          new EditAction(SollbuchungDetailView.class, sollbuchungenList));
+      VorZurueckControl.setObjektListe(null, null);
+    }
+    else
+    {
+      sollbuchungenList.setAction(action);
+    }
+
+    return sollbuchungenList;
+  }
+
+  // Für Sollbuchungen View
+  @Override
+  protected void TabRefresh()
+  {
+    if (sollbuchungenList != null)
+    {
+      try
+      {
+        @SuppressWarnings("rawtypes")
+        GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
+            null).get();
+        sollbuchungenList.removeAll();
+        if (sollbuchungen != null)
+        {
+          while (sollbuchungen.hasNext())
+          {
+            sollbuchungenList.addItem(sollbuchungen.next());
+          }
+        }
+        sollbuchungenList.sort();
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler beim Refresh der Tabelle", e);
+      }
+    }
+  }
+
+  public JVereinTablePart getMitgliederList(Action action, ContextMenu menu)
+      throws RemoteException
+  {
+    GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
+    if (mitgliederList == null)
+    {
+      mitgliederList = new JVereinTablePart(mitglieder, action);
+      mitgliederList.addColumn("Name", "name");
+      mitgliederList.addColumn("Vorname", "vorname");
+      mitgliederList.setContextMenu(menu);
+      mitgliederList.setMulti(true);
+    }
+    else
+    {
+      mitgliederList.removeAll();
+      while (mitglieder.hasNext())
+      {
+        mitgliederList.addItem(mitglieder.next());
+      }
+      mitgliederList.sort();
+    }
+    return mitgliederList;
+  }
+
+  public void refreshMitgliederList()
+  {
+    try
+    {
+      GenericIterator<Mitglied> mitglieder = getMitgliedIterator();
+      mitgliederList.removeAll();
+      while (mitglieder.hasNext())
+      {
+        mitgliederList.addItem(mitglieder.next());
+      }
+      mitgliederList.sort();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+  }
+
+  public JVereinTablePart getSollbuchungList() throws RemoteException
+  {
+    if (buchungList != null)
+    {
+      return buchungList;
+    }
+    List<SollbuchungPosition> list = getSollbuchung()
+        .getSollbuchungPositionList();
+
+    if (!editable)
+    {
+      buchungList = new SollbuchungPositionListPart(list, null);
+    }
+    else
+    {
+      buchungList = new SollbuchungPositionListPart(list,
+          new EditAction(SollbuchungPositionDetailView.class));
+    }
+
+    if (editable)
+    {
+      buchungList.setContextMenu(new SollbuchungPositionMenu());
+    }
+    buchungList.setTableName("Sollbuchungspositionen");
+    buchungList.setMulti(true);
+    sollbuchungConsumer = new SollbuchungMessageConsumer();
+    Application.getMessagingFactory()
+        .registerMessageConsumer(sollbuchungConsumer);
+    return buchungList;
+  }
+
+  public JVereinTablePart getBuchungList() throws RemoteException
+  {
+    if (istbuchungList != null)
+    {
+      return istbuchungList;
+    }
+    istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
+        new BuchungAction(false), new BuchungPartBearbeitenMenu());
+    istbuchungList.setTableName("Buchungen");
+    Application.getMessagingFactory()
+        .registerMessageConsumer(new MitgliedskontoMessageConsumer());
+    return istbuchungList;
+  }
+
+  private GenericIterator<Mitglied> getMitgliedIterator() throws RemoteException
+  {
+    DBIterator<Mitglied> mitglieder = Einstellungen.getDBService()
+        .createList(Mitglied.class);
+    // MitgliedUtils.setMitgliedOderSpender(mitglieder);
+    if (suchname2 != null && suchname2.getValue() != null)
+    {
+      StringBuffer where = new StringBuffer();
+      ArrayList<String> object = new ArrayList<>();
+      StringTokenizer tok = new StringTokenizer((String) suchname2.getValue(),
+          " ,-");
+      where.append("(");
+      boolean first = true;
+      while (tok.hasMoreElements())
+      {
+        if (!first)
+        {
+          where.append("or ");
+        }
+        first = false;
+        where.append(
+            "upper(name) like upper(?) or upper(vorname) like upper(?) ");
+        String o = tok.nextToken();
+        if ((Boolean) getSpezialSuche().getValue())
+        {
+          o = "%" + o + "%";
+        }
+        object.add(o);
+        object.add(o);
+      }
+      where.append(")");
+      if (where.length() > 2)
+      {
+        mitglieder.addFilter(where.toString(), object.toArray());
+      }
+    }
+    mitglieder.setOrder("order by name, vorname");
+    return mitglieder;
+  }
+
+  public void refreshSollbuchungenList()
+  {
+    try
+    {
+      @SuppressWarnings("rawtypes")
+      GenericIterator sollbIterator = new SollbuchungQuery(this, umwandeln,
+          null).get();
+      sollbuchungenList.removeAll();
+      if (sollbIterator != null)
+      {
+        while (sollbIterator.hasNext())
+        {
+          sollbuchungenList.addItem(sollbIterator.next());
+        }
+      }
+      sollbuchungenList.sort();
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+    }
+  }
+
+  public Button getStartKontoauszugButton(final Object currentObject)
+  {
+    Button button = new Button("Starten", new Action()
+    {
+
+      @Override
+      public void handleAction(Object context)
+      {
+        try
+        {
+          saveFilterSettings();
+          new Kontoauszug(SollbuchungControl.this).aufbereiten(
+              getMitglieder(currentObject),
+              (Ausgabeart) getAusgabeart().getValue(), getBetreffString(),
+              getTxtString(), false, false, false);
+        }
+        catch (ApplicationException ae)
+        {
+          GUI.getStatusBar().setErrorText(ae.getMessage());
+        }
+        catch (Exception e)
+        {
+          Logger.error("Fehler bei der Kontoauszug Ausgabe.", e);
+          GUI.getStatusBar().setErrorText(e.getMessage());
+        }
+      }
+    }, null, true, "walking.png");
+    return button;
+  }
+
+  private static class MitgliedskontoTreeFormatter implements TreeFormatter
+  {
+    @Override
+    public void format(TreeItem item)
+    {
+      MitgliedskontoNode mkn = (MitgliedskontoNode) item.getData();
+      switch (mkn.getType())
+      {
+        case MitgliedskontoNode.MITGLIED:
+          item.setImage(0, SWTUtil.getImage("user.png"));
+          break;
+        case MitgliedskontoNode.SOLL:
+          item.setImage(0, SWTUtil.getImage("calculator.png"));
+          item.setExpanded(false);
+          break;
+        case MitgliedskontoNode.IST:
+          item.setImage(0, SWTUtil.getImage("euro-sign.png"));
+          break;
+      }
+    }
+  }
+
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class MitgliedskontoMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { MitgliedskontoMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            if (mitgliedskontoTree != null)
+            {
+              Mitglied mitglied = (Mitglied) getCurrentObject();
+              mitgliedskontoTree
+                  .setRootObject(new MitgliedskontoNode(mitglied));
+            }
+            else if (istbuchungList != null)
+            {
+              MitgliedskontoMessage msg = (MitgliedskontoMessage) message;
+              istbuchungList.removeItem(msg.getObject());
+            }
+            else
+            {
+              // Eingabe-Feld existiert nicht. Also abmelden
+              Application.getMessagingFactory().unRegisterMessageConsumer(
+                  MitgliedskontoMessageConsumer.this);
+              return;
+            }
+
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("unable to refresh saldo", e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(MitgliedskontoMessageConsumer.this);
+          }
+        }
+
+      });
+    }
+  }
+
+  @Override
+  public String getInfoText(Object selection) throws RemoteException
+  {
+    Mitglied[] mitglieder = null;
+    String text = "";
+
+    if (selection instanceof Mitglied)
+    {
+      mitglieder = new Mitglied[] { (Mitglied) selection };
+    }
+    else if (selection instanceof Mitglied[])
+    {
+      mitglieder = (Mitglied[]) selection;
+    }
+    else
+    {
+      return "";
+    }
+
+    // Aufruf aus Mitglieder View
+    if (mitglieder != null)
+    {
+      text = "Es wurden " + mitglieder.length + " Mitglieder ausgewählt";
+      String fehlen = "";
+      for (Mitglied m : mitglieder)
+      {
+        if (m.getEmail() == null || m.getEmail().isEmpty())
+        {
+          fehlen = fehlen + "\n - " + m.getName() + ", " + m.getVorname();
+        }
+      }
+      if (fehlen.length() > 0)
+      {
+        text += "\nFolgende Mitglieder haben keine Mailadresse:" + fehlen;
+      }
+    }
+    return text;
+  }
+
+  public Input getMitglied() throws RemoteException
+  {
+    if (mitglied != null)
+    {
+      return mitglied;
+    }
+
+    if (getSollbuchung().getMitglied() != null)
+    {
+      Mitglied[] mitgliedArray = { getSollbuchung().getMitglied() };
+      mitglied = new SelectInput(mitgliedArray, getSollbuchung().getMitglied());
+      mitglied.setEnabled(false);
+    }
+    else
+    {
+      mitglied = new MitgliedInput().getMitgliedInput(mitglied, null,
+          (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+      if (mitglied instanceof SelectInput)
+      {
+        ((SelectInput) mitglied).setPleaseChoose("Bitte auswählen");
+        ((SelectInput) mitglied).setPreselected(null);
+      }
+      mitglied.setEnabled(editable);
+    }
+    mitglied.setMandatory(true);
+    return mitglied;
+  }
+
+  public Input getZahler() throws RemoteException
+  {
+    if (zahler != null)
+    {
+      return zahler;
+    }
+    zahler = new MitgliedInput().getMitgliedInput(zahler,
+        getSollbuchung().getZahler(),
+        (Integer) Einstellungen.getEinstellung(Property.MITGLIEDAUSWAHL));
+    if (zahler instanceof SelectInput)
+    {
+      ((SelectInput) zahler).setPleaseChoose("Bitte auswählen");
+      if (getSollbuchung().getZahler() == null)
+      {
+        ((SelectInput) zahler).setPreselected(null);
+      }
+    }
+    zahler.setMandatory(true);
+    zahler.setEnabled(editable);
+    return zahler;
+  }
+
+  private Long getSelectedZahlerId() throws ApplicationException
+  {
+    try
+    {
+      if (zahler == null)
+      {
+        return null;
+      }
+      Mitglied derZahler = (Mitglied) getZahler().getValue();
+      if (null == derZahler)
+      {
+        return null;
+      }
+      return Long.valueOf(derZahler.getID());
+    }
+    catch (RemoteException ex)
+    {
+      final String meldung = "Gewählter Zahler kann nicht ermittelt werden";
+      Logger.error(meldung, ex);
+      throw new ApplicationException(meldung, ex);
+    }
+  }
+
+  public boolean isSollbuchungEditable() throws RemoteException
+  {
+    if (getSollbuchung().getRechnung() != null)
+    {
+      GUI.getStatusBar().setErrorText(
+          "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
+      return editable = false;
+    }
+    return editable = true;
+  }
+
+  public Object[] getCVSExportGrenzen() throws RemoteException
+  {
+    return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
+        getOhneAbbucher().getValue(), getDatumvon().getValue(),
+        getDatumbis().getValue(), getMailauswahl().getValue(),
+        getSuchtext().getValue(), getDoubleAusw().getValue() };
+  }
+
+  private ArrayList<Mitglied> getMitglieder(Object object)
+      throws RemoteException, ApplicationException
+  {
+    ArrayList<Mitglied> mitglieder = new ArrayList<>();
+    if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
+    {
+      Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.ALLE)
+          .getValue();
+      mitglieder = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()),
+          null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object == null && isSuchMitgliedstypActive()
+        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
+    {
+      mitglieder = new MitgliedQuery(this).get(-1, null);
+      if (mitglieder == null || mitglieder.isEmpty())
+      {
+        throw new ApplicationException(
+            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
+      }
+    }
+    else if (object != null && object instanceof Mitglied)
+    {
+      mitglieder.add((Mitglied) object);
+    }
+    else if (object != null && object instanceof Mitglied[])
+    {
+      mitglieder = new ArrayList<>(Arrays.asList((Mitglied[]) object));
+    }
+    else
+    {
+      throw new ApplicationException("Kein Mitglied ausgewählt!");
+    }
+    return mitglieder;
+  }
+
+  @Override
+  DruckMailEmpfaenger getDruckMailMitglieder(Object object, String option)
+      throws RemoteException, ApplicationException
+  {
+    List<Mitglied> mitglieder = getMitglieder(object);
+    List<DruckMailEmpfaengerEntry> liste = new ArrayList<>();
+    String text = null;
+    int ohneMail = 0;
+
+    for (Mitglied m : mitglieder)
+    {
+      String mail = m.getEmail();
+      if ((mail == null || mail.isEmpty())
+          && getAusgabeart().getValue() == Ausgabeart.MAIL)
+      {
+        ohneMail++;
+      }
+      liste.add(new DruckMailEmpfaengerEntry("Kontoauszug", mail, m.getName(),
+          m.getVorname(), m.getMitgliedstyp()));
+    }
+
+    if (ohneMail == 1)
+    {
+      text = ohneMail + " Mitglied hat keine Mail Adresse.";
+    }
+    else if (ohneMail > 1)
+    {
+      text = ohneMail + " Mitglieder haben keine Mail Adresse.";
+    }
+    return new DruckMailEmpfaenger(liste, text);
+  }
+
+  @Override
+  public List<Mitglied> getEmpfaengerList()
+      throws RemoteException, ApplicationException
+  {
+    return getMitglieder(this.view.getCurrentObject());
+  }
+
+  /**
+   * Wird benachrichtigt um die Anzeige zu aktualisieren.
+   */
+  private class SollbuchungMessageConsumer implements MessageConsumer
+  {
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#autoRegister()
+     */
+    @Override
+    public boolean autoRegister()
+    {
+      return false;
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#getExpectedMessageTypes()
+     */
+    @Override
+    public Class<?>[] getExpectedMessageTypes()
+    {
+      return new Class[] { SollbuchungMessage.class };
+    }
+
+    /**
+     * @see de.willuhn.jameica.messaging.MessageConsumer#handleMessage(de.willuhn.jameica.messaging.Message)
+     */
+    @Override
+    public void handleMessage(final Message message) throws Exception
+    {
+      GUI.getDisplay().syncExec(new Runnable()
+      {
+
+        @Override
+        public void run()
+        {
+          try
+          {
+            Sollbuchung sollb = (Sollbuchung) ((SollbuchungMessage) message)
+                .getObject();
+            getBetrag().setValue(sollb.getBetrag());
+          }
+          catch (Exception e)
+          {
+            // Wenn hier ein Fehler auftrat, deregistrieren wir uns wieder
+            Logger.error("Fehler beim Update der Sollbuchung Betrag Anzeige.",
+                e);
+            Application.getMessagingFactory()
+                .unRegisterMessageConsumer(SollbuchungMessageConsumer.this);
+          }
+        }
+      });
+    }
+  }
+
+  public PanelButton getDetailSpaltenPanelButton()
+  {
+    return new PanelButton("document-properties.png", context -> {
+      try
+      {
+        new TabelleSpaltenAuswahlDialog(getSollbuchungList(), getBuchungList())
+            .open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Spalten-Auswahl-Dialog");
+      }
+    }, "Spalten auswählen");
+  }
+
+  @Override
+  protected String getTableTitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_TITEL, this);
+  }
+
+  @Override
+  protected String getTableSubtitle()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_SUBTITEL, this);
+  }
+
+  @Override
+  protected String getTableDateiname()
+  {
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, this);
+  }
+
+  public void deregisterSollbuchungConsumer()
+  {
+    Application.getMessagingFactory()
+        .unRegisterMessageConsumer(sollbuchungConsumer);
+  }
+
+  public void deregisterMitgliedskontoConsumer()
+  {
+    Application.getMessagingFactory().unRegisterMessageConsumer(mc);
+  }
+}

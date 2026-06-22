@@ -1,0 +1,56 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.gui.view;
+
+import de.jost_net.jverein.gui.action.DokumentationAction;
+import de.jost_net.jverein.gui.action.NewAction;
+import de.jost_net.jverein.gui.control.LesefeldControl;
+import de.jost_net.jverein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.jverein.rmi.Lesefeld;
+import de.willuhn.jameica.gui.AbstractView;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
+
+public class LesefeldListeView extends AbstractView
+{
+
+  @Override
+  public void bind() throws Exception
+  {
+    GUI.getView().setTitle("Lesefelder");
+
+    final LesefeldControl control = new LesefeldControl(this);
+
+    LabelGroup group = new LabelGroup(getParent(), "Parameter");
+    group.addLabelPair("Mitglied", control.getSuchMitglied());
+
+    control.getTablePart().paint(this.getParent());
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.LESEFELDER, false, "question-circle.png");
+    buttons.addButton("Neu",
+        new NewAction(LesefeldDetailView.class, Lesefeld.class), null, false,
+        "document-new.png");
+    buttons.paint(this.getParent());
+
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
+  }
+}

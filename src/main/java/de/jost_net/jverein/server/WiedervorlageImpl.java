@@ -1,0 +1,174 @@
+/**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
+ * This program is free software: you can redistribute it and/or modify it under the terms of the 
+ * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
+ * License, or (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without 
+ *  even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See 
+ *  the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with this program.  If not, 
+ * see <http://www.gnu.org/licenses/>.
+ * 
+ * heiner@jverein.de
+ * www.jverein.de
+ **********************************************************************/
+package de.jost_net.jverein.server;
+
+import java.rmi.RemoteException;
+import java.util.Date;
+
+import de.jost_net.jverein.rmi.Mitglied;
+import de.jost_net.jverein.rmi.Wiedervorlage;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
+
+public class WiedervorlageImpl extends AbstractJVereinDBObject
+    implements Wiedervorlage, IMitglied, UnreadCounter
+{
+
+  private static final long serialVersionUID = 1L;
+
+  public WiedervorlageImpl() throws RemoteException
+  {
+    super();
+  }
+
+  @Override
+  protected String getTableName()
+  {
+    return "wiedervorlage";
+  }
+
+  @Override
+  public String getPrimaryAttribute()
+  {
+    return "id";
+  }
+
+  @Override
+  protected void deleteCheck()
+  {
+    //
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getMitglied() == null)
+      {
+        throw new ApplicationException("Bitte Mitglied eingeben!");
+      }
+      if (getDatum() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben!");
+      }
+      if (getVermerk() == null || getVermerk().isEmpty())
+      {
+        throw new ApplicationException("Bitte Vermerk eingeben!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Wiedervorlage kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    insertCheck();
+  }
+
+  @Override
+  protected Class<?> getForeignObject(String arg0)
+  {
+    if ("mitglied".equals(arg0))
+    {
+      return Mitglied.class;
+    }
+    return null;
+  }
+
+  @Override
+  public Mitglied getMitglied() throws RemoteException
+  {
+    return (Mitglied) getAttribute("mitglied");
+  }
+
+  @Override
+  public void setMitglied(Integer mitglied) throws RemoteException
+  {
+    setAttribute("mitglied", mitglied);
+  }
+
+  @Override
+  public Date getDatum() throws RemoteException
+  {
+    return (Date) getAttribute("datum");
+  }
+
+  @Override
+  public void setDatum(Date datum) throws RemoteException
+  {
+    setAttribute("datum", datum);
+  }
+
+  @Override
+  public String getVermerk() throws RemoteException
+  {
+    return (String) getAttribute("vermerk");
+  }
+
+  @Override
+  public void setVermerk(String vermerk) throws RemoteException
+  {
+    setAttribute("vermerk", vermerk);
+  }
+
+  @Override
+  public Date getErledigung() throws RemoteException
+  {
+    return (Date) getAttribute("erledigung");
+  }
+
+  @Override
+  public void setErledigung(Date erledigung) throws RemoteException
+  {
+    setAttribute("erledigung", erledigung);
+  }
+
+  @Override
+  public String getObjektName()
+  {
+    return "Wiedervorlage";
+  }
+
+  @Override
+  public String getObjektNameMehrzahl()
+  {
+    return "Wiedervorlagen";
+  }
+
+  @Override
+  public int getUeberfaellig() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+        getTableName());
+    it.addFilter("erledigung is null");
+    it.addFilter("datum <= ?", new Date());
+    it.addColumn("count(*) as sum");
+    return it.next().getInteger("sum");
+  }
+
+  @Override
+  public String getMenueID()
+  {
+    return "Mitglieder.Wiedervorlagen";
+  }
+}

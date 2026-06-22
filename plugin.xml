@@ -1,7 +1,7 @@
 <plugin xmlns="https://www.willuhn.de/schema/jameica-plugin"
         xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="https://www.willuhn.de/schema/jameica-plugin https://www.willuhn.de/schema/jameica-plugin-1.5.xsd"
-        name="jverein" version="4.2.0" class="de.jost_net.JVerein.JVereinPlugin">
+        name="jverein" version="4.2.0" class="de.jost_net.jverein.JVereinPlugin">
 
   <description>OpenSource-Vereinsverwaltung</description>
   <url>https://openjverein.github.io/jameica-repository/${plugin.zip.path}</url>
@@ -11,7 +11,7 @@
   <menu>
     <item name="OpenJVerein">
       <item name="Über"
-            action="de.jost_net.JVerein.gui.action.AboutAction" 
+            action="de.jost_net.jverein.gui.action.AboutAction" 
             icon="gtk-info.png" />
     </item>
   </menu>
@@ -30,14 +30,14 @@
 
   <services>
     <service name="database" depends="" autostart="true"
-      class="de.jost_net.JVerein.server.JVereinDBServiceImpl" />
+      class="de.jost_net.jverein.server.JVereinDBServiceImpl" />
   </services>
 
   <messaging>
-    <consumer queue="hibiscus.umsatz.markchecked" class="de.jost_net.JVerein.Messaging.HibscusUmsatzMessageConsumer" />
-    <consumer queue="hibiscus.vop.updateaddress" class="de.jost_net.JVerein.Messaging.VopKontoinhaberChangeMessageConsumer" />
-    <consumer queue="jverein.dbobject.delete" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
-    <consumer queue="jverein.dbobject.store" class="de.jost_net.JVerein.Messaging.MarkOverdueMessageConsumer" />
+    <consumer queue="hibiscus.umsatz.markchecked" class="de.jost_net.jverein.messaging.HibscusUmsatzMessageConsumer" />
+    <consumer queue="hibiscus.vop.updateaddress" class="de.jost_net.jverein.messaging.VopKontoinhaberChangeMessageConsumer" />
+    <consumer queue="jverein.dbobject.delete" class="de.jost_net.jverein.messaging.MarkOverdueMessageConsumer" />
+    <consumer queue="jverein.dbobject.store" class="de.jost_net.jverein.messaging.MarkOverdueMessageConsumer" />
   </messaging>
   
   <requires jameica="2.12+">
