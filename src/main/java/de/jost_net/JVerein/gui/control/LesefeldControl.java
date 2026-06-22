@@ -478,6 +478,7 @@ public class LesefeldControl extends VorZurueckControl implements Savable
     lesefeldMitgliedList = new JVereinTablePart(
         lesefeldAuswerter.getLesefelder(),
         new EditAction(LesefeldDetailView.class));
+    lesefeldMitgliedList.setTableName("Lesefelder");
     lesefeldMitgliedList.addColumn("Skript-Name", "bezeichnung");
     lesefeldMitgliedList.addColumn("Erste Zeile der Script-Ausgabe", "ausgabe");
     lesefeldMitgliedList.setContextMenu(new LesefeldMenu(null));

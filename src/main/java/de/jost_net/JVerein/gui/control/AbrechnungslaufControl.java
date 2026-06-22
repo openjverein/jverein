@@ -394,6 +394,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
     buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
         new BuchungAction(false, null));
+    buchungList.setTableName("Buchungen");
+
     buchungList.addColumn("Nr", "id-int");
     buchungList.addColumn("Geprüft", "geprueft",
         o -> (Boolean) o ? "\u2705" : "");
@@ -478,6 +480,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
     sollbuchungList = new BetragSummaryTablePart(it,
         new EditAction(SollbuchungDetailView.class));
+    sollbuchungList.setTableName("Sollbuchungen");
+
     sollbuchungList.addColumn("Nr", "id-int");
     sollbuchungList.addColumn("Datum", Sollbuchung.DATUM,
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -513,6 +517,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
     lastschriftList = new BetragSummaryTablePart(it,
         new EditAction(LastschriftDetailView.class));
+    lastschriftList.setTableName("Lastschriften");
+
     lastschriftList.addColumn("Nr", "id-int");
     lastschriftList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -548,6 +554,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
     zusatzbetraegeList = new BetragSummaryTablePart(it,
         new EditAction(ZusatzbetragDetailView.class));
+    zusatzbetraegeList.setTableName("Zusatzbeträge");
+
     zusatzbetraegeList.addColumn("Nr", "id-int");
     zusatzbetraegeList.addColumn("Name", "mitglied");
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",

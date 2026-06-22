@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -52,7 +51,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
   {
     super(TabelleSpaltenAuswahlDialog.POSITION_CENTER);
 
-    boolean leer = true;
     for (IJVereinPart table : tableParts)
     {
       if (table == null)
@@ -60,14 +58,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
         continue;
       }
       tableMap.put(table, null);
-      if (table.getItems().size() > 0)
-      {
-        leer = false;
-      }
-    }
-    if (leer)
-    {
-      throw new ApplicationException("Tabelle ist leer");
     }
     setTitle("Spalten auswählen");
     setSize(400, SWT.DEFAULT);
@@ -80,10 +70,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
     TabFolder folder = null;
     for (IJVereinPart table : tableMap.keySet())
     {
-      if (table.getItems().size() == 0)
-      {
-        continue;
-      }
       JVereinTablePart part = new JVereinTablePart(table.getAllColums(), null)
       {
         @Override
@@ -98,22 +84,12 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
 
       if (tableMap.size() > 1)
       {
-        String name = table.getTableName();
-        Object o = table.getItems().get(0);
-        if (o instanceof JVereinDBObject && name == null)
-        {
-          name = ((JVereinDBObject) o).getObjektNameMehrzahl();
-        }
-        if (name == null)
-        {
-          name = "Tabelle";
-        }
         if (folder == null)
         {
           folder = new TabFolder(parent, SWT.BORDER);
           folder.setLayoutData(new GridData(GridData.FILL_BOTH));
         }
-        TabGroup tab = new TabGroup(folder, name, true, 1);
+        TabGroup tab = new TabGroup(folder, table.getTableName(), true, 1);
         tab.addPart(part);
       }
       else
