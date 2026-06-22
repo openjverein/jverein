@@ -41,7 +41,7 @@ public interface IJVereinPart
   public String getTableName();
 
   /**
-   * Ermittelt die ID der Tablepart aus der View und dem Objekttyp
+   * Ermittelt die ID der Tablepart aus der View und ggf. dem angegeenen Namen
    * 
    * @param tablePartId
    * @param tableName
@@ -55,13 +55,6 @@ public interface IJVereinPart
     {
       return tablePartId;
     }
-    List<?> items = getItems();
-
-    if (items.size() == 0)
-    {
-      tablePartId = "";
-      return tablePartId;
-    }
     StringBuilder sb = new StringBuilder();
 
     sb.append(GUI.getCurrentView().getClass().getSimpleName());
@@ -69,10 +62,6 @@ public interface IJVereinPart
     if (tableName != null)
     {
       sb.append(tableName);
-    }
-    else
-    {
-      sb.append(items.get(0).getClass().getSimpleName());
     }
     sb.append(".");
 

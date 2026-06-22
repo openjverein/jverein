@@ -248,6 +248,7 @@ public class DokumentControl extends AbstractControl
     docs.setOrder("ORDER BY datum desc");
 
     docsList = new JVereinTablePart(docs, new DokumentShowAction());
+    docsList.setTableName("Dokumente");
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");

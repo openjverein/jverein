@@ -1588,6 +1588,7 @@ public class MitgliedControl extends FilterControl implements Savable
     zusatzbetraege.addFilter("mitglied = " + getMitglied().getID());
     zusatzbetraegeList = new BetragSummaryTablePart(zusatzbetraege,
         new EditAction(ZusatzbetragDetailView.class));
+    zusatzbetraegeList.setTableName("Zusatzbeträge");
     zusatzbetraegeList.setMulti(true);
     zusatzbetraegeList.addColumn("Erste Fälligkeit", "startdatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
@@ -1646,6 +1647,7 @@ public class MitgliedControl extends FilterControl implements Savable
     wiedervorlagen.setOrder("ORDER BY datum DESC");
     wiedervorlageList = new AutoUpdateTablePart(wiedervorlagen,
         new EditAction(WiedervorlageDetailView.class));
+    wiedervorlageList.setTableName("Widervorlagen");
     wiedervorlageList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     wiedervorlageList.addColumn("Vermerk", "vermerk");
@@ -1668,6 +1670,7 @@ public class MitgliedControl extends FilterControl implements Savable
     me.addFilter("mailempfaenger.mail = mail.id");
     me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
     mailList = new JVereinTablePart(me, new EditAction(MailDetailView.class));
+    mailList.setTableName("Mails");
     mailList.setMulti(true);
     mailList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
@@ -1692,6 +1695,7 @@ public class MitgliedControl extends FilterControl implements Savable
     arbeitseinsaetze.setOrder("ORDER by datum desc");
     arbeitseinsatzList = new JVereinTablePart(arbeitseinsaetze,
         new EditAction(ArbeitseinsatzDetailView.class));
+    arbeitseinsatzList.setTableName("Arbeitseinsätze");
     arbeitseinsatzList.setContextMenu(new ArbeitseinsatzMenu(null));
     arbeitseinsatzList.setMulti(true);
     arbeitseinsatzList.addColumn("Datum", "datum",
@@ -1715,6 +1719,7 @@ public class MitgliedControl extends FilterControl implements Savable
     lehrgaenge.addFilter("mitglied = " + getMitglied().getID());
     lehrgaengeList = new JVereinTablePart(lehrgaenge,
         new EditAction(LehrgangDetailView.class));
+    lehrgaengeList.setTableName("Lehrgänge");
     lehrgaengeList.setMulti(true);
     lehrgaengeList.addColumn("Lehrgangsart", "lehrgangsart");
     lehrgaengeList.addColumn("Bezeichnung", "bezeichnung");
