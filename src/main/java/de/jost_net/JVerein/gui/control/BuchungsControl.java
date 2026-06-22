@@ -2142,14 +2142,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           calendar.add(Calendar.DAY_OF_MONTH, -1);
           getBisdatum().setValue(calendar.getTime());
         }
-        try
-        {
-          getTablePart();
-        }
-        catch (RemoteException ex)
-        {
-          throw new ApplicationException(ex.getMessage());
-        }
+        refreshBuchungsList();
       }
     }, null, false, "go-previous.png");
   }
@@ -2190,14 +2183,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           calendar.add(Calendar.DAY_OF_MONTH, -1);
           getBisdatum().setValue(calendar.getTime());
         }
-        try
-        {
-          getTablePart();
-        }
-        catch (RemoteException ex)
-        {
-          throw new ApplicationException(ex.getMessage());
-        }
+        refreshBuchungsList();
       }
     }, null, false, "go-next.png");
   }
