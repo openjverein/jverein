@@ -41,7 +41,7 @@ public interface IJVereinPart
   public String getTableName();
 
   /**
-   * Ermittelt die ID der Tablepart aus der View und ggf. dem angegeenen Namen
+   * Ermittelt die ID der Tablepart aus der View und ggf. dem angegebenen Namen
    * 
    * @param tablePartId
    * @param tableName
