@@ -388,7 +388,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
               buchungIt.addFilter("sollbuchung is null");
 
               buchungIt.addFilter("CAST(betrag AS DECIMAL(10,2)) = ?",
-                  Math.round(o.getDouble("fehlbetrag") * 100) / 100);
+                  Math.round(o.getDouble("fehlbetrag") * 100) / 100d);
 
               // Buchungen, die diesem Mitglied schon zugeordnet wurden,
               // rausfiltern. (Es dürfen mehrere Sollbuchungen zu einer Buchung
@@ -570,7 +570,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
     // entfernen: "ü" -> "u". Daher machen wir: "u" == "ü" == "ue".
     return text.toLowerCase().replaceAll("ä", "a").replaceAll("ae", "a")
         .replaceAll("ö", "o").replaceAll("oe", "o").replaceAll("ü", "u")
-        .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s");
+        .replaceAll("ue", "u").replaceAll("ß", "s").replaceAll("ss", "s")
+        .trim();
   }
 
   /**
