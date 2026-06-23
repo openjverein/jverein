@@ -268,7 +268,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         reporter.addHeaderColumn(col.getText(),
             col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                 : Element.ALIGN_RIGHT,
-            (int) col.getData(), BaseColor.LIGHT_GRAY);
+            (int) col.getData(), BaseColor.LIGHT_GRAY,
+            getFontNormal(BaseColor.BLACK));
       }
       reporter.createHeader();
 
@@ -277,6 +278,21 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         for (TreeColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
+          String text = row.getTreeItem().getText(index);
+          BaseColor color = BaseColor.BLACK;
+          try
+          {
+            String text2 = text.replaceAll("\\.", "").replaceAll("\\,", "\\.");
+            Double value = Double.valueOf(text2);
+            if (value < 0)
+            {
+              color = BaseColor.RED;
+            }
+          }
+          catch (NumberFormatException ex)
+          {
+            // Dann bleibt es Schwarz
+          }
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) row.getTreeItem().getData("background");
@@ -286,13 +302,13 @@ public class TreePartExportDialog extends AbstractPartExportDialog
             switch (data.getStyle())
             {
               case SWT.BOLD:
-                font = Reporter.getFreeSansBold(8);
+                font = getFontFett(color);
                 break;
               case SWT.ITALIC:
-                font = Reporter.getFreeSansItalic(8);
+                font = getFontKursiv(color);
                 break;
               case SWT.NORMAL:
-                font = Reporter.getFreeSans(8);
+                font = getFontNormal(color);
                 break;
             }
           }
@@ -305,12 +321,11 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           }
           if (bg == null)
           {
-            reporter.addColumn(row.getTreeItem().getText(index), alignment,
-                font);
+            reporter.addColumn(text, alignment, font);
           }
           else
           {
-            reporter.addColumn(row.getTreeItem().getText(index), alignment,
+            reporter.addColumn(text, alignment,
                 new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
           }
         }

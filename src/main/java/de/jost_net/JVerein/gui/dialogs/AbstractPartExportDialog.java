@@ -22,9 +22,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TabFolder;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.BaseFont;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
@@ -86,6 +92,20 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected CheckboxInput zellenTransparent;
 
+  protected SelectInput fontNormal;
+
+  protected SelectInput fontFett;
+
+  protected SelectInput fontItalic;
+
+  protected IntegerInput fontsizeNormal;
+
+  protected IntegerInput fontsizeFett;
+
+  protected IntegerInput fontsizeItalic;
+
+  protected CheckboxInput negativRot;
+
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
       throws ApplicationException
@@ -138,13 +158,16 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
     TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
     TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
+    TabGroup tabFont = new TabGroup(folder, "Schriftart", true, 2);
 
+    // Spalten
     tabSpalten.addPart(spaltenList);
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(
         new Button("Breiten zurücksetzen", action, null, false, "eraser.png"));
     tabSpalten.addButtonArea(buttons);
 
+    // Ränder
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
     rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
     oben = new IntegerInput(settings.getInt(settingPrefix + "oben", 20));
@@ -167,6 +190,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     // tabRaender.addLabelPair("Oben ab 2. Seite", oben2);
     // tabRaender.addLabelPair("Unten ab 2. Seite", unten2);
 
+    // Formular
     hintergrund = new FormularInput(FormularArt.HINTERGRUND,
         settings.getString(settingPrefix + "hintergrund", ""));
     hintergrund.setPleaseChoose("Kein Formular");
@@ -186,6 +210,29 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFormular.addLabelPair("Tabellen Header transparent", headerTransparent);
     tabFormular.addLabelPair("Tabellen Zellen transparent", zellenTransparent);
     tabFormular.addLabelPair("Querformat", querformat);
+
+    // Schriftart
+    fontNormal = new FontInput(
+        settings.getString(settingPrefix + "font_normal", "FreeSans"));
+    fontFett = new FontInput(
+        settings.getString(settingPrefix + "font_fett", "FreeSans-Bold"));
+    fontItalic = new FontInput(
+        settings.getString(settingPrefix + "font_italic", "FreeSans-Oblique"));
+    fontsizeNormal = new IntegerInput(
+        settings.getInt(settingPrefix + "fontsize_normal", 8));
+    fontsizeFett = new IntegerInput(
+        settings.getInt(settingPrefix + "fontsize_fett", 8));
+    fontsizeItalic = new IntegerInput(
+        settings.getInt(settingPrefix + "fontsize_italic", 8));
+    negativRot = new CheckboxInput(
+        settings.getBoolean(settingPrefix + "negativ_rot", true));
+    tabFont.addLabelPair("Schriftart Standard", fontNormal);
+    tabFont.addLabelPair("Schriftgröße Standard", fontsizeNormal);
+    tabFont.addLabelPair("Schriftart Fett", fontFett);
+    tabFont.addLabelPair("Schriftgröße Fett", fontsizeFett);
+    tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
+    tabFont.addLabelPair("Schriftgröße Kursiv", fontsizeItalic);
+    tabFont.addLabelPair("Negative Werte in Rot", negativRot);
   }
 
   protected void export() throws ApplicationException
@@ -276,7 +323,54 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
       settings.setAttribute(settingPrefix + "quer",
           (Boolean) querformat.getValue());
+
+      settings.setAttribute(settingPrefix + "font_normal",
+          (String) fontNormal.getValue());
+      settings.setAttribute(settingPrefix + "font_fett",
+          (String) fontFett.getValue());
+      settings.setAttribute(settingPrefix + "font_italic",
+          (String) fontItalic.getValue());
+      settings.setAttribute(settingPrefix + "fontsize_normal",
+          (Integer) fontsizeNormal.getValue());
+      settings.setAttribute(settingPrefix + "fontsize_fett",
+          (Integer) fontsizeFett.getValue());
+      settings.setAttribute(settingPrefix + "fontsize_italic",
+          (Integer) fontsizeItalic.getValue());
+      settings.setAttribute(settingPrefix + "negativ_rot",
+          (Boolean) negativRot.getValue());
     }
+  }
+
+  protected Font getFontNormal(BaseColor color)
+  {
+    return FontFactory.getFont(
+        "/fonts/" + (String) fontNormal.getValue() + ".ttf",
+        BaseFont.IDENTITY_H, (Integer) fontsizeNormal.getValue(),
+        Font.UNDEFINED, getColor(color));
+  }
+
+  protected Font getFontFett(BaseColor color)
+  {
+    return FontFactory.getFont(
+        "/fonts/" + (String) fontFett.getValue() + ".ttf", BaseFont.IDENTITY_H,
+        (Integer) fontsizeFett.getValue(), Font.UNDEFINED, getColor(color));
+  }
+
+  protected Font getFontKursiv(BaseColor color)
+  {
+    return FontFactory.getFont(
+        "/fonts/" + (String) fontItalic.getValue() + ".ttf",
+        BaseFont.IDENTITY_H, (Integer) fontsizeItalic.getValue(), Font.ITALIC,
+        getColor(color));
+  }
+
+  private BaseColor getColor(BaseColor color)
+  {
+    if (!(Boolean) negativRot.getValue())
+    {
+      color = BaseColor.BLACK;
+    }
+    return color;
   }
 
   @Override

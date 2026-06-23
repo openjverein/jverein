@@ -17,7 +17,6 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -28,6 +27,7 @@ import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
+import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
@@ -131,28 +131,7 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     {
       return font;
     }
-    ArrayList<String> fonts = new ArrayList<>();
-    fonts.add("PTSans-Regular");
-    fonts.add("PTSans-Bold");
-    fonts.add("PTSans-Italic");
-    fonts.add("PTSans-BoldItalic");
-    fonts.add("FreeSans");
-    fonts.add("FreeSans-Bold");
-    fonts.add("FreeSans-BoldOblique");
-    fonts.add("FreeSans-Oblique");
-    fonts.add("Courier Prime");
-    fonts.add("Courier Prime Bold");
-    fonts.add("Courier Prime Bold Italic");
-    fonts.add("Courier Prime Italic");
-    fonts.add("LiberationSans-Bold");
-    fonts.add("LiberationSans-BoldItalic");
-    fonts.add("LiberationSans-Italic");
-    fonts.add("LiberationSans-Regular");
-    fonts.add("LiberationSerif-Bold");
-    fonts.add("LiberationSerif-BoldItalic");
-    fonts.add("LiberationSerif-Italic");
-    fonts.add("LiberationSerif-Regular");
-    font = new SelectInput(fonts, getFormularfeld().getFont());
+    font = new FontInput(getFormularfeld().getFont());
     return font;
   }
 
