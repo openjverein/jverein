@@ -131,8 +131,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
 
   private SollbuchungMessageConsumer sollbuchungConsumer = null;
 
-  private TextInput suchname;
-
   public SollbuchungControl(AbstractView view)
   {
     super(view);
@@ -257,18 +255,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     spezialsuche.addListener(e -> refreshMitgliederList());
 
     return spezialsuche;
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public TextInput getSuchName1(boolean newcontrol)
-  {
-    if (!newcontrol && suchname != null)
-    {
-      return suchname;
-    }
-    suchname = new TextInput("", 30);
-    suchname.setName("Name");
-    return suchname;
   }
 
   // Für SollbuchungAuswahlDialog
