@@ -233,6 +233,13 @@ public abstract class FilterControl extends VorZurueckControl
             this.getControl().setToolTipText(this.getText());
             super.update();
           }
+
+          @Override
+          public void setValue(Object value)
+          {
+            super.setValue(value);
+            d1.setValue((EigenschaftenAuswahlParameter) value);
+          }
         };
 
         d1.addCloseListener(e -> {
@@ -272,6 +279,16 @@ public abstract class FilterControl extends VorZurueckControl
             }
             this.setValue(text);
             super.update();
+          }
+
+          @Override
+          public void setValue(Object value)
+          {
+            super.setValue(value);
+            if (value == null)
+            {
+              dialog.reset();
+            }
           }
         };
         dialog.addCloseListener(c -> {
@@ -682,8 +699,9 @@ public abstract class FilterControl extends VorZurueckControl
         }
         else if (filter.equals(Filter.ZUSATZFELD))
         {
-          settings.setAttribute(additionalparamprefix2 + "selected", 0);
-          ((DialogInput) filterMap.get(filter)).setText("");
+          DialogInput dInput = (DialogInput) input;
+          dInput.setValue(null);
+          setZusatzfelderAuswahl(dInput);
         }
         else
         {

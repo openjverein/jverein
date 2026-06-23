@@ -83,6 +83,11 @@ public class EigenschaftenAuswahlDialog
 
   }
 
+  public void setValue(EigenschaftenAuswahlParameter param)
+  {
+    this.param = param == null ? new EigenschaftenAuswahlParameter() : param;
+  }
+
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
