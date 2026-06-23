@@ -148,6 +148,12 @@ public class VorlageUtil
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
           map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
@@ -382,12 +388,6 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_DATEINAME:
-        case ABWEICHENDE_ZAHLER_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_TITEL:
-        case FAMILIENVERBAND_DATEINAME:
-        case FAMILIENVERBAND_SUBTITEL:
-        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -799,6 +799,18 @@ public class VorlageUtil
           set.add(Filter.DATUM_START_BIS);
           map = new FilterMap().getDummyMap(set, map);
           break;
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+          set.add(Filter.MITGLIEDSCHAFT_STATUS);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
+          set.add(Filter.MITGLIEDSCHAFT_STATUS);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
         case MAHNUNG_DATEINAME:
@@ -855,12 +867,6 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_DATEINAME:
-        case ABWEICHENDE_ZAHLER_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_TITEL:
-        case FAMILIENVERBAND_DATEINAME:
-        case FAMILIENVERBAND_SUBTITEL:
-        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
