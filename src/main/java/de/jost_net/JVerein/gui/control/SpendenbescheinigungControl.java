@@ -850,7 +850,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
         else
         {
-          spendenbescheinigung.setMitglied(null);
+          spendenbescheinigung.setMitglied((Integer) null);
         }
       }
       catch (Exception e)
