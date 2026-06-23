@@ -19,12 +19,10 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.parts.EigenschaftenTree;
 import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -46,19 +44,9 @@ public class EigenschaftenAuswahlDialog
     extends AbstractDialog<EigenschaftenAuswahlParameter>
 {
 
-  public static final String UND = "und";
-
-  public static final String ODER = "oder";
-
-  private FilterControl control;
-
   private SelectInput eigenschaftenverknuepfung;
 
-  private String defaults = null;
-
   private boolean verknuepfung;
-
-  private boolean onlyChecked;
 
   private Mitglied[] mitglieder;
 
@@ -78,41 +66,33 @@ public class EigenschaftenAuswahlDialog
    *          Gibt an ob nur die Checkbox Werte UNCHECKED und CHECKED angezeigt
    *          werden.
    */
-  public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
-      FilterControl control, boolean onlyChecked)
+  public EigenschaftenAuswahlDialog(EigenschaftenAuswahlParameter param)
   {
-    this(defaults, verknuepfung, control, onlyChecked, null);
+    this(param, true, null);
   }
 
-  public EigenschaftenAuswahlDialog(String defaults, boolean verknuepfung,
-      FilterControl control, boolean onlyChecked, Mitglied[] mitglieder)
+  public EigenschaftenAuswahlDialog(EigenschaftenAuswahlParameter param,
+      boolean verknuepfung, Mitglied[] mitglieder)
   {
     super(EigenschaftenAuswahlDialog.POSITION_CENTER);
     this.setSize(400, 400);
     this.verknuepfung = verknuepfung;
     setTitle("Eigenschaften auswählen ");
-    this.control = control;
-    this.setDefaults(defaults);
-    this.onlyChecked = onlyChecked;
+    this.param = param == null ? new EigenschaftenAuswahlParameter() : param;
     this.mitglieder = mitglieder;
+
   }
 
-  /**
-   * Speichert die Default-Werte.
-   * 
-   * @param defaults
-   *          Liste der Eigenschaften-IDs durch Komma separiert.
-   */
-  public void setDefaults(String defaults)
+  public void setValue(EigenschaftenAuswahlParameter param)
   {
-    this.defaults = defaults != null ? defaults : "";
+    this.param = param == null ? new EigenschaftenAuswahlParameter() : param;
   }
 
   @Override
   protected void paint(Composite parent) throws RemoteException
   {
-    final TreePart tree = control.getEigenschaftenAuswahlTree(this.defaults,
-        onlyChecked, mitglieder);
+    final TreePart tree = new EigenschaftenTree(null,
+        param == null ? "" : param.getIdString(), false, mitglieder);
 
     LabelGroup group = new LabelGroup(parent, "Eigenschaften", true);
     group.addPart(tree);
@@ -129,9 +109,7 @@ public class EigenschaftenAuswahlDialog
         try
         {
           param = new EigenschaftenAuswahlParameter();
-          ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems(); // liefert
-                                                                   // nur den
-                                                                   // Root
+          ArrayList<?> rootNodes = (ArrayList<?>) tree.getItems();
           EigenschaftenNode root = (EigenschaftenNode) rootNodes.get(0);
           if (mitglieder != null)
           {
@@ -139,7 +117,7 @@ public class EigenschaftenAuswahlDialog
           }
           for (EigenschaftenNode checkedNode : root.getCheckedNodes())
           {
-            param.add(checkedNode);
+            param.add(checkedNode.getEigenschaft(), checkedNode.getPreset());
           }
           if (verknuepfung)
           {
@@ -154,14 +132,8 @@ public class EigenschaftenAuswahlDialog
         close();
       }
     }, null, true, "ok.png");
-    buttons.addButton("Abbrechen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        throw new OperationCanceledException();
-      }
+    buttons.addButton("Abbrechen", c -> {
+      throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     buttons.paint(parent);
   }
@@ -180,10 +152,9 @@ public class EigenschaftenAuswahlDialog
       return eigenschaftenverknuepfung;
     }
     ArrayList<String> werte = new ArrayList<>();
-    werte.add(UND);
-    werte.add(ODER);
-    eigenschaftenverknuepfung = new SelectInput(werte,
-        control.getEigenschaftenVerknuepfung());
+    werte.add(EigenschaftenAuswahlParameter.UND);
+    werte.add(EigenschaftenAuswahlParameter.ODER);
+    eigenschaftenverknuepfung = new SelectInput(werte, param.getVerknuepfung());
     eigenschaftenverknuepfung.setName("Eigenschaften-Verknüpfung");
     return eigenschaftenverknuepfung;
   }
@@ -330,5 +301,4 @@ public class EigenschaftenAuswahlDialog
     }
     return true;
   }
-
 }

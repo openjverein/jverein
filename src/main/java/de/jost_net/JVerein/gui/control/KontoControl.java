@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -46,6 +47,7 @@ import de.jost_net.JVerein.keys.Anlagenzweck;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -65,7 +67,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -136,8 +137,6 @@ public class KontoControl extends FilterControl implements Savable
   public KontoControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Konto getKonto()
@@ -289,11 +288,6 @@ public class KontoControl extends FilterControl implements Savable
     return k;
   }
 
-  /**
-   * This method stores the project using the current values.
-   * 
-   * @throws ApplicationException
-   */
   @Override
   public void handleStore() throws ApplicationException
   {
@@ -329,7 +323,8 @@ public class KontoControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (kontenList != null)
     {
@@ -389,13 +384,13 @@ public class KontoControl extends FilterControl implements Savable
     return kontenList;
   }
 
-  public void refreshTable()
+  public void refreshTable() throws ApplicationException
   {
     TabRefresh();
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (kontenList == null)
     {
@@ -417,36 +412,38 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Konto> getKonten() throws RemoteException
+  private DBIterator<Konto> getKonten()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Konto> konten = Einstellungen.getDBService()
         .createList(Konto.class);
 
-    if (isSuchKontoartAktiv() && getSuchKontoart().getValue() != null)
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      konten.addFilter("kontoart = ?",
-          new Object[] { ((Kontoart) getSuchKontoart().getValue()).getKey() });
-    }
-    if (isSuchStatusAktiv() && getSuchStatus(null).getValue().toString()
-        .equalsIgnoreCase("Nur aktive Konten"))
-      konten.addFilter("(aufloesung IS NULL OR aufloesung > ?)",
-          new Object[] { new Date() });
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
-    {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        konten.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
-      }
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        konten.addFilter("(lower(nummer) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+        case KONTOART:
+          konten.addFilter("kontoart = ?", ((Kontoart) value).getKey());
+          break;
+        case STATUS:
+          if ((boolean) value)
+          {
+            konten.addFilter("(aufloesung IS NULL OR aufloesung > ?)",
+                new Date());
+          }
+          break;
+        case BEZEICHNUNG:
+          konten.addFilter("(lower(bezeichnung) like ?)",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        case NUMMER:
+          konten.addFilter("(lower(nummer) like ?)",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
     konten.setOrder("ORDER BY nummer");
@@ -455,6 +452,7 @@ public class KontoControl extends FilterControl implements Savable
 
   public Input getBuchungsart() throws RemoteException
   {
+    // TODO BuchungsartInput
     if (buchungsart != null)
     {
       return buchungsart;
@@ -1096,7 +1094,7 @@ public class KontoControl extends FilterControl implements Savable
     }
   }
 
-  public void refreshGui()
+  private void refreshGui()
   {
     try
     {
@@ -1172,15 +1170,8 @@ public class KontoControl extends FilterControl implements Savable
     if (autobutton != null)
       return autobutton;
 
-    autobutton = new Button("Auto Anlagenwert", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        handleAuto();
-      }
-    }, null, true, "view-refresh.png");
+    autobutton = new Button("Auto Anlagenwert", c -> handleAuto(), null, true,
+        "view-refresh.png");
 
     if (getBetrag().getValue() != null)
       autobutton.setEnabled(false);
@@ -1197,15 +1188,8 @@ public class KontoControl extends FilterControl implements Savable
     if (afabutton != null)
       return afabutton;
 
-    afabutton = new Button("Auto AfA", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        handleAfa();
-      }
-    }, null, true, "view-refresh.png");
+    afabutton = new Button("Auto AfA", c -> handleAfa(), null, true,
+        "view-refresh.png");
 
     if (getKontoArt().getValue() != Kontoart.ANLAGE
         || getAfaMode().getValue() == null

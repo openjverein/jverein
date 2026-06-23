@@ -26,7 +26,7 @@ import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
-    implements Lastschrift, IBetrag, IVersand
+    implements Lastschrift, IBetrag, IVersand, IMitglied
 {
 
   private static final long serialVersionUID = 380278347818535726L;

@@ -17,15 +17,16 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.keys.Filter;
 
-public class AuswertungKursteilnehmerFilterMap extends AbstractMap
+public class FilterMap extends AbstractMap
 {
-
   public Map<String, Object> getMap(FilterControl control,
       Map<String, Object> inma) throws RemoteException
   {
@@ -38,51 +39,36 @@ public class AuswertungKursteilnehmerFilterMap extends AbstractMap
     {
       map = inma;
     }
-
-    for (AuswertungKursteilnehmerFilterVar var : AuswertungKursteilnehmerFilterVar
-        .values())
+    if (control != null)
     {
-      Object value = null;
-      switch (var)
+      for (Entry<Filter, String> entry : control.getFilterText(true).entrySet())
       {
-        case DATUM_ABBUCHUNG_VON_F:
-          value = fromDate((Date) control.getAbbuchungsdatumvon().getValue());
-          break;
-        case DATUM_ABBUCHUNG_BIS_F:
-          value = fromDate((Date) control.getAbbuchungsdatumbis().getValue());
-          break;
+        map.put(entry.getKey().getSetting(), entry.getValue());
       }
-      map.put(var.getName(), value);
     }
     return map;
   }
 
-  public static Map<String, Object> getDummyMap(Map<String, Object> inMap)
+  public Map<String, Object> getDummyMap(Set<Filter> set,
+      Map<String, Object> inma)
   {
     Map<String, Object> map = null;
-    if (inMap == null)
+    if (inma == null)
     {
       map = new HashMap<>();
     }
     else
     {
-      map = inMap;
+      map = inma;
     }
-    for (AuswertungKursteilnehmerFilterVar var : AuswertungKursteilnehmerFilterVar
-        .values())
+    if (set != null)
     {
-      Object value = null;
-      switch (var)
+      for (Filter f : set)
       {
-        case DATUM_ABBUCHUNG_VON_F:
-          value = "20240101";
-          break;
-        case DATUM_ABBUCHUNG_BIS_F:
-          value = "20241231";
-          break;
+        map.put(f.getSetting(), f.getDefault());
       }
-      map.put(var.getName(), value);
     }
+
     return map;
   }
 }

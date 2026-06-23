@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Vorlageart
+public enum Vorlageart implements KeyEnum
 {
 
   DATEINAME(1, "Dateiname"),
@@ -32,6 +32,7 @@ public enum Vorlageart
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

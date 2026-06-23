@@ -24,6 +24,7 @@ import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.MitgliedStatus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.GenericIterator;
@@ -31,7 +32,6 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.logging.Logger;
 
 public class AbweichenderZahlerNode implements GenericObjectNode
@@ -52,11 +52,12 @@ public class AbweichenderZahlerNode implements GenericObjectNode
 
   private ArrayList<AbweichenderZahlerNode> children;
 
-  private Input status;
+  private MitgliedStatus status;
 
-  public AbweichenderZahlerNode(Input status) throws RemoteException
+  public AbweichenderZahlerNode(MitgliedStatus mitgliedStatus)
+      throws RemoteException
   {
-    this.status = status;
+    this.status = mitgliedStatus;
     this.parent = null;
     this.type = ROOT;
     this.children = new ArrayList<>();
@@ -65,9 +66,9 @@ public class AbweichenderZahlerNode implements GenericObjectNode
     DBIterator<Mitglied> mitgliederIt = Einstellungen.getDBService()
         .createList(Mitglied.class);
     mitgliederIt.addFilter("altzahler is not null and altzahler != 0");
-    if (status.getValue().equals("Angemeldet"))
+    if (MitgliedStatus.ANGEMELDET.equals(mitgliedStatus))
       mitgliederIt.addFilter("(austritt is null or austritt > ?)", new Date());
-    if (status.getValue().equals("Abgemeldet"))
+    if (MitgliedStatus.ABGEMELDET.equals(mitgliedStatus))
       mitgliederIt.addFilter("(austritt is not null and austritt < ?)",
           new Date());
     while (mitgliederIt.hasNext())
@@ -95,9 +96,9 @@ public class AbweichenderZahlerNode implements GenericObjectNode
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("altzahler = ?", new Object[] { m.getID() });
-    if (status.getValue().equals("Angemeldet"))
+    if (MitgliedStatus.ANGEMELDET.equals(status))
       it.addFilter("(austritt is null or austritt > ?)", new Date());
-    if (status.getValue().equals("Abgemeldet"))
+    if (MitgliedStatus.ABGEMELDET.equals(status))
       it.addFilter("(austritt is not null and austritt < ?)", new Date());
     while (it.hasNext())
     {

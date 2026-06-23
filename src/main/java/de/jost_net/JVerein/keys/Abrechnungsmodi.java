@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Abrechnungsmodi
  */
-public class Abrechnungsmodi
+public class Abrechnungsmodi implements KeyEnum
 {
   public static final int KEINBEITRAG = 0;
 
@@ -58,6 +58,7 @@ public class Abrechnungsmodi
     this.abrechnungsmodus = abrechnungsmodus;
   }
 
+  @Override
   public int getKey()
   {
     return abrechnungsmodus;

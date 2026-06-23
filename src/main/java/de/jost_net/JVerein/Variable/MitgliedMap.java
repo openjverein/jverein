@@ -620,62 +620,66 @@ public class MitgliedMap extends AbstractMap
       map.put(var.getName(), value);
     }
 
-    // Liste der Felddefinitionen
-    DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
-        .createList(Felddefinition.class);
-    while (itfd.hasNext())
+    // Tests können nicht mit DBService laufen, daher muss man die Map auch ohne
+    // erstellen können
+    if (!Einstellungen.isTest())
     {
-      Felddefinition fd = itfd.next();
-      String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
-      switch (fd.getDatentyp())
+      // Liste der Felddefinitionen
+      DBIterator<Felddefinition> itfd = Einstellungen.getDBService()
+          .createList(Felddefinition.class);
+      while (itfd.hasNext())
       {
-        case Datentyp.DATUM:
-          map.put(name, "31.12.2024");
-          break;
-        case Datentyp.JANEIN:
-          map.put(name, "X");
-          break;
-        case Datentyp.GANZZAHL:
-          map.put(name, "22");
-          break;
-        case Datentyp.WAEHRUNG:
-          map.put(name, Einstellungen.DECIMALFORMAT.format(3d));
-          break;
-        case Datentyp.ZEICHENFOLGE:
-          map.put(name, "abcd");
-          break;
+        Felddefinition fd = itfd.next();
+        String name = Einstellungen.ZUSATZFELD_PRE + fd.getName();
+        switch (fd.getDatentyp())
+        {
+          case Datentyp.DATUM:
+            map.put(name, "31.12.2024");
+            break;
+          case Datentyp.JANEIN:
+            map.put(name, "X");
+            break;
+          case Datentyp.GANZZAHL:
+            map.put(name, "22");
+            break;
+          case Datentyp.WAEHRUNG:
+            map.put(name, Einstellungen.DECIMALFORMAT.format(3d));
+            break;
+          case Datentyp.ZEICHENFOLGE:
+            map.put(name, "abcd");
+            break;
+        }
+      }
+
+      // Liste der Eigenschaften
+      DBIterator<Eigenschaft> iteig = Einstellungen.getDBService()
+          .createList(Eigenschaft.class);
+      while (iteig.hasNext())
+      {
+        Eigenschaft eig = iteig.next();
+        map.put("mitglied_eigenschaft_" + eig.getName(), "X");
+      }
+
+      // Liste der Eigenschaften einer Eigenschaftengruppe
+      DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
+          .getDBService().createList(EigenschaftGruppe.class);
+      while (eigenschaftGruppeIt.hasNext())
+      {
+        EigenschaftGruppe eg = eigenschaftGruppeIt.next();
+
+        map.put("mitglied_eigenschaften_" + eg.getName(),
+            "Eigenschaft1, Eigenschaft2");
+      }
+
+      if (!ohneLesefelder)
+      {
+        // Füge Lesefelder diesem Mitglied-Objekt hinzu.
+        LesefeldAuswerter l = new LesefeldAuswerter();
+        l.setLesefelderDefinitionsFromDatabase();
+        l.setMap(map);
+        map.putAll(l.getLesefelderMap());
       }
     }
-
-    // Liste der Eigenschaften
-    DBIterator<Eigenschaft> iteig = Einstellungen.getDBService()
-        .createList(Eigenschaft.class);
-    while (iteig.hasNext())
-    {
-      Eigenschaft eig = iteig.next();
-      map.put("mitglied_eigenschaft_" + eig.getName(), "X");
-    }
-
-    // Liste der Eigenschaften einer Eigenschaftengruppe
-    DBIterator<EigenschaftGruppe> eigenschaftGruppeIt = Einstellungen
-        .getDBService().createList(EigenschaftGruppe.class);
-    while (eigenschaftGruppeIt.hasNext())
-    {
-      EigenschaftGruppe eg = eigenschaftGruppeIt.next();
-
-      map.put("mitglied_eigenschaften_" + eg.getName(),
-          "Eigenschaft1, Eigenschaft2");
-    }
-
-    if (!ohneLesefelder)
-    {
-      // Füge Lesefelder diesem Mitglied-Objekt hinzu.
-      LesefeldAuswerter l = new LesefeldAuswerter();
-      l.setLesefelderDefinitionsFromDatabase();
-      l.setMap(map);
-      map.putAll(l.getLesefelderMap());
-    }
-
     return map;
   }
 

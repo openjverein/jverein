@@ -18,7 +18,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -41,7 +40,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -63,8 +61,6 @@ public class WiedervorlageControl extends FilterControl implements Savable
   public WiedervorlageControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Wiedervorlage getWiedervorlage()
@@ -210,7 +206,8 @@ public class WiedervorlageControl extends FilterControl implements Savable
   }
 
   @Override
-  public AutoUpdateTablePart getTablePart() throws RemoteException
+  public AutoUpdateTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (wiedervorlageList != null)
     {
@@ -222,7 +219,7 @@ public class WiedervorlageControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (wiedervorlageList == null)
     {

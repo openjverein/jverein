@@ -33,7 +33,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
-    implements Spendenbescheinigung, IBetrag, IVersand
+    implements Spendenbescheinigung, IBetrag, IVersand, IMitglied
 {
 
   private static final long serialVersionUID = -1861750218155086064L;
@@ -343,7 +343,7 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void setMitgliedID(Integer mitgliedID) throws RemoteException
+  public void setMitglied(Integer mitgliedID) throws RemoteException
   {
     setAttribute("mitglied", mitgliedID);
   }

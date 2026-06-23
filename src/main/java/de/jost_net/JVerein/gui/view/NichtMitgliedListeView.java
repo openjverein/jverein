@@ -24,24 +24,24 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.willuhn.util.ApplicationException;
 
 public class NichtMitgliedListeView extends AbstractMitgliedListeView
 {
   public NichtMitgliedListeView() throws RemoteException
   {
     control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
-    control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
   }
 
   @Override
@@ -51,7 +51,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
   }
 
   @Override
-  public void getFilter() throws RemoteException
+  protected void getFilter() throws RemoteException, ApplicationException
   {
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     TabFolder folder = new TabFolder(group.getComposite(),
@@ -62,39 +62,35 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
     // Erster Tab
     TabGroup tab1 = new TabGroup(folder, "Allgemein", true, 3);
     SimpleContainer left = new SimpleContainer(tab1.getComposite());
-    left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED));
-    left.addInput(control.getSuchname());
+    left.addInput(control.getFilterInput(Filter.MITGLIEDSTYP));
+    left.addInput(control.getFilterInput(Filter.NAME));
 
     SimpleContainer middle = new SimpleContainer(tab1.getComposite());
-    middle.addInput(control.getSuchGeschlecht());
-    middle.addInput(control.getMailauswahl());
+    middle.addInput(control.getFilterInput(Filter.GESCHLECHT));
+    middle.addInput(control.getFilterInput(Filter.MAIL));
 
     SimpleContainer right = new SimpleContainer(tab1.getComposite());
-    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    right.addInput(eigenschaftenInput);
-    control.updateEigenschaftenAuswahlTooltip();
+    right.addInput(control.getFilterInput(Filter.EIGENSCHAFTEN));
     if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
-      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      right.addInput(zusatzfelderInput);
-      control.updateZusatzfelderAuswahlTooltip();
+      right.addInput(control.getFilterInput(Filter.ZUSATZFELD));
     }
 
     // Zeiter Tab
     TabGroup tab2 = new TabGroup(folder, "Datum", true, 1);
     SimpleContainer left2 = new SimpleContainer(tab2.getComposite());
-    left2.addInput(control.getGeburtsdatumvon());
-    left2.addInput(control.getGeburtsdatumbis());
+    left2.addInput(control.getFilterInput(Filter.GEBURTSDATUM_VON));
+    left2.addInput(control.getFilterInput(Filter.GEBURTSDATUM_BIS));
 
     // Dritter Tab
     TabGroup tab3 = new TabGroup(folder, "Mitgliedskonto", true, 2);
     SimpleContainer left3 = new SimpleContainer(tab3.getComposite());
-    left3.addInput(control.getDifferenz());
-    left3.addLabelPair("Differenz Limit", control.getDoubleAusw());
+    left3.addInput(control.getFilterInput(Filter.DIFFERENZ));
+    left3.addInput(control.getFilterInput(Filter.DIFFERENZ_LIMIT));
 
     SimpleContainer right3 = new SimpleContainer(tab3.getComposite());
-    right3.addInput(control.getDatumvon());
-    right3.addInput(control.getDatumbis());
+    right3.addInput(control.getFilterInput(Filter.DATUM_VON));
+    right3.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getResetButton());
@@ -103,15 +99,21 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
   }
 
   @Override
-  public Action getDetailAction()
+  protected Action getDetailAction()
   {
     return new NichtMitgliedDetailAction();
   }
 
   @Override
-  public Button getHilfeButton()
+  protected Button getHilfeButton()
   {
     return new Button("Hilfe", new DokumentationAction(),
         DokumentationUtil.ADRESSEN, false, "question-circle.png");
+  }
+
+  @Override
+  protected MitgliedAuswahl getMitgliedAuswahl()
+  {
+    return MitgliedAuswahl.NICHTMITGLIEDER;
   }
 }

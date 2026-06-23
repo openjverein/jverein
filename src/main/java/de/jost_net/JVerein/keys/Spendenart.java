@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Abrechnungsausgabe
  */
-public class Spendenart
+public class Spendenart implements KeyEnum
 {
 
   public static final int GELDSPENDE = 1;
@@ -35,6 +35,7 @@ public class Spendenart
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;

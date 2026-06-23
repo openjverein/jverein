@@ -21,6 +21,7 @@ import de.jost_net.JVerein.gui.action.HibiscusKontenImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Konto;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -43,12 +44,13 @@ public class KontoListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Nummer", control.getSuchtext());
-    left.addLabelPair("Bezeichnung", control.getSuchname());
+    left.addInput(control.getFilterInput(Filter.NUMMER));
+    left.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Status", control.getSuchStatus("Nur aktive Konten"));
-    right.addInput(control.getSuchKontoart());
+    right.addLabelPair("Nur aktive Konten",
+        control.getFilterInput(Filter.STATUS));
+    right.addInput(control.getFilterInput(Filter.KONTOART));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

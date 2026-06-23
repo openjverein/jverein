@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -45,6 +46,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -64,7 +66,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -117,8 +118,6 @@ public class KursteilnehmerControl extends FilterControl implements Savable
   public KursteilnehmerControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Kursteilnehmer getKursteilnehmer()
@@ -390,7 +389,8 @@ public class KursteilnehmerControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (kursteilnehmerList != null)
     {
@@ -425,7 +425,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
 
     try
@@ -455,7 +455,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     {
 
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) throws ApplicationException
       {
         starteAuswertung();
       }
@@ -535,7 +535,7 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAuswertung()
+  private void starteAuswertung() throws ApplicationException
   {
     // Alle Kursteilnehmer lesen
 
@@ -639,49 +639,40 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Kursteilnehmer> getIterator() throws RemoteException
+  private DBIterator<Kursteilnehmer> getIterator()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Kursteilnehmer> kursteilnehmer = Einstellungen.getDBService()
         .createList(Kursteilnehmer.class);
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String suchN = (String) getSuchname().getValue();
-      if (suchN.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        kursteilnehmer.addFilter("name like ?",
-            new Object[] { "%" + suchN + "%" });
+        case NAME:
+          kursteilnehmer.addFilter("name like ?", "%" + value.toString() + "%");
+          break;
+        case VERWENDUNGSZWECK:
+          kursteilnehmer.addFilter("(lower(vzweck1) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case EINGABEDATUM_VON:
+          kursteilnehmer.addFilter("eingabedatum >= ?", value);
+          break;
+        case EINGABEDATUM_BIS:
+          kursteilnehmer.addFilter("eingabedatum <= ?", value);
+          break;
+        case ABBUCHUNGSDATUM_VON:
+          kursteilnehmer.addFilter("abbudatum >= ?", value);
+          break;
+        case ABBUCHUNGSDATUM_BIS:
+          kursteilnehmer.addFilter("abbudatum <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        kursteilnehmer.addFilter("(lower(vzweck1) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
-      }
-    }
-    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
-    {
-      kursteilnehmer.addFilter("eingabedatum >= ?",
-          new Object[] { (Date) getEingabedatumvon().getValue() });
-    }
-    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
-    {
-      kursteilnehmer.addFilter("eingabedatum <= ?",
-          new Object[] { (Date) getEingabedatumbis().getValue() });
-    }
-    if (isAbbuchungsdatumvonAktiv()
-        && getAbbuchungsdatumvon().getValue() != null)
-    {
-      kursteilnehmer.addFilter("abbudatum >= ?",
-          new Object[] { (Date) getAbbuchungsdatumvon().getValue() });
-    }
-    if (isAbbuchungsdatumbisAktiv()
-        && getAbbuchungsdatumbis().getValue() != null)
-    {
-      kursteilnehmer.addFilter("abbudatum <= ?",
-          new Object[] { (Date) getAbbuchungsdatumbis().getValue() });
     }
     return kursteilnehmer;
   }

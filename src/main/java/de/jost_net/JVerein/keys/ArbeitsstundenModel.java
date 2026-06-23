@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Schlüssel Einstellung.Arbeitsmodel Diese Klasse hilft beim Einstellen wie mit
  * Arbeitsstunden umgegangen werden soll
  */
-public class ArbeitsstundenModel
+public class ArbeitsstundenModel implements KeyEnum
 {
 
   public static final int STANDARD = 1;
@@ -36,6 +36,7 @@ public class ArbeitsstundenModel
     this.arbeitsModel = key;
   }
 
+  @Override
   public int getKey()
   {
     return arbeitsModel;

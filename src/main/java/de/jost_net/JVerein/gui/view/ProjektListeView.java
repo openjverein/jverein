@@ -21,9 +21,11 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.ProjektControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -43,28 +45,28 @@ public class ProjektListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Bezeichnung", control.getSuchtext());
+    left.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Startdatum von", control.getDatumvon());
-    middle.addLabelPair("Startdatum bis", control.getDatumbis());
+    Input von = control.getFilterInput(Filter.DATUM_START_VON);
+    middle.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_START_BIS);
+    middle.addInput(bis);
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Endedatum von", control.getEingabedatumvon());
-    right.addLabelPair("Endedatum bis", control.getEingabedatumbis());
+    Input eingabeVon = control.getFilterInput(Filter.DATUM_ENDE_VON);
+    right.addInput(eingabeVon);
+    Input eingabeBis = control.getFilterInput(Filter.DATUM_ENDE_BIS);
+    right.addInput(eingabeBis);
 
     ButtonArea fbuttons = new ButtonArea();
-    ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton zurueck1 = control.getZurueckButton(von, bis);
     fbuttons.addButton(zurueck1);
-    ToolTipButton vor1 = control.getVorButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton vor1 = control.getVorButton(von, bis);
     fbuttons.addButton(vor1);
-    ToolTipButton zurueck2 = control.getZurueckButton(
-        control.getEingabedatumvon(), control.getEingabedatumbis());
+    ToolTipButton zurueck2 = control.getZurueckButton(eingabeVon, eingabeBis);
     fbuttons.addButton(zurueck2);
-    ToolTipButton vor2 = control.getVorButton(control.getEingabedatumvon(),
-        control.getEingabedatumbis());
+    ToolTipButton vor2 = control.getVorButton(eingabeVon, eingabeBis);
     fbuttons.addButton(vor2);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());

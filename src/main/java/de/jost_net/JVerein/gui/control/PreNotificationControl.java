@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -30,11 +31,12 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.PreNotificationAusgabe;
 import de.jost_net.JVerein.io.Ueberweisung;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.MailAuswahl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.UeberweisungAusgabe;
@@ -54,7 +56,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -78,8 +79,6 @@ public class PreNotificationControl extends DruckMailControl
   public PreNotificationControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public TabFolder getFolder(Composite parent)
@@ -287,11 +286,9 @@ public class PreNotificationControl extends DruckMailControl
   {
     if (currentObject == null)
     {
-      if (abrechnungslaufausw != null && abrechnungslaufausw.getValue() != null)
-      {
-        currentObject = abrechnungslaufausw.getValue();
-      }
-      else
+      currentObject = getFilter().get(Filter.ABRECHNUNGSLAUF);
+
+      if (currentObject == null)
       {
         throw new ApplicationException(
             "Kein Abrechnungslauf oder keine Lastschrift ausgewählt!");
@@ -310,28 +307,35 @@ public class PreNotificationControl extends DruckMailControl
       DBIterator<Lastschrift> it = Einstellungen.getDBService()
           .createList(Lastschrift.class);
       it.addFilter("abrechnungslauf = ?", abrl.getID());
-      if (isMailauswahlAktiv())
+      for (Entry<Filter, Object> entry : getFilter().entrySet())
       {
-        int mailauswahl = (Integer) getMailauswahl().getValue();
-        if (mailauswahl == MailAuswertungInput.OHNE)
+        Object value = entry.getValue();
+        switch (entry.getKey())
         {
-          it.addFilter("(email is null or length(email) = 0)");
-        }
-        if (mailauswahl == MailAuswertungInput.MIT)
-        {
-          it.addFilter("(email is  not null and length(email) > 0)");
-        }
-      }
-      if (suchversand != null && suchversand.getValue() != null)
-      {
-        switch ((SuchVersand) suchversand.getValue())
-        {
+          case MAIL:
+            if (value.equals(MailAuswahl.OHNE))
+            {
+              it.addFilter("(email is null or length(email) = 0)");
+            }
+            if (value.equals(MailAuswahl.MIT))
+            {
+              it.addFilter("(email is  not null and length(email) > 0)");
+            }
+            break;
           case VERSAND:
-            it.addFilter("versanddatum IS NOT NULL");
+            switch ((SuchVersand) value)
+            {
+              case VERSAND:
+                it.addFilter("versanddatum IS NOT NULL");
+                break;
+              case NICHT_VERSAND:
+                it.addFilter("versanddatum IS NULL");
+                break;
+            }
             break;
-          case NICHT_VERSAND:
-            it.addFilter("versanddatum IS NULL");
-            break;
+          default:
+            throw new ApplicationException("Filter nicht implementiert: "
+                + entry.getKey().getAnzeigeText());
         }
       }
 

@@ -142,12 +142,12 @@ public class Rechnungsausgabe extends AbstractAusgabe
       if (typ == TYP.RECHNUNG)
       {
         return VorlageUtil.getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME,
-            rechnung, rechnung.getMitglied());
+            rechnung);
       }
       else
       {
         return VorlageUtil.getName(VorlageTyp.MAHNUNG_MITGLIED_DATEINAME,
-            rechnung, rechnung.getMitglied());
+            rechnung);
       }
     }
     else

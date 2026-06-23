@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Monat
+public enum Monat implements KeyEnum
 {
   JANUAR(1, "Januar"),
   FEBRUAR(2, "Februar"),
@@ -41,6 +41,7 @@ public enum Monat
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

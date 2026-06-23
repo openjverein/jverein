@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Gegen welches Datum wird das Alter des Mitglieds für die Anzeige berechnet.
  */
-public class Altermodel
+public class Altermodel implements KeyEnum
 {
   public static final int AKTUELLES_DATUM = 1;
 
@@ -36,6 +36,7 @@ public class Altermodel
     this.model = key;
   }
 
+  @Override
   public int getKey()
   {
     return model;

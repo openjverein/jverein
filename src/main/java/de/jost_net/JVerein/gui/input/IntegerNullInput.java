@@ -26,9 +26,9 @@ public class IntegerNullInput extends TextInput
    * @param value
    *          anzuzeigender Wert.
    */
-  public IntegerNullInput(int value)
+  public IntegerNullInput(Integer value)
   {
-    super(value < 0 ? "" : "" + value);
+    super(value == null || value < 0 ? "" : "" + value);
   }
 
   @Override

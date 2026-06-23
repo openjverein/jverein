@@ -24,18 +24,23 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.StringTokenizer;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.FilterControl;
-import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
-import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
+import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Differenz;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.Geschlecht;
+import de.jost_net.JVerein.keys.MailAuswahl;
+import de.jost_net.JVerein.keys.MitgliedStatus;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -45,9 +50,9 @@ import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.Settings;
 
 public class MitgliedQuery
@@ -70,364 +75,325 @@ public class MitgliedQuery
     this.control = control;
   }
 
+  public enum MitgliedAuswahl
+  {
+    ALLE,
+    MITGLIEDER,
+    NICHTMITGLIEDER
+  }
+
   @SuppressWarnings("unchecked")
-  public ArrayList<Mitglied> get(int mitgliedstyp, String sort)
-      throws RemoteException
+  public ArrayList<Mitglied> get(MitgliedAuswahl mitgliedAuswahl, String sort)
+      throws RemoteException, ApplicationException
   {
 
     this.sort = sort;
     zusatzfeld = control.getAdditionalparamprefix1();
     zusatzfelder = control.getAdditionalparamprefix2();
 
-    final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
 
     sql = "select distinct mitglied.*, ucase(name), ucase(vorname) ";
     sql += "from mitglied ";
+
+    Map<Filter, Object> filter = control.getFilter();
+
     Settings settings = control.getSettings();
     char synonym = 'a';
-    if (control.isZusatzfelderAuswahlAktiv())
+    if (settings.getInt(zusatzfelder + "selected", 0) > 0)
     {
-      if (settings.getInt(zusatzfelder + "selected", 0) > 0)
+      for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
       {
-        for (int i = 1; i <= settings.getInt(zusatzfelder + "counter", 0); i++)
+        int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
+        switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
         {
-          int definition = settings.getInt(zusatzfeld + i + ".definition", -1);
-          switch (settings.getInt(zusatzfeld + i + ".datentyp", -1))
+          case Datentyp.ZEICHENFOLGE:
           {
-            case Datentyp.ZEICHENFOLGE:
+            String val = settings.getString(zusatzfeld + i + ".value", null)
+                .replace('*', '%');
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            if (val != null && val.length() > 0)
             {
-              String value = settings.getString(zusatzfeld + i + ".value", null)
-                  .replace('*', '%');
-              String cond = settings.getString(zusatzfeld + i + ".cond", null);
-              if (value != null && value.length() > 0)
+              sql += "join zusatzfelder " + synonym + " on " + synonym
+                  + ".mitglied = mitglied.id  and lower(" + synonym + ".FELD) "
+                  + cond + " lower( ? ) and " + synonym
+                  + ".felddefinition = ? ";
+              synonym++;
+              bedingungen.add(val);
+              bedingungen.add(definition);
+            }
+            break;
+          }
+          case Datentyp.DATUM:
+          {
+            String val = settings.getString(zusatzfeld + i + ".value", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            if (val != null)
+            {
+              try
               {
+                Date datum = new JVDateFormatTTMMJJJJ().parse(val);
                 sql += "join zusatzfelder " + synonym + " on " + synonym
-                    + ".mitglied = mitglied.id  and lower(" + synonym
-                    + ".FELD) " + cond + " lower( ? ) and " + synonym
-                    + ".felddefinition = ? ";
-                synonym++;
-                bedingungen.add(value);
+                    + ".mitglied = mitglied.id  and " + synonym + ".FELDDATUM "
+                    + cond + " ? and " + synonym + ".felddefinition = ? ";
+                bedingungen.add(datum);
                 bedingungen.add(definition);
+                synonym++;
               }
-              break;
+              catch (ParseException e)
+              {
+                //
+              }
             }
-            case Datentyp.DATUM:
+            break;
+          }
+          case Datentyp.GANZZAHL:
+          {
+            Integer val = null;
+            String tmp = settings.getString(zusatzfeld + i + ".value", "");
+            if (tmp != null && !tmp.isEmpty())
             {
-              String value = settings.getString(zusatzfeld + i + ".value",
-                  null);
-              String cond = settings.getString(zusatzfeld + i + ".cond", null);
-              if (value != null)
-              {
-                try
-                {
-                  Date datum = new JVDateFormatTTMMJJJJ().parse(value);
-                  sql += "join zusatzfelder " + synonym + " on " + synonym
-                      + ".mitglied = mitglied.id  and " + synonym
-                      + ".FELDDATUM " + cond + " ? and " + synonym
-                      + ".felddefinition = ? ";
-                  bedingungen.add(datum);
-                  bedingungen.add(definition);
-                  synonym++;
-                }
-                catch (ParseException e)
-                {
-                  //
-                }
-              }
-              break;
+              val = Integer.parseInt(tmp);
             }
-            case Datentyp.GANZZAHL:
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            if (val != null)
             {
-              Integer value = null;
-              String tmp = settings.getString(zusatzfeld + i + ".value", "");
-              if (tmp != null && !tmp.isEmpty())
+              sql += "join zusatzfelder " + synonym + " on " + synonym
+                  + ".mitglied = mitglied.id  and " + synonym + ".FELDGANZZAHL "
+                  + cond + " ? and " + synonym + ".felddefinition = ? ";
+              bedingungen.add(val);
+              bedingungen.add(definition);
+              synonym++;
+            }
+            break;
+          }
+          case Datentyp.JANEIN:
+          {
+            boolean val = settings.getBoolean(zusatzfeld + i + ".value", false);
+            if (val)
+            {
+              sql += "join zusatzfelder " + synonym + " on " + synonym
+                  + ".mitglied = mitglied.id  and " + synonym
+                  + ".FELDJANEIN = true and " + synonym
+                  + ".felddefinition = ? ";
+              bedingungen.add(definition);
+              synonym++;
+            }
+            break;
+          }
+          case Datentyp.WAEHRUNG:
+          {
+            String val = settings.getString(zusatzfeld + i + ".value", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            if (val != null)
+            {
+              try
               {
-                value = Integer.parseInt(tmp);
-              }
-              String cond = settings.getString(zusatzfeld + i + ".cond", null);
-              if (value != null)
-              {
+                Number n = Einstellungen.DECIMALFORMAT.parse(val);
                 sql += "join zusatzfelder " + synonym + " on " + synonym
                     + ".mitglied = mitglied.id  and " + synonym
-                    + ".FELDGANZZAHL " + cond + " ? and " + synonym
+                    + ".FELDWAEHRUNG " + cond + " ? and " + synonym
                     + ".felddefinition = ? ";
-                bedingungen.add(value);
+                bedingungen.add(n);
                 bedingungen.add(definition);
-                synonym++;
               }
-              break;
-            }
-            case Datentyp.JANEIN:
-            {
-              boolean value = settings.getBoolean(zusatzfeld + i + ".value",
-                  false);
-              if (value)
+              catch (ParseException e)
               {
-                sql += "join zusatzfelder " + synonym + " on " + synonym
-                    + ".mitglied = mitglied.id  and " + synonym
-                    + ".FELDJANEIN = true and " + synonym
-                    + ".felddefinition = ? ";
-                bedingungen.add(definition);
-                synonym++;
+                //
               }
-              break;
+              synonym++;
             }
-            case Datentyp.WAEHRUNG:
-            {
-              String value = settings.getString(zusatzfeld + i + ".value",
-                  null);
-              String cond = settings.getString(zusatzfeld + i + ".cond", null);
-              if (value != null)
-              {
-                try
-                {
-                  Number n = Einstellungen.DECIMALFORMAT.parse(value);
-                  sql += "join zusatzfelder " + synonym + " on " + synonym
-                      + ".mitglied = mitglied.id  and " + synonym
-                      + ".FELDWAEHRUNG " + cond + " ? and " + synonym
-                      + ".felddefinition = ? ";
-                  bedingungen.add(n);
-                  bedingungen.add(definition);
-                }
-                catch (ParseException e)
-                {
-                  //
-                }
-                synonym++;
-              }
-              break;
-            }
+            break;
           }
         }
       }
     }
-    if (control.isBeitragsgruppeAuswAktiv())
+
+    Beitragsgruppe bg = (Beitragsgruppe) filter.get(Filter.BEITRAGSGRUPPE);
+    if (bg != null)
     {
-      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
-          .getValue();
-      if (bg != null)
-      {
-        sql += " left join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
-        addCondition(
-            "(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
-        bedingungen.add(Integer.valueOf(bg.getID()));
-        bedingungen.add(Integer.valueOf(bg.getID()));
-      }
+      sql += " left join sekundaerebeitragsgruppe on sekundaerebeitragsgruppe.mitglied = mitglied.id ";
+      addCondition(
+          "(mitglied.beitragsgruppe = ? OR sekundaerebeitragsgruppe.beitragsgruppe = ?)");
+      bedingungen.add(bg.getID());
+      bedingungen.add(bg.getID());
     }
-    if (mitgliedstyp > 0)
+    // Wenn der MitgliedsTyp Filter vorhanden ist, diesen verwenden, sonst den
+    // übergebenen Wert.
+    if (filter.get(Filter.MITGLIEDSTYP) != null)
     {
-      addCondition(Mitglied.MITGLIEDSTYP + " = " + mitgliedstyp);
+      addCondition(Mitglied.MITGLIEDSTYP + " = "
+          + ((Mitgliedstyp) filter.get(Filter.MITGLIEDSTYP)).getID());
     }
-    else if (mitgliedstyp == 0)
+    else
     {
-      addCondition(Mitglied.MITGLIEDSTYP + " != " + Mitgliedstyp.MITGLIED);
-    }
-    if (control.isMitgliedStatusAktiv())
-    {
-      Date stichtag = new Date();
-      if (control.isStichtagAktiv() && control.getStichtag().getValue() != null)
+      switch (mitgliedAuswahl)
       {
-        stichtag = (Date) control.getStichtag().getValue();
-      }
-      if (control.getMitgliedStatus().getValue().equals("Angemeldet"))
-      {
-        addCondition("(eintritt is null or eintritt <= ?)");
-        bedingungen.add(stichtag);
-        addCondition("(austritt is null or austritt > ?)");
-        bedingungen.add(stichtag);
-      }
-      else if (control.getMitgliedStatus().getValue().equals("Abgemeldet"))
-      {
-        addCondition(
-            "((austritt is not null and austritt <= ?) or (eintritt is not null and eintritt > ?))");
-        bedingungen.add(stichtag);
-        bedingungen.add(stichtag);
-      }
-    }
-    if (control.isMailauswahlAktiv())
-    {
-      int mailauswahl = (Integer) control.getMailauswahl().getValue();
-      if (mailauswahl == MailAuswertungInput.OHNE)
-      {
-        addCondition("(email is null or length(email) = 0)");
-      }
-      if (mailauswahl == MailAuswertungInput.MIT)
-      {
-        addCondition("(email is  not null and length(email) > 0)");
+        case MITGLIEDER:
+          addCondition(Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
+          break;
+        case NICHTMITGLIEDER:
+          addCondition(Mitglied.MITGLIEDSTYP + " != " + Mitgliedstyp.MITGLIED);
+          break;
+        case ALLE:
+          break;
       }
     }
 
-    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
+    for (Entry<Filter, Object> entry : filter.entrySet())
     {
-      String tmpSuchname = (String) control.getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        tmpSuchname = tmpSuchname.toLowerCase() + "%";
-        addCondition("(lower(name) like ? or lower(vorname) like ?) ");
-        bedingungen.add(tmpSuchname);
-        bedingungen.add(tmpSuchname);
-      }
-    }
-
-    if (control.isGeburtsdatumvonAktiv()
-        && control.getGeburtsdatumvon().getValue() != null)
-    {
-      addCondition("geburtsdatum >= ?");
-      Date d = (Date) control.getGeburtsdatumvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isGeburtsdatumbisAktiv()
-        && control.getGeburtsdatumbis().getValue() != null)
-    {
-      addCondition("geburtsdatum <= ?");
-      Date d = (Date) control.getGeburtsdatumbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-
-    if (control.isSterbedatumvonAktiv()
-        && control.getSterbedatumvon().getValue() != null)
-    {
-      addCondition("sterbetag >= ?");
-      Date d = (Date) control.getSterbedatumvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isSterbedatumbisAktiv()
-        && control.getSterbedatumbis().getValue() != null)
-    {
-      addCondition("sterbetag <= ?");
-      Date d = (Date) control.getSterbedatumbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isSuchGeschlechtAktiv()
-        && control.getSuchGeschlecht().getValue() != null)
-    {
-      addCondition("geschlecht = ?");
-      String g = (String) control.getSuchGeschlecht().getValue();
-      bedingungen.add(g);
-    }
-    if (control.isEintrittvonAktiv()
-        && control.getEintrittvon().getValue() != null)
-    {
-      addCondition("eintritt >= ?");
-      Date d = (Date) control.getEintrittvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isEintrittbisAktiv()
-        && control.getEintrittbis().getValue() != null)
-    {
-      addCondition("eintritt <= ?");
-      Date d = (Date) control.getEintrittbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isAustrittvonAktiv()
-        && control.getAustrittvon().getValue() != null)
-    {
-      addCondition("austritt >= ?");
-      Date d = (Date) control.getAustrittvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (control.isAustrittbisAktiv()
-        && control.getAustrittbis().getValue() != null)
-    {
-      addCondition("austritt <= ?");
-      Date d = (Date) control.getAustrittbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-
-    if (control.isAustrittbisAktiv())
-    {
-      // Was soll das? Das wird nie durchlaufen!
-      if (control.getSterbedatumvon() == null
-          && control.getSterbedatumbis() == null
-          && control.getAustrittvon().getValue() == null
-          && control.getAustrittbis().getValue() == null)
-      {
-        addCondition("(austritt is null or austritt > current_date())");
-      }
-    }
-
-    if (control.isSuchExterneMitgliedsnummerActive())
-    {
-      try
-      {
-        if (control.getSuchExterneMitgliedsnummer().getValue() != null)
-        {
-          String ext = (String) control.getSuchExterneMitgliedsnummer()
-              .getValue();
-          if (ext.length() > 0)
+        case MITGLIEDSCHAFT_STATUS:
+          Date stichtag = (Date) filter.get(Filter.STICHTAG);
+          if (stichtag == null)
           {
-            addCondition("externemitgliedsnummer = ?");
-            bedingungen.add(ext);
+            stichtag = new Date();
           }
-        }
-      }
-      catch (NullPointerException e)
-      {
-        // Workaround für einen Bug in IntegerInput
-      }
-    }
-    if (control.isSuchMitgliedsnummerActive())
-    {
-      Integer value = (Integer) control.getSuchMitgliedsnummer().getValue();
-      if (value != null)
-      {
-        addCondition("mitglied.id = ?");
-        bedingungen.add(value);
-      }
-    }
+          switch ((MitgliedStatus) value)
+          {
+            case ANGEMELDET:
+              addCondition("(eintritt is null or eintritt <= ?)");
+              bedingungen.add(stichtag);
+              addCondition("(austritt is null or austritt > ?)");
+              bedingungen.add(stichtag);
+              break;
+            case ABGEMELDET:
+              addCondition(
+                  "((austritt is not null and austritt <= ?) or (eintritt is not null and eintritt > ?))");
+              bedingungen.add(stichtag);
+              bedingungen.add(stichtag);
+              break;
+          }
+          break;
+        case MAIL:
+          switch ((MailAuswahl) value)
+          {
+            case OHNE:
+              addCondition("(email is null or length(email) = 0)");
+              break;
+            case MIT:
+              addCondition("(email is  not null and length(email) > 0)");
+              break;
+          }
+          break;
+        case NAME:
+          String tmpSuchname = ((String) value).toLowerCase() + "%";
+          addCondition("(lower(name) like ? or lower(vorname) like ?) ");
+          bedingungen.add(tmpSuchname);
+          bedingungen.add(tmpSuchname);
+          break;
+        case GEBURTSDATUM_VON:
+          addCondition("geburtsdatum >= ?");
+          bedingungen.add(value);
+          break;
+        case GEBURTSDATUM_BIS:
+          addCondition("geburtsdatum <= ?");
+          bedingungen.add(value);
+          break;
+        case STERBEDATUM_VON:
+          addCondition("sterbetag >= ?");
+          bedingungen.add(value);
+          break;
+        case STERBEDATUM_BIS:
+          addCondition("sterbetag <= ?");
+          bedingungen.add(value);
+          break;
+        case GESCHLECHT:
+          addCondition("geschlecht = ?");
+          bedingungen.add(((Geschlecht) value).getStringKey());
+          break;
+        case EINTRITT_VON:
+          addCondition("eintritt >= ?");
+          bedingungen.add(value);
+          break;
+        case EINTRITT_BIS:
+          addCondition("eintritt <= ?");
+          bedingungen.add(value);
+          break;
+        case AUSTRITT_VON:
+          addCondition("austritt >= ?");
+          bedingungen.add(value);
+          break;
+        case AUSTRITT_BIS:
+          addCondition("austritt <= ?");
+          bedingungen.add(value);
+          break;
+        case EXTERNEMITGLIEDSNUMMER:
+          addCondition("externemitgliedsnummer = ?");
+          bedingungen.add(value);
+          break;
+        case MITGLIEDSNUMMER:
+          addCondition("mitglied.id = ?");
+          bedingungen.add(value);
+          break;
+        case DIFFERENZ:
+          Double limit = (Double) filter.get(Filter.DIFFERENZ_LIMIT);
 
-    if (control.isDifferenzAktiv()
-        && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
-    {
-      Double limit = Double.valueOf(0d);
-      if (control.isDoubleAuswAktiv()
-          && control.getDoubleAusw().getValue() != null)
-      {
-        // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
-        limit = Math.abs((Double) control.getDoubleAusw().getValue());
-      }
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          Sollbuchung.TABLE_NAME);
-      it.addColumn(Sollbuchung.T_MITGLIED + " as mid");
-      it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
-          + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
-      it.leftJoin(
-          "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
-              + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
-              + ") AS buchung",
-          Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
-      if (control.isDatumvonAktiv() && control.getDatumvon().getValue() != null)
-      {
-        it.addFilter(Sollbuchung.T_DATUM + " >= ?",
-            (Date) control.getDatumvon().getValue());
-      }
-      if (control.isDatumbisAktiv() && control.getDatumbis().getValue() != null)
-      {
-        it.addFilter(Sollbuchung.T_DATUM + " <= ?",
-            (Date) control.getDatumbis().getValue());
-      }
-      if (control.getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
-      {
-        it.addHaving("dif < -" + limit.toString());
-      }
-      else
-      {
-        it.addHaving("dif > " + limit.toString());
-      }
-      it.addGroupBy(Sollbuchung.T_MITGLIED);
-      ArrayList<String> diffIds = new ArrayList<>();
-      while (it.hasNext())
-      {
-        PseudoDBObject o = it.next();
-        diffIds.add(String.valueOf(o.getAttribute("mid")));
-      }
+          if (limit == null)
+          {
+            limit = 0.005d;
+          }
+          // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
+          limit = Math.abs(limit);
 
-      if (diffIds.size() == 0)
-      {
-        return new ArrayList<Mitglied>();
+          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+              Sollbuchung.TABLE_NAME);
+          it.addColumn(Sollbuchung.T_MITGLIED + " as mid");
+          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+          it.leftJoin(
+              "(SELECT sum(COALESCE((betrag),0)) AS ist,"
+                  + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
+                  + Buchung.T_SOLLBUCHUNG + ") AS buchung",
+              Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+
+          Date von = (Date) filter.get(Filter.DATUM_VON);
+          if (von != null)
+          {
+            it.addFilter(Sollbuchung.T_DATUM + " >= ?", von);
+          }
+          Date bis = (Date) filter.get(Filter.DATUM_BIS);
+          if (bis != null)
+          {
+            it.addFilter(Sollbuchung.T_DATUM + " <= ?", bis);
+          }
+          if (value == Differenz.FEHLBETRAG)
+          {
+            it.addHaving("dif < ?", -limit);
+          }
+          else
+          {
+            it.addHaving("dif > ?", limit);
+          }
+          it.addGroupBy(Sollbuchung.T_MITGLIED);
+          ArrayList<String> diffIds = new ArrayList<>();
+          while (it.hasNext())
+          {
+            diffIds.add(it.next().getAttribute("mid").toString());
+          }
+
+          if (diffIds.size() == 0)
+          {
+            return new ArrayList<Mitglied>();
+          }
+          addCondition("mitglied.id in (" + String.join(",", diffIds) + ")");
+          break;
+        case BEITRAGSGRUPPE:
+        case MITGLIEDSTYP:
+        case STICHTAG:
+        case DIFFERENZ_LIMIT:
+        case DATUM_BIS:
+        case DATUM_VON:
+        case EIGENSCHAFTEN:
+        case ZUSATZFELD:
+          // werden oben abgefragt
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
-      addCondition("mitglied.id in (" + String.join(",", diffIds) + ")");
     }
 
     Logger.debug(sql);
@@ -446,29 +412,27 @@ public class MitgliedQuery
       }
     };
 
-    ArrayList<Long> mitgliederIds = (ArrayList<Long>) service.execute(sql,
-        bedingungen.toArray(), rs);
+    ArrayList<Long> mitgliederIds = (ArrayList<Long>) Einstellungen
+        .getDBService().execute(sql, bedingungen.toArray(), rs);
 
-    String eigenschaftenString = control.getEigenschaftenString();
-
-    if (control.isEigenschaftenAuswahlAktiv()
-        && eigenschaftenString.length() > 0)
+    EigenschaftenAuswahlParameter param = (EigenschaftenAuswahlParameter) filter
+        .get(Filter.EIGENSCHAFTEN);
+    if (param != null && param.getEigenschaften().size() > 0)
     {
       ArrayList<Long> suchIds = new ArrayList<>();
       HashMap<Long, String> suchauswahl = new HashMap<>();
-      StringTokenizer stt = new StringTokenizer(eigenschaftenString, ",");
-      while (stt.hasMoreElements())
+      for (Entry<Eigenschaft, String> entry : param.getEigenschaften()
+          .entrySet())
       {
-        String s = stt.nextToken();
-        Long id = Long.valueOf(s.substring(0, s.length() - 1));
+        Long id = Long.valueOf(entry.getKey().getID());
         suchIds.add(id);
-        suchauswahl.put(id, s.substring(s.length() - 1));
+        suchauswahl.put(id, entry.getValue());
       }
 
       // Eigenschaften lesen
       String sql = "SELECT eigenschaften.* from eigenschaften ";
-      List<Long[]> mitgliedEigenschaften = (List<Long[]>) service.execute(sql,
-          new Object[] {}, new ResultSetExtractor()
+      List<Long[]> mitgliedEigenschaften = (List<Long[]>) Einstellungen
+          .getDBService().execute(sql, new Object[] {}, new ResultSetExtractor()
           {
             @Override
             public Object extract(ResultSet rs)
@@ -483,14 +447,10 @@ public class MitgliedQuery
               return list;
             }
           });
-
-      return getMitglieder(getFilteredIds(mitgliederIds, suchIds, suchauswahl,
-          mitgliedEigenschaften, control.getEigenschaftenVerknuepfung()));
+      mitgliederIds = getFilteredIds(mitgliederIds, suchIds, suchauswahl,
+          mitgliedEigenschaften, param.getVerknuepfung());
     }
-    else
-    {
-      return getMitglieder(mitgliederIds);
-    }
+    return getMitglieder(mitgliederIds);
   }
 
   private ArrayList<Mitglied> getMitglieder(ArrayList<Long> ids)
@@ -579,7 +539,7 @@ public class MitgliedQuery
       boolean ok = false;
       for (Long suchId : suchIds)
       {
-        if (verknuepfung.equals(EigenschaftenAuswahlDialog.UND))
+        if (verknuepfung.equals(EigenschaftenAuswahlParameter.UND))
         {
           ok = true;
           if (suchauswahl.get(suchId).equals(EigenschaftenNode.PLUS))

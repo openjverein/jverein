@@ -20,14 +20,12 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.DialogInput;
-import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -40,6 +38,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
   public AuswertungNichtMitgliedView() throws RemoteException
   {
     control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
+    control.setMitgliedAuswahl(MitgliedAuswahl.NICHTMITGLIEDER);
   }
 
   @Override
@@ -52,25 +51,18 @@ public class AuswertungNichtMitgliedView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
     SimpleContainer left = new SimpleContainer(cl.getComposite());
 
-    left.addInput(control.getMailauswahl());
-    SelectInput mitgliedsTyp = control
-        .getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED);
-    mitgliedsTyp.setPleaseChoose(FilterControl.ALLE);
-    left.addInput(mitgliedsTyp);
-    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    left.addInput(eigenschaftenInput);
-    control.updateEigenschaftenAuswahlTooltip();
+    left.addInput(control.getFilterInput(Filter.MAIL));
+    left.addInput(control.getFilterInput(Filter.MITGLIEDSTYP));
+    left.addInput(control.getFilterInput(Filter.EIGENSCHAFTEN));
     if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
-      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      left.addInput(zusatzfelderInput);
-      control.updateZusatzfelderAuswahlTooltip();
+      left.addInput(control.getFilterInput(Filter.ZUSATZFELD));
     }
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getGeburtsdatumvon());
-    right.addInput(control.getGeburtsdatumbis());
-    right.addInput(control.getSuchGeschlecht());
+    right.addInput(control.getFilterInput(Filter.GEBURTSDATUM_VON));
+    right.addInput(control.getFilterInput(Filter.GEBURTSDATUM_BIS));
+    right.addInput(control.getFilterInput(Filter.GESCHLECHT));
 
     ButtonArea filterbuttons = new ButtonArea();
     filterbuttons.addButton(control.getResetButton());

@@ -18,7 +18,7 @@ package de.jost_net.JVerein.keys;
 
 import java.util.ArrayList;
 
-public class AfaOrt
+public class AfaOrt implements KeyEnum
 {
 
   public static final int ANLAGENBUCHUNGEN = 0;
@@ -32,6 +32,7 @@ public class AfaOrt
     this.afaort = key;
   }
 
+  @Override
   public int getKey()
   {
     return afaort;

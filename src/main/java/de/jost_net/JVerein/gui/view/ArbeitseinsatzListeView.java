@@ -24,9 +24,11 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -46,19 +48,19 @@ public class ArbeitseinsatzListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getSuchname());
-    left.addLabelPair("Bemerkung", control.getSuchtext());
+    left.addInput(control.getFilterInput(Filter.NAME));
+    left.addInput(control.getFilterInput(Filter.BEMERKUNG));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getDatumvon());
-    right.addInput(control.getDatumbis());
+    Input von = control.getFilterInput(Filter.DATUM_VON);
+    right.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_BIS);
+    right.addInput(bis);
 
     ButtonArea fbuttons = new ButtonArea();
-    ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton zurueck = control.getZurueckButton(von, bis);
     fbuttons.addButton(zurueck);
-    ToolTipButton vor = control.getVorButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton vor = control.getVorButton(von, bis);
     fbuttons.addButton(vor);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());

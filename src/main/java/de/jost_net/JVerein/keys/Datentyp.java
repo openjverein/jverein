@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Datentyp
  */
-public class Datentyp
+public class Datentyp implements KeyEnum
 {
 
   public static final int ZEICHENFOLGE = 1;
@@ -41,6 +41,7 @@ public class Datentyp
     this.datentyp = datentyp;
   }
 
+  @Override
   public int getKey()
   {
     return datentyp;

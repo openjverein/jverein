@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -52,6 +53,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.io.MailSender;
 import de.jost_net.JVerein.io.VelocityTool;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mail;
@@ -62,7 +64,6 @@ import de.jost_net.JVerein.util.JVDateFormatDATETIME;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -102,8 +103,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   public MailControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Mail getMail()
@@ -666,7 +665,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (mailsList != null)
     {
@@ -688,7 +688,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     try
     {
@@ -710,61 +710,54 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
   }
 
-  private DBIterator<Mail> getMails() throws RemoteException
+  private DBIterator<Mail> getMails()
+      throws RemoteException, ApplicationException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> mails = service.createList(Mail.class);
+    DBIterator<Mail> mails = Einstellungen.getDBService()
+        .createList(Mail.class);
 
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        mails.join("mailempfaenger");
-        mails.addFilter("mailempfaenger.mail = mail.id");
-        mails.join("mitglied");
-        mails.addFilter("mitglied.id = mailempfaenger.mitglied");
-        mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ",
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%",
-                "%" + tmpSuchname.toLowerCase() + "%" });
+        case MAIL_EMPFAENGER:
+          mails.join("mailempfaenger");
+          mails.addFilter("mailempfaenger.mail = mail.id");
+          mails.join("mitglied");
+          mails.addFilter("mitglied.id = mailempfaenger.mitglied");
+          mails.addFilter("(lower(name) like ? or lower(vorname) like ?) ",
+              "%" + value.toString().toLowerCase() + "%",
+              "%" + value.toString().toLowerCase() + "%");
+
+          break;
+        case BETREFF:
+          mails.addFilter("(lower(betreff) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case DATUM_BEARBEITUNG_VON:
+          mails.addFilter("bearbeitung >= ?", value);
+          break;
+        case DATUM_BEARBEITUNG_BIS:
+          Calendar cal = Calendar.getInstance();
+          cal.setTime((Date) value);
+          cal.add(Calendar.DAY_OF_MONTH, 1);
+          mails.addFilter("bearbeitung <= ?",
+              new java.sql.Date(cal.getTimeInMillis()));
+          break;
+        case DATUM_VERSAND_VON:
+          mails.addFilter("mail.versand >= ?", value);
+          break;
+        case DATUM_VERSAND_BIS:
+          Calendar calendar = Calendar.getInstance();
+          calendar.setTime((Date) value);
+          calendar.add(Calendar.DAY_OF_MONTH, 1);
+          mails.addFilter("mail.versand <= ?", calendar.getTime());
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        mails.addFilter("(lower(betreff) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
-      }
-    }
-    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
-    {
-      Date d = (Date) getEingabedatumvon().getValue();
-      mails.addFilter("bearbeitung >= ?",
-          new Object[] { new java.sql.Date(d.getTime()) });
-    }
-    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
-    {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime((Date) getEingabedatumbis().getValue());
-      cal.add(Calendar.DAY_OF_MONTH, 1);
-      mails.addFilter("bearbeitung <= ?",
-          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      Date d = (Date) getDatumvon().getValue();
-      mails.addFilter("mail.versand >= ?",
-          new Object[] { new java.sql.Date(d.getTime()) });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime((Date) getDatumbis().getValue());
-      cal.add(Calendar.DAY_OF_MONTH, 1);
-      mails.addFilter("mail.versand <= ?",
-          new Object[] { new java.sql.Date(cal.getTimeInMillis()) });
     }
     mails.setOrder("ORDER BY betreff");
 

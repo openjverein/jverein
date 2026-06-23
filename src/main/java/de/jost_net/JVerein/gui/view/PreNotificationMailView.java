@@ -35,6 +35,7 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.PreNotificationControl;
 import de.jost_net.JVerein.gui.control.PreNotificationControl.TYP;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.server.AbrechnungslaufImpl;
@@ -64,17 +65,17 @@ public class PreNotificationMailView extends AbstractView
         || getCurrentObject() instanceof Abrechnungslauf)
     {
       LabelGroup group = new LabelGroup(getParent(), "Filter");
-      group.addInput(control.getMailauswahl());
+      group.addInput(control.getFilterInput(Filter.MAIL));
       if (getCurrentObject() == null)
       {
-        group.addInput(control.getAbrechnungslaufAusw(10));
+        group.addInput(control.getFilterInput(Filter.ABRECHNUNGSLAUF));
       }
       else
       {
         group.addInput(control
             .getAbrechnungslauf((AbrechnungslaufImpl) this.getCurrentObject()));
       }
-      group.addInput(control.getSuchVersand());
+      group.addInput(control.getFilterInput(Filter.VERSAND));
     }
     else
     {

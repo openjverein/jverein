@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Intervall Zusatzzahlungen
  */
-public class IntervallZusatzzahlung
+public class IntervallZusatzzahlung implements KeyEnum
 {
 
   public static final int KEIN = 0;
@@ -43,6 +43,7 @@ public class IntervallZusatzzahlung
     this.intervall = key;
   }
 
+  @Override
   public int getKey()
   {
     return intervall;

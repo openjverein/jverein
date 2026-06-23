@@ -685,9 +685,8 @@ public class SpendenbescheinigungAusgabe extends AbstractAusgabe
   {
     if (object != null)
     {
-      return VorlageUtil.getName(
-          VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, object,
-          ((Spendenbescheinigung) object).getMitglied());
+      return VorlageUtil
+          .getName(VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, object);
     }
     else
     {

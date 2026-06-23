@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Auswahl der Buchungsart im Buchungsdialog
  */
-public class AbstractInputAuswahl
+public class AbstractInputAuswahl implements KeyEnum
 {
   public static final int SearchInput = 0;
 
@@ -34,6 +34,7 @@ public class AbstractInputAuswahl
     this.auswahl = key;
   }
 
+  @Override
   public int getKey()
   {
     return auswahl;

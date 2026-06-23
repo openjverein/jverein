@@ -18,8 +18,10 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
@@ -29,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.Tools.EigenschaftenTool;
@@ -40,20 +43,21 @@ import de.willuhn.util.ApplicationException;
 public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
 {
 
-  public MitgliedAuswertungPDF(MitgliedControl control)
+  public MitgliedAuswertungPDF(MitgliedControl control) throws RemoteException
   {
     super(control);
   }
 
   @Override
-  public void go(ArrayList<Mitglied> list, final File file)
-      throws ApplicationException
+  public void go(ArrayList<Mitglied> list, final File file,
+      Map<Filter, String> filter) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
 
-      Reporter report = new Reporter(fos, title, subtitle, 50, 10, 20, 25, false);
+      Reporter report = new Reporter(fos, title, subtitle, 50, 10, 20, 25,
+          false);
 
       report.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
           BaseColor.LIGHT_GRAY);
@@ -175,7 +179,7 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
                   : mitgliedstyp.getBezeichnungPlural()),
           Reporter.getFreeSans(8)));
 
-      report.addParams(params);
+      report.addParams(filter);
       report.closeTable();
       report.close();
       GUI.getStatusBar().setSuccessText(

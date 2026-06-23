@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -25,6 +26,7 @@ import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.parts.ArbeitseinsatzPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -36,7 +38,6 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -51,8 +52,6 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   public ArbeitseinsatzControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Arbeitseinsatz getArbeitseinsatz()
@@ -114,7 +113,8 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (arbeitseinsatzList != null)
     {
@@ -140,7 +140,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     try
     {
@@ -163,7 +163,7 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
   }
 
   private DBIterator<Arbeitseinsatz> getArbeitseinsaetzeIt()
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Arbeitseinsatz> arbeitseinsaetze = service
@@ -171,34 +171,30 @@ public class ArbeitseinsatzControl extends FilterControl implements Savable
     arbeitseinsaetze.join("mitglied");
     arbeitseinsaetze.addFilter("mitglied.id = arbeitseinsatz.mitglied");
 
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        arbeitseinsaetze.addFilter(
-            "(lower(name) like ? " + "or lower(vorname) like ?)",
-            new Object[] { suchName, suchName });
-      }
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      arbeitseinsaetze.addFilter("datum >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      arbeitseinsaetze.addFilter("datum <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        arbeitseinsaetze.addFilter("(lower(bemerkung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+        case NAME:
+          String suchName = "%" + value.toString().toLowerCase() + "%";
+          arbeitseinsaetze.addFilter(
+              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
+              suchName);
+          break;
+        case DATUM_VON:
+          arbeitseinsaetze.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          arbeitseinsaetze.addFilter("datum <= ?", value);
+          break;
+        case BEMERKUNG:
+          arbeitseinsaetze.addFilter("(lower(bemerkung) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
     arbeitseinsaetze.setOrder("ORDER by datum desc");

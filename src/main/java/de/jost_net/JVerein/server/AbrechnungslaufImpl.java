@@ -18,7 +18,6 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;

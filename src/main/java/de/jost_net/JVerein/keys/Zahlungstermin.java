@@ -20,7 +20,7 @@ package de.jost_net.JVerein.keys;
  * Zahlungstermine
  */
 
-public enum Zahlungstermin
+public enum Zahlungstermin implements KeyEnum
 {
 
   MONATLICH(1, "Monatlich",
@@ -63,6 +63,7 @@ public enum Zahlungstermin
     this.monate = monate;
   }
 
+  @Override
   public int getKey()
   {
     return key;

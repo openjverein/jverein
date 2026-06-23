@@ -30,7 +30,7 @@ package de.jost_net.JVerein.keys;
  * @author thooge
  * 
  */
-public enum Ausgabesortierung
+public enum Ausgabesortierung implements KeyEnum
 {
 
   NAME(1, "Nach Name und Vorname"), //
@@ -46,6 +46,7 @@ public enum Ausgabesortierung
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

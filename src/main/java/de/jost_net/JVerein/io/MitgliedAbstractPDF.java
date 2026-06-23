@@ -16,23 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
-import java.io.File;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.TreeMap;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.view.IAuswertung;
-import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.util.ApplicationException;
 
 public abstract class MitgliedAbstractPDF implements IAuswertung
 {
@@ -45,47 +36,22 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
 
   protected String subtitle = "";
 
-  protected TreeMap<String, String> params;
-
-  protected String zusatzfeld = null;
-
-  protected String zusatzfelder = null;
-
-  public MitgliedAbstractPDF(MitgliedControl control)
+  public MitgliedAbstractPDF(MitgliedControl control) throws RemoteException
   {
     this.control = control;
-    this.zusatzfeld = control.getAdditionalparamprefix1();
-    this.zusatzfelder = control.getAdditionalparamprefix2();
   }
 
   @Override
-  public String getDateiname()
+  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
+      throws RemoteException
   {
-    return null;
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return null;
-  }
-
-  @Override
-  public void beforeGo(String title) throws RemoteException
-  {
-    if (control.isSuchMitgliedstypActive())
+    mitgliedstyp = (Mitgliedstyp) control.getFilter().get(Filter.MITGLIEDSTYP);
+    if (mitgliedstyp == null
+        && mitgliedAuswahl.equals(MitgliedAuswahl.MITGLIEDER))
     {
-      mitgliedstyp = (Mitgliedstyp) control
-          .getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED).getValue();
+      mitgliedstyp = Einstellungen.getDBService()
+          .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
     }
-    else
-    {
-      DBIterator<Mitgliedstyp> mtIt = Einstellungen.getDBService()
-          .createList(Mitgliedstyp.class);
-      mtIt.addFilter(Mitgliedstyp.JVEREINID + " = " + Mitgliedstyp.MITGLIED);
-      mitgliedstyp = (Mitgliedstyp) mtIt.next();
-    }
-    initParams();
     String ueberschrift = (String) control.getAuswertungUeberschrift()
         .getValue();
     if (ueberschrift.length() > 0)
@@ -93,137 +59,5 @@ public abstract class MitgliedAbstractPDF implements IAuswertung
       subtitle = ueberschrift;
     }
     this.title = title;
-  }
-
-  @Override
-  public void go(ArrayList<Mitglied> list, File file)
-      throws ApplicationException
-  {
-    // Wird in abgeleiteter Klasse implementiert
-
-  }
-
-  @Override
-  public boolean openFile()
-  {
-    return false;
-  }
-
-  public void initParams() throws RemoteException
-  {
-
-    params = new TreeMap<>();
-
-    if (control.isMitgliedStatusAktiv())
-    {
-      params.put("Status", (String) control.getMitgliedStatus().getValue());
-    }
-    if (control.isEigenschaftenAuswahlAktiv())
-    {
-      String eig = control.getEigenschaftenAuswahl().getText();
-      if (eig.length() > 0)
-      {
-        params.put("Eigenschaften", eig);
-      }
-    }
-    if (control.isSuchExterneMitgliedsnummerActive()
-        && control.getSuchExterneMitgliedsnummer() != null)
-    {
-      String val = control.getSuchExterneMitgliedsnummer().getValue()
-          .toString();
-      if (val.length() > 0)
-      {
-        params.put("Externe Mitgliedsnummer ", val);
-      }
-    }
-    if (control.isGeburtsdatumvonAktiv()
-        && control.getGeburtsdatumvon().getValue() != null)
-    {
-      Date d = (Date) control.getGeburtsdatumvon().getValue();
-      params.put("Geburtsdatum von ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isGeburtsdatumbisAktiv()
-        && control.getGeburtsdatumbis().getValue() != null)
-    {
-      Date d = (Date) control.getGeburtsdatumbis().getValue();
-      params.put("Geburtsdatum bis ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isEintrittvonAktiv()
-        && control.getEintrittvon().getValue() != null)
-    {
-      Date d = (Date) control.getEintrittvon().getValue();
-      params.put("Eintritt von ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isEintrittbisAktiv()
-        && control.getEintrittbis().getValue() != null)
-    {
-      Date d = (Date) control.getEintrittbis().getValue();
-      params.put("Eintritt bis ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isAustrittvonAktiv()
-        && control.getAustrittvon().getValue() != null)
-    {
-      Date d = (Date) control.getAustrittvon().getValue();
-      params.put("Austritt von ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isAustrittbisAktiv()
-        && control.getAustrittbis().getValue() != null)
-    {
-      Date d = (Date) control.getAustrittbis().getValue();
-      params.put("Austritt bis ", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isSterbedatumvonAktiv()
-        && control.getSterbedatumvon().getValue() != null)
-    {
-      Date d = (Date) control.getSterbedatumvon().getValue();
-      params.put("Sterbetag von", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isSterbedatumbisAktiv()
-        && control.getSterbedatumbis().getValue() != null)
-    {
-      Date d = (Date) control.getSterbedatumbis().getValue();
-      params.put("Sterbedatum bis", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isBeitragsgruppeAuswAktiv()
-        && control.getBeitragsgruppeAusw().getValue() != null)
-    {
-      Beitragsgruppe bg = (Beitragsgruppe) control.getBeitragsgruppeAusw()
-          .getValue();
-      params.put("Beitragsgruppe", bg.getBezeichnung());
-    }
-    if (control.isMailauswahlAktiv())
-    {
-      int ma = (Integer) control.getMailauswahl().getValue();
-      if (ma != MailAuswertungInput.ALLE)
-      {
-        params.put("Mail", control.getMailauswahl().getText());
-      }
-    }
-    if (control.isSuchGeschlechtAktiv()
-        && control.getSuchGeschlecht().getValue() != null)
-    {
-      params.put("Geschlecht", control.getSuchGeschlecht().getText());
-    }
-    if (control.isStichtagAktiv()
-        && control.getStichtag(false).getValue() != null)
-    {
-      Date d = (Date) control.getStichtag(false).getValue();
-      params.put("Stichtag", new JVDateFormatTTMMJJJJ().format(d));
-    }
-    if (control.isZusatzfelderAuswahlAktiv())
-    {
-      int counter = control.getSettings().getInt(zusatzfelder + "counter", 0);
-      for (int i = 1; i <= counter; i++)
-      {
-        String value = control.getSettings()
-            .getString(zusatzfeld + i + ".value", "");
-        if (!value.equals("") && !value.equals("false"))
-        {
-          params.put(
-              control.getSettings().getString(zusatzfeld + i + ".name", ""),
-              value);
-        }
-      }
-    }
   }
 }

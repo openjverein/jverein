@@ -68,7 +68,7 @@ public class FreiesFormularAusgabe extends AbstractAusgabe
     if (object != null)
     {
       return VorlageUtil.getName(VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-          formular.getBezeichnung(), (Mitglied) object);
+          object, formular.getBezeichnung());
     }
     else
     {

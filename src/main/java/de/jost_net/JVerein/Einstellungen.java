@@ -826,4 +826,13 @@ public class Einstellungen
         (String) getEinstellung(Property.IMAPSENTFOLDER));
     return imapCopyData;
   }
+
+  // Wird für Tests gebraucht um DBService zu umgehen, bisher nur in MitgliedMap
+  // verwendet
+  // TODO Sollte wieder entfernt werden, sobald die Map ohne DBService
+  // funktioniert
+  public static boolean isTest()
+  {
+    return false;
+  }
 }

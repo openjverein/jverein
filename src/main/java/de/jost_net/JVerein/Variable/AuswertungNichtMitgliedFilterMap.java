@@ -17,14 +17,13 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
+import de.jost_net.JVerein.keys.Filter;
 
 public class AuswertungNichtMitgliedFilterMap extends AbstractMap
 {
@@ -41,7 +40,7 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
     {
       map = inma;
     }
-
+    Map<Filter, String> filter = control.getFilterText(true);
     for (AuswertungNichtMitgliedFilterVar var : AuswertungNichtMitgliedFilterVar
         .values())
     {
@@ -49,36 +48,29 @@ public class AuswertungNichtMitgliedFilterMap extends AbstractMap
       switch (var)
       {
         case MITGLIEDSTYP:
-          value = control.getSuchMitgliedstyp(Mitgliedstypen.NICHTMITGLIED)
-              .getText();
+          value = filter.get(Filter.MITGLIEDSTYP);
+          if (value == null)
+          {
+            value = "Alle";
+          }
           break;
         case EIGENSCHAFTEN:
-          value = control.getEigenschaftenAuswahl().getText();
+          value = filter.get(Filter.EIGENSCHAFTEN);
           break;
         case ZUSATZFELDER:
-          try
-          {
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.USEZUSATZFELDER))
-            {
-              value = control.getZusatzfelderAuswahl().getText();
-            }
-          }
-          catch (RemoteException e)
-          {
-            // Keine unterstützen
-          }
+          value = filter.get(Filter.ZUSATZFELD);
+          break;
         case MAIL:
-          value = control.getMailauswahl().getText();
+          value = filter.get(Filter.MAIL);
           break;
         case GESCHLECHT:
-          value = control.getSuchGeschlecht().getText();
+          value = filter.get(Filter.GESCHLECHT);
           break;
         case DATUM_GEBURT_VON_F:
-          value = fromDate((Date) control.getGeburtsdatumvon().getValue());
+          value = filter.get(Filter.GEBURTSDATUM_VON);
           break;
         case DATUM_GEBURT_BIS_F:
-          value = fromDate((Date) control.getGeburtsdatumbis().getValue());
+          value = filter.get(Filter.GEBURTSDATUM_BIS);
           break;
         case SORTIERUNG:
           value = control.getSortierung().getText();

@@ -19,10 +19,9 @@ package de.jost_net.JVerein.keys;
 /**
  * Suchspendenart
  */
-public enum SuchSpendenart
+public enum SuchSpendenart implements KeyEnum
 {
 
-  ALLE(1, "Alle"),
   GELDSPENDE(2, "Geldspende"),
   SACHSPENDE(3, "Sachspende"),
   ERSTATTUNGSVERZICHT(4, "Geldspende mit Erstattungsverzicht"),
@@ -40,6 +39,7 @@ public enum SuchSpendenart
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

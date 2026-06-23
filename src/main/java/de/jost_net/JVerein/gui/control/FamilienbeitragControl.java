@@ -21,6 +21,8 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.menu.FamilienbeitragMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTreePart;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.MitgliedStatus;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
@@ -47,6 +49,7 @@ public class FamilienbeitragControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
+  @Override
   public JVereinTreePart getTablePart() throws RemoteException
   {
     if (familienbeitragtree != null)
@@ -54,7 +57,8 @@ public class FamilienbeitragControl extends FilterControl
       return familienbeitragtree;
     }
     familienbeitragtree = new JVereinTreePart(
-        new FamilienbeitragNode(getMitgliedStatus()),
+        new FamilienbeitragNode(
+            (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)),
         new MitgliedDetailAction());
     familienbeitragtree.addColumn("Name", "name");
     familienbeitragtree.addColumn("Zahlungsweg", "zahlungsweg");
@@ -106,8 +110,8 @@ public class FamilienbeitragControl extends FilterControl
       try
       {
         familienbeitragtree.removeAll();
-        familienbeitragtree
-            .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
+        familienbeitragtree.setRootObject(new FamilienbeitragNode(
+            (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
       }
       catch (RemoteException e1)
       {
@@ -161,8 +165,8 @@ public class FamilienbeitragControl extends FilterControl
                   FamilienbeitragMessageConsumer.this);
               return;
             }
-            familienbeitragtree
-                .setRootObject(new FamilienbeitragNode(getMitgliedStatus()));
+            familienbeitragtree.setRootObject(new FamilienbeitragNode(
+                (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
           }
           catch (Exception e)
           {
@@ -198,5 +202,4 @@ public class FamilienbeitragControl extends FilterControl
   {
     return VorlageUtil.getName(VorlageTyp.FAMILIENVERBAND_DATEINAME);
   }
-
 }

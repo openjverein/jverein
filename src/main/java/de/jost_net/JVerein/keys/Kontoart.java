@@ -16,7 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Kontoart
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.willuhn.logging.Logger;
+
+public enum Kontoart implements KeyEnum
 {
   // LIMIT ist keine Kontoart, sondern dient zur Abgrenzung.
   // Ids unter dem Limit werden regulär im Buchungsklassensaldo, Kontensaldo
@@ -53,18 +61,19 @@ public enum Kontoart
 
   private String textVermoegen;
 
-  Kontoart(int key, String text)
+  private Kontoart(int key, String text)
   {
     this(key, text, text);
   }
 
-  Kontoart(int key, String text, String textVermoegen)
+  private Kontoart(int key, String text, String textVermoegen)
   {
     this.key = key;
     this.text = text;
     this.textVermoegen = textVermoegen;
   }
 
+  @Override
   public int getKey()
   {
     return key;
@@ -90,6 +99,53 @@ public enum Kontoart
       }
     }
     return null;
+  }
+
+  /**
+   * Gibt die Liste der Kontoarten zurück, gefiltert je nach Einstellungen.
+   * 
+   * @return
+   * @throws RemoteException
+   */
+  public static Kontoart[] getList()
+  {
+    List<Kontoart> values = new ArrayList<Kontoart>();
+    try
+    {
+      boolean anlage = (Boolean) Einstellungen
+          .getEinstellung(Property.ANLAGENKONTEN);
+      boolean ruecklage = (Boolean) Einstellungen
+          .getEinstellung(Property.RUECKLAGENKONTEN);
+      boolean verbindlichkeiten = (Boolean) Einstellungen
+          .getEinstellung(Property.VERBINDLICHKEITEN_FORDERUNGEN);
+
+      for (Kontoart ka : Kontoart.values())
+      {
+        if (ka.getKey() < Kontoart.LIMIT.getKey() && ka != Kontoart.ANLAGE)
+        {
+          values.add(ka);
+        }
+        else if (anlage && ka == Kontoart.ANLAGE)
+        {
+          values.add(ka);
+        }
+        else if (ruecklage && ka.getKey() > Kontoart.LIMIT.getKey()
+            && ka.getKey() < Kontoart.LIMIT_RUECKLAGE.getKey())
+        {
+          values.add(ka);
+        }
+        else if (verbindlichkeiten
+            && ka.getKey() > Kontoart.LIMIT_RUECKLAGE.getKey())
+        {
+          values.add(ka);
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim holen der Kontoliste", e);
+    }
+    return values.toArray(new Kontoart[0]);
   }
 
   @Override

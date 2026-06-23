@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Schlüssel Anzeige der Buchungsart; Form der Anzeige
  */
-public class BuchungsartAnzeige
+public class BuchungsartAnzeige implements KeyEnum
 {
 
   public static final int BEZEICHNUNG = 1;
@@ -44,6 +44,7 @@ public class BuchungsartAnzeige
     this.buchungsartanzeige = key;
   }
 
+  @Override
   public int getKey()
   {
     return buchungsartanzeige;

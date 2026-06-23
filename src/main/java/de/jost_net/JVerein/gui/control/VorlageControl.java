@@ -21,12 +21,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.VorlageMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Vorlage;
@@ -56,8 +56,6 @@ public class VorlageControl extends FilterControl implements Savable
   public VorlageControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Vorlage getVorlage() throws ApplicationException
@@ -186,8 +184,14 @@ public class VorlageControl extends FilterControl implements Savable
 
   private List<Vorlage> getVorlagenList() throws RemoteException
   {
-    String tmpSuchtext = ((String) getSuchtext().getValue()).toLowerCase();
-    Vorlageart art = (Vorlageart) getVorlagenart().getValue();
+    Map<Filter, Object> filter = getFilter();
+    String tmpSuchtext = "";
+    if ((String) filter.get(Filter.ENTHALTENER_TEXT) != null)
+    {
+      tmpSuchtext = ((String) filter.get(Filter.ENTHALTENER_TEXT))
+          .toLowerCase();
+    }
+    Vorlageart art = (Vorlageart) filter.get(Filter.VORLAGEART);
 
     // Vorhandene Vorlagen aus DB laden
     Map<String, DBObject> vorlagen = new HashMap<>();

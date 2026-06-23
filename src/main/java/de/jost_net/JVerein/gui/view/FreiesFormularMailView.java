@@ -12,11 +12,10 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.FreieFormulareControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -40,27 +39,23 @@ public class FreiesFormularMailView extends AbstractView
 
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
-      left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
-      left.addInput(control.getMitgliedStatus());
-      left.addInput(control.getBeitragsgruppeAusw());
-      left.addInput(control.getMailauswahl());
+      left.addInput(control.getFilterInput(Filter.MITGLIEDSTYP));
+      left.addInput(control.getFilterInput(Filter.MITGLIEDSCHAFT_STATUS));
+      left.addInput(control.getFilterInput(Filter.BEITRAGSGRUPPE));
+      left.addInput(control.getFilterInput(Filter.MAIL));
 
       SimpleContainer mid = new SimpleContainer(cl.getComposite());
-      mid.addInput(control.getSuchname());
-      mid.addInput(control.getGeburtsdatumvon());
-      mid.addInput(control.getGeburtsdatumbis());
-      mid.addInput(control.getSuchGeschlecht());
+      mid.addInput(control.getFilterInput(Filter.NAME));
+      mid.addInput(control.getFilterInput(Filter.GEBURTSDATUM_VON));
+      mid.addInput(control.getFilterInput(Filter.GEBURTSDATUM_BIS));
+      mid.addInput(control.getFilterInput(Filter.GESCHLECHT));
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-      right.addInput(eigenschaftenInput);
-      control.updateEigenschaftenAuswahlTooltip();
-      right.addInput(control.getStichtag());
+      right.addInput(control.getFilterInput(Filter.EIGENSCHAFTEN));
+      right.addInput(control.getFilterInput(Filter.STICHTAG));
       if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
       {
-        DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-        right.addInput(zusatzfelderInput);
-        control.updateZusatzfelderAuswahlTooltip();
+        right.addInput(control.getFilterInput(Filter.ZUSATZFELD));
       }
 
       ButtonArea fbuttons = new ButtonArea();

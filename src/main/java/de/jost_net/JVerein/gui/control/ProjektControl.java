@@ -18,12 +18,14 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.ProjektMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.ProjektDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -54,8 +56,6 @@ public class ProjektControl extends FilterControl implements Savable
   public ProjektControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Projekt getProjekt()
@@ -145,7 +145,8 @@ public class ProjektControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (projektList != null)
     {
@@ -165,7 +166,7 @@ public class ProjektControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (projektList == null)
     {
@@ -187,39 +188,37 @@ public class ProjektControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Projekt> getProjekte() throws RemoteException
+  private DBIterator<Projekt> getProjekte()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Projekt> projekte = Einstellungen.getDBService()
         .createList(Projekt.class);
 
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        projekte.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
+        case BEZEICHNUNG:
+          projekte.addFilter("(lower(bezeichnung) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case DATUM_START_VON:
+          projekte.addFilter("startdatum >= ?", value);
+          break;
+        case DATUM_START_BIS:
+          projekte.addFilter("startdatum <= ?", value);
+          break;
+        case DATUM_ENDE_VON:
+          projekte.addFilter("endedatum >= ?", value);
+          break;
+        case DATUM_ENDE_BIS:
+          projekte.addFilter("endedatum <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      projekte.addFilter("startdatum >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      projekte.addFilter("startdatum <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
-    }
-    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
-    {
-      projekte.addFilter("endedatum >= ?",
-          new Object[] { (Date) getEingabedatumvon().getValue() });
-    }
-    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
-    {
-      projekte.addFilter("endedatum <= ?",
-          new Object[] { (Date) getEingabedatumbis().getValue() });
     }
     projekte.setOrder("ORDER BY bezeichnung");
     return projekte;

@@ -21,13 +21,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.AbstractView;
@@ -36,23 +34,21 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public abstract class AbstractMitgliedListeView extends AbstractView
 {
-
-  private JVereinTablePart p;
 
   final MitgliedControl control = new MitgliedControl(this);
 
   @Override
   public void bind() throws Exception
   {
+    control.setMitgliedAuswahl(getMitgliedAuswahl());
+
     GUI.getView().setTitle(getTitle());
     this.setCurrentObject(
-        Einstellungen.getDBService().createObject(Mitglied.class, null)); // leeres
-                                                                          // Object
-                                                                          // erzeugen
+        Einstellungen.getDBService().createObject(Mitglied.class, null));
 
     DBService service = Einstellungen.getDBService();
     String sql = "select count(*) from beitragsgruppe";
@@ -67,39 +63,16 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     };
     Long anzahlbeitragsgruppe = (Long) service.execute(sql, new Object[] {},
         rs);
-    if (anzahlbeitragsgruppe.longValue() == 0)
-    {
+    if (anzahlbeitragsgruppe == 0)
+    {// TODO braucht man das hier wiklich?
       new LabelInput("Noch keine Beitragsgruppe erfaßt. Bitte unter "
           + "Administration|Beitragsgruppen erfassen.").paint(getParent());
     }
-    rs = new ResultSetExtractor()
-    {
-      @Override
-      public Object extract(ResultSet rs) throws SQLException
-      {
-        rs.next();
-        return Long.valueOf(rs.getLong(1));
-      }
-    };
 
     getFilter();
-
-    Long anzahl = (Long) service.execute(sql, new Object[] {}, rs);
-    if (anzahl.longValue() > 0)
+    if (anzahlbeitragsgruppe > 0)
     {
-      Mitgliedstyp mt = (Mitgliedstyp) control
-          .getSuchMitgliedstyp(Mitgliedstypen.MITGLIED).getValue();
-      if (mt != null)
-      {
-        Logger.debug(mt.getID() + ": " + mt.getBezeichnung());
-        p = control.getTablePart(Integer.parseInt(mt.getID()),
-            getDetailAction());
-      }
-      else
-      {
-        p = control.getTablePart(0, getDetailAction());
-      }
-      p.paint(getParent());
+      control.getTablePart(getDetailAction()).paint(getParent());
     }
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(getHilfeButton());
@@ -117,11 +90,14 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
-  public abstract String getTitle();
+  protected abstract MitgliedAuswahl getMitgliedAuswahl();
 
-  public abstract void getFilter() throws RemoteException;
+  protected abstract String getTitle();
 
-  public abstract Action getDetailAction();
+  protected abstract void getFilter()
+      throws RemoteException, ApplicationException;
 
-  public abstract Button getHilfeButton();
+  protected abstract Action getDetailAction();
+
+  protected abstract Button getHilfeButton();
 }

@@ -15,7 +15,6 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-
 import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Messaging.AbweichenderZahlerMessage;
@@ -23,6 +22,8 @@ import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.menu.AbweichenderZahlerMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTreePart;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.MitgliedStatus;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.AbstractView;
@@ -48,6 +49,7 @@ public class AbweichenderZahlerControl extends FilterControl
     settings.setStoreWhenRead(true);
   }
 
+  @Override
   public JVereinTreePart getTablePart() throws RemoteException
   {
     if (abweichenderzahlertree != null)
@@ -55,7 +57,8 @@ public class AbweichenderZahlerControl extends FilterControl
       return abweichenderzahlertree;
     }
     abweichenderzahlertree = new JVereinTreePart(
-        new AbweichenderZahlerNode(getMitgliedStatus()),
+        new AbweichenderZahlerNode(
+            (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)),
         new MitgliedDetailAction());
     abweichenderzahlertree.addColumn("Name", "name");
     abweichenderzahlertree.addColumn("Zahlungsweg", "zahlungsweg");
@@ -110,8 +113,8 @@ public class AbweichenderZahlerControl extends FilterControl
       try
       {
         abweichenderzahlertree.removeAll();
-        abweichenderzahlertree
-            .setRootObject(new AbweichenderZahlerNode(getMitgliedStatus()));
+        abweichenderzahlertree.setRootObject(new AbweichenderZahlerNode(
+            (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
       }
       catch (RemoteException e1)
       {
@@ -165,8 +168,8 @@ public class AbweichenderZahlerControl extends FilterControl
                   AbweichenderZahlerMessageConsumer.this);
               return;
             }
-            abweichenderzahlertree
-                .setRootObject(new AbweichenderZahlerNode(getMitgliedStatus()));
+            abweichenderzahlertree.setRootObject(new AbweichenderZahlerNode(
+                (MitgliedStatus) getFilter().get(Filter.MITGLIEDSCHAFT_STATUS)));
           }
           catch (Exception e)
           {

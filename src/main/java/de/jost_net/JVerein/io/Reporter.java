@@ -24,6 +24,8 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import com.itextpdf.text.BadElementException;
@@ -52,6 +54,7 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.JVereinPlugin;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -570,9 +573,37 @@ public class Reporter implements AutoCloseable
   /**
    * Gibt die Parameter als Tablelle aus
    * 
+   * @param map
+   * @throws DocumentException
+   * @throws RemoteException
+   */
+  public void addParams(final Map<Filter, String> map)
+      throws DocumentException, RemoteException
+  {
+    if (map.size() > 0)
+    {
+      add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
+      BaseColor bcolor = headerTransparent ? null : BaseColor.LIGHT_GRAY;
+      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100, bcolor);
+      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, bcolor);
+      createHeader(75f, Element.ALIGN_LEFT);
+      for (Entry<Filter, String> entry : map.entrySet())
+      {
+        addColumn(entry.getKey().getAnzeigeText(), Element.ALIGN_RIGHT);
+        addColumn(entry.getValue(), Element.ALIGN_LEFT);
+      }
+      closeTable();
+    }
+  }
+
+  /**
+   * Gibt die Parameter als Tablelle aus
+   * 
    * @param params
    * @throws DocumentException
    */
+  // TODO wird nur noch für Buchungen verwendet, sollte auch da zu Filter
+  // umgestellt werden.
   public void addParams(final TreeMap<String, String> params)
       throws DocumentException
   {

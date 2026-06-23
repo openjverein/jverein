@@ -18,12 +18,14 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.menu.AnfangsbestandMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Anfangsbestand;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -58,8 +60,6 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   public AnfangsbestandControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Anfangsbestand getAnfangsbestand()
@@ -154,7 +154,8 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (anfangsbestandList != null)
     {
@@ -178,7 +179,7 @@ public class AnfangsbestandControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (anfangsbestandList == null)
     {
@@ -200,39 +201,37 @@ public class AnfangsbestandControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Anfangsbestand> getAnfangsstaende() throws RemoteException
+  private DBIterator<Anfangsbestand> getAnfangsstaende()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Anfangsbestand> anfangsbestaende = Einstellungen.getDBService()
         .createList(Anfangsbestand.class);
     anfangsbestaende.join("konto");
     anfangsbestaende.addFilter("konto.id = anfangsbestand.konto");
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
-            new Object[] { "%" + tmpSuchname.toLowerCase() + "%" });
+        case BEZEICHNUNG:
+          anfangsbestaende.addFilter("(lower(bezeichnung) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case NUMMER:
+          anfangsbestaende.addFilter("(lower(nummer) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case DATUM_VON:
+          anfangsbestaende.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          anfangsbestaende.addFilter("datum <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        anfangsbestaende.addFilter("(lower(nummer) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
-      }
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      anfangsbestaende.addFilter("datum >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      anfangsbestaende.addFilter("datum <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
     }
     anfangsbestaende.setOrder("ORDER BY konto, datum desc");
     return anfangsbestaende;

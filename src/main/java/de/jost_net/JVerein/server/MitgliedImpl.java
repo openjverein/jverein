@@ -30,11 +30,11 @@ import javax.mail.internet.AddressException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsrhythmus;
@@ -1428,21 +1428,19 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
         it.addFilter(Sollbuchung.T_MITGLIED + " = " + this.getID());
         it.addGroupBy(Sollbuchung.T_MITGLIED);
 
-        MitgliedControl control = MitgliedControl.control;
-        if (control.isDifferenzAktiv()
-            && control.getDifferenz().getValue() != DIFFERENZ.EGAL)
+        Map<Filter, Object> filter = MitgliedControl.control.getFilter();
+        if (filter.get(Filter.DIFFERENZ) != null
+            && filter.get(Filter.DIFFERENZ) != null)
         {
-          if (control.isDatumvonAktiv()
-              && control.getDatumvon().getValue() != null)
+          if (filter.get(Filter.DATUM_VON) != null)
           {
             it.addFilter(Sollbuchung.T_DATUM + " >= ?",
-                (Date) control.getDatumvon().getValue());
+                filter.get(Filter.DATUM_VON));
           }
-          if (control.isDatumbisAktiv()
-              && control.getDatumbis().getValue() != null)
+          if (filter.get(Filter.DATUM_BIS) != null)
           {
             it.addFilter(Sollbuchung.T_DATUM + " <= ?",
-                (Date) control.getDatumbis().getValue());
+                filter.get(Filter.DATUM_BIS));
           }
         }
 

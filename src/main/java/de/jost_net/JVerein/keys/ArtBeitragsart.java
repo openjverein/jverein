@@ -20,7 +20,7 @@ package de.jost_net.JVerein.keys;
  * Art der Beitragsart
  */
 
-public enum ArtBeitragsart
+public enum ArtBeitragsart implements KeyEnum
 {
 
   NORMAL(0, "Normal"),
@@ -36,6 +36,7 @@ public enum ArtBeitragsart
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

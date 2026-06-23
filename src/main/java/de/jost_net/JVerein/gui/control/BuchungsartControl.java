@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -30,6 +31,7 @@ import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
 import de.jost_net.JVerein.keys.BuchungsartSort;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.StatusBuchungsart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -49,7 +51,6 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Column;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -82,8 +83,6 @@ public class BuchungsartControl extends FilterControl implements Savable
   public BuchungsartControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Buchungsart getBuchungsart()
@@ -340,7 +339,8 @@ public class BuchungsartControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (buchungsartList != null)
     {
@@ -414,48 +414,50 @@ public class BuchungsartControl extends FilterControl implements Savable
     return buchungsartList;
   }
 
-  private DBIterator<Buchungsart> getBuchungsarten() throws RemoteException
+  private DBIterator<Buchungsart> getBuchungsarten()
+      throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Buchungsart> buchungsarten = service
         .createList(Buchungsart.class);
 
-    if (isSuchStatusAktiv() && getSuchStatus(null).getValue().toString()
-        .equalsIgnoreCase("Ohne Deaktiviert"))
-      buchungsarten.addFilter("status != ?",
-          new Object[] { StatusBuchungsart.INACTIVE });
-    if (isSuchnameAktiv() && !getSuchname().getValue().equals(""))
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String text = "%" + ((String) getSuchname().getValue()).toUpperCase()
-          + "%";
-      buchungsarten.addFilter("nummer like ?", new Object[] { text });
-    }
-    if (isSuchtextAktiv() && !getSuchtext().getValue().equals(""))
-    {
-      String text = "%" + ((String) getSuchtext().getValue()).toUpperCase()
-          + "%";
-      buchungsarten.addFilter("UPPER(bezeichnung) like ?",
-          new Object[] { text });
-    }
-    if (isSuchBuchungsartArtAktiv()
-        && getSuchBuchungsartArt().getValue() != null)
-    {
-      ArtBuchungsart art = (ArtBuchungsart) getSuchBuchungsartArt().getValue();
-      buchungsarten.addFilter("art = ?", new Object[] { art.getKey() });
-    }
-    if (isSuchBuchungsklasseAktiv()
-        && getSuchBuchungsklasse().getValue() != null)
-    {
-      Buchungsklasse tmp = (Buchungsklasse) getSuchBuchungsklasse().getValue();
-      buchungsarten.addFilter("buchungsklasse = ?",
-          new Object[] { tmp.getID() });
+      Object value = entry.getValue();
+      switch (entry.getKey())
+      {
+        case STATUS:
+          if ((Boolean) value)
+          {
+            buchungsarten.addFilter("status != ?", StatusBuchungsart.INACTIVE);
+          }
+          break;
+        case NUMMER:
+          buchungsarten.addFilter("nummer like ?",
+              "%" + value.toString().toUpperCase() + "%");
+          break;
+        case BEZEICHNUNG:
+          buchungsarten.addFilter("UPPER(bezeichnung) like ?",
+              "%" + value.toString().toUpperCase() + "%");
+          break;
+        case BUCHUNGSARTART:
+          buchungsarten.addFilter("art = ?", ((ArtBuchungsart) value).getKey());
+          break;
+        case BUCHUNGSKLASSE:
+          buchungsarten.addFilter("buchungsklasse = ?",
+              ((Buchungsklasse) value).getID());
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
+      }
     }
     buchungsarten.setOrder("ORDER BY nummer");
     return buchungsarten;
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     try
     {

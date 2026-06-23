@@ -108,7 +108,7 @@ public class MitgliedschaftsjubilaeumExportCSV
     MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
     try
     {
-      mcsv.go(mitglieder, file);
+      mcsv.go(mitglieder, file, null);
     }
     catch (ApplicationException e)
     {

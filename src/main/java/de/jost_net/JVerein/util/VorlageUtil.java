@@ -17,59 +17,41 @@
 package de.jost_net.JVerein.util;
 
 import java.rmi.RemoteException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
-import de.jost_net.JVerein.Variable.AbrechnungslaufListeFilterMap;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.AnfangsbestandListeFilterMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
-import de.jost_net.JVerein.Variable.ArbeitseinsatzListeFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungJubilareFilterMap;
-import de.jost_net.JVerein.Variable.AuswertungKursteilnehmerFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungMitgliedFilterMap;
-import de.jost_net.JVerein.Variable.AuswertungMitgliederstatistikFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
-import de.jost_net.JVerein.Variable.BuchungsartListeFilterMap;
+import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
-import de.jost_net.JVerein.Variable.KontoListeFilterMap;
-import de.jost_net.JVerein.Variable.KursteilnehmerListeFilterMap;
-import de.jost_net.JVerein.Variable.LastschriftListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
-import de.jost_net.JVerein.Variable.LehrgangListeFilterMap;
-import de.jost_net.JVerein.Variable.MailListeFilterMap;
-import de.jost_net.JVerein.Variable.MitgliedListeFilterMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.Variable.NichtMitgliedListeFilterMap;
-import de.jost_net.JVerein.Variable.ProjektListeFilterMap;
-import de.jost_net.JVerein.Variable.RechnungListeFilterMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.Variable.SaldoFilterMap;
-import de.jost_net.JVerein.Variable.SollbuchungListeFilterMap;
-import de.jost_net.JVerein.Variable.SpendenbescheinigungListeFilterMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
-import de.jost_net.JVerein.Variable.WiedervorlageListeFilterMap;
 import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
-import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.jost_net.JVerein.gui.control.ProjektControl;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
 import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.io.Zeichen;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
@@ -78,8 +60,10 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Vorlage;
+import de.jost_net.JVerein.server.IMitglied;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class VorlageUtil
 {
@@ -87,7 +71,7 @@ public class VorlageUtil
   // Namen Generierung aus Vorlagen Muster
   public static String getName(VorlageTyp typ)
   {
-    return getName(typ, null, null);
+    return getName(typ, null);
   }
 
   public static String getName(VorlageTyp typ, Object obj)
@@ -95,7 +79,7 @@ public class VorlageUtil
     return getName(typ, obj, null);
   }
 
-  public static String getName(VorlageTyp typ, Object obj, Mitglied mitglied)
+  public static String getName(VorlageTyp typ, Object obj, String formularName)
   {
     Map<String, Object> map = null;
     String muster = "";
@@ -103,87 +87,84 @@ public class VorlageUtil
     {
       map = new AllgemeineMap().getMap(null);
       muster = getVorlageMuster(typ);
+
+      if (obj instanceof IMitglied && ((IMitglied) obj).getMitglied() != null)
+      {
+        map = new MitgliedMap().getMap(((IMitglied) obj).getMitglied(), map);
+      }
       switch (typ)
       {
         case ABRECHNUNGSLAEUFE_DATEINAME:
         case ABRECHNUNGSLAEUFE_SUBTITEL:
         case ABRECHNUNGSLAEUFE_TITEL:
-          map = new AbrechnungslaufListeFilterMap().getMap((FilterControl) obj,
-              map);
-          break;
         case ANFANGSBESTAENDE_DATEINAME:
         case ANFANGSBESTAENDE_SUBTITEL:
         case ANFANGSBESTAENDE_TITEL:
-          map = new AnfangsbestandListeFilterMap().getMap((FilterControl) obj,
-              map);
-          break;
         case KONTEN_DATEINAME:
         case KONTEN_SUBTITEL:
         case KONTEN_TITEL:
-          map = new KontoListeFilterMap().getMap((FilterControl) obj, map);
-          break;
         case KURSTEILNEHMER_DATEINAME:
         case KURSTEILNEHMER_SUBTITEL:
         case KURSTEILNEHMER_TITEL:
-          map = new KursteilnehmerListeFilterMap().getMap((FilterControl) obj,
-              map);
-          break;
         case LASTSCHRIFTEN_DATEINAME:
         case LASTSCHRIFTEN_SUBTITEL:
         case LASTSCHRIFTEN_TITEL:
-          map = new LastschriftListeFilterMap().getMap((FilterControl) obj,
-              map);
-          break;
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
-          map = new LehrgangListeFilterMap().getMap((FilterControl) obj, map);
-          break;
         case MAILS_DATEINAME:
         case MAILS_SUBTITEL:
         case MAILS_TITEL:
-          map = new MailListeFilterMap().getMap((FilterControl) obj, map);
-          break;
         case RECHNUNGEN_DATEINAME:
         case RECHNUNGEN_SUBTITEL:
         case RECHNUNGEN_TITEL:
-          map = new RechnungListeFilterMap().getMap((FilterControl) obj, map);
-          break;
         case WIEDERVORLAGEN_DATEINAME:
         case WIEDERVORLAGEN_SUBTITEL:
         case WIEDERVORLAGEN_TITEL:
-          map = new WiedervorlageListeFilterMap().getMap((FilterControl) obj,
-              map);
+        case MITGLIEDER_DATEINAME:
+        case MITGLIEDER_TITEL:
+        case MITGLIEDER_SUBTITEL:
+        case NICHT_MITGLIEDER_DATEINAME:
+        case NICHT_MITGLIEDER_TITEL:
+        case NICHT_MITGLIEDER_SUBTITEL:
+        case SOLLBUCHUNGEN_DATEINAME:
+        case SOLLBUCHUNGEN_TITEL:
+        case SOLLBUCHUNGEN_SUBTITEL:
+        case ARBEITSEINSAETZE_DATEINAME:
+        case ARBEITSEINSAETZE_TITEL:
+        case ARBEITSEINSAETZE_SUBTITEL:
+        case SPENDENBESCHEINIGUNGEN_DATEINAME:
+        case SPENDENBESCHEINIGUNGEN_TITEL:
+        case SPENDENBESCHEINIGUNGEN_SUBTITEL:
+        case BUCHUNGSARTEN_DATEINAME:
+        case BUCHUNGSARTEN_TITEL:
+        case BUCHUNGSARTEN_SUBTITEL:
+        case PROJEKTE_DATEINAME:
+        case PROJEKTE_TITEL:
+        case PROJEKTE_SUBTITEL:
+        case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
+        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
+        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
+          map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
               map);
-          if (mitglied != null)
-          {
-            map = new MitgliedMap().getMap(mitglied, map);
-          }
-          break;
-        case MITGLIEDER_DATEINAME:
-        case MITGLIEDER_TITEL:
-        case MITGLIEDER_SUBTITEL:
-          map = new MitgliedListeFilterMap().getMap((FilterControl) obj, map);
-          break;
-        case NICHT_MITGLIEDER_DATEINAME:
-        case NICHT_MITGLIEDER_TITEL:
-        case NICHT_MITGLIEDER_SUBTITEL:
-          map = new NichtMitgliedListeFilterMap().getMap((FilterControl) obj,
-              map);
           break;
         case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED_DATEINAME:
-          // Ein Dokument pro Mitglied
           map = new RechnungMap().getMap((Rechnung) obj, map);
-          map = new MitgliedMap().getMap(mitglied, map);
           break;
         case PRENOTIFICATION_MITGLIED_DATEINAME:
-          map = new LastschriftMap().getMap((Lastschrift) obj, map);
-          map = new MitgliedMap().getMap(mitglied, map);
-          break;
         case PRENOTIFICATION_KURSTEILNEHMER_DATEINAME:
           map = new LastschriftMap().getMap((Lastschrift) obj, map);
           break;
@@ -215,7 +196,7 @@ public class VorlageUtil
         case MITGLIED_DOKUMENTE_DATEINAME:
         case MITGLIED_DOKUMENTE_TITEL:
         case MITGLIED_DOKUMENTE_SUBTITEL:
-          map = new MitgliedMap().getMap(mitglied, map);
+          map = new MitgliedMap().getMap((Mitglied) obj, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
         case FORMULAR_DATEINAME:
@@ -225,8 +206,8 @@ public class VorlageUtil
           map.put("formular_name", (String) obj);
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
-          map = new MitgliedMap().getMap(mitglied, map);
-          map.put("formular_name", (String) obj);
+          map = new MitgliedMap().getMap((Mitglied) obj, map);
+          map.put("formular_name", formularName);
           break;
         case KONTENSALDO_DATEINAME:
         case KONTENSALDO_TITEL:
@@ -274,29 +255,11 @@ public class VorlageUtil
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((Abrechnungslauf) obj, map);
           break;
-        case SOLLBUCHUNGEN_DATEINAME:
-        case SOLLBUCHUNGEN_TITEL:
-        case SOLLBUCHUNGEN_SUBTITEL:
-          map = new SollbuchungListeFilterMap().getMap((SollbuchungControl) obj,
-              map);
-          break;
         case ZUSATZBETRAEGE_DATEINAME:
         case ZUSATZBETRAEGE_TITEL:
         case ZUSATZBETRAEGE_SUBTITEL:
           map = new ZusatzbetragListeFilterMap()
               .getMap((ZusatzbetragControl) obj, map);
-          break;
-        case ARBEITSEINSAETZE_DATEINAME:
-        case ARBEITSEINSAETZE_TITEL:
-        case ARBEITSEINSAETZE_SUBTITEL:
-          map = new ArbeitseinsatzListeFilterMap().getMap((FilterControl) obj,
-              map);
-          break;
-        case SPENDENBESCHEINIGUNGEN_DATEINAME:
-        case SPENDENBESCHEINIGUNGEN_TITEL:
-        case SPENDENBESCHEINIGUNGEN_SUBTITEL:
-          map = new SpendenbescheinigungListeFilterMap()
-              .getMap((FilterControl) obj, map);
           break;
         case BUCHUNGEN_DATEINAME:
         case BUCHUNGEN_TITEL:
@@ -345,18 +308,6 @@ public class VorlageUtil
           map = new AuswertungNichtMitgliedFilterMap()
               .getMap((MitgliedControl) obj, map);
           break;
-        case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
-        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
-        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
-          map = new AuswertungKursteilnehmerFilterMap()
-              .getMap((KursteilnehmerControl) obj, map);
-          break;
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
-          map = new AuswertungMitgliederstatistikFilterMap()
-              .getMap((MitgliedControl) obj, map);
-          break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
         case AUSWERTUNG_ALTERSJUBILARE_TITEL:
         case AUSWERTUNG_ALTERSJUBILARE_SUBTITEL:
@@ -375,22 +326,11 @@ public class VorlageUtil
           map = new AuswertungArbeitseinsatzFilterMap()
               .getMap((ArbeitseinsatzAbrechnungControl) obj, map);
           break;
-        case BUCHUNGSARTEN_DATEINAME:
-        case BUCHUNGSARTEN_TITEL:
-        case BUCHUNGSARTEN_SUBTITEL:
-          map = new BuchungsartListeFilterMap().getMap((BuchungsartControl) obj,
-              map);
-          break;
         case WIRTSCHAFTSPLAN_DATEINAME:
         case WIRTSCHAFTSPLAN_TITEL:
         case WIRTSCHAFTSPLAN_SUBTITEL:
           map = new WirtschaftsplanParameterMap()
               .getMap((WirtschaftsplanControl) obj, map);
-          break;
-        case PROJEKTE_DATEINAME:
-        case PROJEKTE_TITEL:
-        case PROJEKTE_SUBTITEL:
-          map = new ProjektListeFilterMap().getMap((ProjektControl) obj, map);
           break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
@@ -448,40 +388,18 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_DATEINAME:
-        case ABWEICHENDE_ZAHLER_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_TITEL:
-        case FAMILIENVERBAND_DATEINAME:
-        case FAMILIENVERBAND_SUBTITEL:
-        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
       }
     }
-    catch (Exception e)
+    catch (RemoteException | ApplicationException e)
     {
       Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
       return "";
     }
     return translate(map, muster,
         typ.getArtkey() == Vorlageart.DATEINAME.getKey());
-  }
-
-  // Dummy Namen Generierung aus Vorlagen Muster
-  public static String getDummyName(VorlageTyp typ)
-  {
-    String muster = "";
-    try
-    {
-      muster = getVorlageMuster(typ);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler bei Dateinamen Ersetzung: " + e.getMessage());
-      return "";
-    }
-    return getDummyName(typ, muster);
   }
 
   // Dummy Namen Generierung aus Vorlagen Muster
@@ -496,53 +414,106 @@ public class VorlageUtil
     Map<String, Object> map = null;
     try
     {
+      Set<Filter> set = new HashSet<>();
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
         case ABRECHNUNGSLAEUFE_DATEINAME:
         case ABRECHNUNGSLAEUFE_SUBTITEL:
         case ABRECHNUNGSLAEUFE_TITEL:
-          map = AbrechnungslaufListeFilterMap.getDummyMap(map);
+          set = new HashSet<>();
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case ANFANGSBESTAENDE_DATEINAME:
         case ANFANGSBESTAENDE_SUBTITEL:
         case ANFANGSBESTAENDE_TITEL:
-          map = AnfangsbestandListeFilterMap.getDummyMap(map);
+          set = new HashSet<>();
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.NUMMER);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case KONTEN_DATEINAME:
         case KONTEN_SUBTITEL:
         case KONTEN_TITEL:
-          map = KontoListeFilterMap.getDummyMap(map);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.NUMMER);
+          set.add(Filter.KONTOART);
+          set.add(Filter.STATUS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case KURSTEILNEHMER_DATEINAME:
         case KURSTEILNEHMER_SUBTITEL:
         case KURSTEILNEHMER_TITEL:
-          map = KursteilnehmerListeFilterMap.getDummyMap(map);
+          set.add(Filter.NAME);
+          set.add(Filter.VERWENDUNGSZWECK);
+          set.add(Filter.EINGABEDATUM_VON);
+          set.add(Filter.EINGABEDATUM_BIS);
+          set.add(Filter.ABBUCHUNGSDATUM_VON);
+          set.add(Filter.ABBUCHUNGSDATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case LASTSCHRIFTEN_DATEINAME:
         case LASTSCHRIFTEN_SUBTITEL:
         case LASTSCHRIFTEN_TITEL:
-          map = LastschriftListeFilterMap.getDummyMap(map);
+          set.add(Filter.MITGLIEDART);
+          set.add(Filter.NAME);
+          set.add(Filter.ZWECK);
+          set.add(Filter.DATUM_FAELLIGKEI_VON);
+          set.add(Filter.DATUM_FAELLIGKEI_BIS);
+          set.add(Filter.ABRECHNUNGSLAUF_AB);
+          set.add(Filter.VERSAND);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case LEHRGAENGE_DATEINAME:
         case LEHRGAENGE_SUBTITEL:
         case LEHRGAENGE_TITEL:
-          map = LehrgangListeFilterMap.getDummyMap(map);
+          set.add(Filter.NAME);
+          set.add(Filter.VERANSTALTER);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.LEHRGANGSART);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case MAILS_DATEINAME:
         case MAILS_SUBTITEL:
         case MAILS_TITEL:
-          map = MailListeFilterMap.getDummyMap(map);
+          set.add(Filter.MAIL_EMPFAENGER);
+          set.add(Filter.BETREFF);
+          set.add(Filter.DATUM_BEARBEITUNG_BIS);
+          set.add(Filter.DATUM_BEARBEITUNG_VON);
+          set.add(Filter.DATUM_VERSAND_VON);
+          set.add(Filter.DATUM_VERSAND_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case RECHNUNGEN_DATEINAME:
         case RECHNUNGEN_SUBTITEL:
         case RECHNUNGEN_TITEL:
-          map = RechnungListeFilterMap.getDummyMap(map);
+          set.add(Filter.VERSAND);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.NAME);
+          set.add(Filter.MAIL);
+          set.add(Filter.OHNE_ABBUCHER);
+          set.add(Filter.DIFFERENZ);
+          set.add(Filter.DIFFERENZ_LIMIT);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case WIEDERVORLAGEN_DATEINAME:
         case WIEDERVORLAGEN_SUBTITEL:
         case WIEDERVORLAGEN_TITEL:
-          map = WiedervorlageListeFilterMap.getDummyMap(map);
+          set.add(Filter.NAME);
+          set.add(Filter.VERMERK);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.OHNE_ERLEDIGUNG);
+          set.add(Filter.DATUM_ERLEDIGUNG_VON);
+          set.add(Filter.DATUM_ERLEDIGUNG_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = SpendenbescheinigungMap.getDummyMap(map);
@@ -551,12 +522,44 @@ public class VorlageUtil
         case MITGLIEDER_DATEINAME:
         case MITGLIEDER_TITEL:
         case MITGLIEDER_SUBTITEL:
-          map = MitgliedListeFilterMap.getDummyMap(map);
+          set.add(Filter.ZUSATZFELD);
+          set.add(Filter.BEITRAGSGRUPPE);
+          set.add(Filter.MITGLIEDSCHAFT_STATUS);
+          set.add(Filter.STICHTAG);
+          set.add(Filter.MAIL);
+          set.add(Filter.NAME);
+          set.add(Filter.GEBURTSDATUM_VON);
+          set.add(Filter.GEBURTSDATUM_BIS);
+          set.add(Filter.GESCHLECHT);
+          set.add(Filter.EINTRITT_VON);
+          set.add(Filter.EINTRITT_BIS);
+          set.add(Filter.AUSTRITT_VON);
+          set.add(Filter.AUSTRITT_BIS);
+          set.add(Filter.EXTERNEMITGLIEDSNUMMER);
+          set.add(Filter.MITGLIEDSNUMMER);
+          set.add(Filter.DIFFERENZ);
+          set.add(Filter.DIFFERENZ_LIMIT);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.EIGENSCHAFTEN);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case NICHT_MITGLIEDER_DATEINAME:
         case NICHT_MITGLIEDER_TITEL:
         case NICHT_MITGLIEDER_SUBTITEL:
-          map = NichtMitgliedListeFilterMap.getDummyMap(map);
+          set.add(Filter.ZUSATZFELD);
+          set.add(Filter.MITGLIEDSTYP);
+          set.add(Filter.MAIL);
+          set.add(Filter.NAME);
+          set.add(Filter.GEBURTSDATUM_VON);
+          set.add(Filter.GEBURTSDATUM_BIS);
+          set.add(Filter.GESCHLECHT);
+          set.add(Filter.DIFFERENZ);
+          set.add(Filter.DIFFERENZ_LIMIT);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.EIGENSCHAFTEN);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case RECHNUNG_MITGLIED_DATEINAME:
         case MAHNUNG_MITGLIED_DATEINAME:
@@ -662,7 +665,15 @@ public class VorlageUtil
         case SOLLBUCHUNGEN_DATEINAME:
         case SOLLBUCHUNGEN_TITEL:
         case SOLLBUCHUNGEN_SUBTITEL:
-          map = SollbuchungListeFilterMap.getDummyMap(map);
+          set.add(Filter.MITGLIED);
+          set.add(Filter.ZAHLER);
+          set.add(Filter.MAIL);
+          set.add(Filter.DIFFERENZ);
+          set.add(Filter.DIFFERENZ_LIMIT);
+          set.add(Filter.OHNE_ABBUCHER);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case ZUSATZBETRAEGE_DATEINAME:
         case ZUSATZBETRAEGE_TITEL:
@@ -672,12 +683,24 @@ public class VorlageUtil
         case ARBEITSEINSAETZE_DATEINAME:
         case ARBEITSEINSAETZE_TITEL:
         case ARBEITSEINSAETZE_SUBTITEL:
-          map = ArbeitseinsatzListeFilterMap.getDummyMap(map);
+          set.add(Filter.NAME);
+          set.add(Filter.BEMERKUNG);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case SPENDENBESCHEINIGUNGEN_DATEINAME:
         case SPENDENBESCHEINIGUNGEN_TITEL:
         case SPENDENBESCHEINIGUNGEN_SUBTITEL:
-          map = SpendenbescheinigungListeFilterMap.getDummyMap(map);
+          set.add(Filter.DATUM_SPENDE_VON);
+          set.add(Filter.DATUM_SPENDE_BIS);
+          set.add(Filter.DATUM_BESCHEINIGUNG_VON);
+          set.add(Filter.DATUM_BESCHEINIGUNG_BIS);
+          set.add(Filter.ZEILE2);
+          set.add(Filter.MAIL);
+          set.add(Filter.SPENDENART);
+          set.add(Filter.VERSAND);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case BUCHUNGEN_DATEINAME:
         case BUCHUNGEN_TITEL:
@@ -725,12 +748,15 @@ public class VorlageUtil
         case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
         case AUSWERTUNG_KURSTEILNEHMER_TITEL:
         case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
-          map = AuswertungKursteilnehmerFilterMap.getDummyMap(map);
+          set.add(Filter.ABBUCHUNGSDATUM_VON);
+          set.add(Filter.ABBUCHUNGSDATUM_BIS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
-          map = AuswertungMitgliederstatistikFilterMap.getDummyMap(map);
+          set.add(Filter.STICHTAG);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
         case AUSWERTUNG_ALTERSJUBILARE_TITEL:
@@ -751,7 +777,12 @@ public class VorlageUtil
         case BUCHUNGSARTEN_DATEINAME:
         case BUCHUNGSARTEN_TITEL:
         case BUCHUNGSARTEN_SUBTITEL:
-          map = BuchungsartListeFilterMap.getDummyMap(map);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.NUMMER);
+          set.add(Filter.BUCHUNGSKLASSE);
+          set.add(Filter.BUCHUNGSARTART);
+          set.add(Filter.STATUS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case WIRTSCHAFTSPLAN_DATEINAME:
         case WIRTSCHAFTSPLAN_TITEL:
@@ -761,7 +792,24 @@ public class VorlageUtil
         case PROJEKTE_DATEINAME:
         case PROJEKTE_TITEL:
         case PROJEKTE_SUBTITEL:
-          map = ProjektListeFilterMap.getDummyMap(map);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.DATUM_ENDE_VON);
+          set.add(Filter.DATUM_ENDE_BIS);
+          set.add(Filter.DATUM_START_VON);
+          set.add(Filter.DATUM_START_BIS);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
+        case ABWEICHENDE_ZAHLER_DATEINAME:
+        case ABWEICHENDE_ZAHLER_SUBTITEL:
+        case ABWEICHENDE_ZAHLER_TITEL:
+          set.add(Filter.MITGLIEDSCHAFT_STATUS);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
+        case FAMILIENVERBAND_DATEINAME:
+        case FAMILIENVERBAND_SUBTITEL:
+        case FAMILIENVERBAND_TITEL:
+          set.add(Filter.MITGLIEDSCHAFT_STATUS);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case SPENDENBESCHEINIGUNG_DATEINAME:
         case RECHNUNG_DATEINAME:
@@ -819,12 +867,6 @@ public class VorlageUtil
         case MAILVORLAGEN_DATEINAME:
         case MAILVORLAGEN_TITEL:
         case MAILVORLAGEN_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_DATEINAME:
-        case ABWEICHENDE_ZAHLER_SUBTITEL:
-        case ABWEICHENDE_ZAHLER_TITEL:
-        case FAMILIENVERBAND_DATEINAME:
-        case FAMILIENVERBAND_SUBTITEL:
-        case FAMILIENVERBAND_TITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
@@ -861,7 +903,7 @@ public class VorlageUtil
 
   }
 
-  public static String getVorlageMuster(VorlageTyp typ) throws RemoteException
+  private static String getVorlageMuster(VorlageTyp typ) throws RemoteException
   {
     DBIterator<Vorlage> vorlagen = Einstellungen.getDBService()
         .createList(Vorlage.class);

@@ -115,7 +115,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     if (object != null)
     {
       return VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_MITGLIED_DATEINAME,
-          object, (Mitglied) object);
+          object);
     }
     else
     {
@@ -168,10 +168,9 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         rpt.newPage();
       }
 
-      String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL, null,
-          m);
+      String title = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_TITEL, m);
       String subtitle = VorlageUtil.getName(VorlageTyp.PERSONALBOGEN_SUBTITEL,
-          null, m);
+          m);
       Paragraph pTitle = new Paragraph(title, Reporter.getFreeSansBold(13));
       pTitle.setAlignment(Element.ALIGN_CENTER);
       rpt.add(pTitle);

@@ -16,10 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
@@ -34,7 +39,13 @@ public class StatistikMitgliedView extends AbstractView
     final MitgliedControl control = new MitgliedControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
-    group.addLabelPair("Stichtag", control.getStichtag(true));
+
+    Input input = control.getFilterInput(Filter.STICHTAG);
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.MONTH, Calendar.DECEMBER);
+    cal.set(Calendar.DAY_OF_MONTH, 31);
+    input.setValue(new Date(cal.getTimeInMillis()));
+    group.addInput(input);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),

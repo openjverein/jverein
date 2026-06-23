@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Suchspendenart
  */
-public enum SuchVersand
+public enum SuchVersand implements KeyEnum
 {
   VERSAND(1, "Versendet"),
   NICHT_VERSAND(2, "Nicht versendet");
@@ -34,6 +34,7 @@ public enum SuchVersand
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

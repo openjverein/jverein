@@ -76,7 +76,7 @@ public interface Spendenbescheinigung extends JVereinDBObject
 
   public void setMitglied(Mitglied mitglied) throws RemoteException;
 
-  public void setMitgliedID(Integer mitglied) throws RemoteException;
+  public void setMitglied(Integer id) throws RemoteException;
 
   /**
    * Liefert als Kennzeichen zurück, ob die Spendenbescheinigung eine

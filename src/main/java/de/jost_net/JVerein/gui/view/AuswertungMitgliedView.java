@@ -22,9 +22,9 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -50,42 +50,38 @@ public class AuswertungMitgliedView extends AbstractView
 
     // left
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getMitgliedStatus());
+    left.addInput(control.getFilterInput(Filter.MITGLIEDSCHAFT_STATUS));
     if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
-      left.addInput(control.getSuchExterneMitgliedsnummer());
+      left.addInput(control.getFilterInput(Filter.EXTERNEMITGLIEDSNUMMER));
     }
-    DialogInput eigenschaftenInput = control.getEigenschaftenAuswahl();
-    left.addInput(eigenschaftenInput);
-    control.updateEigenschaftenAuswahlTooltip();
-    left.addInput(control.getBeitragsgruppeAusw());
+    left.addInput(control.getFilterInput(Filter.EIGENSCHAFTEN));
+    left.addInput(control.getFilterInput(Filter.BEITRAGSGRUPPE));
 
     if ((Boolean) Einstellungen.getEinstellung(Property.USEZUSATZFELDER))
     {
-      DialogInput zusatzfelderInput = control.getZusatzfelderAuswahl();
-      left.addInput(zusatzfelderInput);
-      control.updateZusatzfelderAuswahlTooltip();
+      left.addInput(control.getFilterInput(Filter.ZUSATZFELD));
     }
 
     // middle
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addInput(control.getMailauswahl());
-    middle.addInput(control.getGeburtsdatumvon());
-    middle.addInput(control.getGeburtsdatumbis());
-    middle.addInput(control.getSuchGeschlecht());
-    middle.addInput(control.getStichtag(false));
+    middle.addInput(control.getFilterInput(Filter.MAIL));
+    middle.addInput(control.getFilterInput(Filter.GEBURTSDATUM_VON));
+    middle.addInput(control.getFilterInput(Filter.GEBURTSDATUM_BIS));
+    middle.addInput(control.getFilterInput(Filter.GESCHLECHT));
+    middle.addInput(control.getFilterInput(Filter.STICHTAG));
 
     // right
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getEintrittvon());
-    right.addInput(control.getEintrittbis());
-    right.addInput(control.getAustrittvon());
-    right.addInput(control.getAustrittbis());
+    right.addInput(control.getFilterInput(Filter.EINTRITT_VON));
+    right.addInput(control.getFilterInput(Filter.EINTRITT_BIS));
+    right.addInput(control.getFilterInput(Filter.AUSTRITT_VON));
+    right.addInput(control.getFilterInput(Filter.AUSTRITT_BIS));
 
     if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
     {
-      right.addInput(control.getSterbedatumvon());
-      right.addInput(control.getSterbedatumbis());
+      right.addInput(control.getFilterInput(Filter.STERBEDATUM_VON));
+      right.addInput(control.getFilterInput(Filter.STERBEDATUM_BIS));
     }
 
     ButtonArea filterbuttons = new ButtonArea();

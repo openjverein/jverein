@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -34,6 +35,8 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.PreNotificationMailView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.MitgliedsArt;
 import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -105,12 +108,11 @@ public class LastschriftControl extends FilterControl implements Savable
   public LastschriftControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (lastschriftList != null)
     {
@@ -142,7 +144,7 @@ public class LastschriftControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (lastschriftList == null)
     {
@@ -164,79 +166,72 @@ public class LastschriftControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Lastschrift> getLastschriften() throws RemoteException
+  private DBIterator<Lastschrift> getLastschriften()
+      throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Lastschrift> lastschriften = service
         .createList(Lastschrift.class);
     lastschriften.join("abrechnungslauf");
     lastschriften.addFilter("abrechnungslauf.id = lastschrift.abrechnungslauf");
-    if (isMitgliedArtAktiv() && getMitgliedArt().getValue() != null)
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpArt = (String) getMitgliedArt().getValue();
-      if (tmpArt.equalsIgnoreCase("Kursteilnehmer"))
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        lastschriften.addFilter("(lastschrift.kursteilnehmer IS NOT NULL)");
-      }
-      else
-      {
-        lastschriften.join("mitglied");
-        lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
-        if (tmpArt.equalsIgnoreCase("Mitglied"))
-        {
-          lastschriften
-              .addFilter(Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
-        }
-        else if (tmpArt.equalsIgnoreCase("Nicht-Mitglied"))
-        {
-          lastschriften
-              .addFilter(Mitglied.MITGLIEDSTYP + " > " + Mitgliedstyp.MITGLIED);
-        }
-      }
-    }
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
-    {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
-      {
-        lastschriften.addFilter("(lower(lastschrift.name) like ?)",
-            new Object[] { tmpSuchname.toLowerCase() + "%" });
-      }
-    }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        lastschriften.addFilter("(lower(verwendungszweck) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
-      }
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      lastschriften.addFilter("faelligkeit >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      lastschriften.addFilter("faelligkeit <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
-    }
-    if (isIntegerAuswAktiv() && getIntegerAusw().getValue() != null)
-    {
-      lastschriften.addFilter("abrechnungslauf >= ?",
-          new Object[] { (Integer) getIntegerAusw().getValue() });
-    }
-    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
-    {
-      switch ((SuchVersand) suchversand.getValue())
-      {
+        case MITGLIEDART:
+          if (((MitgliedsArt) value).equals(MitgliedsArt.KURSTEILNEHMER))
+          {
+            lastschriften.addFilter("(lastschrift.kursteilnehmer IS NOT NULL)");
+          }
+          else
+          {
+            lastschriften.join("mitglied");
+            lastschriften.addFilter("mitglied.id = lastschrift.mitglied");
+            if (((MitgliedsArt) value).equals(MitgliedsArt.MITGLIED))
+            {
+              lastschriften.addFilter(
+                  Mitglied.MITGLIEDSTYP + " = " + Mitgliedstyp.MITGLIED);
+            }
+            else if (((MitgliedsArt) value).equals(MitgliedsArt.NICHT_MITGLIED))
+            {
+              lastschriften.addFilter(
+                  Mitglied.MITGLIEDSTYP + " > " + Mitgliedstyp.MITGLIED);
+            }
+          }
+          break;
+        case NAME:
+          lastschriften.addFilter("(lower(lastschrift.name) like ?)",
+              value.toString() + "%");
+          break;
+        case ZWECK:
+          lastschriften.addFilter("(lower(verwendungszweck) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case DATUM_FAELLIGKEI_VON:
+          lastschriften.addFilter("faelligkeit >= ?", value);
+          break;
+        case DATUM_FAELLIGKEI_BIS:
+          lastschriften.addFilter("faelligkeit <= ?", value);
+          break;
+        case ABRECHNUNGSLAUF_AB:
+          lastschriften.addFilter("abrechnungslauf >= ?", value);
+          break;
         case VERSAND:
-          lastschriften.addFilter("versanddatum IS NOT NULL");
+          switch ((SuchVersand) value)
+          {
+            case VERSAND:
+              lastschriften.addFilter("versanddatum IS NOT NULL");
+              break;
+            case NICHT_VERSAND:
+              lastschriften.addFilter("versanddatum IS NULL");
+              break;
+          }
           break;
-        case NICHT_VERSAND:
-          lastschriften.addFilter("versanddatum IS NULL");
-          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
 

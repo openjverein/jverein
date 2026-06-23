@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
@@ -73,6 +75,7 @@ import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
+import de.jost_net.JVerein.gui.parts.EigenschaftenTree;
 import de.jost_net.JVerein.gui.parts.Familienverband;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
@@ -98,6 +101,7 @@ import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
 import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -158,7 +162,6 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -314,6 +317,8 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
 
+  private MitgliedAuswahl mitgliedAuswahl = MitgliedAuswahl.MITGLIEDER;
+
   public enum TabSelection
   {
     TAB_ZUSATZBETRAEGE,
@@ -334,8 +339,6 @@ public class MitgliedControl extends FilterControl implements Savable
   public MitgliedControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     control = this;
     if (view instanceof AbstractMitgliedDetailView)
     {
@@ -2169,20 +2172,21 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
-    return getTablePart(0, null);
+    return getTablePart(null);
   }
 
-  public JVereinTablePart getTablePart(int atyp, Action detailaction)
-      throws RemoteException
+  public JVereinTablePart getTablePart(Action detailaction)
+      throws RemoteException, ApplicationException
   {
     if (mitgliedList != null)
     {
       return mitgliedList;
     }
-    mitgliedList = new JVereinTablePart(new MitgliedQuery(this).get(atyp, null),
-        null);
+    mitgliedList = new JVereinTablePart(
+        new MitgliedQuery(this).get(mitgliedAuswahl, null), null);
     add("Status", "status", false, new Formatter()
     {
       @Override
@@ -2379,7 +2383,8 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  public void refreshMitgliedTable(int atyp) throws RemoteException
+  public void refreshMitgliedTable()
+      throws RemoteException, ApplicationException
   {
     if (System.currentTimeMillis() - lastrefresh < 500)
     {
@@ -2389,7 +2394,8 @@ public class MitgliedControl extends FilterControl implements Savable
     }
     lastrefresh = System.currentTimeMillis();
     mitgliedList.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(atyp, null);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this)
+        .get(mitgliedAuswahl, null);
     for (Mitglied m : mitglieder)
     {
       mitgliedList.addItem(m);
@@ -2403,10 +2409,7 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return eigenschaftenTree;
     }
-    eigenschaftenTree = new TreePart(new EigenschaftenNode(mitglied), null);
-    eigenschaftenTree.addSelectionListener(new EigenschaftListener());
-    eigenschaftenTree.setFormatter(new EigenschaftTreeFormatter());
-
+    eigenschaftenTree = new EigenschaftenTree(mitglied);
     eigenschaftenHash = createEigenschaftenHash();
 
     return eigenschaftenTree;
@@ -2754,7 +2757,7 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAuswertung() throws RemoteException
+  private void starteAuswertung() throws RemoteException, ApplicationException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
@@ -2764,8 +2767,8 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       sort = (String) getSortierung().getValue();
     }
-    ArrayList<Mitglied> list = null;
-    list = new MitgliedQuery(this).get(1, sort);
+    ArrayList<Mitglied> list = new MitgliedQuery(this)
+        .get(MitgliedAuswahl.MITGLIEDER, sort);
     try
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -2797,8 +2800,9 @@ public class MitgliedControl extends FilterControl implements Savable
 
       final ArrayList<Mitglied> flist = list;
       ausw.beforeGo(
-          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, this));
-
+          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, this),
+          mitgliedAuswahl);
+      Map<Filter, String> filter = getFilterText(false);
       BackgroundTask t = new BackgroundTask()
       {
 
@@ -2807,8 +2811,7 @@ public class MitgliedControl extends FilterControl implements Savable
         {
           try
           {
-            ausw.go(flist, file);
-            GUI.getCurrentView().reload();
+            ausw.go(flist, file, filter);
             if (ausw.openFile())
             {
               FileViewer.show(file);
@@ -2848,7 +2851,8 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAdressAuswertung() throws RemoteException
+  private void starteAdressAuswertung()
+      throws RemoteException, ApplicationException
   {
     final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
     saveAusgabeSettings();
@@ -2859,14 +2863,7 @@ public class MitgliedControl extends FilterControl implements Savable
       sort = (String) getSortierung().getValue();
     }
     ArrayList<Mitglied> list = null;
-    Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(
-        Mitgliedstypen.NICHTMITGLIED).getValue();
-    int id = 0;
-    if (mt != null)
-    {
-      id = Integer.parseInt(mt.getID());
-    }
-    list = new MitgliedQuery(this).get(id, sort);
+    list = new MitgliedQuery(this).get(MitgliedAuswahl.NICHTMITGLIEDER, sort);
     try
     {
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
@@ -2897,8 +2894,10 @@ public class MitgliedControl extends FilterControl implements Savable
       settings.setAttribute("lastdir", file.getParent());
 
       final ArrayList<Mitglied> flist = list;
-      ausw.beforeGo(VorlageUtil
-          .getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL, this));
+      ausw.beforeGo(
+          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL, this),
+          mitgliedAuswahl);
+      Map<Filter, String> filter = getFilterText(false);
 
       BackgroundTask t = new BackgroundTask()
       {
@@ -2907,8 +2906,7 @@ public class MitgliedControl extends FilterControl implements Savable
         {
           try
           {
-            ausw.go(flist, file);
-            GUI.getCurrentView().reload();
+            ausw.go(flist, file, filter);
             if (ausw.openFile())
             {
               FileViewer.show(file);
@@ -2970,7 +2968,7 @@ public class MitgliedControl extends FilterControl implements Savable
     final File file = new File(s);
     settings.setAttribute("lastdir", file.getParent());
 
-    final Date sticht = (Date) stichtag.getValue();
+    final Date sticht = (Date) getFilter().get(Filter.STICHTAG);
     String title = VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL, this);
     String subtitle = VorlageUtil
@@ -3043,22 +3041,13 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh()
+  public void TabRefresh() throws ApplicationException
   {
     if (mitgliedList != null)
     {
       try
       {
-        Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(
-            Mitgliedstypen.NICHTMITGLIED).getValue();
-        if (mt != null)
-        {
-          refreshMitgliedTable(Integer.parseInt(mt.getID()));
-        }
-        else
-        {
-          refreshMitgliedTable(0);
-        }
+        refreshMitgliedTable();
       }
       catch (RemoteException e1)
       {
@@ -3188,78 +3177,76 @@ public class MitgliedControl extends FilterControl implements Savable
             case TAB_ZUSATZBETRAEGE:
               liste.export(
                   VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_TITEL,
-                      null, getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL, null,
                       getMitglied()),
                   VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME, null,
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME,
                       getMitglied()),
                   art);
               break;
             case TAB_WIEDERVORLAGEN:
               liste.export(
                   VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_TITEL,
-                      null, getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL, null,
                       getMitglied()),
                   VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME, null,
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL,
+                      getMitglied()),
+                  VorlageUtil.getName(
+                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME,
                       getMitglied()),
                   art);
               break;
             case TAB_MAILS:
               liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL, null,
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL,
                       getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL, null,
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL,
                       getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME, null,
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME,
                       getMitglied()),
                   art);
               break;
             case TAB_LEHRGAENGE:
               liste.export(
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_TITEL,
-                      null, getMitglied()),
+                      getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_SUBTITEL,
-                      null, getMitglied()),
+                      getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
-                      null, getMitglied()),
+                      getMitglied()),
                   art);
               break;
             case TAB_LESEFELDER:
               liste.export(
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_TITEL,
-                      null, getMitglied()),
+                      getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_SUBTITEL,
-                      null, getMitglied()),
+                      getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
-                      null, getMitglied()),
+                      getMitglied()),
                   art);
               break;
             case TAB_ARBEITSEINSAETZE:
-              liste.export(
+              liste.export(VorlageUtil.getName(
+                  VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL, getMitglied()),
                   VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL, null,
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL,
                       getMitglied()),
                   VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL, null,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME, null,
+                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME,
                       getMitglied()),
                   art);
               break;
             case TAB_DOKUMENTE:
               liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL, null,
+                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL,
                       getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_SUBTITEL,
-                      null, getMitglied()),
+                      getMitglied()),
                   VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
-                      null, getMitglied()),
+                      getMitglied()),
                   art);
               break;
             case NO_LIST_TAB:
@@ -3341,6 +3328,30 @@ public class MitgliedControl extends FilterControl implements Savable
     return dcontrol.getDokumenteList();
   }
 
+  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
+  // entfernen
+  @Override
+  public Input getFilterInput(Filter filter)
+      throws RemoteException, ApplicationException
+  {
+    Input input = super.getFilterInput(filter);
+    if (filter.equals(Filter.MITGLIEDSTYP)
+        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
+    {
+      List<?> list = ((SelectInput) input).getList();
+      for (Object o : list)
+      {
+        if (((Mitgliedstyp) o).getJVereinid() == Integer
+            .parseInt(Mitgliedstyp.MITGLIED))
+        {
+          list.remove(o);
+          break;
+        }
+      }
+    }
+    return input;
+  }
+
   @Override
   protected String getTableTitle()
   {
@@ -3378,5 +3389,10 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME, this);
     }
+  }
+
+  public void setMitgliedAuswahl(MitgliedAuswahl mitgliedAuswahl)
+  {
+    this.mitgliedAuswahl = mitgliedAuswahl;
   }
 }

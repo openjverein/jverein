@@ -105,6 +105,6 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
   {
     Logger.debug(String.format("Alterjubiläum-CSV-Export, Jahr=%d", jahr));
     MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
-    mcsv.go(mitglieder, file);
+    mcsv.go(mitglieder, file, null);
   }
 }

@@ -24,6 +24,7 @@ import java.util.Set;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
+import de.jost_net.JVerein.keys.MitgliedStatus;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -32,7 +33,6 @@ import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.GenericObjectNode;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.logging.Logger;
 
 public class FamilienbeitragNode implements GenericObjectNode
@@ -53,9 +53,9 @@ public class FamilienbeitragNode implements GenericObjectNode
 
   private ArrayList<FamilienbeitragNode> children;
 
-  private Input status;
+  private MitgliedStatus status;
 
-  public FamilienbeitragNode(Input status) throws RemoteException
+  public FamilienbeitragNode(MitgliedStatus status) throws RemoteException
   {
     this.status = status;
     this.parent = null;
@@ -70,9 +70,9 @@ public class FamilienbeitragNode implements GenericObjectNode
     DBIterator<Mitglied> angIt = Einstellungen.getDBService()
         .createList(Mitglied.class);
     angIt.addFilter("zahlerid is not null and zahlerid != 0");
-    if (status.getValue().equals("Angemeldet"))
+    if (MitgliedStatus.ANGEMELDET.equals(status))
       angIt.addFilter("austritt is null");
-    if (status.getValue().equals("Abgemeldet"))
+    if (MitgliedStatus.ABGEMELDET.equals(status))
       angIt.addFilter("austritt is not null");
     while (angIt.hasNext())
     {
@@ -88,9 +88,9 @@ public class FamilienbeitragNode implements GenericObjectNode
       DBIterator<Mitglied> it2 = Einstellungen.getDBService()
           .createList(Mitglied.class);
       it2.addFilter("beitragsgruppe = ?", new Object[] { bg.getID() });
-      if (status.getValue().equals("Angemeldet"))
-        it2.addFilter("austritt is null");
-      if (status.getValue().equals("Abgemeldet"))
+      if (MitgliedStatus.ANGEMELDET.equals(status))
+        it.addFilter("austritt is null");
+      if (MitgliedStatus.ABGEMELDET.equals(status))
         it2.addFilter("austritt is not null");
       it2.setOrder("ORDER BY name, vorname");
       while (it2.hasNext())
@@ -117,9 +117,9 @@ public class FamilienbeitragNode implements GenericObjectNode
     DBIterator<Mitglied> it = Einstellungen.getDBService()
         .createList(Mitglied.class);
     it.addFilter("zahlerid = ?", new Object[] { m.getID() });
-    if (status.getValue().equals("Angemeldet"))
+    if (MitgliedStatus.ANGEMELDET.equals(status))
       it.addFilter("austritt is null");
-    if (status.getValue().equals("Abgemeldet"))
+    if (MitgliedStatus.ABGEMELDET.equals(status))
       it.addFilter("austritt is not null");
     while (it.hasNext())
     {

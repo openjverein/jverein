@@ -19,6 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbweichenderZahlerControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -36,7 +37,7 @@ public class AbweichendeZahlerView extends AbstractView
     GUI.getView().setTitle("Abweichende Zahler");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addInput(control.getMitgliedStatus());
+    group.addInput(control.getFilterInput(Filter.MITGLIEDSCHAFT_STATUS));
 
     control.getTablePart().paint(this.getParent());
 

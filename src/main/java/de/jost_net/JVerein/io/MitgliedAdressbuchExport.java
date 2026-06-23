@@ -20,9 +20,12 @@ package de.jost_net.JVerein.io;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.io.Adressbuch.Txt;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -35,14 +38,14 @@ public class MitgliedAdressbuchExport implements IAuswertung
   }
 
   @Override
-  public void beforeGo(String title)
+  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
   {
     // Nothing to do
   }
 
   @Override
-  public void go(ArrayList<Mitglied> list, File file)
-      throws ApplicationException
+  public void go(ArrayList<Mitglied> list, File file,
+      Map<Filter, String> filter) throws ApplicationException
   {
     try
     {

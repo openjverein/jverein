@@ -133,7 +133,6 @@ public class KontoauswahlInput
           konto = null;
           try
           {
-            // TODO warum wird das doppelt aufgerufen?
             getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)
                 .setText("");
             getKontoAuswahl(keinkonto, "", false, false, Kontenfilter.ALLE)

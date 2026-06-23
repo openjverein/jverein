@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Adressblatt
  */
-public enum Adressblatt
+public enum Adressblatt implements KeyEnum
 {
 
   OHNE_ADRESSBLATT(1, "Ohne Adressblatt"),
@@ -37,6 +37,7 @@ public enum Adressblatt
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

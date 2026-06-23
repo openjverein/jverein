@@ -59,8 +59,8 @@ public class SEPASupport
         map = new RechnungMap().getMap(re, map);
 
         // PDF erstellen
-        String dateiname = VorlageUtil.getName(
-            VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, re.getMitglied());
+        String dateiname = VorlageUtil
+            .getName(VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re);
         File file = File.createTempFile(dateiname, ".pdf");
         FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
             false);

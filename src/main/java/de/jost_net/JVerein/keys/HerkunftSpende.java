@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Herkunft Spende
  */
-public class HerkunftSpende
+public class HerkunftSpende implements KeyEnum
 {
 
   public static final int BETRIEBSVERMOEGEN = 1;
@@ -37,6 +37,7 @@ public class HerkunftSpende
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;

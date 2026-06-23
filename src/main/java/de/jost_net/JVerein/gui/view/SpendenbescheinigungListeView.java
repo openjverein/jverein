@@ -21,8 +21,10 @@ import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -43,31 +45,31 @@ public class SpendenbescheinigungListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Zeile 2", control.getSuchname());
-    left.addInput(control.getMailauswahl());
-    left.addInput(control.getSuchVersand());
+    left.addInput(control.getFilterInput(Filter.ZEILE2));
+    left.addInput(control.getFilterInput(Filter.MAIL));
+    left.addInput(control.getFilterInput(Filter.VERSAND));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
-    middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
-    middle.addInput(control.getSuchSpendenart());
+    Input von = control.getFilterInput(Filter.DATUM_BESCHEINIGUNG_VON);
+    middle.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_BESCHEINIGUNG_BIS);
+    middle.addInput(bis);
+    middle.addInput(control.getFilterInput(Filter.SPENDENART));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
-    right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+    Input spendeVon = control.getFilterInput(Filter.DATUM_SPENDE_VON);
+    right.addInput(spendeVon);
+    Input spendeBis = control.getFilterInput(Filter.DATUM_SPENDE_BIS);
+    right.addInput(spendeBis);
 
     ButtonArea fbuttons = new ButtonArea();
-    ToolTipButton zurueck1 = control.getZurueckButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton zurueck1 = control.getZurueckButton(von, bis);
     fbuttons.addButton(zurueck1);
-    ToolTipButton vor1 = control.getVorButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton vor1 = control.getVorButton(von, bis);
     fbuttons.addButton(vor1);
-    ToolTipButton zurueck2 = control.getZurueckButton(
-        control.getEingabedatumvon(), control.getEingabedatumbis());
+    ToolTipButton zurueck2 = control.getZurueckButton(spendeVon, spendeBis);
     fbuttons.addButton(zurueck2);
-    ToolTipButton vor2 = control.getVorButton(control.getEingabedatumvon(),
-        control.getEingabedatumbis());
+    ToolTipButton vor2 = control.getVorButton(spendeVon, spendeBis);
     fbuttons.addButton(vor2);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());

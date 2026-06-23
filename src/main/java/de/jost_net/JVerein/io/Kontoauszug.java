@@ -29,6 +29,7 @@ import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -36,6 +37,7 @@ import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.util.ApplicationException;
 
 public class Kontoauszug extends AbstractAusgabe
 {
@@ -51,11 +53,11 @@ public class Kontoauszug extends AbstractAusgabe
   }
 
   private void generiereMitglied(File file, Mitglied m)
-      throws DocumentException, IOException
+      throws DocumentException, IOException, ApplicationException
   {
     MitgliedskontoNode node = new MitgliedskontoNode(m,
-        (Date) control.getDatumvon().getValue(),
-        (Date) control.getDatumbis().getValue());
+        (Date) control.getFilter().get(Filter.DATUM_VON),
+        (Date) control.getFilter().get(Filter.DATUM_BIS));
 
     if (fos == null)
     {
@@ -72,9 +74,9 @@ public class Kontoauszug extends AbstractAusgabe
       rpt.newPage();
     }
 
-    String title = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_TITEL, null, m);
-    String subtitle = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_SUBTITEL, null,
-        m);
+    String title = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_TITEL, m);
+    String subtitle = VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_SUBTITEL, m);
+
     Paragraph pTitle = new Paragraph(title, Reporter.getFreeSansBold(13));
     pTitle.setAlignment(Element.ALIGN_CENTER);
     rpt.add(pTitle);
@@ -144,7 +146,8 @@ public class Kontoauszug extends AbstractAusgabe
 
   @Override
   protected void createPDF(Formular formular, FormularAufbereitung aufbereitung,
-      File file, DBObject object) throws IOException, DocumentException
+      File file, DBObject object)
+      throws IOException, DocumentException, ApplicationException
   {
     generiereMitglied(file, (Mitglied) object);
   }
@@ -181,7 +184,7 @@ public class Kontoauszug extends AbstractAusgabe
     if (object != null)
     {
       return VorlageUtil.getName(VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME,
-          null, (Mitglied) object);
+          (Mitglied) object);
     }
     else
     {

@@ -16,9 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import java.rmi.RemoteException;
-
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -39,7 +37,8 @@ public class SollbuchungExportAction implements Action
   {
     try
     {
-      ExportDialog d = new ExportDialog(gibSuchGrenzen(context),
+      ExportDialog d = new ExportDialog(
+          new Object[] { ((FilterControl) context).getFilter() },
           Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT,
           context);
       d.open();
@@ -59,18 +58,6 @@ public class SollbuchungExportAction implements Action
       GUI.getStatusBar()
           .setErrorText("Fehler beim exportieren der Sollbuchungen");
     }
-  }
-
-  private Object[] gibSuchGrenzen(Object context)
-      throws ApplicationException, RemoteException
-  {
-    if (context instanceof SollbuchungControl)
-    {
-      SollbuchungControl control = (SollbuchungControl) context;
-      return control.getCVSExportGrenzen();
-    }
-    throw new ApplicationException(
-        "Dieser Export wurde aus dem falschen Context aufgerufen!");
   }
 
 }

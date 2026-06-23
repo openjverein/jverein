@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.keys.Filter;
 
 public class AuswertungMitgliedFilterMap extends AbstractMap
 {
@@ -39,6 +39,7 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
     {
       map = inma;
     }
+    Map<Filter, String> filter = control.getFilterText(true);
 
     for (AuswertungMitgliedFilterVar var : AuswertungMitgliedFilterVar.values())
     {
@@ -46,81 +47,53 @@ public class AuswertungMitgliedFilterMap extends AbstractMap
       switch (var)
       {
         case MITGLIEDSCHAFT:
-          value = control.getMitgliedStatus().getText();
+          value = filter.get(Filter.MITGLIEDSCHAFT_STATUS);
           break;
         case EXT_MITGLIEDSNUMMER:
-          try
-          {
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-            {
-              value = control.getSuchExterneMitgliedsnummer().getValue()
-                  .toString();
-            }
-          }
-          catch (RemoteException e)
-          {
-            // Keine unterstützen
-          }
+          value = filter.get(Filter.EXTERNEMITGLIEDSNUMMER);
           break;
         case EIGENSCHAFTEN:
-          value = control.getEigenschaftenAuswahl().getText();
+          value = filter.get(Filter.EIGENSCHAFTEN);
           break;
         case BEITRAGSGRUPPE:
-          value = control.getBeitragsgruppeAusw().getText();
+          value = filter.get(Filter.BEITRAGSGRUPPE);
           break;
         case ZUSATZFELDER:
-          try
-          {
-            if ((Boolean) Einstellungen
-                .getEinstellung(Property.USEZUSATZFELDER))
-            {
-              value = control.getZusatzfelderAuswahl().getText();
-            }
-          }
-          catch (RemoteException e)
-          {
-            // Keine unterstützen
-          }
+          value = filter.get(Filter.ZUSATZFELD);
           break;
         case MAIL:
-          value = control.getMailauswahl().getText();
+          value = filter.get(Filter.MAIL);
           break;
         case GESCHLECHT:
-          value = control.getSuchGeschlecht().getText();
+          value = filter.get(Filter.GESCHLECHT);
           break;
         case STICHTAG_F:
-          value = fromDate((Date) control.getStichtag(false).getValue());
+          value = filter.get(Filter.STICHTAG);
           break;
         case DATUM_GEBURT_VON_F:
-          value = fromDate((Date) control.getGeburtsdatumvon().getValue());
+          value = filter.get(Filter.GEBURTSDATUM_VON);
           break;
         case DATUM_GEBURT_BIS_F:
-          value = fromDate((Date) control.getGeburtsdatumbis().getValue());
+          value = filter.get(Filter.GEBURTSDATUM_BIS);
           break;
         case DATUM_EINTRITT_VON_F:
-          value = fromDate((Date) control.getEintrittvon().getValue());
+          value = filter.get(Filter.EINTRITT_VON);
           break;
         case DATUM_EINTRITT_BIS_F:
-          value = fromDate((Date) control.getEintrittbis().getValue());
+          value = filter.get(Filter.EINTRITT_BIS);
           break;
         case DATUM_AUSTRITT_VON_F:
-          value = fromDate((Date) control.getAustrittvon().getValue());
+          value = filter.get(Filter.AUSTRITT_VON);
           break;
         case DATUM_AUSTRITT_BIS_F:
-          value = fromDate((Date) control.getAustrittbis().getValue());
+          value = filter.get(Filter.AUSTRITT_BIS);
           break;
         case DATUM_STERBE_VON_F:
-          if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
-          {
-            value = fromDate((Date) control.getSterbedatumvon().getValue());
-          }
+          value = filter.get(Filter.STERBEDATUM_VON);
           break;
         case DATUM_STERBE_BIS_F:
-          if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
-          {
-            value = fromDate((Date) control.getSterbedatumbis().getValue());
-          }
+          value = filter.get(Filter.STERBEDATUM_BIS);
+          break;
         case SORTIERUNG:
           value = control.getSortierung().getText();
           break;

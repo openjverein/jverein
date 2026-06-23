@@ -22,14 +22,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
 import de.jost_net.JVerein.gui.control.MailControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.keys.Eigenschaftenauswahl;
+import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
@@ -98,8 +100,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       {
         try
         {
-          EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
-              true, new MitgliedControl(null), false);
+          EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null);
           param = ead.open();
           setSelection();
         }
@@ -297,16 +298,16 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         return;
       }
 
-      ArrayList<EigenschaftenNode> eigenschaftenNodes = null;
-      if (param != null && param.getEigenschaftenNodes().size() > 0)
+      Map<Eigenschaft, String> eigenschaftenMap = null;
+      if (param != null && param.getEigenschaften().size() > 0)
       {
-        eigenschaftenNodes = param.getEigenschaftenNodes();
+        eigenschaftenMap = param.getEigenschaften();
       }
 
       ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
           "mitglied");
       it.addColumn("mitglied.id as " + MITGLIED_ID);
-      if (eigenschaftenNodes != null)
+      if (eigenschaftenMap != null)
       {
         it.addColumn("eigenschaft as " + EIGENSCHAFT);
         it.leftJoin("eigenschaften", "mitglied.id = eigenschaften.mitglied");
@@ -368,7 +369,7 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
       {
         PseudoDBObject o = it.next();
         Long mitglied_id = (Long) o.getAttribute(MITGLIED_ID);
-        if (eigenschaftenNodes != null)
+        if (eigenschaftenMap != null)
         {
           mitgliederIds.add(mitglied_id);
           Long eigenschaft = (Long) o.getAttribute(EIGENSCHAFT);
@@ -383,15 +384,15 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
         }
       }
 
-      if (eigenschaftenNodes != null)
+      if (eigenschaftenMap != null)
       {
         ArrayList<Long> suchIds = new ArrayList<>();
         HashMap<Long, String> suchauswahl = new HashMap<>();
-        for (EigenschaftenNode node : eigenschaftenNodes)
+        for (Entry<Eigenschaft, String> entry : eigenschaftenMap.entrySet())
         {
-          Long eigenschaftId = Long.valueOf(node.getEigenschaft().getID());
+          Long eigenschaftId = Long.valueOf(entry.getKey().getID());
           suchIds.add(eigenschaftId);
-          suchauswahl.put(eigenschaftId, node.getPreset());
+          suchauswahl.put(eigenschaftId, entry.getValue());
         }
         selectedIds = MitgliedQuery.getFilteredIds(mitgliederIds, suchIds,
             suchauswahl, mitgliedEigenschaften, param.getVerknuepfung());
@@ -452,22 +453,22 @@ public class MailEmpfaengerAuswahlDialog extends AbstractDialog<Object>
 
   private String getEigenschaftenString()
   {
-    if (param != null && param.getEigenschaftenNodes().size() > 0)
+    if (param != null)
     {
       StringBuilder text = new StringBuilder();
-      for (Object o : param.getEigenschaftenNodes())
+      for (Entry<Eigenschaft, String> entry : param.getEigenschaften()
+          .entrySet())
       {
         if (text.length() > 0)
         {
           text.append(", ");
         }
-        EigenschaftenNode node = (EigenschaftenNode) o;
         try
         {
           String prefix = "+";
-          if (node.getPreset().equals(EigenschaftenNode.MINUS))
+          if (entry.getValue().equals(EigenschaftenNode.MINUS))
             prefix = "-";
-          text.append(prefix + node.getEigenschaft().getBezeichnung());
+          text.append(prefix + entry.getKey().getBezeichnung());
         }
         catch (RemoteException e)
         {

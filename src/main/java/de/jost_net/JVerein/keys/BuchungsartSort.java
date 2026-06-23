@@ -28,7 +28,7 @@ import java.util.ArrayList;
 /**
  * Schlüssel Sortierung der Buchungsart; Form der Anzeige
  */
-public class BuchungsartSort
+public class BuchungsartSort implements KeyEnum
 {
 
   public static final int NACH_BEZEICHNUNG = 1;
@@ -50,6 +50,7 @@ public class BuchungsartSort
     }
   }
 
+  @Override
   public int getKey()
   {
     return buchungsartsort;

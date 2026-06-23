@@ -100,7 +100,8 @@ public abstract class DruckMailControl extends FilterControl
     {
       return versand;
     }
-    versand = getCheckboxAuswahl();
+    versand = new CheckboxInput(
+        settings.getBoolean(settingsprefix + "versand", false));
     versand.setEnabled(ausgabeart.getValue() != Ausgabeart.MAIL);
     return versand;
   }
@@ -111,7 +112,8 @@ public abstract class DruckMailControl extends FilterControl
     {
       return ct1versand;
     }
-    ct1versand = getOhneAbbucher();
+    ct1versand = new CheckboxInput(
+        settings.getBoolean(settingsprefix + "ct1versand", false));
     return ct1versand;
   }
 
@@ -194,6 +196,16 @@ public abstract class DruckMailControl extends FilterControl
         Formular f = (Formular) getFormular(null).getValue();
         settings.setAttribute(settingsprefix + "formular.key",
             f == null ? "" : f.getID());
+      }
+      if (versand != null)
+      {
+        settings.setAttribute(settingsprefix + "versand",
+            versand.getValue().toString());
+      }
+      if (ct1versand != null)
+      {
+        settings.setAttribute(settingsprefix + "ct1versand",
+            ct1versand.getValue().toString());
       }
       super.saveFilterSettings();
     }

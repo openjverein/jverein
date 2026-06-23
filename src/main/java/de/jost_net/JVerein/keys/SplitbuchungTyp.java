@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Typ der Splitbuchung
  */
-public class SplitbuchungTyp
+public class SplitbuchungTyp implements KeyEnum
 {
   public static final int HAUPT = 1;
 
@@ -36,6 +36,7 @@ public class SplitbuchungTyp
     this.typ = key;
   }
 
+  @Override
   public int getKey()
   {
     return typ;

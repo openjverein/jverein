@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.VorlageControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -34,8 +35,8 @@ public class EinstellungenVorlageListeView extends AbstractView
     VorlageControl control = new VorlageControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
-    group.addLabelPair("Enthaltener Text", control.getSuchtext());
-    group.addLabelPair("Vorlagenart", control.getVorlagenart());
+    group.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
+    group.addInput(control.getFilterInput(Filter.VORLAGEART));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

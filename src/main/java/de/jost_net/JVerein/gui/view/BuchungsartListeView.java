@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.control.BuchungsartControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Buchungsart;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -42,13 +43,14 @@ public class BuchungsartListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Nummer", control.getSuchname());
-    left.addLabelPair("Bezeichnung", control.getSuchtext());
-    left.addInput(control.getSuchBuchungsklasse());
+    left.addInput(control.getFilterInput(Filter.NUMMER));
+    left.addInput(control.getFilterInput(Filter.BEZEICHNUNG));
+    left.addInput(control.getFilterInput(Filter.BUCHUNGSKLASSE));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addInput(control.getSuchBuchungsartArt());
-    right.addLabelPair("Status", control.getSuchStatus("Ohne Deaktiviert"));
+    right.addInput(control.getFilterInput(Filter.BUCHUNGSARTART));
+    right.addLabelPair("Ohne Deaktiviert",
+        control.getFilterInput(Filter.STATUS));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

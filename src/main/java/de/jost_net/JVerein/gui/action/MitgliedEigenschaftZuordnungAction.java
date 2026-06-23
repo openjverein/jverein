@@ -19,14 +19,14 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
+import de.jost_net.JVerein.rmi.Eigenschaft;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.EigenschaftenNode;
@@ -66,25 +66,24 @@ public class MitgliedEigenschaftZuordnungAction implements Action
     int anzGeloescht = 0;
     try
     {
-      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog("", false,
-          new MitgliedControl(null), false, mitglieder);
+      EigenschaftenAuswahlDialog ead = new EigenschaftenAuswahlDialog(null,
+          false, mitglieder);
       EigenschaftenAuswahlParameter param = ead.open();
-      if (param == null || param.getEigenschaftenNodes() == null)
+      if (param == null || param.getEigenschaften() == null)
       {
         return;
       }
       Map<Long, Long[]> eigenschaftenMap = getEigenschaften();
-      ArrayList<EigenschaftenNode> eigenschaftenNodes = param
-          .getEigenschaftenNodes();
-      for (EigenschaftenNode eigenschaftenNode : eigenschaftenNodes)
+      Map<Eigenschaft, String> map = param.getEigenschaften();
+      for (Entry<Eigenschaft, String> entry : map.entrySet())
       {
-        if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.PLUS))
+        if (entry.getValue().equals(EigenschaftenNode.PLUS))
         {
           for (Mitglied mitglied : mitglieder)
           {
             Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
                 .createObject(Eigenschaften.class, null);
-            eig.setEigenschaft(eigenschaftenNode.getEigenschaft().getID());
+            eig.setEigenschaft(entry.getKey().getID());
             eig.setMitglied(mitglied.getID());
             try
             {
@@ -104,16 +103,16 @@ public class MitgliedEigenschaftZuordnungAction implements Action
             }
           }
         }
-        else if (eigenschaftenNode.getPreset().equals(EigenschaftenNode.MINUS))
+
+        else if (entry.getValue().equals(EigenschaftenNode.MINUS))
         {
           for (Mitglied mitglied : mitglieder)
           {
             for (Long key : eigenschaftenMap.keySet())
             {
-              Long[] entry = eigenschaftenMap.get(key);
-              if (entry[0].equals(Long.valueOf(mitglied.getID()))
-                  && entry[1].equals(
-                      Long.valueOf(eigenschaftenNode.getEigenschaft().getID())))
+              Long[] e = eigenschaftenMap.get(key);
+              if (e[0].equals(Long.valueOf(mitglied.getID()))
+                  && e[1].equals(Long.valueOf(entry.getKey().getID())))
               {
                 Eigenschaften eig = (Eigenschaften) Einstellungen.getDBService()
                     .createObject(Eigenschaften.class, key.toString());

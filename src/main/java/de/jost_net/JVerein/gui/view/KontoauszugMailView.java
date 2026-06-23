@@ -25,8 +25,8 @@ import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
-import de.jost_net.JVerein.gui.control.FilterControl.Mitgliedstypen;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -52,30 +52,30 @@ public class KontoauszugMailView extends AbstractView
     {
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
-      left.addInput(control.getSuchMitgliedstyp(Mitgliedstypen.ALLE));
-      left.addInput(control.getMitgliedStatus());
-      left.addInput(control.getBeitragsgruppeAusw());
+      left.addInput(control.getFilterInput(Filter.MITGLIEDSTYP));
+      left.addInput(control.getFilterInput(Filter.MITGLIEDSCHAFT_STATUS));
+      left.addInput(control.getFilterInput(Filter.BEITRAGSGRUPPE));
 
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
-      middle.addInput(control.getMailauswahl());
-      middle.addInput(control.getDifferenz());
-      middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
+      middle.addInput(control.getFilterInput(Filter.MAIL));
+      middle.addInput(control.getFilterInput(Filter.DIFFERENZ));
+      middle.addInput(control.getFilterInput(Filter.DIFFERENZ_LIMIT));
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addInput(control.getDatumvon());
-      right.addInput(control.getDatumbis());
-      right.addInput(control.getStichtag(false));
+      right.addInput(control.getFilterInput(Filter.DATUM_VON));
+      right.addInput(control.getFilterInput(Filter.DATUM_BIS));
+      right.addInput(control.getFilterInput(Filter.STICHTAG));
     }
     else
     {
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
       SimpleContainer left = new SimpleContainer(cl.getComposite());
-      left.addInput(control.getDifferenz());
-      left.addLabelPair("Differenz Limit", control.getDoubleAusw());
+      left.addInput(control.getFilterInput(Filter.DIFFERENZ));
+      left.addInput(control.getFilterInput(Filter.DIFFERENZ_LIMIT));
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addInput(control.getDatumvon());
-      right.addInput(control.getDatumbis());
+      right.addInput(control.getFilterInput(Filter.DATUM_VON));
+      right.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
       SimpleContainer cont1 = new SimpleContainer(getParent(), false);
       cont1.addHeadline("Info");

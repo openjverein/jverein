@@ -18,7 +18,7 @@ package de.jost_net.JVerein.keys;
 
 import java.util.ArrayList;
 
-public class AfaMode
+public class AfaMode implements KeyEnum
 {
 
   public static final int MANUELL = 1;
@@ -34,6 +34,7 @@ public class AfaMode
     this.afamode = key;
   }
 
+  @Override
   public int getKey()
   {
     return afamode;

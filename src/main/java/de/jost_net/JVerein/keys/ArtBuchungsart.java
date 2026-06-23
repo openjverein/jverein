@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Art der Buchungsart
  */
-public class ArtBuchungsart
+public class ArtBuchungsart implements KeyEnum
 {
   public static final int EINNAHME = 0;
 
@@ -36,6 +36,7 @@ public class ArtBuchungsart
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;
@@ -61,13 +62,13 @@ public class ArtBuchungsart
     }
   }
 
-  public static ArrayList<ArtBuchungsart> getArray()
+  public static ArtBuchungsart[] getArray()
   {
     ArrayList<ArtBuchungsart> ret = new ArrayList<>();
     ret.add(new ArtBuchungsart(EINNAHME));
     ret.add(new ArtBuchungsart(AUSGABE));
     ret.add(new ArtBuchungsart(UMBUCHUNG));
-    return ret;
+    return ret.toArray(new ArtBuchungsart[0]);
   }
 
   @Override

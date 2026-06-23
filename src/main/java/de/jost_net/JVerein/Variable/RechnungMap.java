@@ -313,7 +313,6 @@ public class RechnungMap extends AbstractMap
           }
           value = VelocityTool.eval(new AllgemeineMap().getMap(map),
               zahlungsweg);
-
           break;
       }
       map.put(var.getName(), value);

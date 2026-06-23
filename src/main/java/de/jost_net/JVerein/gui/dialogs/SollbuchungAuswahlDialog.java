@@ -30,15 +30,17 @@ import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
+import de.jost_net.JVerein.keys.Differenz;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -113,10 +115,12 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         "Istbuchung einer Sollbuchung zuordnen", false, 1);
     LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
 
-    control.getSuchName1(true).setValue(buchung.getName());
-    grNurIst.addLabelPair("Name", control.getSuchName1(false));
-    grNurIst.addLabelPair("Differenz",
-        control.getDifferenz(DIFFERENZ.FEHLBETRAG));
+    Input input = control.getFilterInput(Filter.ZAHLER);
+    input.setValue(buchung.getName());
+    grNurIst.addInput(input);
+    Input differenzInput = control.getFilterInput(Filter.DIFFERENZ);
+    differenzInput.setValue(Differenz.FEHLBETRAG);
+    grNurIst.addInput(differenzInput);
 
     ButtonArea button1 = new ButtonArea();
     suchen1 = new MyButton("Suchen", new Action()

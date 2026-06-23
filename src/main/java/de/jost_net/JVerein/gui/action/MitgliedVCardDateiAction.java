@@ -77,7 +77,7 @@ public class MitgliedVCardDateiAction implements Action
         if (mitgl.size() == 1)
         {
           fd.setFileName(
-              VorlageUtil.getName(VorlageTyp.VCARD_MITGLIED_DATEINAME, null,
+              VorlageUtil.getName(VorlageTyp.VCARD_MITGLIED_DATEINAME,
                   (Mitglied) mitgl.get(0)) + ".vcf");
         }
         else

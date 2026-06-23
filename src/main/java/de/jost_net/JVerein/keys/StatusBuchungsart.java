@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Art der Buchungsart
  */
-public class StatusBuchungsart
+public class StatusBuchungsart implements KeyEnum
 {
   public static final int ACTIVE = 0;
 
@@ -36,6 +36,7 @@ public class StatusBuchungsart
     this.art = key;
   }
 
+  @Override
   public int getKey()
   {
     return art;

@@ -18,6 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
+import java.util.Map.Entry;
 
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -29,6 +30,7 @@ import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
@@ -45,7 +47,6 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -73,8 +74,6 @@ public class LehrgangControl extends FilterControl implements Savable
   public LehrgangControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Lehrgang getLehrgang()
@@ -237,7 +236,7 @@ public class LehrgangControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     try
     {
@@ -259,65 +258,54 @@ public class LehrgangControl extends FilterControl implements Savable
     }
   }
 
-  private DBIterator<Lehrgang> getIterator() throws RemoteException
+  private DBIterator<Lehrgang> getIterator()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Lehrgang> lehrgaenge = Einstellungen.getDBService()
         .createList(Lehrgang.class);
     lehrgaenge.join("mitglied");
     lehrgaenge.addFilter("mitglied.id = lehrgang.mitglied");
 
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        lehrgaenge.addFilter(
-            "(lower(name) like ? " + "or lower(vorname) like ?)",
-            new Object[] { suchName, suchName });
+        case NAME:
+          String suchName = "%" + value.toString().toLowerCase() + "%";
+          lehrgaenge.addFilter(
+              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
+              suchName);
+          break;
+        case VERANSTALTER:
+          lehrgaenge.addFilter("lower(veranstalter) like ? ",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case BEZEICHNUNG:
+          lehrgaenge.addFilter("lower(bezeichnung) like ? ",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case LEHRGANGSART:
+          lehrgaenge.addFilter("lehrgangsart = ?",
+              ((Lehrgangsart) value).getID());
+          break;
+        case DATUM_VON:
+          lehrgaenge.addFilter("von >= ?", value);
+          break;
+        case DATUM_BIS:
+          lehrgaenge.addFilter("bis <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
-    if (isSuchtextAktiv() && getSuchtext().getValue() != null)
-    {
-      String tmptext = (String) getSuchtext().getValue();
-      if (tmptext.length() > 0)
-      {
-        String suchText = "%" + tmptext.toLowerCase() + "%";
-        lehrgaenge.addFilter("lower(veranstalter) like ? ",
-            new Object[] { suchText });
-      }
-    }
-    if (isSuchbezeichnungAktiv() && getSuchbezeichnung().getValue() != null)
-    {
-      String tmptext = (String) getSuchbezeichnung().getValue();
-      if (tmptext.length() > 0)
-      {
-        String suchText = "%" + tmptext.toLowerCase() + "%";
-        lehrgaenge.addFilter("lower(bezeichnung) like ? ",
-            new Object[] { suchText });
-      }
-    }
-    if (isSuchLehrgangsartAktiv() && getSuchLehrgangsart().getValue() != null)
-    {
-      Lehrgangsart la = (Lehrgangsart) getSuchLehrgangsart().getValue();
-      lehrgaenge.addFilter("lehrgangsart = ?", new Object[] { la.getID() });
-    }
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      lehrgaenge.addFilter("von >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      lehrgaenge.addFilter("bis <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
-    }
-
     return lehrgaenge;
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (lehrgaengeList != null)
     {

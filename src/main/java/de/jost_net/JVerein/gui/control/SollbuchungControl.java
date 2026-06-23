@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Messaging.MitgliedskontoMessage;
 import de.jost_net.JVerein.Messaging.SollbuchungMessage;
 import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -54,7 +55,6 @@ import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Mitglied;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -93,36 +93,6 @@ import de.willuhn.util.ApplicationException;
 
 public class SollbuchungControl extends DruckMailControl implements Savable
 {
-  public enum DIFFERENZ
-  {
-    EGAL("Egal"),
-    FEHLBETRAG("Fehlbetrag"),
-    UEBERZAHLUNG("Überzahlung");
-
-    private final String titel;
-
-    private DIFFERENZ(String titel)
-    {
-      this.titel = titel;
-    }
-
-    @Override
-    public String toString()
-    {
-      return titel;
-    }
-
-    public static DIFFERENZ fromString(final String text)
-    {
-      for (DIFFERENZ item : DIFFERENZ.values())
-      {
-        if (item.titel.equals(text))
-          return item;
-      }
-      return null;
-    }
-  }
-
   // SollbuchungDetailView
   private DateInput datum = null;
 
@@ -164,16 +134,12 @@ public class SollbuchungControl extends DruckMailControl implements Savable
   public SollbuchungControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   // Aufruf durch SollbuchungNeuDialog
   public SollbuchungControl(AbstractView view, Sollbuchung sollb)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     sollbuchung = sollb;
   }
 
@@ -289,18 +255,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     spezialsuche.addListener(e -> refreshMitgliederList());
 
     return spezialsuche;
-  }
-
-  // Für SollbuchungAuswahlDialog
-  public TextInput getSuchName1(boolean newcontrol)
-  {
-    if (!newcontrol && suchname != null)
-    {
-      return suchname;
-    }
-    suchname = new TextInput("", 30);
-    suchname.setName("Name");
-    return suchname;
   }
 
   // Für SollbuchungAuswahlDialog
@@ -447,8 +401,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
     this.umwandeln = umwandeln;
     @SuppressWarnings("rawtypes")
-    GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln, null)
-        .get();
+    GenericIterator sollbuchungen = new SollbuchungQuery(getFilter(), umwandeln,
+        null).get();
 
     sollbuchungenList = new BetragSummaryTablePart(sollbuchungen, null);
     sollbuchungenList.addColumn("Nr", "id-int");
@@ -500,8 +454,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
       try
       {
         @SuppressWarnings("rawtypes")
-        GenericIterator sollbuchungen = new SollbuchungQuery(this, umwandeln,
-            null).get();
+        GenericIterator sollbuchungen = new SollbuchungQuery(getFilter(),
+            umwandeln, null).get();
         sollbuchungenList.removeAll();
         if (sollbuchungen != null)
         {
@@ -651,8 +605,8 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     try
     {
       @SuppressWarnings("rawtypes")
-      GenericIterator sollbIterator = new SollbuchungQuery(this, umwandeln,
-          null).get();
+      GenericIterator sollbIterator = new SollbuchungQuery(getFilter(),
+          umwandeln, null).get();
       sollbuchungenList.removeAll();
       if (sollbIterator != null)
       {
@@ -915,36 +869,14 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     return editable = true;
   }
 
-  public Object[] getCVSExportGrenzen() throws RemoteException
-  {
-    return new Object[] { getSuchname().getValue(), getDifferenz().getValue(),
-        getOhneAbbucher().getValue(), getDatumvon().getValue(),
-        getDatumbis().getValue(), getMailauswahl().getValue(),
-        getSuchtext().getValue(), getDoubleAusw().getValue() };
-  }
-
   private ArrayList<Mitglied> getMitglieder(Object object)
       throws RemoteException, ApplicationException
   {
     ArrayList<Mitglied> mitglieder = new ArrayList<>();
-    if (object == null && isSuchMitgliedstypActive()
-        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() != null)
+    if (object == null)
     {
-      Mitgliedstyp mt = (Mitgliedstyp) getSuchMitgliedstyp(Mitgliedstypen.ALLE)
-          .getValue();
-      mitglieder = new MitgliedQuery(this).get(Integer.parseInt(mt.getID()),
-          null);
-      if (mitglieder == null || mitglieder.isEmpty())
-      {
-        throw new ApplicationException(
-            "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");
-      }
-    }
-    else if (object == null && isSuchMitgliedstypActive()
-        && getSuchMitgliedstyp(Mitgliedstypen.ALLE).getValue() == null)
-    {
-      mitglieder = new MitgliedQuery(this).get(-1, null);
-      if (mitglieder == null || mitglieder.isEmpty())
+      mitglieder = new MitgliedQuery(this).get(MitgliedAuswahl.ALLE, null);
+      if (mitglieder.size() == 0)
       {
         throw new ApplicationException(
             "Für die gewählten Filterkriterien wurden keine Mitglieder gefunden.");

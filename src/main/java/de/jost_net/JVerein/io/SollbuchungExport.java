@@ -21,14 +21,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.SollbuchungQuery;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput.MailAuswertungObject;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.willuhn.datasource.GenericIterator;
@@ -47,23 +47,12 @@ public abstract class SollbuchungExport implements Exporter
 
   protected File file;
 
-  protected SollbuchungControl control = new SollbuchungControl(null);
-
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
       ProgressMonitor monitor)
       throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
-    this.control.getSuchname().setValue(objects[0]);
-    this.control.getDifferenz().setValue(objects[1]);
-    this.control.getOhneAbbucher().setValue(objects[2]);
-    this.control.getDatumvon().setValue(objects[3]);
-    this.control.getDatumbis().setValue(objects[4]);
-    this.control.getMailauswahl()
-        .setValue(new MailAuswertungObject((int) objects[5]));
-    this.control.getSuchtext().setValue(objects[6]);
-    this.control.getDoubleAusw().setValue(objects[7]);
     open();
 
     DBIterator<Mitglied> mitgl = Einstellungen.getDBService()
@@ -74,8 +63,9 @@ public abstract class SollbuchungExport implements Exporter
     {
       Mitglied m = (Mitglied) mitgl.next();
       startMitglied(m);
+      @SuppressWarnings("unchecked")
       GenericIterator<Sollbuchung> sollbuchnungen = new SollbuchungQuery(
-          control, false, m).get();
+          (Map<Filter, Object>) objects[0], false, m).get();
       if (sollbuchnungen != null)
       {
         while (sollbuchnungen.hasNext())

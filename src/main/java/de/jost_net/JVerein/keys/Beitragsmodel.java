@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Beitragsmodel
  */
-public enum Beitragsmodel
+public enum Beitragsmodel implements KeyEnum
 {
   GLEICHERTERMINFUERALLE(1, "Gleicher Termin für alle"),
   MONATLICH12631(5,
@@ -37,6 +37,7 @@ public enum Beitragsmodel
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

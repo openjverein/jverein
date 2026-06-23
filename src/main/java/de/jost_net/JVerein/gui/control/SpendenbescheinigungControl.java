@@ -25,6 +25,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.widgets.Event;
@@ -36,7 +37,6 @@ import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.input.FormularInput;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.MitgliedInput;
 import de.jost_net.JVerein.gui.menu.BuchungPartAnzeigenMenu;
 import de.jost_net.JVerein.gui.menu.SpendenbescheinigungMenu;
@@ -49,8 +49,10 @@ import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.io.SpendenbescheinigungAusgabe;
 import de.jost_net.JVerein.keys.Adressblatt;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.keys.HerkunftSpende;
+import de.jost_net.JVerein.keys.MailAuswahl;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.SuchSpendenart;
 import de.jost_net.JVerein.keys.SuchVersand;
@@ -86,7 +88,6 @@ import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -146,8 +147,6 @@ public class SpendenbescheinigungControl extends DruckMailControl
   public SpendenbescheinigungControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Spendenbescheinigung getSpendenbescheinigung()
@@ -516,7 +515,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (spbList != null)
     {
@@ -552,7 +552,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (spbList != null)
     {
@@ -574,13 +574,10 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   @SuppressWarnings("unchecked")
   private ArrayList<Spendenbescheinigung> getSpendenbescheinigungen()
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
-    SuchSpendenart suchSpendenart = SuchSpendenart.ALLE;
-    if (isSuchSpendenartAktiv())
-    {
-      suchSpendenart = (SuchSpendenart) getSuchSpendenart().getValue();
-    }
+    SuchSpendenart suchSpendenart = (SuchSpendenart) getFilter()
+        .get(Filter.SPENDENART);
     ArrayList<Long> ids = new ArrayList<>();
     ArrayList<Long> queryIds = querySpendenbescheinigungen(suchSpendenart);
 
@@ -620,116 +617,101 @@ public class SpendenbescheinigungControl extends DruckMailControl
 
   @SuppressWarnings("unchecked")
   private ArrayList<Long> querySpendenbescheinigungen(
-      SuchSpendenart suchSpendenart) throws RemoteException
+      SuchSpendenart suchSpendenart)
+      throws RemoteException, ApplicationException
   {
     final DBService service = Einstellungen.getDBService();
     ArrayList<Object> bedingungen = new ArrayList<>();
     and = false;
 
     sql = "select DISTINCT spendenbescheinigung.id, bescheinigungsdatum from spendenbescheinigung ";
-    int mailauswahl = MailAuswertungInput.ALLE;
-    if (isMailauswahlAktiv())
+    if (getFilter().get(Filter.MAIL) != null)
     {
-      mailauswahl = (Integer) getMailauswahl().getValue();
-      if (mailauswahl != MailAuswertungInput.ALLE)
-      {
-        sql += "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
-      }
+      sql += "left join mitglied on (spendenbescheinigung.mitglied = mitglied.id) ";
     }
-    if (suchSpendenart != SuchSpendenart.ALLE
-        && suchSpendenart != SuchSpendenart.GELDSPENDE
-        && suchSpendenart != SuchSpendenart.SACHSPENDE)
+    Object spart = getFilter().get(Filter.SPENDENART);
+    if (spart != null && spart != SuchSpendenart.GELDSPENDE
+        && spart != SuchSpendenart.SACHSPENDE)
     {
       sql += "left join buchung on (spendenbescheinigung.id = buchung.spendenbescheinigung) ";
     }
 
-    if (isMailauswahlAktiv())
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      if (mailauswahl == MailAuswertungInput.OHNE)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        addCondition("(email is null or length(email) = 0) ");
-      }
-      if (mailauswahl == MailAuswertungInput.MIT)
-      {
-        addCondition("(email is not null and length(email) > 0) ");
-      }
-    }
-
-    if (isSuchSpendenartAktiv())
-    {
-      switch (suchSpendenart)
-      {
-        case ALLE:
+        case MAIL:
+          switch ((MailAuswahl) value)
+          {
+            case OHNE:
+              addCondition("(email is null or length(email) = 0) ");
+              break;
+            case MIT:
+              addCondition("(email is not null and length(email) > 0) ");
+          }
           break;
-        case GELDSPENDE:
-          addCondition("spendenart = ?");
-          bedingungen.add(Spendenart.GELDSPENDE);
+        case SPENDENART:
+          switch ((SuchSpendenart) value)
+          {
+            case GELDSPENDE:
+              addCondition("spendenart = ?");
+              bedingungen.add(Spendenart.GELDSPENDE);
+              break;
+            case SACHSPENDE:
+              addCondition("spendenart = ?");
+              bedingungen.add(Spendenart.SACHSPENDE);
+              break;
+            case ERSTATTUNGSVERZICHT:
+              addCondition("buchung.verzicht = 1");
+              break;
+            case GELDSPENDE_ECHT:
+              addCondition(
+                  "(buchung.verzicht != 1 or buchung.verzicht is null) AND spendenart = ?");
+              bedingungen.add(Spendenart.GELDSPENDE);
+              break;
+            case SACHSPENDE_ERSTATTUNGSVERZICHT:
+              addCondition("(buchung.verzicht = 1 OR spendenart = ?)");
+              bedingungen.add(Spendenart.SACHSPENDE);
+              break;
+            default:
+              break;
+          }
           break;
-        case SACHSPENDE:
-          addCondition("spendenart = ?");
-          bedingungen.add(Spendenart.SACHSPENDE);
+        case ZEILE2:
+          addCondition("(lower(zeile2) like ?)");
+          bedingungen.add("%" + value.toString().toLowerCase() + "%");
           break;
-        case ERSTATTUNGSVERZICHT:
-          addCondition("buchung.verzicht = 1");
+        case DATUM_BESCHEINIGUNG_VON:
+          addCondition("bescheinigungsdatum >= ?");
+          bedingungen.add(value);
           break;
-        case GELDSPENDE_ECHT:
-          addCondition(
-              "(buchung.verzicht != 1 or buchung.verzicht is null) AND spendenart = ?");
-          bedingungen.add(Spendenart.GELDSPENDE);
+        case DATUM_BESCHEINIGUNG_BIS:
+          addCondition("bescheinigungsdatum <= ?");
+          bedingungen.add(value);
           break;
-        case SACHSPENDE_ERSTATTUNGSVERZICHT:
-          addCondition("(buchung.verzicht = 1 OR spendenart = ?)");
-          bedingungen.add(Spendenart.SACHSPENDE);
+        case DATUM_SPENDE_VON:
+          addCondition("spendedatum >= ?");
+          bedingungen.add(value);
+          break;
+        case DATUM_SPENDE_BIS:
+          addCondition("spendedatum <= ?");
+          bedingungen.add(value);
+          break;
+        case VERSAND:
+          switch ((SuchVersand) value)
+          {
+            case VERSAND:
+              addCondition("versanddatum IS NOT NULL");
+              break;
+            case NICHT_VERSAND:
+              addCondition("versanddatum IS NULL");
+              break;
+          }
           break;
         default:
-          break;
-      }
-    }
-
-    if (isSuchnameAktiv() && getSuchname().getValue() != null)
-    {
-      String tmpSuchname = (String) getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
-      {
-        addCondition("(lower(zeile2) like ?)");
-        bedingungen.add("%" + tmpSuchname.toLowerCase() + "%");
-      }
-    }
-
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
-    {
-      addCondition("bescheinigungsdatum >= ?");
-      Date d = (Date) getDatumvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      addCondition("bescheinigungsdatum <= ?");
-      Date d = (Date) getDatumbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (isEingabedatumvonAktiv() && getEingabedatumvon().getValue() != null)
-    {
-      addCondition("spendedatum >= ?");
-      Date d = (Date) getEingabedatumvon().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (isEingabedatumbisAktiv() && getEingabedatumbis().getValue() != null)
-    {
-      addCondition("spendedatum <= ?");
-      Date d = (Date) getEingabedatumbis().getValue();
-      bedingungen.add(new java.sql.Date(d.getTime()));
-    }
-    if (isSuchVersandAktiv() && getSuchVersand().getValue() != null)
-    {
-      switch ((SuchVersand) getSuchVersand().getValue())
-      {
-        case VERSAND:
-          addCondition("versanddatum IS NOT NULL");
-          break;
-        case NICHT_VERSAND:
-          addCondition("versanddatum IS NULL");
-          break;
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
 
@@ -868,7 +850,7 @@ public class SpendenbescheinigungControl extends DruckMailControl
         }
         else
         {
-          spendenbescheinigung.setMitglied(null);
+          spendenbescheinigung.setMitglied((Integer) null);
         }
       }
       catch (Exception e)

@@ -20,8 +20,10 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.LastschriftControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -41,24 +43,24 @@ public class LastschriftListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addInput(control.getMitgliedArt());
-    left.addInput(control.getSuchname());
-    left.addInput(control.getSuchVersand());
+    left.addInput(control.getFilterInput(Filter.MITGLIEDART));
+    left.addInput(control.getFilterInput(Filter.NAME));
+    left.addInput(control.getFilterInput(Filter.VERSAND));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Zweck", control.getSuchtext());
-    middle.addLabelPair("Abrechnungslauf ab", control.getIntegerAusw());
+    middle.addInput(control.getFilterInput(Filter.ZWECK));
+    middle.addInput(control.getFilterInput(Filter.ABRECHNUNGSLAUF_AB));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Fälligkeit von", control.getDatumvon());
-    right.addLabelPair("Fälligkeit bis", control.getDatumbis());
+    Input von = control.getFilterInput(Filter.DATUM_FAELLIGKEI_VON);
+    right.addInput(von);
+    Input bis = control.getFilterInput(Filter.DATUM_FAELLIGKEI_BIS);
+    right.addInput(bis);
 
     ButtonArea fbuttons = new ButtonArea();
-    ToolTipButton zurueck = control.getZurueckButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton zurueck = control.getZurueckButton(von, bis);
     fbuttons.addButton(zurueck);
-    ToolTipButton vor = control.getVorButton(control.getDatumvon(),
-        control.getDatumbis());
+    ToolTipButton vor = control.getVorButton(von, bis);
     fbuttons.addButton(vor);
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());

@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Schlüssel Zahlungsrhythmus
  */
-public class Zahlungsrhythmus
+public class Zahlungsrhythmus implements KeyEnum
 {
 
   public static final int JAEHRLICH = 12;
@@ -39,6 +39,7 @@ public class Zahlungsrhythmus
     this.zahlungsrhytmus = key;
   }
 
+  @Override
   public int getKey()
   {
     return zahlungsrhytmus;

@@ -237,36 +237,34 @@ public class ZipMailer
                 {
                   case "rechnung":
                     finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                        + ".pdf";
+                        VorlageTyp.RECHNUNG_MITGLIED_DATEINAME, re) + ".pdf";
                     break;
                   case "mahnung":
                     finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re, mitgliedMap)
-                        + ".pdf";
+                        VorlageTyp.MAHNUNG_MITGLIED_DATEINAME, re) + ".pdf";
                     break;
                   case "spendenbescheinigung":
                     finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb,
-                        mitgliedMap) + ".pdf";
+                        VorlageTyp.SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME, spb)
+                        + ".pdf";
                     break;
                   case "freiesformular":
                     finaldateiname = VorlageUtil.getName(
                         VorlageTyp.FREIES_FORMULAR_MITGLIED_DATEINAME,
-                        dateiname.substring(0, dateiname.lastIndexOf('.')),
-                        mitgliedMap) + ".pdf";
+                        dateiname.substring(0, dateiname.lastIndexOf('.')))
+                        + ".pdf";
                     break;
                   case "kontoauszug":
                     finaldateiname = VorlageUtil.getName(
-                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null,
-                        mitgliedMap) + ".pdf";
+                        VorlageTyp.KONTOAUSZUG_MITGLIED_DATEINAME, null)
+                        + ".pdf";
                     break;
                   case "lastschrift":
-                    if (mitgliedMap.getID() != null)
+                    if (ls.getMitglied() != null)
                     {
                       finaldateiname = VorlageUtil.getName(
-                          VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls,
-                          mitgliedMap) + ".pdf";
+                          VorlageTyp.PRENOTIFICATION_MITGLIED_DATEINAME, ls)
+                          + ".pdf";
                     }
                     else
                     {

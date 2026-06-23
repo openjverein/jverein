@@ -17,9 +17,7 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
-import java.util.Date;
-
-import org.eclipse.swt.widgets.Composite;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.EditAction;
@@ -27,6 +25,7 @@ import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.VorZurueckControl;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
@@ -34,6 +33,7 @@ import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class WiedervorlageList extends JVereinTablePart
 {
@@ -48,7 +48,8 @@ public class WiedervorlageList extends JVereinTablePart
     this.control = control;
   }
 
-  public AutoUpdateTablePart getWiedervorlageList() throws RemoteException
+  public AutoUpdateTablePart getWiedervorlageList()
+      throws RemoteException, ApplicationException
   {
     if (wiedervorlageList != null)
     {
@@ -73,7 +74,8 @@ public class WiedervorlageList extends JVereinTablePart
     return wiedervorlageList;
   }
 
-  private DBIterator<Wiedervorlage> getIterator() throws RemoteException
+  private DBIterator<Wiedervorlage> getIterator()
+      throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Wiedervorlage> wiedervorlagen = service
@@ -82,65 +84,48 @@ public class WiedervorlageList extends JVereinTablePart
     wiedervorlagen.join("mitglied");
     wiedervorlagen.addFilter("mitglied.id = wiedervorlage.mitglied");
 
-    if (control.isSuchnameAktiv() && control.getSuchname().getValue() != null)
+    for (Entry<Filter, Object> entry : control.getFilter().entrySet())
     {
-      String tmpSuchname = (String) control.getSuchname().getValue();
-      if (tmpSuchname.length() > 0)
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        String suchName = "%" + tmpSuchname.toLowerCase() + "%";
-        wiedervorlagen.addFilter(
-            "(lower(name) like ? " + "or lower(vorname) like ?)",
-            new Object[] { suchName, suchName });
+        case NAME:
+          String suchName = "%" + value.toString().toLowerCase() + "%";
+          wiedervorlagen.addFilter(
+              "(lower(name) like ? " + "or lower(vorname) like ?)", suchName,
+              suchName);
+          break;
+        case DATUM_VON:
+          wiedervorlagen.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          wiedervorlagen.addFilter("datum <= ?", value);
+          break;
+        case VERMERK:
+          wiedervorlagen.addFilter("(lower(vermerk) like ?)",
+              "%" + value.toString().toLowerCase() + "%");
+          break;
+        case OHNE_ERLEDIGUNG:
+          if ((Boolean) value)
+          {
+            wiedervorlagen.addFilter("erledigung IS NULL");
+          }
+          break;
+        case DATUM_ERLEDIGUNG_VON:
+          wiedervorlagen.addFilter("erledigung >= ?", value);
+          break;
+        case DATUM_ERLEDIGUNG_BIS:
+          wiedervorlagen.addFilter("erledigung <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
-    if (control.isDatumvonAktiv() && control.getDatumvon().getValue() != null)
-    {
-      wiedervorlagen.addFilter("datum >= ?",
-          new Object[] { (Date) control.getDatumvon().getValue() });
-    }
-    if (control.isDatumbisAktiv() && control.getDatumbis().getValue() != null)
-    {
-      wiedervorlagen.addFilter("datum <= ?",
-          new Object[] { (Date) control.getDatumbis().getValue() });
-    }
-    if (control.isSuchtextAktiv() && control.getSuchtext().getValue() != null)
-    {
-      String tmpSuchtext = (String) control.getSuchtext().getValue();
-      if (tmpSuchtext.length() > 0)
-      {
-        wiedervorlagen.addFilter("(lower(vermerk) like ?)",
-            new Object[] { "%" + tmpSuchtext.toLowerCase() + "%" });
-      }
-    }
-    if (control.isCheckboxAuswahlAktiv()
-        && (Boolean) control.getCheckboxAuswahl().getValue())
-    {
-      wiedervorlagen.addFilter("erledigung IS NULL");
-    }
-    if (control.isEingabedatumvonAktiv()
-        && control.getEingabedatumvon().getValue() != null)
-    {
-      wiedervorlagen.addFilter("erledigung >= ?",
-          new Object[] { (Date) control.getEingabedatumvon().getValue() });
-    }
-    if (control.isEingabedatumbisAktiv()
-        && control.getEingabedatumbis().getValue() != null)
-    {
-      wiedervorlagen.addFilter("erledigung <= ?",
-          new Object[] { (Date) control.getEingabedatumbis().getValue() });
-    }
-    wiedervorlagen.setOrder("ORDER BY datum DESC");
-
     return wiedervorlagen;
   }
 
-  @Override
-  public synchronized void paint(Composite parent) throws RemoteException
-  {
-    super.paint(parent);
-  }
-
-  public void refresh()
+  public void refresh() throws ApplicationException
   {
     try
     {

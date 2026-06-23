@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Ausgabeart
+public enum Ausgabeart implements KeyEnum
 {
 
   PDF(1, "Eine PDF-Datei"),
@@ -33,6 +33,7 @@ public enum Ausgabeart
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

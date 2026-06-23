@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Schlüssel Einstellung.SEPAMandatIDSource Diese Klasse hilft beim Einstellen
  * wie die MandatsID für SEPA Lastschriften erzeugt werden soll
  */
-public class SepaMandatIdSource
+public class SepaMandatIdSource implements KeyEnum
 {
 
   public static final int DBID = 1;
@@ -38,6 +38,7 @@ public class SepaMandatIdSource
     this.mandatIDSource = key;
   }
 
+  @Override
   public int getKey()
   {
     return mandatIDSource;

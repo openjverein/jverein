@@ -21,7 +21,7 @@ import java.util.ArrayList;
 /**
  * Schlüssel Zahlungsweg
  */
-public class Zahlungsweg
+public class Zahlungsweg implements KeyEnum
 {
 
   public static final int STANDARD = 0;
@@ -39,6 +39,7 @@ public class Zahlungsweg
     this.zahlungsweg = key;
   }
 
+  @Override
   public int getKey()
   {
     return zahlungsweg;

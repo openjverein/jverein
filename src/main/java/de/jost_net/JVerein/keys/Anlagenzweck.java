@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum Anlagenzweck
+public enum Anlagenzweck implements KeyEnum
 {
   // Verwendungszweck der Anlage
 
@@ -37,6 +37,7 @@ public enum Anlagenzweck
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

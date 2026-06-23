@@ -4,19 +4,17 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import de.jost_net.JVerein.Queries.MitgliedQuery;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.PersonalbogenAusgabe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.keys.Ausgabeart;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -44,8 +42,6 @@ public class PersonalbogenControl extends DruckMailControl
   public PersonalbogenControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   public Button getStartPersonalbogenButton(Object currentObject)
@@ -135,14 +131,8 @@ public class PersonalbogenControl extends DruckMailControl
     {
       return new ArrayList<Mitglied>(Arrays.asList((Mitglied[]) object));
     }
-    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) getSuchMitgliedstyp(
-        Mitgliedstypen.ALLE).getValue();
-    int type = -1;
-    if (mitgliedstyp != null)
-    {
-      type = Integer.parseInt(mitgliedstyp.getID());
-    }
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this).get(type, null);
+    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this)
+        .get(MitgliedAuswahl.ALLE, null);
     if (mitglieder.size() == 0)
     {
       throw new ApplicationException(

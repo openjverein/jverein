@@ -20,6 +20,7 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MailNeuAction;
 import de.jost_net.JVerein.gui.control.MailControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -41,16 +42,16 @@ public class MailListeView extends AbstractView
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
     SimpleContainer left = new SimpleContainer(cl.getComposite());
-    left.addLabelPair("Mail Empfänger", control.getSuchname());
-    left.addLabelPair("Betreff", control.getSuchtext());
+    left.addInput(control.getFilterInput(Filter.MAIL_EMPFAENGER));
+    left.addInput(control.getFilterInput(Filter.BETREFF));
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
-    middle.addLabelPair("Bearbeitung von", control.getEingabedatumvon());
-    middle.addLabelPair("Bearbeitung bis", control.getEingabedatumbis());
+    middle.addInput(control.getFilterInput(Filter.DATUM_BEARBEITUNG_VON));
+    middle.addInput(control.getFilterInput(Filter.DATUM_BEARBEITUNG_BIS));
 
     SimpleContainer right = new SimpleContainer(cl.getComposite());
-    right.addLabelPair("Versand von", control.getDatumvon());
-    right.addLabelPair("Versand bis", control.getDatumbis());
+    right.addInput(control.getFilterInput(Filter.DATUM_VERSAND_VON));
+    right.addInput(control.getFilterInput(Filter.DATUM_VERSAND_BIS));
 
     ButtonArea fbuttons = new ButtonArea();
     fbuttons.addButton(control.getResetButton());

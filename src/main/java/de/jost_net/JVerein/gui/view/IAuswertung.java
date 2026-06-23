@@ -20,7 +20,10 @@ package de.jost_net.JVerein.gui.view;
 import java.io.File;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Map;
 
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.util.ApplicationException;
 
@@ -48,14 +51,17 @@ public interface IAuswertung
 
   /**
    * Vorbereitende Arbeiten
+   * 
+   * @param mitgliedAuswahl
    */
-  public void beforeGo(String title) throws RemoteException;
+  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
+      throws RemoteException;
 
   /**
    * Startet die Auswertung
    */
-  public void go(ArrayList<Mitglied> list, File file)
-      throws ApplicationException;
+  public void go(ArrayList<Mitglied> list, File file,
+      Map<Filter, String> filter) throws ApplicationException;
 
   /**
    * Bezeichnung der Auswertung für die Drop-Down-Liste

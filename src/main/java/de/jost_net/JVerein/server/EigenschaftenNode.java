@@ -65,9 +65,9 @@ public class EigenschaftenNode implements GenericObjectNode
   // Preset und Icon Definition
   public static final String UNCHECKED = "0";
 
-  public static final String PLUS = "1";
+  public static final String PLUS = "+";
 
-  public static final String MINUS = "2";
+  public static final String MINUS = "-";
 
   public static final String CHECKED = "3";
 
@@ -88,13 +88,7 @@ public class EigenschaftenNode implements GenericObjectNode
     this(mitglied, "", true, null);
   }
 
-  public EigenschaftenNode(String vorbelegung, boolean onlyChecked,
-      Mitglied[] mitglieder) throws RemoteException
-  {
-    this(null, vorbelegung, onlyChecked, mitglieder);
-  }
-
-  private EigenschaftenNode(Mitglied mitglied, String vorbelegung,
+  public EigenschaftenNode(Mitglied mitglied, String vorbelegung,
       boolean onlyChecked, Mitglied[] mitglieder) throws RemoteException
   {
     this.onlyChecked = onlyChecked;

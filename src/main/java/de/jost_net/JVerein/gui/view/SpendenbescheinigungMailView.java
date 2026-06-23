@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.action.MailTextVorschauAction;
 import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.SpendenbescheinigungControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -53,18 +54,18 @@ public class SpendenbescheinigungMailView extends AbstractView
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
       SimpleContainer left = new SimpleContainer(cl.getComposite());
-      left.addInput(control.getSuchname());
-      left.addInput(control.getMailauswahl());
-      left.addInput(control.getSuchVersand());
+      left.addInput(control.getFilterInput(Filter.NAME));
+      left.addInput(control.getFilterInput(Filter.MAIL));
+      left.addInput(control.getFilterInput(Filter.VERSAND));
 
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
-      middle.addLabelPair("Bescheinigungsdatum von", control.getDatumvon());
-      middle.addLabelPair("Bescheinigungsdatum bis", control.getDatumbis());
-      middle.addInput(control.getSuchSpendenart());
+      middle.addInput(control.getFilterInput(Filter.DATUM_BESCHEINIGUNG_VON));
+      middle.addInput(control.getFilterInput(Filter.DATUM_BESCHEINIGUNG_BIS));
+      middle.addInput(control.getFilterInput(Filter.SPENDENART));
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addLabelPair("Spendedatum von", control.getEingabedatumvon());
-      right.addLabelPair("Spendedatum bis", control.getEingabedatumbis());
+      right.addInput(control.getFilterInput(Filter.DATUM_SPENDE_VON));
+      right.addInput(control.getFilterInput(Filter.DATUM_SPENDE_BIS));
 
       ButtonArea fbuttons = new ButtonArea();
       fbuttons.addButton(control.getResetButton());

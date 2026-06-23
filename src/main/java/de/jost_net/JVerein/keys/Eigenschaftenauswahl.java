@@ -15,7 +15,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Eigenschaftenauswahl
  */
-public enum Eigenschaftenauswahl
+public enum Eigenschaftenauswahl implements KeyEnum
 {
 
   KEINE(1, "Keine Auswahl"),
@@ -39,6 +39,7 @@ public enum Eigenschaftenauswahl
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

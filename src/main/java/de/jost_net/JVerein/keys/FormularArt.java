@@ -16,7 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-public enum FormularArt
+public enum FormularArt implements KeyEnum
 {
   SPENDENBESCHEINIGUNG(1, "Spendenbescheinigung"),
   RECHNUNG(2, "Rechnung"),
@@ -37,6 +37,7 @@ public enum FormularArt
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

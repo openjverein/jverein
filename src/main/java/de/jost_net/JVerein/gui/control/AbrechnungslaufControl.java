@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.util.Date;
-
+import java.util.Map.Entry;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.BuchungAction;
@@ -44,6 +44,7 @@ import de.jost_net.JVerein.gui.view.LastschriftDetailView;
 import de.jost_net.JVerein.gui.view.SollbuchungDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.Abrechnungsmodi;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -125,8 +126,6 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   public AbrechnungslaufControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   private Abrechnungslauf getAbrechnungslauf()
@@ -296,7 +295,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   }
 
   @Override
-  public JVereinTablePart getTablePart() throws RemoteException
+  public JVereinTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (abrechnungslaufList != null)
     {
@@ -339,7 +339,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     if (abrechnungslaufList == null)
     {
@@ -362,20 +362,27 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   }
 
   private DBIterator<Abrechnungslauf> getAbrechnungslaeufe()
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     DBService service = Einstellungen.getDBService();
     DBIterator<Abrechnungslauf> abrechnungslaeufe = service
         .createList(Abrechnungslauf.class);
-    if (isDatumvonAktiv() && getDatumvon().getValue() != null)
+
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      abrechnungslaeufe.addFilter("datum >= ?",
-          new Object[] { (Date) getDatumvon().getValue() });
-    }
-    if (isDatumbisAktiv() && getDatumbis().getValue() != null)
-    {
-      abrechnungslaeufe.addFilter("datum <= ?",
-          new Object[] { (Date) getDatumbis().getValue() });
+      Object value = entry.getValue();
+      switch (entry.getKey())
+      {
+        case DATUM_VON:
+          abrechnungslaeufe.addFilter("datum >= ?", value);
+          break;
+        case DATUM_BIS:
+          abrechnungslaeufe.addFilter("datum <= ?", value);
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
+      }
     }
     abrechnungslaeufe.setOrder("ORDER BY datum DESC");
     return abrechnungslaeufe;

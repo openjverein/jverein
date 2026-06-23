@@ -23,11 +23,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
-import de.jost_net.JVerein.gui.control.SollbuchungControl.DIFFERENZ;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
 import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
@@ -35,7 +35,6 @@ import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.input.IBANInput;
-import de.jost_net.JVerein.gui.input.MailAuswertungInput;
 import de.jost_net.JVerein.gui.input.PersonenartInput;
 import de.jost_net.JVerein.gui.menu.RechnungMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
@@ -47,7 +46,10 @@ import de.jost_net.JVerein.gui.view.RechnungDetailView;
 import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.io.Rechnungsausgabe;
 import de.jost_net.JVerein.keys.Ausgabeart;
+import de.jost_net.JVerein.keys.Differenz;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.FormularArt;
+import de.jost_net.JVerein.keys.MailAuswahl;
 import de.jost_net.JVerein.keys.SuchVersand;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -79,7 +81,6 @@ import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -155,12 +156,11 @@ public class RechnungControl extends DruckMailControl implements Savable
   public RechnungControl(AbstractView view)
   {
     super(view);
-    settings = new Settings(this.getClass());
-    settings.setStoreWhenRead(true);
   }
 
   @Override
-  public BetragSummaryTablePart getTablePart() throws RemoteException
+  public BetragSummaryTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (rechnungList != null)
     {
@@ -257,7 +257,7 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @Override
-  protected void TabRefresh()
+  protected void TabRefresh() throws ApplicationException
   {
     try
     {
@@ -279,113 +279,118 @@ public class RechnungControl extends DruckMailControl implements Savable
   }
 
   @SuppressWarnings("unchecked")
-  private GenericIterator<Rechnung> getRechnungIterator() throws RemoteException
+  private GenericIterator<Rechnung> getRechnungIterator()
+      throws RemoteException, ApplicationException
   {
     DBIterator<Rechnung> rechnungenIt = Einstellungen.getDBService()
         .createList(Rechnung.class);
 
-    if (suchversand != null && suchversand.getValue() != null)
+    boolean joinMitglied = false;
+    for (Entry<Filter, Object> entry : getFilter().entrySet())
     {
-      switch ((SuchVersand) suchversand.getValue())
+      Object value = entry.getValue();
+
+      switch (entry.getKey())
       {
         case VERSAND:
-          rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
+          switch ((SuchVersand) value)
+          {
+            case VERSAND:
+              rechnungenIt.addFilter("rechnung.versanddatum IS NOT NULL");
+              break;
+            case NICHT_VERSAND:
+              rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
+              break;
+          }
           break;
-        case NICHT_VERSAND:
-          rechnungenIt.addFilter("rechnung.versanddatum IS NULL");
+        case DATUM_VON:
+          rechnungenIt.addFilter("rechnung.datum >= ? ", value);
           break;
+        case DATUM_BIS:
+          rechnungenIt.addFilter("rechnung.datum <= ? ", value);
+          break;
+        case NAME:
+          joinMitglied = true;
+          rechnungenIt.addFilter(
+              "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
+              "%" + ((String) value).toLowerCase() + "%",
+              "%" + ((String) value).toLowerCase() + "%");
+          break;
+        case MAIL:
+          switch ((MailAuswahl) value)
+          {
+            case OHNE:
+              joinMitglied = true;
+              rechnungenIt.addFilter(
+                  "(mitglied.email is null or length(mitglied.email) = 0)");
+              break;
+            case MIT:
+              joinMitglied = true;
+              rechnungenIt.addFilter(
+                  "(mitglied.email is  not null and length(mitglied.email) > 0)");
+          }
+          break;
+        case OHNE_ABBUCHER:
+          if ((boolean) value)
+          {
+            rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
+                Zahlungsweg.BASISLASTSCHRIFT);
+          }
+          break;
+        case DIFFERENZ:
+          Double limit = (Double) getFilter().get(Filter.DIFFERENZ_LIMIT);
+          if (limit == null)
+          {
+            limit = 0.005d;
+          }
+          // Es ist egal ob der Betrag positiv oder negativ eingetragen
+          // wurde
+          limit = Math.abs(limit);
+
+          ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+              Sollbuchung.TABLE_NAME);
+          it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
+          it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
+              + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
+          it.leftJoin(
+              "(SELECT sum(COALESCE((betrag),0)) AS ist,"
+                  + Buchung.T_SOLLBUCHUNG + " FROM buchung GROUP BY "
+                  + Buchung.T_SOLLBUCHUNG + ") AS buchung",
+              Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
+
+          if (value == Differenz.FEHLBETRAG)
+          {
+            it.addHaving("dif < ?", -limit);
+          }
+          else
+          {
+            it.addHaving("dif > ?", limit);
+          }
+          it.addGroupBy(Sollbuchung.T_RECHNUNG);
+          ArrayList<String> diffIds = new ArrayList<>();
+          while (it.hasNext())
+          {
+            diffIds.add(String.valueOf(it.next().getAttribute("rid")));
+          }
+          if (diffIds.size() == 0)
+          {
+            return PseudoIterator.fromArray(new GenericObject[] {});
+          }
+          rechnungenIt
+              .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
+          break;
+        case DIFFERENZ_LIMIT:
+          // Wird oben getestet
+          break;
+        default:
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
-
-    if (datumvon != null && datumvon.getValue() != null)
-    {
-      rechnungenIt.addFilter("rechnung.datum >= ? ",
-          new Object[] { datumvon.getValue() });
-    }
-    if (datumbis != null && datumbis.getValue() != null)
-    {
-      rechnungenIt.addFilter("rechnung.datum <= ? ",
-          new Object[] { datumbis.getValue() });
-    }
-
-    // Wenn Filtern nach Name oder Mail JOIN mitglied
-    if ((suchname != null && suchname.getValue() != null
-        && !((String) suchname.getValue()).isEmpty())
-        || (mailAuswahl != null
-            && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE))
+    if (joinMitglied)
     {
       rechnungenIt.join("mitglied");
       rechnungenIt.addFilter("mitglied.id = rechnung.mitglied");
-    }
-
-    if (suchname != null && suchname.getValue() != null
-        && !((String) suchname.getValue()).isEmpty())
-    {
-      rechnungenIt.addFilter(
-          "((lower(mitglied.name) like ?) OR (lower(mitglied.vorname) like ?))",
-          new Object[] {
-              "%" + ((String) suchname.getValue()).toLowerCase() + "%",
-              "%" + ((String) suchname.getValue()).toLowerCase() + "%" });
-    }
-
-    if (mailAuswahl != null
-        && (Integer) mailAuswahl.getValue() != MailAuswertungInput.ALLE)
-    {
-      if ((Integer) mailAuswahl.getValue() == MailAuswertungInput.OHNE)
-        rechnungenIt.addFilter(
-            "(mitglied.email is null or length(mitglied.email) = 0)");
-      else
-        rechnungenIt.addFilter(
-            "(mitglied.email is  not null and length(mitglied.email) > 0)");
-    }
-
-    if (ohneabbucher != null && (Boolean) ohneabbucher.getValue())
-    {
-      rechnungenIt.addFilter("rechnung.zahlungsweg <> ?",
-          Zahlungsweg.BASISLASTSCHRIFT);
-    }
-
-    if (isDifferenzAktiv() && getDifferenz().getValue() != DIFFERENZ.EGAL)
-    {
-      Double limit = Double.valueOf(0.005d);
-      if (isDoubleAuswAktiv() && getDoubleAusw().getValue() != null)
-      {
-        // Es ist egal ob der Betrag positiv oder negativ eingetragen wurde
-        limit = Math.abs((Double) getDoubleAusw().getValue());
-      }
-
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          Sollbuchung.TABLE_NAME);
-      it.addColumn(Sollbuchung.T_RECHNUNG + " as rid");
-      it.addColumn("sum(cast(COALESCE(buchung.ist,0) - COALESCE("
-          + Sollbuchung.T_BETRAG + ",0) AS DECIMAL(10,2))) as dif");
-      it.leftJoin(
-          "(SELECT sum(COALESCE((betrag),0)) AS ist," + Buchung.T_SOLLBUCHUNG
-              + " FROM buchung GROUP BY " + Buchung.T_SOLLBUCHUNG
-              + ") AS buchung",
-          Buchung.T_SOLLBUCHUNG + " = " + Sollbuchung.TABLE_NAME_ID);
-
-      if (getDifferenz().getValue() == DIFFERENZ.FEHLBETRAG)
-      {
-        it.addHaving("dif < -" + limit.toString());
-      }
-      else
-      {
-        it.addHaving("dif > " + limit.toString());
-      }
-      it.addGroupBy(Sollbuchung.T_RECHNUNG);
-      ArrayList<String> diffIds = new ArrayList<>();
-      while (it.hasNext())
-      {
-        PseudoDBObject o = it.next();
-        diffIds.add(String.valueOf(o.getAttribute("rid")));
-      }
-      if (diffIds.size() == 0)
-      {
-        return PseudoIterator.fromArray(new GenericObject[] {});
-      }
-      rechnungenIt
-          .addFilter("rechnung.id in (" + String.join(",", diffIds) + ")");
     }
 
     return rechnungenIt;

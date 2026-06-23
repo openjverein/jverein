@@ -28,6 +28,7 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.RechnungControl;
 import de.jost_net.JVerein.gui.control.RechnungControl.TYP;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -53,18 +54,19 @@ public class RechnungMailView extends AbstractView
       ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
 
       SimpleContainer left = new SimpleContainer(cl.getComposite());
-      left.addInput(control.getSuchname());
-      left.addInput(control.getMailauswahl());
-      left.addInput(control.getSuchVersand());
+      left.addInput(control.getFilterInput(Filter.NAME));
+      left.addInput(control.getFilterInput(Filter.MAIL));
+      left.addInput(control.getFilterInput(Filter.VERSAND));
 
       SimpleContainer middle = new SimpleContainer(cl.getComposite());
-      middle.addInput(control.getDifferenz());
-      middle.addLabelPair("Differenz Limit", control.getDoubleAusw());
-      middle.addLabelPair("Ohne Abbucher", control.getOhneAbbucher());
+      middle.addInput(control.getFilterInput(Filter.DIFFERENZ));
+      middle.addInput(control.getFilterInput(Filter.DIFFERENZ_LIMIT));
+      middle.addLabelPair("Ohne Abbucher",
+          control.getFilterInput(Filter.OHNE_ABBUCHER));
 
       SimpleContainer right = new SimpleContainer(cl.getComposite());
-      right.addInput(control.getDatumvon());
-      right.addInput(control.getDatumbis());
+      right.addInput(control.getFilterInput(Filter.DATUM_VON));
+      right.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
       ButtonArea filterbuttons = new ButtonArea();
       filterbuttons.addButton(control.getResetButton());

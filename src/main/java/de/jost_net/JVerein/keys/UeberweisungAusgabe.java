@@ -19,7 +19,7 @@ package de.jost_net.JVerein.keys;
 /**
  * Abrechnungsausgabe
  */
-public enum UeberweisungAusgabe
+public enum UeberweisungAusgabe implements KeyEnum
 {
 
   SEPA_DATEI(1, "Datei"),
@@ -35,6 +35,7 @@ public enum UeberweisungAusgabe
     this.text = text;
   }
 
+  @Override
   public int getKey()
   {
     return key;

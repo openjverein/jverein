@@ -31,8 +31,10 @@ import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.view.IAuswertung;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -69,7 +71,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public void beforeGo(String title) throws RemoteException
+  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
+      throws RemoteException
   {
     // read and check vorlagedateicsv
     headerKeys = null;
@@ -117,8 +120,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public void go(ArrayList<Mitglied> list, final File file)
-      throws ApplicationException
+  public void go(ArrayList<Mitglied> list, final File file,
+      Map<Filter, String> filter) throws ApplicationException
   {
     try
     {
