@@ -197,6 +197,16 @@ public abstract class DruckMailControl extends FilterControl
         settings.setAttribute(settingsprefix + "formular.key",
             f == null ? "" : f.getID());
       }
+      if (versand != null)
+      {
+        settings.setAttribute(settingsprefix + "versand",
+            versand.getValue().toString());
+      }
+      if (ct1versand != null)
+      {
+        settings.setAttribute(settingsprefix + "ct1versand",
+            ct1versand.getValue().toString());
+      }
       super.saveFilterSettings();
     }
     catch (RemoteException e)
