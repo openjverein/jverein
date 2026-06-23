@@ -513,7 +513,6 @@ public class VorlageUtil
           set.add(Filter.OHNE_ERLEDIGUNG);
           set.add(Filter.DATUM_ERLEDIGUNG_VON);
           set.add(Filter.DATUM_ERLEDIGUNG_BIS);
-          set.add(Filter.DATUM_ERLEDIGUNG_BIS);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:

@@ -122,7 +122,7 @@ public enum Filter
       FilterArt.SELECT, MitgliedStatus.values()),
   MITGLIEDSNUMMER("filter_mitgliedsnummer", "Mitgliedsnummer", "45",
       FilterArt.INTEGER),
-  MITGLIEDSTYP("filter_mitgliedstyp", "Adresstyp", "Spender/in",
+  MITGLIEDSTYP("filter_mitgliedstyp", "Mitgliedstyp", "Spender/in",
       FilterArt.SELECT, Mitgliedstyp.class),
   NAME("filter_name", "Name", "Meier", FilterArt.TEXT),
   NUMMER("filter_nummer", "Nummer", "44", FilterArt.TEXT),
