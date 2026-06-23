@@ -115,7 +115,7 @@ public class SollbuchungAuswahlDialog extends AbstractDialog<Object>
         "Istbuchung einer Sollbuchung zuordnen", false, 1);
     LabelGroup grNurIst = new LabelGroup(tabNurIst.getComposite(), "Filter");
 
-    Input input = control.getFilterInput(Filter.MITGLIED);
+    Input input = control.getFilterInput(Filter.ZAHLER);
     input.setValue(buchung.getName());
     grNurIst.addInput(input);
     Input differenzInput = control.getFilterInput(Filter.DIFFERENZ);
