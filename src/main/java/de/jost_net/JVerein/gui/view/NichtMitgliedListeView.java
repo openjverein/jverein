@@ -86,8 +86,7 @@ public class NichtMitgliedListeView extends AbstractMitgliedListeView
     TabGroup tab3 = new TabGroup(folder, "Mitgliedskonto", true, 2);
     SimpleContainer left3 = new SimpleContainer(tab3.getComposite());
     left3.addInput(control.getFilterInput(Filter.DIFFERENZ));
-    left3.addLabelPair("Differenz Limit",
-        control.getFilterInput(Filter.DIFFERENZ_LIMIT));
+    left3.addInput(control.getFilterInput(Filter.DIFFERENZ_LIMIT));
 
     SimpleContainer right3 = new SimpleContainer(tab3.getComposite());
     right3.addInput(control.getFilterInput(Filter.DATUM_VON));

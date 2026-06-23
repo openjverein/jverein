@@ -45,7 +45,7 @@ public class StatistikMitgliedView extends AbstractView
     cal.set(Calendar.MONTH, Calendar.DECEMBER);
     cal.set(Calendar.DAY_OF_MONTH, 31);
     input.setValue(new Date(cal.getTimeInMillis()));
-    group.addLabelPair("Stichtag", input);
+    group.addInput(input);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
