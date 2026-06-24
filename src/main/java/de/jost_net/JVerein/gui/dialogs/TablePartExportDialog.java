@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -206,8 +204,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         reporter.addHeaderColumn(col.getText(),
             col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                 : Element.ALIGN_RIGHT,
-            (int) col.getData(), BaseColor.LIGHT_GRAY,
-            getFontNormal(BaseColor.BLACK));
+            (int) col.getData(), getHintergrundHeader(),
+            getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
@@ -217,39 +215,11 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         {
           int index = listeOrig.indexOf(col);
           String text = row.getText(index);
-          BaseColor color = BaseColor.BLACK;
-          try
-          {
-            String text2 = text.replaceAll("\\.", "").replaceAll("\\,", "\\.");
-            Double value = Double.valueOf(text2);
-            if (value < 0)
-            {
-              color = BaseColor.RED;
-            }
-          }
-          catch (NumberFormatException ex)
-          {
-            // Dann bleibt es Schwarz
-          }
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) row.getData("background");
-          Font font = null;
-          for (FontData data : row.getFont(index).getFontData())
-          {
-            switch (data.getStyle())
-            {
-              case SWT.BOLD:
-                font = getFontFett(color);
-                break;
-              case SWT.ITALIC:
-                font = getFontKursiv(color);
-                break;
-              case SWT.NORMAL:
-                font = getFontNormal(color);
-                break;
-            }
-          }
+          Font font = getFont(text, row.getFont(index).getFontData());
+
           if (bg == null)
           {
             reporter.addColumn(text,

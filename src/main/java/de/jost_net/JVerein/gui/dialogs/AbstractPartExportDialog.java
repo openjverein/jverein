@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
@@ -40,6 +42,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.CheckboxInput;
+import de.willuhn.jameica.gui.input.ColorInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
@@ -92,19 +95,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected CheckboxInput zellenTransparent;
 
+  protected SelectInput fontHeader;
+
   protected SelectInput fontNormal;
 
   protected SelectInput fontFett;
 
   protected SelectInput fontItalic;
 
-  protected IntegerInput fontsizeNormal;
+  protected IntegerInput fontsizeHeader;
 
-  protected IntegerInput fontsizeFett;
-
-  protected IntegerInput fontsizeItalic;
+  protected IntegerInput fontsize;
 
   protected CheckboxInput negativRot;
+
+  protected ColorInput colorChooser;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
@@ -212,26 +217,33 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFormular.addLabelPair("Querformat", querformat);
 
     // Schriftart
+    fontHeader = new FontInput(
+        settings.getString(settingPrefix + "font_header", "FreeSans"));
     fontNormal = new FontInput(
         settings.getString(settingPrefix + "font_normal", "FreeSans"));
     fontFett = new FontInput(
         settings.getString(settingPrefix + "font_fett", "FreeSans-Bold"));
     fontItalic = new FontInput(
         settings.getString(settingPrefix + "font_italic", "FreeSans-Oblique"));
-    fontsizeNormal = new IntegerInput(
-        settings.getInt(settingPrefix + "fontsize_normal", 8));
-    fontsizeFett = new IntegerInput(
-        settings.getInt(settingPrefix + "fontsize_fett", 8));
-    fontsizeItalic = new IntegerInput(
-        settings.getInt(settingPrefix + "fontsize_italic", 8));
+    fontsize = new IntegerInput(settings.getInt(settingPrefix + "fontsize", 8));
+    fontsizeHeader = new IntegerInput(
+        settings.getInt(settingPrefix + "fontsize_header", 8));
     negativRot = new CheckboxInput(
         settings.getBoolean(settingPrefix + "negativ_rot", true));
+    Color col = new Color(
+        (int) settings.getInt(settingPrefix + "color_red", 192),
+        (int) settings.getInt(settingPrefix + "color_green", 192),
+        (int) settings.getInt(settingPrefix + "color_blue", 192));
+    colorChooser = new ColorInput(col, false);
+    tabFont.addHeadline("Tabellen Spaltennamen");
+    tabFont.addLabelPair("Schriftart", fontHeader);
+    tabFont.addLabelPair("Schriftgröße", fontsizeHeader);
+    tabFont.addLabelPair("Hintergrund Farbe", colorChooser);
+    tabFont.addHeadline("Tabellen Inhalt");
     tabFont.addLabelPair("Schriftart Standard", fontNormal);
-    tabFont.addLabelPair("Schriftgröße Standard", fontsizeNormal);
     tabFont.addLabelPair("Schriftart Fett", fontFett);
-    tabFont.addLabelPair("Schriftgröße Fett", fontsizeFett);
     tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
-    tabFont.addLabelPair("Schriftgröße Kursiv", fontsizeItalic);
+    tabFont.addLabelPair("Schriftgröße", fontsize);
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
   }
 
@@ -324,53 +336,95 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       settings.setAttribute(settingPrefix + "quer",
           (Boolean) querformat.getValue());
 
+      settings.setAttribute(settingPrefix + "font_header",
+          (String) fontHeader.getValue());
       settings.setAttribute(settingPrefix + "font_normal",
           (String) fontNormal.getValue());
       settings.setAttribute(settingPrefix + "font_fett",
           (String) fontFett.getValue());
       settings.setAttribute(settingPrefix + "font_italic",
           (String) fontItalic.getValue());
-      settings.setAttribute(settingPrefix + "fontsize_normal",
-          (Integer) fontsizeNormal.getValue());
-      settings.setAttribute(settingPrefix + "fontsize_fett",
-          (Integer) fontsizeFett.getValue());
-      settings.setAttribute(settingPrefix + "fontsize_italic",
-          (Integer) fontsizeItalic.getValue());
+      settings.setAttribute(settingPrefix + "fontsize_header",
+          (Integer) fontsizeHeader.getValue());
+      settings.setAttribute(settingPrefix + "fontsize",
+          (Integer) fontsize.getValue());
       settings.setAttribute(settingPrefix + "negativ_rot",
           (Boolean) negativRot.getValue());
+      Color col = (Color) colorChooser.getValue();
+      settings.setAttribute(settingPrefix + "color_red",
+          (Integer) col.getRed());
+      settings.setAttribute(settingPrefix + "color_green",
+          (Integer) col.getGreen());
+      settings.setAttribute(settingPrefix + "color_blue",
+          (Integer) col.getBlue());
     }
+  }
+
+  protected Font getFont(String text, FontData[] data)
+  {
+    BaseColor color = BaseColor.BLACK;
+    try
+    {
+      String text2 = text.replaceAll("\\.", "").replaceAll("\\,", "\\.");
+      Double value = Double.valueOf(text2);
+      if (value < 0)
+      {
+        color = BaseColor.RED;
+      }
+    }
+    catch (NumberFormatException ex)
+    {
+      // Dann bleibt es Schwarz
+    }
+    for (FontData fdata : data)
+    {
+      switch (fdata.getStyle())
+      {
+        case SWT.BOLD:
+          return getFontFett(color);
+        case SWT.ITALIC:
+          return getFontKursiv(color);
+        case SWT.NORMAL:
+          return getFontNormal(color);
+      }
+    }
+    return null;
+  }
+
+  protected Font getFontHeader(BaseColor color)
+  {
+    return FontFactory.getFont(
+        "/fonts/" + (String) fontHeader.getValue() + ".ttf",
+        BaseFont.IDENTITY_H, (Integer) fontsizeHeader.getValue(),
+        Font.UNDEFINED, color);
+  }
+
+  protected BaseColor getHintergrundHeader()
+  {
+    Color col = (Color) colorChooser.getValue();
+    return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
   }
 
   protected Font getFontNormal(BaseColor color)
   {
     return FontFactory.getFont(
         "/fonts/" + (String) fontNormal.getValue() + ".ttf",
-        BaseFont.IDENTITY_H, (Integer) fontsizeNormal.getValue(),
-        Font.UNDEFINED, getColor(color));
+        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
+        color);
   }
 
   protected Font getFontFett(BaseColor color)
   {
     return FontFactory.getFont(
         "/fonts/" + (String) fontFett.getValue() + ".ttf", BaseFont.IDENTITY_H,
-        (Integer) fontsizeFett.getValue(), Font.UNDEFINED, getColor(color));
+        (Integer) fontsize.getValue(), Font.UNDEFINED, color);
   }
 
   protected Font getFontKursiv(BaseColor color)
   {
     return FontFactory.getFont(
         "/fonts/" + (String) fontItalic.getValue() + ".ttf",
-        BaseFont.IDENTITY_H, (Integer) fontsizeItalic.getValue(), Font.ITALIC,
-        getColor(color));
-  }
-
-  private BaseColor getColor(BaseColor color)
-  {
-    if (!(Boolean) negativRot.getValue())
-    {
-      color = BaseColor.BLACK;
-    }
-    return color;
+        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.ITALIC, color);
   }
 
   @Override
