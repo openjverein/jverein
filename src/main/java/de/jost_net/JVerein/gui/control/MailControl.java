@@ -494,8 +494,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 String textParsed = VelocityTool.eval(map, txt);
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(), textParsed,
-                      betreffParsed, getMail().getAnhang());
+                  sender.sendMail(empf.getMailAdresse(), betreffParsed,
+                      textParsed, getMail().getAnhang());
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
