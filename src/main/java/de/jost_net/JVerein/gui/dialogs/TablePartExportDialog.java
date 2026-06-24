@@ -232,7 +232,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
             reporter.addColumn(text,
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
-                new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
+                getHintergrundTabelle(), font);
           }
         }
       }

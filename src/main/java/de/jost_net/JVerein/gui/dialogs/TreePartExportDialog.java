@@ -296,8 +296,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           }
           else
           {
-            reporter.addColumn(text, alignment,
-                new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
+            reporter.addColumn(text, alignment, getHintergrundTabelle(), font);
           }
         }
       }

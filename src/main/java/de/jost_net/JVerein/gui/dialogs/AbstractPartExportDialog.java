@@ -109,7 +109,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected CheckboxInput negativRot;
 
-  protected ColorInput colorChooser;
+  protected ColorInput colorHeader;
+
+  protected ColorInput colorTable;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
@@ -231,18 +233,23 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     negativRot = new CheckboxInput(
         settings.getBoolean(settingPrefix + "negativ_rot", true));
     Color col = new Color(
-        (int) settings.getInt(settingPrefix + "color_red", 192),
+        (int) settings.getInt(settingPrefix + "header_color_red", 192),
+        (int) settings.getInt(settingPrefix + "header_color_green", 192),
+        (int) settings.getInt(settingPrefix + "header_color_blue", 192));
+    colorHeader = new ColorInput(col, false);
+    col = new Color((int) settings.getInt(settingPrefix + "color_red", 192),
         (int) settings.getInt(settingPrefix + "color_green", 192),
         (int) settings.getInt(settingPrefix + "color_blue", 192));
-    colorChooser = new ColorInput(col, false);
+    colorTable = new ColorInput(col, false);
     tabFont.addHeadline("Tabellen Spaltennamen");
     tabFont.addLabelPair("Schriftart", fontHeader);
     tabFont.addLabelPair("Schriftgröße", fontsizeHeader);
-    tabFont.addLabelPair("Hintergrund Farbe", colorChooser);
+    tabFont.addLabelPair("Hintergrund Farbe", colorHeader);
     tabFont.addHeadline("Tabellen Inhalt");
     tabFont.addLabelPair("Schriftart Standard", fontNormal);
     tabFont.addLabelPair("Schriftart Fett", fontFett);
     tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
+    tabFont.addLabelPair("Hintergrund Farbe", colorTable);
     tabFont.addLabelPair("Schriftgröße", fontsize);
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
   }
@@ -350,7 +357,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           (Integer) fontsize.getValue());
       settings.setAttribute(settingPrefix + "negativ_rot",
           (Boolean) negativRot.getValue());
-      Color col = (Color) colorChooser.getValue();
+      Color col = (Color) colorHeader.getValue();
+      settings.setAttribute(settingPrefix + "header_color_red",
+          (Integer) col.getRed());
+      settings.setAttribute(settingPrefix + "header_color_green",
+          (Integer) col.getGreen());
+      settings.setAttribute(settingPrefix + "header_color_blue",
+          (Integer) col.getBlue());
+      col = (Color) colorTable.getValue();
       settings.setAttribute(settingPrefix + "color_red",
           (Integer) col.getRed());
       settings.setAttribute(settingPrefix + "color_green",
@@ -401,7 +415,13 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected BaseColor getHintergrundHeader()
   {
-    Color col = (Color) colorChooser.getValue();
+    Color col = (Color) colorHeader.getValue();
+    return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
+  }
+
+  protected BaseColor getHintergrundTabelle()
+  {
+    Color col = (Color) colorTable.getValue();
     return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
   }
 
