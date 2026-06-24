@@ -249,8 +249,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addLabelPair("Schriftart Standard", fontNormal);
     tabFont.addLabelPair("Schriftart Fett", fontFett);
     tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
-    tabFont.addLabelPair("Hintergrund Farbe *", colorTable);
     tabFont.addLabelPair("Schriftgröße", fontsize);
+    tabFont.addLabelPair("Hintergrund Farbe *", colorTable);
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
     tabFont.addSeparator();
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
