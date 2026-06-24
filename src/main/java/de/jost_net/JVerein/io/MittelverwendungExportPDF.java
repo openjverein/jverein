@@ -82,7 +82,8 @@ public class MittelverwendungExportPDF implements ISaldoExport
             }
             else
             {
-              reporter.addColumn(position, Element.ALIGN_RIGHT);
+              reporter.addColumn(position, Element.ALIGN_RIGHT,
+                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
                   Element.ALIGN_LEFT, params.getFontNormal());
@@ -106,7 +107,8 @@ public class MittelverwendungExportPDF implements ISaldoExport
             }
             else
             {
-              reporter.addColumn(position, Element.ALIGN_RIGHT);
+              reporter.addColumn(position, Element.ALIGN_RIGHT,
+                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
                   Element.ALIGN_RIGHT, params.getFontFett());
