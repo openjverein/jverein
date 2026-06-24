@@ -895,7 +895,7 @@ public class AbrechnungSEPA extends SEPASupport
       ls_properties.setProperty(SepaUtil.insertIndex("manddateofsig", counter),
           ISO_DATE.format(zahler.getMandatdatum()));
       ls_properties.setProperty(SepaUtil.insertIndex("purposecode", counter),
-          "OHTR");
+          "OTHR");
       counter += 1;
     }
     final OutputStream os = Files.newOutputStream(param.sepafileRCUR.toPath());
