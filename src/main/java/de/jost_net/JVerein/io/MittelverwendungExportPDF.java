@@ -69,14 +69,12 @@ public class MittelverwendungExportPDF implements ISaldoExport
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
                   Element.ALIGN_LEFT, params.getColorTable(), true,
-                  params.getFontNormal(), 5);
+                  params.getFontNormal(), 4);
             }
             break;
           case MittelverwendungControl.ART_DETAIL:
             if (tab == MittelverwendungControl.SALDO_REPORT)
             {
-              reporter.addColumn(position, Element.ALIGN_LEFT,
-                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz
                       .getAttribute(MittelverwendungControl.BEZEICHNUNG),
@@ -105,7 +103,7 @@ public class MittelverwendungExportPDF implements ISaldoExport
             {
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
-                  Element.ALIGN_RIGHT, null, true, params.getFontFett(), 3);
+                  Element.ALIGN_RIGHT, null, true, params.getFontFett(), 2);
             }
             else
             {
@@ -174,7 +172,6 @@ public class MittelverwendungExportPDF implements ISaldoExport
         reporter.createHeader();
         break;
       case MittelverwendungControl.SALDO_REPORT:
-        reporter.addHeaderColumn("Art", Element.ALIGN_CENTER, 25, color, font);
         reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 27, color,
             font);
         reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13, color,
