@@ -453,17 +453,39 @@ public class Reporter implements AutoCloseable
     addColumn(text, Element.ALIGN_RIGHT, backgroundcolor, font);
   }
 
+  public void addColumn(Double value, Font font, Boolean red)
+  {
+    String text = "";
+    if (value != null)
+    {
+      text = Einstellungen.DECIMALFORMAT.format(value);
+      if (value < 0 && red)
+      {
+        Font newfont = new Font(font);
+        newfont.setColor(BaseColor.RED);
+        addColumn(text, Element.ALIGN_RIGHT, zellenColor, newfont);
+        return;
+      }
+    }
+    addColumn(text, Element.ALIGN_RIGHT, zellenColor, font);
+  }
+
   /**
    * Fuegt eine neue Zelle zur Tabelle hinzu.
    */
   public void addColumn(Date value, int align)
+  {
+    addColumn(value, align, null);
+  }
+
+  public void addColumn(Date value, int align, Font font)
   {
     String text = "";
     if (value != null && !value.equals(Einstellungen.NODATE))
     {
       text = new SimpleDateFormat("dd.MM.yyyy").format(value);
     }
-    addColumn(text, align, zellenColor, false, null, 1);
+    addColumn(text, align, zellenColor, false, font, 1);
   }
 
   /**

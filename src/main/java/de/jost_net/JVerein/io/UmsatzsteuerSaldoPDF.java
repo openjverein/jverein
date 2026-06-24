@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.UmsatzsteuerSaldoControl;
@@ -36,13 +37,18 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      String title, String subtitle) throws ApplicationException
+      String title, String subtitle, SaldoExportParam params)
+      throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
-      makeHeader(reporter);
+      Reporter reporter = new Reporter(fos, title, subtitle, params.getLinks(),
+          params.getRechts(), params.getOben(), params.getUnten(), false,
+          params.getVordergrund(), params.getHintergrund(),
+          params.getQuerformat(), params.getHeaderTransparent(),
+          params.getZellenTransparent());
+      makeHeader(reporter, params.getColorHeader(), params.getFontHeader());
 
       for (PseudoDBObject bkz : zeile)
       {
@@ -52,18 +58,21 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 3);
+                Element.ALIGN_LEFT, params.getColorTable(), true,
+                params.getFontNormal(), 3);
             break;
           }
           case AbstractSaldoControl.ART_DETAIL:
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(UmsatzsteuerSaldoControl.STEUER),
-                Element.ALIGN_LEFT);
+                Element.ALIGN_LEFT, params.getFontNormal());
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE));
+                bkz.getDouble(UmsatzsteuerSaldoControl.BEMESSUNGSGRUNDLAGE),
+                params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
+                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG),
+                params.getFontNormal(), params.getNegativRot());
             break;
           }
           case AbstractSaldoControl.ART_SALDOFOOTER:
@@ -71,9 +80,10 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_RIGHT, 2);
+                Element.ALIGN_RIGHT, null, true, params.getFontFett(), 2);
             reporter.addColumn(
-                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG));
+                bkz.getDouble(UmsatzsteuerSaldoControl.STEUERBETRAG),
+                params.getFontFett(), params.getNegativRot());
             break;
           }
         }
@@ -82,7 +92,6 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
       reporter.closeTable();
       reporter.close();
       fos.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -91,14 +100,14 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
     }
   }
 
-  private void makeHeader(Reporter reporter) throws DocumentException
+  private void makeHeader(Reporter reporter, BaseColor color, Font font)
+      throws DocumentException
   {
-    reporter.addHeaderColumn("Steuer Name", Element.ALIGN_CENTER, 45,
-        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Steuer Name", Element.ALIGN_CENTER, 45, color,
+        font);
     reporter.addHeaderColumn("Bemessungsgrundlage", Element.ALIGN_CENTER, 45,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Steuer", Element.ALIGN_CENTER, 45,
-        BaseColor.LIGHT_GRAY);
+        color, font);
+    reporter.addHeaderColumn("Steuer", Element.ALIGN_CENTER, 45, color, font);
     reporter.createHeader();
   }
 }

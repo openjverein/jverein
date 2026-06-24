@@ -131,14 +131,17 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   protected void createGui(Composite parent, Action action)
       throws RemoteException
   {
-    spaltenList.addColumn("Name", "text");
-    spaltenList.setCheckable(true);
+    if (spaltenList != null)
+    {
+      spaltenList.addColumn("Name", "text");
+      spaltenList.setCheckable(true);
+    }
 
     if (art.equals(ExportArt.PDF))
     {
       zeichnePDF(parent, action);
     }
-    else
+    else if (spaltenList != null)
     {
       spaltenList.paint(parent);
     }
@@ -158,21 +161,24 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   protected void zeichnePDF(Composite parent, Action action)
       throws RemoteException
   {
-    spaltenList.addColumn("Breite", "data", null, true);
-
     TabFolder folder = new TabFolder(parent, SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-    TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+
+    // Spalten
+    if (spaltenList != null)
+    {
+      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+      spaltenList.addColumn("Breite", "data", null, true);
+      tabSpalten.addPart(spaltenList);
+      ButtonArea buttons = new ButtonArea();
+      buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
+          "eraser.png"));
+      tabSpalten.addButtonArea(buttons);
+    }
+
     TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
     TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
     TabGroup tabFont = new TabGroup(folder, "Schriftart", true, 2);
-
-    // Spalten
-    tabSpalten.addPart(spaltenList);
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton(
-        new Button("Breiten zurücksetzen", action, null, false, "eraser.png"));
-    tabSpalten.addButtonArea(buttons);
 
     // Ränder
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
@@ -446,7 +452,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     return FontFactory.getFont(
         "/fonts/" + (String) fontItalic.getValue() + ".ttf",
-        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.ITALIC, color);
+        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
+        color);
   }
 
   @Override

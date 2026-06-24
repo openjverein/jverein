@@ -24,6 +24,7 @@ import java.util.Date;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.control.AnlagenlisteControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -36,7 +37,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
-      String subtitle) throws ApplicationException
+      String subtitle, SaldoExportParam params) throws ApplicationException
   {
     try
     {
@@ -66,8 +67,13 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       }
 
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
-      makeHeader(reporter, anzahlSpalten, hasZugang, hasAbgang);
+      Reporter reporter = new Reporter(fos, title, subtitle, params.getLinks(),
+          params.getRechts(), params.getOben(), params.getUnten(), false,
+          params.getVordergrund(), params.getHintergrund(),
+          params.getQuerformat(), params.getHeaderTransparent(),
+          params.getZellenTransparent());
+      makeHeader(reporter, params.getColorHeader(), params.getFontHeader(),
+          anzahlSpalten, hasZugang, hasAbgang);
 
       for (PseudoDBObject akz : zeilen)
       {
@@ -77,90 +83,107 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220),
-                anzahlSpalten);
+                Element.ALIGN_LEFT, params.getColorTable(), true,
+                params.getFontNormal(), anzahlSpalten);
             break;
           }
           case AnlagenlisteControl.ART_DETAIL:
           {
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.KONTO),
-                Element.ALIGN_LEFT);
+                Element.ALIGN_LEFT, params.getFontNormal());
             Integer tmp = (Integer) akz
                 .getAttribute(AnlagenlisteControl.NUTZUNGSDAUER);
             reporter.addColumn(tmp == null ? "" : tmp.toString(),
-                Element.ALIGN_RIGHT);
+                Element.ALIGN_RIGHT, params.getFontNormal());
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.AFAART),
-                Element.ALIGN_LEFT);
+                Element.ALIGN_LEFT, params.getFontNormal());
             reporter.addColumn(
                 (Date) akz.getAttribute(AnlagenlisteControl.ANSCHAFFUNG_DATUM),
-                Element.ALIGN_RIGHT);
+                Element.ALIGN_RIGHT, params.getFontNormal());
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.BETRAG));
+                (Double) akz.getAttribute(AnlagenlisteControl.BETRAG),
+                params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                params.getFontNormal(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  params.getFontNormal(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                params.getFontNormal(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
                   (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                params.getFontNormal(), params.getNegativRot());
             break;
           }
           case AnlagenlisteControl.ART_SALDOFOOTER:
           {
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
-                Element.ALIGN_RIGHT, 5);
+                Element.ALIGN_RIGHT, null, true, params.getFontFett(), 5);
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                params.getFontFett(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                params.getFontFett(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG),
+                  params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                params.getFontFett(), params.getNegativRot());
             break;
           }
           case AnlagenlisteControl.ART_GESAMTSALDOFOOTER:
           {
-            reporter.addColumn("Gesamt", Element.ALIGN_LEFT, anzahlSpalten);
+            reporter.addColumn("Gesamt", Element.ALIGN_LEFT,
+                params.getColorTable(), true, params.getFontNormal(),
+                anzahlSpalten);
             reporter.addColumn(
                 (String) akz.getAttribute(AnlagenlisteControl.GRUPPE),
-                Element.ALIGN_RIGHT, 5);
+                Element.ALIGN_RIGHT, null, true, params.getFontFett(), 5);
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.STARTWERT),
+                params.getFontFett(), params.getNegativRot());
             if (hasZugang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG));
+                  (Double) akz.getAttribute(AnlagenlisteControl.ZUGANG),
+                  params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG));
+                (Double) akz.getAttribute(AnlagenlisteControl.ABSCHREIBUNG),
+                params.getFontFett(), params.getNegativRot());
             if (hasAbgang)
             {
               reporter.addColumn(
-                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG));
+                  (Double) akz.getAttribute(AnlagenlisteControl.ABGANG),
+                  params.getFontFett(), params.getNegativRot());
             }
             reporter.addColumn(
-                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT));
+                (Double) akz.getAttribute(AnlagenlisteControl.ENDWERT),
+                params.getFontFett(), params.getNegativRot());
             break;
           }
         }
@@ -169,7 +192,6 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       reporter.closeTable();
       reporter.close();
       fos.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -178,8 +200,9 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
     }
   }
 
-  private void makeHeader(Reporter reporter, int anzahlSpalten,
-      boolean hasZugang, boolean hasAbgang) throws DocumentException
+  private void makeHeader(Reporter reporter, BaseColor color, Font font,
+      int anzahlSpalten, boolean hasZugang, boolean hasAbgang)
+      throws DocumentException
   {
     int width = 25;
     switch (anzahlSpalten)
@@ -190,32 +213,29 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       case 8:
         width = 50;
     }
-    reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_CENTER, width,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("ND", Element.ALIGN_CENTER, 10,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Afa Art", Element.ALIGN_CENTER, width,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Anschaffung", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Bezeichnung", Element.ALIGN_CENTER, width, color,
+        font);
+    reporter.addHeaderColumn("ND", Element.ALIGN_CENTER, 10, color, font);
+    reporter.addHeaderColumn("Afa Art", Element.ALIGN_CENTER, width, color,
+        font);
+    reporter.addHeaderColumn("Anschaffung", Element.ALIGN_CENTER, 20, color,
+        font);
     reporter.addHeaderColumn("Anschaffungskosten", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+        color, font);
     reporter.addHeaderColumn("Buchwert Beginn GJ", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+        color, font);
     if (hasZugang)
     {
-      reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20,
-          BaseColor.LIGHT_GRAY);
+      reporter.addHeaderColumn("Zugang", Element.ALIGN_CENTER, 20, color, font);
     }
-    reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Abschreibung", Element.ALIGN_CENTER, 20, color,
+        font);
     if (hasAbgang)
     {
-      reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20,
-          BaseColor.LIGHT_GRAY);
+      reporter.addHeaderColumn("Abgang", Element.ALIGN_CENTER, 20, color, font);
     }
     reporter.addHeaderColumn("Buchwert Ende GJ", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+        color, font);
     reporter.createHeader();
   }
 }

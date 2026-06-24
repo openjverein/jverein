@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.BuchungsklasseSaldoControl;
@@ -43,13 +44,19 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      String title, String subtitle) throws ApplicationException
+      String title, String subtitle, SaldoExportParam params)
+      throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
-      makeHeader(reporter, umbuchung);
+      Reporter reporter = new Reporter(fos, title, subtitle, params.getLinks(),
+          params.getRechts(), params.getOben(), params.getUnten(), false,
+          params.getVordergrund(), params.getHintergrund(),
+          params.getQuerformat(), params.getHeaderTransparent(),
+          params.getZellenTransparent());
+      makeHeader(reporter, params.getColorHeader(), params.getFontHeader(),
+          umbuchung);
 
       for (PseudoDBObject bkz : zeile)
       {
@@ -59,20 +66,24 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_LEFT, new BaseColor(220, 220, 220), 4);
+                Element.ALIGN_LEFT, params.getColorTable(), true,
+                params.getFontNormal(), 4);
             break;
           }
           case AbstractSaldoControl.ART_DETAIL:
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.BUCHUNGSART),
-                Element.ALIGN_LEFT);
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+                Element.ALIGN_LEFT, params.getFontNormal());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+                params.getFontNormal(), params.getNegativRot());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+                params.getFontNormal(), params.getNegativRot());
             if (umbuchung)
             {
-              reporter
-                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter.addColumn(
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  params.getFontNormal(), params.getNegativRot());
             }
             break;
           }
@@ -80,28 +91,35 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_RIGHT);
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+                Element.ALIGN_RIGHT, params.getFontFett());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+                params.getFontFett(), params.getNegativRot());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+                params.getFontFett(), params.getNegativRot());
             if (umbuchung)
             {
-              reporter
-                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter.addColumn(
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  params.getFontFett(), params.getNegativRot());
             }
             break;
           }
           case AbstractSaldoControl.ART_GESAMTSALDOFOOTER:
           {
-            reporter.addColumn("Gesamt", Element.ALIGN_LEFT, 4);
+            reporter.addColumn("Gesamt", Element.ALIGN_LEFT,
+                params.getColorTable(), true, params.getFontNormal(), 4);
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_RIGHT);
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN));
+                Element.ALIGN_RIGHT, params.getFontFett());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+                params.getFontFett(), params.getNegativRot());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.AUSGABEN),
+                params.getFontFett(), params.getNegativRot());
             if (umbuchung)
             {
-              reporter
-                  .addColumn(bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN));
+              reporter.addColumn(
+                  bkz.getDouble(AbstractSaldoControl.UMBUCHUNGEN),
+                  params.getFontFett(), params.getNegativRot());
             }
             break;
           }
@@ -110,8 +128,9 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_RIGHT);
-            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN));
+                Element.ALIGN_RIGHT, params.getFontFett());
+            reporter.addColumn(bkz.getDouble(AbstractSaldoControl.EINNAHMEN),
+                params.getFontFett(), params.getNegativRot());
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
@@ -119,9 +138,10 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
           {
             reporter.addColumn(
                 (String) bkz.getAttribute(AbstractSaldoControl.GRUPPE),
-                Element.ALIGN_LEFT);
-            reporter
-                .addColumn(bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN));
+                Element.ALIGN_LEFT, params.getFontItalic());
+            reporter.addColumn(
+                bkz.getDouble(BuchungsklasseSaldoControl.EINNAHMEN),
+                params.getFontItalic(), params.getNegativRot());
             reporter.addColumn("", Element.ALIGN_LEFT, 2);
             break;
           }
@@ -131,7 +151,6 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
       reporter.closeTable();
       reporter.close();
       fos.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -140,19 +159,18 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
     }
   }
 
-  private void makeHeader(Reporter reporter, boolean umbuchung)
-      throws DocumentException
+  private void makeHeader(Reporter reporter, BaseColor color, Font font,
+      boolean umbuchung) throws DocumentException
   {
-    reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 90,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Einnahmen", Element.ALIGN_CENTER, 45,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 45,
-        BaseColor.LIGHT_GRAY);
+    reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 90, color,
+        font);
+    reporter.addHeaderColumn("Einnahmen", Element.ALIGN_CENTER, 45, color,
+        font);
+    reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 45, color, font);
     if (umbuchung)
     {
-      reporter.addHeaderColumn("Umbuchungen", Element.ALIGN_CENTER, 45,
-          BaseColor.LIGHT_GRAY);
+      reporter.addHeaderColumn("Umbuchungen", Element.ALIGN_CENTER, 45, color,
+          font);
     }
     reporter.createHeader();
   }
