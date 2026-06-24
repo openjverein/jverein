@@ -75,10 +75,12 @@ public class MittelverwendungExportPDF implements ISaldoExport
           case MittelverwendungControl.ART_DETAIL:
             if (tab == MittelverwendungControl.SALDO_REPORT)
             {
+              reporter.addColumn(position, Element.ALIGN_LEFT,
+                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz
                       .getAttribute(MittelverwendungControl.BEZEICHNUNG),
-                  Element.ALIGN_RIGHT, null, true, params.getFontNormal(), 2);
+                  Element.ALIGN_LEFT, params.getFontNormal());
             }
             else
             {
