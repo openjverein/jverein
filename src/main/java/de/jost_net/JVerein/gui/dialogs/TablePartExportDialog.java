@@ -24,9 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -206,7 +204,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         reporter.addHeaderColumn(col.getText(),
             col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                 : Element.ALIGN_RIGHT,
-            (int) col.getData(), BaseColor.LIGHT_GRAY);
+            (int) col.getData(), getHintergrundHeader(),
+            getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
@@ -215,38 +214,25 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         for (TableColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
+          String text = row.getText(index);
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) row.getData("background");
-          Font font = null;
-          for (FontData data : row.getFont(index).getFontData())
-          {
-            switch (data.getStyle())
-            {
-              case SWT.BOLD:
-                font = Reporter.getFreeSansBold(8);
-                break;
-              case SWT.ITALIC:
-                font = Reporter.getFreeSansItalic(8);
-                break;
-              case SWT.NORMAL:
-                font = Reporter.getFreeSans(8);
-                break;
-            }
-          }
+          Font font = getFont(text, row.getFont(index).getFontData());
+
           if (bg == null)
           {
-            reporter.addColumn(row.getText(index),
+            reporter.addColumn(text,
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
                 font);
           }
           else
           {
-            reporter.addColumn(row.getText(index),
+            reporter.addColumn(text,
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
-                new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
+                getHintergrundTabelle(), font);
           }
         }
       }

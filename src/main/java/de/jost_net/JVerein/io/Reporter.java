@@ -104,8 +104,8 @@ public class Reporter implements AutoCloseable
 
   public static Font getFreeSansItalic(float size, BaseColor color)
   {
-    return FontFactory.getFont("/fonts/FreeSansItalic.ttf", BaseFont.IDENTITY_H,
-        size, Font.ITALIC, color);
+    return FontFactory.getFont("/fonts/FreeSans-Oblique.ttf",
+        BaseFont.IDENTITY_H, size, Font.ITALIC, color);
   }
 
   public static Font getFreeSansItalic(float size)
@@ -300,8 +300,23 @@ public class Reporter implements AutoCloseable
   public void addHeaderColumn(String text, int align, int width,
       BaseColor color)
   {
+    addHeaderColumn(text, align, width, color, getFreeSans(8));
+  }
+
+  /**
+   * Fuegt der Tabelle einen neuen Spaltenkopf hinzu.
+   * 
+   * @param text
+   * @param align
+   * @param width
+   * @param color
+   * @param font
+   */
+  public void addHeaderColumn(String text, int align, int width,
+      BaseColor color, Font font)
+  {
     headers.add(getDetailCell(text, align, headerTransparent ? null : color,
-        true, getFreeSans(8), 1));
+        true, font, 1));
     widths.add(width);
   }
 
