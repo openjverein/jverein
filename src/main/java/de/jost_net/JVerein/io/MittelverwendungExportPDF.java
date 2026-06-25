@@ -43,17 +43,16 @@ public class MittelverwendungExportPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      String title, String subtitle, SaldoExportParam params)
-      throws ApplicationException
+      SaldoExportParam params) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, params.getLinks(),
-          params.getRechts(), params.getOben(), params.getUnten(), false,
-          params.getVordergrund(), params.getHintergrund(),
-          params.getQuerformat(), params.getHeaderTransparent(),
-          params.getZellenTransparent());
+      Reporter reporter = new Reporter(fos, params.getTitle(),
+          params.getSubtitle(), params.getLinks(), params.getRechts(),
+          params.getOben(), params.getUnten(), false, params.getVordergrund(),
+          params.getHintergrund(), params.getQuerformat(),
+          params.getHeaderTransparent(), params.getZellenTransparent());
       makeHeader(reporter, params.getColorHeader(), params.getFontHeader(),
           tab);
 

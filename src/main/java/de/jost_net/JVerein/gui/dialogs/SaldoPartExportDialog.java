@@ -67,7 +67,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        export.export(zeile, file, title, subtitle, getSaldoExportParam());
+        export.export(zeile, file, getSaldoExportParam());
       }
 
       @Override

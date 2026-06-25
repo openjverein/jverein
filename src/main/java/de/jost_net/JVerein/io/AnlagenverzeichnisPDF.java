@@ -36,8 +36,8 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
 {
 
   @Override
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
-      String subtitle, SaldoExportParam params) throws ApplicationException
+  public void export(ArrayList<PseudoDBObject> zeilen, File file,
+      SaldoExportParam params) throws ApplicationException
   {
     try
     {
@@ -67,11 +67,11 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
       }
 
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle, params.getLinks(),
-          params.getRechts(), params.getOben(), params.getUnten(), false,
-          params.getVordergrund(), params.getHintergrund(),
-          params.getQuerformat(), params.getHeaderTransparent(),
-          params.getZellenTransparent());
+      Reporter reporter = new Reporter(fos, params.getTitle(),
+          params.getSubtitle(), params.getLinks(), params.getRechts(),
+          params.getOben(), params.getUnten(), false, params.getVordergrund(),
+          params.getHintergrund(), params.getQuerformat(),
+          params.getHeaderTransparent(), params.getZellenTransparent());
       makeHeader(reporter, params.getColorHeader(), params.getFontHeader(),
           anzahlSpalten, hasZugang, hasAbgang);
 

@@ -20,6 +20,9 @@ import de.jost_net.JVerein.rmi.Formular;
 
 public class SaldoExportParam
 {
+  private String title;
+
+  private String subtitle;
 
   private Integer links;
 
@@ -235,6 +238,26 @@ public class SaldoExportParam
   public void setColorTable(BaseColor colorTable)
   {
     this.colorTable = colorTable;
+  }
+
+  public String getTitle()
+  {
+    return title;
+  }
+
+  public void setTitle(String title)
+  {
+    this.title = title;
+  }
+
+  public String getSubtitle()
+  {
+    return subtitle;
+  }
+
+  public void setSubtitle(String subtitle)
+  {
+    this.subtitle = subtitle;
   }
 
 }
