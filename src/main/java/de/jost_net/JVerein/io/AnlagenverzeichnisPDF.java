@@ -37,7 +37,7 @@ public class AnlagenverzeichnisPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeilen, File file,
-      SaldoExportParam params) throws ApplicationException
+      ExportLayoutParam params) throws ApplicationException
   {
     try
     {

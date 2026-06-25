@@ -18,7 +18,7 @@ import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.rmi.Formular;
 
-public class SaldoExportParam
+public class ExportLayoutParam
 {
   private String title;
 

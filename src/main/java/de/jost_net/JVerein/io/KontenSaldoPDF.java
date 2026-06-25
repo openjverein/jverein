@@ -37,7 +37,7 @@ public class KontenSaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      SaldoExportParam params) throws ApplicationException
+      ExportLayoutParam params) throws ApplicationException
   {
     try
     {

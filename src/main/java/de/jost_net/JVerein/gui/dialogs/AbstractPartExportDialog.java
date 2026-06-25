@@ -35,7 +35,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.io.SaldoExportParam;
+import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -454,9 +454,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         color);
   }
 
-  protected SaldoExportParam getSaldoExportParam()
+  protected ExportLayoutParam getExportLayoutParam()
   {
-    SaldoExportParam params = new SaldoExportParam();
+    ExportLayoutParam params = new ExportLayoutParam();
     params.setTitle(title);
     params.setSubtitle(subtitle);
     params.setLinks((Integer) links.getValue());
