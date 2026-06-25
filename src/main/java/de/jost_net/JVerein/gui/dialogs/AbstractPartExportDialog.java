@@ -35,7 +35,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.SaldoExportParam;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -311,8 +311,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       }
       saveSettings();
 
-      FileViewer.show(file);
-
       success = true;
       close();
     }
@@ -454,6 +452,30 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         "/fonts/" + (String) fontItalic.getValue() + ".ttf",
         BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
         color);
+  }
+
+  protected SaldoExportParam getSaldoExportParam()
+  {
+    SaldoExportParam params = new SaldoExportParam();
+    params.setLinks((Integer) links.getValue());
+    params.setRechts((Integer) rechts.getValue());
+    params.setOben((Integer) oben.getValue());
+    params.setUnten((Integer) unten.getValue());
+    params.setQuerformat((Boolean) querformat.getValue());
+    params.setVordergrund((Formular) vordergrund.getValue());
+    params.setHintergrund((Formular) hintergrund.getValue());
+    params.setHeaderTransparent((Boolean) headerTransparent.getValue());
+    params.setZellenTransparent((Boolean) zellenTransparent.getValue());
+    params.setFontsize((Integer) fontsize.getValue());
+    params.setFontsizeHeader((Integer) fontsizeHeader.getValue());
+    params.setFontHeader(getFontHeader(null));
+    params.setFontNormal(getFontNormal(null));
+    params.setFontFett(getFontFett(null));
+    params.setFontItalic(getFontKursiv(null));
+    params.setColorHeader(getHintergrundHeader());
+    params.setColorTable(getHintergrundTabelle());
+    params.setNegativRot((Boolean) negativRot.getValue());
+    return params;
   }
 
   @Override

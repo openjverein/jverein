@@ -98,6 +98,7 @@ public class KontenSaldoPDF implements ISaldoExport
 
       reporter.close();
       fos.close();
+      FileViewer.show(file);
     }
     catch (Exception e)
     {

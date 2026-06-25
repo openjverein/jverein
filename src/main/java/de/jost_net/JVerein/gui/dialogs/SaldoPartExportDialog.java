@@ -21,8 +21,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.io.ISaldoExport;
-import de.jost_net.JVerein.io.SaldoExportParam;
-import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
@@ -63,32 +61,13 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
   @Override
   protected void exportPDF(File file) throws IOException, DocumentException
   {
-    SaldoExportParam params = new SaldoExportParam();
-    params.setLinks((Integer) links.getValue());
-    params.setRechts((Integer) rechts.getValue());
-    params.setOben((Integer) oben.getValue());
-    params.setUnten((Integer) unten.getValue());
-    params.setQuerformat((Boolean) querformat.getValue());
-    params.setVordergrund((Formular) vordergrund.getValue());
-    params.setHintergrund((Formular) hintergrund.getValue());
-    params.setHeaderTransparent((Boolean) headerTransparent.getValue());
-    params.setZellenTransparent((Boolean) zellenTransparent.getValue());
-    params.setFontsize((Integer) fontsize.getValue());
-    params.setFontsizeHeader((Integer) fontsizeHeader.getValue());
-    params.setFontHeader(getFontHeader(null));
-    params.setFontNormal(getFontNormal(null));
-    params.setFontFett(getFontFett(null));
-    params.setFontItalic(getFontKursiv(null));
-    params.setColorHeader(getHintergrundHeader());
-    params.setColorTable(getHintergrundTabelle());
-    params.setNegativRot((Boolean) negativRot.getValue());
 
     BackgroundTask t = new BackgroundTask()
     {
       @Override
       public void run(ProgressMonitor monitor) throws ApplicationException
       {
-        export.export(zeile, file, title, subtitle, params);
+        export.export(zeile, file, title, subtitle, getSaldoExportParam());
       }
 
       @Override

@@ -41,6 +41,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -179,6 +180,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         }
         writer.write(csvzeile, header, cellProcessor);
       }
+      FileViewer.show(file);
     }
   }
 
@@ -236,6 +238,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           }
         }
       }
+      FileViewer.show(file);
     }
   }
 
