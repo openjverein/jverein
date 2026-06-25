@@ -133,14 +133,7 @@ public class MittelverwendungExportPDF implements ISaldoExport
             }
             break;
           case MittelverwendungControl.ART_LEERZEILE:
-            if (tab == MittelverwendungControl.SALDO_REPORT)
-            {
-              reporter.addColumn(" ", Element.ALIGN_LEFT, 5);
-            }
-            else
-            {
-              reporter.addColumn(" ", Element.ALIGN_LEFT, 4);
-            }
+            reporter.addColumn(" ", Element.ALIGN_LEFT, 4);
             break;
         }
       }
