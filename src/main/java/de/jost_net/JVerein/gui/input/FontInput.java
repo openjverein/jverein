@@ -38,6 +38,10 @@ public class FontInput extends SelectInput
   private static ArrayList<String> init()
   {
     ArrayList<String> fonts = new ArrayList<>();
+    fonts.add("Carlito-Regular");
+    fonts.add("Carlito-Bold");
+    fonts.add("Carlito-Italic");
+    fonts.add("Carlito-BoldItalic");
     fonts.add("PTSans-Regular");
     fonts.add("PTSans-Bold");
     fonts.add("PTSans-Italic");
