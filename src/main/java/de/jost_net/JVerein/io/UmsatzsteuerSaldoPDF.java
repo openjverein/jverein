@@ -103,7 +103,7 @@ public class UmsatzsteuerSaldoPDF implements ISaldoExport
   private void makeHeader(Reporter reporter, BaseColor color, Font font)
       throws DocumentException
   {
-    reporter.addHeaderColumn("Steuer Name", Element.ALIGN_CENTER, 45, color,
+    reporter.addHeaderColumn("Steuer Name", Element.ALIGN_CENTER, 90, color,
         font);
     reporter.addHeaderColumn("Bemessungsgrundlage", Element.ALIGN_CENTER, 45,
         color, font);

@@ -164,12 +164,12 @@ public class BuchungsklassesaldoPDF implements ISaldoExport
   {
     reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 90, color,
         font);
-    reporter.addHeaderColumn("Einnahmen", Element.ALIGN_CENTER, 45, color,
+    reporter.addHeaderColumn("Einnahmen", Element.ALIGN_CENTER, 30, color,
         font);
-    reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 45, color, font);
+    reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 30, color, font);
     if (umbuchung)
     {
-      reporter.addHeaderColumn("Umbuchungen", Element.ALIGN_CENTER, 45, color,
+      reporter.addHeaderColumn("Umbuchungen", Element.ALIGN_CENTER, 30, color,
           font);
     }
     reporter.createHeader();

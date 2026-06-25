@@ -113,6 +113,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected ColorInput colorTable;
 
+  private ExportLayoutParam params;
+
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename, String dialogTitel)
       throws ApplicationException
@@ -300,6 +302,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       File file = new File(p);
       settings.setAttribute(settingPrefix + "lastdir", file.getParent());
 
+      storeExportLayoutParam();
       switch (art)
       {
         case CSV:
@@ -454,9 +457,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         color);
   }
 
-  protected ExportLayoutParam getExportLayoutParam()
+  protected void storeExportLayoutParam()
   {
-    ExportLayoutParam params = new ExportLayoutParam();
+    params = new ExportLayoutParam();
     params.setTitle(title);
     params.setSubtitle(subtitle);
     params.setLinks((Integer) links.getValue());
@@ -477,6 +480,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     params.setColorHeader(getHintergrundHeader());
     params.setColorTable(getHintergrundTabelle());
     params.setNegativRot((Boolean) negativRot.getValue());
+  }
+
+  protected ExportLayoutParam getExportLayoutParam()
+  {
     return params;
   }
 
