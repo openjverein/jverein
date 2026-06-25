@@ -457,6 +457,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   protected SaldoExportParam getSaldoExportParam()
   {
     SaldoExportParam params = new SaldoExportParam();
+    params.setTitle(title);
+    params.setSubtitle(subtitle);
     params.setLinks((Integer) links.getValue());
     params.setRechts((Integer) rechts.getValue());
     params.setOben((Integer) oben.getValue());
