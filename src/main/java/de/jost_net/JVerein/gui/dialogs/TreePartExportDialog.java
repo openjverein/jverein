@@ -59,7 +59,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename);
+    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren");
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {

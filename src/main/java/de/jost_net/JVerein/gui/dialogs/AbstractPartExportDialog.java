@@ -114,7 +114,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   protected ColorInput colorTable;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+      String title, String subtitle, String filename, String dialogTitel)
       throws ApplicationException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
@@ -124,7 +124,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
 
-    setTitle("Tabelle exportieren");
+    setTitle(dialogTitel);
     setSize(400, SWT.DEFAULT);
   }
 
