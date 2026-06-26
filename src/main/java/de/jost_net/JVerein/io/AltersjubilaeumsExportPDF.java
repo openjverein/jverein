@@ -21,7 +21,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
@@ -86,7 +85,11 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   {
     fos = new FileOutputStream(file);
     Logger.debug(String.format("Altersjubilare, Jahr=%d", jahr));
-    reporter = new Reporter(fos, title, subtitle);
+    reporter = new Reporter(fos, params.getTitle(), params.getSubtitle(),
+        params.getLinks(), params.getRechts(), params.getOben(),
+        params.getUnten(), false, params.getVordergrund(),
+        params.getHintergrund(), params.getQuerformat(),
+        params.getHeaderTransparent(), params.getZellenTransparent());
   }
 
   @Override
@@ -98,14 +101,13 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
         Reporter.getFreeSans(11));
     reporter.add(pHeader);
     reporter.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Name, Vorname", Element.ALIGN_CENTER, 100,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Anschrift", Element.ALIGN_CENTER, 120,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Kommunikation", Element.ALIGN_CENTER, 80,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.createHeader();
     anz = 0;
   }
@@ -116,7 +118,8 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
     if (anz == 0)
     {
       reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("kein Mitglied", Element.ALIGN_LEFT);
+      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT,
+          params.getFontNormal());
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
     }
@@ -126,10 +129,12 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   @Override
   protected void add(Mitglied m) throws RemoteException
   {
-    reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getNameVorname(m),
-        Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
+    reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
     String kommunikation = m.getTelefonprivat();
     if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)
     {
@@ -142,7 +147,8 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
       kommunikation += ", ";
     }
     kommunikation += m.getEmail();
-    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false);
+    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false,
+        params.getFontNormal());
     anz++;
   }
 
