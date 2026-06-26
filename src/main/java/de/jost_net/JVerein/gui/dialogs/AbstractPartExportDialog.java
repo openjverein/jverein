@@ -113,6 +113,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected ColorInput colorTable;
 
+  protected ColorInput colorTable2;
+
+  protected boolean supportTable2;
+
   private ExportLayoutParam params;
 
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
@@ -249,6 +253,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         (int) settings.getInt(settingPrefix + "color_green", 192),
         (int) settings.getInt(settingPrefix + "color_blue", 192));
     colorTable = new ColorInput(col, false);
+    col = new Color((int) settings.getInt(settingPrefix + "color_red2", 230),
+        (int) settings.getInt(settingPrefix + "color_green2", 230),
+        (int) settings.getInt(settingPrefix + "color_blue2", 230));
+    colorTable2 = new ColorInput(col, false);
     tabFont.addHeadline("Tabellen Spaltennamen");
     tabFont.addLabelPair("Schriftart", fontHeader);
     tabFont.addLabelPair("Schriftgröße", fontsizeHeader);
@@ -259,6 +267,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
     tabFont.addLabelPair("Schriftgröße", fontsize);
     tabFont.addLabelPair("Hintergrund Farbe *", colorTable);
+    if (supportTable2)
+    {
+      tabFont.addLabelPair("Hintergrund Farbe *", colorTable2);
+    }
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
     tabFont.addSeparator();
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
@@ -281,7 +293,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
-
+      fd.setOverwrite(true);
       String path = settings.getString(settingPrefix + "lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -380,6 +392,16 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           (Integer) col.getGreen());
       settings.setAttribute(settingPrefix + "color_blue",
           (Integer) col.getBlue());
+      if (supportTable2)
+      {
+        col = (Color) colorTable2.getValue();
+        settings.setAttribute(settingPrefix + "color_red2",
+            (Integer) col.getRed());
+        settings.setAttribute(settingPrefix + "color_green2",
+            (Integer) col.getGreen());
+        settings.setAttribute(settingPrefix + "color_blue2",
+            (Integer) col.getBlue());
+      }
     }
   }
 
@@ -434,6 +456,12 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
   }
 
+  protected BaseColor getHintergrundTabelle2()
+  {
+    Color col = (Color) colorTable2.getValue();
+    return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
+  }
+
   protected Font getFontNormal(BaseColor color)
   {
     return FontFactory.getFont(
@@ -479,6 +507,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     params.setFontItalic(getFontKursiv(null));
     params.setColorHeader(getHintergrundHeader());
     params.setColorTable(getHintergrundTabelle());
+    if (supportTable2)
+    {
+      params.setColorTable2(getHintergrundTabelle2());
+    }
     params.setNegativRot((Boolean) negativRot.getValue());
   }
 

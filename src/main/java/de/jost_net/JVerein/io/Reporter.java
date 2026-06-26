@@ -396,20 +396,20 @@ public class Reporter implements AutoCloseable
     addColumn(text, align, backgroundcolor, null);
   }
 
-  /**
-   * Fuegt eine neue Zelle zur Tabelle hinzu.
-   */
   public void addColumn(String text, int align, Font font)
   {
     addColumn(text, align, zellenColor, font);
   }
 
-  /**
-   * Fuegt eine neue Zelle zur Tabelle hinzu.
-   */
   public void addColumn(String text, int align, boolean silbentrennung)
   {
     addColumn(text, align, zellenColor, silbentrennung, null, 1);
+  }
+
+  public void addColumn(String text, int align, boolean silbentrennung,
+      Font font)
+  {
+    addColumn(text, align, zellenColor, silbentrennung, font, 1);
   }
 
   public void addColumn(String text, int align, BaseColor color, Font font)
@@ -455,6 +455,12 @@ public class Reporter implements AutoCloseable
 
   public void addColumn(Double value, Font font, Boolean red)
   {
+    addColumn(value, zellenColor, font, red);
+  }
+
+  public void addColumn(Double value, BaseColor backgroundcolor, Font font,
+      Boolean red)
+  {
     String text = "";
     if (value != null)
     {
@@ -463,11 +469,11 @@ public class Reporter implements AutoCloseable
       {
         Font newfont = new Font(font);
         newfont.setColor(BaseColor.RED);
-        addColumn(text, Element.ALIGN_RIGHT, zellenColor, newfont);
+        addColumn(text, Element.ALIGN_RIGHT, backgroundcolor, newfont);
         return;
       }
     }
-    addColumn(text, Element.ALIGN_RIGHT, zellenColor, font);
+    addColumn(text, Element.ALIGN_RIGHT, backgroundcolor, font);
   }
 
   /**

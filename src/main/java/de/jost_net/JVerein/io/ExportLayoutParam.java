@@ -60,6 +60,8 @@ public class ExportLayoutParam
 
   private BaseColor colorTable;
 
+  private BaseColor colorTable2;
+
   public Integer getLinks()
   {
     return links;
@@ -258,6 +260,16 @@ public class ExportLayoutParam
   public void setSubtitle(String subtitle)
   {
     this.subtitle = subtitle;
+  }
+
+  public BaseColor getColorTable2()
+  {
+    return colorTable2;
+  }
+
+  public void setColorTable2(BaseColor colorTable2)
+  {
+    this.colorTable2 = colorTable2;
   }
 
 }
