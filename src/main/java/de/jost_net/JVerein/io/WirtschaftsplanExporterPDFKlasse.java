@@ -132,7 +132,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
         params.getColorHeader(), params.getFontHeader());
     for (int i = 0; i < wirtschaftsplaene.length; i++)
     {
-      reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 75,
+      reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 50,
           params.getColorHeader(), params.getFontHeader());
       // Wenn es für diesen Plan noch keine Ist-Buchungen gab, spalte "Ist"
       // ausblenden. Oder wenn Ende noch in der Zukkunft und in Einstellungen so
@@ -144,7 +144,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
               || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
       {
         hatIst.add(wirtschaftsplaene[i]);
-        reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 90,
+        reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 50,
             params.getColorHeader(), params.getFontHeader());
       }
     }
