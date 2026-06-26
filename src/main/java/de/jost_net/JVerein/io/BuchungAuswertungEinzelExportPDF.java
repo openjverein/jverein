@@ -25,7 +25,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
@@ -51,11 +50,9 @@ import de.willuhn.util.ProgressMonitor;
 
 public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
 {
-  private String title;
-
-  private String subtitle;
-
   boolean geldkonto;
+
+  private ExportLayoutParam params;
 
   @Override
   public String getName()
@@ -115,33 +112,35 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
   }
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, object);
+    return VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_TITEL, object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL, object);
+    return VorlageUtil.getName(VorlageTyp.EINZELBUCHUNGEN_SUBTITEL, object);
   }
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
+    this.params = params;
     BuchungsControl control = (BuchungsControl) objects[0];
     BuchungQuery query = control.getQuery();
     ArrayList<Buchungsart> buchungsarten = getBuchungsarten(query);
     kontonummer_in_buchungsliste = getKontonummer();
     FileOutputStream fos = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fos, title, subtitle);
-    if (kontonummer_in_buchungsliste)
-    {
-      reporter = new Reporter(fos, title, subtitle, 50, 30, 20, 20, false);
-    }
+    Reporter reporter = new Reporter(fos, params.getTitle(),
+        params.getSubtitle(), params.getLinks(), params.getRechts(),
+        params.getOben(), params.getUnten(), false, params.getVordergrund(),
+        params.getHintergrund(), params.getQuerformat(),
+        params.getHeaderTransparent(), params.getZellenTransparent());
 
     boolean nichtLeer = false;
     int anzahlBuchungsarten = 0;
@@ -211,32 +210,43 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     if (anzahlBuchungsarten > 1)
     {
       createTableHeader(reporter);
-      reporter.addColumn("", Element.ALIGN_RIGHT);
+      reporter.addColumn("", Element.ALIGN_RIGHT, params.getColorTable());
       if (kontonummer_in_buchungsliste)
       {
-        reporter.addColumn("", Element.ALIGN_LEFT);
+        reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       }
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("Gesamtsumme", Element.ALIGN_LEFT);
-      reporter.addColumn(summe);
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("Gesamtsumme", Element.ALIGN_LEFT,
+          params.getColorTable(), params.getFontFett());
+      reporter.addColumn(summe, params.getColorTable(), params.getFontFett(),
+          params.getNegativRot());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      }
       reporter.closeTable();
     }
 
     if (!nichtLeer)
     {
       createTableHeader(reporter);
-      reporter.addColumn("", Element.ALIGN_RIGHT);
+      reporter.addColumn("", Element.ALIGN_RIGHT, params.getColorTable());
       if (kontonummer_in_buchungsliste)
       {
-        reporter.addColumn("", Element.ALIGN_LEFT);
+        reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       }
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT,
+          params.getColorTable(), params.getFontNormal());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      }
       reporter.closeTable();
     }
     reporter.addParams(control.getParams());
@@ -248,26 +258,27 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       throws DocumentException, RemoteException
   {
     reporter.addHeaderColumn("Nummer", Element.ALIGN_CENTER, 22,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Datum", Element.ALIGN_CENTER, 32,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     if (kontonummer_in_buchungsliste)
     {
       reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 34,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
     }
     reporter.addHeaderColumn("Auszug", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Name", Element.ALIGN_CENTER,
-        (kontonummer_in_buchungsliste) ? 86 : 100, BaseColor.LIGHT_GRAY);
+        (kontonummer_in_buchungsliste) ? 86 : 100, params.getColorHeader(),
+        params.getFontHeader());
     reporter.addHeaderColumn("Zahlungsgrund", Element.ALIGN_CENTER, 100,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       reporter.addHeaderColumn("Steuersatz", Element.ALIGN_CENTER, 25,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
     }
     reporter.createHeader();
   }
@@ -294,7 +305,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     }
     Paragraph pBuchungsart = new Paragraph(
         buchungsklasseBezeichnung + " - " + buchungsartBezeichnung,
-        Reporter.getFreeSansBold(10));
+        params.getFontHeader());
     reporter.add(pBuchungsart);
     double buchungsartSumme = 0;
 
@@ -302,31 +313,36 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
 
     for (Buchung b : buchungen)
     {
-      reporter.addColumn(b.getID(), Element.ALIGN_RIGHT);
+      reporter.addColumn(b.getID(), Element.ALIGN_RIGHT,
+          params.getFontNormal());
       reporter.addColumn(new JVDateFormatTTMMJJJJ().format(b.getDatum()),
-          Element.ALIGN_CENTER);
+          Element.ALIGN_CENTER, params.getFontNormal());
       if (kontonummer_in_buchungsliste)
       {
-        reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT);
+        reporter.addColumn(b.getKonto().getNummer(), Element.ALIGN_RIGHT,
+            params.getFontNormal());
       }
       if (b.getAuszugsnummer() != null)
       {
         reporter.addColumn(
             b.getAuszugsnummer() + "/"
                 + (b.getBlattnummer() != null ? b.getBlattnummer() : "-"),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
       }
       else
       {
-        reporter.addColumn("", Element.ALIGN_LEFT);
+        reporter.addColumn("", Element.ALIGN_LEFT, params.getFontNormal());
       }
-      reporter.addColumn(b.getName(), Element.ALIGN_LEFT);
-      reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT);
+      reporter.addColumn(b.getName(), Element.ALIGN_LEFT,
+          params.getFontNormal());
+      reporter.addColumn(b.getZweck(), Element.ALIGN_LEFT,
+          params.getFontNormal());
       reporter.addColumn(b.getBetrag());
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
-        reporter
-            .addColumn(b.getSteuer() == null ? null : b.getSteuer().getSatz());
+        reporter.addColumn(
+            b.getSteuer() == null ? null : b.getSteuer().getSatz(),
+            params.getFontNormal(), params.getNegativRot());
       }
       buchungsartSumme += b.getBetrag();
       if (bua.getArt() == ArtBuchungsart.EINNAHME)
@@ -343,25 +359,31 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       }
     }
 
-    reporter.addColumn("", Element.ALIGN_RIGHT);
-    reporter.addColumn("", Element.ALIGN_CENTER);
+    reporter.addColumn("", Element.ALIGN_RIGHT, params.getColorTable());
+    reporter.addColumn("", Element.ALIGN_CENTER, params.getColorTable());
     if (kontonummer_in_buchungsliste)
     {
-      reporter.addColumn("", Element.ALIGN_RIGHT);
+      reporter.addColumn("", Element.ALIGN_RIGHT, params.getColorTable());
     }
-    reporter.addColumn("", Element.ALIGN_LEFT);
-    reporter.addColumn("", Element.ALIGN_LEFT);
+    reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+    reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
     if (buchungen.size() == 0)
     {
-      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
+      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT,
+          params.getColorTable(), params.getFontNormal());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
     }
     else
     {
       reporter.addColumn(String.format("Summe %s", bua.getBezeichnung()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, params.getColorTable(), params.getFontFett());
       summe += buchungsartSumme;
-      reporter.addColumn(buchungsartSumme);
+      reporter.addColumn(buchungsartSumme, params.getColorTable(),
+          params.getFontFett(), params.getNegativRot());
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
     }
     reporter.closeTable();
     return true;

@@ -39,17 +39,11 @@ import de.willuhn.util.ProgressMonitor;
 public abstract class SollbuchungExport implements Exporter
 {
 
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
-
   protected File file;
 
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor)
+      ExportLayoutParam params, ProgressMonitor monitor)
       throws DocumentException, IOException, ApplicationException
   {
     this.file = file;
@@ -77,18 +71,6 @@ public abstract class SollbuchungExport implements Exporter
       endeMitglied();
     }
     close(monitor);
-  }
-
-  @Override
-  public void calculateTitle(Object object)
-  {
-    // Kein Titel bei csv
-  }
-
-  @Override
-  public void calculateSubitle(Object object)
-  {
-    // Kein Subtitel bei csv
   }
 
   protected abstract void startMitglied(Mitglied m) throws DocumentException;

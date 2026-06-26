@@ -39,26 +39,20 @@ import de.willuhn.util.ProgressMonitor;
 
 public abstract class AltersjubilaeumsExport implements Exporter
 {
-  protected String title;
-
-  protected String subtitle;
-
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
 
   protected File file;
 
   protected Integer jahr;
 
+  protected ExportLayoutParam params;
+
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor)
+      ExportLayoutParam params, ProgressMonitor monitor)
       throws ApplicationException, DocumentException, IOException
   {
     this.file = file;
+    this.params = params;
     final MitgliedControl control = (MitgliedControl) objects[0];
     jahr = control.getJJahr();
     Logger.debug(String.format("Altersjubiläumexport, Jahr=%d", jahr));
@@ -111,16 +105,16 @@ public abstract class AltersjubilaeumsExport implements Exporter
       throws IOException, DocumentException, ApplicationException;
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_TITEL,
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL, object);
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL,
+        object);
   }
 }

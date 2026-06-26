@@ -40,15 +40,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public abstract class StatistikJahrgaengeExport implements Exporter
 {
-  protected String title;
-
-  protected String subtitle;
-
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
 
   protected File file;
 
@@ -56,11 +47,15 @@ public abstract class StatistikJahrgaengeExport implements Exporter
 
   protected TreeMap<String, StatistikJahrgang> statistik;
 
+  protected ExportLayoutParam params;
+
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws DocumentException, IOException
   {
     this.file = file;
+    this.params = params;
     statistik = new TreeMap<>();
     MitgliedControl control = (MitgliedControl) objects[0];
     Integer jahr = control.getJJahr();
@@ -172,16 +167,16 @@ public abstract class StatistikJahrgaengeExport implements Exporter
   protected abstract void close() throws IOException, DocumentException;
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil
+    return VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
   }
 

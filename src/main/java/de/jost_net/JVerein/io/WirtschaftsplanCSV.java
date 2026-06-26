@@ -53,7 +53,8 @@ public class WirtschaftsplanCSV implements Exporter
   @SuppressWarnings("unchecked")
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws ApplicationException, RemoteException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws ApplicationException, RemoteException
   {
     Wirtschaftsplan[] wirtschaftsplaene;
     if (objects[0] instanceof Wirtschaftsplan[])
@@ -256,15 +257,4 @@ public class WirtschaftsplanCSV implements Exporter
         + ".csv";
   }
 
-  @Override
-  public void calculateTitle(Object object)
-  {
-    // Bei CSV nicht nötig
-  }
-
-  @Override
-  public void calculateSubitle(Object object)
-  {
-    // Bei CSV nicht nötig
-  }
 }

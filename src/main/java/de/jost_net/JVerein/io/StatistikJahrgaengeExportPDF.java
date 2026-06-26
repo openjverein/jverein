@@ -20,7 +20,6 @@ package de.jost_net.JVerein.io;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
@@ -83,50 +82,56 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, title, subtitle);
-    reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("männlich", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-    reporter.addHeaderColumn("ohne Angabe", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-    reporter.createHeader(50, Element.ALIGN_LEFT);
+    reporter = new Reporter(fos, params.getTitle(), params.getSubtitle(),
+        params.getLinks(), params.getRechts(), params.getOben(),
+        params.getUnten(), false, params.getVordergrund(),
+        params.getHintergrund(), params.getQuerformat(),
+        params.getHeaderTransparent(), params.getZellenTransparent());
+
+    reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.addHeaderColumn("Männlich", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.addHeaderColumn("Weiblich", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.addHeaderColumn("Ohne Angabe", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.createHeader(100, Element.ALIGN_LEFT);
     int summegesamt = 0;
     int summemaennlich = 0;
     int summeweiblich = 0;
     int summeohne = 0;
     for (String key : statistik.keySet())
     {
-      reporter.addColumn(key, Element.ALIGN_CENTER);
+      reporter.addColumn(key, Element.ALIGN_CENTER, params.getFontNormal());
       StatistikJahrgang dsbj = statistik.get(key);
       reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
-          Element.ALIGN_RIGHT);
+          Element.ALIGN_RIGHT, params.getFontNormal());
       reporter.addColumn(
           Einstellungen.INTFORMAT.format(dsbj.getAnzahlmaennlich()),
-          Element.ALIGN_RIGHT);
+          Element.ALIGN_RIGHT, params.getFontNormal());
       reporter.addColumn(
           Einstellungen.INTFORMAT.format(dsbj.getAnzahlweiblich()),
-          Element.ALIGN_RIGHT);
+          Element.ALIGN_RIGHT, params.getFontNormal());
       reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlOhne()),
-          Element.ALIGN_RIGHT);
+          Element.ALIGN_RIGHT, params.getFontNormal());
       summegesamt += dsbj.getAnzahlgesamt();
       summemaennlich += dsbj.getAnzahlmaennlich();
       summeweiblich += dsbj.getAnzahlweiblich();
       summeohne += dsbj.getAnzahlOhne();
     }
-    reporter.addColumn("Summe", Element.ALIGN_CENTER);
+    reporter.addColumn("Summe", Element.ALIGN_CENTER, params.getColorTable(),
+        params.getFontNormal());
     reporter.addColumn(Einstellungen.INTFORMAT.format(summegesamt),
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
     reporter.addColumn(Einstellungen.INTFORMAT.format(summemaennlich),
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
     reporter.addColumn(Einstellungen.INTFORMAT.format(summeweiblich),
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
     reporter.addColumn(Einstellungen.INTFORMAT.format(summeohne),
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
     reporter.closeTable();
 
   }
@@ -137,4 +142,5 @@ public class StatistikJahrgaengeExportPDF extends StatistikJahrgaengeExport
     reporter.close();
     fos.close();
   }
+
 }

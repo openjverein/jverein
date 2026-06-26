@@ -35,7 +35,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.io.FileViewer;
+import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -113,8 +113,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected ColorInput colorTable;
 
+  protected ColorInput colorTable2;
+
+  protected boolean supportTable2;
+
+  private ExportLayoutParam params;
+
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+      String title, String subtitle, String filename, String dialogTitel)
       throws ApplicationException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
@@ -124,21 +130,24 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
 
-    setTitle("Tabelle exportieren");
+    setTitle(dialogTitel);
     setSize(400, SWT.DEFAULT);
   }
 
   protected void createGui(Composite parent, Action action)
       throws RemoteException
   {
-    spaltenList.addColumn("Name", "text");
-    spaltenList.setCheckable(true);
+    if (spaltenList != null)
+    {
+      spaltenList.addColumn("Name", "text");
+      spaltenList.setCheckable(true);
+    }
 
     if (art.equals(ExportArt.PDF))
     {
       zeichnePDF(parent, action);
     }
-    else
+    else if (spaltenList != null)
     {
       spaltenList.paint(parent);
     }
@@ -158,21 +167,24 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   protected void zeichnePDF(Composite parent, Action action)
       throws RemoteException
   {
-    spaltenList.addColumn("Breite", "data", null, true);
-
     TabFolder folder = new TabFolder(parent, SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
-    TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+
+    // Spalten
+    if (spaltenList != null)
+    {
+      TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
+      spaltenList.addColumn("Breite", "data", null, true);
+      tabSpalten.addPart(spaltenList);
+      ButtonArea buttons = new ButtonArea();
+      buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
+          "eraser.png"));
+      tabSpalten.addButtonArea(buttons);
+    }
+
     TabGroup tabRaender = new TabGroup(folder, "Ränder", true, 2);
     TabGroup tabFormular = new TabGroup(folder, "Formular", true, 2);
     TabGroup tabFont = new TabGroup(folder, "Schriftart", true, 2);
-
-    // Spalten
-    tabSpalten.addPart(spaltenList);
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton(
-        new Button("Breiten zurücksetzen", action, null, false, "eraser.png"));
-    tabSpalten.addButtonArea(buttons);
 
     // Ränder
     links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
@@ -241,6 +253,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         (int) settings.getInt(settingPrefix + "color_green", 192),
         (int) settings.getInt(settingPrefix + "color_blue", 192));
     colorTable = new ColorInput(col, false);
+    col = new Color((int) settings.getInt(settingPrefix + "color_red2", 230),
+        (int) settings.getInt(settingPrefix + "color_green2", 230),
+        (int) settings.getInt(settingPrefix + "color_blue2", 230));
+    colorTable2 = new ColorInput(col, false);
     tabFont.addHeadline("Tabellen Spaltennamen");
     tabFont.addLabelPair("Schriftart", fontHeader);
     tabFont.addLabelPair("Schriftgröße", fontsizeHeader);
@@ -251,6 +267,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addLabelPair("Schriftart Kursiv", fontItalic);
     tabFont.addLabelPair("Schriftgröße", fontsize);
     tabFont.addLabelPair("Hintergrund Farbe *", colorTable);
+    if (supportTable2)
+    {
+      tabFont.addLabelPair("Hintergrund Farbe *", colorTable2);
+    }
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
     tabFont.addSeparator();
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
@@ -273,7 +293,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
       FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
       fd.setText("Ausgabedatei wählen.");
-
+      fd.setOverwrite(true);
       String path = settings.getString(settingPrefix + "lastdir",
           System.getProperty("user.home"));
       if (path != null && path.length() > 0)
@@ -294,6 +314,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       File file = new File(p);
       settings.setAttribute(settingPrefix + "lastdir", file.getParent());
 
+      storeExportLayoutParam();
       switch (art)
       {
         case CSV:
@@ -304,8 +325,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           break;
       }
       saveSettings();
-
-      FileViewer.show(file);
 
       success = true;
       close();
@@ -373,6 +392,16 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           (Integer) col.getGreen());
       settings.setAttribute(settingPrefix + "color_blue",
           (Integer) col.getBlue());
+      if (supportTable2)
+      {
+        col = (Color) colorTable2.getValue();
+        settings.setAttribute(settingPrefix + "color_red2",
+            (Integer) col.getRed());
+        settings.setAttribute(settingPrefix + "color_green2",
+            (Integer) col.getGreen());
+        settings.setAttribute(settingPrefix + "color_blue2",
+            (Integer) col.getBlue());
+      }
     }
   }
 
@@ -427,6 +456,12 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
   }
 
+  protected BaseColor getHintergrundTabelle2()
+  {
+    Color col = (Color) colorTable2.getValue();
+    return new BaseColor(col.getRed(), col.getGreen(), col.getBlue());
+  }
+
   protected Font getFontNormal(BaseColor color)
   {
     return FontFactory.getFont(
@@ -446,7 +481,42 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     return FontFactory.getFont(
         "/fonts/" + (String) fontItalic.getValue() + ".ttf",
-        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.ITALIC, color);
+        BaseFont.IDENTITY_H, (Integer) fontsize.getValue(), Font.UNDEFINED,
+        color);
+  }
+
+  protected void storeExportLayoutParam()
+  {
+    params = new ExportLayoutParam();
+    params.setTitle(title);
+    params.setSubtitle(subtitle);
+    params.setLinks((Integer) links.getValue());
+    params.setRechts((Integer) rechts.getValue());
+    params.setOben((Integer) oben.getValue());
+    params.setUnten((Integer) unten.getValue());
+    params.setQuerformat((Boolean) querformat.getValue());
+    params.setVordergrund((Formular) vordergrund.getValue());
+    params.setHintergrund((Formular) hintergrund.getValue());
+    params.setHeaderTransparent((Boolean) headerTransparent.getValue());
+    params.setZellenTransparent((Boolean) zellenTransparent.getValue());
+    params.setFontsize((Integer) fontsize.getValue());
+    params.setFontsizeHeader((Integer) fontsizeHeader.getValue());
+    params.setFontHeader(getFontHeader(null));
+    params.setFontNormal(getFontNormal(null));
+    params.setFontFett(getFontFett(null));
+    params.setFontItalic(getFontKursiv(null));
+    params.setColorHeader(getHintergrundHeader());
+    params.setColorTable(getHintergrundTabelle());
+    if (supportTable2)
+    {
+      params.setColorTable2(getHintergrundTabelle2());
+    }
+    params.setNegativRot((Boolean) negativRot.getValue());
+  }
+
+  protected ExportLayoutParam getExportLayoutParam()
+  {
+    return params;
   }
 
   @Override

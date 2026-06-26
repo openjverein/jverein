@@ -38,15 +38,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
 {
-  protected String title;
-
-  protected String subtitle;
-
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
 
   protected File file;
 
@@ -54,11 +45,15 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
 
   protected int jubilarStartAlter;
 
+  protected ExportLayoutParam params;
+
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws DocumentException, IOException
   {
     this.file = file;
+    this.params = params;
     setzeParameterDerListe(objects);
     DBIterator<Mitglied> mitgliederListe = ladeMitgliederAktivImGewaehltenJahr();
 
@@ -153,16 +148,16 @@ public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
   protected abstract void close() throws IOException, DocumentException;
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil
+    return VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
   }
 
