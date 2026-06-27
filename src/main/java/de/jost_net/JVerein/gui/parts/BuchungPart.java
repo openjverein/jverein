@@ -27,7 +27,6 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.DokumentControl;
 import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -43,15 +42,11 @@ public class BuchungPart implements Part
 
   private DokumentControl dcontrol;
 
-  private AbstractView view;
-
   private boolean buchungabgeschlossen;
 
-  public BuchungPart(BuchungsControl control, AbstractView view,
-      boolean buchungabgeschlossen)
+  public BuchungPart(BuchungsControl control, boolean buchungabgeschlossen)
   {
     this.control = control;
-    this.view = view;
     this.buchungabgeschlossen = buchungabgeschlossen;
   }
 
@@ -125,7 +120,7 @@ public class BuchungPart implements Part
       LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
           "Dokumente", true);
 
-      dcontrol = new DokumentControl(view, !buchungabgeschlossen,
+      dcontrol = new DokumentControl(!buchungabgeschlossen,
           BuchungDokument.class);
 
       grDokument.getComposite().setLayout(new GridLayout(1, false));

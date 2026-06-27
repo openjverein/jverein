@@ -26,104 +26,49 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentShowAction;
+import de.jost_net.JVerein.gui.dialogs.DokumentDialog;
 import de.jost_net.JVerein.gui.menu.DokumentMenu;
 import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
-import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.DokumentDetailView;
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.server.AbstractJVereinDBObject;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.jameica.gui.AbstractControl;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
-import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Settings;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DokumentControl extends AbstractControl implements Savable
+public class DokumentControl
 {
-  private DokumentPart dopa;
-
-  private FileInput datei;
-
   private JVereinTablePart docsList;
 
   private Button neuButton;
 
   private boolean enabled;
 
-  private Settings settings = null;
-
   private Class<? extends AbstractDokument> clazz;
 
-  public DokumentControl(AbstractView view, boolean enabled,
+  public DokumentControl(boolean enabled,
       Class<? extends AbstractDokument> clazz)
   {
-    super(view);
     this.enabled = enabled;
-    this.settings = new Settings(this.getClass());
     this.clazz = clazz;
   }
 
-  // Wird nur aus der DokumentDetailView aufgerufen
-  private AbstractDokument getDokument() throws RemoteException
-  {
-    Object doc = getCurrentObject();
-    if (doc == null || !(doc instanceof AbstractDokument))
-    {
-      throw new RemoteException(
-          "Programmfehler! Dokument fehlt oder hat falschen Typ");
-    }
-    return (AbstractDokument) doc;
-  }
-
-  // Wird nur aus der DokumentListe aufgerufen
   private AbstractJVereinDBObject getReferenzObject() throws RemoteException
   {
-    Object obj = getCurrentObject();
+    Object obj = GUI.getCurrentView().getCurrentObject();
     if (obj == null || !(obj instanceof AbstractJVereinDBObject))
     {
       throw new RemoteException(
           "Programmfehler! Referenz-Object fehlt oder hat falschen Typ");
     }
     return (AbstractJVereinDBObject) obj;
-  }
-
-  public FileInput getDatei()
-  {
-    if (datei != null)
-    {
-      return datei;
-    }
-    datei = new FileInput("", false)
-    {
-      @Override
-      protected void customize(FileDialog fd)
-      {
-        fd.setFilterPath(settings.getString("buchung.dokument", ""));
-      }
-    };
-    return datei;
-  }
-
-  public DokumentPart getDokumentPart() throws RemoteException
-  {
-    if (dopa != null)
-    {
-      return dopa;
-    }
-    dopa = new DokumentPart(getDokument());
-    return dopa;
   }
 
   public Button getNeuButton()
@@ -142,44 +87,26 @@ public class DokumentControl extends AbstractControl implements Savable
             .createObject(clazz, null);
         doc.setReferenz(Long.valueOf(object.getID()));
 
-        GUI.startView(new DokumentDetailView(), doc);
+        doc = new DokumentDialog(doc).open();
+        if (doc != null)
+        {
+          doc.store();
+          refreshTable();
+        }
       }
-      catch (RemoteException e)
+      catch (ApplicationException | OperationCanceledException e)
       {
-        throw new ApplicationException("Fehler beim Datenbankzugriff.", e);
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Dokument-Dialog.", e);
+        throw new ApplicationException("Fehler beim Dokument-Dialog.");
       }
 
     }, null, false, "document-new.png");
     neuButton.setEnabled(enabled);
     return neuButton;
-  }
-
-  @Override
-  public JVereinDBObject prepareStore()
-      throws RemoteException, ApplicationException
-  {
-    AbstractDokument dokument = getDokument();
-    File file = new File((String) datei.getValue());
-    settings.setAttribute("buchung.dokument", file.getParent());
-    dokument.setBemerkung((String) dopa.getBemerkung().getValue());
-    dokument.setDatum((Date) dopa.getDatum().getValue());
-    dokument.setFile(file);
-    return dokument;
-  }
-
-  @Override
-  public void handleStore() throws ApplicationException
-  {
-    try
-    {
-      prepareStore().store();
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Fehler bei speichern des Dokuments";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler, e);
-    }
   }
 
   public JVereinTablePart getDokumenteList() throws RemoteException

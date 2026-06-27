@@ -199,7 +199,6 @@ public class VorlageUtil
         case MITGLIED_DOKUMENTE_TITEL:
         case MITGLIED_DOKUMENTE_SUBTITEL:
         case MITGLIED_DOKUMENT_PFAD:
-          map = new MitgliedMap().getMap((Mitglied) obj, map);
           break;
         case FREIES_FORMULAR_DATEINAME:
         case FORMULAR_DATEINAME:
@@ -209,7 +208,6 @@ public class VorlageUtil
           map.put("formular_name", (String) obj);
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
-          map = new MitgliedMap().getMap((Mitglied) obj, map);
           map.put("formular_name", formularName);
           break;
         case KONTENSALDO_DATEINAME:

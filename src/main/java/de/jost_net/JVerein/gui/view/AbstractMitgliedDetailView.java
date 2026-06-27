@@ -429,7 +429,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     {
       Container cont = getTabOrLabelContainer(parentComposite, DOKUMENTE);
 
-      dcontrol = new DokumentControl(this, true, MitgliedDokument.class);
+      dcontrol = new DokumentControl(true, MitgliedDokument.class);
 
       ButtonArea butts = new ButtonArea();
       butts.addButton(dcontrol.getNeuButton());

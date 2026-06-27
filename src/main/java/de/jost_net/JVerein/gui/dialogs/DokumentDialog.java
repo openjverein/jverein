@@ -17,18 +17,28 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.io.File;
 import java.rmi.RemoteException;
 import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.gui.parts.DokumentPart;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.willuhn.jameica.gui.Action;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 
 /**
@@ -39,12 +49,21 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
 
   private AbstractDokument dok = null;
 
-  private DokumentPart part = null;
+  private AbstractDokument data = null;
+
+  private Settings settings;
+
+  private DateInput datum;
+
+  private TextInput bemerkung;
+
+  private FileInput datei;
 
   public DokumentDialog(AbstractDokument dok)
   {
     super(AbstractDialog.POSITION_CENTER);
     this.dok = dok;
+    this.settings = new Settings(this.getClass());
 
     setTitle("Dokument-Infos");
     setSize(850, SWT.DEFAULT);
@@ -53,50 +72,90 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    getPart().paint(parent);
-    ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", new Action()
+    if (dok.isNewObject())
     {
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          dok.setDatum((Date) part.getDatum().getValue());
-          dok.setBemerkung((String) part.getBemerkung().getValue());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler beim Speichern des Dokuments", e);
-        }
-        close();
-      }
-    }, null, true, "ok.png");
-    b.addButton("Abbrechen", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        throw new OperationCanceledException();
-      }
+      LabelGroup grDokument = new LabelGroup(parent, "Dokument");
+      grDokument.addLabelPair("Datei", getDatei());
+    }
+    LabelGroup group = new LabelGroup(parent, "Infos");
+    group.addLabelPair("Datum", getDatum());
+    group.addLabelPair("Bemerkung", getBemerkung());
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(new Button("Speichern", c -> speichern(), null, true,
+        "document-save.png"));
+
+    buttons.addButton("Abbrechen", c -> {
+      throw new OperationCanceledException();
     }, null, false, "process-stop.png");
-    b.paint(parent);
+    buttons.paint(parent);
+  }
+
+  private void speichern()
+  {
+    try
+    {
+      if (datei != null)
+      {
+        File file = new File((String) datei.getValue());
+        settings.setAttribute("lastdir", file.getParent());
+        dok.setFile(file);
+      }
+      dok.setBemerkung((String) bemerkung.getValue());
+      dok.setDatum((Date) datum.getValue());
+      data = dok;
+    }
+    catch (RemoteException e)
+    {
+      GUI.getStatusBar().setErrorText("Fehler beim Speichern");
+      Logger.error("Fehler beim Speichern", e);
+    }
+    close();
   }
 
   @Override
   protected AbstractDokument getData() throws Exception
   {
-    return this.dok;
+    return data;
   }
 
-  private DokumentPart getPart()
+  private DateInput getDatum() throws RemoteException
   {
-    if (part != null)
+    if (datum != null)
     {
-      return part;
+      return datum;
     }
-    part = new DokumentPart(dok);
-    return part;
+    Date d = dok.getDatum();
+    if (d == null)
+    {
+      d = new Date();
+    }
+    this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.datum.setTitle("Datum");
+    this.datum.setText("Bitte Datum wählen");
+    return datum;
   }
 
+  private TextInput getBemerkung() throws RemoteException
+  {
+    if (bemerkung != null)
+    {
+      return bemerkung;
+    }
+    bemerkung = new TextInput(dok.getBemerkung(), 50);
+    return bemerkung;
+  }
+
+  private Input getDatei()
+  {
+    datei = new FileInput("", false)
+    {
+      @Override
+      protected void customize(FileDialog fd)
+      {
+        fd.setFilterPath(settings.getString("buchung.dokument", ""));
+      }
+    };
+    return datei;
+  }
 }

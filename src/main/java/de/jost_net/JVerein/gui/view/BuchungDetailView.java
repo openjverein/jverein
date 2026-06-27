@@ -59,7 +59,7 @@ public class BuchungDetailView extends AbstractDetailView
     final boolean editable = control.isBuchungEditable();
     final boolean splitbuchung = control.getBuchung().isSplitbuchung();
 
-    part = new BuchungPart(control, this, !editable);
+    part = new BuchungPart(control, !editable);
     part.paint(this.getParent());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
