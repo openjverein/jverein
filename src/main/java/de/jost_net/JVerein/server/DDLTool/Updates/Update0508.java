@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
 
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
@@ -41,5 +42,12 @@ public class Update0508 extends AbstractDDLUpdate
 
     alterColumn("mitglieddokument",
         new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+
+    // Wenn bisher Dokumentenspeicherung aktiv war, dann soll auch weiterhin per
+    // Messaging gespeichert werden
+    execute("INSERT INTO einstellungneu (name,wert) SELECT '"
+        + Property.DOKUMENTSPEICHERUNG_MESSAGING.getKey()
+        + "', wert FROM einstellungneu WHERE name = '"
+        + Property.DOKUMENTENSPEICHERUNG.getKey());
   }
 }

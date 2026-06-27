@@ -227,6 +227,8 @@ public class Einstellungen
     AUSLANDSADRESSEN("auslandsadressen", Boolean.class, "0"),
     ARBEITSEINSATZ("arbeitseinsatz", Boolean.class, "0"),
     DOKUMENTENSPEICHERUNG("dokumentenspeicherung", Boolean.class, "0"),
+    DOKUMENTSPEICHERUNG_MESSAGING("dokumentspeicherung_messaging",
+        Boolean.class, "0"),
     INDIVIDUELLEBEITRAEGE("individuellebeitraege", Boolean.class, "0"),
     EXTERNEMITGLIEDSNUMMER("externemitgliedsnummer", Boolean.class, "0"),
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
@@ -366,9 +368,7 @@ public class Einstellungen
     TABELLEN_HEADER_TRANSPARENT("header_transparent", Boolean.class, "0"),
     TABELLEN_ZELLEN_TRANSPARENT("zellen_transparent", Boolean.class, "0"),
     WIRTSCHFTSPLAN_IST_NICHT_ABGESCHLOSSEN(
-        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1"),
-    DOKUMENTSPEICHERUNG_MESSAGING("dokumentspeicherung_messaging",
-        Boolean.class, "0");
+        "wirtschaftsplan_ist_nicht_abgeschlossen", Boolean.class, "1");
 
     private final String key;
 
