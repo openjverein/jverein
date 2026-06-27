@@ -54,7 +54,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
   }
 
