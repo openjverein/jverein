@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -78,8 +77,7 @@ public class ArbeitseinsatzAbrechnenDialog extends AbstractDialog<Boolean>
     boolean einstellungRechnungAnzeigen = (Boolean) Einstellungen
         .getEinstellung(Property.RECHNUNGENANZEIGEN);
     boolean einstellungSpeicherungAnzeigen = (Boolean) Einstellungen
-        .getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-        && JVereinPlugin.isArchiveServiceActive();
+        .getEinstellung(Property.DOKUMENTENSPEICHERUNG);
     if (einstellungRechnungAnzeigen)
     {
       right.addHeadline("Rechnungen");
