@@ -41,6 +41,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.Action;
@@ -58,7 +59,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename);
+    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren");
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
@@ -235,6 +236,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         }
         writer.write(csvzeile, header, cellProcessor);
       }
+      FileViewer.show(file);
     }
   }
 
@@ -300,8 +302,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           }
         }
       }
+      FileViewer.show(file);
     }
-
   }
 
   private void getItemRekursiv(List<MyTreeItem> rows, TreeItem item, int ebene)

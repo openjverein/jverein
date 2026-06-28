@@ -18,37 +18,32 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Map;
+import java.rmi.RemoteException;
+import com.itextpdf.text.DocumentException;
 
-import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
-import de.jost_net.JVerein.gui.view.IAuswertung;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
+import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.io.Adressbuch.Txt;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedAdressbuchExport implements IAuswertung
+public class AuswertungMitgliedAdressbuchCSV
+    extends AuswertungMitgliedAbstractCSV
 {
 
-  public MitgliedAdressbuchExport()
-  {
-  }
-
   @Override
-  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
-  {
-    // Nothing to do
-  }
-
-  @Override
-  public void go(ArrayList<Mitglied> list, File file,
-      Map<Filter, String> filter) throws ApplicationException
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     try
     {
+      Mitglied[] list = (Mitglied[]) objects[0];
       Txt txt = new Txt(file, ";");
       for (Mitglied m : list)
       {
@@ -56,7 +51,7 @@ public class MitgliedAdressbuchExport implements IAuswertung
       }
       txt.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.size()));
+          String.format("Auswertung fertig. %d Sätze.", list.length));
     }
     catch (IOException e)
     {
@@ -65,26 +60,43 @@ public class MitgliedAdressbuchExport implements IAuswertung
   }
 
   @Override
-  public String getDateiname()
-  {
-    return "adressbuchexport";
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return "csv";
-  }
-
-  @Override
-  public boolean openFile()
-  {
-    return true;
-  }
-
-  @Override
   public String toString()
   {
+    return getName();
+  }
+
+  @Override
+  public String getName()
+  {
     return "Adressbuchexport CSV";
+  }
+
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != AuswertungMitgliedView.class
+        && objectType != AuswertungNichtMitgliedView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliedAdressbuchCSV.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.csv" };
+      }
+    };
+    return new IOFormat[] { f };
   }
 }

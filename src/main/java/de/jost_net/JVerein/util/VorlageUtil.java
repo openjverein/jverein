@@ -42,10 +42,10 @@ import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -300,13 +300,13 @@ public class VorlageUtil
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
-          map = new AuswertungMitgliedFilterMap().getMap((MitgliedControl) obj,
-              map);
+          map = new AuswertungMitgliedFilterMap()
+              .getMap((AuswertungControl) obj, map);
           break;
         case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
         case AUSWERTUNG_NICHT_MITGLIED_TITEL:
           map = new AuswertungNichtMitgliedFilterMap()
-              .getMap((MitgliedControl) obj, map);
+              .getMap((AuswertungControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
         case AUSWERTUNG_ALTERSJUBILARE_TITEL:
@@ -317,8 +317,8 @@ public class VorlageUtil
         case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
-          map = new AuswertungJubilareFilterMap().getMap((MitgliedControl) obj,
-              map);
+          map = new AuswertungJubilareFilterMap()
+              .getMap((AuswertungControl) obj, map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:

@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.StatistikJahrgaengeExportAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Button;
@@ -33,7 +33,7 @@ public class StatistikJahrgaengeView extends AbstractView
   {
     GUI.getView().setTitle("Jahrgangsstatistik");
 
-    final MitgliedControl control = new MitgliedControl(this);
+    final AuswertungControl control = new AuswertungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
     group.addLabelPair("Jahr", control.getJubeljahr());

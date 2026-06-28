@@ -17,10 +17,11 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Map;
 
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -30,16 +31,18 @@ import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.view.IAuswertung;
-import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
+import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedAuswertungCSV implements IAuswertung
+public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
 {
 
   private String vorlagedateiname;
@@ -50,7 +53,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
 
   private String[] headerKeys;
 
-  public MitgliedAuswertungCSV()
+  public AuswertungMitgliedCSV()
   {
     this.vorlagedateiname = "";
     this.name = "Mitgliederliste CSV";
@@ -58,7 +61,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
     this.headerUser = null;
   }
 
-  public MitgliedAuswertungCSV(String filename)
+  public AuswertungMitgliedCSV(String filename)
   {
     this(); // call default constructor
 
@@ -71,9 +74,12 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
-      throws RemoteException
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
+
     // read and check vorlagedateicsv
     headerKeys = null;
     headerUser = null;
@@ -87,8 +93,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
       // 2nd line: headerKeys
       try
       {
-        File file = new File(vorlagedateiname);
-        ICsvListReader reader = new CsvListReader(new FileReader(file),
+        File fileVorlage = new File(vorlagedateiname);
+        ICsvListReader reader = new CsvListReader(new FileReader(fileVorlage),
             CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
         headerUser = reader.read().toArray(new String[0]);
         headerKeys = reader.read().toArray(new String[0]);
@@ -117,21 +123,17 @@ public class MitgliedAuswertungCSV implements IAuswertung
                 + vorlagedateiname);
       }
     }
-  }
 
-  @Override
-  public void go(ArrayList<Mitglied> list, final File file,
-      Map<Filter, String> filter) throws ApplicationException
-  {
     try
     {
       ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
       Mitglied m = null;
-      if (list.size() > 0)
+      Mitglied[] list = (Mitglied[]) objects[0];
+      if (list.length > 0)
       {
-        m = list.get(0);
+        m = list[0];
       }
       else
       {
@@ -177,7 +179,6 @@ public class MitgliedAuswertungCSV implements IAuswertung
             processors);
       }
       writer.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -201,27 +202,43 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public String getDateiname()
-  {
-    return "mitglied";
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return "csv";
-  }
-
-  @Override
   public String toString()
+  {
+    return getName();
+  }
+
+  @Override
+  public String getName()
   {
     return name;
   }
 
   @Override
-  public boolean openFile()
+  public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    return true;
-  }
+    if (objectType != AuswertungMitgliedView.class
+        && objectType != AuswertungNichtMitgliedView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
 
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliedCSV.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.csv" };
+      }
+    };
+    return new IOFormat[] { f };
+  }
 }
