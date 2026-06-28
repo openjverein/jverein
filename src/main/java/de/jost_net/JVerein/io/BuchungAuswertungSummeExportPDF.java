@@ -293,11 +293,14 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       }
     }
 
-    reporter.addColumn(buchungsklasseBezeichnung, Element.ALIGN_LEFT);
-    reporter.addColumn(buchungsartBezeichnung, Element.ALIGN_LEFT);
+    reporter.addColumn(buchungsklasseBezeichnung, Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(buchungsartBezeichnung, Element.ALIGN_LEFT,
+        params.getFontNormal());
     if (buchungen.size() == 0)
     {
-      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT);
+      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     else
     {
