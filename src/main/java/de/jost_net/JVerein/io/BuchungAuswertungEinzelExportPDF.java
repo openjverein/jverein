@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -303,9 +304,11 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     {
       buchungsartBezeichnung = new BuchungsartFormatter().format(bua);
     }
+
+    Font font = new Font(params.getFontHeader());
+    font.setSize(10);
     Paragraph pBuchungsart = new Paragraph(
-        buchungsklasseBezeichnung + " - " + buchungsartBezeichnung,
-        params.getFontHeader());
+        buchungsklasseBezeichnung + " - " + buchungsartBezeichnung, font);
     reporter.add(pBuchungsart);
     double buchungsartSumme = 0;
 
