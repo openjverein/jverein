@@ -21,6 +21,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
@@ -43,7 +45,12 @@ public class AuswertungMitgliedAdressbuchCSV
   {
     try
     {
-      Mitglied[] list = (Mitglied[]) objects[0];
+      /*
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
+       * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+       */
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
       Txt txt = new Txt(file, ";");
       for (Mitglied m : list)
       {
@@ -51,7 +58,7 @@ public class AuswertungMitgliedAdressbuchCSV
       }
       txt.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.length));
+          String.format("Auswertung fertig. %d Sätze.", list.size()));
     }
     catch (IOException e)
     {

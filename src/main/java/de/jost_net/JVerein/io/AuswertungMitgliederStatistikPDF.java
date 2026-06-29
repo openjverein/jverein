@@ -24,8 +24,6 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Map;
-
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -35,7 +33,6 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedStatistikView;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -61,9 +58,10 @@ public class AuswertungMitgliederStatistikPDF implements Exporter
   {
     try
     {
-      @SuppressWarnings("unchecked")
-      Date stichtag = (Date) ((Map<Filter, Object>) objects[0])
-          .get(Filter.STICHTAG);
+      /*
+       * objects[0] ist der Stichtag, objects[1] ist der Subtitel,
+       */
+      Date stichtag = (Date) objects[0];
       if (stichtag == null)
       {
         throw new ApplicationException("Stichtag ist leer");

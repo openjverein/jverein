@@ -18,6 +18,7 @@ import java.io.FilenameFilter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
@@ -36,6 +37,7 @@ import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.IOFormat;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.io.AuswertungMitgliedAdressbuchCSV;
 import de.jost_net.JVerein.io.AuswertungMitgliedAdresslistePDF;
 import de.jost_net.JVerein.io.AuswertungMitgliedCSV;
@@ -43,6 +45,7 @@ import de.jost_net.JVerein.io.AuswertungMitgliedPDF;
 import de.jost_net.JVerein.io.AuswertungKursteilnehmerPDF;
 import de.jost_net.JVerein.io.AuswertungMitgliederStatistikPDF;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -145,7 +148,7 @@ public class AuswertungControl extends FilterControl
     }
     auswertungUeberschrift = new TextInput(
         settings.getString("auswertung.ueberschrift", ""));
-    auswertungUeberschrift.setName("Überschrift");
+    auswertungUeberschrift.setName("Subtitel");
     return auswertungUeberschrift;
   }
 
@@ -229,10 +232,15 @@ public class AuswertungControl extends FilterControl
         }
         ArrayList<Mitglied> list = new MitgliedQuery(this)
             .get(MitgliedAuswahl.MITGLIEDER, sort);
-
-        Object[] objects = new Object[] { list.toArray(new Mitglied[0]),
+        Mitgliedstyp mitgliedstyp = Einstellungen.getDBService()
+            .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
+        Object[] objects = new Object[] { list,
             (String) getAuswertungUeberschrift().getValue(),
-            getFilterText(false) };
+            getFilterText(false), mitgliedstyp };
+        /*
+         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
+         * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+         */
         starteAuswertung(exporter, objects, view.getClass(), this);
       }
       catch (RemoteException e)
@@ -256,9 +264,14 @@ public class AuswertungControl extends FilterControl
         }
         ArrayList<Mitglied> list = new MitgliedQuery(this)
             .get(MitgliedAuswahl.NICHTMITGLIEDER, sort);
-        Object[] objects = new Object[] { list.toArray(new Mitglied[0]),
+        Object[] objects = new Object[] { list,
             (String) getAuswertungUeberschrift().getValue(),
-            getFilterText(false) };
+            getFilterText(false),
+            (Mitgliedstyp) getFilter().get(Filter.MITGLIEDSTYP) };
+        /*
+         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
+         * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+         */
         starteAuswertung(exporter, objects, view.getClass(), this);
       }
       catch (RemoteException e)
@@ -287,8 +300,12 @@ public class AuswertungControl extends FilterControl
     Button b = new Button("Starten", context -> {
       try
       {
+        /*
+         * objects[0] ist der Stichtag, objects[1] ist der Subtitel
+         */
         starteAuswertung(new AuswertungMitgliederStatistikPDF(),
-            new Object[] { getFilter(), "" }, view.getClass(), this);
+            new Object[] { (Date) getFilter().get(Filter.STICHTAG), "" },
+            view.getClass(), this);
       }
       catch (RemoteException e)
       {
@@ -303,6 +320,9 @@ public class AuswertungControl extends FilterControl
     Button b = new Button("Starten", context -> {
       try
       {
+        /*
+         * objects[0] ist der Filter, objects[1] ist der Subtitel
+         */
         starteAuswertung(new AuswertungKursteilnehmerPDF(),
             new Object[] { getFilter(), "" }, view.getClass(), this);
       }
@@ -322,12 +342,12 @@ public class AuswertungControl extends FilterControl
    * @param exporter
    *          Der Exporter
    * @param objects
-   *          objects[0] ist das Mitglied[], objects[1] ist der Subtitel,
-   *          objects[2] ist der Filter
+   *          objects[1] muss der Subtitel sein
    * @param type
    *          Die View Klasse
    * @param dateinameObject
-   *          Das Objekt für die Evaluierung von Dateiname, Titel und Subtitel
+   *          Das Objekt für die Evaluierung von Dateiname, Titel und Subtitel,
+   *          ist hier der Control selbst
    * @throws ApplicationException
    * @throws RemoteException
    */
@@ -487,6 +507,30 @@ public class AuswertungControl extends FilterControl
       }
     }
     super.saveFilterSettings();
+  }
+
+  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
+  // entfernen
+  @Override
+  public Input getFilterInput(Filter filter)
+      throws RemoteException, ApplicationException
+  {
+    Input input = super.getFilterInput(filter);
+    if (filter.equals(Filter.MITGLIEDSTYP)
+        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
+    {
+      List<?> list = ((SelectInput) input).getList();
+      for (Object o : list)
+      {
+        if (((Mitgliedstyp) o).getJVereinid() == Integer
+            .parseInt(Mitgliedstyp.MITGLIED))
+        {
+          list.remove(o);
+          break;
+        }
+      }
+    }
+    return input;
   }
 
   public void setMitgliedAuswahl(MitgliedAuswahl mitgliedAuswahl)

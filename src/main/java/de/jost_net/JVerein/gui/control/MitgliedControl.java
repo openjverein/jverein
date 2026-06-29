@@ -87,7 +87,6 @@ import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -2810,30 +2809,6 @@ public class MitgliedControl extends FilterControl implements Savable
       return null;
     }
     return dcontrol.getDokumenteList();
-  }
-
-  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
-  // entfernen
-  @Override
-  public Input getFilterInput(Filter filter)
-      throws RemoteException, ApplicationException
-  {
-    Input input = super.getFilterInput(filter);
-    if (filter.equals(Filter.MITGLIEDSTYP)
-        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
-    {
-      List<?> list = ((SelectInput) input).getList();
-      for (Object o : list)
-      {
-        if (((Mitgliedstyp) o).getJVereinid() == Integer
-            .parseInt(Mitgliedstyp.MITGLIED))
-        {
-          list.remove(o);
-          break;
-        }
-      }
-    }
-    return input;
   }
 
   @Override

@@ -34,6 +34,7 @@ import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Tools.EigenschaftenTool;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
@@ -44,6 +45,7 @@ import de.willuhn.util.ProgressMonitor;
 public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
 {
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
       ExportLayoutParam params, ProgressMonitor monitor)
@@ -52,9 +54,13 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
   {
     try
     {
-      Mitglied[] list = (Mitglied[]) objects[0];
-      @SuppressWarnings("unchecked")
+      /*
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
+       * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+       */
+      ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
       Map<Filter, String> filterparams = (Map<Filter, String>) objects[2];
+      Mitgliedstyp mitgliedstyp = (Mitgliedstyp) objects[3];
 
       FileOutputStream fos = new FileOutputStream(file);
       Reporter reporter = new Reporter(fos, params.getTitle(),
@@ -87,9 +93,9 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
           params.getFontHeader());
       reporter.createHeader(100, Element.ALIGN_CENTER);
 
-      for (int i = 0; i < list.length; i++)
+      for (int i = 0; i < list.size(); i++)
       {
-        Mitglied m = list[i];
+        Mitglied m = list.get(i);
         reporter.addColumn(Adressaufbereitung.getNameVorname(m),
             Element.ALIGN_LEFT, params.getFontNormal());
         String anschriftkommunikation = Adressaufbereitung.getAnschrift(m);
@@ -181,19 +187,18 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
       }
       reporter.closeTable();
 
-      reporter
-          .add(new Paragraph(
-              String.format("Anzahl %s: %d",
-                  mitgliedauswahl == MitgliedAuswahl.MITGLIEDER ? "Mitglieder"
-                      : "Nicht-Mitglieder",
-                  list.length),
-              params.getFontNormal()));
+      reporter.add(new Paragraph(
+          String.format("Anzahl %s: %d",
+              mitgliedstyp == null ? "Nicht-Mitglieder"
+                  : mitgliedstyp.getBezeichnungPlural(),
+              list.size()),
+          params.getFontNormal()));
 
       reporter.addParams(filterparams);
       reporter.closeTable();
       reporter.close();
       GUI.getStatusBar().setSuccessText(
-          String.format("Auswertung fertig. %d Sätze.", list.length));
+          String.format("Auswertung fertig. %d Sätze.", list.size()));
     }
     catch (Exception e)
     {

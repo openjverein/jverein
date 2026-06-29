@@ -22,6 +22,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Map;
 
 import org.supercsv.cellprocessor.ift.CellProcessor;
@@ -79,6 +80,12 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
       throws RemoteException, ApplicationException, FileNotFoundException,
       DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
+     * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+     */
+    @SuppressWarnings("unchecked")
+    ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
 
     // read and check vorlagedateicsv
     headerKeys = null;
@@ -130,10 +137,9 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
           CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
 
       Mitglied m = null;
-      Mitglied[] list = (Mitglied[]) objects[0];
-      if (list.length > 0)
+      if (list.size() > 0)
       {
-        m = list[0];
+        m = list.get(0);
       }
       else
       {
