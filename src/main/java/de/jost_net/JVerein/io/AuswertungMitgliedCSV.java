@@ -118,19 +118,24 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
       if (headerUser.length == 0)
       {
         Logger.error("No elements in first line: " + vorlagedateiname);
-        throw new RemoteException(
+        throw new ApplicationException(
             "Keine Elemente in erster Zeile in Datei " + vorlagedateiname);
       }
       if (headerUser.length != headerKeys.length)
       {
         Logger.error("Different number of elements in 1st and 2nd line: "
             + vorlagedateiname);
-        throw new RemoteException(
+        throw new ApplicationException(
             "Unterschiedliche Anzahl Elemente in 1. und 2. Zeile: "
                 + vorlagedateiname);
       }
     }
+    go(list, file);
+  }
 
+  public void go(ArrayList<Mitglied> list, File file)
+      throws ApplicationException
+  {
     try
     {
       ICsvMapWriter writer = new CsvMapWriter(new FileWriter(file),
