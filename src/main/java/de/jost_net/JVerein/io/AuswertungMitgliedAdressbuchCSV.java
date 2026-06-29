@@ -17,9 +17,12 @@
 
 package de.jost_net.JVerein.io;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
@@ -27,7 +30,6 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
 import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
-import de.jost_net.JVerein.io.Adressbuch.Txt;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -36,6 +38,9 @@ import de.willuhn.util.ProgressMonitor;
 public class AuswertungMitgliedAdressbuchCSV
     extends AuswertungMitgliedAbstractCSV
 {
+  private OutputStreamWriter out;
+
+  private String separator = ";";
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
@@ -51,12 +56,19 @@ public class AuswertungMitgliedAdressbuchCSV
        */
       @SuppressWarnings("unchecked")
       ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
-      Txt txt = new Txt(file, ";");
+      out = new OutputStreamWriter(
+          new BufferedOutputStream(new FileOutputStream(file)));
+      out.write("\"Name\"" + separator + "\"Vorname\"" + separator
+          + "\"Strasse\"" + separator + "\"PLZ\"" + separator + "\"Ort\""
+          + separator + "\"Staat\"" + separator + "\"Anzeigename\"" + separator
+          + "\"Email\"" + separator + "\"TelefonPrivat\"" + separator
+          + "\"TelefonMobil\"\n");
+
       for (Mitglied m : list)
       {
-        txt.add(m);
+        out.write(getZeile(m));
       }
-      txt.close();
+      out.close();
       GUI.getStatusBar().setSuccessText(
           String.format("Auswertung fertig. %d Sätze.", list.size()));
     }
@@ -64,6 +76,25 @@ public class AuswertungMitgliedAdressbuchCSV
     {
       throw new ApplicationException(e);
     }
+  }
+
+  public String getZeile(Mitglied mitglied) throws RemoteException
+  {
+    StringBuilder sb = new StringBuilder();
+    sb.append("\"" + mitglied.getName() + "\"" + separator);
+    sb.append("\"" + mitglied.getVorname() + "\"" + separator);
+    sb.append("\"" + mitglied.getStrasse() + "\"" + separator);
+    sb.append("\"" + mitglied.getPlz() + "\"" + separator);
+    sb.append("\"" + mitglied.getOrt() + "\"" + separator);
+    sb.append("\"" + (mitglied.getStaat() != null ? mitglied.getStaat() : "")
+        + "\"" + separator);
+    sb.append("\"" + mitglied.getVorname() + " " + mitglied.getName() + "\""
+        + separator);
+    sb.append("\"" + mitglied.getEmail() + "\"" + separator);
+    sb.append("\"" + mitglied.getTelefonprivat() + "\"" + separator);
+    sb.append("\"" + mitglied.getHandy() + "\"" + separator);
+    sb.append("\n");
+    return sb.toString();
   }
 
   @Override
