@@ -75,8 +75,7 @@ public class StatistikJahrgaengeExportCSV extends StatistikJahrgaengeExport
   public String getDateiname(Object object)
   {
     return VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME,
-        (MitgliedControl) object) + ".csv";
+        VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME, object) + ".csv";
   }
 
   @Override
