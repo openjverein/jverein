@@ -408,7 +408,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                       // Ist nur bei Buchungsart
                       if ("-".equals(postenEntry.getKey()))
                       {
-                        d = betrag[1];
+                        d = betrag[1] == null ? 0 : betrag[1];
 
                       }
                       reporter.addColumn(d);
