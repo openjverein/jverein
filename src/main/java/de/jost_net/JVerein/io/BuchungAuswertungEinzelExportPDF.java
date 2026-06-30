@@ -221,6 +221,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("Gesamtsumme", Element.ALIGN_LEFT);
       reporter.addColumn(summe);
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        reporter.addColumn("", Element.ALIGN_LEFT);
+      }
       reporter.closeTable();
     }
 
@@ -237,6 +241,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
+      if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+      {
+        reporter.addColumn("", Element.ALIGN_LEFT);
+      }
       reporter.closeTable();
     }
     reporter.addParams(control.getParams());
@@ -362,6 +370,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
           Element.ALIGN_LEFT);
       summe += buchungsartSumme;
       reporter.addColumn(buchungsartSumme);
+    }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addColumn("", Element.ALIGN_LEFT);
     }
     reporter.closeTable();
     return true;
