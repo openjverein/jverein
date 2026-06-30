@@ -388,6 +388,10 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
     {
       reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
     }
+    if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
+    {
+      reporter.addColumn("", Element.ALIGN_LEFT);
+    }
     reporter.closeTable();
     return true;
   }
