@@ -431,8 +431,8 @@ public class WirtschaftsplanExporterPDF implements Exporter
                     {
                       return;
                     }
-                    reporter.addColumn(postenEntry.getKey(),
-                        Element.ALIGN_RIGHT);
+                    reporter.addColumn("      " + postenEntry.getKey(),
+                        Element.ALIGN_LEFT);
                   }
 
                   Double[][] values = postenEntry.getValue();
@@ -440,11 +440,12 @@ public class WirtschaftsplanExporterPDF implements Exporter
                   for (Double[] betrag : values)
                   {
                     i++;
-                    reporter.addColumn(betrag[0], new BaseColor(230, 230, 230));
+                    reporter.addColumn(betrag[0] == null ? 0 : betrag[0],
+                        new BaseColor(230, 230, 230));
 
                     if (hatIst.contains(wirtschaftsplaene[i]))
                     {
-                      double wert = 0d;
+                      Double wert = null;
                       // Ist nur bei Buchungsart
                       if ("-".equals(postenEntry.getKey()))
                       {
