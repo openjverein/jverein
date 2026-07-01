@@ -177,11 +177,9 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
               : "");
         }
 
-        reporter
-            .addColumn(
-                beitragsgruppebemerkung.toString() + " "
-                    + eigenschaften.toString() + " " + zelle,
-                Element.ALIGN_LEFT, params.getFontNormal());
+        reporter.addColumn(beitragsgruppebemerkung.toString()
+            + eigenschaften.toString() + zelle, Element.ALIGN_LEFT,
+            params.getFontNormal());
       }
       reporter.closeTable();
 
