@@ -28,8 +28,6 @@ import java.util.ArrayList;
 
 import com.itextpdf.text.DocumentException;
 
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
-import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -51,8 +49,8 @@ public class AuswertungMitgliedAdressbuchCSV
     try
     {
       /*
-       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
-       * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+       * objects[2] ist Mitgliedstyp
        */
       @SuppressWarnings("unchecked")
       ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
@@ -98,43 +96,9 @@ public class AuswertungMitgliedAdressbuchCSV
   }
 
   @Override
-  public String toString()
-  {
-    return getName();
-  }
-
-  @Override
   public String getName()
   {
     return "Adressbuchexport CSV";
   }
 
-  @Override
-  public IOFormat[] getIOFormats(Class<?> objectType)
-  {
-    if (objectType != AuswertungMitgliedView.class
-        && objectType != AuswertungNichtMitgliedView.class)
-    {
-      return null;
-    }
-    IOFormat f = new IOFormat()
-    {
-
-      @Override
-      public String getName()
-      {
-        return AuswertungMitgliedAdressbuchCSV.this.getName();
-      }
-
-      /**
-       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
-       */
-      @Override
-      public String[] getFileExtensions()
-      {
-        return new String[] { "*.csv" };
-      }
-    };
-    return new IOFormat[] { f };
-  }
 }

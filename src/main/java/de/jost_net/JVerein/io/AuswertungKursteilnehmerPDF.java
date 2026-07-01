@@ -50,7 +50,7 @@ public class AuswertungKursteilnehmerPDF implements Exporter
     try
     {
       /*
-       * objects[0] ist der Filter, objects[1] ist der Subtitel,
+       * objects[0] ist der Filter
        */
       final DBIterator<Kursteilnehmer> list = getIterator(
           (Map<Filter, Object>) objects[0]);

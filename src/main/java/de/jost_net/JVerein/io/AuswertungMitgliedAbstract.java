@@ -15,57 +15,46 @@ package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
-import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 
-public abstract class AuswertungMitgliedAbstractCSV
-    extends AuswertungMitgliedAbstract
+public abstract class AuswertungMitgliedAbstract implements Exporter
 {
 
   @Override
-  public String getDateiname(Object object)
+  public String getTitle(Object object)
   {
     if (((AuswertungControl) object).getMitgliedAuswahl()
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
-      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,
-          object) + ".csv";
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, object);
     }
     else
     {
-      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
-          object) + ".csv";
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL,
+          object);
     }
   }
 
   @Override
-  public IOFormat[] getIOFormats(Class<?> objectType)
+  public String getSubtitle(Object object)
   {
-    if (objectType != AuswertungMitgliedView.class
-        && objectType != AuswertungNichtMitgliedView.class)
+    if (((AuswertungControl) object).getMitgliedAuswahl()
+        .equals(MitgliedAuswahl.MITGLIEDER))
     {
-      return null;
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_SUBTITEL,
+          object);
     }
-    IOFormat f = new IOFormat()
+    else
     {
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_SUBTITEL,
+          object);
+    }
+  }
 
-      @Override
-      public String getName()
-      {
-        return this.getName();
-      }
-
-      /**
-       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
-       */
-      @Override
-      public String[] getFileExtensions()
-      {
-        return new String[] { "*.csv" };
-      }
-    };
-    return new IOFormat[] { f };
+  @Override
+  public String toString()
+  {
+    return getName();
   }
 }

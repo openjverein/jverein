@@ -29,8 +29,6 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
-import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -55,12 +53,12 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
     try
     {
       /*
-       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
-       * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+       * objects[2] ist Mitgliedstyp
        */
       ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
-      Map<Filter, String> filterparams = (Map<Filter, String>) objects[2];
-      Mitgliedstyp mitgliedstyp = (Mitgliedstyp) objects[3];
+      Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
+      Mitgliedstyp mitgliedstyp = (Mitgliedstyp) objects[2];
 
       FileOutputStream fos = new FileOutputStream(file);
       Reporter reporter = new Reporter(fos, params.getTitle(),
@@ -208,43 +206,9 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
   }
 
   @Override
-  public String toString()
-  {
-    return getName();
-  }
-
-  @Override
   public String getName()
   {
     return "Mitgliederliste PDF";
   }
 
-  @Override
-  public IOFormat[] getIOFormats(Class<?> objectType)
-  {
-    if (objectType != AuswertungMitgliedView.class
-        && objectType != AuswertungNichtMitgliedView.class)
-    {
-      return null;
-    }
-    IOFormat f = new IOFormat()
-    {
-
-      @Override
-      public String getName()
-      {
-        return AuswertungMitgliedPDF.this.getName();
-      }
-
-      /**
-       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
-       */
-      @Override
-      public String[] getFileExtensions()
-      {
-        return new String[] { "*.pdf" };
-      }
-    };
-    return new IOFormat[] { f };
-  }
 }

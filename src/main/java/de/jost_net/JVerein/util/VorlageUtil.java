@@ -300,11 +300,13 @@ public class VorlageUtil
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
+        case AUSWERTUNG_MITGLIED_SUBTITEL:
           map = new AuswertungMitgliedFilterMap()
               .getMap((AuswertungControl) obj, map);
           break;
         case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
         case AUSWERTUNG_NICHT_MITGLIED_TITEL:
+        case AUSWERTUNG_NICHT_MITGLIED_SUBTITEL:
           map = new AuswertungNichtMitgliedFilterMap()
               .getMap((AuswertungControl) obj, map);
           break;
@@ -739,10 +741,12 @@ public class VorlageUtil
           break;
         case AUSWERTUNG_MITGLIED_DATEINAME:
         case AUSWERTUNG_MITGLIED_TITEL:
+        case AUSWERTUNG_MITGLIED_SUBTITEL:
           map = AuswertungMitgliedFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
         case AUSWERTUNG_NICHT_MITGLIED_TITEL:
+        case AUSWERTUNG_NICHT_MITGLIED_SUBTITEL:
           map = AuswertungNichtMitgliedFilterMap.getDummyMap(map);
           break;
         case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:

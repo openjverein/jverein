@@ -148,7 +148,7 @@ public class AuswertungControl extends FilterControl
     }
     auswertungUeberschrift = new TextInput(
         settings.getString("auswertung.ueberschrift", ""));
-    auswertungUeberschrift.setName("Subtitel");
+    auswertungUeberschrift.setName("Überschrift");
     return auswertungUeberschrift;
   }
 
@@ -234,12 +234,11 @@ public class AuswertungControl extends FilterControl
             .get(MitgliedAuswahl.MITGLIEDER, sort);
         Mitgliedstyp mitgliedstyp = Einstellungen.getDBService()
             .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
-        Object[] objects = new Object[] { list,
-            (String) getAuswertungUeberschrift().getValue(),
-            getFilterText(false), mitgliedstyp };
+        Object[] objects = new Object[] { list, getFilterText(false),
+            mitgliedstyp };
         /*
-         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
-         * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+         * objects[2] ist Mitgliedstyp
          */
         starteAuswertung(exporter, objects, view.getClass(), this);
       }
@@ -264,13 +263,11 @@ public class AuswertungControl extends FilterControl
         }
         ArrayList<Mitglied> list = new MitgliedQuery(this)
             .get(MitgliedAuswahl.NICHTMITGLIEDER, sort);
-        Object[] objects = new Object[] { list,
-            (String) getAuswertungUeberschrift().getValue(),
-            getFilterText(false),
+        Object[] objects = new Object[] { list, getFilterText(false),
             (Mitgliedstyp) getFilter().get(Filter.MITGLIEDSTYP) };
         /*
-         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Subtitel,
-         * objects[2] ist der Filtertext, objects[3] ist Mitgliedstyp
+         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+         * objects[2] ist Mitgliedstyp
          */
         starteAuswertung(exporter, objects, view.getClass(), this);
       }
@@ -304,7 +301,7 @@ public class AuswertungControl extends FilterControl
          * objects[0] ist der Stichtag, objects[1] ist der Subtitel
          */
         starteAuswertung(new AuswertungMitgliederStatistikPDF(),
-            new Object[] { (Date) getFilter().get(Filter.STICHTAG), "" },
+            new Object[] { (Date) getFilter().get(Filter.STICHTAG) },
             view.getClass(), this);
       }
       catch (RemoteException e)
@@ -324,7 +321,7 @@ public class AuswertungControl extends FilterControl
          * objects[0] ist der Filter, objects[1] ist der Subtitel
          */
         starteAuswertung(new AuswertungKursteilnehmerPDF(),
-            new Object[] { getFilter(), "" }, view.getClass(), this);
+            new Object[] { getFilter() }, view.getClass(), this);
       }
       catch (RemoteException e)
       {
@@ -342,7 +339,7 @@ public class AuswertungControl extends FilterControl
    * @param exporter
    *          Der Exporter
    * @param objects
-   *          objects[1] muss der Subtitel sein
+   *          Zu übergebende Daten
    * @param type
    *          Die View Klasse
    * @param dateinameObject
@@ -363,18 +360,13 @@ public class AuswertungControl extends FilterControl
     ext = ext.replaceAll("\\*.", ""); // "*." entfernen
     String prefix = exporter.getName().replaceAll(" ", "-") + ".";
 
-    String subtitle = "";
-    if (((String) objects[1]).length() > 0)
-    {
-      subtitle = (String) objects[1];
-    }
-
     try
     {
       if (ext.equalsIgnoreCase("pdf"))
       {
         if (!new ExporterExportDialog(exporter, objects, format, prefix,
-            ExportArt.PDF, exporter.getTitle(dateinameObject), subtitle,
+            ExportArt.PDF, exporter.getTitle(dateinameObject),
+            exporter.getSubtitle(dateinameObject),
             exporter.getDateiname(dateinameObject), open).open())
         {
           throw new OperationCanceledException();
@@ -407,7 +399,7 @@ public class AuswertungControl extends FilterControl
         settings.setAttribute("lastdir", file.getParent());
         ExportLayoutParam param = new ExportLayoutParam();
         param.setTitle(exporter.getTitle(dateinameObject));
-        param.setSubtitle(subtitle);
+        param.setSubtitle(exporter.getSubtitle(dateinameObject));
 
         BackgroundTask t = new BackgroundTask()
         {
