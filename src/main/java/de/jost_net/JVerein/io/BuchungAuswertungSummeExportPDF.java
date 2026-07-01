@@ -25,7 +25,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
@@ -49,11 +48,9 @@ import de.willuhn.util.ProgressMonitor;
 
 public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
 {
-  private String title;
-
-  private String subtitle;
-
   boolean geldkonto;
+
+  private ExportLayoutParam params;
 
   @Override
   public String getName()
@@ -113,33 +110,35 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
   }
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_TITEL, object);
+    return VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_TITEL, object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_SUBTITEL, object);
+    return VorlageUtil.getName(VorlageTyp.SUMMENBUCHUNGEN_SUBTITEL, object);
   }
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
+    this.params = params;
     BuchungsControl control = (BuchungsControl) objects[0];
     BuchungQuery query = control.getQuery();
     ArrayList<Buchungsart> buchungsarten = getBuchungsarten(query);
     kontonummer_in_buchungsliste = getKontonummer();
-    FileOutputStream fos = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fos, title, subtitle);
-    if (kontonummer_in_buchungsliste)
-    {
-      reporter = new Reporter(fos, title, subtitle, 50, 30, 20, 20, false);
-    }
+    FileOutputStream fos = new FileOutputStream(file);
+    Reporter reporter = new Reporter(fos, params.getTitle(),
+        params.getSubtitle(), params.getLinks(), params.getRechts(),
+        params.getOben(), params.getUnten(), false, params.getVordergrund(),
+        params.getHintergrund(), params.getQuerformat(),
+        params.getHeaderTransparent(), params.getZellenTransparent());
 
     createTableHeader(reporter);
     boolean nichtLeer = false;
@@ -207,18 +206,22 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
 
     if (anzahlBuchungsarten > 1)
     {
-      reporter.addColumn("Summe Einnahmen", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn(summeeinnahmen);
-      reporter.addColumn("Summe Ausgaben", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn(summeausgaben);
-      reporter.addColumn("Summe Umbuchungen", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn(summeumbuchungen);
-      reporter.addColumn("Saldo", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen);
+      reporter.addColumn("Summe Einnahmen", Element.ALIGN_RIGHT,
+          params.getColorTable(), true, params.getFontFett(), 2);
+      reporter.addColumn(summeeinnahmen, params.getColorTable(),
+          params.getFontFett(), params.getNegativRot());
+      reporter.addColumn("Summe Ausgaben", Element.ALIGN_RIGHT,
+          params.getColorTable(), true, params.getFontFett(), 2);
+      reporter.addColumn(summeausgaben, params.getColorTable(),
+          params.getFontFett(), params.getNegativRot());
+      reporter.addColumn("Summe Umbuchungen", Element.ALIGN_RIGHT,
+          params.getColorTable(), true, params.getFontFett(), 2);
+      reporter.addColumn(summeumbuchungen, params.getColorTable(),
+          params.getFontFett(), params.getNegativRot());
+      reporter.addColumn("Saldo", Element.ALIGN_RIGHT, params.getColorTable(),
+          true, params.getFontFett(), 2);
+      reporter.addColumn(summeeinnahmen + summeausgaben + summeumbuchungen,
+          params.getColorTable(), params.getFontFett(), params.getNegativRot());
       reporter.closeTable();
     }
     else if (nichtLeer)
@@ -227,9 +230,10 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     }
     if (!nichtLeer)
     {
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
+      reporter.addColumn("Keine Buchungen", Element.ALIGN_LEFT,
+          params.getColorTable(), params.getFontNormal());
+      reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       reporter.closeTable();
     }
     reporter.addParams(control.getParams());
@@ -241,11 +245,11 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
   private void createTableHeader(Reporter reporter) throws DocumentException
   {
     reporter.addHeaderColumn("Buchungsklasse", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Buchungsart", Element.ALIGN_CENTER, 150,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 60,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.createHeader();
   }
 
@@ -289,11 +293,14 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       }
     }
 
-    reporter.addColumn(buchungsklasseBezeichnung, Element.ALIGN_LEFT);
-    reporter.addColumn(buchungsartBezeichnung, Element.ALIGN_LEFT);
+    reporter.addColumn(buchungsklasseBezeichnung, Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(buchungsartBezeichnung, Element.ALIGN_LEFT,
+        params.getFontNormal());
     if (buchungen.size() == 0)
     {
-      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT);
+      reporter.addColumn("Keine Buchung", Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     else
     {

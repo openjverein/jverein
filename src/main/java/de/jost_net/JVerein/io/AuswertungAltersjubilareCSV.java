@@ -20,15 +20,14 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedschaftsjubilaeumExportCSV
-    extends MitgliedschaftsjubilaeumsExport
+public class AuswertungAltersjubilareCSV
+    extends AuswertungAltersjubilareAbstract
 {
 
   private ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -38,7 +37,7 @@ public class MitgliedschaftsjubilaeumExportCSV
   @Override
   public String getName()
   {
-    return "Mitgliedschaftsjubilare CSV-Export";
+    return "Altersjubilare CSV-Export";
   }
 
   @Override
@@ -54,7 +53,7 @@ public class MitgliedschaftsjubilaeumExportCSV
       @Override
       public String getName()
       {
-        return MitgliedschaftsjubilaeumExportCSV.this.getName();
+        return AuswertungAltersjubilareCSV.this.getName();
       }
 
       /**
@@ -72,15 +71,14 @@ public class MitgliedschaftsjubilaeumExportCSV
   @Override
   public String getDateiname(Object object)
   {
-    return VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,
-        (MitgliedControl) object) + ".csv";
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
+        object) + ".csv";
   }
 
   @Override
   protected void open()
   {
-    //
+    mitglieder = new ArrayList<>();
   }
 
   @Override
@@ -98,21 +96,15 @@ public class MitgliedschaftsjubilaeumExportCSV
   @Override
   protected void add(Mitglied m) throws RemoteException
   {
-    m.addVariable("mitgliedsschaftsjubilaeum", jahrgang + "");
+    m.addVariable("altersjubilaeum", jahrgang + "");
     mitglieder.add(m);
   }
 
   @Override
-  protected void close()
+  protected void close() throws ApplicationException
   {
-    MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
-    try
-    {
-      mcsv.go(mitglieder, file, null);
-    }
-    catch (ApplicationException e)
-    {
-      Logger.error("Fehler", e);
-    }
+    Logger.debug(String.format("Alterjubiläum-CSV-Export, Jahr=%d", jahr));
+    AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
+    mcsv.go(mitglieder, file);
   }
 }

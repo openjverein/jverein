@@ -20,7 +20,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -28,7 +28,7 @@ import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class StatistikMitgliedView extends AbstractView
+public class AuswertungMitgliederstatistikView extends AbstractView
 {
 
   @Override
@@ -36,7 +36,7 @@ public class StatistikMitgliedView extends AbstractView
   {
     GUI.getView().setTitle("Mitgliederstatistik");
 
-    final MitgliedControl control = new MitgliedControl(this);
+    final AuswertungControl control = new AuswertungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
 

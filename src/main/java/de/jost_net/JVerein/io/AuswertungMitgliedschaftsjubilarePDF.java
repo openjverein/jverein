@@ -21,19 +21,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 
-public class MitgliedschaftsjubilaeumExportPDF
-    extends MitgliedschaftsjubilaeumsExport
+public class AuswertungMitgliedschaftsjubilarePDF
+    extends AuswertungMitgliedschaftsjubilareAbstract
 {
 
   private FileOutputStream fos;
@@ -61,7 +60,7 @@ public class MitgliedschaftsjubilaeumExportPDF
       @Override
       public String getName()
       {
-        return MitgliedschaftsjubilaeumExportPDF.this.getName();
+        return AuswertungMitgliedschaftsjubilarePDF.this.getName();
       }
 
       /**
@@ -80,33 +79,37 @@ public class MitgliedschaftsjubilaeumExportPDF
   public String getDateiname(Object object)
   {
     return VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,
-        (MitgliedControl) object) + ".pdf";
+        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME, object)
+        + ".pdf";
   }
 
   @Override
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, title, subtitle);
+    reporter = new Reporter(fos, params.getTitle(), params.getSubtitle(),
+        params.getLinks(), params.getRechts(), params.getOben(),
+        params.getUnten(), false, params.getVordergrund(),
+        params.getHintergrund(), params.getQuerformat(),
+        params.getHeaderTransparent(), params.getZellenTransparent());
   }
 
   @Override
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
+    Font font = new Font(params.getFontHeader());
+    font.setSize(11);
     Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d-jähriges Jubiläum", jahrgang),
-        Reporter.getFreeSans(11));
+        "\n" + String.format("%d-jähriges Jubiläum", jahrgang), font);
     reporter.add(pHeader);
     reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Name, Vorname", Element.ALIGN_CENTER, 100,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Anschrift", Element.ALIGN_CENTER, 120,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Kommunikation", Element.ALIGN_CENTER, 80,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.createHeader();
     anz = 0;
   }
@@ -117,7 +120,8 @@ public class MitgliedschaftsjubilaeumExportPDF
     if (anz == 0)
     {
       reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT);
+      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT,
+          params.getFontNormal());
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
     }
@@ -127,10 +131,12 @@ public class MitgliedschaftsjubilaeumExportPDF
   @Override
   protected void add(Mitglied m) throws RemoteException
   {
-    reporter.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getNameVorname(m),
-        Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
+    reporter.addColumn(m.getEintritt(), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
     String kommunikation = m.getTelefonprivat();
     if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)
     {
@@ -143,7 +149,8 @@ public class MitgliedschaftsjubilaeumExportPDF
       kommunikation += ", ";
     }
     kommunikation += m.getEmail();
-    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false);
+    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false,
+        params.getFontNormal());
     anz++;
   }
 
@@ -153,4 +160,5 @@ public class MitgliedschaftsjubilaeumExportPDF
     reporter.close();
     fos.close();
   }
+
 }

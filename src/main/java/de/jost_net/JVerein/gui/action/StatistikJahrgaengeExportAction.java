@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
-import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
+import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -37,7 +37,7 @@ public class StatistikJahrgaengeExportAction implements Action
     try
     {
       Object[] objects = new Object[] { context };
-      ExportDialog d = new ExportDialog(objects, StatistikJahrgaengeView.class,
+      ExportDialog d = new ExportDialog(objects, AuswertungJahrgangsstatistikView.class,
           DokumentationUtil.STATISTIKJAHRGAENGE, objects[0]);
       d.open();
     }

@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.KursteilnehmerControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -32,7 +32,7 @@ public class AuswertungKursteilnehmerView extends AbstractView
   {
     GUI.getView().setTitle("Auswertung Kursteilnehmer");
 
-    final KursteilnehmerControl control = new KursteilnehmerControl(this);
+    final AuswertungControl control = new AuswertungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     group.addInput(control.getFilterInput(Filter.ABBUCHUNGSDATUM_VON));
@@ -47,7 +47,7 @@ public class AuswertungKursteilnehmerView extends AbstractView
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.AUSWERTUNGKURSTEILNEHMER, false,
         "question-circle.png");
-    buttons.addButton(control.getStartAuswertungButton());
+    buttons.addButton(control.getStartAuswertungKursteilnehmerButton());
     buttons.paint(this.getParent());
   }
 }

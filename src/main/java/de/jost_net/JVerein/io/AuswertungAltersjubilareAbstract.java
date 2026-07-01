@@ -27,7 +27,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -37,29 +37,23 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AltersjubilaeumsExport implements Exporter
+public abstract class AuswertungAltersjubilareAbstract implements Exporter
 {
-  protected String title;
-
-  protected String subtitle;
-
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
 
   protected File file;
 
   protected Integer jahr;
 
+  protected ExportLayoutParam params;
+
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor)
+      ExportLayoutParam params, ProgressMonitor monitor)
       throws ApplicationException, DocumentException, IOException
   {
     this.file = file;
-    final MitgliedControl control = (MitgliedControl) objects[0];
+    this.params = params;
+    final AuswertungControl control = (AuswertungControl) objects[0];
     jahr = control.getJJahr();
     Logger.debug(String.format("Altersjubiläumexport, Jahr=%d", jahr));
 
@@ -111,16 +105,16 @@ public abstract class AltersjubilaeumsExport implements Exporter
       throws IOException, DocumentException, ApplicationException;
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_TITEL,
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_TITEL,
         object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL, object);
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL,
+        object);
   }
 }

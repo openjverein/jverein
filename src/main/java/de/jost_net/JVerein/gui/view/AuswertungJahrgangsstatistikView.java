@@ -17,31 +17,35 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.JubilaeumsExportAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.action.StatistikJahrgaengeExportAction;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class JubilaeenView extends AbstractView
+public class AuswertungJahrgangsstatistikView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jubiläen");
+    GUI.getView().setTitle("Jahrgangsstatistik");
 
-    final MitgliedControl control = new MitgliedControl(this);
+    final AuswertungControl control = new AuswertungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
     group.addLabelPair("Jahr", control.getJubeljahr());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JUBILAEEN, false, "question-circle.png");
-    buttons.addButton("Starten", new JubilaeumsExportAction(), control, true,
-        "walking.png");
+        DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
+    Button btnStart = new Button("Starten",
+        new StatistikJahrgaengeExportAction(), control, true, "walking.png");
+
+    buttons.addButton(btnStart);
+
     buttons.paint(getParent());
   }
 }

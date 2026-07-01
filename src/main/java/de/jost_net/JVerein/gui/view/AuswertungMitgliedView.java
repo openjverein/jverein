@@ -21,7 +21,7 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -32,7 +32,7 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class AuswertungMitgliedView extends AbstractView
 {
-  final MitgliedControl control = new MitgliedControl(this);
+  final AuswertungControl control = new AuswertungControl(this);
 
   public AuswertungMitgliedView() throws RemoteException
   {
