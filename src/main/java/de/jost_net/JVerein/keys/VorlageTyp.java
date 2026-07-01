@@ -798,7 +798,7 @@ public enum VorlageTyp
       Einstellungen.getWorkPath()
           + "/Buchungen/$buchung_kontonummer/$buchung_id",
       Vorlageart.PFAD.getKey()),
-  MITGLIED_DOKUMENT_PFAD("rechnung-dokument-pfad", "Rechnung Dokument Pfad",
+  MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
       Einstellungen.getWorkPath() + "/Mitglieder/$mitglied_id",
       Vorlageart.PFAD.getKey());
 
