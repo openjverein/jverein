@@ -37,6 +37,7 @@ public class AuswertungNichtMitgliedView extends AbstractView
 
   public AuswertungNichtMitgliedView() throws RemoteException
   {
+    control.init("nichtmitglied.", "nichtzusatzfeld.", "nichtzusatzfelder.");
     control.setMitgliedAuswahl(MitgliedAuswahl.NICHTMITGLIEDER);
   }
 

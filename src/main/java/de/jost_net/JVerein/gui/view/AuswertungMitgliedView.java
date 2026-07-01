@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -31,6 +33,11 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 public class AuswertungMitgliedView extends AbstractView
 {
   final AuswertungControl control = new AuswertungControl(this);
+
+  public AuswertungMitgliedView() throws RemoteException
+  {
+    control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
+  }
 
   @Override
   public void bind() throws Exception
