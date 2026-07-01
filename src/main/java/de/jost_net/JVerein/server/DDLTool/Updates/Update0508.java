@@ -47,7 +47,7 @@ public class Update0508 extends AbstractDDLUpdate
     // Messaging gespeichert werden
     execute("INSERT INTO einstellungneu (name,wert) SELECT '"
         + Property.DOKUMENTSPEICHERUNG_MESSAGING.getKey()
-        + "', wert FROM einstellungneu WHERE name = '"
-        + Property.DOKUMENTENSPEICHERUNG.getKey());
+        + "', wert FROM einstellungneu WHERE name LIKE '"
+        + Property.DOKUMENTENSPEICHERUNG.getKey() + "'");
   }
 }
