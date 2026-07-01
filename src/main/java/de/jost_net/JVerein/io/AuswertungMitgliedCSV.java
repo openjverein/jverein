@@ -17,8 +17,10 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Map;
@@ -30,16 +32,16 @@ import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
+import com.itextpdf.text.DocumentException;
+
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.Variable.MitgliedMap;
-import de.jost_net.JVerein.gui.view.IAuswertung;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedAuswertungCSV implements IAuswertung
+public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
 {
 
   private String vorlagedateiname;
@@ -50,7 +52,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
 
   private String[] headerKeys;
 
-  public MitgliedAuswertungCSV()
+  public AuswertungMitgliedCSV()
   {
     this.vorlagedateiname = "";
     this.name = "Mitgliederliste CSV";
@@ -58,7 +60,7 @@ public class MitgliedAuswertungCSV implements IAuswertung
     this.headerUser = null;
   }
 
-  public MitgliedAuswertungCSV(String filename)
+  public AuswertungMitgliedCSV(String filename)
   {
     this(); // call default constructor
 
@@ -71,9 +73,18 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public void beforeGo(String title, MitgliedAuswahl mitgliedAuswahl)
-      throws RemoteException
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp
+     */
+    @SuppressWarnings("unchecked")
+    ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
+
     // read and check vorlagedateicsv
     headerKeys = null;
     headerUser = null;
@@ -87,8 +98,8 @@ public class MitgliedAuswertungCSV implements IAuswertung
       // 2nd line: headerKeys
       try
       {
-        File file = new File(vorlagedateiname);
-        ICsvListReader reader = new CsvListReader(new FileReader(file),
+        File fileVorlage = new File(vorlagedateiname);
+        ICsvListReader reader = new CsvListReader(new FileReader(fileVorlage),
             CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
         headerUser = reader.read().toArray(new String[0]);
         headerKeys = reader.read().toArray(new String[0]);
@@ -105,23 +116,23 @@ public class MitgliedAuswertungCSV implements IAuswertung
       if (headerUser.length == 0)
       {
         Logger.error("No elements in first line: " + vorlagedateiname);
-        throw new RemoteException(
+        throw new ApplicationException(
             "Keine Elemente in erster Zeile in Datei " + vorlagedateiname);
       }
       if (headerUser.length != headerKeys.length)
       {
         Logger.error("Different number of elements in 1st and 2nd line: "
             + vorlagedateiname);
-        throw new RemoteException(
+        throw new ApplicationException(
             "Unterschiedliche Anzahl Elemente in 1. und 2. Zeile: "
                 + vorlagedateiname);
       }
     }
+    go(list, file);
   }
 
-  @Override
-  public void go(ArrayList<Mitglied> list, final File file,
-      Map<Filter, String> filter) throws ApplicationException
+  public void go(ArrayList<Mitglied> list, File file)
+      throws ApplicationException
   {
     try
     {
@@ -177,7 +188,6 @@ public class MitgliedAuswertungCSV implements IAuswertung
             processors);
       }
       writer.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -201,27 +211,9 @@ public class MitgliedAuswertungCSV implements IAuswertung
   }
 
   @Override
-  public String getDateiname()
-  {
-    return "mitglied";
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return "csv";
-  }
-
-  @Override
-  public String toString()
+  public String getName()
   {
     return name;
-  }
-
-  @Override
-  public boolean openFile()
-  {
-    return true;
   }
 
 }

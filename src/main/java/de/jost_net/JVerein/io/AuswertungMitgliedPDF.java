@@ -1,5 +1,4 @@
 /**********************************************************************
- * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -11,83 +10,92 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
- * heiner@jverein.de
- * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 
-import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
-import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.jost_net.JVerein.server.Tools.EigenschaftenTool;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
+public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
 {
 
-  public MitgliedAuswertungPDF(MitgliedControl control) throws RemoteException
-  {
-    super(control);
-  }
-
+  @SuppressWarnings("unchecked")
   @Override
-  public void go(ArrayList<Mitglied> list, final File file,
-      Map<Filter, String> filter) throws ApplicationException
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     try
     {
+      /*
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+       * objects[2] ist Mitgliedstyp
+       */
+      ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
+      Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
+      Mitgliedstyp mitgliedstyp = (Mitgliedstyp) objects[2];
+
       FileOutputStream fos = new FileOutputStream(file);
+      Reporter reporter = new Reporter(fos, params.getTitle(),
+          params.getSubtitle(), params.getLinks(), params.getRechts(),
+          params.getOben(), params.getUnten(), false, params.getVordergrund(),
+          params.getHintergrund(), params.getQuerformat(),
+          params.getHeaderTransparent(), params.getZellenTransparent());
 
-      Reporter report = new Reporter(fos, title, subtitle, 50, 10, 20, 25,
-          false);
-
-      report.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
-          BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Anschrift\nKommunikation", Element.ALIGN_CENTER,
-          130, BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      if (mitgliedstyp != null
-          && mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
+      reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 100,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Anschrift\nKommunikation", Element.ALIGN_CENTER,
+          130, params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Geburts- datum", Element.ALIGN_CENTER, 30,
+          params.getColorHeader(), params.getFontHeader());
+      if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
       {
-        report
-            .addHeaderColumn(
-                "Eintritt / \nAustritt / \nKündigung"
-                    + ((Boolean) Einstellungen.getEinstellung(
-                        Property.STERBEDATUM) ? ("/\n" + "Sterbedatum") : ""),
-                Element.ALIGN_CENTER, 30, BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn(
+            "Eintritt / \nAustritt / \nKündigung"
+                + ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM)
+                    ? ("/\n" + "Sterbedatum")
+                    : ""),
+            Element.ALIGN_CENTER, 30, params.getColorHeader(),
+            params.getFontHeader());
       }
-      report.addHeaderColumn(
-
+      reporter.addHeaderColumn(
           "Beitragsgruppe /\nEigenschaften"
               + ((Boolean) Einstellungen.getEinstellung(
                   Property.EXTERNEMITGLIEDSNUMMER) ? "\nMitgliedsnummer" : ""),
-          Element.ALIGN_CENTER, 60, BaseColor.LIGHT_GRAY);
-      report.createHeader(100, Element.ALIGN_CENTER);
+          Element.ALIGN_CENTER, 60, params.getColorHeader(),
+          params.getFontHeader());
+      reporter.createHeader(100, Element.ALIGN_CENTER);
 
       for (int i = 0; i < list.size(); i++)
       {
         Mitglied m = list.get(i);
-        report.addColumn(Adressaufbereitung.getNameVorname(m),
-            Element.ALIGN_LEFT);
+        reporter.addColumn(Adressaufbereitung.getNameVorname(m),
+            Element.ALIGN_LEFT, params.getFontNormal());
         String anschriftkommunikation = Adressaufbereitung.getAnschrift(m);
         if (m.getTelefonprivat() != null && m.getTelefonprivat().length() > 0)
         {
@@ -107,8 +115,10 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           anschriftkommunikation += "\n" + "EMail: " + m.getEmail();
         }
-        report.addColumn(anschriftkommunikation, Element.ALIGN_LEFT);
-        report.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
+        reporter.addColumn(anschriftkommunikation, Element.ALIGN_LEFT,
+            params.getFontNormal());
+        reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT,
+            params.getFontNormal());
 
         Date d = m.getEintritt();
         if (d.equals(Einstellungen.NODATE))
@@ -133,10 +143,9 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
         {
           zelle += "\n" + new JVDateFormatTTMMJJJJ().format(m.getSterbetag());
         }
-        if (mitgliedstyp != null
-            && mitgliedstyp.getID().equals(Mitgliedstyp.MITGLIED))
+        if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
         {
-          report.addColumn(zelle, Element.ALIGN_LEFT);
+          reporter.addColumn(zelle, Element.ALIGN_LEFT, params.getFontNormal());
         }
         StringBuilder beitragsgruppebemerkung = new StringBuilder();
         if (m.getBeitragsgruppe() != null)
@@ -168,20 +177,24 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
               : "");
         }
 
-        report.addColumn(beitragsgruppebemerkung.toString() + " "
-            + eigenschaften.toString() + " " + zelle, Element.ALIGN_LEFT);
+        reporter
+            .addColumn(
+                beitragsgruppebemerkung.toString() + " "
+                    + eigenschaften.toString() + " " + zelle,
+                Element.ALIGN_LEFT, params.getFontNormal());
       }
-      report.closeTable();
+      reporter.closeTable();
 
-      report.add(new Paragraph(
-          String.format("Anzahl %d: %s", list.size(),
+      reporter.add(new Paragraph(
+          String.format("Anzahl %s: %d",
               mitgliedstyp == null ? "Nicht-Mitglieder"
-                  : mitgliedstyp.getBezeichnungPlural()),
-          Reporter.getFreeSans(8)));
+                  : mitgliedstyp.getBezeichnungPlural(),
+              list.size()),
+          params.getFontNormal()));
 
-      report.addParams(filter);
-      report.closeTable();
-      report.close();
+      reporter.addParams(filterparams);
+      reporter.closeTable();
+      reporter.close();
       GUI.getStatusBar().setSuccessText(
           String.format("Auswertung fertig. %d Sätze.", list.size()));
     }
@@ -193,26 +206,9 @@ public class MitgliedAuswertungPDF extends MitgliedAbstractPDF
   }
 
   @Override
-  public String getDateiname()
-  {
-    return "auswertung";
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return "pdf";
-  }
-
-  @Override
-  public String toString()
+  public String getName()
   {
     return "Mitgliederliste PDF";
   }
 
-  @Override
-  public boolean openFile()
-  {
-    return true;
-  }
 }

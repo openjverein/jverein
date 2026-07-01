@@ -14,60 +14,69 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.io.Adressbuch;
+
+package de.jost_net.JVerein.io;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+
+import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.jameica.gui.GUI;
+import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class Txt
+public class AuswertungMitgliedAdressbuchCSV
+    extends AuswertungMitgliedAbstractCSV
 {
   private OutputStreamWriter out;
 
-  private String separator;
+  private String separator = ";";
 
-  public Txt(File file, String separator) throws IOException
+  @Override
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
-    // Vermerk für mich: Encodings siehe
-    // http://www.cafeconleche.org/books/xmljava/chapters/ch03s03.html
-    out = new OutputStreamWriter(
-        new BufferedOutputStream(new FileOutputStream(file)));
-    out.write("\"Name\"" + separator + "\"Vorname\"" + separator + "\"Strasse\""
-        + separator + "\"PLZ\"" + separator + "\"Ort\"" + separator
-        + "\"Staat\"" + separator + "\"Anzeigename\"" + separator + "\"Email\""
-        + separator + "\"TelefonPrivat\"" + separator + "\"TelefonMobil\"\n");
-    this.separator = separator;
+    try
+    {
+      /*
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+       * objects[2] ist Mitgliedstyp
+       */
+      @SuppressWarnings("unchecked")
+      ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
+      out = new OutputStreamWriter(
+          new BufferedOutputStream(new FileOutputStream(file)));
+      out.write("\"Name\"" + separator + "\"Vorname\"" + separator
+          + "\"Strasse\"" + separator + "\"PLZ\"" + separator + "\"Ort\""
+          + separator + "\"Staat\"" + separator + "\"Anzeigename\"" + separator
+          + "\"Email\"" + separator + "\"TelefonPrivat\"" + separator
+          + "\"TelefonMobil\"\n");
+
+      for (Mitglied m : list)
+      {
+        out.write(getZeile(m));
+      }
+      out.close();
+      GUI.getStatusBar().setSuccessText(
+          String.format("Auswertung fertig. %d Sätze.", list.size()));
+    }
+    catch (IOException e)
+    {
+      throw new ApplicationException(e);
+    }
   }
 
-  public void add(Mitglied mitglied) throws IOException
-  {
-    out.write(new TxtRecord(mitglied, separator).get());
-  }
-
-  public void close() throws IOException
-  {
-    out.close();
-  }
-}
-
-class TxtRecord
-{
-  private Mitglied mitglied;
-
-  private String separator;
-
-  public TxtRecord(Mitglied mitglied, String separator)
-  {
-    this.mitglied = mitglied;
-    this.separator = separator;
-  }
-
-  public String get() throws RemoteException
+  public String getZeile(Mitglied mitglied) throws RemoteException
   {
     StringBuilder sb = new StringBuilder();
     sb.append("\"" + mitglied.getName() + "\"" + separator);
@@ -85,4 +94,11 @@ class TxtRecord
     sb.append("\n");
     return sb.toString();
   }
+
+  @Override
+  public String getName()
+  {
+    return "Adressbuchexport CSV";
+  }
+
 }

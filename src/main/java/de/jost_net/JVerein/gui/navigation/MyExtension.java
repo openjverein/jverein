@@ -87,7 +87,7 @@ import de.jost_net.JVerein.gui.view.SollbuchungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
 import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
-import de.jost_net.JVerein.gui.view.StatistikMitgliedView;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliedStatistikView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
@@ -268,7 +268,7 @@ public class MyExtension implements Extension
             "receipt.png"));
       }
       auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
-          new StartViewAction(StatistikMitgliedView.class), "chart-line.png"));
+          new StartViewAction(AuswertungMitgliedStatistikView.class), "chart-line.png"));
       auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
           new StartViewAction(StatistikJahrgaengeView.class),
           "chart-line.png"));

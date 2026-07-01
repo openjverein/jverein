@@ -17,64 +17,75 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Map;
 
-import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
+public class AuswertungMitgliedAdresslistePDF
+    extends AuswertungMitgliedAbstractPDF
 {
 
-  public MitgliedAdresslistePDF(MitgliedControl control) throws RemoteException
-  {
-    super(control);
-  }
-
+  @SuppressWarnings("unchecked")
   @Override
-  public void go(ArrayList<Mitglied> list, final File file,
-      Map<Filter, String> filter) throws ApplicationException
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp
+     */
+    ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
+    Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
+    Mitgliedstyp mitgliedstyp = (Mitgliedstyp) objects[2];
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
+      Reporter reporter = new Reporter(fos, params.getTitle(),
+          params.getSubtitle(), params.getLinks(), params.getRechts(),
+          params.getOben(), params.getUnten(), false, params.getVordergrund(),
+          params.getHintergrund(), params.getQuerformat(),
+          params.getHeaderTransparent(), params.getZellenTransparent());
 
-      Reporter report = new Reporter(fos, title, subtitle, 20, 20, 20, 25,
-          false);
-
-      report.addHeaderColumn("Name", Element.ALIGN_CENTER, 60,
-          BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Adresse", Element.ALIGN_CENTER, 100,
-          BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Telefon", Element.ALIGN_CENTER, 50,
-          BaseColor.LIGHT_GRAY);
-      report.addHeaderColumn("Email", Element.ALIGN_CENTER, 80,
-          BaseColor.LIGHT_GRAY);
+      reporter.addHeaderColumn("Name", Element.ALIGN_CENTER, 60,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Adresse", Element.ALIGN_CENTER, 100,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Telefon", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Email", Element.ALIGN_CENTER, 80,
+          params.getColorHeader(), params.getFontHeader());
       if ((Boolean) Einstellungen.getEinstellung(Property.GEBURTSDATUMPFLICHT))
-        report.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 30,
-            BaseColor.LIGHT_GRAY);
-      report.createHeader(100, Element.ALIGN_CENTER);
+        reporter.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 30,
+            params.getColorHeader(), params.getFontHeader());
+      reporter.createHeader(100, Element.ALIGN_CENTER);
 
       for (int i = 0; i < list.size(); i++)
       {
         Mitglied m = list.get(i);
-        report.addColumn(Adressaufbereitung.getNameVorname(m),
-            Element.ALIGN_LEFT);
-        report.addColumn(Adressaufbereitung.getAnschrift(m),
-            Element.ALIGN_LEFT);
+        reporter.addColumn(Adressaufbereitung.getNameVorname(m),
+            Element.ALIGN_LEFT, params.getFontNormal());
+        reporter.addColumn(Adressaufbereitung.getAnschrift(m),
+            Element.ALIGN_LEFT, params.getFontNormal());
         String telefon = "";
         if (m.getTelefonprivat() != null && m.getTelefonprivat().length() > 0)
         {
@@ -89,7 +100,7 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
         {
           telefon += "\n" + "Handy: " + m.getHandy();
         }
-        report.addColumn(telefon, Element.ALIGN_LEFT);
+        reporter.addColumn(telefon, Element.ALIGN_LEFT, params.getFontNormal());
         // Bei verwendung von mehreren Mailadresse im Fomar
         // NAME:Mail1@xx.de,mail2@xx.de; trennen wir die Mailadressen
         String mail = m.getEmail();
@@ -98,22 +109,24 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
           mail = mail.substring(mail.indexOf(":") + 1).replace(",", "\n")
               .replace(";", "").trim();
         }
-        report.addColumn(mail, Element.ALIGN_LEFT);
+        reporter.addColumn(mail, Element.ALIGN_LEFT, params.getFontNormal());
         if ((Boolean) Einstellungen
             .getEinstellung(Property.GEBURTSDATUMPFLICHT))
-          report.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
+          reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT,
+              params.getFontNormal());
       }
-      report.closeTable();
+      reporter.closeTable();
 
-      report.add(new Paragraph(
+      reporter.add(new Paragraph(
           String.format("Anzahl %s: %d",
               mitgliedstyp == null ? "Nicht-Mitglieder"
                   : mitgliedstyp.getBezeichnungPlural(),
               list.size()),
-          Reporter.getFreeSans(8)));
+          params.getFontNormal()));
 
-      report.addParams(filter);
-      report.close();
+      reporter.addParams(filterparams);
+      reporter.close();
+      fos.close();
       GUI.getStatusBar().setSuccessText(
           String.format("Auswertung fertig. %d Sätze.", list.size()));
     }
@@ -125,26 +138,9 @@ public class MitgliedAdresslistePDF extends MitgliedAbstractPDF
   }
 
   @Override
-  public String getDateiname()
-  {
-    return "adressliste";
-  }
-
-  @Override
-  public String getDateiendung()
-  {
-    return "pdf";
-  }
-
-  @Override
-  public String toString()
+  public String getName()
   {
     return "Adressliste PDF";
   }
 
-  @Override
-  public boolean openFile()
-  {
-    return true;
-  }
 }

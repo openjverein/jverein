@@ -16,19 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map.Entry;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
-
-import com.itextpdf.text.BaseColor;
-import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -44,8 +37,6 @@ import de.jost_net.JVerein.gui.menu.KursteilnehmerMenu;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.KursteilnehmerDetailView;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -55,7 +46,6 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -63,12 +53,8 @@ import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
-import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class KursteilnehmerControl extends FilterControl implements Savable
 {
@@ -449,21 +435,6 @@ public class KursteilnehmerControl extends FilterControl implements Savable
     }
   }
 
-  public Button getStartAuswertungButton()
-  {
-    Button b = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        starteAuswertung();
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
   public TextInput getKontoinhaber() throws RemoteException
   {
     if (kontoinhaber != null)
@@ -532,110 +503,6 @@ public class KursteilnehmerControl extends FilterControl implements Savable
       String fehler = "Fehler bei Speichern des Kursteilnehmers";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
-    }
-  }
-
-  private void starteAuswertung() throws ApplicationException
-  {
-    // Alle Kursteilnehmer lesen
-
-    try
-    {
-      saveFilterSettings();
-      final DBIterator<Kursteilnehmer> list = getIterator();
-
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(VorlageUtil.getName(
-          VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_DATEINAME, this) + ".pdf");
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        // close();
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-      final String title = VorlageUtil
-          .getName(VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_TITEL, this);
-      final String subtitle = VorlageUtil
-          .getName(VorlageTyp.AUSWERTUNG_KURSTEILNEHMER_SUBTITEL, this);
-
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            Reporter rpt = new Reporter(new FileOutputStream(file), title,
-                subtitle);
-
-            GUI.getCurrentView().reload();
-
-            rpt.addHeaderColumn("Datum", Element.ALIGN_LEFT, 50,
-                BaseColor.LIGHT_GRAY);
-            rpt.addHeaderColumn("Name", Element.ALIGN_LEFT, 80,
-                BaseColor.LIGHT_GRAY);
-            rpt.addHeaderColumn("Verwendungszweck", Element.ALIGN_LEFT, 80,
-                BaseColor.LIGHT_GRAY);
-            rpt.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 40,
-                BaseColor.LIGHT_GRAY);
-            rpt.createHeader();
-            while (list.hasNext())
-            {
-              Kursteilnehmer kt = list.next();
-              rpt.addColumn(kt.getAbbudatum(), Element.ALIGN_LEFT);
-              rpt.addColumn(kt.getName(), Element.ALIGN_LEFT);
-              rpt.addColumn(kt.getVZweck1(), Element.ALIGN_LEFT);
-              rpt.addColumn(kt.getBetrag());
-            }
-            rpt.close();
-            FileViewer.show(file);
-          }
-          catch (ApplicationException ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-          catch (Exception re)
-          {
-            Logger.error("Fehler", re);
-            GUI.getStatusBar().setErrorText(re.getMessage());
-            throw new ApplicationException(re);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
     }
   }
 

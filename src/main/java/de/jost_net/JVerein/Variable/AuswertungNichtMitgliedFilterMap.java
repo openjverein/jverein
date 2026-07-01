@@ -22,13 +22,13 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.Filter;
 
 public class AuswertungNichtMitgliedFilterMap extends AbstractMap
 {
 
-  public Map<String, Object> getMap(MitgliedControl control,
+  public Map<String, Object> getMap(AuswertungControl control,
       Map<String, Object> inma) throws RemoteException
   {
     Map<String, Object> map = null;

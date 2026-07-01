@@ -16,20 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.math.BigDecimal;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.TreeItem;
 
@@ -82,8 +76,6 @@ import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
-import de.jost_net.JVerein.gui.view.AuswertungVorlagenCsvView;
-import de.jost_net.JVerein.gui.view.IAuswertung;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
@@ -93,15 +85,8 @@ import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.MitgliedAdressbuchExport;
-import de.jost_net.JVerein.io.MitgliedAdresslistePDF;
-import de.jost_net.JVerein.io.MitgliedAuswertungCSV;
-import de.jost_net.JVerein.io.MitgliedAuswertungPDF;
-import de.jost_net.JVerein.io.MitgliederStatistik;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -147,7 +132,6 @@ import de.willuhn.jameica.gui.input.AbstractInput;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
-import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -159,12 +143,9 @@ import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.util.LabelGroup;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class MitgliedControl extends FilterControl implements Savable
 {
@@ -262,20 +243,9 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private TreePart eigenschaftenTree;
 
-  // Elemente für die Auswertung
-  private TextInput auswertungUeberschrift = null;
-
   private TextAreaInput vermerk1;
 
   private TextAreaInput vermerk2;
-
-  private SelectInput ausgabe;
-
-  private FileInput vorlagedateicsv; // RWU
-
-  private SelectInput sortierung;
-
-  private SelectInput jubeljahr;
 
   private Mitglied mitglied;
 
@@ -297,8 +267,6 @@ public class MitgliedControl extends FilterControl implements Savable
   private JVereinTablePart familienangehoerige;
 
   private ImageInput foto;
-
-  private int jjahr = 0;
 
   private JVereinTablePart beitragsTabelle;
 
@@ -1209,18 +1177,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return individuellerbeitrag;
   }
 
-  public TextInput getAuswertungUeberschrift()
-  {
-    if (auswertungUeberschrift != null)
-    {
-      return auswertungUeberschrift;
-    }
-    auswertungUeberschrift = new TextInput(
-        settings.getString("auswertung.ueberschrift", ""));
-    auswertungUeberschrift.setName("Überschrift");
-    return auswertungUeberschrift;
-  }
-
   /**
    * Liefert ein Part zurück, das den Familienverband anzeigt. Da Container
    * jedoch nur das Hinzufügen von Parts zulassen, ist das Part Familienverband
@@ -1736,146 +1692,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return lehrgaengeList;
   }
 
-  public SelectInput getJubeljahr()
-  {
-    if (jubeljahr != null)
-    {
-      return jubeljahr;
-    }
-    Calendar cal = Calendar.getInstance();
-    jjahr = cal.get(Calendar.YEAR);
-    cal.add(Calendar.YEAR, -2);
-    Integer[] jubeljahre = new Integer[5];
-    for (int i = 0; i < 5; i++)
-    {
-      jubeljahre[i] = cal.get(Calendar.YEAR);
-      cal.add(Calendar.YEAR, 1);
-    }
-    jubeljahr = new SelectInput(jubeljahre, jubeljahre[2]);
-    jubeljahr.addListener(new Listener()
-    {
-
-      @Override
-      public void handleEvent(Event event)
-      {
-        jjahr = (Integer) jubeljahr.getValue();
-      }
-    });
-    return jubeljahr;
-  }
-
-  public int getJJahr()
-  {
-    return jjahr;
-  }
-
-  public SelectInput getAusgabe() throws RemoteException
-  {
-    if (ausgabe != null)
-    {
-      return ausgabe;
-    }
-
-    // Hilfsklasse FilenameFilter *.csv
-    FilenameFilter csvFilter = new FilenameFilter()
-    {
-
-      @Override
-      public boolean accept(File dir, String name)
-      {
-        return name.toLowerCase().endsWith(".csv");
-      }
-    };
-
-    // Suche alle *.csv Dateien im vorlagencsvverzeichnis
-    String vorlagencsvverzeichnis = "";
-    String[] vorlagencsvList = {};
-    vorlagencsvverzeichnis = (String) Einstellungen
-        .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
-    if (vorlagencsvverzeichnis.length() > 0)
-    {
-      File verzeichnis = new File(vorlagencsvverzeichnis);
-      if (verzeichnis.isDirectory())
-      {
-        vorlagencsvList = verzeichnis.list(csvFilter);
-      }
-    }
-
-    // erzeuge Auswertungsobjekte
-    List<Object> objectList = new ArrayList<>();
-    objectList.add(new MitgliedAuswertungPDF(this));
-    objectList.add(new MitgliedAdresslistePDF(this));
-    objectList.add(new MitgliedAuswertungCSV());
-    objectList.add(new MitgliedAdressbuchExport());
-
-    for (String vorlagecsv : vorlagencsvList)
-    {
-      objectList.add(new MitgliedAuswertungCSV(
-          vorlagencsvverzeichnis + File.separator + vorlagecsv));
-    }
-
-    ausgabe = new SelectInput(objectList.toArray(), null);
-    ausgabe.setName("Ausgabe");
-    return ausgabe;
-  }
-
-  // RWU: vorlage fuer .csv ausgabe
-  public Input getVorlagedateicsv()
-  {
-    if (vorlagedateicsv != null)
-    {
-      return vorlagedateicsv;
-    }
-    String lastValue = settings.getString("auswertung.vorlagedateicsv", "");
-    String[] extensions = { "*.csv" };
-    vorlagedateicsv = new FileInput(lastValue, false, extensions);
-    vorlagedateicsv.setName("Vorlagedatei CSV");
-    vorlagedateicsv.setEnabled(false); // default is PDF
-    return vorlagedateicsv;
-  }
-
-  public SelectInput getSortierung()
-  {
-    if (sortierung != null)
-    {
-      return sortierung;
-    }
-    String[] sort = { "Name, Vorname", "Eintrittsdatum", "Geburtsdatum",
-        "Geburtstagsliste" };
-    sortierung = new SelectInput(sort, "Name, Vorname");
-    sortierung.setName("Sortierung");
-    return sortierung;
-  }
-
-  public boolean isSortierungAktiv()
-  {
-    return sortierung != null;
-  }
-
-  public Button getStartAuswertungButton()
-  {
-    Button b = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der Mitgliederauswertung");
-        }
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
   public Button getKontoDatenLoeschenButton()
   {
     Button b = new Button("Daten löschen", new Action()
@@ -2063,66 +1879,6 @@ public class MitgliedControl extends FilterControl implements Savable
       }
     }, null, true, "user-check.png"); // "true" defines this button as the
                                       // default button
-    return b;
-  }
-
-  public Button getStartAdressAuswertungButton()
-  {
-    Button b = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteAdressAuswertung();
-        }
-        catch (RemoteException e)
-        {
-          Logger.error(e.getMessage());
-          throw new ApplicationException(
-              "Fehler beim Start der Adressauswertung");
-        }
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
-  public Button getStartStatistikButton()
-  {
-    Button b = new Button("Starten", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          starteStatistik();
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(e);
-        }
-      }
-    }, null, true, "walking.png"); // "true" defines this button as the default
-    // button
-    return b;
-  }
-
-  public Button getVorlagenCsvEditButton()
-  {
-    Button b = new Button("CSV Vorlagen", new Action()
-    {
-      @Override
-      public void handleAction(Object context)
-      {
-        GUI.startView(AuswertungVorlagenCsvView.class.getName(), null);
-      }
-    }, null, false, "xsd.png");
-    // button
     return b;
   }
 
@@ -2757,248 +2513,6 @@ public class MitgliedControl extends FilterControl implements Savable
     }
   }
 
-  private void starteAuswertung() throws RemoteException, ApplicationException
-  {
-    final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
-    saveAusgabeSettings();
-    saveFilterSettings();
-    String sort = null;
-    if (isSortierungAktiv() && getSortierung().getValue() != null)
-    {
-      sort = (String) getSortierung().getValue();
-    }
-    ArrayList<Mitglied> list = new MitgliedQuery(this)
-        .get(MitgliedAuswahl.MITGLIEDER, sort);
-    try
-    {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME, this)
-              + "." + ausw.getDateiendung().toLowerCase());
-      fd.setFilterExtensions(
-          new String[] { "*." + ausw.getDateiendung().toLowerCase() });
-
-      String s = fd.open();
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
-      {
-        s = s + "." + ausw.getDateiendung().toLowerCase();
-      }
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      final ArrayList<Mitglied> flist = list;
-      ausw.beforeGo(
-          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, this),
-          mitgliedAuswahl);
-      Map<Filter, String> filter = getFilterText(false);
-      BackgroundTask t = new BackgroundTask()
-      {
-
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            ausw.go(flist, file, filter);
-            if (ausw.openFile())
-            {
-              FileViewer.show(file);
-            }
-          }
-          catch (ApplicationException ae)
-          {
-            Logger.error("Fehler", ae);
-            GUI.getStatusBar().setErrorText(ae.getMessage());
-            throw ae;
-          }
-          catch (Exception re)
-          {
-            Logger.error("Fehler", re);
-            GUI.getStatusBar().setErrorText(re.getMessage());
-            throw new ApplicationException(re);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
-
-  private void starteAdressAuswertung()
-      throws RemoteException, ApplicationException
-  {
-    final IAuswertung ausw = (IAuswertung) getAusgabe().getValue();
-    saveAusgabeSettings();
-    saveFilterSettings();
-    String sort = null;
-    if (isSortierungAktiv() && getSortierung().getValue() != null)
-    {
-      sort = (String) getSortierung().getValue();
-    }
-    ArrayList<Mitglied> list = null;
-    list = new MitgliedQuery(this).get(MitgliedAuswahl.NICHTMITGLIEDER, sort);
-    try
-    {
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
-      {
-        fd.setFilterPath(path);
-      }
-      fd.setFileName(
-          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
-              this) + "." + ausw.getDateiendung().toLowerCase());
-      fd.setFilterExtensions(
-          new String[] { "*." + ausw.getDateiendung().toLowerCase() });
-
-      String s = fd.open();
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-      if (!s.endsWith(ausw.getDateiendung().toLowerCase()))
-      {
-        s = s + "." + ausw.getDateiendung().toLowerCase();
-      }
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      final ArrayList<Mitglied> flist = list;
-      ausw.beforeGo(
-          VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL, this),
-          mitgliedAuswahl);
-      Map<Filter, String> filter = getFilterText(false);
-
-      BackgroundTask t = new BackgroundTask()
-      {
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          try
-          {
-            ausw.go(flist, file, filter);
-            if (ausw.openFile())
-            {
-              FileViewer.show(file);
-            }
-          }
-          catch (Exception re)
-          {
-            Logger.error("Fehler", re);
-            GUI.getStatusBar().setErrorText(re.getMessage());
-            throw new ApplicationException(re);
-          }
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-  }
-
-  private void starteStatistik() throws RemoteException
-  {
-    FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-    fd.setText("Ausgabedatei wählen.");
-    fd.setFilterExtensions(new String[] { "*.pdf" });
-    String path = settings.getString("lastdir",
-        System.getProperty("user.home"));
-    if (path != null && path.length() > 0)
-    {
-      fd.setFilterPath(path);
-    }
-    fd.setFileName(VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME, this) + ".pdf");
-
-    String s = fd.open();
-
-    if (s == null || s.length() == 0)
-    {
-      return;
-    }
-    if (!s.toLowerCase().endsWith("pdf"))
-    {
-      s = s + ".pdf";
-    }
-
-    final File file = new File(s);
-    settings.setAttribute("lastdir", file.getParent());
-
-    final Date sticht = (Date) getFilter().get(Filter.STICHTAG);
-    String title = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL, this);
-    String subtitle = VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL, this);
-
-    BackgroundTask t = new BackgroundTask()
-    {
-
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        new MitgliederStatistik(file, sticht, title, subtitle);
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
-
-  }
-
   public JVereinTablePart getMitgliedBeitraegeTabelle() throws RemoteException
   {
     if (beitragsTabelle != null)
@@ -3107,37 +2621,6 @@ public class MitgliedControl extends FilterControl implements Savable
       }
     }
     return false;
-  }
-
-  public void saveAusgabeSettings() throws RemoteException
-  {
-
-    if (auswertungUeberschrift != null)
-    {
-      String tmp = (String) getAuswertungUeberschrift().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("auswertung.ueberschrift", tmp);
-      }
-      else
-      {
-        settings.setAttribute("auswertung.ueberschrift", "");
-      }
-    }
-
-    // RWU: vorlagedateicsv
-    if (vorlagedateicsv != null)
-    {
-      String tmp = (String) getVorlagedateicsv().getValue();
-      if (tmp != null)
-      {
-        settings.setAttribute("auswertung.vorlagedateicsv", tmp);
-      }
-      else
-      {
-        settings.setAttribute("auswertung.vorlagedateicsv", "");
-      }
-    }
   }
 
   public LesefeldControl getLesefeldControl()
@@ -3326,30 +2809,6 @@ public class MitgliedControl extends FilterControl implements Savable
       return null;
     }
     return dcontrol.getDokumenteList();
-  }
-
-  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
-  // entfernen
-  @Override
-  public Input getFilterInput(Filter filter)
-      throws RemoteException, ApplicationException
-  {
-    Input input = super.getFilterInput(filter);
-    if (filter.equals(Filter.MITGLIEDSTYP)
-        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
-    {
-      List<?> list = ((SelectInput) input).getList();
-      for (Object o : list)
-      {
-        if (((Mitgliedstyp) o).getJVereinid() == Integer
-            .parseInt(Mitgliedstyp.MITGLIED))
-        {
-          list.remove(o);
-          break;
-        }
-      }
-    }
-    return input;
   }
 
   @Override
