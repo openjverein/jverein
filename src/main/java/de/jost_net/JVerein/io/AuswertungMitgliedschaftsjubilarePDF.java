@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -96,9 +97,10 @@ public class AuswertungMitgliedschaftsjubilarePDF
   @Override
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
+    Font font = new Font(params.getFontHeader());
+    font.setSize(11);
     Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d-jähriges Jubiläum", jahrgang),
-        Reporter.getFreeSans(11));
+        "\n" + String.format("%d-jähriges Jubiläum", jahrgang), font);
     reporter.add(pHeader);
     reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,
         params.getColorHeader(), params.getFontHeader());

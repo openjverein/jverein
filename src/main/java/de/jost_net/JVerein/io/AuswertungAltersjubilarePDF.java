@@ -23,6 +23,7 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
@@ -31,7 +32,8 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 
-public class AuswertungAltersjubilarePDF extends AuswertungAltersjubilareAbstract
+public class AuswertungAltersjubilarePDF
+    extends AuswertungAltersjubilareAbstract
 {
   private FileOutputStream fos;
 
@@ -95,9 +97,10 @@ public class AuswertungAltersjubilarePDF extends AuswertungAltersjubilareAbstrac
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
     Logger.debug(String.format("Altersjubiläum, Jahrgang=%d", jahrgang));
+    Font font = new Font(params.getFontHeader());
+    font.setSize(11);
     Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d. Geburtstag", jahrgang),
-        Reporter.getFreeSans(11));
+        "\n" + String.format("%d. Geburtstag", jahrgang), font);
     reporter.add(pHeader);
     reporter.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 50,
         params.getColorHeader(), params.getFontHeader());

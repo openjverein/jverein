@@ -151,15 +151,15 @@ public abstract class AuswertungMitgliedschaftsjubilareAbstract
   @Override
   public String getTitle(Object object)
   {
-    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL,
-        object);
+    return VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_TITEL, object);
   }
 
   @Override
   public String getSubtitle(Object object)
   {
-    return VorlageUtil
-        .getName(VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL, object);
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_SUBTITEL, object);
   }
 
   /**
