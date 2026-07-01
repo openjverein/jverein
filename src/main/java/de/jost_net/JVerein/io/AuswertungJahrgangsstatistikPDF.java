@@ -24,7 +24,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
+import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 
@@ -44,7 +44,7 @@ public class AuswertungJahrgangsstatistikPDF extends AuswertungJahrgangsstatisti
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != StatistikJahrgaengeView.class)
+    if (objectType != AuswertungJahrgangsstatistikView.class)
     {
       return null;
     }

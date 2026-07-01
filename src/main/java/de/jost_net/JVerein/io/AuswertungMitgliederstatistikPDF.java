@@ -32,7 +32,7 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedStatistikView;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliederstatistikView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -46,7 +46,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public class AuswertungMitgliederStatistikPDF implements Exporter
+public class AuswertungMitgliederstatistikPDF implements Exporter
 {
   private ExportLayoutParam params;
 
@@ -425,7 +425,7 @@ public class AuswertungMitgliederStatistikPDF implements Exporter
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != AuswertungMitgliedStatistikView.class)
+    if (objectType != AuswertungMitgliederstatistikView.class)
     {
       return null;
     }
@@ -435,7 +435,7 @@ public class AuswertungMitgliederStatistikPDF implements Exporter
       @Override
       public String getName()
       {
-        return AuswertungMitgliederStatistikPDF.this.getName();
+        return AuswertungMitgliederstatistikPDF.this.getName();
       }
 
       /**

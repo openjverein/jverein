@@ -43,7 +43,7 @@ import de.jost_net.JVerein.io.AuswertungMitgliedAdresslistePDF;
 import de.jost_net.JVerein.io.AuswertungMitgliedCSV;
 import de.jost_net.JVerein.io.AuswertungMitgliedPDF;
 import de.jost_net.JVerein.io.AuswertungKursteilnehmerPDF;
-import de.jost_net.JVerein.io.AuswertungMitgliederStatistikPDF;
+import de.jost_net.JVerein.io.AuswertungMitgliederstatistikPDF;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
 import de.willuhn.jameica.gui.AbstractView;
@@ -300,7 +300,7 @@ public class AuswertungControl extends FilterControl
         /*
          * objects[0] ist der Stichtag, objects[1] ist der Subtitel
          */
-        starteAuswertung(new AuswertungMitgliederStatistikPDF(),
+        starteAuswertung(new AuswertungMitgliederstatistikPDF(),
             new Object[] { (Date) getFilter().get(Filter.STICHTAG) },
             view.getClass(), this);
       }

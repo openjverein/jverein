@@ -16,36 +16,41 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.StatistikJahrgaengeExportAction;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 
-public class StatistikJahrgaengeView extends AbstractView
+public class AuswertungMitgliederstatistikView extends AbstractView
 {
 
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Jahrgangsstatistik");
+    GUI.getView().setTitle("Mitgliederstatistik");
 
     final AuswertungControl control = new AuswertungControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Parameter");
-    group.addLabelPair("Jahr", control.getJubeljahr());
+
+    Input input = control.getFilterInput(Filter.STICHTAG);
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.MONTH, Calendar.DECEMBER);
+    cal.set(Calendar.DAY_OF_MONTH, 31);
+    input.setValue(new Date(cal.getTimeInMillis()));
+    group.addInput(input);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.STATISTIKJAHRGAENGE, false, "question-circle.png");
-    Button btnStart = new Button("Starten",
-        new StatistikJahrgaengeExportAction(), control, true, "walking.png");
-
-    buttons.addButton(btnStart);
-
-    buttons.paint(getParent());
+        DokumentationUtil.STATISTIKMITGLIEDER, false, "question-circle.png");
+    buttons.addButton(control.getStartStatistikButton());
+    buttons.paint(this.getParent());
   }
 }

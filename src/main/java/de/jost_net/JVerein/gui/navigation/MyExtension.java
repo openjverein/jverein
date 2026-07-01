@@ -59,7 +59,7 @@ import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
-import de.jost_net.JVerein.gui.view.JubilaeenView;
+import de.jost_net.JVerein.gui.view.AuswertungJubilaeenView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
 import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
@@ -86,8 +86,8 @@ import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.SollbuchungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedStatistikView;
+import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
+import de.jost_net.JVerein.gui.view.AuswertungMitgliederstatistikView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
@@ -260,7 +260,7 @@ public class MyExtension implements Extension
             "receipt.png"));
       }
       auswertung.addChild(new MyItem(auswertung, "Jubiläen",
-          new StartViewAction(JubilaeenView.class), "receipt.png"));
+          new StartViewAction(AuswertungJubilaeenView.class), "receipt.png"));
       if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
       {
         auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
@@ -268,9 +268,9 @@ public class MyExtension implements Extension
             "receipt.png"));
       }
       auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
-          new StartViewAction(AuswertungMitgliedStatistikView.class), "chart-line.png"));
+          new StartViewAction(AuswertungMitgliederstatistikView.class), "chart-line.png"));
       auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
-          new StartViewAction(StatistikJahrgaengeView.class),
+          new StartViewAction(AuswertungJahrgangsstatistikView.class),
           "chart-line.png"));
       jverein.addChild(auswertung);
 
