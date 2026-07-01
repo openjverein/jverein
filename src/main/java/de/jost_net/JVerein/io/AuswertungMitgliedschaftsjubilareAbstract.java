@@ -27,7 +27,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -36,7 +36,8 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AuswertungMitgliedschaftsjubilareAbstract implements Exporter
+public abstract class AuswertungMitgliedschaftsjubilareAbstract
+    implements Exporter
 {
 
   protected File file;
@@ -129,7 +130,7 @@ public abstract class AuswertungMitgliedschaftsjubilareAbstract implements Expor
   private void setzeParameterDerListe(final Object[] objects)
       throws RemoteException
   {
-    MitgliedControl control = (MitgliedControl) objects[0];
+    AuswertungControl control = (AuswertungControl) objects[0];
     jahr = control.getJJahr();
     jubilarStartAlter = (Integer) Einstellungen
         .getEinstellung(Property.JUBILARSTARTALTER);

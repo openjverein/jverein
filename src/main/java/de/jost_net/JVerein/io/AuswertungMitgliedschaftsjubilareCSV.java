@@ -104,10 +104,10 @@ public class AuswertungMitgliedschaftsjubilareCSV
   @Override
   protected void close()
   {
-    MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
+    AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
     try
     {
-      mcsv.go(mitglieder, file, null);
+      mcsv.go(mitglieder, file);
     }
     catch (ApplicationException e)
     {

@@ -27,7 +27,7 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -53,7 +53,7 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
   {
     this.file = file;
     this.params = params;
-    final MitgliedControl control = (MitgliedControl) objects[0];
+    final AuswertungControl control = (AuswertungControl) objects[0];
     jahr = control.getJJahr();
     Logger.debug(String.format("Altersjubiläumexport, Jahr=%d", jahr));
 

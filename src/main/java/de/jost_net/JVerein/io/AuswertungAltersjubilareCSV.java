@@ -26,7 +26,8 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AuswertungAltersjubilareCSV extends AuswertungAltersjubilareAbstract
+public class AuswertungAltersjubilareCSV
+    extends AuswertungAltersjubilareAbstract
 {
 
   private ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -103,7 +104,7 @@ public class AuswertungAltersjubilareCSV extends AuswertungAltersjubilareAbstrac
   protected void close() throws ApplicationException
   {
     Logger.debug(String.format("Alterjubiläum-CSV-Export, Jahr=%d", jahr));
-    MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
-    mcsv.go(mitglieder, file, null);
+    AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
+    mcsv.go(mitglieder, file);
   }
 }

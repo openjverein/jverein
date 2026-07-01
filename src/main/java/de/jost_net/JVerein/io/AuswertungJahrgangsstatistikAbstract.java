@@ -27,7 +27,7 @@ import java.util.TreeMap;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -57,7 +57,7 @@ public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
     this.file = file;
     this.params = params;
     statistik = new TreeMap<>();
-    MitgliedControl control = (MitgliedControl) objects[0];
+    AuswertungControl control = (AuswertungControl) objects[0];
     Integer jahr = control.getJJahr();
     try
     {
