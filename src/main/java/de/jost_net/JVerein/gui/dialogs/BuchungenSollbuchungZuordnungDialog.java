@@ -485,7 +485,7 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
                   break;
                 case ZWECK:
                   buchungIt.addFilter(
-                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.name),"
+                      "REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(buchung.zweck),"
                           + "'ss', 's'),'ß', 's'),'ue', 'u'),'oe', 'o'),'ü', 'u'),'ö', 'o'),'ae', 'a'),'ä', 'a')"
                           + " LIKE CONCAT('%',?,'%')",
                       umlauteEretzen(
