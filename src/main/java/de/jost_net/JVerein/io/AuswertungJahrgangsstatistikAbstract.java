@@ -38,7 +38,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class StatistikJahrgaengeExport implements Exporter
+public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
 {
 
   protected File file;

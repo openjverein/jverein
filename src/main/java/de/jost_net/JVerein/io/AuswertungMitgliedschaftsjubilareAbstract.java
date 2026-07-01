@@ -36,7 +36,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class MitgliedschaftsjubilaeumsExport implements Exporter
+public abstract class AuswertungMitgliedschaftsjubilareAbstract implements Exporter
 {
 
   protected File file;

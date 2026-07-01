@@ -26,7 +26,7 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
+public class AuswertungAltersjubilareCSV extends AuswertungAltersjubilareAbstract
 {
 
   private ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -52,7 +52,7 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
       @Override
       public String getName()
       {
-        return AltersjubilaeumsExportCSV.this.getName();
+        return AuswertungAltersjubilareCSV.this.getName();
       }
 
       /**

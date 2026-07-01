@@ -19,37 +19,32 @@ package de.jost_net.JVerein.io;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Paragraph;
 
-import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.gui.view.StatistikJahrgaengeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 
-public class MitgliedschaftsjubilaeumExportPDF
-    extends MitgliedschaftsjubilaeumsExport
+public class AuswertungJahrgangsstatistikPDF extends AuswertungJahrgangsstatistikAbstract
 {
 
   private FileOutputStream fos;
 
   private Reporter reporter;
 
-  private int anz;
-
   @Override
   public String getName()
   {
-    return "Mitgliedschaftsjubilare PDF-Export";
+    return "Statistik Jahrgänge PDF-Export";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != StatistikJahrgaengeView.class)
     {
       return null;
     }
@@ -59,7 +54,7 @@ public class MitgliedschaftsjubilaeumExportPDF
       @Override
       public String getName()
       {
-        return MitgliedschaftsjubilaeumExportPDF.this.getName();
+        return AuswertungJahrgangsstatistikPDF.this.getName();
       }
 
       /**
@@ -78,8 +73,7 @@ public class MitgliedschaftsjubilaeumExportPDF
   public String getDateiname(Object object)
   {
     return VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME, object)
-        + ".pdf";
+        VorlageTyp.AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME, object) + ".pdf";
   }
 
   @Override
@@ -91,65 +85,53 @@ public class MitgliedschaftsjubilaeumExportPDF
         params.getUnten(), false, params.getVordergrund(),
         params.getHintergrund(), params.getQuerformat(),
         params.getHeaderTransparent(), params.getZellenTransparent());
-  }
 
-  @Override
-  protected void startJahrgang(int jahrgang) throws DocumentException
-  {
-    Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d-jähriges Jubiläum", jahrgang),
-        Reporter.getFreeSans(11));
-    reporter.add(pHeader);
-    reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,
+    reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 100,
         params.getColorHeader(), params.getFontHeader());
-    reporter.addHeaderColumn("Name, Vorname", Element.ALIGN_CENTER, 100,
+    reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 100,
         params.getColorHeader(), params.getFontHeader());
-    reporter.addHeaderColumn("Anschrift", Element.ALIGN_CENTER, 120,
+    reporter.addHeaderColumn("Männlich", Element.ALIGN_CENTER, 100,
         params.getColorHeader(), params.getFontHeader());
-    reporter.addHeaderColumn("Kommunikation", Element.ALIGN_CENTER, 80,
+    reporter.addHeaderColumn("Weiblich", Element.ALIGN_CENTER, 100,
         params.getColorHeader(), params.getFontHeader());
-    reporter.createHeader();
-    anz = 0;
-  }
-
-  @Override
-  protected void endeJahrgang() throws DocumentException
-  {
-    if (anz == 0)
+    reporter.addHeaderColumn("Ohne Angabe", Element.ALIGN_CENTER, 100,
+        params.getColorHeader(), params.getFontHeader());
+    reporter.createHeader(100, Element.ALIGN_LEFT);
+    int summegesamt = 0;
+    int summemaennlich = 0;
+    int summeweiblich = 0;
+    int summeohne = 0;
+    for (String key : statistik.keySet())
     {
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT,
-          params.getFontNormal());
-      reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("", Element.ALIGN_LEFT);
+      reporter.addColumn(key, Element.ALIGN_CENTER, params.getFontNormal());
+      StatistikJahrgang dsbj = statistik.get(key);
+      reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlgesamt()),
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(
+          Einstellungen.INTFORMAT.format(dsbj.getAnzahlmaennlich()),
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(
+          Einstellungen.INTFORMAT.format(dsbj.getAnzahlweiblich()),
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(Einstellungen.INTFORMAT.format(dsbj.getAnzahlOhne()),
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      summegesamt += dsbj.getAnzahlgesamt();
+      summemaennlich += dsbj.getAnzahlmaennlich();
+      summeweiblich += dsbj.getAnzahlweiblich();
+      summeohne += dsbj.getAnzahlOhne();
     }
+    reporter.addColumn("Summe", Element.ALIGN_CENTER, params.getColorTable(),
+        params.getFontNormal());
+    reporter.addColumn(Einstellungen.INTFORMAT.format(summegesamt),
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
+    reporter.addColumn(Einstellungen.INTFORMAT.format(summemaennlich),
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
+    reporter.addColumn(Einstellungen.INTFORMAT.format(summeweiblich),
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
+    reporter.addColumn(Einstellungen.INTFORMAT.format(summeohne),
+        Element.ALIGN_RIGHT, params.getColorTable(), params.getFontNormal());
     reporter.closeTable();
-  }
 
-  @Override
-  protected void add(Mitglied m) throws RemoteException
-  {
-    reporter.addColumn(m.getEintritt(), Element.ALIGN_LEFT,
-        params.getFontNormal());
-    reporter.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT,
-        params.getFontNormal());
-    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT,
-        params.getFontNormal());
-    String kommunikation = m.getTelefonprivat();
-    if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)
-    {
-      kommunikation += ", ";
-    }
-    kommunikation += m.getTelefondienstlich();
-
-    if (kommunikation.length() > 0 && m.getEmail().length() > 0)
-    {
-      kommunikation += ", ";
-    }
-    kommunikation += m.getEmail();
-    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false,
-        params.getFontNormal());
-    anz++;
   }
 
   @Override

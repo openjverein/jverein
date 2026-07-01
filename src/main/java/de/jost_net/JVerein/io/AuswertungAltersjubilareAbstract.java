@@ -37,7 +37,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-public abstract class AltersjubilaeumsExport implements Exporter
+public abstract class AuswertungAltersjubilareAbstract implements Exporter
 {
 
   protected File file;
