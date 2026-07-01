@@ -27,6 +27,6 @@ import de.willuhn.util.ApplicationException;
  */
 public interface ISaldoExport
 {
-  public void export(ArrayList<PseudoDBObject> zeilen, File file, String title,
-      String subtitle) throws ApplicationException;
+  public void export(ArrayList<PseudoDBObject> zeilen, File file,
+      ExportLayoutParam params) throws ApplicationException;
 }
