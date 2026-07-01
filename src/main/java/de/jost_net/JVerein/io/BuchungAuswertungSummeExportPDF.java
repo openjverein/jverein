@@ -134,11 +134,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
     kontonummer_in_buchungsliste = getKontonummer();
 
     FileOutputStream fos = new FileOutputStream(file);
-    Reporter reporter = new Reporter(fos, params.getTitle(),
-        params.getSubtitle(), params.getLinks(), params.getRechts(),
-        params.getOben(), params.getUnten(), false, params.getVordergrund(),
-        params.getHintergrund(), params.getQuerformat(),
-        params.getHeaderTransparent(), params.getZellenTransparent());
+    Reporter reporter = new Reporter(fos, params);
 
     createTableHeader(reporter);
     boolean nichtLeer = false;

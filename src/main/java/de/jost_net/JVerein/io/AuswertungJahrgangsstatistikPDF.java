@@ -28,7 +28,8 @@ import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 
-public class AuswertungJahrgangsstatistikPDF extends AuswertungJahrgangsstatistikAbstract
+public class AuswertungJahrgangsstatistikPDF
+    extends AuswertungJahrgangsstatistikAbstract
 {
 
   private FileOutputStream fos;
@@ -80,11 +81,7 @@ public class AuswertungJahrgangsstatistikPDF extends AuswertungJahrgangsstatisti
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, params.getTitle(), params.getSubtitle(),
-        params.getLinks(), params.getRechts(), params.getOben(),
-        params.getUnten(), false, params.getVordergrund(),
-        params.getHintergrund(), params.getQuerformat(),
-        params.getHeaderTransparent(), params.getZellenTransparent());
+    reporter = new Reporter(fos, params);
 
     reporter.addHeaderColumn("Jahrgang", Element.ALIGN_CENTER, 100,
         params.getColorHeader(), params.getFontHeader());

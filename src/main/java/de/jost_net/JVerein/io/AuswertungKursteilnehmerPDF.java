@@ -56,11 +56,7 @@ public class AuswertungKursteilnehmerPDF implements Exporter
           (Map<Filter, Object>) objects[0]);
 
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, params.getTitle(),
-          params.getSubtitle(), params.getLinks(), params.getRechts(),
-          params.getOben(), params.getUnten(), false, params.getVordergrund(),
-          params.getHintergrund(), params.getQuerformat(),
-          params.getHeaderTransparent(), params.getZellenTransparent());
+      Reporter reporter = new Reporter(fos, params);
 
       reporter.addHeaderColumn("Datum", Element.ALIGN_LEFT, 50,
           params.getColorHeader(), params.getFontHeader());

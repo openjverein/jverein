@@ -134,6 +134,16 @@ public class Reporter implements AutoCloseable
     return getFreeSansBold(size, null);
   }
 
+  public Reporter(OutputStream out, ExportLayoutParam params)
+      throws DocumentException, IOException
+  {
+    this(out, params.getTitle(), params.getSubtitle(), params.getLinks(),
+        params.getRechts(), params.getOben(), params.getUnten(), false,
+        params.getVordergrund(), params.getHintergrund(),
+        params.getQuerformat(), params.getHeaderTransparent(),
+        params.getZellenTransparent());
+  }
+
   public Reporter(OutputStream out, String title, String subtitle)
       throws DocumentException, IOException
   {

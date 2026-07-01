@@ -87,11 +87,7 @@ public class AuswertungMitgliedschaftsjubilarePDF
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    reporter = new Reporter(fos, params.getTitle(), params.getSubtitle(),
-        params.getLinks(), params.getRechts(), params.getOben(),
-        params.getUnten(), false, params.getVordergrund(),
-        params.getHintergrund(), params.getQuerformat(),
-        params.getHeaderTransparent(), params.getZellenTransparent());
+    reporter = new Reporter(fos, params);
   }
 
   @Override

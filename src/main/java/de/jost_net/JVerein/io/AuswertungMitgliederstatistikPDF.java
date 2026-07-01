@@ -72,11 +72,7 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
       font.setSize(11);
 
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, params.getTitle(),
-          params.getSubtitle(), params.getLinks(), params.getRechts(),
-          params.getOben(), params.getUnten(), false, params.getVordergrund(),
-          params.getHintergrund(), params.getQuerformat(),
-          params.getHeaderTransparent(), params.getZellenTransparent());
+      Reporter reporter = new Reporter(fos, params);
 
       Paragraph pAltersgruppen = new Paragraph("\n" + "Altersgruppen", font);
       reporter.add(pAltersgruppen);
