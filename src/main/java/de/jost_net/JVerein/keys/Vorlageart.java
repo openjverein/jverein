@@ -20,7 +20,8 @@ public enum Vorlageart implements KeyEnum
 {
 
   DATEINAME(1, "Dateiname"),
-  TITEL(2, "Titel");
+  TITEL(2, "Titel"),
+  PFAD(3, "Pfad");
 
   private final String text;
 

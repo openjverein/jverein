@@ -31,6 +31,7 @@ import de.jost_net.JVerein.Variable.AuswertungJubilareFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
+import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
@@ -55,6 +56,7 @@ import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Rechnung;
@@ -196,7 +198,7 @@ public class VorlageUtil
         case MITGLIED_DOKUMENTE_DATEINAME:
         case MITGLIED_DOKUMENTE_TITEL:
         case MITGLIED_DOKUMENTE_SUBTITEL:
-          map = new MitgliedMap().getMap((Mitglied) obj, map);
+        case MITGLIED_DOKUMENT_PFAD:
           break;
         case FREIES_FORMULAR_DATEINAME:
         case FORMULAR_DATEINAME:
@@ -206,7 +208,6 @@ public class VorlageUtil
           map.put("formular_name", (String) obj);
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
-          map = new MitgliedMap().getMap((Mitglied) obj, map);
           map.put("formular_name", formularName);
           break;
         case KONTENSALDO_DATEINAME:
@@ -390,6 +391,9 @@ public class VorlageUtil
         case MAILVORLAGEN_SUBTITEL:
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
+          break;
+        case BUCHUNG_DOKUMENT_PFAD:
+          map = new BuchungMap().getMap((Buchung) obj, map);
           break;
       }
     }
@@ -601,6 +605,7 @@ public class VorlageUtil
         case MITGLIED_DOKUMENTE_DATEINAME:
         case MITGLIED_DOKUMENTE_TITEL:
         case MITGLIED_DOKUMENTE_SUBTITEL:
+        case MITGLIED_DOKUMENT_PFAD:
           map = MitgliedMap.getDummyMap(map);
           break;
         case FREIES_FORMULAR_DATEINAME:
@@ -870,6 +875,9 @@ public class VorlageUtil
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
+        case BUCHUNG_DOKUMENT_PFAD:
+          map = new BuchungMap().getMap(null, map);
+          break;
       }
     }
     catch (RemoteException e)
@@ -884,6 +892,7 @@ public class VorlageUtil
   {
     try
     {
+
       String in = inString.replaceAll("-\\$", "\\'\\#\\'\\$");
       String str = VelocityTool.eval(map, in);
       str = str.replaceAll("\\'\\#\\'", "-");
@@ -899,8 +908,8 @@ public class VorlageUtil
       Logger.error("Format Fehler bei der Dateinamen/Titel Ersetzung: "
           + e.getMessage());
       return "Format Fehler bei der Dateinamen/Titel Ersetzung.";
-    }
 
+    }
   }
 
   private static String getVorlageMuster(VorlageTyp typ) throws RemoteException

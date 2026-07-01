@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -69,6 +70,11 @@ public class EinstellungenAnzeigeView extends AbstractView
     cont2.addHeadline("Sonstige Feature Auswahl");
     cont2.addLabelPair("Dokumentenspeicherung",
         control.getDokumentenspeicherung());
+    if (JVereinPlugin.isArchiveServiceActive())
+    {
+      cont2.addLabelPair("Dokumente per Jameica Messaging speichern",
+          control.getDokumentenspeicherungMessaging());
+    }
 
     SimpleContainer cont3 = new SimpleContainer(cols1.getComposite());
     cont3.addHeadline("Mitglieder Anzeige");
