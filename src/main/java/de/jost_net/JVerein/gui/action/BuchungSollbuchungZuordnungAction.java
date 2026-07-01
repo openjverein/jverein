@@ -195,6 +195,9 @@ public class BuchungSollbuchungZuordnungAction implements Action
       sbp.setZweck(buchung.getZweck());
       sbp.setSollbuchung(sollb.getID());
       sbp.store();
+
+      buchung.setSollbuchung(sollb);
+      buchung.store();
     }
   }
 
