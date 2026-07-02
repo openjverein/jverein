@@ -122,7 +122,7 @@ public class AuswertungMitgliedAdresslistePDF
               list.size()),
           params.getFontNormal()));
 
-      reporter.addParams(filterparams);
+      reporter.addParams(filterparams, params);
       reporter.close();
       fos.close();
       GUI.getStatusBar().setSuccessText(

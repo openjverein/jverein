@@ -246,7 +246,7 @@ public class BuchungAuswertungEinzelExportPDF extends BuchungAuswertungExportPDF
       }
       reporter.closeTable();
     }
-    reporter.addParams(control.getParams());
+    reporter.addParams(control.getParams(), params);
     reporter.close();
     fos.close();
   }

@@ -232,7 +232,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       reporter.closeTable();
     }
-    reporter.addParams(control.getParams());
+    reporter.addParams(control.getParams(), params);
 
     reporter.close();
     fos.close();

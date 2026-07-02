@@ -630,20 +630,24 @@ public class Reporter implements AutoCloseable
    * @throws DocumentException
    * @throws RemoteException
    */
-  public void addParams(final Map<Filter, String> map)
+  public void addParams(final Map<Filter, String> map, ExportLayoutParam params)
       throws DocumentException, RemoteException
   {
     if (map.size() > 0)
     {
-      add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
-      BaseColor bcolor = headerTransparent ? null : BaseColor.LIGHT_GRAY;
-      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100, bcolor);
-      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, bcolor);
+      Font font = new Font(params.getFontHeader());
+      font.setSize(11);
+      add(new Paragraph("Filter-Parameter", font));
+      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
+          params.getColorHeader(), params.getFontHeader());
+      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, params.getColorHeader(),
+          params.getFontHeader());
       createHeader(75f, Element.ALIGN_LEFT);
       for (Entry<Filter, String> entry : map.entrySet())
       {
-        addColumn(entry.getKey().getAnzeigeText(), Element.ALIGN_RIGHT);
-        addColumn(entry.getValue(), Element.ALIGN_LEFT);
+        addColumn(entry.getKey().getAnzeigeText(), Element.ALIGN_RIGHT,
+            params.getFontNormal());
+        addColumn(entry.getValue(), Element.ALIGN_LEFT, params.getFontNormal());
       }
       closeTable();
     }
@@ -652,25 +656,29 @@ public class Reporter implements AutoCloseable
   /**
    * Gibt die Parameter als Tablelle aus
    * 
+   * @param tree
    * @param params
    * @throws DocumentException
    */
   // TODO wird nur noch für Buchungen verwendet, sollte auch da zu Filter
   // umgestellt werden.
-  public void addParams(final TreeMap<String, String> params)
-      throws DocumentException
+  public void addParams(final TreeMap<String, String> tree,
+      ExportLayoutParam params) throws DocumentException
   {
-    if (!params.keySet().isEmpty())
+    if (!tree.keySet().isEmpty())
     {
-      add(new Paragraph("Filter-Parameter", Reporter.getFreeSans(12)));
-      BaseColor bcolor = headerTransparent ? null : BaseColor.LIGHT_GRAY;
-      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100, bcolor);
-      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, bcolor);
+      Font font = new Font(params.getFontHeader());
+      font.setSize(11);
+      add(new Paragraph("Filter-Parameter", font));
+      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
+          params.getColorHeader(), params.getFontHeader());
+      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, params.getColorHeader(),
+          params.getFontHeader());
       createHeader(75f, Element.ALIGN_LEFT);
-      for (String key : params.keySet())
+      for (String key : tree.keySet())
       {
-        addColumn(key, Element.ALIGN_RIGHT);
-        addColumn(params.get(key), Element.ALIGN_LEFT);
+        addColumn(key, Element.ALIGN_RIGHT, params.getFontNormal());
+        addColumn(tree.get(key), Element.ALIGN_LEFT, params.getFontNormal());
       }
       closeTable();
     }

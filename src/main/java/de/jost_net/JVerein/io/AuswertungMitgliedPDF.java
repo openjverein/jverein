@@ -188,7 +188,7 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
               list.size()),
           params.getFontNormal()));
 
-      reporter.addParams(filterparams);
+      reporter.addParams(filterparams, params);
       reporter.closeTable();
       reporter.close();
       GUI.getStatusBar().setSuccessText(
