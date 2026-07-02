@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
 
 import de.jost_net.JVerein.gui.control.KontensaldoControl;
@@ -38,51 +37,56 @@ public class KontenSaldoPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      String title, String subtitle) throws ApplicationException
+      ExportLayoutParam params) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
+      Reporter reporter = new Reporter(fos, params);
 
       reporter.addHeaderColumn("Konto-\nnummer", Element.ALIGN_CENTER, 50,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Kontobezeichnung", Element.ALIGN_CENTER, 90,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Anfangs-\nbestand", Element.ALIGN_CENTER, 45,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Einnahmen", Element.ALIGN_CENTER, 45,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Ausgaben", Element.ALIGN_CENTER, 45,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Um-\nbuchungen", Element.ALIGN_CENTER, 45,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Endbestand", Element.ALIGN_CENTER, 55,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.addHeaderColumn("Bemerkung", Element.ALIGN_CENTER, 90,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       reporter.createHeader();
 
       for (PseudoDBObject sz : zeile)
       {
         reporter.addColumn(
             (String) sz.getAttribute(KontensaldoControl.KONTO_NUMMER),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
         reporter.addColumn((String) sz.getAttribute(KontensaldoControl.GRUPPE),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND));
-        reporter
-            .addColumn((Double) sz.getAttribute(KontensaldoControl.EINNAHMEN));
-        reporter
-            .addColumn((Double) sz.getAttribute(KontensaldoControl.AUSGABEN));
+            (Double) sz.getAttribute(KontensaldoControl.ANFANGSBESTAND),
+            params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
-            (Double) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN));
-        reporter
-            .addColumn((Double) sz.getAttribute(KontensaldoControl.ENDBESTAND));
+            (Double) sz.getAttribute(KontensaldoControl.EINNAHMEN),
+            params.getFontNormal(), params.getNegativRot());
+        reporter.addColumn(
+            (Double) sz.getAttribute(KontensaldoControl.AUSGABEN),
+            params.getFontNormal(), params.getNegativRot());
+        reporter.addColumn(
+            (Double) sz.getAttribute(KontensaldoControl.UMBUCHUNGEN),
+            params.getFontNormal(), params.getNegativRot());
+        reporter.addColumn(
+            (Double) sz.getAttribute(KontensaldoControl.ENDBESTAND),
+            params.getFontNormal(), params.getNegativRot());
         reporter.addColumn(
             (String) sz.getAttribute(KontensaldoControl.BEMERKUNG),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
       }
       reporter.closeTable();
       GUI.getStatusBar().setSuccessText("Auswertung fertig.");

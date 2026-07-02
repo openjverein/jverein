@@ -16,18 +16,16 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.SaldoPartExportDialog;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.server.PseudoDBObject;
@@ -38,11 +36,10 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.gui.parts.Button;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public abstract class AbstractSaldoControl extends VorZurueckControl
 {
@@ -162,10 +159,6 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
 
   public static final int ART_LEERZEILE = 8;
 
-  final static String AuswertungPDF = ".pdf";
-
-  final static String AuswertungCSV = ".csv";
-
   public AbstractSaldoControl(AbstractView view) throws RemoteException
   {
     super(view);
@@ -223,8 +216,7 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    * @return
    * @throws ApplicationException
    */
-  protected abstract ISaldoExport getAuswertung(String type)
-      throws ApplicationException;
+  protected abstract ISaldoExport getAuswertung() throws ApplicationException;
 
   /**
    * Erstellt die Auswertung
@@ -233,72 +225,35 @@ public abstract class AbstractSaldoControl extends VorZurueckControl
    *          Der Typ der Auswertung (AuswertungPDF, AuswertungCSV)
    * @throws ApplicationException
    */
-  private void starteAuswertung(String type) throws ApplicationException
+  private void starteAuswertung() throws ApplicationException
   {
     try
     {
       ArrayList<PseudoDBObject> zeile = getList();
 
-      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-      fd.setText("Ausgabedatei wählen.");
-
-      Settings settings = new Settings(this.getClass());
-
-      String path = settings.getString("lastdir",
-          System.getProperty("user.home"));
-      if (path != null && path.length() > 0)
+      if (!new SaldoPartExportDialog(getAuswertung(), zeile,
+          GUI.getCurrentView().getClass().getSimpleName() + ".Saldotabelle.",
+          ExportArt.PDF, getTableTitle(), getTableSubtitle(),
+          getTableDateiname()).open())
       {
-        fd.setFilterPath(path);
+        throw new OperationCanceledException();
       }
-      fd.setFileName(getTableDateiname() + type);
-
-      final String s = fd.open();
-
-      if (s == null || s.length() == 0)
-      {
-        return;
-      }
-
-      final File file = new File(s);
-      settings.setAttribute("lastdir", file.getParent());
-
-      final String title = getTableTitle();
-      final String subtitle = getTableSubtitle();
-
-      BackgroundTask t = new BackgroundTask()
-      {
-        @Override
-        public void run(ProgressMonitor monitor) throws ApplicationException
-        {
-          ISaldoExport export = getAuswertung(type);
-          export.export(zeile, file, title, subtitle);
-        }
-
-        @Override
-        public void interrupt()
-        {
-          //
-        }
-
-        @Override
-        public boolean isInterrupted()
-        {
-          return false;
-        }
-      };
-      Application.getController().start(t);
     }
-    catch (RemoteException e)
+    catch (OperationCanceledException | ApplicationException e)
     {
-      throw new ApplicationException(
-          String.format("Fehler beim Aufbau des Reports: %s", e.getMessage()));
+      throw e;
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim Erstellen der Auswertung.", e);
+      throw new ApplicationException("Fehler beim Erstellen der Auswertung.");
     }
   }
 
   public Button getStartAuswertungPDFButton()
   {
-    return new Button("PDF", context -> starteAuswertung(AuswertungPDF), null,
-        false, "file-pdf.png");
+    return new Button("PDF", context -> starteAuswertung(), null, false,
+        "file-pdf.png");
   }
 
   public DateLabel getDatumvon()
