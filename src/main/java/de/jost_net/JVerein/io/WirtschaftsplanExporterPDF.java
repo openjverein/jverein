@@ -118,13 +118,9 @@ public class WirtschaftsplanExporterPDF implements Exporter
       throw new ApplicationException("Keine Pläne ausgewählt");
     }
     this.params = params;
-    FileOutputStream fileOutputStream = new FileOutputStream(file);
+    FileOutputStream fos = new FileOutputStream(file);
 
-    Reporter reporter = new Reporter(fileOutputStream, params.getTitle(),
-        params.getSubtitle(), params.getLinks(), params.getRechts(),
-        params.getOben(), params.getUnten(), false, params.getVordergrund(),
-        params.getHintergrund(), params.getQuerformat(),
-        params.getHeaderTransparent(), params.getZellenTransparent());
+    Reporter reporter = new Reporter(fos, params);
 
     // Header erstellen
     // Leider kann der Header kein Colspan, daher erst Soll/Ist anzeigen
@@ -333,7 +329,7 @@ public class WirtschaftsplanExporterPDF implements Exporter
 
     reporter.closeTable();
     reporter.close();
-    fileOutputStream.close();
+    fos.close();
   }
 
   @SuppressWarnings("unchecked")
