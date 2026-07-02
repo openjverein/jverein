@@ -2815,6 +2815,30 @@ public class MitgliedControl extends FilterControl implements Savable
     return dcontrol.getDokumenteList();
   }
 
+  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
+  // entfernen
+  @Override
+  public Input getFilterInput(Filter filter)
+      throws RemoteException, ApplicationException
+  {
+    Input input = super.getFilterInput(filter);
+    if (filter.equals(Filter.MITGLIEDSTYP)
+        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
+    {
+      List<?> list = ((SelectInput) input).getList();
+      for (Object o : list)
+      {
+        if (((Mitgliedstyp) o).getJVereinid() == Integer
+            .parseInt(Mitgliedstyp.MITGLIED))
+        {
+          list.remove(o);
+          break;
+        }
+      }
+    }
+    return input;
+  }
+
   public Button getExportButton(MitgliedAuswahl mitgliedauswahl)
   {
     @SuppressWarnings("unchecked")
