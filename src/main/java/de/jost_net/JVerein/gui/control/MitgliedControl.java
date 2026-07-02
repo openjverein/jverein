@@ -2895,7 +2895,7 @@ public class MitgliedControl extends FilterControl implements Savable
         Logger.error("Fehler", e);
         GUI.getStatusBar().setErrorText("Fehler beim exportieren des Reports");
       }
-    }, null, true, "walking.png"); // "true" defines this button as the default
+    }, null, false, "document-save.png");
     return b;
   }
 
