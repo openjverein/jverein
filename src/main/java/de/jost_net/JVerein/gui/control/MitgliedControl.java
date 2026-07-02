@@ -38,6 +38,7 @@ import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
+import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -76,6 +77,7 @@ import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
@@ -83,10 +85,12 @@ import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
 import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -2811,6 +2815,66 @@ public class MitgliedControl extends FilterControl implements Savable
     return dcontrol.getDokumenteList();
   }
 
+  public Button getExportButton(MitgliedAuswahl mitgliedauswahl)
+  {
+    @SuppressWarnings("unchecked")
+    Button b = new Button("Export", context -> {
+      try
+      {
+        saveFilterSettings();
+        Mitgliedstyp mitgliedstyp;
+        ExportDialog d;
+        ArrayList<Mitglied> list = (ArrayList<Mitglied>) getTablePart()
+            .getItems();
+        if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
+        {
+          mitgliedstyp = Einstellungen.getDBService()
+              .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
+        }
+        else
+        {
+          mitgliedstyp = (Mitgliedstyp) getFilter().get(Filter.MITGLIEDSTYP);
+        }
+        Object[] objects = new Object[] { list, getFilterText(false),
+            mitgliedstyp, getFilter() };
+        /*
+         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+         * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+         */
+        if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
+        {
+          d = new ExportDialog(objects, MitgliedListeView.class,
+              DokumentationUtil.MITGLIEDSUCHE, this);
+        }
+        else
+        {
+          d = new ExportDialog(objects, NichtMitgliedListeView.class,
+              DokumentationUtil.ADRESSEN, this);
+        }
+        d.open();
+      }
+      catch (OperationCanceledException oce)
+      {
+        Logger.info(oce.getMessage());
+        return;
+      }
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(e);
+      }
+      catch (ApplicationException ae)
+      {
+        throw ae;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler", e);
+        GUI.getStatusBar().setErrorText("Fehler beim exportieren des Reports");
+      }
+    }, null, true, "walking.png"); // "true" defines this button as the default
+    return b;
+  }
+
   @Override
   protected String getTableTitle()
   {
@@ -2853,5 +2917,10 @@ public class MitgliedControl extends FilterControl implements Savable
   public void setMitgliedAuswahl(MitgliedAuswahl mitgliedAuswahl)
   {
     this.mitgliedAuswahl = mitgliedAuswahl;
+  }
+
+  public MitgliedAuswahl getMitgliedAuswahl()
+  {
+    return mitgliedAuswahl;
   }
 }

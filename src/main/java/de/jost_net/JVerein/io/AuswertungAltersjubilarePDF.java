@@ -26,6 +26,7 @@ import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -44,13 +45,13 @@ public class AuswertungAltersjubilarePDF
   @Override
   public String getName()
   {
-    return "Altersjubilare PDF-Export";
+    return "Altersjubilare PDF";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }

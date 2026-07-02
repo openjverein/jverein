@@ -28,6 +28,8 @@ import java.util.ArrayList;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.util.ApplicationException;
@@ -101,4 +103,32 @@ public class AuswertungMitgliedAdressbuchCSV
     return "Adressbuchexport CSV";
   }
 
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != MitgliedListeView.class
+        && objectType != NichtMitgliedListeView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliedAdressbuchCSV.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.csv" };
+      }
+    };
+    return new IOFormat[] { f };
+  }
 }

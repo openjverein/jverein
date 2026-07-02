@@ -24,6 +24,8 @@ import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
+
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -32,7 +34,8 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliederstatistikView;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -50,6 +53,7 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
 {
   private ExportLayoutParam params;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
       ExportLayoutParam params, ProgressMonitor monitor)
@@ -59,9 +63,11 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
     try
     {
       /*
-       * objects[0] ist der Stichtag
+       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+       * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
        */
-      Date stichtag = (Date) objects[0];
+      Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+      Date stichtag = (Date) filter.get(Filter.STICHTAG);
       if (stichtag == null)
       {
         throw new ApplicationException("Stichtag ist leer");
@@ -415,13 +421,13 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
   @Override
   public String getName()
   {
-    return "Mitglieder Statistik PDF";
+    return "Mitgliederstatistik PDF";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != AuswertungMitgliederstatistikView.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }

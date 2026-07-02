@@ -390,6 +390,10 @@ public class MitgliedQuery
         case ZUSATZFELD:
           // werden oben abgefragt
           break;
+        case JAHR:
+        case UEBERSCHRIFT:
+          // Nur für Auswertung
+          break;
         default:
           throw new ApplicationException(
               "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());

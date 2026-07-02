@@ -22,13 +22,14 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -36,6 +37,7 @@ import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
@@ -49,16 +51,25 @@ public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
 
   protected ExportLayoutParam params;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
       ExportLayoutParam params, ProgressMonitor monitor)
-      throws DocumentException, IOException
+      throws ApplicationException, DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+     */
     this.file = file;
     this.params = params;
+    Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+    Integer jahr = (Integer) filter.get(Filter.JAHR);
+    if (jahr == null)
+    {
+      throw new ApplicationException("Auswertungsjahr ist leer");
+    }
     statistik = new TreeMap<>();
-    AuswertungControl control = (AuswertungControl) objects[0];
-    Integer jahr = control.getJJahr();
     try
     {
       stichtag = Datum.toDate("31.12." + jahr);

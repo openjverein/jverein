@@ -22,18 +22,18 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.AuswertungControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
@@ -46,16 +46,24 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
 
   protected ExportLayoutParam params;
 
+  @SuppressWarnings("unchecked")
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
       ExportLayoutParam params, ProgressMonitor monitor)
       throws ApplicationException, DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+     */
     this.file = file;
     this.params = params;
-    final AuswertungControl control = (AuswertungControl) objects[0];
-    jahr = control.getJJahr();
-    Logger.debug(String.format("Altersjubiläumexport, Jahr=%d", jahr));
+    Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+    Integer jahr = (Integer) filter.get(Filter.JAHR);
+    if (jahr == null)
+    {
+      throw new ApplicationException("Auswertungsjahr ist leer");
+    }
 
     open();
     JubilaeenParser jp = new JubilaeenParser(

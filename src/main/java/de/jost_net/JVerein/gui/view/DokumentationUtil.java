@@ -26,8 +26,6 @@ public class DokumentationUtil
 
   private static final String FUNKTIONEN = PRE + "v/4.2/";
 
-  private static final String AUSWERTUNGEN = FUNKTIONEN + "auswertungen/";
-
   private static final String ABRECH = FUNKTIONEN + "abrech/";
 
   private static final String BUCHF = FUNKTIONEN + "buchf/";
@@ -138,20 +136,6 @@ public class DokumentationUtil
 
   public static final String SEPABUGS = ABRECH + "sepa-bugs";
 
-  // Auswertung
-  public static final String AUSWERTUNGKURSTEILNEHMER = AUSWERTUNGEN
-      + "auswertung-kursteilnehmer";
-
-  public static final String AUSWERTUNGMITGLIEDER = AUSWERTUNGEN
-      + "auswertung-mitglieder";
-
-  public static final String JUBILAEEN = AUSWERTUNGEN + "jubilaen";
-
-  public static final String STATISTIKMITGLIEDER = AUSWERTUNGEN + "statistik";
-
-  public static final String STATISTIKJAHRGAENGE = AUSWERTUNGEN
-      + "statistik-jahrgange";
-
   // Druck und Mail
   public static final String RECHNUNG_MAIL = DRUCKMAIL + "rechnungen";
 
@@ -185,9 +169,6 @@ public class DokumentationUtil
 
   public static final String EINSTELLUNGEN_BUCHFUEHRUNG = ADMEINSTELLUNG
       + "buchfuehrung";
-
-  public static final String EINSTELLUNGEN_VERZEICHNISSE = ADMEINSTELLUNG
-      + "verzeichnisse";
 
   public static final String EINSTELLUNGEN_VORLAGEN = ADMEINSTELLUNG
       + "vorlagen";

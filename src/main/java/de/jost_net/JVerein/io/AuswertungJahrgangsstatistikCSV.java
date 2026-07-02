@@ -29,24 +29,25 @@ import org.supercsv.prefs.CsvPreference;
 
 import com.itextpdf.text.DocumentException;
 
-import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.jameica.gui.GUI;
 
-public class AuswertungJahrgangsstatistikCSV extends AuswertungJahrgangsstatistikAbstract
+public class AuswertungJahrgangsstatistikCSV
+    extends AuswertungJahrgangsstatistikAbstract
 {
 
   @Override
   public String getName()
   {
-    return "Statistik Jahrgänge CSV-Export";
+    return "Jahrgangsstatistik CSV";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != AuswertungJahrgangsstatistikView.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }

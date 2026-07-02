@@ -36,6 +36,8 @@ import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -216,4 +218,32 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
     return name;
   }
 
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != MitgliedListeView.class
+        && objectType != NichtMitgliedListeView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliedCSV.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.csv" };
+      }
+    };
+    return new IOFormat[] { f };
+  }
 }

@@ -22,18 +22,20 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.control.AuswertungControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
 public abstract class AuswertungMitgliedschaftsjubilareAbstract
@@ -42,7 +44,7 @@ public abstract class AuswertungMitgliedschaftsjubilareAbstract
 
   protected File file;
 
-  protected int jahr;
+  protected Integer jahr;
 
   protected int jubilarStartAlter;
 
@@ -51,8 +53,12 @@ public abstract class AuswertungMitgliedschaftsjubilareAbstract
   @Override
   public void doExport(final Object[] objects, IOFormat format, File file,
       ExportLayoutParam params, ProgressMonitor monitor)
-      throws DocumentException, IOException
+      throws ApplicationException, DocumentException, IOException
   {
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+     */
     this.file = file;
     this.params = params;
     setzeParameterDerListe(objects);
@@ -126,12 +132,23 @@ public abstract class AuswertungMitgliedschaftsjubilareAbstract
    * 
    * @param objects
    * @throws RemoteException
+   * @throws ApplicationException
    */
   private void setzeParameterDerListe(final Object[] objects)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
-    AuswertungControl control = (AuswertungControl) objects[0];
-    jahr = control.getJJahr();
+    /*
+     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
+     * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+     */
+    @SuppressWarnings("unchecked")
+    Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+    jahr = (Integer) filter.get(Filter.JAHR);
+    if (jahr == null)
+    {
+      throw new ApplicationException("Auswertungsjahr ist leer");
+    }
+
     jubilarStartAlter = (Integer) Einstellungen
         .getEinstellung(Property.JUBILARSTARTALTER);
     Logger.debug("Mitgliedschaftsjubiläum, Jahr=" + Integer.toString(jahr)

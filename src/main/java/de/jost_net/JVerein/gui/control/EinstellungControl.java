@@ -74,7 +74,6 @@ import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.DialogInput;
-import de.willuhn.jameica.gui.input.DirectoryInput;
 import de.willuhn.jameica.gui.input.ImageInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -191,8 +190,6 @@ public class EinstellungControl extends AbstractControl
   private SelectInput beitragsmodel;
 
   private SelectInput sepamandatidsourcemodel;
-
-  private DirectoryInput vorlagenCsvVerzeichnis;
 
   private DecimalInput spendenbescheinigungminbetrag;
 
@@ -1159,18 +1156,6 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
-  }
-
-  public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
-  {
-    if (vorlagenCsvVerzeichnis != null)
-    {
-      return vorlagenCsvVerzeichnis;
-    }
-    String lastValue = (String) Einstellungen
-        .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
-    vorlagenCsvVerzeichnis = new DirectoryInput(lastValue);
-    return vorlagenCsvVerzeichnis;
   }
 
   public DecimalInput getSpendenbescheinigungminbetrag() throws RemoteException
@@ -2635,26 +2620,6 @@ public class EinstellungControl extends AbstractControl
           (Boolean) keineistbuchungbeilastschrift.getValue());
       Einstellungen.setEinstellung(Property.ZAHLERBEILASTSCHRIFT,
           (Boolean) zahlerbeilastschrift.getValue());
-      DBTransaction.commit();
-
-      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
-    }
-    catch (RemoteException | ApplicationException e)
-    {
-      DBTransaction.rollback();
-      Logger.error("Speichern fehlgeschlagen", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
-  }
-
-  public void handleStoreVerzeichnisse()
-  {
-    try
-    {
-      DBTransaction.starten();
-
-      Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
-          (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();
 
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");

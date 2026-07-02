@@ -29,6 +29,8 @@ import com.itextpdf.text.Paragraph;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -54,7 +56,7 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
     {
       /*
        * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
-       * objects[2] ist Mitgliedstyp
+       * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
        */
       ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
       Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
@@ -205,4 +207,32 @@ public class AuswertungMitgliedPDF extends AuswertungMitgliedAbstractPDF
     return "Mitgliederliste PDF";
   }
 
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != MitgliedListeView.class
+        && objectType != NichtMitgliedListeView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliedPDF.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.pdf" };
+      }
+    };
+    return new IOFormat[] { f };
+  }
 }

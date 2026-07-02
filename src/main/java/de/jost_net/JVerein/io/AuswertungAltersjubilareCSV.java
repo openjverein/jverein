@@ -20,6 +20,7 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -37,13 +38,13 @@ public class AuswertungAltersjubilareCSV
   @Override
   public String getName()
   {
-    return "Altersjubilare CSV-Export";
+    return "Altersjubilare CSV";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }

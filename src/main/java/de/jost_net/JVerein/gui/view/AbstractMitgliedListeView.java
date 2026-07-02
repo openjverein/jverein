@@ -80,6 +80,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     {
       buttons.addButton("Import", new MitgliederImportAction(), null, false,
           "file-import.png");
+      buttons.addButton(control.getExportButton(getMitgliedAuswahl()));
       buttons.addButton("Neu", getDetailAction(), null, false,
           "document-new.png");
     }

@@ -17,9 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
-import de.jost_net.JVerein.gui.control.AuswertungControl;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
-import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
+import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 
@@ -32,7 +30,7 @@ public abstract class AuswertungMitgliedAbstractPDF
   @Override
   public String getDateiname(Object object)
   {
-    if (((AuswertungControl) object).getMitgliedAuswahl()
+    if (((MitgliedControl) object).getMitgliedAuswahl()
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,
@@ -46,32 +44,4 @@ public abstract class AuswertungMitgliedAbstractPDF
     }
   }
 
-  @Override
-  public IOFormat[] getIOFormats(Class<?> objectType)
-  {
-    if (objectType != AuswertungMitgliedView.class
-        && objectType != AuswertungNichtMitgliedView.class)
-    {
-      return null;
-    }
-    IOFormat f = new IOFormat()
-    {
-
-      @Override
-      public String getName()
-      {
-        return this.getName();
-      }
-
-      /**
-       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
-       */
-      @Override
-      public String[] getFileExtensions()
-      {
-        return new String[] { "*.pdf" };
-      }
-    };
-    return new IOFormat[] { f };
-  }
 }

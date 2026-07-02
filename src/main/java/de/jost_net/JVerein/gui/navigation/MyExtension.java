@@ -32,9 +32,6 @@ import de.jost_net.JVerein.gui.view.AnfangsbestandListeView;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.AnlagenverzeichnisView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzListeView;
-import de.jost_net.JVerein.gui.view.AuswertungKursteilnehmerView;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliedView;
-import de.jost_net.JVerein.gui.view.AuswertungNichtMitgliedView;
 import de.jost_net.JVerein.gui.view.BeitragsgruppeListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungsartListeView;
@@ -53,13 +50,11 @@ import de.jost_net.JVerein.gui.view.EinstellungenRechnungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenReportsView;
 import de.jost_net.JVerein.gui.view.EinstellungenSpendenbescheinigungenView;
 import de.jost_net.JVerein.gui.view.EinstellungenStatistikView;
-import de.jost_net.JVerein.gui.view.EinstellungenVerzeichnisView;
 import de.jost_net.JVerein.gui.view.EinstellungenVorlageListeView;
 import de.jost_net.JVerein.gui.view.FamilienbeitragView;
 import de.jost_net.JVerein.gui.view.FormularListeView;
 import de.jost_net.JVerein.gui.view.FreiesFormularMailView;
 import de.jost_net.JVerein.gui.view.JahresabschlussListeView;
-import de.jost_net.JVerein.gui.view.AuswertungJubilaeenView;
 import de.jost_net.JVerein.gui.view.KontoListeView;
 import de.jost_net.JVerein.gui.view.KontoSaldoView;
 import de.jost_net.JVerein.gui.view.KontoauszugMailView;
@@ -86,8 +81,6 @@ import de.jost_net.JVerein.gui.view.RechnungMailView;
 import de.jost_net.JVerein.gui.view.SollbuchungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungListeView;
 import de.jost_net.JVerein.gui.view.SpendenbescheinigungMailView;
-import de.jost_net.JVerein.gui.view.AuswertungJahrgangsstatistikView;
-import de.jost_net.JVerein.gui.view.AuswertungMitgliederstatistikView;
 import de.jost_net.JVerein.gui.view.SteuerListeView;
 import de.jost_net.JVerein.gui.view.UmsatzsteuerSaldoView;
 import de.jost_net.JVerein.gui.view.WiedervorlageListeView;
@@ -250,30 +243,6 @@ public class MyExtension implements Extension
           new StartViewAction(LastschriftListeView.class), "lastschrift.png"));
       jverein.addChild(abrechnung);
 
-      NavigationItem auswertung = new MyItem(jverein, "Auswertungen", null);
-      auswertung.addChild(new MyItem(auswertung, "Mitglieder",
-          new StartViewAction(AuswertungMitgliedView.class), "receipt.png"));
-      if ((Boolean) Einstellungen.getEinstellung(Property.ZUSATZADRESSEN))
-      {
-        auswertung.addChild(new MyItem(auswertung, "Nicht-Mitglieder",
-            new StartViewAction(AuswertungNichtMitgliedView.class),
-            "receipt.png"));
-      }
-      auswertung.addChild(new MyItem(auswertung, "Jubiläen",
-          new StartViewAction(AuswertungJubilaeenView.class), "receipt.png"));
-      if ((Boolean) Einstellungen.getEinstellung(Property.KURSTEILNEHMER))
-      {
-        auswertung.addChild(new MyItem(auswertung, "Kursteilnehmer",
-            new StartViewAction(AuswertungKursteilnehmerView.class),
-            "receipt.png"));
-      }
-      auswertung.addChild(new MyItem(auswertung, "Mitgliederstatistik",
-          new StartViewAction(AuswertungMitgliederstatistikView.class), "chart-line.png"));
-      auswertung.addChild(new MyItem(auswertung, "Jahrgangsstatistik",
-          new StartViewAction(AuswertungJahrgangsstatistikView.class),
-          "chart-line.png"));
-      jverein.addChild(auswertung);
-
       NavigationItem mail = new MyItem(jverein, "Druck & Mail", null);
       if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
       {
@@ -326,10 +295,6 @@ public class MyExtension implements Extension
       administrationEinstellungen
           .addChild(new MyItem(administrationEinstellungen, "Abrechnung",
               new StartViewAction(EinstellungenAbrechnungView.class),
-              "wrench.png"));
-      administrationEinstellungen
-          .addChild(new MyItem(administrationEinstellungen, "Verzeichnisse",
-              new StartViewAction(EinstellungenVerzeichnisView.class),
               "wrench.png"));
       administrationEinstellungen
           .addChild(new MyItem(administrationEinstellungen, "Vorlagen",
