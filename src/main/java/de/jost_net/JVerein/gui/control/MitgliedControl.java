@@ -2839,7 +2839,7 @@ public class MitgliedControl extends FilterControl implements Savable
     return input;
   }
 
-  public Button getExportButton(MitgliedAuswahl mitgliedauswahl)
+  public Button getExportButton()
   {
     @SuppressWarnings("unchecked")
     Button b = new Button("Export", context -> {
@@ -2850,7 +2850,7 @@ public class MitgliedControl extends FilterControl implements Savable
         ExportDialog d;
         ArrayList<Mitglied> list = (ArrayList<Mitglied>) getTablePart()
             .getItems();
-        if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
+        if (mitgliedAuswahl == MitgliedAuswahl.MITGLIEDER)
         {
           mitgliedstyp = Einstellungen.getDBService()
               .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
@@ -2865,7 +2865,7 @@ public class MitgliedControl extends FilterControl implements Savable
          * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
          * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
          */
-        if (mitgliedauswahl == MitgliedAuswahl.MITGLIEDER)
+        if (mitgliedAuswahl == MitgliedAuswahl.MITGLIEDER)
         {
           d = new ExportDialog(objects, MitgliedListeView.class,
               DokumentationUtil.MITGLIEDSUCHE, this);
