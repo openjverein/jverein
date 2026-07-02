@@ -708,14 +708,8 @@ public class BuchungsklasseSaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  protected ISaldoExport getAuswertung() throws ApplicationException
   {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new BuchungsklassesaldoPDF(mitUmbuchung);
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
+    return new BuchungsklassesaldoPDF(mitUmbuchung);
   }
 }

@@ -365,14 +365,8 @@ public class KontensaldoControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  protected ISaldoExport getAuswertung() throws ApplicationException
   {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new KontenSaldoPDF();
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
+    return new KontenSaldoPDF();
   }
 }

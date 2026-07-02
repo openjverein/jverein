@@ -1120,15 +1120,9 @@ public class MittelverwendungControl extends AbstractSaldoControl
   }
 
   @Override
-  protected ISaldoExport getAuswertung(String type) throws ApplicationException
+  protected ISaldoExport getAuswertung() throws ApplicationException
   {
-    switch (type)
-    {
-      case AuswertungPDF:
-        return new MittelverwendungExportPDF(selectedTab);
-      default:
-        throw new ApplicationException("Ausgabetyp nicht implementiert");
-    }
+    return new MittelverwendungExportPDF(selectedTab);
   }
 
   /**
