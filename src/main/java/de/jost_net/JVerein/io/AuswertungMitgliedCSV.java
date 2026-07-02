@@ -18,7 +18,6 @@ package de.jost_net.JVerein.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -26,9 +25,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import org.supercsv.cellprocessor.ift.CellProcessor;
-import org.supercsv.io.CsvListReader;
 import org.supercsv.io.CsvMapWriter;
-import org.supercsv.io.ICsvListReader;
 import org.supercsv.io.ICsvMapWriter;
 import org.supercsv.prefs.CsvPreference;
 
@@ -45,34 +42,9 @@ import de.willuhn.util.ProgressMonitor;
 
 public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
 {
-
-  private String vorlagedateiname;
-
-  private String name;
-
   private String[] headerUser;
 
   private String[] headerKeys;
-
-  public AuswertungMitgliedCSV()
-  {
-    this.vorlagedateiname = "";
-    this.name = "Mitgliederliste CSV";
-    this.headerKeys = null;
-    this.headerUser = null;
-  }
-
-  public AuswertungMitgliedCSV(String filename)
-  {
-    this(); // call default constructor
-
-    if (filename.length() > 0)
-    {
-      this.vorlagedateiname = filename;
-      this.name = "Vorlage CSV: " + filename.substring(
-          filename.lastIndexOf(File.separator) + 1, filename.lastIndexOf("."));
-    }
-  }
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
@@ -86,50 +58,6 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
      */
     @SuppressWarnings("unchecked")
     ArrayList<Mitglied> list = (ArrayList<Mitglied>) objects[0];
-
-    // read and check vorlagedateicsv
-    headerKeys = null;
-    headerUser = null;
-
-    if (!vorlagedateiname.isEmpty())
-    {
-      Logger.info("reading " + vorlagedateiname);
-
-      // read the file content: first 2 lines
-      // 1st line: headerUser
-      // 2nd line: headerKeys
-      try
-      {
-        File fileVorlage = new File(vorlagedateiname);
-        ICsvListReader reader = new CsvListReader(new FileReader(fileVorlage),
-            CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE);
-        headerUser = reader.read().toArray(new String[0]);
-        headerKeys = reader.read().toArray(new String[0]);
-        reader.close();
-      }
-      catch (Exception e)
-      {
-        Logger.error("error reading " + vorlagedateiname, e);
-        throw new RemoteException(
-            "Fehler beim Einlesen der Vorlagedatei " + vorlagedateiname, e);
-      }
-
-      // check the file content
-      if (headerUser.length == 0)
-      {
-        Logger.error("No elements in first line: " + vorlagedateiname);
-        throw new ApplicationException(
-            "Keine Elemente in erster Zeile in Datei " + vorlagedateiname);
-      }
-      if (headerUser.length != headerKeys.length)
-      {
-        Logger.error("Different number of elements in 1st and 2nd line: "
-            + vorlagedateiname);
-        throw new ApplicationException(
-            "Unterschiedliche Anzahl Elemente in 1. und 2. Zeile: "
-                + vorlagedateiname);
-      }
-    }
     go(list, file);
   }
 
@@ -152,15 +80,8 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
             null);
       }
 
-      if (headerKeys == null || headerUser == null)
-      {
-        headerKeys = createHeader(m);
-        headerUser = headerKeys;
-      }
-      // TEST
-      // headerKeys = new String[] { "mitglied_name", "mitglied_vorname",
-      // "mitglied_eintritt" };
-      // headerUser = new String[] { "Name", "Vorname", "Eintrittsdatum" };
+      headerKeys = createHeader(m);
+      headerUser = headerKeys;
 
       Logger.debug("Header");
       for (String s : headerKeys)
@@ -215,7 +136,7 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
   @Override
   public String getName()
   {
-    return name;
+    return "Mitgliederliste CSV";
   }
 
   @Override
