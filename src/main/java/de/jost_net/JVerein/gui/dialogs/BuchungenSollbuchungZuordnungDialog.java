@@ -276,8 +276,8 @@ public class BuchungenSollbuchungZuordnungDialog extends AbstractDialog<Object>
             it.leftJoin("buchung", "buchung.sollbuchung = sollbuchung.id");
 
             it.addColumn(
-                "sum(sollbuchung.betrag -COALESCE(buchung.betrag,0)) as fehlbetrag");
-            it.addHaving("fehlbetrag != 0");
+                "sollbuchung.betrag -sum(COALESCE(buchung.betrag,0)) as fehlbetrag");
+            it.addHaving("ABS(fehlbetrag) > 0.01");
             it.addColumn("sollbuchung.zweck1 as sollbuchung_zweck");
 
             it.leftJoin("mitglied", "mitglied.id = sollbuchung.mitglied");
