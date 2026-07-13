@@ -63,10 +63,10 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
     try
     {
       /*
-       * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
-       * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+       * objects[0] sind die Ausgabeparameter Filter, objects[1] ist der
+       * Filtertext, objects[2] ist Mitgliedstyp, objects[3] ist der Filter
        */
-      Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+      Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
       Date stichtag = (Date) filter.get(Filter.STICHTAG);
       if (stichtag == null)
       {
@@ -471,5 +471,11 @@ public class AuswertungMitgliederstatistikPDF implements Exporter
   {
     return VorlageUtil
         .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL, object);
+  }
+
+  @Override
+  public Filter[] getAusgabeParameter(Object object)
+  {
+    return new Filter[] { Filter.STICHTAG };
   }
 }

@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 import de.willuhn.util.Session;
@@ -96,5 +97,16 @@ public interface Exporter extends IO
   default boolean hasColortable2(Object object)
   {
     return false;
+  }
+
+  /**
+   * Übergabe von Ausgabeparameter für die Reportgenerierung
+   * 
+   * @param object
+   * @return
+   */
+  default Filter[] getAusgabeParameter(Object object)
+  {
+    return null;
   }
 }

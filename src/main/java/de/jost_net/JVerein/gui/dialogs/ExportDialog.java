@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.io.Exporter;
@@ -188,6 +189,25 @@ public class ExportDialog extends AbstractDialog<Object>
 
     try
     {
+      // Die Ausgabe hat eigene Parameter und nutzt nicht die gefilterte
+      // Mitgliederliste. Es wird ein eigener AusgabeControl erzeugt mit den
+      // Ausgabeparametern als Filterliste
+      if (exporter.getAusgabeParameter(dateinameObject) != null)
+      {
+        AuswertungExportDialog d = new AuswertungExportDialog(
+            AuswertungExportDialog.POSITION_CENTER,
+            exporter.getAusgabeParameter(dateinameObject));
+        if (d.open() == null)
+        {
+          throw new OperationCanceledException();
+        }
+        // Für die Dateinamen und Titel Generierung muss der AusgabeControl
+        // verwendet werden
+        dateinameObject = d.getData();
+        // Ausgabeparameter überschreiben die Mitgliederliste objects[0]!
+        objects[0] = ((AuswertungControl) dateinameObject).getFilter();
+      }
+
       if (ext.equalsIgnoreCase("pdf"))
       {
         if (!new ExporterExportDialog(exporter, objects, format, prefix,
@@ -204,7 +224,7 @@ public class ExportDialog extends AbstractDialog<Object>
         fd.setText(i18n.tr(
             "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen."));
         fd.setOverwrite(true);
-        fd.setFileName(exp.exporter.getDateiname(dateinameObject));
+        fd.setFileName(exporter.getDateiname(dateinameObject));
         fd.setFilterExtensions(new String[] { "*" + ext });
         String path = settings.getString("lastdir",
             System.getProperty("user.home"));

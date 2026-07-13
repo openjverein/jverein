@@ -27,12 +27,13 @@ public abstract class AuswertungMitgliedAbstract implements Exporter
     if (((MitgliedControl) object).getMitgliedAuswahl()
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
-      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, object);
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, object,
+          getName());
     }
     else
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL,
-          object);
+          object, getName());
     }
   }
 
@@ -43,12 +44,12 @@ public abstract class AuswertungMitgliedAbstract implements Exporter
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_SUBTITEL,
-          object);
+          object, getName());
     }
     else
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_SUBTITEL,
-          object);
+          object, getName());
     }
   }
 

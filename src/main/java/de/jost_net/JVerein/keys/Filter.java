@@ -108,7 +108,6 @@ public enum Filter
       FilterArt.DATE),
   GESCHLECHT("filter_geschlecht", "Geschlecht", "Alle", FilterArt.SELECT,
       Geschlecht.values()),
-  JAHR("filter_jahr", "Auswertungsjahr", "2024", FilterArt.INTEGER),
   KONTOART("filter_kontoart", "Kontoart", "Alle", FilterArt.SELECT,
       Kontoart.getList()),
   LEHRGANGSART("filter_lehrgangsart", "Lehrgangsart", "Grundkurs",
@@ -140,8 +139,6 @@ public enum Filter
   STERBEDATUM_VON("filter_sterbedatum_von_f", "Sterbetag von", "20240101",
       FilterArt.DATE),
   STICHTAG("filter_stichtag_f", "Stichtag", "20240101", FilterArt.DATE),
-  UEBERSCHRIFT("ausgabe_ueberschrift", "Überschrift", "Überschrift",
-      FilterArt.TEXT),
   VERANSTALTER("filter_veranstalter", "Veranstalter", "Kursleiter",
       FilterArt.TEXT),
   VERMERK("filter_vermerk", "Vermerk", "Vermerk", FilterArt.TEXT),
@@ -155,7 +152,11 @@ public enum Filter
   ZEILE2("filter_zeile2", "Zeile 2", "Meier", FilterArt.TEXT),
   ZUSATZFELD("filter_zusatzfelder", "Zusatzfelder", "Zusatzfeld",
       FilterArt.ZUSATZFELD),
-  ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT);
+  ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT),
+
+  // Für Auswertung
+  JAHR("filter_jahr", "Auswertungsjahr", "2024", FilterArt.INTEGER),
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste PDF", FilterArt.TEXT);
 
   private String setting;
 

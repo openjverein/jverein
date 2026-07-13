@@ -309,11 +309,11 @@ public enum VorlageTyp
   // Reports aus Auswertung
   AUSWERTUNG_MITGLIED_DATEINAME("auswertung-mitglied-dateiname",
       "Auswertung Mitglied Dateiname",
-      "Mitglieder-Auswertung-$aktuellesdatum-$aktuellezeit",
+      "Mitglieder-$ausgabe_ausgabe-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   AUSWERTUNG_NICHT_MITGLIED_DATEINAME("auswertung-nichtmitglied-dateiname",
       "Auswertung Nicht-Mitglied Dateiname",
-      "Nicht-Mitglieder-Auswertung-$filter_mitgliedstyp-$aktuellesdatum-$aktuellezeit",
+      "Nicht-Mitglieder-$ausgabe_ausgabe-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
   AUSWERTUNG_ALTERSJUBILARE_DATEINAME("auswertung-altersjubilare-dateiname",
       "Auswertung Altersjubiläen Dateiname",

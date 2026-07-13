@@ -107,14 +107,6 @@ public class MitgliedListeView extends AbstractMitgliedListeView
     right3.addInput(control.getFilterInput(Filter.DATUM_VON));
     right3.addInput(control.getFilterInput(Filter.DATUM_BIS));
 
-    // Vierter Tab
-    TabGroup tab4 = new TabGroup(folder, "Export", true, 2);
-    SimpleContainer left4 = new SimpleContainer(tab4.getComposite());
-    left4.addInput(control.getFilterInput(Filter.JAHR));
-
-    SimpleContainer right4 = new SimpleContainer(tab4.getComposite());
-    right4.addInput(control.getFilterInput(Filter.UEBERSCHRIFT));
-
     // Buttons
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(control.getProfileButton());

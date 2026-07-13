@@ -34,13 +34,13 @@ public abstract class AuswertungMitgliedAbstractPDF
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,
-          object) + ".pdf";
+          object, getName()) + ".pdf";
     }
     else
     {
       mitgliedauswahl = MitgliedAuswahl.NICHTMITGLIEDER;
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
-          object) + ".pdf";
+          object, getName()) + ".pdf";
     }
   }
 

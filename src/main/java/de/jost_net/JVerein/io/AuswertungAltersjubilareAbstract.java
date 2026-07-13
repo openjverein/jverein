@@ -53,12 +53,12 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
       throws ApplicationException, DocumentException, IOException
   {
     /*
-     * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
-     * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+     * objects[0] sind die Ausgabeparameter Filter, objects[1] ist der
+     * Filtertext, objects[2] ist Mitgliedstyp, objects[3] ist der Filter
      */
     this.file = file;
     this.params = params;
-    Map<Filter, Object> filter = (Map<Filter, Object>) objects[3];
+    Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
     Integer jahr = (Integer) filter.get(Filter.JAHR);
     if (jahr == null)
     {
@@ -124,5 +124,11 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
   {
     return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_SUBTITEL,
         object);
+  }
+
+  @Override
+  public Filter[] getAusgabeParameter(Object object)
+  {
+    return new Filter[] { Filter.JAHR };
   }
 }
