@@ -208,100 +208,106 @@ public class ExportDialog extends AbstractDialog<Object>
         objects[0] = ((AuswertungControl) dateinameObject).getFilter();
       }
 
+      ExportLayoutParam params;
+
       if (ext.equalsIgnoreCase("pdf"))
       {
-        if (!new ExporterExportDialog(exporter, objects, format, prefix,
+        // Layout Parameter abfragen
+        ExporterExportDialog d = new ExporterExportDialog(exporter, prefix,
             ExportArt.PDF, exporter.getTitle(dateinameObject),
             exporter.getSubtitle(dateinameObject),
-            exporter.getDateiname(dateinameObject), open).open())
+            exporter.getDateiname(dateinameObject));
+        if (!d.open())
         {
           throw new OperationCanceledException();
         }
+        params = d.getParams();
       }
       else
       {
-        FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
-        fd.setText(i18n.tr(
-            "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen."));
-        fd.setOverwrite(true);
-        fd.setFileName(exporter.getDateiname(dateinameObject));
-        fd.setFilterExtensions(new String[] { "*" + ext });
-        String path = settings.getString("lastdir",
-            System.getProperty("user.home"));
-        if (path != null && path.length() > 0)
-        {
-          fd.setFilterPath(path);
-        }
-        final String s = fd.open();
-
-        if (s == null || s.length() == 0)
-        {
-          throw new OperationCanceledException("Abgebrochen");
-        }
-
-        final File file = new File(s);
-
-        // Wir merken uns noch das Verzeichnis vom letzten mal
-        settings.setAttribute("lastdir", file.getParent());
-        ExportLayoutParam param = new ExportLayoutParam();
-        param.setTitle(exporter.getTitle(dateinameObject));
-        param.setSubtitle(exporter.getSubtitle(dateinameObject));
-
-        BackgroundTask t = new BackgroundTask()
-        {
-          @Override
-          public void run(ProgressMonitor monitor) throws ApplicationException
-          {
-            try
-            {
-              exporter.doExport(objects, format, file, param, monitor);
-              monitor.setPercentComplete(100);
-              monitor.setStatus(ProgressMonitor.STATUS_DONE);
-              GUI.getStatusBar().setSuccessText(
-                  String.format("Daten exportiert nach %s", file.getParent()));
-              monitor.setStatusText(
-                  String.format("Daten exportiert nach %s", file.getParent()));
-
-              if (open)
-              {
-                FileViewer.show(file);
-              }
-            }
-            catch (ApplicationException ae)
-            {
-              GUI.getStatusBar().setErrorText(ae.getMessage());
-              throw ae;
-            }
-            catch (OperationCanceledException oce)
-            {
-              throw oce;
-            }
-            catch (Exception e)
-            {
-              String s = file.getParent();
-              Logger.error("error while writing objects to " + s, e);
-              ApplicationException ae = new ApplicationException(
-                  String.format("Fehler beim Exportieren der Daten in %s", s),
-                  e);
-              GUI.getStatusBar().setErrorText(ae.getMessage());
-              throw ae;
-            }
-          }
-
-          @Override
-          public void interrupt()
-          {
-            //
-          }
-
-          @Override
-          public boolean isInterrupted()
-          {
-            return false;
-          }
-        };
-        Application.getController().start(t);
+        params = new ExportLayoutParam();
+        params.setTitle(exporter.getTitle(dateinameObject));
+        params.setSubtitle(exporter.getSubtitle(dateinameObject));
       }
+
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.SAVE);
+      fd.setText(
+          "Bitte geben Sie eine Datei ein, in die die Daten exportiert werden sollen.");
+      fd.setOverwrite(true);
+      fd.setFileName(exporter.getDateiname(dateinameObject));
+      fd.setFilterExtensions(new String[] { "*" + ext });
+      String path = settings.getString("lastdir",
+          System.getProperty("user.home"));
+      if (path != null && path.length() > 0)
+      {
+        fd.setFilterPath(path);
+      }
+      final String s = fd.open();
+
+      if (s == null || s.length() == 0)
+      {
+        throw new OperationCanceledException("Abgebrochen");
+      }
+
+      final File file = new File(s);
+
+      // Wir merken uns noch das Verzeichnis vom letzten mal
+      settings.setAttribute("lastdir", file.getParent());
+
+      BackgroundTask t = new BackgroundTask()
+      {
+        @Override
+        public void run(ProgressMonitor monitor) throws ApplicationException
+        {
+          try
+          {
+            exporter.doExport(objects, format, file, params, monitor);
+            monitor.setPercentComplete(100);
+            monitor.setStatus(ProgressMonitor.STATUS_DONE);
+            GUI.getStatusBar().setSuccessText(
+                String.format("Daten exportiert nach %s", file.getParent()));
+            monitor.setStatusText(
+                String.format("Daten exportiert nach %s", file.getParent()));
+
+            if (open)
+            {
+              FileViewer.show(file);
+            }
+          }
+          catch (ApplicationException ae)
+          {
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+          catch (OperationCanceledException oce)
+          {
+            throw oce;
+          }
+          catch (Exception e)
+          {
+            String s = file.getParent();
+            Logger.error("error while writing objects to " + s, e);
+            ApplicationException ae = new ApplicationException(
+                String.format("Fehler beim Exportieren der Daten in %s", s), e);
+            GUI.getStatusBar().setErrorText(ae.getMessage());
+            throw ae;
+          }
+        }
+
+        @Override
+        public void interrupt()
+        {
+          //
+        }
+
+        @Override
+        public boolean isInterrupted()
+        {
+          return false;
+        }
+      };
+      Application.getController().start(t);
+
     }
     catch (OperationCanceledException | ApplicationException e)
     {

@@ -20,38 +20,21 @@ import org.eclipse.swt.widgets.Composite;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.io.Exporter;
-import de.jost_net.JVerein.io.FileViewer;
-import de.jost_net.JVerein.io.IOFormat;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.system.Application;
-import de.willuhn.jameica.system.BackgroundTask;
-import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
-import de.willuhn.util.ProgressMonitor;
 
 public class ExporterExportDialog extends AbstractPartExportDialog
 {
   private Object[] objects = null;
 
-  private IOFormat format;
-
-  private Exporter exporter;
-
-  private boolean open;
-
-  public ExporterExportDialog(Exporter exporter, Object[] objects,
-      IOFormat format, String settingPrefix, ExportArt art, String title,
-      String subtitle, String filename, boolean open)
+  public ExporterExportDialog(Exporter exporter, String settingPrefix,
+      ExportArt art, String title, String subtitle, String filename)
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename, "Report generieren");
-    this.exporter = exporter;
-    this.objects = objects;
-    this.format = format;
-    this.open = open;
     supportTable2 = exporter.hasColortable2(objects);
     settings = new Settings(this.getClass());
   }
@@ -64,6 +47,29 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   }
 
   @Override
+  protected void export() throws ApplicationException
+  {
+    try
+    {
+      saveSettings();
+      storeExportLayoutParam();
+      success = true;
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Fehler beim Export";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
+    close();
+  }
+
+  public ExportLayoutParam getParams()
+  {
+    return getExportLayoutParam();
+  }
+
+  @Override
   protected void exportCSV(File file) throws IOException
   {
     // Nicht unterstützt
@@ -72,61 +78,7 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   @Override
   protected void exportPDF(File file) throws IOException, DocumentException
   {
-
-    BackgroundTask t = new BackgroundTask()
-    {
-      @Override
-      public void run(ProgressMonitor monitor) throws ApplicationException
-      {
-        try
-        {
-          exporter.doExport(objects, format, file, getExportLayoutParam(),
-              monitor);
-          monitor.setPercentComplete(100);
-          monitor.setStatus(ProgressMonitor.STATUS_DONE);
-          GUI.getStatusBar().setSuccessText(
-              String.format("Daten exportiert nach %s", file.getParent()));
-          monitor.setStatusText(
-              String.format("Daten exportiert nach %s", file.getParent()));
-
-          if (open)
-          {
-            FileViewer.show(file);
-          }
-        }
-        catch (ApplicationException ae)
-        {
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-        catch (OperationCanceledException oce)
-        {
-          throw oce;
-        }
-        catch (Exception e)
-        {
-          String s = file.getParent();
-          Logger.error("error while writing objects to " + s, e);
-          ApplicationException ae = new ApplicationException(
-              String.format("Fehler beim Exportieren der Daten in %s", s), e);
-          GUI.getStatusBar().setErrorText(ae.getMessage());
-          throw ae;
-        }
-      }
-
-      @Override
-      public void interrupt()
-      {
-        //
-      }
-
-      @Override
-      public boolean isInterrupted()
-      {
-        return false;
-      }
-    };
-    Application.getController().start(t);
+    // Nicht unterstützt
   }
 
   @Override
