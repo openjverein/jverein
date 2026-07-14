@@ -25,14 +25,15 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class DruckMailExportDialog extends AbstractPartExportDialog
+public class ExporterExportDialog extends AbstractPartExportDialog
 {
 
-  public DruckMailExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+  public ExporterExportDialog(boolean hasColortable2, String settingPrefix,
+      ExportArt art, String title, String subtitle, String filename)
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename, "Report generieren");
+    supportTable2 = hasColortable2;
     settings = new Settings(this.getClass());
   }
 
