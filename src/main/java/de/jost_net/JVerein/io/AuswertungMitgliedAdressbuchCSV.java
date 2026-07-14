@@ -100,7 +100,7 @@ public class AuswertungMitgliedAdressbuchCSV
   @Override
   public String getName()
   {
-    return "Adressbuchexport CSV";
+    return "Adressbuch CSV";
   }
 
   @Override

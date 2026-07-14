@@ -29,12 +29,12 @@ public abstract class AuswertungMitgliedAbstractCSV
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,
-          object, getName()) + ".csv";
+          object, getExportName()) + ".csv";
     }
     else
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
-          object, getName()) + ".csv";
+          object, getExportName()) + ".csv";
     }
   }
 

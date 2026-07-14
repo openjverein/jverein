@@ -28,12 +28,12 @@ public abstract class AuswertungMitgliedAbstract implements Exporter
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_TITEL, object,
-          getName());
+          getExportName());
     }
     else
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_TITEL,
-          object, getName());
+          object, getExportName());
     }
   }
 
@@ -44,13 +44,19 @@ public abstract class AuswertungMitgliedAbstract implements Exporter
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_SUBTITEL,
-          object, getName());
+          object, getExportName());
     }
     else
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_SUBTITEL,
-          object, getName());
+          object, getExportName());
     }
+  }
+
+  protected String getExportName()
+  {
+    String name = getName();
+    return name.substring(0, name.length() - 4);
   }
 
   @Override

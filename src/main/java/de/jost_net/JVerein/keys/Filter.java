@@ -155,8 +155,8 @@ public enum Filter
   ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT),
 
   // Für Auswertung
-  JAHR("filter_jahr", "Auswertungsjahr", "2024", FilterArt.INTEGER),
-  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste PDF", FilterArt.TEXT);
+  JAHR("filter_jahr", "Jahr", "2024", FilterArt.INTEGER),
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
 
