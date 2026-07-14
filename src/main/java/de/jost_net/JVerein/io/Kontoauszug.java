@@ -22,12 +22,13 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.Map;
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.DruckMailExportDialog;
 import de.jost_net.JVerein.gui.control.MitgliedskontoNode;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -37,6 +38,8 @@ import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.rmi.DBObject;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class Kontoauszug extends AbstractAusgabe
@@ -46,6 +49,8 @@ public class Kontoauszug extends AbstractAusgabe
   private Reporter rpt;
 
   private SollbuchungControl control;
+
+  private ExportLayoutParam params;
 
   public Kontoauszug(SollbuchungControl control) throws Exception
   {
@@ -66,7 +71,7 @@ public class Kontoauszug extends AbstractAusgabe
 
     if (rpt == null)
     {
-      rpt = new Reporter(fos, "", "", 60, 30, 20, 20, false);
+      rpt = new Reporter(fos, params);
     }
     else
     {
@@ -84,16 +89,20 @@ public class Kontoauszug extends AbstractAusgabe
     psubTitle.setAlignment(Element.ALIGN_CENTER);
     rpt.add(psubTitle);
 
-    rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 15, BaseColor.LIGHT_GRAY);
+    rpt.addHeaderColumn(" ", Element.ALIGN_CENTER, 15, params.getColorHeader(),
+        params.getFontHeader());
     rpt.addHeaderColumn("Datum", Element.ALIGN_CENTER, 20,
-        BaseColor.LIGHT_GRAY);
-    rpt.addHeaderColumn("Zweck", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
+    rpt.addHeaderColumn("Zweck", Element.ALIGN_LEFT, 50,
+        params.getColorHeader(), params.getFontHeader());
     rpt.addHeaderColumn("Zahlungsweg", Element.ALIGN_LEFT, 20,
-        BaseColor.LIGHT_GRAY);
-    rpt.addHeaderColumn("Soll", Element.ALIGN_RIGHT, 20, BaseColor.LIGHT_GRAY);
-    rpt.addHeaderColumn("Ist", Element.ALIGN_RIGHT, 20, BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
+    rpt.addHeaderColumn("Soll", Element.ALIGN_RIGHT, 20,
+        params.getColorHeader(), params.getFontHeader());
+    rpt.addHeaderColumn("Ist", Element.ALIGN_RIGHT, 20, params.getColorHeader(),
+        params.getFontHeader());
     rpt.addHeaderColumn("Differenz", Element.ALIGN_RIGHT, 20,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     rpt.createHeader();
 
     generiereZeile(node);
@@ -119,29 +128,48 @@ public class Kontoauszug extends AbstractAusgabe
     switch (node.getType())
     {
       case MitgliedskontoNode.MITGLIED:
-        rpt.addColumn("Gesamt", Element.ALIGN_LEFT);
+        rpt.addColumn("Gesamt", Element.ALIGN_LEFT, params.getFontNormal());
         break;
       case MitgliedskontoNode.SOLL:
-        rpt.addColumn("Soll", Element.ALIGN_CENTER);
+        rpt.addColumn("Soll", Element.ALIGN_CENTER, params.getColorTable(),
+            params.getFontNormal());
         break;
       case MitgliedskontoNode.IST:
-        rpt.addColumn("Ist", Element.ALIGN_RIGHT);
+        rpt.addColumn("Ist", Element.ALIGN_RIGHT, params.getFontNormal());
         break;
     }
-    rpt.addColumn((Date) node.getAttribute("datum"), Element.ALIGN_CENTER);
-    rpt.addColumn((String) node.getAttribute("zweck1"), Element.ALIGN_LEFT);
-    rpt.addColumn((String) node.getAttribute("zahlungsweg"),
-        Element.ALIGN_LEFT);
-    rpt.addColumn((Double) node.getAttribute("soll"));
+
     if (node.getType() != MitgliedskontoNode.SOLL)
     {
-      rpt.addColumn((Double) node.getAttribute("ist"));
+      rpt.addColumn((Date) node.getAttribute("datum"), Element.ALIGN_CENTER,
+          params.getFontNormal());
+      rpt.addColumn((String) node.getAttribute("zweck1"), Element.ALIGN_LEFT,
+          params.getFontNormal());
+      rpt.addColumn((String) node.getAttribute("zahlungsweg"),
+          Element.ALIGN_LEFT, params.getFontNormal());
+      rpt.addColumn((Double) node.getAttribute("soll"), params.getFontNormal(),
+          params.getNegativRot());
+      rpt.addColumn((Double) node.getAttribute("ist"), params.getFontNormal(),
+          params.getNegativRot());
+      rpt.addColumn((Double) node.getAttribute("differenz"),
+          params.getFontNormal(), params.getNegativRot());
     }
     else
     {
-      rpt.addColumn((Double) null);
+      rpt.addColumn((Date) node.getAttribute("datum"), Element.ALIGN_CENTER,
+          params.getColorTable(), params.getFontNormal());
+      rpt.addColumn((String) node.getAttribute("zweck1"), Element.ALIGN_LEFT,
+          params.getColorTable(), params.getFontNormal());
+      rpt.addColumn((String) node.getAttribute("zahlungsweg"),
+          Element.ALIGN_LEFT, params.getColorTable(), params.getFontNormal());
+      rpt.addColumn((Double) node.getAttribute("soll"), params.getColorTable(),
+          params.getFontNormal(), params.getNegativRot());
+      rpt.addColumn((Double) null, params.getColorTable());
+      rpt.addColumn((Double) node.getAttribute("differenz"),
+          params.getColorTable(), params.getFontNormal(),
+          params.getNegativRot());
     }
-    rpt.addColumn((Double) node.getAttribute("differenz"));
+
   }
 
   @Override
@@ -149,6 +177,29 @@ public class Kontoauszug extends AbstractAusgabe
       File file, DBObject object)
       throws IOException, DocumentException, ApplicationException
   {
+    if (params == null)
+    {
+      DruckMailExportDialog d = new DruckMailExportDialog("Kontoauszug",
+          ExportArt.PDF, "", "", null);
+      try
+      {
+        if (!d.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        String text = "Fehler beim Erstellen des Reports.";
+        Logger.error(text, e);
+        throw new ApplicationException(text);
+      }
+      params = d.getParams();
+    }
     generiereMitglied(file, (Mitglied) object);
   }
 
