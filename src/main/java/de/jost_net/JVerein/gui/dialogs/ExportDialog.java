@@ -213,8 +213,9 @@ public class ExportDialog extends AbstractDialog<Object>
       if (ext.equalsIgnoreCase("pdf"))
       {
         // Layout Parameter abfragen
-        ExporterExportDialog d = new ExporterExportDialog(exporter, prefix,
-            ExportArt.PDF, exporter.getTitle(dateinameObject),
+        ExporterExportDialog d = new ExporterExportDialog(
+            exporter.hasColortable2(dateinameObject), prefix, ExportArt.PDF,
+            exporter.getTitle(dateinameObject),
             exporter.getSubtitle(dateinameObject),
             exporter.getDateiname(dateinameObject));
         if (!d.open())

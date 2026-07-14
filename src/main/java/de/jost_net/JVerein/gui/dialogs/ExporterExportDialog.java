@@ -21,21 +21,19 @@ import org.eclipse.swt.widgets.Composite;
 import com.itextpdf.text.DocumentException;
 
 import de.jost_net.JVerein.io.ExportLayoutParam;
-import de.jost_net.JVerein.io.Exporter;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class ExporterExportDialog extends AbstractPartExportDialog
 {
-  private Object[] objects = null;
 
-  public ExporterExportDialog(Exporter exporter, String settingPrefix,
+  public ExporterExportDialog(boolean hasColortable2, String settingPrefix,
       ExportArt art, String title, String subtitle, String filename)
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename, "Report generieren");
-    supportTable2 = exporter.hasColortable2(objects);
+    supportTable2 = hasColortable2;
     settings = new Settings(this.getClass());
   }
 
