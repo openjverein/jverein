@@ -856,7 +856,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       while (it.hasNext())
       {
         Spendenbescheinigung spb = it.next();
-        rpt.addColumn(Spendenart.get(spb.getSpendenart()), Element.ALIGN_LEFT);
+        rpt.addColumn(Spendenart.get(spb.getSpendenart()), Element.ALIGN_LEFT,
+            params.getFontNormal());
         rpt.addColumn(
             new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
             Element.ALIGN_LEFT, params.getFontNormal());
