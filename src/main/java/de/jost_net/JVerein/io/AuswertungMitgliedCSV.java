@@ -42,9 +42,6 @@ import de.willuhn.util.ProgressMonitor;
 
 public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
 {
-  private String[] headerUser;
-
-  private String[] headerKeys;
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
@@ -80,35 +77,18 @@ public class AuswertungMitgliedCSV extends AuswertungMitgliedAbstractCSV
             null);
       }
 
-      headerKeys = createHeader(m);
-      headerUser = headerKeys;
-
-      Logger.debug("Header");
-      for (String s : headerKeys)
-      {
-        Logger.debug(s);
-      }
+      String[] header = createHeader(m);
 
       Map<String, Object> map = new MitgliedMap().getMap(m, null);
-      // check headerKeys against map
-      for (String key : headerKeys)
-      {
-        if (!map.containsKey(key))
-        {
-          writer.close();
-          throw new ApplicationException("Invalid key: " + key);
-        }
-      }
 
       CellProcessor[] processors = CellProcessors.createCellProcessors(map,
-          headerKeys);
+          header);
 
-      writer.writeHeader(headerUser);
+      writer.writeHeader(header);
 
       for (Mitglied mit : list)
       {
-        writer.write(new MitgliedMap().getMap(mit, null), headerKeys,
-            processors);
+        writer.write(new MitgliedMap().getMap(mit, null), header, processors);
       }
       writer.close();
     }
