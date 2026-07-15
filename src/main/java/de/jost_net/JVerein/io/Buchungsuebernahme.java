@@ -240,6 +240,29 @@ public class Buchungsuebernahme
           }
         }
 
+        if (b.getBuchungsartId() == null)
+        {
+          List<de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal> proposals = de.jost_net.JVerein.util.BuchungHistoryMatcher.getProposals(
+              u.getGegenkontoName(),
+              u.getGegenkontoNummer(),
+              zweck,
+              u.getBetrag()
+          );
+          if (!proposals.isEmpty())
+          {
+            de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal best = proposals.get(0);
+            b.setBuchungsartId(best.getBuchungsartId());
+            if (best.getBuchungsklasseId() != null)
+            {
+              b.setBuchungsklasseId(best.getBuchungsklasseId());
+            }
+            if (best.getProjektId() != null)
+            {
+              b.setProjektID(best.getProjektId());
+            }
+          }
+        }
+
         b.setDatum(u.getDatum());
         b.setArt(u.getArt());
         b.setKommentar(u.getKommentar());
