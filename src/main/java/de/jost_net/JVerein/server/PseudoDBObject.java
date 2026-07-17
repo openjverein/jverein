@@ -20,6 +20,8 @@ public class PseudoDBObject extends AbstractDBObject implements DBObject
 
   private static final long serialVersionUID = 1L;
 
+  public static final String ID = "id";
+
   public PseudoDBObject() throws RemoteException
   {
     super();

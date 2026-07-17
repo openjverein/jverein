@@ -40,6 +40,7 @@ import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
+import de.jost_net.JVerein.gui.action.PseudoDBObjectEditAction;
 import de.jost_net.JVerein.gui.action.NewAction;
 import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
@@ -68,7 +69,7 @@ import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.gui.menu.MailMenu;
+import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
@@ -126,6 +127,8 @@ import de.jost_net.JVerein.rmi.Wiedervorlage;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.Zusatzfelder;
 import de.jost_net.JVerein.server.EigenschaftenNode;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTIMESTAMP;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -1667,21 +1670,31 @@ public class MitgliedControl extends FilterControl implements Savable
     {
       return mailList;
     }
-    DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> me = service.createList(Mail.class);
-    me.join("mailempfaenger");
-    me.addFilter("mailempfaenger.mail = mail.id");
-    me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
-    mailList = new JVereinTablePart(me, new EditAction(MailDetailView.class));
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<PseudoDBObject>(
+        "mail");
+    it.join("mailempfaenger");
+    it.addFilter("mailempfaenger.mail = mail.id");
+    it.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
+    it.join("mailanhang");
+    it.addFilter("mailanhang.mail = mail.id");
+    it.addColumn("mail.id as " + PseudoDBObject.ID);
+    it.addColumn("bearbeitung");
+    it.addColumn("mailempfaenger.versand as versand");
+    it.addColumn("betreff");
+    it.addColumn("count(mailanhang.id) as anhaenge");
+    it.addGroupBy("mailempfaenger.mail");
+    mailList = new JVereinTablePart(it,
+        new PseudoDBObjectEditAction(Mail.class, MailDetailView.class));
     mailList.setTableName("Mails");
     mailList.setMulti(true);
+    mailList.addColumn("Id", PseudoDBObject.ID);
     mailList.addColumn("Bearbeitung", "bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "betreff");
     mailList.addColumn("Anhänge", "anhaenge");
-    mailList.setContextMenu(new MailMenu(null));
+    mailList.setContextMenu(new MitgliedMailMenu());
     return mailList;
   }
 
