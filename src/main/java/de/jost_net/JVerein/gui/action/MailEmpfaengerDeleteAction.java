@@ -29,6 +29,7 @@ import de.willuhn.util.ApplicationException;
  */
 public class MailEmpfaengerDeleteAction extends DeleteAction
 {
+
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
@@ -37,8 +38,16 @@ public class MailEmpfaengerDeleteAction extends DeleteAction
     {
       return;
     }
-    Application.getMessagingFactory()
-        .sendMessage(new MailDeleteMessage(object));
+    if (((MailEmpfaenger) object).getVersand() == null)
+    {
+      Application.getMessagingFactory()
+          .sendMessage(new MailDeleteMessage(object));
+    }
+    else
+    {
+      throw new ApplicationException(
+          "Empfänger kann nicht gelöscht werden, es wurde die Mail schon an ihn versendet!");
+    }
   }
 
   @Override

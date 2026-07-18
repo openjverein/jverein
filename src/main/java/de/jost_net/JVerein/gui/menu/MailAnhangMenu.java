@@ -16,9 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
+import java.rmi.RemoteException;
+
 import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
 import de.jost_net.JVerein.gui.action.MailAnhangDeleteAction;
 import de.jost_net.JVerein.gui.control.MailControl;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
@@ -29,11 +32,36 @@ import de.willuhn.jameica.gui.parts.ContextMenu;
 public class MailAnhangMenu extends ContextMenu
 {
 
+  MailControl control;
+
   public MailAnhangMenu(MailControl control)
   {
+    this.control = control;
     addItem(new CheckedSingleContextMenuItem("Anzeigen",
         new MailAnhangAnzeigeAction(), "eye.png"));
-    addItem(new CheckedContextMenuItem("Entfernen",
+    addItem(new CheckedMailContextMenuItem("Entfernen",
         new MailAnhangDeleteAction(), "user-trash-full.png"));
   }
+
+  private class CheckedMailContextMenuItem extends CheckedContextMenuItem
+  {
+    private CheckedMailContextMenuItem(String text, Action action, String icon)
+    {
+      super(text, action, icon);
+    }
+
+    @Override
+    public boolean isEnabledFor(Object o)
+    {
+      try
+      {
+        return control.getMail().getVersand() == null;
+      }
+      catch (RemoteException e)
+      {
+        return true;
+      }
+    }
+  }
+
 }

@@ -16,17 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.FileDialog;
-
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
@@ -36,17 +31,12 @@ import de.jost_net.JVerein.gui.action.MailVorlageUebernehmenAction;
 import de.jost_net.JVerein.gui.action.MailVorlageZuweisenAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.MailControl;
-import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.util.JameicaUtil;
-import de.jost_net.JVerein.rmi.MailAnhang;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.system.OperationCanceledException;
-import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class MailDetailView extends AbstractDetailView
@@ -83,28 +73,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl3 = new GridLayout();
     gl3.marginWidth = 0;
     comp3.setLayout(gl3);
-    ButtonRtoL add = new ButtonRtoL("Empfänger hinzufügen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        MailEmpfaengerAuswahlDialog mead = new MailEmpfaengerAuswahlDialog(
-            control, MailEmpfaengerAuswahlDialog.POSITION_CENTER);
-        try
-        {
-          mead.open();
-        }
-        catch (OperationCanceledException oce)
-        {
-          throw oce;
-        }
-        catch (Exception e)
-        {
-          throw new ApplicationException(e.getMessage());
-        }
-      }
-    }, control, false, "list-add.png");
+    ButtonRtoL add = control.getAddEmpfaengerButton();
     add.paint(comp3);
 
     JameicaUtil.addLabel("Betreff", comp, GridData.VERTICAL_ALIGN_CENTER);
@@ -152,46 +121,7 @@ public class MailDetailView extends AbstractDetailView
     GridLayout gl5 = new GridLayout();
     gl5.marginWidth = 0;
     comp5.setLayout(gl5);
-    ButtonRtoL addAttachment = new ButtonRtoL("Anhang hinzufügen", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Settings settings = new Settings(this.getClass());
-        settings.setStoreWhenRead(true);
-        FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
-        fd.setFilterPath(
-            settings.getString("lastdir", System.getProperty("user.home")));
-        fd.setText("Bitte wählen Sie einen Anhang aus.");
-        if (fd.open() != null)
-        {
-          try
-          {
-            for (String f : fd.getFileNames())
-            {
-              MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
-                  .createObject(MailAnhang.class, null);
-              anh.setDateiname(f);
-              File file = new File(fd.getFilterPath()
-                  + System.getProperty("file.separator") + f);
-              FileInputStream fis = new FileInputStream(file);
-              byte[] buffer = new byte[(int) file.length()];
-              fis.read(buffer);
-              anh.setAnhang(buffer);
-              control.addAnhang(anh);
-              fis.close();
-              settings.setAttribute("lastdir", file.getParent());
-            }
-          }
-          catch (Exception e)
-          {
-            Logger.error("", e);
-            throw new ApplicationException(e);
-          }
-        }
-      }
-    }, control, false, "list-add.png");
+    ButtonRtoL addAttachment = control.getAddAnhangButton();
     addAttachment.paint(comp5);
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
@@ -201,7 +131,6 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
     buttons.addButton(new SaveButton(control));
-    buttons.addButton(control.getMailReSendButton());
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());
   }

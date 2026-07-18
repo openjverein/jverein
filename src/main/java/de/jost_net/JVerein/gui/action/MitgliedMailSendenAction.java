@@ -17,8 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
-
+import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MailVorlageControl;
 import de.jost_net.JVerein.gui.dialogs.MailVorlagenAuswahlDialog;
@@ -46,8 +45,8 @@ public class MitgliedMailSendenAction implements Action
       if (context != null
           && (context instanceof Mitglied || context instanceof Mitglied[]))
       {
-        ArrayList<Mitglied> mitgl = new ArrayList<>();
-        TreeSet<MailEmpfaenger> empf = new TreeSet<>();
+        List<Mitglied> mitgl = new ArrayList<>();
+        List<MailEmpfaenger> empf = new ArrayList<>();
         if (context instanceof Mitglied)
         {
           mitgl.add((Mitglied) context);

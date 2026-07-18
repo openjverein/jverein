@@ -18,6 +18,8 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeSet;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -33,7 +35,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
 
   private static final long serialVersionUID = 1L;
 
-  private TreeSet<MailEmpfaenger> empfaenger = null;
+  private List<MailEmpfaenger> empfaenger = null;
 
   private TreeSet<MailAnhang> anhang = null;
 
@@ -81,9 +83,9 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     }
     catch (RemoteException e)
     {
-      Logger.error("insert check of mailvorlage failed", e);
+      Logger.error("Insert check of mail failed", e);
       throw new ApplicationException(
-          "MailVorlage kann nicht gespeichert werden. Siehe system log");
+          "Mail kann nicht gespeichert werden. Siehe system log");
     }
   }
 
@@ -101,13 +103,34 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public TreeSet<MailEmpfaenger> getEmpfaenger()
+  public List<MailEmpfaenger> getEmpfaenger() throws RemoteException
   {
+    if (empfaenger != null)
+    {
+      return empfaenger;
+    }
+    if (isNewObject())
+    {
+      empfaenger = new ArrayList<>();
+      return empfaenger;
+    }
+    DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
+        .createList(MailEmpfaenger.class);
+    it.join("mitglied");
+    it.addFilter("mitglied = mitglied.id");
+    it.addFilter("mail = ?", getID());
+    it.setOrder("order by mitglied.name, mitglied.vorname");
+    empfaenger = new ArrayList<>();
+    while (it.hasNext())
+    {
+      MailEmpfaenger me = it.next();
+      empfaenger.add(me);
+    }
     return empfaenger;
   }
 
   @Override
-  public void setEmpfaenger(TreeSet<MailEmpfaenger> empfaenger)
+  public void setEmpfaenger(List<MailEmpfaenger> empfaenger)
   {
     this.empfaenger = empfaenger;
   }
