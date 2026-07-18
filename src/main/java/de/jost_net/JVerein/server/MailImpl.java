@@ -20,8 +20,6 @@ import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
-
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -37,7 +35,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
 
   private List<MailEmpfaenger> empfaenger = null;
 
-  private TreeSet<MailAnhang> anhang = null;
+  private List<MailAnhang> anhang = null;
 
   public MailImpl() throws RemoteException
   {
@@ -105,7 +103,14 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   @Override
   public List<MailEmpfaenger> getEmpfaenger() throws RemoteException
   {
-    if (empfaenger != null)
+    return getEmpfaenger(false);
+  }
+
+  @Override
+  public List<MailEmpfaenger> getEmpfaenger(boolean reload)
+      throws RemoteException
+  {
+    if (empfaenger != null && !reload)
     {
       return empfaenger;
     }
@@ -136,22 +141,28 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public TreeSet<MailAnhang> getAnhang() throws RemoteException
+  public List<MailAnhang> getAnhang() throws RemoteException
   {
-    if (anhang != null)
+    return getAnhang(false);
+  }
+
+  @Override
+  public List<MailAnhang> getAnhang(boolean reload) throws RemoteException
+  {
+    if (anhang != null && !reload)
     {
       return anhang;
     }
     if (isNewObject())
     {
-      anhang = new TreeSet<>();
+      anhang = new ArrayList<>();
       return anhang;
     }
     DBIterator<MailAnhang> it = Einstellungen.getDBService()
         .createList(MailAnhang.class);
     it.addFilter("mail = ?", getID());
 
-    anhang = new TreeSet<>();
+    anhang = new ArrayList<>();
     while (it.hasNext())
     {
       MailAnhang an = it.next();
@@ -161,7 +172,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public void setAnhang(TreeSet<MailAnhang> anhang)
+  public void setAnhang(List<MailAnhang> anhang)
   {
     this.anhang = anhang;
   }
