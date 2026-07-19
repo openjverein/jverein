@@ -130,6 +130,7 @@ public class MailDetailView extends AbstractDetailView
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());
+    buttons.addButton(control.getDuplizierenButton());
     buttons.addButton(new SaveButton(control));
     buttons.addButton(control.getMailSendButton());
     buttons.paint(this.getParent());

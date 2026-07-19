@@ -243,6 +243,46 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     return anhang;
   }
 
+  public ButtonRtoL getDuplizierenButton()
+  {
+    @SuppressWarnings("unchecked")
+    ButtonRtoL b = new ButtonRtoL("Duplizieren", context -> {
+      try
+      {
+        Mail mail = (Mail) Einstellungen.getDBService().createObject(Mail.class,
+            null);
+        mail.setBetreff(getBetreffString());
+        mail.setTxt(getTxtString());
+        List<MailEmpfaenger> empfaenger = new ArrayList<>();
+        for (MailEmpfaenger master : (List<MailEmpfaenger>) getEmpfaenger()
+            .getItems())
+        {
+          MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
+              .createObject(MailEmpfaenger.class, null);
+          me.setMitglied(master.getMitglied());
+          empfaenger.add(me);
+        }
+        mail.setEmpfaenger(empfaenger);
+        List<MailAnhang> anhaenge = new ArrayList<>();
+        for (MailAnhang master : (List<MailAnhang>) getAnhang().getItems())
+        {
+          MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
+              .createObject(MailAnhang.class, null);
+          ma.setAnhang(master.getAnhang());
+          ma.setDateiname(master.getDateiname());
+          anhaenge.add(ma);
+        }
+        mail.setAnhang(anhaenge);
+        GUI.startView(new MailDetailView(), mail);
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(e.getMessage());
+      }
+    }, this, false, "edit-copy.png");
+    return b;
+  }
+
   public ButtonRtoL getAddEmpfaengerButton()
   {
     ButtonRtoL b = new ButtonRtoL("Empfänger hinzufügen", context -> {
@@ -502,7 +542,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
                 // persistent.
                 empf.setVersand(new Timestamp(new Date().getTime()));
-                // Fix null value in colum mail for mailempfaenger
                 empf.setMail(getMail());
                 empf.store();
               }
@@ -558,9 +597,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   @Override
   public boolean hasChanged() throws RemoteException
   {
-    if (!getMail().getBetreff().equals(getBetreffString())
-        || !getMail().getTxt().equals(getTxtString()) || empfaengerChanged()
-        || anhangChanged())
+    if (getMail().isChanged() || empfaengerChanged() || anhangChanged())
     {
       return true;
     }
@@ -652,7 +689,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   {
     try
     {
-      if (!getMail().isNewObject() && !hasChanged())
+      if (!hasChanged())
       {
         return;
       }
