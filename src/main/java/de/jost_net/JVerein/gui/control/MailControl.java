@@ -136,7 +136,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       return empfaengerPart;
     }
     empfaengerPart = new AutoUpdateTablePart(getMail().getEmpfaenger(), null);
-    empfaengerPart.addColumn("Id", "id");
+    empfaengerPart.addColumn("Nr", "id");
     empfaengerPart.addColumn("Mail-Adresse", "mailadresse");
     empfaengerPart.addColumn("Name", "name");
     empfaengerPart.addColumn("Versand", "versand",
