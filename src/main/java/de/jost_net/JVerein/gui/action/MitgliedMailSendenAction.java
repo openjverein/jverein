@@ -75,6 +75,7 @@ public class MitgliedMailSendenAction implements Action
           else
           {
             me.setMitglied(mitglied);
+            me.setEmail(mitglied.getEmail());
             empf.add(me);
           }
         }

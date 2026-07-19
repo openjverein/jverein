@@ -259,6 +259,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
               .createObject(MailEmpfaenger.class, null);
           me.setMitglied(master.getMitglied());
+          me.setEmail(master.getEmail());
           empfaenger.add(me);
         }
         mail.setEmpfaenger(empfaenger);

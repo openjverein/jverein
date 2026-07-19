@@ -1676,7 +1676,9 @@ public class MitgliedControl extends FilterControl implements Savable
         new EditAction(MailDetailView.class));
     mailList.setTableName("Mails");
     mailList.setMulti(true);
+    mailList.addColumn("Email-Nr", "mail.id");
     mailList.addColumn("Empfänger-Nr", "id");
+    mailList.addColumn("Email", "email");
     mailList.addColumn("Bearbeitung", "mail.bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Versand", "versand",
