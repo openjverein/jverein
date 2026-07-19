@@ -111,13 +111,20 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     super(view);
   }
 
-  public Mail getMail()
+  public Mail getMail() throws RemoteException
   {
     if (mail != null)
     {
       return mail;
     }
-    mail = (Mail) getCurrentObject();
+    if (getCurrentObject() instanceof MailEmpfaenger)
+    {
+      mail = ((MailEmpfaenger) getCurrentObject()).getMail();
+    }
+    else
+    {
+      mail = (Mail) getCurrentObject();
+    }
     return mail;
   }
 

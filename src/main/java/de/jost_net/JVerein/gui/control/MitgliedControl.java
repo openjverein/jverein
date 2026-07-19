@@ -115,7 +115,7 @@ import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Lehrgang;
-import de.jost_net.JVerein.rmi.Mail;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedNextBGruppe;
 import de.jost_net.JVerein.rmi.Mitgliedfoto;
@@ -1668,19 +1668,21 @@ public class MitgliedControl extends FilterControl implements Savable
       return mailList;
     }
     DBService service = Einstellungen.getDBService();
-    DBIterator<Mail> me = service.createList(Mail.class);
-    me.join("mailempfaenger");
+    DBIterator<MailEmpfaenger> me = service.createList(MailEmpfaenger.class);
+    me.join("mail");
     me.addFilter("mailempfaenger.mail = mail.id");
     me.addFilter("mailempfaenger.mitglied = ?", getMitglied().getID());
-    mailList = new JVereinTablePart(me, new EditAction(MailDetailView.class));
+    mailList = new AutoUpdateTablePart(me,
+        new EditAction(MailDetailView.class));
     mailList.setTableName("Mails");
     mailList.setMulti(true);
-    mailList.addColumn("Bearbeitung", "bearbeitung",
+    mailList.addColumn("Id", "id");
+    mailList.addColumn("Bearbeitung", "mail.bearbeitung",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatTIMESTAMP()));
-    mailList.addColumn("Betreff", "betreff");
-    mailList.addColumn("Anhänge", "anhaenge");
+    mailList.addColumn("Betreff", "mail.betreff");
+    mailList.addColumn("Anhänge", "mail.anhaenge");
     mailList.setContextMenu(new MailMenu(null));
     return mailList;
   }

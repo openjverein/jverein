@@ -23,6 +23,8 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class MailEmpfaengerImpl extends AbstractJVereinDBObject
     implements MailEmpfaenger, Comparable<MailEmpfaenger>
@@ -48,9 +50,32 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  public void delete() throws RemoteException, ApplicationException
   {
-    //
+    super.delete();
+    if (getMail().getEmpfaenger().size() == 0)
+    {
+      getMail().delete();
+    }
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Empfänger kann nicht gelöscht werden, es wurde die Mail schon an ihn versendet!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mailempfänger kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
