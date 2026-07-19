@@ -606,7 +606,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   @Override
   public boolean hasChanged() throws RemoteException
   {
-    if (getMail().isChanged() || empfaengerChanged() || anhangChanged())
+    if (getMail().isNewObject() || getMail().isChanged() || empfaengerChanged()
+        || anhangChanged())
     {
       return true;
     }
