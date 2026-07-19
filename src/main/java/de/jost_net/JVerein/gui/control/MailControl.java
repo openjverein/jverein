@@ -137,7 +137,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     empfaengerPart = new AutoUpdateTablePart(getMail().getEmpfaenger(), null);
     empfaengerPart.addColumn("Nr", "id");
-    empfaengerPart.addColumn("Mail-Adresse", "mailadresse");
+    empfaengerPart.addColumn("Mail-Adresse", "email");
     empfaengerPart.addColumn("Name", "name");
     empfaengerPart.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
@@ -151,11 +151,12 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   {
     for (MailEmpfaenger e : (List<MailEmpfaenger>) getEmpfaenger().getItems())
     {
-      if (BeanUtil.equals(e.getMitglied(), me.getMitglied()))
+      if (e.getEmail().equalsIgnoreCase(me.getMitglied().getEmail()))
       {
         return;
       }
     }
+    me.setEmail(me.getMitglied().getEmail());
     getEmpfaenger().addItem(me);
   }
 
@@ -534,19 +535,19 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 String textParsed = VelocityTool.eval(map, txt);
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(), betreffParsed,
-                      textParsed, anhang);
+                  sender.sendMail(empf.getEmail(), betreffParsed, textParsed,
+                      anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
-                  monitor.log(empf.getMailAdresse() + " - "
-                      + ae.getMessage().split("\n")[0]);
+                  monitor.log(
+                      empf.getEmail() + " - " + ae.getMessage().split("\n")[0]);
                 }
                 sentCount++;
-                monitor.log(empf.getMailAdresse() + " - versendet");
+                monitor.log(empf.getEmail() + " - versendet");
                 // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
                 // persistent.
                 empf.setVersand(new Timestamp(new Date().getTime()));
@@ -555,13 +556,13 @@ public class MailControl extends FilterControl implements IMailControl, Savable
               }
               else
               {
-                monitor.log(empf.getMailAdresse() + " - übersprungen");
+                monitor.log(empf.getEmail() + " - übersprungen");
               }
             }
             catch (Exception e)
             {
               Logger.error("Fehler beim Mailversand", e);
-              monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
+              monitor.log(empf.getEmail() + " - " + e.getMessage());
             }
             zae++;
             double proz = (double) zae

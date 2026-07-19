@@ -123,9 +123,15 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getMailAdresse() throws RemoteException
+  public String getEmail() throws RemoteException
   {
-    return getMitglied().getEmail();
+    return (String) getAttribute("email");
+  }
+
+  @Override
+  public void setEmail(String email) throws RemoteException
+  {
+    setAttribute("email", email);
   }
 
   @Override
@@ -143,11 +149,7 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if (fieldName.equals("mailadresse"))
-    {
-      return getMailAdresse();
-    }
-    else if (fieldName.equals("mitglied"))
+    if (fieldName.equals("mitglied"))
     {
       return getMitglied();
     }
