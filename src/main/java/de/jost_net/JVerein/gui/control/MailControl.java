@@ -151,7 +151,8 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   {
     for (MailEmpfaenger e : (List<MailEmpfaenger>) getEmpfaenger().getItems())
     {
-      if (e.getEmail().equalsIgnoreCase(me.getMitglied().getEmail()))
+      if (e.getVersand() == null && e.getEmail() != null
+          && e.getEmail().equalsIgnoreCase(me.getMitglied().getEmail()))
       {
         return;
       }
