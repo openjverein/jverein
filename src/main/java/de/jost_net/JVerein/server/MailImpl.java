@@ -57,19 +57,22 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    try
+    if (!forcedDelete)
     {
-      if (getVersand() != null)
+      try
       {
-        throw new ApplicationException(
-            "Die Mail kann nicht gelöscht werden, sie wurde schon versendet!");
+        if (getVersand() != null)
+        {
+          throw new ApplicationException(
+              "Die Mail kann nicht gelöscht werden, sie wurde schon versendet!");
+        }
       }
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
+      catch (RemoteException e)
+      {
+        String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
     }
   }
 
