@@ -912,7 +912,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           mail = it.next();
-          mail.delete();
+          mail.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)

@@ -26,9 +26,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
+import java.util.TreeSet;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -36,14 +37,17 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.MailAnhangAnzeigeAction;
+import de.jost_net.JVerein.gui.dialogs.MailEmpfaengerAuswahlDialog;
 import de.jost_net.JVerein.gui.menu.MailAnhangMenu;
 import de.jost_net.JVerein.gui.menu.MailEmpfaengerMenu;
 import de.jost_net.JVerein.gui.menu.MailMenu;
@@ -65,7 +69,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.SimpleDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -77,6 +80,8 @@ import de.willuhn.jameica.messaging.Message;
 import de.willuhn.jameica.messaging.MessageConsumer;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.BackgroundTask;
+import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
@@ -84,13 +89,13 @@ import de.willuhn.util.ProgressMonitor;
 public class MailControl extends FilterControl implements IMailControl, Savable
 {
 
-  private AutoUpdateTablePart empfaenger;
+  private AutoUpdateTablePart empfaengerPart;
 
   private TextInput betreff;
 
   private TextAreaInput txt;
 
-  private JVereinTablePart anhang;
+  private JVereinTablePart anhangPart;
 
   private JVereinTablePart mitgliedmitmail;
 
@@ -100,86 +105,67 @@ public class MailControl extends FilterControl implements IMailControl, Savable
 
   private MailDeleteMessageConsumer mailDeleteConsumer = null;
 
+  private ButtonRtoL anhangButton;
+
   public MailControl(AbstractView view)
   {
     super(view);
   }
 
-  private Mail getMail()
+  public Mail getMail() throws RemoteException
   {
     if (mail != null)
     {
       return mail;
     }
-    mail = (Mail) getCurrentObject();
+    if (getCurrentObject() instanceof MailEmpfaenger)
+    {
+      mail = ((MailEmpfaenger) getCurrentObject()).getMail();
+    }
+    else
+    {
+      mail = (Mail) getCurrentObject();
+    }
     return mail;
   }
 
   public AutoUpdateTablePart getEmpfaenger() throws RemoteException
   {
-    if (empfaenger != null)
+    if (empfaengerPart != null)
     {
-      return empfaenger;
+      return empfaengerPart;
     }
-    if (!getMail().isNewObject() && getMail().getEmpfaenger() == null)
-    {
-      DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
-          .createList(MailEmpfaenger.class);
-      it.join("mitglied");
-      it.addFilter("mail = ?", new Object[] { getMail().getID() });
-      it.setOrder("order by mitglied.name, mitglied.vorname");
-      TreeSet<MailEmpfaenger> empf = new TreeSet<>();
-      while (it.hasNext())
-      {
-        MailEmpfaenger me = it.next();
-        empf.add(me);
-      }
-      getMail().setEmpfaenger(empf);
-    }
-    else if (getMail().getEmpfaenger() == null)
-    {
-      getMail().setEmpfaenger(new TreeSet<MailEmpfaenger>());
-    }
-    // Umwandeln in ArrayList
-    ArrayList<MailEmpfaenger> empf2 = new ArrayList<>();
-    for (MailEmpfaenger me : getMail().getEmpfaenger())
-    {
-      empf2.add(me);
-    }
-    empfaenger = new AutoUpdateTablePart(empf2, null);
-    empfaenger.addColumn("Mail-Adresse", "mailadresse");
-    empfaenger.addColumn("Name", "name");
-    empfaenger.addColumn("Versand", "versand",
+    empfaengerPart = new AutoUpdateTablePart(getMail().getEmpfaenger(), null);
+    empfaengerPart.addColumn("Nr", "id");
+    empfaengerPart.addColumn("Mail-Adresse", "email");
+    empfaengerPart.addColumn("Name", "name");
+    empfaengerPart.addColumn("Versand", "versand",
         new DateFormatter(new JVDateFormatDATETIME()));
-    empfaenger.setContextMenu(new MailEmpfaengerMenu(this));
-    empfaenger.setMulti(true);
-    return empfaenger;
+    empfaengerPart.setContextMenu(new MailEmpfaengerMenu(this));
+    empfaengerPart.setMulti(true);
+    return empfaengerPart;
   }
 
+  @SuppressWarnings("unchecked")
   public void addEmpfaenger(MailEmpfaenger me) throws RemoteException
   {
-    // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht werden
-    for (MailEmpfaenger e : getMail().getEmpfaenger())
+    for (MailEmpfaenger e : (List<MailEmpfaenger>) getEmpfaenger().getItems())
     {
-      if (BeanUtil.equals(e, me))
+      if (e.getVersand() == null && e.getEmail() != null
+          && e.getEmail().equalsIgnoreCase(me.getMitglied().getEmail()))
       {
         return;
       }
     }
+    me.setEmail(me.getMitglied().getEmail());
     getEmpfaenger().addItem(me);
-    getMail().getEmpfaenger().add(me);
   }
 
-  public void removeEmpfaenger(MailEmpfaenger me) throws RemoteException
-  {
-    getEmpfaenger().removeItem(me);
-    getMail().getEmpfaenger().remove(me);
-  }
-
+  @SuppressWarnings("unchecked")
   public void addAnhang(MailAnhang ma) throws RemoteException
   {
     // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht werden
-    for (MailAnhang a : getMail().getAnhang())
+    for (MailAnhang a : (List<MailAnhang>) getAnhang().getItems())
     {
       if (BeanUtil.equals(a, ma))
       {
@@ -187,13 +173,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       }
     }
     getAnhang().addItem(ma);
-    getMail().getAnhang().add(ma);
-  }
-
-  public void removeAnhang(MailAnhang ma) throws RemoteException
-  {
-    getAnhang().removeItem(ma);
-    getMail().getAnhang().remove(ma);
   }
 
   public JVereinTablePart getMitgliedMitMail() throws RemoteException
@@ -223,6 +202,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     betreff = new TextInput(getMail().getBetreff(), 100);
     betreff.setName("Betreff");
+    if (getMail().getVersand() != null)
+    {
+      betreff.disable();
+    }
     return betreff;
   }
 
@@ -234,160 +217,218 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     txt = new TextAreaInput(getMail().getTxt(), 10000);
     txt.setName("Text");
+    if (getMail().getVersand() != null)
+    {
+      txt.disable();
+    }
     return txt;
   }
 
   public JVereinTablePart getAnhang() throws RemoteException
   {
-    if (anhang != null)
+    if (anhangPart != null)
     {
-      return anhang;
+      return anhangPart;
     }
 
-    // Umwandeln in ArrayList
-    ArrayList<MailAnhang> anhang2 = new ArrayList<>();
-    for (MailAnhang ma : getMail().getAnhang())
-    {
-      anhang2.add(ma);
-    }
     this.mailDeleteConsumer = new MailDeleteMessageConsumer();
     Application.getMessagingFactory()
         .registerMessageConsumer(this.mailDeleteConsumer);
-    anhang = new JVereinTablePart(anhang2, new MailAnhangAnzeigeAction());
-    anhang.addColumn("Dateiname", "dateiname");
-    anhang.setContextMenu(new MailAnhangMenu(this));
-    anhang.setMulti(true);
-    return anhang;
+    anhangPart = new JVereinTablePart(getMail().getAnhang(),
+        new MailAnhangAnzeigeAction());
+    anhangPart.addColumn("Dateiname", "dateiname");
+    anhangPart.setContextMenu(new MailAnhangMenu(this));
+    anhangPart.setMulti(true);
+    return anhangPart;
   }
 
-  public ButtonRtoL getMailSendButton()
+  public ButtonRtoL getDuplizierenButton()
   {
-    ButtonRtoL b = new ButtonRtoL("Speichern und senden", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
+    @SuppressWarnings("unchecked")
+    ButtonRtoL b = new ButtonRtoL("Duplizieren", context -> {
+      try
       {
-        try
+        Mail mail = (Mail) Einstellungen.getDBService().createObject(Mail.class,
+            null);
+        mail.setBetreff(getBetreffString());
+        mail.setTxt(getTxtString());
+        List<MailEmpfaenger> empfaenger = new ArrayList<>();
+        for (MailEmpfaenger master : (List<MailEmpfaenger>) getEmpfaenger()
+            .getItems())
         {
-          int toBeSentCount = 0;
-          for (final MailEmpfaenger empf : getMail().getEmpfaenger())
-          {
-            if (empf.getVersand() == null)
-            {
-              toBeSentCount++;
-            }
-          }
-          if (toBeSentCount == 0)
-          {
-            SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
-            d.setTitle("Mail bereits versendet");
-            d.setText("Mail wurde bereits an alle Empfänger versendet!");
-            try
-            {
-              d.open();
-            }
-            catch (Exception e)
-            {
-              Logger.error("Fehler beim Nicht-Senden der Mail", e);
-            }
-            return;
-          }
-          if (toBeSentCount != getMail().getEmpfaenger().size())
-          {
-            YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-            d.setTitle("Mail senden?");
-            d.setText("Diese Mail wurde bereits an "
-                + (getMail().getEmpfaenger().size() - toBeSentCount)
-                + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren "
-                + toBeSentCount + " Empfänger senden?");
-            try
-            {
-              Boolean choice = (Boolean) d.open();
-              if (!choice.booleanValue())
-                return;
-            }
-            catch (Exception e)
-            {
-              Logger.error("Fehler beim Senden der Mail", e);
-              return;
-            }
-          }
-          sendeMail(false);
-          handleStore(true);
+          MailEmpfaenger me = (MailEmpfaenger) Einstellungen.getDBService()
+              .createObject(MailEmpfaenger.class, null);
+          me.setMitglied(master.getMitglied());
+          me.setEmail(master.getEmail());
+          empfaenger.add(me);
         }
-        catch (RemoteException e)
+        mail.setEmpfaenger(empfaenger);
+        List<MailAnhang> anhaenge = new ArrayList<>();
+        for (MailAnhang master : (List<MailAnhang>) getAnhang().getItems())
         {
-          Logger.error(e.getMessage());
-          throw new ApplicationException("Fehler beim Senden der Mail");
+          MailAnhang ma = (MailAnhang) Einstellungen.getDBService()
+              .createObject(MailAnhang.class, null);
+          ma.setAnhang(master.getAnhang());
+          ma.setDateiname(master.getDateiname());
+          anhaenge.add(ma);
         }
+        mail.setAnhang(anhaenge);
+        GUI.startView(new MailDetailView(), mail);
       }
-    }, null, true, "envelope-open.png");
+      catch (Exception e)
+      {
+        throw new ApplicationException(e.getMessage());
+      }
+    }, this, false, "edit-copy.png");
     return b;
   }
 
-  public ButtonRtoL getMailReSendButton()
+  public ButtonRtoL getAddEmpfaengerButton()
   {
-    ButtonRtoL b = new ButtonRtoL("Speichern und erneut senden", new Action()
-    {
+    ButtonRtoL b = new ButtonRtoL("Empfänger hinzufügen", context -> {
+      MailEmpfaengerAuswahlDialog mead = new MailEmpfaengerAuswahlDialog(
+          (MailControl) context, MailEmpfaengerAuswahlDialog.POSITION_CENTER);
+      try
+      {
+        mead.open();
+      }
+      catch (OperationCanceledException oce)
+      {
+        throw oce;
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException(e.getMessage());
+      }
+    }, this, false, "list-add.png");
+    return b;
+  }
 
-      @Override
-      public void handleAction(Object context) throws ApplicationException
+  public ButtonRtoL getAddAnhangButton() throws RemoteException
+  {
+    if (anhangButton != null)
+    {
+      return anhangButton;
+    }
+    anhangButton = new ButtonRtoL("Anhang hinzufügen", context -> {
+      Settings settings = new Settings(this.getClass());
+      settings.setStoreWhenRead(true);
+      FileDialog fd = new FileDialog(GUI.getShell(), SWT.OPEN | SWT.MULTI);
+      fd.setFilterPath(
+          settings.getString("lastdir", System.getProperty("user.home")));
+      fd.setText("Bitte wählen Sie einen Anhang aus.");
+      if (fd.open() != null)
       {
         try
         {
-          Mail mail = getMail();
-          if (mail.getBetreff() == null || mail.getBetreff().length() == 0)
+          for (String f : fd.getFileNames())
           {
-            throw new ApplicationException("Bitte Betreff eingeben");
+            MailAnhang anh = (MailAnhang) Einstellungen.getDBService()
+                .createObject(MailAnhang.class, null);
+            anh.setDateiname(f);
+            File file = new File(
+                fd.getFilterPath() + System.getProperty("file.separator") + f);
+            FileInputStream fis = new FileInputStream(file);
+            byte[] buffer = new byte[(int) file.length()];
+            fis.read(buffer);
+            anh.setAnhang(buffer);
+            ((MailControl) context).addAnhang(anh);
+            fis.close();
+            settings.setAttribute("lastdir", file.getParent());
           }
-          if (mail.getTxt() == null || mail.getTxt().length() == 0)
-          {
-            throw new ApplicationException("Bitte Text eingeben");
-          }
-          if (mail.getTxt().length() > 10000)
-          {
-            throw new ApplicationException(
-                "Maximale Länge des Textes 10.000 Zeichen");
-          }
-
-          boolean mailAlreadySent = false;
-          for (final MailEmpfaenger empf : getMail().getEmpfaenger())
-          {
-            if (empf.getVersand() != null)
-            {
-              mailAlreadySent = true;
-              break;
-            }
-          }
-          if (mailAlreadySent)
-          {
-            YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-            d.setTitle("Mail erneut senden?");
-            d.setText(
-                "An mindestens einen Empfänger wurde diese Mail bereits versendet. Wollen Sie diese Mail wirklich erneut an alle Empfänger senden?");
-            try
-            {
-              Boolean choice = (Boolean) d.open();
-              if (!choice.booleanValue())
-                return;
-            }
-            catch (Exception e)
-            {
-              Logger.error("Fehler beim Senden der Mail", e);
-              return;
-            }
-          }
-          sendeMail(true);
-          handleStore(true);
         }
-        catch (RemoteException e)
+        catch (Exception e)
         {
-          Logger.error(e.getMessage());
-          throw new ApplicationException("Fehler beim Senden der Mail");
+          Logger.error("", e);
+          throw new ApplicationException(e);
         }
       }
-    }, null, false, "envelope-open.png");
+    }, this, false, "list-add.png");
+    if (getMail().getVersand() != null)
+    {
+      anhangButton.setEnabled(false);
+    }
+    return anhangButton;
+  }
+
+  @SuppressWarnings("unchecked")
+  public ButtonRtoL getMailSendButton()
+  {
+    ButtonRtoL b = new ButtonRtoL("Senden", context -> {
+      try
+      {
+        int toBeSentCount = 0;
+        for (final MailEmpfaenger empf : (List<MailEmpfaenger>) getEmpfaenger()
+            .getItems())
+        {
+          if (empf.getVersand() == null)
+          {
+            toBeSentCount++;
+          }
+        }
+        if (toBeSentCount == 0)
+        {
+          SimpleDialog d = new SimpleDialog(SimpleDialog.POSITION_CENTER);
+          d.setTitle("Mail bereits versendet");
+          d.setText("Mail wurde bereits an alle Empfänger versendet!");
+          try
+          {
+            d.open();
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim Nicht-Senden der Mail", e);
+          }
+          return;
+        }
+        if (toBeSentCount != getEmpfaenger().size())
+        {
+          YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+          d.setTitle("Mail senden?");
+          d.setText("Diese Mail wurde bereits an "
+              + (getEmpfaenger().size() - toBeSentCount)
+              + " der gewählten Empfänger versendet. Wollen Sie diese Mail an alle weiteren "
+              + toBeSentCount + " Empfänger senden?");
+          try
+          {
+            Boolean choice = (Boolean) d.open();
+            if (!choice.booleanValue())
+              return;
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler beim Senden der Mail", e);
+            return;
+          }
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error(e.getMessage());
+        throw new ApplicationException("Fehler beim Senden der Mail");
+      }
+
+      try
+      {
+        DBTransaction.starten();
+        handleStore(true);
+        sendeMail();
+        updateInputs();
+        DBTransaction.commit();
+      }
+      catch (ApplicationException ae)
+      {
+        DBTransaction.rollback();
+        throw ae;
+      }
+      catch (Exception e)
+      {
+        DBTransaction.rollback();
+        Logger.error(e.getMessage());
+        throw new ApplicationException("Fehler beim Senden der Mail");
+      }
+
+    }, null, true, "envelope-open.png");
     return b;
   }
 
@@ -407,10 +448,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   @Override
   public List<Mitglied> getEmpfaengerList() throws RemoteException
   {
-    if (empfaenger != null)
+    if (empfaengerPart != null)
     {
       List<Mitglied> mitglieder = new ArrayList<>();
-      for (MailEmpfaenger e : (List<MailEmpfaenger>) empfaenger.getItems())
+      for (MailEmpfaenger e : (List<MailEmpfaenger>) empfaengerPart.getItems())
       {
         mitglieder.add(e.getMitglied());
       }
@@ -420,10 +461,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   /**
-   * Versende Mail an Empfänger. Wenn erneutSenden==false wird Mail nur an
-   * Empfänger versendet, die Mail noch nicht erhalten haben.
+   * Versende Mail an Empfänger. Es wird nur an Empfänger gesendet für die die
+   * Mail noch nicht versendet wurde.
    */
-  private void sendeMail(final boolean erneutSenden) throws RemoteException
+  private void sendeMail() throws RemoteException
   {
     String text = getTxtString();
     if (text.toLowerCase().contains("<html")
@@ -437,11 +478,13 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     }
     else
     {
-      // MailSignatur mit Separator einfach anh?ngen
+      // MailSignatur mit Separator einfach anhängen
       text = text + Einstellungen.getMailSignatur(true);
     }
     final String txt = text;
     final String betr = getBetreffString();
+    TreeSet<MailAnhang> anhang = new TreeSet<>(
+        (List<MailAnhang>) getMail().getAnhang());
     BackgroundTask t = new BackgroundTask()
     {
 
@@ -471,6 +514,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           monitor.setPercentComplete(0);
           int zae = 0;
           int sentCount = 0;
+
           for (final MailEmpfaenger empf : getMail().getEmpfaenger())
           {
             if (isInterrupted())
@@ -482,7 +526,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
             }
             try
             {
-              if (erneutSenden || empf.getVersand() == null)
+              if (empf.getVersand() == null)
               {
                 Map<String, Object> map = new MitgliedMap().getMap(
                     empf.getMitglied(), new AllgemeineMap().getMap(null));
@@ -493,35 +537,34 @@ public class MailControl extends FilterControl implements IMailControl, Savable
                 String textParsed = VelocityTool.eval(map, txt);
                 try
                 {
-                  sender.sendMail(empf.getMailAdresse(), betreffParsed,
-                      textParsed, getMail().getAnhang());
+                  sender.sendMail(empf.getEmail(), betreffParsed, textParsed,
+                      anhang);
                 }
                 // Wenn eine ApplicationException geworfen wurde, wurde die
                 // Mails erfolgreich versendet, erst danach trat ein Fehler auf.
                 catch (ApplicationException ae)
                 {
                   Logger.error("Fehler: ", ae);
-                  monitor.log(empf.getMailAdresse() + " - "
-                      + ae.getMessage().split("\n")[0]);
+                  monitor.log(
+                      empf.getEmail() + " - " + ae.getMessage().split("\n")[0]);
                 }
                 sentCount++;
-                monitor.log(empf.getMailAdresse() + " - versendet");
+                monitor.log(empf.getEmail() + " - versendet");
                 // Nachricht wurde erfolgreich versendet; speicher Versand-Datum
                 // persistent.
                 empf.setVersand(new Timestamp(new Date().getTime()));
-                // Fix null value in colum mail for mailempfaenger
                 empf.setMail(getMail());
                 empf.store();
               }
               else
               {
-                monitor.log(empf.getMailAdresse() + " - übersprungen");
+                monitor.log(empf.getEmail() + " - übersprungen");
               }
             }
             catch (Exception e)
             {
               Logger.error("Fehler beim Mailversand", e);
-              monitor.log(empf.getMailAdresse() + " - " + e.getMessage());
+              monitor.log(empf.getEmail() + " - " + e.getMessage());
             }
             zae++;
             double proz = (double) zae
@@ -564,6 +607,75 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   }
 
   @Override
+  public boolean hasChanged() throws RemoteException
+  {
+    if (getMail().isNewObject() || getMail().isChanged() || empfaengerChanged()
+        || anhangChanged())
+    {
+      return true;
+    }
+    return false;
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean empfaengerChanged() throws RemoteException
+  {
+    if (getMail().getEmpfaenger().size() != getEmpfaenger().size())
+    {
+      return true;
+    }
+
+    // Auf gleiche Einträge prüfen
+    for (MailEmpfaenger me : getMail().getEmpfaenger())
+    {
+      boolean found = false;
+      // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
+      // werden
+      for (MailEmpfaenger e : (List<MailEmpfaenger>) getEmpfaenger().getItems())
+      {
+        if (BeanUtil.equals(e, me))
+        {
+          found = true;
+        }
+      }
+      if (!found)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @SuppressWarnings("unchecked")
+  private boolean anhangChanged() throws RemoteException
+  {
+    if (getMail().getAnhang().size() != getAnhang().size())
+    {
+      return true;
+    }
+
+    // Auf gleiche Einträge prüfen
+    for (MailAnhang me : getMail().getAnhang())
+    {
+      boolean found = false;
+      // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
+      // werden
+      for (MailAnhang e : (List<MailAnhang>) getAnhang().getItems())
+      {
+        if (BeanUtil.equals(e, me))
+        {
+          found = true;
+        }
+      }
+      if (!found)
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @Override
   public JVereinDBObject prepareStore() throws RemoteException
   {
     Mail m = getMail();
@@ -575,7 +687,23 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   @Override
   public void handleStore() throws ApplicationException
   {
-    handleStore(false);
+    try
+    {
+      DBTransaction.starten();
+      handleStore(false);
+      DBTransaction.commit();
+    }
+    catch (ApplicationException ae)
+    {
+      DBTransaction.rollback();
+      throw ae;
+    }
+    catch (Exception e)
+    {
+      DBTransaction.rollback();
+      Logger.error(e.getMessage());
+      throw new ApplicationException("Fehler beim Senden der Mail");
+    }
   }
 
   /**
@@ -585,37 +713,35 @@ public class MailControl extends FilterControl implements IMailControl, Savable
    *          wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
    * @throws ApplicationException
    */
+  @SuppressWarnings("unchecked")
   public void handleStore(boolean mitversand) throws ApplicationException
   {
     try
     {
+      if (!hasChanged())
+      {
+        return;
+      }
       Mail m = (Mail) prepareStore();
       m.setBearbeitung(new Timestamp(new Date().getTime()));
       if (mitversand)
       {
         m.setVersand(new Timestamp(new Date().getTime()));
       }
-      else
-      {
-        m.setVersand(null);
-      }
       m.store();
-      for (MailEmpfaenger me : getMail().getEmpfaenger())
+      for (MailEmpfaenger me : (List<MailEmpfaenger>) getEmpfaenger()
+          .getItems())
       {
         me.setMail(m);
         me.store();
       }
-      DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
-          .createList(MailEmpfaenger.class);
-      it.addFilter("mail = ?", new Object[] { m.getID() });
-      while (it.hasNext())
+      for (MailEmpfaenger me : m.getEmpfaenger())
       {
-        MailEmpfaenger me = it.next();
-
         // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
         // werden
         boolean found = false;
-        for (MailEmpfaenger e : m.getEmpfaenger())
+        for (MailEmpfaenger e : (List<MailEmpfaenger>) getEmpfaenger()
+            .getItems())
         {
           if (BeanUtil.equals(e, me))
           {
@@ -628,20 +754,18 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           me.delete();
         }
       }
-      for (MailAnhang ma : getMail().getAnhang())
+      for (MailAnhang ma : (List<MailAnhang>) getAnhang().getItems())
       {
         ma.setMail(m);
         ma.store();
       }
-      it = Einstellungen.getDBService().createList(MailAnhang.class);
-      it.addFilter("mail = ?", new Object[] { m.getID() });
-      while (it.hasNext())
+
+      for (MailAnhang ma : m.getAnhang())
       {
-        MailAnhang ma = (MailAnhang) it.next();
         // Contains geht bei RemoteObject nicht, muss über BeanUtil gemacht
         // werden
         boolean found = false;
-        for (MailAnhang a : m.getAnhang())
+        for (MailAnhang a : (List<MailAnhang>) getAnhang().getItems())
         {
           if (BeanUtil.equals(a, ma))
           {
@@ -654,6 +778,9 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           ma.delete();
         }
       }
+      // Update Mailempfänger und Anhang
+      getMail().getEmpfaenger(true);
+      getMail().getAnhang(true);
     }
     catch (RemoteException e)
     {
@@ -762,6 +889,24 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     mails.setOrder("ORDER BY betreff");
 
     return mails;
+  }
+
+  private void updateInputs() throws RemoteException
+  {
+    boolean unversand = getMail().getVersand() == null;
+    getBetreff().setEnabled(unversand);
+    getTxt().setEnabled(unversand);
+    getAddAnhangButton().setEnabled(unversand);
+    // Update Empfänger Versand
+    if (empfaengerPart != null)
+    {
+      empfaengerPart.removeAll();
+      for (MailEmpfaenger me : getMail().getEmpfaenger())
+      {
+        empfaengerPart.addItem(me);
+      }
+      empfaengerPart.sort();
+    }
   }
 
   public void setDragDrop(Composite composit)
@@ -893,13 +1038,13 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           {
             if (((MailDeleteMessage) message).getObject() instanceof MailAnhang)
             {
-              removeAnhang(
+              getAnhang().removeItem(
                   (MailAnhang) ((MailDeleteMessage) message).getObject());
             }
             else if (((MailDeleteMessage) message)
                 .getObject() instanceof MailEmpfaenger)
             {
-              removeEmpfaenger(
+              getEmpfaenger().removeItem(
                   (MailEmpfaenger) ((MailDeleteMessage) message).getObject());
             }
           }

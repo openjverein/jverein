@@ -23,6 +23,8 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class MailEmpfaengerImpl extends AbstractJVereinDBObject
     implements MailEmpfaenger, Comparable<MailEmpfaenger>
@@ -48,9 +50,22 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Empfänger kann nicht gelöscht werden, die Mail wurde schon an ihn versendet!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mailempfänger kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
@@ -108,9 +123,15 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public String getMailAdresse() throws RemoteException
+  public String getEmail() throws RemoteException
   {
-    return getMitglied().getEmail();
+    return (String) getAttribute("email");
+  }
+
+  @Override
+  public void setEmail(String email) throws RemoteException
+  {
+    setAttribute("email", email);
   }
 
   @Override
@@ -128,11 +149,7 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
-    if (fieldName.equals("mailadresse"))
-    {
-      return getMailAdresse();
-    }
-    else if (fieldName.equals("mitglied"))
+    if (fieldName.equals("mitglied"))
     {
       return getMitglied();
     }
