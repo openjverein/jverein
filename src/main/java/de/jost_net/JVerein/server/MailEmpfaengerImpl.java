@@ -50,16 +50,6 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void delete() throws RemoteException, ApplicationException
-  {
-    super.delete();
-    if (getMail().getEmpfaenger().size() == 0)
-    {
-      getMail().delete();
-    }
-  }
-
-  @Override
   protected void deleteCheck() throws ApplicationException
   {
     try

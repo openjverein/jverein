@@ -10,32 +10,31 @@
  *
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
- *
+ * 
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.MailEmpfaengerEntfernenAction;
-import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
-import de.jost_net.JVerein.gui.control.MailControl;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.MailDetailView;
 import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
-import de.willuhn.jameica.gui.parts.ContextMenuItem;
 
 /**
- * Kontext-Menu zur MailEmpfänger-Auswahl.
+ * Kontext-Menu zu den Mails.
  */
-public class MailEmpfaengerMenu extends ContextMenu
+public class MitgliedMailMenu extends ContextMenu
 {
 
-  public MailEmpfaengerMenu(MailControl control)
+  public MitgliedMailMenu(JVereinTablePart part)
   {
-    addItem(new CheckedContextMenuItem("Entfernen",
-        new MailEmpfaengerEntfernenAction(), "user-trash-full.png"));
-    addItem(ContextMenuItem.SEPARATOR);
-    addItem(new CheckedSingleContextMenuItem("Mitglied anzeigen",
-        new MitgliedDetailAction(), "user-friends.png"));
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(MailDetailView.class, part), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
   }
 }

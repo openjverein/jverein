@@ -68,7 +68,7 @@ import de.jost_net.JVerein.gui.input.VollzahlerInput;
 import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
-import de.jost_net.JVerein.gui.menu.MailMenu;
+import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
@@ -1683,7 +1683,7 @@ public class MitgliedControl extends FilterControl implements Savable
         new DateFormatter(new JVDateFormatTIMESTAMP()));
     mailList.addColumn("Betreff", "mail.betreff");
     mailList.addColumn("Anhänge", "mail.anhaenge");
-    mailList.setContextMenu(new MailMenu(null));
+    mailList.setContextMenu(new MitgliedMailMenu(null));
     return mailList;
   }
 
