@@ -67,7 +67,7 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
       if (getVersand() != null)
       {
         throw new ApplicationException(
-            "Empfänger kann nicht gelöscht werden, es wurde die Mail schon an ihn versendet!");
+            "Empfänger kann nicht gelöscht werden, die Mail wurde schon an ihn versendet!");
       }
     }
     catch (RemoteException e)

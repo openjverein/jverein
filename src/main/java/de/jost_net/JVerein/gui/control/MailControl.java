@@ -158,12 +158,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     getEmpfaenger().addItem(me);
   }
 
-  public void removeEmpfaenger(MailEmpfaenger me)
-      throws RemoteException, ApplicationException
-  {
-    getEmpfaenger().removeItem(me);
-  }
-
   @SuppressWarnings("unchecked")
   public void addAnhang(MailAnhang ma) throws RemoteException
   {
@@ -176,11 +170,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       }
     }
     getAnhang().addItem(ma);
-  }
-
-  public void removeAnhang(MailAnhang ma) throws RemoteException
-  {
-    getAnhang().removeItem(ma);
   }
 
   public JVereinTablePart getMitgliedMitMail() throws RemoteException
@@ -1044,13 +1033,13 @@ public class MailControl extends FilterControl implements IMailControl, Savable
           {
             if (((MailDeleteMessage) message).getObject() instanceof MailAnhang)
             {
-              removeAnhang(
+              getAnhang().removeItem(
                   (MailAnhang) ((MailDeleteMessage) message).getObject());
             }
             else if (((MailDeleteMessage) message)
                 .getObject() instanceof MailEmpfaenger)
             {
-              removeEmpfaenger(
+              getEmpfaenger().removeItem(
                   (MailEmpfaenger) ((MailDeleteMessage) message).getObject());
             }
           }

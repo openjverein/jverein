@@ -46,7 +46,7 @@ public class MailEmpfaengerDeleteAction extends DeleteAction
     else
     {
       throw new ApplicationException(
-          "Empfänger kann nicht gelöscht werden, es wurde die Mail schon an ihn versendet!");
+          "Empfänger kann nicht gelöscht werden, die Mail wurde schon an ihn versendet!");
     }
   }
 
