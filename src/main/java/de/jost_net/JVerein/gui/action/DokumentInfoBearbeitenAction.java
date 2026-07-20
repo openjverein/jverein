@@ -44,6 +44,9 @@ public class DokumentInfoBearbeitenAction implements Action
       {
         return;
       }
+      // DB-Object nue laden, sonst sind ggf. Änderungen enthalten, bei denen
+      // das Speichern fehlgeschlagen ist.
+      ad.load(ad.getID());
       DokumentDialog dd = new DokumentDialog(ad);
       ad = dd.open();
       if (ad != null)
@@ -54,6 +57,10 @@ public class DokumentInfoBearbeitenAction implements Action
     catch (OperationCanceledException e)
     {
       // Nichts machen
+    }
+    catch (ApplicationException e)
+    {
+      throw e;
     }
     catch (Exception e)
     {

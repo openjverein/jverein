@@ -82,7 +82,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void updateCheck()
+  protected void updateCheck() throws ApplicationException
   {
   }
 

@@ -124,10 +124,6 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
 
   private DateInput getDatum() throws RemoteException
   {
-    if (datum != null)
-    {
-      return datum;
-    }
     Date d = dok.getDatum();
     if (d == null)
     {
@@ -141,10 +137,6 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
 
   private TextInput getBemerkung() throws RemoteException
   {
-    if (bemerkung != null)
-    {
-      return bemerkung;
-    }
     bemerkung = new TextInput(dok.getBemerkung(), 50);
     return bemerkung;
   }

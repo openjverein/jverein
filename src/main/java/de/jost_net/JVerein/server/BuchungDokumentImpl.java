@@ -42,9 +42,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
     super.deleteCheck();
     try
     {
-      Buchung buchung = Einstellungen.getDBService().createObject(Buchung.class,
-          getReferenz().toString());
-      if (buchung.getAbschluss() != null)
+      if (istAbgeschlossen())
       {
         throw new ApplicationException(
             "Dokument kann nicht gelöscht werden, Buchung ist abgeschlossen");
@@ -54,6 +52,49 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
     {
       throw new ApplicationException("Fehler beim deleteCheck");
     }
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Dokument kann nicht geändert werden, Buchung ist abgeschlossen");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim updateCheck");
+    }
+    super.updateCheck();
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Es kann kein Dokument hinzugefügt werden, Buchung ist abgeschlossen");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim insertCheck");
+    }
+    super.insertCheck();
+  }
+
+  private boolean istAbgeschlossen() throws RemoteException
+  {
+    Buchung buchung = Einstellungen.getDBService().createObject(Buchung.class,
+        getReferenz().toString());
+    return buchung.getJahresabschluss() != null;
   }
 
   @Override
