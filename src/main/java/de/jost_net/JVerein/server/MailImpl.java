@@ -19,6 +19,7 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
@@ -62,10 +63,19 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     {
       if (getVersand() != null)
       {
+        Timestamp versand = new Timestamp(new Date().getTime());
+        List<MailEmpfaenger> empfaenger = getEmpfaenger(true);
+        for (MailEmpfaenger me : empfaenger)
+        {
+          if (me.getVersand() != null && me.getVersand().before(versand))
+          {
+            versand = me.getVersand();
+          }
+        }
         DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
             .createList(Jahresabschluss.class);
-        it.addFilter("von <= ?", new Object[] { getVersand() });
-        it.addFilter("bis >= ?", new Object[] { getVersand() });
+        it.addFilter("von <= ?", versand);
+        it.addFilter("bis >= ?", versand);
         if (it.hasNext())
         {
           throw new ApplicationException(
@@ -112,20 +122,6 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
-    try
-    {
-      if (getVersand() != null)
-      {
-        throw new ApplicationException(
-            "Die Mail kann nicht geändert werden, sie wurde schon versendet!");
-      }
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
   }
 
   @Override
