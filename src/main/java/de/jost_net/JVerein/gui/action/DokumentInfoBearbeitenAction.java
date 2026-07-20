@@ -46,8 +46,10 @@ public class DokumentInfoBearbeitenAction implements Action
       }
       DokumentDialog dd = new DokumentDialog(ad);
       ad = dd.open();
-      ad.store();
-
+      if (ad != null)
+      {
+        ad.store();
+      }
     }
     catch (OperationCanceledException e)
     {

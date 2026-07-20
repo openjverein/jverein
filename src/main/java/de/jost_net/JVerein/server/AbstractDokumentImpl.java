@@ -28,6 +28,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.system.Application;
@@ -64,6 +65,19 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     if (file == null)
     {
       throw new ApplicationException("Keine Datei angegeben!");
+    }
+    try
+    {
+      if (getDatum() == null)
+      {
+        throw new ApplicationException("Bitte Datum eingeben!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Dokument kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -142,6 +156,11 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     }
     if (getUUID() != null)
     {
+      if (!JVereinPlugin.isArchiveServiceActive())
+      {
+        throw new ApplicationException(
+            "Dokument wurde per jameica.messaging gespeichert. Das Plugin ist aber nicht installiert.");
+      }
       QueryMessage qm = new QueryMessage(getUUID(), null);
 
       Application.getMessagingFactory()
@@ -185,6 +204,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   @Override
   public void store() throws RemoteException, ApplicationException
   {
+    File newFile = null;
     if (file != null)
     {
       if (file.isDirectory())
@@ -208,7 +228,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         {
           String pfad = getDateiPfad() + "/" + file.getName();
 
-          File newFile = new File(pfad);
+          newFile = new File(pfad);
           if (newFile.exists())
           {
             throw new ApplicationException("Datei existiert bereits!");
@@ -229,6 +249,12 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         }
         else
         {
+          if (!JVereinPlugin.isArchiveServiceActive())
+          {
+            throw new ApplicationException(
+                "Dokument kann nicht per jameica.messaging gespeichert werden. Das Plugin ist aber nicht installiert."
+                    + "\nBitte in Einstellungen korrigieren.");
+          }
           QueryMessage qm = new QueryMessage(getVerzeichnis() + getReferenz(),
               fis);
           Application.getMessagingFactory()
@@ -255,7 +281,28 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         throw new ApplicationException("Allgemeiner Ein-/Ausgabe-Fehler");
       }
     }
-    super.store();
+    try
+    {
+      super.store();
+    }
+    catch (Exception e)
+    {
+      // Wenn das speichern fehlschlägt, Datei wieder löschen
+      if (newFile != null)
+      {
+        if (newFile.exists())
+        {
+          newFile.delete();
+        }
+      }
+      else
+      {
+        QueryMessage qm = new QueryMessage(getUUID(), null);
+        Application.getMessagingFactory()
+            .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
+      }
+      throw e;
+    }
   }
 
   protected abstract String getDateiPfad() throws RemoteException;

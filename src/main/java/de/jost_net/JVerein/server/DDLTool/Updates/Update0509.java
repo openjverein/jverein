@@ -37,10 +37,10 @@ public class Update0509 extends AbstractDDLUpdate
     execute(addColumn("mitglieddokument",
         new Column("pfad", COLTYPE.VARCHAR, 500, null, false, false)));
 
-    alterColumn("buchungdokument",
+    alterColumnDropNotNull("buchungdokument",
         new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
 
-    alterColumn("mitglieddokument",
+    alterColumnDropNotNull("mitglieddokument",
         new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
 
     // Wenn bisher Dokumentenspeicherung aktiv war, dann soll auch weiterhin per
