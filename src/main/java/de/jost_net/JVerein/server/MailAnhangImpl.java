@@ -71,6 +71,11 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
     try
     {
       dateinameCheck(getDateiname());
+      if (getMail().getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Der Mailanhang kann nicht eingefügt werden, die Mail wurde schon versendet!");
+      }
     }
     catch (RemoteException e)
     {

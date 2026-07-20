@@ -21,6 +21,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -57,22 +58,26 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    if (!forcedDelete)
+    try
     {
-      try
+      if (getVersand() != null)
       {
-        if (getVersand() != null)
+        DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+            .createList(Jahresabschluss.class);
+        it.addFilter("von <= ?", new Object[] { getVersand() });
+        it.addFilter("bis >= ?", new Object[] { getVersand() });
+        if (it.hasNext())
         {
           throw new ApplicationException(
-              "Die Mail kann nicht gelöscht werden, sie wurde schon versendet!");
+              "Die Mail kann nicht gelöscht werden, das zugehörige Geschäftsjahr ist bereits abgeschlossen!");
         }
       }
-      catch (RemoteException e)
-      {
-        String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
-        Logger.error(fehler, e);
-        throw new ApplicationException(fehler);
-      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
@@ -107,6 +112,20 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      if (getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Die Mail kann nicht geändert werden, sie wurde schon versendet!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override
