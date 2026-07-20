@@ -79,6 +79,10 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
     LabelGroup group = new LabelGroup(parent, "Infos");
     group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Bemerkung", getBemerkung());
+    if (dok.getPfad() != null)
+    {
+      group.addLabelPair("Pfad", getPfad());
+    }
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new Button("Speichern", c -> speichern(), null, true,
@@ -156,5 +160,12 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
       }
     };
     return datei;
+  }
+
+  private Input getPfad() throws RemoteException
+  {
+    Input pfad = new TextInput(dok.getPfad());
+    pfad.disable();
+    return pfad;
   }
 }

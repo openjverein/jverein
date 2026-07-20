@@ -120,6 +120,7 @@ public class DokumentControl
     docsList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     docsList.addColumn("Bemerkung", "bemerkung");
+    docsList.addColumn("Pfad", "pfad");
     docsList.setContextMenu(new DokumentMenu(enabled));
     docsList.setMulti(true);
 
