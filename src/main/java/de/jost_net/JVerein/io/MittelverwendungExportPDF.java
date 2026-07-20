@@ -25,7 +25,6 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 
-import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.MittelverwendungControl;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.willuhn.jameica.gui.GUI;
@@ -44,13 +43,14 @@ public class MittelverwendungExportPDF implements ISaldoExport
 
   @Override
   public void export(ArrayList<PseudoDBObject> zeile, final File file,
-      String title, String subtitle) throws ApplicationException
+      ExportLayoutParam params) throws ApplicationException
   {
     try
     {
       FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
-      makeHeader(reporter, tab);
+      Reporter reporter = new Reporter(fos, params);
+      makeHeader(reporter, params.getColorHeader(), params.getFontHeader(),
+          tab);
 
       for (PseudoDBObject mvz : zeile)
       {
@@ -58,32 +58,39 @@ public class MittelverwendungExportPDF implements ISaldoExport
         String position = pos == null ? "" : pos.toString();
         switch (mvz.getInteger(MittelverwendungControl.ART))
         {
-          case MittelverwendungControl.ART_DETAIL:
           case MittelverwendungControl.ART_HEADER:
             if (tab == MittelverwendungControl.SALDO_REPORT)
             {
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
-                  Element.ALIGN_LEFT);
+                  Element.ALIGN_LEFT, params.getColorTable(), true,
+                  params.getFontNormal(), 4);
+            }
+            break;
+          case MittelverwendungControl.ART_DETAIL:
+            if (tab == MittelverwendungControl.SALDO_REPORT)
+            {
               reporter.addColumn(
                   (String) mvz
                       .getAttribute(MittelverwendungControl.BEZEICHNUNG),
-                  Element.ALIGN_RIGHT);
+                  Element.ALIGN_LEFT, params.getFontNormal());
             }
             else
             {
-              reporter.addColumn(position, Element.ALIGN_RIGHT);
+              reporter.addColumn(position, Element.ALIGN_RIGHT,
+                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
-                  Element.ALIGN_LEFT);
+                  Element.ALIGN_LEFT, params.getFontNormal());
             }
-            reporter.addColumn(mvz.getDouble(MittelverwendungControl.BETRAG));
+            reporter.addColumn(mvz.getDouble(MittelverwendungControl.BETRAG),
+                params.getFontNormal(), params.getNegativRot());
             reporter.addColumn(" ", Element.ALIGN_LEFT);
             if (tab == MittelverwendungControl.SALDO_REPORT)
             {
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.KOMMENTAR),
-                  Element.ALIGN_LEFT);
+                  Element.ALIGN_LEFT, params.getFontNormal());
             }
             break;
           case MittelverwendungControl.ART_SALDOFOOTER:
@@ -91,36 +98,23 @@ public class MittelverwendungExportPDF implements ISaldoExport
             {
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
-                  Element.ALIGN_RIGHT, Reporter.getFreeSansBold(8));
-
-              reporter.addColumn(
-                  (String) mvz
-                      .getAttribute(MittelverwendungControl.BEZEICHNUNG),
-                  Element.ALIGN_LEFT);
+                  Element.ALIGN_RIGHT, null, true, params.getFontFett(), 2);
             }
             else
             {
-              reporter.addColumn(position, Element.ALIGN_RIGHT);
-
+              reporter.addColumn(position, Element.ALIGN_RIGHT,
+                  params.getFontNormal());
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.GRUPPE),
-                  Element.ALIGN_RIGHT, Reporter.getFreeSansBold(8));
+                  Element.ALIGN_RIGHT, params.getFontFett());
+              reporter.addColumn(" ", Element.ALIGN_LEFT);
             }
-            reporter.addColumn(" ", Element.ALIGN_LEFT);
-            Font f = null;
+
             Double value = mvz.getDouble(MittelverwendungControl.SUMME);
             if (value != null)
             {
-              if (value >= 0)
-              {
-                f = Reporter.getFreeSansBold(8, BaseColor.BLACK);
-              }
-              else
-              {
-                f = Reporter.getFreeSansBold(8, BaseColor.RED);
-              }
-              reporter.addColumn(Einstellungen.DECIMALFORMAT.format(value),
-                  Element.ALIGN_RIGHT, f);
+              reporter.addColumn(value, params.getFontFett(),
+                  params.getNegativRot());
             }
             else
             {
@@ -130,18 +124,11 @@ public class MittelverwendungExportPDF implements ISaldoExport
             {
               reporter.addColumn(
                   (String) mvz.getAttribute(MittelverwendungControl.KOMMENTAR),
-                  Element.ALIGN_LEFT);
+                  Element.ALIGN_LEFT, params.getFontNormal());
             }
             break;
           case MittelverwendungControl.ART_LEERZEILE:
-            reporter.addColumn(" ", Element.ALIGN_RIGHT);
-            reporter.addColumn(" ", Element.ALIGN_RIGHT);
-            reporter.addColumn(" ", Element.ALIGN_RIGHT);
-            reporter.addColumn(" ", Element.ALIGN_RIGHT);
-            if (tab == MittelverwendungControl.SALDO_REPORT)
-            {
-              reporter.addColumn(" ", Element.ALIGN_LEFT);
-            }
+            reporter.addColumn(" ", Element.ALIGN_LEFT, 4);
             break;
         }
       }
@@ -158,32 +145,30 @@ public class MittelverwendungExportPDF implements ISaldoExport
     }
   }
 
-  private void makeHeader(Reporter reporter, int tab) throws DocumentException
+  private void makeHeader(Reporter reporter, BaseColor color, Font font,
+      int tab) throws DocumentException
   {
     switch (tab)
     {
       case MittelverwendungControl.FLOW_REPORT:
-        reporter.addHeaderColumn("Nr", Element.ALIGN_CENTER, 5,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Mittel", Element.ALIGN_CENTER, 69,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13,
-            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Nr", Element.ALIGN_CENTER, 5, color, font);
+        reporter.addHeaderColumn("Mittel", Element.ALIGN_CENTER, 69, color,
+            font);
+        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13, color,
+            font);
+        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13, color,
+            font);
         reporter.createHeader();
         break;
       case MittelverwendungControl.SALDO_REPORT:
-        reporter.addHeaderColumn("Art", Element.ALIGN_CENTER, 25,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 27,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13,
-            BaseColor.LIGHT_GRAY);
-        reporter.addHeaderColumn("Kommentar", Element.ALIGN_CENTER, 20,
-            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Konto", Element.ALIGN_CENTER, 27, color,
+            font);
+        reporter.addHeaderColumn("Betrag", Element.ALIGN_CENTER, 13, color,
+            font);
+        reporter.addHeaderColumn("Summe", Element.ALIGN_CENTER, 13, color,
+            font);
+        reporter.addHeaderColumn("Kommentar", Element.ALIGN_CENTER, 20, color,
+            font);
         reporter.createHeader();
         break;
     }

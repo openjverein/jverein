@@ -36,7 +36,7 @@
     <swt.artifactId>org.eclipse.swt.win32.win32.x86_64</swt.artifactId>
     <icu4j.version>52.2</icu4j.version>
     <jaxb.api.version>2.4.0-b180830.0359</jaxb.api.version>
-    <bytebuddy.agent.version>1.18.10-jdk5</bytebuddy.agent.version>
+    <bytebuddy.agent.version>1.18.11-jdk5</bytebuddy.agent.version>
     <release.root>${project.build.directory}/releases</release.root>
     <release.plugin.dir>${release.root}/${project.artifactId}</release.plugin.dir>
     <release.nightly.generated.dir>${project.build.directory}/generated-resources/nightly</release.nightly.generated.dir>
@@ -87,7 +87,7 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.22.0</version>
+      <version>2.22.1</version>
     </dependency>
     <dependency>
       <groupId>jakarta.activation</groupId>
@@ -187,7 +187,7 @@
     <dependency>
       <groupId>org.apache.pdfbox</groupId>
       <artifactId>xmpbox</artifactId>
-      <version>3.0.7</version>
+      <version>3.0.8</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -281,7 +281,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter</artifactId>
-      <version>6.1.0</version>
+      <version>6.1.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

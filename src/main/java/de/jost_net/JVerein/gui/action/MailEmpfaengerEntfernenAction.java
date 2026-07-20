@@ -1,4 +1,5 @@
 /**********************************************************************
+ * Copyright (c) by Heiner Jostkleigrewe
  * This program is free software: you can redistribute it and/or modify it under the terms of the 
  * GNU General Public License as published by the Free Software Foundation, either version 3 of the 
  * License, or (at your option) any later version.
@@ -10,19 +11,23 @@
  * You should have received a copy of the GNU General Public License along with this program.  If not, 
  * see <http://www.gnu.org/licenses/>.
  * 
+ * heiner@jverein.de
+ * www.jverein.de
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
+import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Loeschen von Mailempfaengern.
+ * Entfernen von Mailempfaengern aus der Liste der Empfänger im MailDetailView.
  */
-public class MailEmpfaengerDeleteAction extends DeleteAction
+public class MailEmpfaengerEntfernenAction extends DeleteAction
 {
 
   @Override
@@ -33,11 +38,21 @@ public class MailEmpfaengerDeleteAction extends DeleteAction
     {
       return;
     }
-    MailEmpfaenger empfaenger = (MailEmpfaenger) object;
-    empfaenger.delete();
-    if (empfaenger.getMail().getEmpfaenger().size() == 0)
+    if (((MailEmpfaenger) object).getVersand() == null)
     {
-      empfaenger.getMail().delete();
+      Application.getMessagingFactory()
+          .sendMessage(new MailDeleteMessage(object));
     }
+    else
+    {
+      throw new ApplicationException(
+          "Empfänger kann nicht entfernt werden, die Mail wurde schon an ihn versendet!");
+    }
+  }
+
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
   }
 }

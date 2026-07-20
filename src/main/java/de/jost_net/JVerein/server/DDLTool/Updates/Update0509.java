@@ -13,16 +13,17 @@
  **********************************************************************/
 package de.jost_net.JVerein.server.DDLTool.Updates;
 
+import java.sql.Connection;
+
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 
-import java.sql.Connection;
-
-public class Update0508 extends AbstractDDLUpdate
+public class Update0509 extends AbstractDDLUpdate
 {
-  public Update0508(String driver, ProgressMonitor monitor, Connection conn)
+  public Update0509(String driver, ProgressMonitor monitor, Connection conn)
   {
     super(driver, monitor, conn);
   }
@@ -30,7 +31,23 @@ public class Update0508 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
-    execute(addColumn("mailempfaenger",
-        new Column("email", COLTYPE.VARCHAR, 255, null, false, false)));
+    execute(addColumn("buchungdokument",
+        new Column("pfad", COLTYPE.VARCHAR, 500, null, false, false)));
+
+    execute(addColumn("mitglieddokument",
+        new Column("pfad", COLTYPE.VARCHAR, 500, null, false, false)));
+
+    alterColumn("buchungdokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+
+    alterColumn("mitglieddokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+
+    // Wenn bisher Dokumentenspeicherung aktiv war, dann soll auch weiterhin per
+    // Messaging gespeichert werden
+    execute("INSERT INTO einstellungneu (name,wert) SELECT '"
+        + Property.DOKUMENTSPEICHERUNG_MESSAGING.getKey()
+        + "', wert FROM einstellungneu WHERE name LIKE '"
+        + Property.DOKUMENTENSPEICHERUNG.getKey() + "'");
   }
 }

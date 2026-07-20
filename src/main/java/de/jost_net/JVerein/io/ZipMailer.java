@@ -312,6 +312,7 @@ public class ZipMailer
                       .getDBService().createObject(MailEmpfaenger.class, null);
                   me.setMitglied(mitgliedMail);
                   me.setMail(ml);
+                  me.setEmail(mitgliedMail.getEmail());
                   me.setVersand(new Timestamp(new Date().getTime()));
                   me.store();
                   if ((Boolean) Einstellungen

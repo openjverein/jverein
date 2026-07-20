@@ -18,18 +18,23 @@ package de.jost_net.JVerein.rmi;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import java.util.TreeSet;
+import java.util.List;
 
 public interface Mail extends JVereinDBObject
 {
-  public TreeSet<MailEmpfaenger> getEmpfaenger() throws RemoteException;
+  public List<MailEmpfaenger> getEmpfaenger() throws RemoteException;
 
-  public void setEmpfaenger(TreeSet<MailEmpfaenger> empfaenger)
+  public List<MailEmpfaenger> getEmpfaenger(boolean reload)
       throws RemoteException;
 
-  public TreeSet<MailAnhang> getAnhang() throws RemoteException;
+  public void setEmpfaenger(List<MailEmpfaenger> empfaenger)
+      throws RemoteException;
 
-  public void setAnhang(TreeSet<MailAnhang> anhang) throws RemoteException;
+  public List<MailAnhang> getAnhang() throws RemoteException;
+
+  public List<MailAnhang> getAnhang(boolean reload) throws RemoteException;
+
+  public void setAnhang(List<MailAnhang> anhang) throws RemoteException;
 
   public String getBetreff() throws RemoteException;
 
