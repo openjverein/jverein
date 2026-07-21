@@ -128,9 +128,10 @@ public class DokumentDialog extends AbstractDialog<Boolean>
     {
       d = new Date();
     }
-    this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.datum.setTitle("Datum");
-    this.datum.setText("Bitte Datum wählen");
+    datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    datum.setTitle("Datum");
+    datum.setText("Bitte Datum wählen");
+    datum.setMandatory(true);
     return datum;
   }
 
@@ -150,6 +151,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
         fd.setFilterPath(settings.getString("buchung.dokument", ""));
       }
     };
+    datei.setMandatory(true);
     return datei;
   }
 
