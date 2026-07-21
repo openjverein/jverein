@@ -262,12 +262,12 @@ public class BuchungHistoryMatcher {
         if (name != null && past.getName() != null) {
           if (name.trim().equalsIgnoreCase(past.getName().trim())) {
             score += 80;
-            matchReasons.add("Name (Exact)");
+            matchReasons.add("Name (Exakt)");
           } else {
             double nameSim = calculateJaccardSimilarity(name, past.getName(), false);
             if (nameSim > 0.5) {
               score += 60 * nameSim;
-              matchReasons.add("Name (Fuzzy: " + Math.round(nameSim * 100) + "%)");
+              matchReasons.add("Name (Ähnlich: " + Math.round(nameSim * 100) + "%)");
             }
           }
         }
@@ -279,12 +279,12 @@ public class BuchungHistoryMatcher {
           double absPast = Math.abs(pastBetrag);
           if (Math.abs(betrag - pastBetrag) < 0.01) {
             score += 60;
-            matchReasons.add("Amount (Exact)");
+            matchReasons.add("Betrag (Exakt)");
           } else if (absBetrag > 0 && absPast > 0) {
             double ratio = Math.abs(absBetrag - absPast) / Math.max(absBetrag, absPast);
             if (ratio < 0.05) { // within 5%
               score += 30 * (1 - ratio);
-              matchReasons.add("Amount (Close: " + Math.round((1 - ratio) * 100) + "%)");
+              matchReasons.add("Betrag (Ähnlich: " + Math.round((1 - ratio) * 100) + "%)");
             }
           }
         }
@@ -294,7 +294,7 @@ public class BuchungHistoryMatcher {
           double zweckSim = calculateJaccardSimilarity(zweck, past.getZweck(), true);
           if (zweckSim > 0.2) {
             score += 40 * zweckSim;
-            matchReasons.add("Zweck Pattern (Fuzzy: " + Math.round(zweckSim * 100) + "%)");
+            matchReasons.add("Verwendungszweck (Ähnlich: " + Math.round(zweckSim * 100) + "%)");
           }
         }
 
@@ -302,7 +302,7 @@ public class BuchungHistoryMatcher {
         if (iban != null && past.getIban() != null
             && iban.replace(" ", "").equalsIgnoreCase(past.getIban().replace(" ", ""))) {
           score += 30;
-          matchReasons.add("IBAN Match");
+          matchReasons.add("IBAN-Übereinstimmung");
         }
 
         if (score > 0) {

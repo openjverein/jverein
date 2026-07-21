@@ -67,12 +67,12 @@ class BuchungHistoryMatcherTest {
 
   @Test
   void testProposalPropertiesClassic() {
-    Proposal p = new Proposal(10L, 20L, 30L, 88.5, "Exact match");
+    Proposal p = new Proposal(10L, 20L, 30L, 88.5, "Exakt");
     assertEquals(10L, p.getBuchungsartId());
     assertEquals(20L, p.getBuchungsklasseId());
     assertEquals(30L, p.getProjektId());
     assertEquals(88.5, p.getScore());
-    assertEquals("Exact match", p.getReason());
+    assertEquals("Exakt", p.getReason());
     assertTrue(!p.isSplit());
   }
 
@@ -82,10 +82,10 @@ class BuchungHistoryMatcherTest {
     parts.add(new SplitPart(1L, 1L, 1L, 0.6));
     parts.add(new SplitPart(2L, 2L, 2L, 0.4));
 
-    Proposal p = new Proposal(parts, 99.0, "Split match");
+    Proposal p = new Proposal(parts, 99.0, "Splittung");
     assertTrue(p.isSplit());
     assertEquals(99.0, p.getScore());
-    assertEquals("Split match", p.getReason());
+    assertEquals("Splittung", p.getReason());
     assertEquals(2, p.getSplitParts().size());
     assertEquals(0.6, p.getSplitParts().get(0).getPercentage());
     assertEquals(0.4, p.getSplitParts().get(1).getPercentage());
