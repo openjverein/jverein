@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.rmi.RemoteException;
@@ -42,8 +41,6 @@ import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -913,17 +910,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
     it.addFilter("referenz = ?", new Object[] { this.getID() });
     while (it.hasNext())
     {
-      BuchungDokument doc = it.next();
-      if (doc.getUUID() != null)
-      {
-        QueryMessage qm = new QueryMessage(doc.getUUID(), null);
-        Application.getMessagingFactory()
-            .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
-      }
-      else if (doc.getPfad() != null)
-      {
-        new File(doc.getPfad()).delete();
-      }
+      it.next().delete();
     }
     super.delete();
   }

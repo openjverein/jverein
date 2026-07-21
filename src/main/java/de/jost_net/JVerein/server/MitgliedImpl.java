@@ -16,7 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
-import java.io.File;
 import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -61,8 +60,6 @@ import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.parts.TreePart;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -1494,17 +1491,7 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
     it.addFilter("referenz = ?", new Object[] { this.getID() });
     while (it.hasNext())
     {
-      MitgliedDokument doc = it.next();
-      if (doc.getUUID() != null)
-      {
-        QueryMessage qm = new QueryMessage(doc.getUUID(), null);
-        Application.getMessagingFactory()
-            .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
-      }
-      else if (doc.getPfad() != null)
-      {
-        new File(doc.getPfad()).delete();
-      }
+      it.next().delete();
     }
     super.delete();
   }
