@@ -253,7 +253,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
           {
             throw new ApplicationException(
                 "Dokument kann nicht per jameica.messaging gespeichert werden. Das Plugin ist aber nicht installiert."
-                    + "\nBitte in Einstellungen korrigieren.");
+                    + " Bitte in Einstellungen korrigieren.");
           }
           QueryMessage qm = new QueryMessage(getVerzeichnis() + getReferenz(),
               fis);
