@@ -22,6 +22,9 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +43,8 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 {
 
   private static final long serialVersionUID = 1L;
+
+  private static String HASH_ALGORITHM = "SHA-512";
 
   private File file;
 
@@ -154,6 +159,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     {
       return null;
     }
+    File file = null;
     if (getUUID() != null)
     {
       if (!JVereinPlugin.isArchiveServiceActive())
@@ -170,29 +176,45 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
       if (map == null)
       {
         throw new ApplicationException("Datei existiert nicht");
-
       }
       qm = new QueryMessage(getUUID(), null);
       Application.getMessagingFactory()
           .getMessagingQueue("jameica.messaging.get").sendSyncMessage(qm);
       byte[] data = (byte[]) qm.getData();
-      final File file = new File(
+      file = new File(
           System.getProperty("java.io.tmpdir") + "/" + map.get("filename"));
       FileOutputStream fos = new FileOutputStream(file);
       fos.write(data);
       fos.close();
       file.deleteOnExit();
-      return file;
     }
-    else
+    else if (getPfad() != null)
     {
-      File file = new File(getPfad());
+      file = new File(getPfad());
       if (!file.exists())
       {
         throw new ApplicationException("Datei existiert nicht");
       }
-      return file;
     }
+    if (getHash() != null && getHash().length > 0 && file != null)
+    {
+      try (FileInputStream fis = new FileInputStream(file))
+      {
+        MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
+        md.update(fis.readAllBytes());
+        if (!Arrays.equals(getHash(), md.digest()))
+        {
+          throw new ApplicationException(
+              "Datei wurde seit dem Speichern veränder, Hash stimmt nicht überein!");
+        }
+      }
+      catch (NoSuchAlgorithmException e)
+      {
+        throw new ApplicationException(
+            "Fehler beim erstellen des Datei-Hashes");
+      }
+    }
+    return file;
   }
 
   @Override
@@ -217,7 +239,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         throw new ApplicationException("Datei existiert nicht");
       }
 
-      try (FileInputStream fis = new FileInputStream(file);)
+      try (FileInputStream fis = new FileInputStream(file))
       {
         if (fis.available() <= 0)
         {
@@ -252,7 +274,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
           if (!JVereinPlugin.isArchiveServiceActive())
           {
             throw new ApplicationException(
-                "Dokument kann nicht per jameica.messaging gespeichert werden. Das Plugin ist aber nicht installiert."
+                "Dokument kann nicht per jameica.messaging gespeichert werden. Das Plugin ist nicht installiert."
                     + " Bitte in Einstellungen korrigieren.");
           }
           QueryMessage qm = new QueryMessage(getVerzeichnis() + getReferenz(),
@@ -269,6 +291,17 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
           qm = new QueryMessage(uuid, map);
           Application.getMessagingFactory()
               .getMessagingQueue("jameica.messaging.putmeta").sendMessage(qm);
+        }
+        try (FileInputStream stream = new FileInputStream(file))
+        {
+          MessageDigest md = MessageDigest.getInstance(HASH_ALGORITHM);
+          md.update(stream.readAllBytes());
+          setHash(md.digest());
+        }
+        catch (NoSuchAlgorithmException e)
+        {
+          throw new ApplicationException(
+              "Fehler beim erstellen des Datei-Hashes");
         }
       }
       catch (FileNotFoundException e)
@@ -303,6 +336,18 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
       }
       throw e;
     }
+  }
+
+  @Override
+  public void setHash(byte[] hash) throws RemoteException
+  {
+    setAttribute("hash", hash);
+  }
+
+  @Override
+  public byte[] getHash() throws RemoteException
+  {
+    return (byte[]) getAttribute("hash");
   }
 
   protected abstract String getDateiPfad() throws RemoteException;

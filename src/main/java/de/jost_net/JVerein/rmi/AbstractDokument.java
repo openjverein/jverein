@@ -49,4 +49,7 @@ public interface AbstractDokument extends JVereinDBObject
 
   public File getFile() throws IOException, ApplicationException;
 
+  public void setHash(byte[] hash) throws RemoteException;
+
+  public byte[] getHash() throws RemoteException;
 }
