@@ -38,7 +38,7 @@ public class Update0509 extends AbstractDDLUpdate
 
     execute(addColumn("mitglieddokument",
         new Column("pfad", COLTYPE.VARCHAR, 500, null, false, false)));
-    execute(addColumn("buchungdokument",
+    execute(addColumn("mitglieddokument",
         new Column("hash", COLTYPE.VARBINARY, 500, null, false, false)));
 
     alterColumnDropNotNull("buchungdokument",

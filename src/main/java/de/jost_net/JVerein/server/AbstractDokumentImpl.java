@@ -248,7 +248,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         if (!(Boolean) Einstellungen
             .getEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING))
         {
-          String pfad = getDateiPfad() + "/" + file.getName();
+          String pfad = getDateiPfad() + File.separator + file.getName();
 
           newFile = new File(pfad);
           if (newFile.exists())
