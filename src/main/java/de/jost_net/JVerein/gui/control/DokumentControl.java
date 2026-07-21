@@ -87,12 +87,8 @@ public class DokumentControl
             .createObject(clazz, null);
         doc.setReferenz(Long.valueOf(object.getID()));
 
-        doc = new DokumentDialog(doc).open();
-        if (doc != null)
-        {
-          doc.store();
-          refreshTable();
-        }
+        new DokumentDialog(doc).open();
+        refreshTable();
       }
       catch (ApplicationException | OperationCanceledException e)
       {

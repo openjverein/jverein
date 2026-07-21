@@ -39,16 +39,15 @@ import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, zur Bearbeitung von Dokument-Infos
  */
-public class DokumentDialog extends AbstractDialog<AbstractDokument>
+public class DokumentDialog extends AbstractDialog<Boolean>
 {
 
   private AbstractDokument dok = null;
-
-  private AbstractDokument data = null;
 
   private Settings settings;
 
@@ -94,7 +93,7 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
     buttons.paint(parent);
   }
 
-  private void speichern()
+  private void speichern() throws ApplicationException
   {
     try
     {
@@ -106,20 +105,20 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
       }
       dok.setBemerkung((String) bemerkung.getValue());
       dok.setDatum((Date) datum.getValue());
-      data = dok;
+      dok.store();
+      close();
     }
     catch (RemoteException e)
     {
       GUI.getStatusBar().setErrorText("Fehler beim Speichern");
       Logger.error("Fehler beim Speichern", e);
     }
-    close();
   }
 
   @Override
-  protected AbstractDokument getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return data;
+    return true;
   }
 
   private DateInput getDatum() throws RemoteException
