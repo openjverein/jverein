@@ -130,7 +130,7 @@ public class BuchungMenu extends ContextMenu
     }
     addItem(new CheckedContextMenuItem(text,
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
-    addItem(new CheckedSingleContextMenuItem("Mit History zuordnen...",
+    addItem(new CheckedSingleContextMenuItem("Aus Historie zuordnen...",
         new BuchungHistoryZuordnungAction(), "view-refresh.png"));
 
     if (geldkonto)

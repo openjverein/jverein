@@ -130,7 +130,7 @@ public class BuchungHistoryZuordnungAction implements Action {
         GUI.getStatusBar().setSuccessText("Buchung erfolgreich klassifiziert.");
       }
     } catch (Exception e) {
-      Logger.error("Fehler bei der History-basierten Zuordnung", e);
+      Logger.error("Fehler bei der Historie-basierten Zuordnung", e);
       GUI.getStatusBar().setErrorText("Fehler bei der Zuordnung: " + e.getLocalizedMessage());
     }
   }

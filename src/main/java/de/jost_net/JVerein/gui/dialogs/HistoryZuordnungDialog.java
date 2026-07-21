@@ -51,7 +51,7 @@ public class HistoryZuordnungDialog extends AbstractDialog<Proposal> {
   public HistoryZuordnungDialog(Buchung buchung, int position) {
     super(position);
     this.buchung = buchung;
-    setTitle("History-basierte Buchungszuordnung");
+    setTitle("Historie-basierte Buchungszuordnung");
     setSize(650, 480);
   }
 
