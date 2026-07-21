@@ -73,6 +73,73 @@ public class BuchungsartInput
           list.add(bart);
         }
 
+        if (buchung != null)
+        {
+          try
+          {
+            List<de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal> proposals = de.jost_net.JVerein.util.BuchungHistoryMatcher.getProposals(
+                buchung.getName(),
+                buchung.getIban(),
+                buchung.getZweck(),
+                buchung.getBetrag() != null ? buchung.getBetrag() : 0.0
+            );
+            List<Buchungsart> proposedList = new java.util.ArrayList<>();
+            java.util.Set<String> proposedIds = new java.util.HashSet<>();
+            for (de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal p : proposals)
+            {
+              if (p.getBuchungsartId() != null)
+              {
+                try
+                {
+                  Buchungsart b = (Buchungsart) Einstellungen.getDBService()
+                      .createObject(Buchungsart.class, String.valueOf(p.getBuchungsartId()));
+                  if (b != null)
+                  {
+                    String oldBezeichnung = b.getBezeichnung();
+                    b.setBezeichnung("[Vorschlag] " + oldBezeichnung);
+                    proposedList.add(b);
+                    proposedIds.add(b.getID());
+                  }
+                }
+                catch (Exception ex)
+                {
+                  Logger.error("Error loading proposed Buchungsart ID " + p.getBuchungsartId(), ex);
+                }
+              }
+            }
+            
+            // Remove duplicates from the main list
+            for (java.util.Iterator<Buchungsart> iterator = list.iterator(); iterator.hasNext();)
+            {
+              Buchungsart ba = iterator.next();
+              try
+              {
+                if (ba.getID() != null && proposedIds.contains(ba.getID()))
+                {
+                  iterator.remove();
+                }
+              }
+              catch (RemoteException re)
+              {
+                Logger.error("Error checking ID of Buchungsart in list", re);
+              }
+            }
+            
+            // Prepend proposals
+            list.addAll(0, proposedList);
+            
+            // Set value to first proposal if no booking type is set yet
+            if (bart == null && !proposedList.isEmpty())
+            {
+              bart = proposedList.get(0);
+            }
+          }
+          catch (Exception e)
+          {
+            Logger.error("Error generating history proposals for ComboBox", e);
+          }
+        }
+
         buchungsart = new SelectInput(list, bart);
 
         switch ((Integer) Einstellungen

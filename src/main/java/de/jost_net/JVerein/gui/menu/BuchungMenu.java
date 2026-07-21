@@ -23,6 +23,7 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.AnlagenkontoNeuAction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungBuchungsartZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungHistoryZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungDeleteAction;
 import de.jost_net.JVerein.gui.action.BuchungDuplizierenAction;
 import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
@@ -129,6 +130,8 @@ public class BuchungMenu extends ContextMenu
     }
     addItem(new CheckedContextMenuItem(text,
         new BuchungBuchungsartZuordnungAction(), "view-refresh.png"));
+    addItem(new CheckedSingleContextMenuItem("Mit History zuordnen...",
+        new BuchungHistoryZuordnungAction(), "view-refresh.png"));
 
     if (geldkonto)
     {
