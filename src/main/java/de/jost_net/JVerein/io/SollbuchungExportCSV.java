@@ -29,7 +29,6 @@ import org.supercsv.prefs.CsvPreference;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.SollbuchungMap;
-import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
@@ -161,7 +160,7 @@ public class SollbuchungExportCSV extends SollbuchungExport
   @Override
   public String getDateiname(Object object)
   {
-    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME,
-        (SollbuchungControl) object) + ".csv";
+    return VorlageUtil.getName(VorlageTyp.SOLLBUCHUNGEN_DATEINAME, object)
+        + ".csv";
   }
 }

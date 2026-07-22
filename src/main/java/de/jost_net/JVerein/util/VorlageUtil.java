@@ -27,9 +27,6 @@ import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
-import de.jost_net.JVerein.Variable.AuswertungJubilareFilterMap;
-import de.jost_net.JVerein.Variable.AuswertungMitgliedFilterMap;
-import de.jost_net.JVerein.Variable.AuswertungNichtMitgliedFilterMap;
 import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
@@ -43,10 +40,10 @@ import de.jost_net.JVerein.Variable.WirtschaftsplanParameterMap;
 import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
+import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
 import de.jost_net.JVerein.gui.control.ZusatzbetragControl;
 import de.jost_net.JVerein.io.AbrechnungSEPAParam;
@@ -80,7 +77,7 @@ public class VorlageUtil
     return getName(typ, obj, null);
   }
 
-  public static String getName(VorlageTyp typ, Object obj, String formularName)
+  public static String getName(VorlageTyp typ, Object obj, String name)
   {
     Map<String, Object> map = null;
     String muster = "";
@@ -143,12 +140,6 @@ public class VorlageUtil
         case PROJEKTE_DATEINAME:
         case PROJEKTE_TITEL:
         case PROJEKTE_SUBTITEL:
-        case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
-        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
-        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
-        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
         case ABWEICHENDE_ZAHLER_DATEINAME:
         case ABWEICHENDE_ZAHLER_SUBTITEL:
         case ABWEICHENDE_ZAHLER_TITEL:
@@ -156,6 +147,29 @@ public class VorlageUtil
         case FAMILIENVERBAND_SUBTITEL:
         case FAMILIENVERBAND_TITEL:
           map = new FilterMap().getMap((FilterControl) obj, map);
+          break;
+        case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
+        case AUSWERTUNG_ALTERSJUBILARE_TITEL:
+        case AUSWERTUNG_ALTERSJUBILARE_SUBTITEL:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_TITEL:
+        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_SUBTITEL:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
+        case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
+        case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
+          map = ((AuswertungControl) obj).getMap(map);
+          break;
+        case AUSWERTUNG_MITGLIED_DATEINAME:
+        case AUSWERTUNG_MITGLIED_TITEL:
+        case AUSWERTUNG_MITGLIED_SUBTITEL:
+        case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
+        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
+        case AUSWERTUNG_NICHT_MITGLIED_SUBTITEL:
+          map = new FilterMap().getMap((FilterControl) obj, map);
+          map.put("ausgabe_ausgabe", name);
           break;
         case SPENDENBESCHEINIGUNG_MITGLIED_DATEINAME:
           map = new SpendenbescheinigungMap().getMap((Spendenbescheinigung) obj,
@@ -207,7 +221,7 @@ public class VorlageUtil
           map.put("formular_name", (String) obj);
           break;
         case FREIES_FORMULAR_MITGLIED_DATEINAME:
-          map.put("formular_name", formularName);
+          map.put("formular_name", name);
           break;
         case KONTENSALDO_DATEINAME:
         case KONTENSALDO_TITEL:
@@ -297,28 +311,6 @@ public class VorlageUtil
         case JAHRESABSCHLUSS_SUBTITEL:
           map = new JahresabschlussListeFilterMap()
               .getMap((JahresabschlussControl) obj, map);
-          break;
-        case AUSWERTUNG_MITGLIED_DATEINAME:
-        case AUSWERTUNG_MITGLIED_TITEL:
-          map = new AuswertungMitgliedFilterMap().getMap((MitgliedControl) obj,
-              map);
-          break;
-        case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
-        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
-          map = new AuswertungNichtMitgliedFilterMap()
-              .getMap((MitgliedControl) obj, map);
-          break;
-        case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
-        case AUSWERTUNG_ALTERSJUBILARE_TITEL:
-        case AUSWERTUNG_ALTERSJUBILARE_SUBTITEL:
-        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME:
-        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_TITEL:
-        case AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_SUBTITEL:
-        case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
-        case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
-        case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
-          map = new AuswertungJubilareFilterMap().getMap((MitgliedControl) obj,
-              map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:
@@ -522,6 +514,10 @@ public class VorlageUtil
           map = SpendenbescheinigungMap.getDummyMap(map);
           map = MitgliedMap.getDummyMap(map);
           break;
+        case AUSWERTUNG_MITGLIED_DATEINAME:
+        case AUSWERTUNG_MITGLIED_TITEL:
+        case AUSWERTUNG_MITGLIED_SUBTITEL:
+          set.add(Filter.AUSGABE);
         case MITGLIEDER_DATEINAME:
         case MITGLIEDER_TITEL:
         case MITGLIEDER_SUBTITEL:
@@ -547,6 +543,10 @@ public class VorlageUtil
           set.add(Filter.EIGENSCHAFTEN);
           map = new FilterMap().getDummyMap(set, map);
           break;
+        case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
+        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
+        case AUSWERTUNG_NICHT_MITGLIED_SUBTITEL:
+          set.add(Filter.AUSGABE);
         case NICHT_MITGLIEDER_DATEINAME:
         case NICHT_MITGLIEDER_TITEL:
         case NICHT_MITGLIEDER_SUBTITEL:
@@ -741,21 +741,6 @@ public class VorlageUtil
         case JAHRESABSCHLUSS_SUBTITEL:
           map = JahresabschlussListeFilterMap.getDummyMap(map);
           break;
-        case AUSWERTUNG_MITGLIED_DATEINAME:
-        case AUSWERTUNG_MITGLIED_TITEL:
-          map = AuswertungMitgliedFilterMap.getDummyMap(map);
-          break;
-        case AUSWERTUNG_NICHT_MITGLIED_DATEINAME:
-        case AUSWERTUNG_NICHT_MITGLIED_TITEL:
-          map = AuswertungNichtMitgliedFilterMap.getDummyMap(map);
-          break;
-        case AUSWERTUNG_KURSTEILNEHMER_DATEINAME:
-        case AUSWERTUNG_KURSTEILNEHMER_TITEL:
-        case AUSWERTUNG_KURSTEILNEHMER_SUBTITEL:
-          set.add(Filter.ABBUCHUNGSDATUM_VON);
-          set.add(Filter.ABBUCHUNGSDATUM_BIS);
-          map = new FilterMap().getDummyMap(set, map);
-          break;
         case AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL:
         case AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL:
@@ -771,7 +756,8 @@ public class VorlageUtil
         case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
-          map = AuswertungJubilareFilterMap.getDummyMap(map);
+          set.add(Filter.JAHR);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:
         case AUSWERTUNG_ARBEITSEINSAETZE_TITEL:

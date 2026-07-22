@@ -88,8 +88,9 @@ public class FormularExporterXML implements Exporter
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     XmlWriter writer = new XmlWriter(
         new BufferedOutputStream(new FileOutputStream(file)));
@@ -116,15 +117,4 @@ public class FormularExporterXML implements Exporter
     writer.close();
   }
 
-  @Override
-  public void calculateTitle(Object object)
-  {
-    // Kein Titel bei xml
-  }
-
-  @Override
-  public void calculateSubitle(Object object)
-  {
-    // Kein Subitel bei xml
-  }
 }

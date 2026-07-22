@@ -17,59 +17,83 @@
 package de.jost_net.JVerein.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Map;
 
-import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
+import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VonBis;
+import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
+import de.willuhn.util.ProgressMonitor;
 
-public class MitgliederStatistik
+public class AuswertungMitgliederstatistikPDF implements Exporter
 {
+  private ExportLayoutParam params;
 
-  public MitgliederStatistik(final File file, Date stichtag, String title,
-      String subtitle) throws ApplicationException
+  @SuppressWarnings("unchecked")
+  @Override
+  public void doExport(Object[] objects, IOFormat format, File file,
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     try
     {
+      /*
+       * objects[0] sind die Ausgabeparameter Filter, objects[1] ist der
+       * Filtertext, objects[2] ist Mitgliedstyp, objects[3] ist der Filter
+       */
+      Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
+      Date stichtag = (Date) filter.get(Filter.STICHTAG);
       if (stichtag == null)
       {
         throw new ApplicationException("Stichtag ist leer");
       }
-      FileOutputStream fos = new FileOutputStream(file);
-      Reporter reporter = new Reporter(fos, title, subtitle);
+      this.params = params;
 
-      Paragraph pAltersgruppen = new Paragraph("\n" + "Altersgruppen",
-          Reporter.getFreeSans(11));
+      Font font = new Font(params.getFontHeader());
+      font.setSize(11);
+
+      FileOutputStream fos = new FileOutputStream(file);
+      Reporter reporter = new Reporter(fos, params);
+
+      Paragraph pAltersgruppen = new Paragraph("\n" + "Altersgruppen", font);
       reporter.add(pAltersgruppen);
 
       reporter.addHeaderColumn("Altersgruppe", Element.ALIGN_CENTER, 100,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("männlich", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("ohne Angabe", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.createHeader(70f, Element.ALIGN_LEFT);
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Männlich", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Weiblich", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Ohne Angabe", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.createHeader(100f, Element.ALIGN_LEFT);
 
       AltersgruppenParser ap = new AltersgruppenParser(
           (String) Einstellungen.getEinstellung(Property.ALTERSGRUPPEN));
@@ -83,20 +107,20 @@ public class MitgliederStatistik
       reporter.closeTable();
 
       Paragraph pBeitragsgruppen = new Paragraph("\n" + "Beitragsgruppen",
-          Reporter.getFreeSans(11));
+          font);
       reporter.add(pBeitragsgruppen);
 
       reporter.addHeaderColumn("Beitragsgruppe", Element.ALIGN_CENTER, 100,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("männlich", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("weiblich", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.addHeaderColumn("ohne Angabe", Element.ALIGN_CENTER, 30,
-          BaseColor.LIGHT_GRAY);
-      reporter.createHeader(70f, Element.ALIGN_LEFT);
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Insgesamt", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Männlich", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Weiblich", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.addHeaderColumn("Ohne Angabe", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
+      reporter.createHeader(100f, Element.ALIGN_LEFT);
 
       DBIterator<Beitragsgruppe> beitragsgruppen = Einstellungen.getDBService()
           .createList(Beitragsgruppe.class);
@@ -117,17 +141,20 @@ public class MitgliederStatistik
             "\n" + String.format("Anmeldungen/Abmeldungen (%s - %s)",
                 ttmmjj.format(gj.getBeginnGeschaeftsjahr()),
                 ttmmjj.format(gj.getEndeGeschaeftsjahr())),
-            Reporter.getFreeSans(11));
+            font);
         reporter.add(pGuV);
         reporter.addHeaderColumn("Text", Element.ALIGN_CENTER, 100,
-            BaseColor.LIGHT_GRAY);
+            params.getColorHeader(), params.getFontHeader());
         reporter.addHeaderColumn("Anzahl", Element.ALIGN_CENTER, 30,
-            BaseColor.LIGHT_GRAY);
-        reporter.createHeader(70f, Element.ALIGN_LEFT);
-        reporter.addColumn("Anmeldungen", Element.ALIGN_LEFT);
-        reporter.addColumn(getAnmeldungen(gj) + "", Element.ALIGN_RIGHT);
+            params.getColorHeader(), params.getFontHeader());
+        reporter.createHeader(100f, Element.ALIGN_LEFT);
+        reporter.addColumn("Anmeldungen", Element.ALIGN_LEFT,
+            params.getFontNormal());
+        reporter.addColumn(getAnmeldungen(gj) + "", Element.ALIGN_RIGHT,
+            params.getFontNormal());
         reporter.addColumn("Abmeldungen", Element.ALIGN_LEFT);
-        reporter.addColumn(getAbmeldungen(gj) + "", Element.ALIGN_RIGHT);
+        reporter.addColumn(getAbmeldungen(gj) + "", Element.ALIGN_RIGHT,
+            params.getFontNormal());
         reporter.closeTable();
       }
       catch (ParseException e)
@@ -137,7 +164,6 @@ public class MitgliederStatistik
       }
       reporter.close();
       fos.close();
-      FileViewer.show(file);
     }
     catch (Exception e)
     {
@@ -149,31 +175,44 @@ public class MitgliederStatistik
   private void addAltersgruppe(Reporter reporter, VonBis vb, Date stichtag)
       throws RemoteException
   {
-    if (vb.getVon() == -1)
+    if (vb.getVon() == 0 && vb.getBis() == 199)
     {
-      reporter.addColumn("Ohne Geburtsdatum", Element.ALIGN_LEFT);
+      reporter.addColumn("Insgesamt", Element.ALIGN_LEFT, params.getFontFett());
+      reporter.addColumn(getAltersgruppe(vb, null, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getAltersgruppe(vb, GeschlechtInput.MAENNLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getAltersgruppe(vb, GeschlechtInput.WEIBLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getAltersgruppe(vb, GeschlechtInput.OHNEANGABE, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      return;
     }
-    else if (vb.getVon() == 0 && vb.getBis() == 199)
+    else if (vb.getVon() == -1)
     {
-      reporter.addColumn("Insgesamt", Element.ALIGN_LEFT);
+      reporter.addColumn("Ohne Geburtsdatum", Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     else
     {
       reporter.addColumn(
           String.format("Altersgruppe %d - %d", vb.getVon(), vb.getBis()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, params.getFontNormal());
     }
     reporter.addColumn(getAltersgruppe(vb, null, stichtag) + "",
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getFontNormal());
     reporter.addColumn(
         getAltersgruppe(vb, GeschlechtInput.MAENNLICH, stichtag) + "",
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getFontNormal());
     reporter.addColumn(
         getAltersgruppe(vb, GeschlechtInput.WEIBLICH, stichtag) + "",
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getFontNormal());
     reporter.addColumn(
         getAltersgruppe(vb, GeschlechtInput.OHNEANGABE, stichtag) + "",
-        Element.ALIGN_RIGHT);
+        Element.ALIGN_RIGHT, params.getFontNormal());
   }
 
   private void addBeitragsgruppe(Reporter reporter, Beitragsgruppe bg,
@@ -181,23 +220,35 @@ public class MitgliederStatistik
   {
     if (bg == null)
     {
-      reporter.addColumn("Insgesamt", Element.ALIGN_LEFT);
+      reporter.addColumn("Insgesamt", Element.ALIGN_LEFT, params.getFontFett());
+      reporter.addColumn(getBeitragsgruppe(bg, null, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.MAENNLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.WEIBLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.OHNEANGABE, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontFett());
     }
     else
     {
-      reporter.addColumn(bg.getBezeichnung(), Element.ALIGN_LEFT);
+      reporter.addColumn(bg.getBezeichnung(), Element.ALIGN_LEFT,
+          params.getFontNormal());
+      reporter.addColumn(getBeitragsgruppe(bg, null, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.MAENNLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.WEIBLICH, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontNormal());
+      reporter.addColumn(
+          getBeitragsgruppe(bg, GeschlechtInput.OHNEANGABE, stichtag) + "",
+          Element.ALIGN_RIGHT, params.getFontNormal());
     }
-    reporter.addColumn(getBeitragsgruppe(bg, null, stichtag) + "",
-        Element.ALIGN_RIGHT);
-    reporter.addColumn(
-        getBeitragsgruppe(bg, GeschlechtInput.MAENNLICH, stichtag) + "",
-        Element.ALIGN_RIGHT);
-    reporter.addColumn(
-        getBeitragsgruppe(bg, GeschlechtInput.WEIBLICH, stichtag) + "",
-        Element.ALIGN_RIGHT);
-    reporter.addColumn(
-        getBeitragsgruppe(bg, GeschlechtInput.OHNEANGABE, stichtag) + "",
-        Element.ALIGN_RIGHT);
   }
 
   /**
@@ -359,5 +410,72 @@ public class MitgliederStatistik
     list.addFilter("austritt <= ? ",
         new Object[] { gj.getEndeGeschaeftsjahr() });
     return list.size();
+  }
+
+  @Override
+  public String toString()
+  {
+    return getName();
+  }
+
+  @Override
+  public String getName()
+  {
+    return "Mitgliederstatistik PDF";
+  }
+
+  @Override
+  public IOFormat[] getIOFormats(Class<?> objectType)
+  {
+    if (objectType != MitgliedListeView.class)
+    {
+      return null;
+    }
+    IOFormat f = new IOFormat()
+    {
+
+      @Override
+      public String getName()
+      {
+        return AuswertungMitgliederstatistikPDF.this.getName();
+      }
+
+      /**
+       * @see de.willuhn.jameica.hbci.io.IOFormat#getFileExtensions()
+       */
+      @Override
+      public String[] getFileExtensions()
+      {
+        return new String[] { "*.pdf" };
+      }
+    };
+    return new IOFormat[] { f };
+  }
+
+  @Override
+  public String getDateiname(Object object)
+  {
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_DATEINAME, object) + ".pdf";
+  }
+
+  @Override
+  public String getTitle(Object object)
+  {
+    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_TITEL,
+        object);
+  }
+
+  @Override
+  public String getSubtitle(Object object)
+  {
+    return VorlageUtil
+        .getName(VorlageTyp.AUSWERTUNG_MITGLIEDER_STATISTIK_SUBTITEL, object);
+  }
+
+  @Override
+  public Filter[] getAusgabeParameter(Object object)
+  {
+    return new Filter[] { Filter.STICHTAG };
   }
 }

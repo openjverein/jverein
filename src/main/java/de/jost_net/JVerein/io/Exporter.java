@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 
 import com.itextpdf.text.DocumentException;
 
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.util.ApplicationException;
 import de.willuhn.util.ProgressMonitor;
 import de.willuhn.util.Session;
@@ -58,8 +59,9 @@ public interface Exporter extends IO
    * @throws ApplicationException
    */
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException;
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException;
 
   /**
    * Dateiname für Report generieren
@@ -68,11 +70,43 @@ public interface Exporter extends IO
 
   /**
    * Titel für Report generieren
+   * 
+   * @return Titel
    */
-  public void calculateTitle(Object object);
+  default String getTitle(Object object)
+  {
+    return null;
+  }
 
   /**
    * Subtitel für Report generieren
+   * 
+   * @return Subtitle
    */
-  public void calculateSubitle(Object object);
+  default String getSubtitle(Object object)
+  {
+    return null;
+  }
+
+  /**
+   * Sagt, ob eine zweite Tabellenhintergrund Farbe unterstützt wird
+   * 
+   * @param object
+   * @return
+   */
+  default boolean hasColortable2(Object object)
+  {
+    return false;
+  }
+
+  /**
+   * Übergabe von Ausgabeparameter für die Reportgenerierung
+   * 
+   * @param object
+   * @return
+   */
+  default Filter[] getAusgabeParameter(Object object)
+  {
+    return null;
+  }
 }

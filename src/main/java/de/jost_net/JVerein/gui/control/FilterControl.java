@@ -98,6 +98,25 @@ public abstract class FilterControl extends VorZurueckControl
   }
 
   /**
+   * Prüft ob alle Input Felder ausgefüllt sind
+   * 
+   * @return
+   */
+  public boolean checkFilter()
+  {
+    for (Entry<Filter, Input> entry : filterMap.entrySet())
+    {
+      Object value = entry.getValue().getValue();
+      if (value == null
+          || (value instanceof String && ((String) value).isBlank()))
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Gibt alle Angewendeten Filter als Map zurück. Value ist der angezeigte
    * Text.
    * 

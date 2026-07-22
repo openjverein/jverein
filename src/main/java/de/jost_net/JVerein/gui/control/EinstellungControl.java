@@ -192,8 +192,6 @@ public class EinstellungControl extends AbstractControl
 
   private SelectInput sepamandatidsourcemodel;
 
-  private DirectoryInput vorlagenCsvVerzeichnis;
-
   private DecimalInput spendenbescheinigungminbetrag;
 
   private CheckboxInput spendenbescheinigungprintbuchungsart;
@@ -1177,18 +1175,6 @@ public class EinstellungControl extends AbstractControl
         (Integer) Einstellungen.getEinstellung(Property.ALTERSMODEL)));
 
     return altersmodel;
-  }
-
-  public DirectoryInput getVorlagenCsvVerzeichnis() throws RemoteException
-  {
-    if (vorlagenCsvVerzeichnis != null)
-    {
-      return vorlagenCsvVerzeichnis;
-    }
-    String lastValue = (String) Einstellungen
-        .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
-    vorlagenCsvVerzeichnis = new DirectoryInput(lastValue);
-    return vorlagenCsvVerzeichnis;
   }
 
   public DirectoryInput getMitgliedsDokumentVerzeichnis() throws RemoteException
@@ -2693,12 +2679,6 @@ public class EinstellungControl extends AbstractControl
   {
     try
     {
-      DBTransaction.starten();
-
-      Einstellungen.setEinstellung(Property.VORLAGENCSVVERZEICHNIS,
-          (String) vorlagenCsvVerzeichnis.getValue());
-      DBTransaction.commit();
-
       if (!Einstellungen.getMitgliedDokumentVerzeichnis()
           .equals(mitgliedsDokumentVerzeichnis.getValue()))
       {
@@ -2745,7 +2725,6 @@ public class EinstellungControl extends AbstractControl
     }
     catch (Exception e)
     {
-      DBTransaction.rollback();
       Logger.error("Speichern fehlgeschlagen", e);
       GUI.getStatusBar().setErrorText(e.getMessage());
     }

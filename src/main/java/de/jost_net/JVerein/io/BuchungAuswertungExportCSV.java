@@ -107,21 +107,10 @@ public class BuchungAuswertungExportCSV implements Exporter
   }
 
   @Override
-  public void calculateTitle(Object object)
-  {
-    // Kein Titel bei CSV
-  }
-
-  @Override
-  public void calculateSubitle(Object object)
-  {
-    // Kein Subtitel bei CSV
-  }
-
-  @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     BuchungsControl control = (BuchungsControl) objects[0];
     BuchungQuery query = control.getQuery();

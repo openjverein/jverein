@@ -20,15 +20,15 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedschaftsjubilaeumExportCSV
-    extends MitgliedschaftsjubilaeumsExport
+public class AuswertungMitgliedschaftsjubilareCSV
+    extends AuswertungMitgliedschaftsjubilareAbstract
 {
 
   private ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -38,13 +38,13 @@ public class MitgliedschaftsjubilaeumExportCSV
   @Override
   public String getName()
   {
-    return "Mitgliedschaftsjubilare CSV-Export";
+    return "Mitgliedschaftsjubilare CSV";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }
@@ -54,7 +54,7 @@ public class MitgliedschaftsjubilaeumExportCSV
       @Override
       public String getName()
       {
-        return MitgliedschaftsjubilaeumExportCSV.this.getName();
+        return AuswertungMitgliedschaftsjubilareCSV.this.getName();
       }
 
       /**
@@ -73,8 +73,8 @@ public class MitgliedschaftsjubilaeumExportCSV
   public String getDateiname(Object object)
   {
     return VorlageUtil.getName(
-        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME,
-        (MitgliedControl) object) + ".csv";
+        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME, object)
+        + ".csv";
   }
 
   @Override
@@ -105,10 +105,10 @@ public class MitgliedschaftsjubilaeumExportCSV
   @Override
   protected void close()
   {
-    MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
+    AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
     try
     {
-      mcsv.go(mitglieder, file, null);
+      mcsv.go(mitglieder, file);
     }
     catch (ApplicationException e)
     {

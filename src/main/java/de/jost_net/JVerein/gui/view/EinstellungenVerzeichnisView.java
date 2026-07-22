@@ -35,8 +35,6 @@ public class EinstellungenVerzeichnisView extends AbstractView
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
-    cont.addLabelPair("CSV Vorlagenverzeichnis",
-        control.getVorlagenCsvVerzeichnis());
     cont.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
         control.getMitgliedsDokumentVerzeichnis());
     cont.addLabelPair("Verzeichnis für Buchungs-Dokumente *",

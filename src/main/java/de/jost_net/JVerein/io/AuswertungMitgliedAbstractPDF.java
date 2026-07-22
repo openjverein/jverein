@@ -14,34 +14,34 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.gui.view;
+package de.jost_net.JVerein.io;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.action.JubilaeumsExportAction;
+import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.control.MitgliedControl;
-import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.LabelGroup;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.util.VorlageUtil;
 
-public class JubilaeenView extends AbstractView
+public abstract class AuswertungMitgliedAbstractPDF
+    extends AuswertungMitgliedAbstract
 {
 
+  protected MitgliedAuswahl mitgliedauswahl = MitgliedAuswahl.MITGLIEDER;
+
   @Override
-  public void bind() throws Exception
+  public String getDateiname(Object object)
   {
-    GUI.getView().setTitle("Jubiläen");
-
-    final MitgliedControl control = new MitgliedControl(this);
-
-    LabelGroup group = new LabelGroup(getParent(), "Parameter");
-    group.addLabelPair("Jahr", control.getJubeljahr());
-
-    ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.JUBILAEEN, false, "question-circle.png");
-    buttons.addButton("Starten", new JubilaeumsExportAction(), control, true,
-        "walking.png");
-    buttons.paint(getParent());
+    if (((MitgliedControl) object).getMitgliedAuswahl()
+        .equals(MitgliedAuswahl.MITGLIEDER))
+    {
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,
+          object, getExportName()) + ".pdf";
+    }
+    else
+    {
+      mitgliedauswahl = MitgliedAuswahl.NICHTMITGLIEDER;
+      return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_NICHT_MITGLIED_DATEINAME,
+          object, getExportName()) + ".pdf";
+    }
   }
+
 }

@@ -152,7 +152,11 @@ public enum Filter
   ZEILE2("filter_zeile2", "Zeile 2", "Meier", FilterArt.TEXT),
   ZUSATZFELD("filter_zusatzfelder", "Zusatzfelder", "Zusatzfeld",
       FilterArt.ZUSATZFELD),
-  ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT);
+  ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT),
+
+  // Für Auswertung
+  JAHR("filter_jahr", "Jahr", "2024", FilterArt.INTEGER),
+  AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
 

@@ -28,7 +28,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import de.jost_net.JVerein.Einstellungen;
@@ -53,9 +52,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
   // Liste der Pläne die Ist-Beträge haben
   private Set<Wirtschaftsplan> hatIst = new HashSet<>();
 
-  protected String title;
-
-  protected String subtitle;
+  private ExportLayoutParam params;
 
   @Override
   public String getName()
@@ -102,8 +99,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws RemoteException, ApplicationException,
-      FileNotFoundException, DocumentException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws RemoteException, ApplicationException, FileNotFoundException,
+      DocumentException, IOException
   {
     Wirtschaftsplan[] wirtschaftsplaene;
     if (objects[0] instanceof Wirtschaftsplan[])
@@ -119,20 +117,19 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     {
       throw new ApplicationException("Keine Pläne ausgewählt");
     }
+    this.params = params;
+    FileOutputStream fos = new FileOutputStream(file);
 
-    FileOutputStream fileOutputStream = new FileOutputStream(file);
-
-    Reporter reporter = new Reporter(fileOutputStream, title, subtitle, 40, 20,
-        20, 20, false);
+    Reporter reporter = new Reporter(fos, params);
 
     // Header erstellen
     // Leider kann der Header kein Colspan, daher erst Soll/Ist anzeigen
     reporter.addHeaderColumn("Buchungsart/Posten", Element.ALIGN_CENTER, 150,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     for (int i = 0; i < wirtschaftsplaene.length; i++)
     {
-      reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 90,
-          BaseColor.LIGHT_GRAY);
+      reporter.addHeaderColumn("Soll", Element.ALIGN_CENTER, 50,
+          params.getColorHeader(), params.getFontHeader());
       // Wenn es für diesen Plan noch keine Ist-Buchungen gab, spalte "Ist"
       // ausblenden. Oder wenn Ende noch in der Zukkunft und in Einstellungen so
       // festgelegt.
@@ -143,22 +140,23 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
               || Math.abs(wirtschaftsplaene[i].getIstAusgabe()) >= 0.01d))
       {
         hatIst.add(wirtschaftsplaene[i]);
-        reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 90,
-            BaseColor.LIGHT_GRAY);
+        reporter.addHeaderColumn("Ist", Element.ALIGN_CENTER, 50,
+            params.getColorHeader(), params.getFontHeader());
       }
     }
     reporter.createHeader();
 
     // Unter-Header
-    reporter.addColumn("", Element.ALIGN_CENTER, BaseColor.LIGHT_GRAY);
+    reporter.addColumn("", Element.ALIGN_CENTER, params.getColorHeader(),
+        params.getFontHeader());
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
       reporter.addColumn(
           plan.getBezeichung() + "\n"
               + new JVDateFormatTTMMJJJJ().format(plan.getDatumVon()) + "-"
               + new JVDateFormatTTMMJJJJ().format(plan.getDatumBis()),
-          Element.ALIGN_CENTER, BaseColor.LIGHT_GRAY,
-          hatIst.contains(plan) ? 2 : 1);
+          Element.ALIGN_CENTER, params.getColorHeader(), true,
+          params.getFontHeader(), hatIst.contains(plan) ? 2 : 1);
     }
 
     DBIterator<Buchungsklasse> buchungsklasseIterator = Einstellungen
@@ -187,44 +185,57 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     // Summen
     reporter.addColumn(" ", Element.ALIGN_LEFT,
         wirtschaftsplaene.length * 2 + 1);
-    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    reporter.addColumn("Einnahmen", Element.ALIGN_LEFT, params.getColorTable2(),
+        params.getFontFett());
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      reporter.addColumn(plan.getPlanEinnahme(), BaseColor.LIGHT_GRAY);
+      reporter.addColumn(plan.getPlanEinnahme(), params.getColorTable2(),
+          params.getFontFett(), params.getNegativRot());
       if (hatIst.contains(plan))
       {
         reporter.addColumn(
             plan.getIstEinnahme()
                 + (verbindlichkeitenForderungen ? plan.getIstForderungen() : 0),
-            BaseColor.LIGHT_GRAY);
+            params.getColorTable2(), params.getFontFett(),
+            params.getNegativRot());
       }
     }
 
-    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    reporter.addColumn("Ausgaben", Element.ALIGN_LEFT, params.getColorTable2(),
+        params.getFontFett());
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
-      reporter.addColumn(plan.getPlanAusgabe(), BaseColor.LIGHT_GRAY);
+      reporter.addColumn(plan.getPlanAusgabe(), params.getColorTable2(),
+          params.getFontFett(), params.getNegativRot());
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(plan.getIstAusgabe()
-            + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten()
-                : 0),
-            BaseColor.LIGHT_GRAY);
+        reporter.addColumn(
+            plan.getIstAusgabe()
+                + (verbindlichkeitenForderungen ? plan.getIstVerbindlichkeiten()
+                    : 0),
+            params.getColorTable2(), params.getFontFett(),
+            params.getNegativRot());
       }
     }
 
-    reporter.addColumn("Saldo", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY);
+    reporter.addColumn("Saldo", Element.ALIGN_LEFT, params.getColorTable2(),
+        params.getFontFett());
     for (Wirtschaftsplan plan : wirtschaftsplaene)
     {
       reporter.addColumn(plan.getPlanEinnahme() + plan.getPlanAusgabe(),
-          BaseColor.LIGHT_GRAY);
+          params.getColorTable2(), params.getFontFett(),
+          params.getNegativRot());
       if (hatIst.contains(plan))
       {
-        reporter.addColumn(plan.getIstEinnahme() + plan.getIstAusgabe()
-            + (verbindlichkeitenForderungen
-                ? plan.getIstForderungen() + plan.getIstVerbindlichkeiten()
-                : 0),
-            BaseColor.LIGHT_GRAY);
+        reporter
+            .addColumn(
+                plan.getIstEinnahme() + plan.getIstAusgabe()
+                    + (verbindlichkeitenForderungen
+                        ? plan.getIstForderungen()
+                            + plan.getIstVerbindlichkeiten()
+                        : 0),
+                params.getColorTable2(), params.getFontFett(),
+                params.getNegativRot());
       }
     }
 
@@ -233,7 +244,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     {
       reporter.addColumn(" ", Element.ALIGN_LEFT,
           wirtschaftsplaene.length * 2 + 1);
-      reporter.addColumn("Rücklagen", Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY,
+      reporter.addColumn("Rücklagen", Element.ALIGN_LEFT,
+          params.getColorTable(), true, params.getFontNormal(),
           wirtschaftsplaene.length * 2 + 1);
       buchungsklasseIterator.begin();
       while (buchungsklasseIterator.hasNext())
@@ -246,35 +258,39 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
       reporter.addColumn(" ", Element.ALIGN_LEFT,
           wirtschaftsplaene.length * 2 + 1);
       reporter.addColumn("Rücklagen gebildet", Element.ALIGN_LEFT,
-          BaseColor.LIGHT_GRAY);
+          params.getColorTable2(), params.getFontFett());
       for (Wirtschaftsplan plan : wirtschaftsplaene)
       {
         reporter.addColumn(plan.getPlanRuecklagenGebildet(),
-            BaseColor.LIGHT_GRAY);
+            params.getColorTable2(), params.getFontFett(),
+            params.getNegativRot());
         if (hatIst.contains(plan))
         {
           reporter.addColumn(plan.getIstRuecklagenGebildet(),
-              BaseColor.LIGHT_GRAY);
+              params.getColorTable2(), params.getFontFett(),
+              params.getNegativRot());
         }
       }
 
       reporter.addColumn("Rücklagen Aufgelöst", Element.ALIGN_LEFT,
-          BaseColor.LIGHT_GRAY);
+          params.getColorTable2(), params.getFontFett());
       for (Wirtschaftsplan plan : wirtschaftsplaene)
       {
         reporter.addColumn(plan.getPlanRuecklagenAufgeloest(),
-            BaseColor.LIGHT_GRAY);
+            params.getColorTable2(), params.getFontFett(),
+            params.getNegativRot());
         if (hatIst.contains(plan))
         {
           reporter.addColumn(plan.getIstRuecklagenAufgeloest(),
-              BaseColor.LIGHT_GRAY);
+              params.getColorTable2(), params.getFontFett(),
+              params.getNegativRot());
         }
       }
     }
 
     reporter.closeTable();
     reporter.close();
-    fileOutputStream.close();
+    fos.close();
   }
 
   @SuppressWarnings("unchecked")
@@ -354,8 +370,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
     }
 
     reporter.addColumn(new BuchungsklasseFormatter().format(klasse),
-        Element.ALIGN_LEFT, BaseColor.LIGHT_GRAY,
-        wirtschaftsplaene.length * 2 + 1);
+        Element.ALIGN_LEFT, params.getColorTable(), true,
+        params.getFontNormal(), wirtschaftsplaene.length * 2 + 1);
 
     // Spalten füllen
     // Buchungsarten
@@ -381,7 +397,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                   {
                     String text = (String) buchungsartEntry.getKey()
                         .getAttribute("buchungsklassebezeichnung");
-                    reporter.addColumn(text, Element.ALIGN_LEFT);
+                    reporter.addColumn(text, Element.ALIGN_LEFT,
+                        params.getFontNormal());
                   }
                   else
                   {
@@ -391,7 +408,7 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                       return;
                     }
                     reporter.addColumn("      " + postenEntry.getKey(),
-                        Element.ALIGN_LEFT);
+                        Element.ALIGN_LEFT, params.getFontNormal());
                   }
 
                   Double[][] values = postenEntry.getValue();
@@ -400,7 +417,8 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                   {
                     i++;
                     reporter.addColumn(betrag[0] == null ? 0 : betrag[0],
-                        new BaseColor(230, 230, 230));
+                        params.getColorTable2(), params.getFontNormal(),
+                        params.getNegativRot());
 
                     if (hatIst.contains(wirtschaftsplaene[i]))
                     {
@@ -409,9 +427,9 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
                       if ("-".equals(postenEntry.getKey()))
                       {
                         d = betrag[1] == null ? 0 : betrag[1];
-
                       }
-                      reporter.addColumn(d);
+                      reporter.addColumn(d, params.getFontNormal(),
+                          params.getNegativRot());
                     }
                   }
                 }
@@ -424,32 +442,40 @@ public class WirtschaftsplanExporterPDFKlasse implements Exporter
 
     // Summenzeile
     reporter.addColumn("Summe " + new BuchungsklasseFormatter().format(klasse),
-        Element.ALIGN_RIGHT, new BaseColor(230, 230, 230));
+        Element.ALIGN_RIGHT, params.getColorTable2(), params.getFontFett());
     int j = -1;
     for (Double[] sollist : summen)
     {
       j++;
-      reporter.addColumn(sollist[0], new BaseColor(230, 230, 230));
+      reporter.addColumn(sollist[0], params.getColorTable2(),
+          params.getFontFett(), params.getNegativRot());
       if (hatIst.contains(wirtschaftsplaene[j]))
       {
-        reporter.addColumn(sollist[1], new BaseColor(230, 230, 230));
+        reporter.addColumn(sollist[1], params.getColorTable2(),
+            params.getFontFett(), params.getNegativRot());
       }
     }
   }
 
   @Override
-  public void calculateTitle(Object object)
+  public String getTitle(Object object)
   {
-    title = VorlageUtil
+    return VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_TITEL
             : VorlageTyp.WIRTSCHAFTSPLAN_TITEL, object);
   }
 
   @Override
-  public void calculateSubitle(Object object)
+  public String getSubtitle(Object object)
   {
-    subtitle = VorlageUtil
+    return VorlageUtil
         .getName(object == null ? VorlageTyp.WIRTSCHAFTSPLAN_MEHRERE_SUBTITEL
             : VorlageTyp.WIRTSCHAFTSPLAN_SUBTITEL, object);
+  }
+
+  @Override
+  public boolean hasColortable2(Object object)
+  {
+    return true;
   }
 }
