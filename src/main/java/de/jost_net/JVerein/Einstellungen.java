@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein;
 
+import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
@@ -41,7 +42,6 @@ import de.jost_net.JVerein.util.JVDecimalFormat;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.jameica.hbci.rmi.HBCIDBService;
-import de.willuhn.jameica.messaging.QueryMessage;
 import de.willuhn.jameica.security.Wallet;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.Settings;
@@ -127,7 +127,7 @@ public class Einstellungen
   }
 
   /**
-   * Settings in die lokale Settings Datei schreiben (nicht in der DB)
+   * Liest die Settings aus der lokalen Datei.
    * 
    * @param key
    *          der Settings-Key
@@ -141,11 +141,12 @@ public class Einstellungen
   }
 
   /**
-   * List die Settings aus der lokalen Datei.
+   * Settings in die lokale Settings Datei schreiben (nicht in der DB)
    * 
    * @param key
-   *          der zu lesende Settings-Key
+   *          der Settings-Key
    * @param value
+   *          der zu speichernde Wert
    */
   public static void setSettingInt(String key, int value)
   {
@@ -228,6 +229,8 @@ public class Einstellungen
     AUSLANDSADRESSEN("auslandsadressen", Boolean.class, "0"),
     ARBEITSEINSATZ("arbeitseinsatz", Boolean.class, "0"),
     DOKUMENTENSPEICHERUNG("dokumentenspeicherung", Boolean.class, "0"),
+    DOKUMENTSPEICHERUNG_MESSAGING("dokumentspeicherung_messaging",
+        Boolean.class, "0"),
     INDIVIDUELLEBEITRAEGE("individuellebeitraege", Boolean.class, "0"),
     EXTERNEMITGLIEDSNUMMER("externemitgliedsnummer", Boolean.class, "0"),
     MITGLIEDSNUMMERANZEIGEN("nummeranzeigen", Boolean.class, "0"),
@@ -723,59 +726,6 @@ public class Einstellungen
   }
 
   /**
-   * Prueft die Gueltigkeit der BLZ/Kontonummer-Kombi anhand von Pruefziffern.
-   * 
-   * @param blz
-   * @param kontonummer
-   * @return true, wenn die Kombi ok ist.
-   */
-  public final static boolean checkAccountCRC(String blz, String kontonummer)
-  {
-    QueryMessage q = new QueryMessage(blz + ":" + kontonummer);
-    Application.getMessagingFactory()
-        .getMessagingQueue("hibiscus.query.accountcrc").sendSyncMessage(q);
-    Object data = q.getData();
-
-    // Wenn wir keine oder eine ungueltige Antwort erhalten haben,
-    // ist Hibiscus vermutlich nicht installiert. In dem Fall
-    // lassen wir die Konto/BLZ-Kombination mangels besserer
-    // Informationen zu
-    return (data == null || !(data instanceof Boolean)) ? true
-        : ((Boolean) data).booleanValue();
-  }
-
-  /**
-   * Liefert den Namen der Bank zu einer BLZ.
-   * 
-   * @param blz
-   *          BLZ.
-   * @return Name der Bank oder Leerstring.
-   */
-  public final static String getNameForBLZ(String blz)
-  {
-    QueryMessage q = new QueryMessage(blz);
-    Application.getMessagingFactory()
-        .getMessagingQueue("hibiscus.query.bankname").sendSyncMessage(q);
-    Object data = q.getData();
-
-    // wenn wir nicht zurueckerhalten haben oder die Nachricht
-    // noch unveraendert die BLZ enthaelt, liefern wir einen
-    // Leerstring zurueck
-    return (data == null || data.equals(blz)) ? "" : data.toString();
-  }
-
-  /**
-   * Prueft, ob die MD5-Checksumme der Datenbank geprueft werden soll.
-   * 
-   * @return true, wenn die Checksumme geprueft werden soll.
-   */
-  public static boolean getCheckDatabase()
-  {
-    loadSettings();
-    return settings.getBoolean("checkdatabase", true);
-  }
-
-  /**
    * Prüft, ob es der Erste Start von JVerein ist
    * 
    * @return
@@ -833,5 +783,37 @@ public class Einstellungen
   public static boolean isTest()
   {
     return false;
+  }
+
+  public static String getMitgliedDokumentVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("mitgliedDokumentVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Mitglieder");
+  }
+
+  public static void setMitgliedDokumentVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("mitgliedDokumentVerzeichnis", value);
+  }
+
+  public static String getBuchungDokumentVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("buchungDokumentVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Buchungen");
+  }
+
+  public static void setBuchungDokumentVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("buchungDokumentVerzeichnis", value);
+  }
+
+  private static String getWorkPath()
+  {
+    return Application.getPluginLoader().getPlugin(JVereinPlugin.class)
+        .getResources().getWorkPath();
   }
 }

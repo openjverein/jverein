@@ -16,12 +16,10 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
-import de.jost_net.JVerein.Messaging.DokumentMessage;
 import de.jost_net.JVerein.gui.dialogs.DokumentDialog;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -46,15 +44,18 @@ public class DokumentInfoBearbeitenAction implements Action
       {
         return;
       }
-      DokumentDialog dd = new DokumentDialog(ad);
-      ad = dd.open();
-      ad.store();
-      Application.getMessagingFactory().sendMessage(new DokumentMessage(ad));
-
+      // DB-Object nue laden, sonst sind ggf. Änderungen enthalten, bei denen
+      // das Speichern fehlgeschlagen ist.
+      ad.load(ad.getID());
+      new DokumentDialog(ad).open();
     }
     catch (OperationCanceledException e)
     {
       // Nichts machen
+    }
+    catch (ApplicationException e)
+    {
+      throw e;
     }
     catch (Exception e)
     {

@@ -40,10 +40,7 @@ import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -908,16 +905,12 @@ public class BuchungImpl extends AbstractJVereinDBObject
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<BuchungDokument> docs = service
+    DBIterator<BuchungDokument> it = Einstellungen.getDBService()
         .createList(BuchungDokument.class);
-    docs.addFilter("referenz = ?", new Object[] { this.getID() });
-    while (docs.hasNext())
+    it.addFilter("referenz = ?", new Object[] { this.getID() });
+    while (it.hasNext())
     {
-      QueryMessage qm = new QueryMessage(
-          ((BuchungDokument) docs.next()).getUUID(), null);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
+      it.next().delete();
     }
     super.delete();
   }

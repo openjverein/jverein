@@ -18,8 +18,8 @@ package de.jost_net.JVerein.server;
 
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
-import java.util.TreeSet;
-
+import java.util.ArrayList;
+import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
@@ -33,9 +33,9 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
 
   private static final long serialVersionUID = 1L;
 
-  private TreeSet<MailEmpfaenger> empfaenger = null;
+  private List<MailEmpfaenger> empfaenger = null;
 
-  private TreeSet<MailAnhang> anhang = null;
+  private List<MailAnhang> anhang = null;
 
   public MailImpl() throws RemoteException
   {
@@ -55,9 +55,25 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    if (!forcedDelete)
+    {
+      try
+      {
+        if (getVersand() != null)
+        {
+          throw new ApplicationException(
+              "Die Mail kann nicht gelöscht werden, sie wurde schon versendet!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
   }
 
   @Override
@@ -81,9 +97,9 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
     }
     catch (RemoteException e)
     {
-      Logger.error("insert check of mailvorlage failed", e);
+      Logger.error("Insert check of mail failed", e);
       throw new ApplicationException(
-          "MailVorlage kann nicht gespeichert werden. Siehe system log");
+          "Mail kann nicht gespeichert werden. Siehe system log");
     }
   }
 
@@ -101,34 +117,68 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public TreeSet<MailEmpfaenger> getEmpfaenger()
+  public List<MailEmpfaenger> getEmpfaenger() throws RemoteException
   {
+    return getEmpfaenger(false);
+  }
+
+  @Override
+  public List<MailEmpfaenger> getEmpfaenger(boolean reload)
+      throws RemoteException
+  {
+    if (empfaenger != null && !reload)
+    {
+      return empfaenger;
+    }
+    if (isNewObject())
+    {
+      empfaenger = new ArrayList<>();
+      return empfaenger;
+    }
+    DBIterator<MailEmpfaenger> it = Einstellungen.getDBService()
+        .createList(MailEmpfaenger.class);
+    it.join("mitglied");
+    it.addFilter("mitglied = mitglied.id");
+    it.addFilter("mail = ?", getID());
+    it.setOrder("order by mitglied.name, mitglied.vorname");
+    empfaenger = new ArrayList<>();
+    while (it.hasNext())
+    {
+      MailEmpfaenger me = it.next();
+      empfaenger.add(me);
+    }
     return empfaenger;
   }
 
   @Override
-  public void setEmpfaenger(TreeSet<MailEmpfaenger> empfaenger)
+  public void setEmpfaenger(List<MailEmpfaenger> empfaenger)
   {
     this.empfaenger = empfaenger;
   }
 
   @Override
-  public TreeSet<MailAnhang> getAnhang() throws RemoteException
+  public List<MailAnhang> getAnhang() throws RemoteException
   {
-    if (anhang != null)
+    return getAnhang(false);
+  }
+
+  @Override
+  public List<MailAnhang> getAnhang(boolean reload) throws RemoteException
+  {
+    if (anhang != null && !reload)
     {
       return anhang;
     }
     if (isNewObject())
     {
-      anhang = new TreeSet<>();
+      anhang = new ArrayList<>();
       return anhang;
     }
     DBIterator<MailAnhang> it = Einstellungen.getDBService()
         .createList(MailAnhang.class);
     it.addFilter("mail = ?", getID());
 
-    anhang = new TreeSet<>();
+    anhang = new ArrayList<>();
     while (it.hasNext())
     {
       MailAnhang an = it.next();
@@ -138,7 +188,7 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   }
 
   @Override
-  public void setAnhang(TreeSet<MailAnhang> anhang)
+  public void setAnhang(List<MailAnhang> anhang)
   {
     this.anhang = anhang;
   }

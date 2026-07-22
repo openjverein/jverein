@@ -21,7 +21,6 @@ import java.sql.Clob;
 import java.sql.SQLException;
 import java.text.ParseException;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.io.AltersgruppenParser;
 import de.jost_net.JVerein.io.JubilaeenParser;
 import de.jost_net.JVerein.rmi.Einstellung;
@@ -110,18 +109,6 @@ public class EinstellungImpl extends AbstractJVereinDBObject
         catch (SEPAException e)
         {
           throw new ApplicationException(e.getMessage());
-        }
-      }
-
-      // Dokumentenspeicherung
-      if (hasChanged(Property.DOKUMENTENSPEICHERUNG.getKey())
-          && (Boolean) getAttribute(Property.DOKUMENTENSPEICHERUNG.getKey()))
-      {
-        if (!JVereinPlugin.isArchiveServiceActive())
-        {
-          throw new ApplicationException(
-              "Plugin jameica.messaging ist nicht installiert oder im LAN verfügbar!"
-                  + " Wird zur Dokumentenspeicherung benötigt!");
         }
       }
 

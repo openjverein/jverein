@@ -1,6 +1,7 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +27,10 @@ public class BuchungMap extends AbstractMap
       map = inma;
     }
 
+    if (bu == null)
+    {
+      return getDummyMap(map);
+    }
     for (BuchungVar var : BuchungVar.values())
     {
       Object value = null;
@@ -189,6 +194,88 @@ public class BuchungMap extends AbstractMap
           break;
         case ZWECK1:
           value = StringTool.toNotNullString(bu.getZweck());
+          break;
+      }
+      map.put(var.getName(), value);
+    }
+    return map;
+  }
+
+  private Map<String, Object> getDummyMap(Map<String, Object> map)
+  {
+    for (BuchungVar var : BuchungVar.values())
+    {
+      Object value = null;
+      switch (var)
+      {
+        case ABRECHNUNGSLAUF:
+          value = Datum.formatDate(new Date());
+          break;
+        case ART:
+          value = "Überweisung";
+          break;
+        case AUSZUGSNUMMER:
+          value = "3";
+          break;
+        case BETRAG:
+          value = Einstellungen.DECIMALFORMAT.format(10.20);
+          break;
+        case BETRAGNETTO:
+          value = Einstellungen.DECIMALFORMAT.format(10.20);
+          break;
+        case BLATTNUMMER:
+          value = "1";
+          break;
+        case BUCHUNGSARBEZEICHNUNG:
+          value = "Mitgliedsbeiträge";
+          break;
+        case BUCHUNGSARTNUMMER:
+          value = "1000";
+          break;
+        case BUCHUNGSKLASSEBEZEICHNUNG:
+          value = "Ideeller Bereich";
+          break;
+        case BUCHUNGSKLASSENUMMER:
+          value = "1";
+          break;
+        case DATUM:
+          value = Datum.formatDate(new Date());
+          break;
+        case IBAN:
+          value = "DE89 3704 0044 0532 0130 00";
+          break;
+        case ID:
+          value = "1234";
+          break;
+        case JAHRESABSCHLUSS:
+          value = Datum.formatDate(new Date());
+          break;
+        case KOMMENTAR:
+          value = "Kommentar";
+          break;
+        case KONTONUMMER:
+          value = "123";
+          break;
+        case MITGLIEDSKONTO:
+          value = "Max Mustermann";
+          break;
+        case NAME:
+          value = "Mustermann";
+          break;
+        case PROJEKTBEZEICHNUNG:
+          value = "Projekt";
+          break;
+        case PROJEKTNUMMER:
+          value = "4";
+          break;
+        case SPENDENBESCHEINIGUNG:
+          value = "55";
+          break;
+        case STEUER:
+          value = "";
+          break;
+        case ZWECK1:
+          value = "Verwendungszweck";
           break;
       }
       map.put(var.getName(), value);

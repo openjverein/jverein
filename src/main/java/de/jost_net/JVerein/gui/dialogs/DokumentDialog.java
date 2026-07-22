@@ -17,34 +17,45 @@
 
 package de.jost_net.JVerein.gui.dialogs;
 
+import java.io.File;
 import java.rmi.RemoteException;
-import java.util.Date;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.gui.parts.DokumentPart;
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.FileInput;
+import de.willuhn.jameica.gui.input.Input;
+import de.willuhn.jameica.gui.input.TextInput;
+import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Dialog, zur Bearbeitung von Dokument-Infos
  */
-public class DokumentDialog extends AbstractDialog<AbstractDokument>
+public class DokumentDialog extends AbstractDialog<Boolean>
 {
 
   private AbstractDokument dok = null;
 
-  private DokumentPart part = null;
+  private Settings settings;
+
+  private TextInput bemerkung;
+
+  private FileInput datei;
 
   public DokumentDialog(AbstractDokument dok)
   {
     super(AbstractDialog.POSITION_CENTER);
     this.dok = dok;
+    this.settings = new Settings(this.getClass());
 
     setTitle("Dokument-Infos");
     setSize(850, SWT.DEFAULT);
@@ -53,50 +64,79 @@ public class DokumentDialog extends AbstractDialog<AbstractDokument>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    getPart().paint(parent);
-    ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", new Action()
+    if (dok.isNewObject())
     {
-      @Override
-      public void handleAction(Object context)
-      {
-        try
-        {
-          dok.setDatum((Date) part.getDatum().getValue());
-          dok.setBemerkung((String) part.getBemerkung().getValue());
-        }
-        catch (RemoteException e)
-        {
-          Logger.error("Fehler beim Speichern des Dokuments", e);
-        }
-        close();
-      }
-    }, null, true, "ok.png");
-    b.addButton("Abbrechen", new Action()
+      LabelGroup grDokument = new LabelGroup(parent, "Dokument");
+      grDokument.addLabelPair("Datei", getDatei());
+    }
+    LabelGroup group = new LabelGroup(parent, "Infos");
+    group.addLabelPair("Bemerkung", getBemerkung());
+    if (dok.getPfad() != null)
     {
-      @Override
-      public void handleAction(Object context)
-      {
-        throw new OperationCanceledException();
-      }
+      group.addLabelPair("Pfad", getPfad());
+    }
+
+    ButtonArea buttons = new ButtonArea();
+    buttons.addButton(new Button("Speichern", c -> speichern(), null, true,
+        "document-save.png"));
+
+    buttons.addButton("Abbrechen", c -> {
+      throw new OperationCanceledException();
     }, null, false, "process-stop.png");
-    b.paint(parent);
+    buttons.paint(parent);
+  }
+
+  private void speichern() throws ApplicationException
+  {
+    try
+    {
+      if (datei != null)
+      {
+        File file = new File((String) datei.getValue());
+        settings.setAttribute("lastdir", file.getParent());
+        dok.setFile(file);
+      }
+      dok.setBemerkung((String) bemerkung.getValue());
+      dok.store();
+      close();
+    }
+    catch (RemoteException e)
+    {
+      GUI.getStatusBar().setErrorText("Fehler beim Speichern");
+      Logger.error("Fehler beim Speichern", e);
+    }
   }
 
   @Override
-  protected AbstractDokument getData() throws Exception
+  protected Boolean getData() throws Exception
   {
-    return this.dok;
+    return true;
   }
 
-  private DokumentPart getPart()
+  private TextInput getBemerkung() throws RemoteException
   {
-    if (part != null)
+    bemerkung = new TextInput(dok.getBemerkung(), 50);
+    return bemerkung;
+  }
+
+  private Input getDatei()
+  {
+    datei = new FileInput("", false)
     {
-      return part;
-    }
-    part = new DokumentPart(dok);
-    return part;
+      @Override
+      protected void customize(FileDialog fd)
+      {
+        fd.setFilterPath(settings.getString("lastdir", ""));
+      }
+    };
+    datei.setMandatory(true);
+    return datei;
   }
 
+  private Input getPfad() throws RemoteException
+  {
+    Input pfad = new TextInput(dok.getRootDir() + dok.getPfad());
+    pfad.disable();
+    return pfad;
+  }
 }

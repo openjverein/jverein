@@ -14,19 +14,27 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
+package de.jost_net.JVerein.gui.menu;
 
-package de.jost_net.JVerein.Messaging;
-
-import de.willuhn.datasource.GenericObject;
-import de.willuhn.jameica.hbci.messaging.ObjectMessage;
+import de.jost_net.JVerein.gui.action.EditAction;
+import de.jost_net.JVerein.gui.action.MailEmpfaengerDeleteAction;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.MailDetailView;
+import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
+import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
+import de.willuhn.jameica.gui.parts.ContextMenu;
 
 /**
- * Wird versendet, wenn sich die Tabelle der Dokumente geaendert hat.
+ * Kontext-Menu zu den Mails.
  */
-public class DokumentMessage extends ObjectMessage
+public class MitgliedMailMenu extends ContextMenu
 {
-  public DokumentMessage(GenericObject object)
+
+  public MitgliedMailMenu(JVereinTablePart part)
   {
-    super(object);
+    addItem(new CheckedSingleContextMenuItem("Bearbeiten",
+        new EditAction(MailDetailView.class, part), "text-x-generic.png"));
+    addItem(new CheckedContextMenuItem("Löschen",
+        new MailEmpfaengerDeleteAction(), "user-trash-full.png"));
   }
 }

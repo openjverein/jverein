@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
@@ -426,28 +425,21 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   private void zeichneDokumente(Composite parentComposite)
       throws RemoteException
   {
-    if (JVereinPlugin.isArchiveServiceActive())
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
       Container cont = getTabOrLabelContainer(parentComposite, DOKUMENTE);
 
-      MitgliedDokument mido = (MitgliedDokument) Einstellungen.getDBService()
-          .createObject(MitgliedDokument.class, null);
-      if (control.getMitglied().getID() != null)
-      {
-        mido.setReferenz(Long.valueOf(control.getMitglied().getID()));
-      }
-
-      dcontrol = new DokumentControl(this, "mitglieder", true);
+      dcontrol = new DokumentControl(true, MitgliedDokument.class);
 
       ButtonArea butts = new ButtonArea();
-      butts.addButton(dcontrol.getNeuButton(mido));
+      butts.addButton(dcontrol.getNeuButton());
       butts.paint(cont.getComposite());
 
       cont.getComposite().setLayoutData(new GridData(GridData.FILL_VERTICAL));
       cont.getComposite().setLayout(new GridLayout(1, false));
 
-      dcontrol.getDokumenteList(mido).paint(cont.getComposite());
-      dcontrol.setDragDrop(cont.getComposite(), MitgliedDokument.class);
+      dcontrol.getDokumenteList().paint(cont.getComposite());
+      dcontrol.setDragDrop(cont.getComposite());
       control.setDokumentControl(dcontrol);
     }
   }
@@ -940,17 +932,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
   public void unbind() throws OperationCanceledException, ApplicationException
   {
     controlSollb.deregisterMitgliedskontoConsumer();
-    try
-    {
-      if (JVereinPlugin.isArchiveServiceActive() && dcontrol != null)
-      {
-        dcontrol.deregisterDocumentConsumer();
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
-    }
     super.unbind();
   }
 

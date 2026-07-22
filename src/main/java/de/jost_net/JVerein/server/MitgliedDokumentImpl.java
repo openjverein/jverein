@@ -16,9 +16,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.MitgliedDokument;
+import de.jost_net.JVerein.util.VorlageUtil;
 
 public class MitgliedDokumentImpl extends AbstractDokumentImpl
     implements MitgliedDokument
@@ -35,6 +40,26 @@ public class MitgliedDokumentImpl extends AbstractDokumentImpl
   protected String getTableName()
   {
     return "mitglieddokument";
+  }
+
+  @Override
+  protected String getVerzeichnis()
+  {
+    return "mitglieder";
+  }
+
+  @Override
+  public String getRootDir()
+  {
+    return Einstellungen.getMitgliedDokumentVerzeichnis() + File.separator;
+  }
+
+  @Override
+  protected String getDateiPfad() throws RemoteException
+  {
+    AbstractJVereinDBObject dbObject = Einstellungen.getDBService()
+        .createObject(Mitglied.class, getReferenz().toString());
+    return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENT_PFAD, dbObject);
   }
 
 }

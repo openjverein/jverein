@@ -18,30 +18,41 @@ package de.jost_net.JVerein.gui.action;
 
 import java.rmi.RemoteException;
 
-import de.jost_net.JVerein.rmi.AbstractDokument;
+import de.jost_net.JVerein.Messaging.MailDeleteMessage;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
-import de.willuhn.jameica.messaging.QueryMessage;
+import de.jost_net.JVerein.rmi.MailEmpfaenger;
 import de.willuhn.jameica.system.Application;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen von Dokumenten
+ * Entfernen von Mailempfaengern aus der Liste der Empfänger im MailDetailView.
  */
-public class DokumentDeleteAction extends DeleteAction
+public class MailEmpfaengerEntfernenAction extends DeleteAction
 {
+
   @Override
   protected void doDelete(JVereinDBObject object, Integer selection)
       throws RemoteException, ApplicationException
   {
-    if (!(object instanceof AbstractDokument))
+    if (!(object instanceof MailEmpfaenger))
     {
       return;
     }
+    if (((MailEmpfaenger) object).getVersand() == null)
+    {
+      Application.getMessagingFactory()
+          .sendMessage(new MailDeleteMessage(object));
+    }
+    else
+    {
+      throw new ApplicationException(
+          "Empfänger kann nicht entfernt werden, die Mail wurde schon an ihn versendet!");
+    }
+  }
 
-    AbstractDokument ad = (AbstractDokument) object;
-    QueryMessage qm = new QueryMessage(ad.getUUID(), null);
-    Application.getMessagingFactory().getMessagingQueue("jameica.messaging.del")
-        .sendSyncMessage(qm);
-    ad.delete();
+  @Override
+  protected boolean isNewAllowed()
+  {
+    return true;
   }
 }
