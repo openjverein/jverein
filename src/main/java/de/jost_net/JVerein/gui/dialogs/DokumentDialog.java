@@ -135,7 +135,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
 
   private Input getPfad() throws RemoteException
   {
-    Input pfad = new TextInput(dok.getPfad());
+    Input pfad = new TextInput(dok.getRootDir() + dok.getPfad());
     pfad.disable();
     return pfad;
   }

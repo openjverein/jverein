@@ -111,7 +111,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   }
 
   @Override
-  protected String getRootDir()
+  public String getRootDir()
   {
     return Einstellungen.getBuchungDokumentVerzeichnis() + File.separator;
   }

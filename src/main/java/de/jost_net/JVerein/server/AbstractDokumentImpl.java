@@ -152,6 +152,10 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   @Override
   public Object getAttribute(String fieldName) throws RemoteException
   {
+    if ("vollpfad".equals(fieldName) && getPfad() != null)
+    {
+      return getRootDir() + getPfad();
+    }
     return super.getAttribute(fieldName);
   }
 
@@ -371,7 +375,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     }
     else if (getPfad() != null)
     {
-      new File(getPfad()).delete();
+      new File(getRootDir() + getPfad()).delete();
     }
     else
     {
@@ -405,5 +409,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     setAttribute("pfad", pfad);
   }
 
-  protected abstract String getRootDir();
+  @Override
+  public abstract String getRootDir() throws RemoteException;
 }

@@ -52,4 +52,6 @@ public interface AbstractDokument extends JVereinDBObject
   public void setHash(byte[] hash) throws RemoteException;
 
   public byte[] getHash() throws RemoteException;
+
+  public String getRootDir() throws RemoteException;
 }

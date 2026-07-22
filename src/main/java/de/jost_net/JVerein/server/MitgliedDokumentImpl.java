@@ -49,7 +49,7 @@ public class MitgliedDokumentImpl extends AbstractDokumentImpl
   }
 
   @Override
-  protected String getRootDir()
+  public String getRootDir()
   {
     return Einstellungen.getMitgliedDokumentVerzeichnis() + File.separator;
   }
