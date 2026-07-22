@@ -2634,20 +2634,7 @@ public class EinstellungControl extends AbstractControl
 
   public void handleStoreVerzeichnisse()
   {
-    try
-    {
-      DBTransaction.starten();
 
-      DBTransaction.commit();
-
-      GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
-    }
-    catch (ApplicationException e)
-    {
-      DBTransaction.rollback();
-      Logger.error("Speichern fehlgeschlagen", e);
-      GUI.getStatusBar().setErrorText(e.getMessage());
-    }
   }
 
   public void handleStoreSpendenbescheinigungen()
