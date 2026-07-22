@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -107,6 +108,12 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   protected String getVerzeichnis()
   {
     return "buchungen";
+  }
+
+  @Override
+  protected String getRootDir()
+  {
+    return Einstellungen.getBuchungDokumentVerzeichnis() + File.separator;
   }
 
   @Override

@@ -17,6 +17,7 @@
 
 package de.jost_net.JVerein;
 
+import java.io.File;
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.text.DecimalFormat;
@@ -126,7 +127,7 @@ public class Einstellungen
   }
 
   /**
-   * Settings in die lokale Settings Datei schreiben (nicht in der DB)
+   * Liest die Settings aus der lokalen Datei.
    * 
    * @param key
    *          der Settings-Key
@@ -140,11 +141,12 @@ public class Einstellungen
   }
 
   /**
-   * List die Settings aus der lokalen Datei.
+   * Settings in die lokale Settings Datei schreiben (nicht in der DB)
    * 
    * @param key
-   *          der zu lesende Settings-Key
+   *          der Settings-Key
    * @param value
+   *          der zu speichernde Wert
    */
   public static void setSettingInt(String key, int value)
   {
@@ -784,7 +786,33 @@ public class Einstellungen
     return false;
   }
 
-  public static String getWorkPath()
+  public static String getMitgliedDokumentVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("mitgliedDokumentVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Mitglieder");
+  }
+
+  public static void setMitgliedDokumentVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("mitgliedDokumentVerzeichnis", value);
+  }
+
+  public static String getBuchungDokumentVerzeichnis()
+  {
+    loadSettings();
+    return settings.getString("buchungDokumentVerzeichnis",
+        Einstellungen.getWorkPath() + File.separator + "Buchungen");
+  }
+
+  public static void setBuchungDokumentVerzeichnis(String value)
+  {
+    loadSettings();
+    settings.setAttribute("buchungDokumentVerzeichnis", value);
+  }
+
+  private static String getWorkPath()
   {
     return Application.getPluginLoader().getPlugin(JVereinPlugin.class)
         .getResources().getWorkPath();

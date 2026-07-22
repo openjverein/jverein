@@ -190,7 +190,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     }
     else if (getPfad() != null)
     {
-      file = new File(getPfad());
+      file = new File(getRootDir() + getPfad());
       if (!file.exists())
       {
         throw new ApplicationException("Datei existiert nicht");
@@ -250,7 +250,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         {
           String pfad = getDateiPfad() + File.separator + file.getName();
 
-          newFile = new File(pfad);
+          newFile = new File(getRootDir() + pfad);
           if (newFile.exists())
           {
             throw new ApplicationException("Datei existiert bereits!");
@@ -397,4 +397,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   {
     setAttribute("pfad", pfad);
   }
+
+  protected abstract String getRootDir();
 }

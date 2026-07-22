@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -45,6 +46,12 @@ public class MitgliedDokumentImpl extends AbstractDokumentImpl
   protected String getVerzeichnis()
   {
     return "mitglieder";
+  }
+
+  @Override
+  protected String getRootDir()
+  {
+    return Einstellungen.getMitgliedDokumentVerzeichnis() + File.separator;
   }
 
   @Override

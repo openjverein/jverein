@@ -84,6 +84,7 @@ import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.input.TextInput;
 import de.willuhn.jameica.messaging.QueryMessage;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
@@ -91,7 +92,6 @@ import de.willuhn.util.Base64;
 
 public class EinstellungControl extends AbstractControl
 {
-
   private Input name;
 
   private Input strasse;
@@ -423,6 +423,10 @@ public class EinstellungControl extends AbstractControl
   private CheckboxInput abweichendezahler;
 
   private CheckboxInput dokumentenspeicherung_messaging;
+
+  private DirectoryInput mitgliedsDokumentVerzeichnis;
+
+  private DirectoryInput buchungsDokumentVerzeichnis;
 
   public EinstellungControl(AbstractView view)
   {
@@ -1185,6 +1189,28 @@ public class EinstellungControl extends AbstractControl
         .getEinstellung(Property.VORLAGENCSVVERZEICHNIS);
     vorlagenCsvVerzeichnis = new DirectoryInput(lastValue);
     return vorlagenCsvVerzeichnis;
+  }
+
+  public DirectoryInput getMitgliedsDokumentVerzeichnis() throws RemoteException
+  {
+    if (mitgliedsDokumentVerzeichnis != null)
+    {
+      return mitgliedsDokumentVerzeichnis;
+    }
+    mitgliedsDokumentVerzeichnis = new DirectoryInput(
+        Einstellungen.getMitgliedDokumentVerzeichnis());
+    return mitgliedsDokumentVerzeichnis;
+  }
+
+  public DirectoryInput getBuchungsDokumentVerzeichnis() throws RemoteException
+  {
+    if (buchungsDokumentVerzeichnis != null)
+    {
+      return buchungsDokumentVerzeichnis;
+    }
+    buchungsDokumentVerzeichnis = new DirectoryInput(
+        Einstellungen.getBuchungDokumentVerzeichnis());
+    return buchungsDokumentVerzeichnis;
   }
 
   public DecimalInput getSpendenbescheinigungminbetrag() throws RemoteException
@@ -2673,9 +2699,51 @@ public class EinstellungControl extends AbstractControl
           (String) vorlagenCsvVerzeichnis.getValue());
       DBTransaction.commit();
 
+      if (!Einstellungen.getMitgliedDokumentVerzeichnis()
+          .equals(mitgliedsDokumentVerzeichnis.getValue()))
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Verzeichnis geändert");
+        dialog
+            .setText("Das Verzeichnis für Mitglieds-Dokumente wurde geändert.\n"
+                + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
+                + Einstellungen.getMitgliedDokumentVerzeichnis() + "' nach '"
+                + mitgliedsDokumentVerzeichnis.getValue() + "'\n"
+                + "Fortfahren?");
+        if (!(Boolean) dialog.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+      if (!Einstellungen.getBuchungDokumentVerzeichnis()
+          .equals(buchungsDokumentVerzeichnis.getValue()))
+      {
+        YesNoDialog dialog = new YesNoDialog(YesNoDialog.POSITION_CENTER);
+        dialog.setTitle("Verzeichnis geändert");
+        dialog
+            .setText("Das Verzeichnis für Buchungs-Dokumente wurde geändert.\n"
+                + "Bitte Verschieben sie ggf. vorhandene Dokument manuell von '"
+                + Einstellungen.getBuchungDokumentVerzeichnis() + "' nach '"
+                + buchungsDokumentVerzeichnis.getValue() + "'\n"
+                + "Fortfahren?");
+        if (!(Boolean) dialog.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+
+      Einstellungen.setMitgliedDokumentVerzeichnis(
+          (String) mitgliedsDokumentVerzeichnis.getValue());
+      Einstellungen.setBuchungDokumentVerzeichnis(
+          (String) buchungsDokumentVerzeichnis.getValue());
+
       GUI.getStatusBar().setSuccessText("Einstellungen gespeichert");
     }
-    catch (RemoteException | ApplicationException e)
+    catch (OperationCanceledException e)
+    {
+      throw e;
+    }
+    catch (Exception e)
     {
       DBTransaction.rollback();
       Logger.error("Speichern fehlgeschlagen", e);

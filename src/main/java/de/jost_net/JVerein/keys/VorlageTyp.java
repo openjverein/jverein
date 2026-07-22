@@ -16,8 +16,6 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
-import de.jost_net.JVerein.Einstellungen;
-
 public enum VorlageTyp
 {
   // Dateinamen
@@ -795,12 +793,9 @@ public enum VorlageTyp
   STEUERN_SUBTITEL("steuern-subtitel", "Steuern Subtitel", "",
       Vorlageart.TITEL.getKey()),
   BUCHUNG_DOKUMENT_PFAD("buchung-dokument-pfad", "Buchung Dokument Pfad",
-      Einstellungen.getWorkPath()
-          + "/Buchungen/$buchung_kontonummer/$buchung_id",
-      Vorlageart.PFAD.getKey()),
+      "/$buchung_kontonummer/$buchung_id", Vorlageart.PFAD.getKey()),
   MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
-      Einstellungen.getWorkPath() + "/Mitglieder/$mitglied_id",
-      Vorlageart.PFAD.getKey());
+      "/$mitglied_id", Vorlageart.PFAD.getKey());
 
   private final String text;
 
