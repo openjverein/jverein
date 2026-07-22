@@ -643,6 +643,10 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         {
           GUI.getStatusBar().setErrorText(ae.getMessage());
         }
+        catch (OperationCanceledException e)
+        {
+          throw e;
+        }
         catch (Exception e)
         {
           Logger.error("Fehler bei der Kontoauszug Ausgabe.", e);

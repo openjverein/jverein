@@ -61,7 +61,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     CSV
   }
 
-  private boolean success = false;
+  protected boolean success = false;
 
   protected Settings settings;
 

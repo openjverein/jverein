@@ -496,12 +496,18 @@ public class Reporter implements AutoCloseable
 
   public void addColumn(Date value, int align, Font font)
   {
+    addColumn(value, align, zellenColor, font);
+  }
+
+  public void addColumn(Date value, int align, BaseColor backgroundcolor,
+      Font font)
+  {
     String text = "";
     if (value != null && !value.equals(Einstellungen.NODATE))
     {
       text = new SimpleDateFormat("dd.MM.yyyy").format(value);
     }
-    addColumn(text, align, zellenColor, false, font, 1);
+    addColumn(text, align, backgroundcolor, false, font, 1);
   }
 
   /**
