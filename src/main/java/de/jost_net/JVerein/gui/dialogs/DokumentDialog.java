@@ -19,17 +19,13 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.io.File;
 import java.rmi.RemoteException;
-import java.util.Date;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.rmi.AbstractDokument;
-import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
-import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -50,8 +46,6 @@ public class DokumentDialog extends AbstractDialog<Boolean>
   private AbstractDokument dok = null;
 
   private Settings settings;
-
-  private DateInput datum;
 
   private TextInput bemerkung;
 
@@ -76,7 +70,6 @@ public class DokumentDialog extends AbstractDialog<Boolean>
       grDokument.addLabelPair("Datei", getDatei());
     }
     LabelGroup group = new LabelGroup(parent, "Infos");
-    group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Bemerkung", getBemerkung());
     if (dok.getPfad() != null)
     {
@@ -104,7 +97,6 @@ public class DokumentDialog extends AbstractDialog<Boolean>
         dok.setFile(file);
       }
       dok.setBemerkung((String) bemerkung.getValue());
-      dok.setDatum((Date) datum.getValue());
       dok.store();
       close();
     }
@@ -119,20 +111,6 @@ public class DokumentDialog extends AbstractDialog<Boolean>
   protected Boolean getData() throws Exception
   {
     return true;
-  }
-
-  private DateInput getDatum() throws RemoteException
-  {
-    Date d = dok.getDatum();
-    if (d == null)
-    {
-      d = new Date();
-    }
-    datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    datum.setTitle("Datum");
-    datum.setText("Bitte Datum wählen");
-    datum.setMandatory(true);
-    return datum;
   }
 
   private TextInput getBemerkung() throws RemoteException

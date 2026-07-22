@@ -71,24 +71,27 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Keine Datei angegeben!");
     }
-    try
-    {
-      if (getDatum() == null)
-      {
-        throw new ApplicationException("Bitte Datum eingeben!");
-      }
-    }
-    catch (RemoteException e)
-    {
-      String fehler = "Dokument kann nicht gespeichert werden. Siehe system log.";
-      Logger.error(fehler, e);
-      throw new ApplicationException(fehler);
-    }
   }
 
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    if (hasChanged("datum"))
+    {
+      throw new ApplicationException("Datum darf nicht verändert werden!");
+    }
+    if (hasChanged("uuid"))
+    {
+      throw new ApplicationException("UUID darf nicht verändert werden!");
+    }
+    if (hasChanged("hash"))
+    {
+      throw new ApplicationException("Hash darf nicht verändert werden!");
+    }
+    if (hasChanged("pfad"))
+    {
+      throw new ApplicationException("Pfad darf nicht verändert werden!");
+    }
   }
 
   @Override
@@ -226,6 +229,10 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   @Override
   public void store() throws RemoteException, ApplicationException
   {
+    if (getDatum() == null)
+    {
+      setAttribute("datum", new Date());
+    }
     File newFile = null;
     if (file != null)
     {
