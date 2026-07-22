@@ -148,7 +148,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
       @Override
       protected void customize(FileDialog fd)
       {
-        fd.setFilterPath(settings.getString("buchung.dokument", ""));
+        fd.setFilterPath(settings.getString("lastdir", ""));
       }
     };
     datei.setMandatory(true);

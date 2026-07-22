@@ -205,7 +205,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
         if (!Arrays.equals(getHash(), md.digest()))
         {
           throw new ApplicationException(
-              "Datei wurde seit dem Speichern veränder, Hash stimmt nicht überein!");
+              "Datei wurde seit dem Speichern verändert, Hash stimmt nicht überein!");
         }
       }
       catch (NoSuchAlgorithmException e)
