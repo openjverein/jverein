@@ -58,11 +58,8 @@ import de.jost_net.OBanToo.SEPA.BIC;
 import de.jost_net.OBanToo.SEPA.IBAN;
 import de.jost_net.OBanToo.SEPA.SEPAException;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.parts.TreePart;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -1489,15 +1486,12 @@ public class MitgliedImpl extends AbstractJVereinDBObject implements Mitglied
   @Override
   public void delete() throws RemoteException, ApplicationException
   {
-    DBService service = Einstellungen.getDBService();
-    DBIterator<MitgliedDokument> docs = service
+    DBIterator<MitgliedDokument> it = Einstellungen.getDBService()
         .createList(MitgliedDokument.class);
-    docs.addFilter("referenz = ?", new Object[] { this.getID() });
-    while (docs.hasNext())
+    it.addFilter("referenz = ?", new Object[] { this.getID() });
+    while (it.hasNext())
     {
-      QueryMessage qm = new QueryMessage(docs.next().getUUID(), null);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.del").sendSyncMessage(qm);
+      it.next().delete();
     }
     super.delete();
   }

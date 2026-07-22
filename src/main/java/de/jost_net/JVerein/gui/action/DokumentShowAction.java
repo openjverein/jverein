@@ -17,15 +17,10 @@
 package de.jost_net.JVerein.gui.action;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Map;
-
+import java.io.IOException;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.messaging.QueryMessage;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -45,33 +40,17 @@ public class DokumentShowAction implements Action
     try
     {
       AbstractDokument ad = (AbstractDokument) context;
-      if (ad.isNewObject())
+      File file = ad.getFile();
+      if (file != null)
       {
-        return;
+        FileViewer.show(file);
       }
-      QueryMessage qm = new QueryMessage(ad.getUUID(), null);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.getmeta").sendSyncMessage(qm);
-      @SuppressWarnings("rawtypes")
-      Map map = (Map) qm.getData();
-
-      qm = new QueryMessage(ad.getUUID(), null);
-      Application.getMessagingFactory()
-          .getMessagingQueue("jameica.messaging.get").sendSyncMessage(qm);
-      byte[] data = (byte[]) qm.getData();
-      final File file = new File(
-          System.getProperty("java.io.tmpdir") + "/" + map.get("filename"));
-      FileOutputStream fos = new FileOutputStream(file);
-      fos.write(data);
-      fos.close();
-      file.deleteOnExit();
-      FileViewer.show(file);
     }
-    catch (Exception e)
+    catch (IOException e)
     {
       String fehler = "Fehler beim Anzeigen des Dokuments";
-      GUI.getStatusBar().setErrorText(fehler);
       Logger.error(fehler, e);
+      throw new ApplicationException(fehler + ": " + e.getMessage());
     }
   }
 }

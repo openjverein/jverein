@@ -47,9 +47,22 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getMail().getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Der Mailanhang kann nicht gelöscht werden, die Mail wurde schon versendet!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mailempfänger kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
   }
 
   @Override

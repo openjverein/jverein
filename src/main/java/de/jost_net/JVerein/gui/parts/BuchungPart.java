@@ -24,12 +24,9 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.DokumentControl;
-import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
-import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
@@ -38,7 +35,6 @@ import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
-import de.willuhn.logging.Logger;
 
 public class BuchungPart implements Part
 {
@@ -46,17 +42,11 @@ public class BuchungPart implements Part
 
   private DokumentControl dcontrol;
 
-  private AbstractView view;
-
   private boolean buchungabgeschlossen;
 
-  private Buchung bu;
-
-  public BuchungPart(BuchungsControl control, AbstractView view,
-      boolean buchungabgeschlossen)
+  public BuchungPart(BuchungsControl control, boolean buchungabgeschlossen)
   {
     this.control = control;
-    this.view = view;
     this.buchungabgeschlossen = buchungabgeschlossen;
   }
 
@@ -125,47 +115,25 @@ public class BuchungPart implements Part
           control.getUnterlagenWertermittlung());
     }
 
-    if (JVereinPlugin.isArchiveServiceActive())
+    if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      bu = (Buchung) control.getBuchung();
-
       LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
           "Dokumente", true);
 
-      BuchungDokument budo = (BuchungDokument) Einstellungen.getDBService()
-          .createObject(BuchungDokument.class, null);
-      if (!bu.isNewObject())
-      {
-        budo.setReferenz(Long.valueOf(bu.getID()));
-      }
-      dcontrol = new DokumentControl(view, "buchungen", !buchungabgeschlossen);
+      dcontrol = new DokumentControl(!buchungabgeschlossen,
+          BuchungDokument.class);
 
       grDokument.getComposite().setLayout(new GridLayout(1, false));
       ButtonArea butts = new ButtonArea();
-      butts.addButton(dcontrol.getNeuButton(budo));
+      butts.addButton(dcontrol.getNeuButton());
       butts.paint(grDokument.getComposite());
 
-      grDokument.addPart(dcontrol.getDokumenteList(budo));
-      dcontrol.setDragDrop(grDokument.getComposite(), BuchungDokument.class);
+      grDokument.addPart(dcontrol.getDokumenteList());
+      dcontrol.setDragDrop(grDokument.getComposite());
 
       GridData gridData = new GridData(GridData.FILL_BOTH);
       gridData.heightHint = 150;
       grDokument.getComposite().setLayoutData(gridData);
-    }
-  }
-
-  public void deregisterDocumentConsumer()
-  {
-    try
-    {
-      if (JVereinPlugin.isArchiveServiceActive() && dcontrol != null)
-      {
-        dcontrol.deregisterDocumentConsumer();
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler beim Deregistrieren des DocumentMessageConsumer", e);
     }
   }
 }

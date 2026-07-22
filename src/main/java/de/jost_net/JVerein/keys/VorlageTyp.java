@@ -791,7 +791,11 @@ public enum VorlageTyp
   STEUERN_TITEL("steuern-titel", "Steuern Titel", "Steuern",
       Vorlageart.TITEL.getKey()),
   STEUERN_SUBTITEL("steuern-subtitel", "Steuern Subtitel", "",
-      Vorlageart.TITEL.getKey());
+      Vorlageart.TITEL.getKey()),
+  BUCHUNG_DOKUMENT_PFAD("buchung-dokument-pfad", "Buchung Dokument Pfad",
+      "/$buchung_kontonummer/$buchung_id", Vorlageart.PFAD.getKey()),
+  MITGLIED_DOKUMENT_PFAD("mitglied-dokument-pfad", "Mitglied Dokument Pfad",
+      "/$mitglied_id", Vorlageart.PFAD.getKey());
 
   private final String text;
 

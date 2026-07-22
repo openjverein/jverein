@@ -16,8 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.rmi;
 
+import java.io.File;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Date;
+
+import de.willuhn.util.ApplicationException;
 
 public interface AbstractDokument extends JVereinDBObject
 {
@@ -36,4 +40,18 @@ public interface AbstractDokument extends JVereinDBObject
   public String getUUID() throws RemoteException;
 
   public void setUUID(String uuid) throws RemoteException;
+
+  public String getPfad() throws RemoteException;
+
+  public void setPfad(String pfad) throws RemoteException;
+
+  public void setFile(File file) throws RemoteException;
+
+  public File getFile() throws IOException, ApplicationException;
+
+  public void setHash(byte[] hash) throws RemoteException;
+
+  public byte[] getHash() throws RemoteException;
+
+  public String getRootDir() throws RemoteException;
 }

@@ -19,7 +19,6 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
@@ -38,20 +37,21 @@ public class EinstellungenVerzeichnisView extends AbstractView
 
     cont.addLabelPair("CSV Vorlagenverzeichnis",
         control.getVorlagenCsvVerzeichnis());
+    cont.addLabelPair("Verzeichnis für Mitglieds-Dokumente *",
+        control.getMitgliedsDokumentVerzeichnis());
+    cont.addLabelPair("Verzeichnis für Buchungs-Dokumente *",
+        control.getBuchungsDokumentVerzeichnis());
+    cont.addText(
+        "* Die Unterordner unter dem die Dokumente angelegt werden,"
+            + " können unter Vorlagen (Vorlageart: Pfad) eingestellt werden.",
+        false);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_VERZEICHNISSE, false,
         "question-circle.png");
-    buttons.addButton("Speichern", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context)
-      {
-        control.handleStoreVerzeichnisse();
-      }
-    }, null, true, "document-save.png");
+    buttons.addButton("Speichern", c -> control.handleStoreVerzeichnisse(),
+        null, true, "document-save.png");
     buttons.paint(this.getParent());
   }
 }

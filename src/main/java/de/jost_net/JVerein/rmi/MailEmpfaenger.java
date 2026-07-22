@@ -46,10 +46,14 @@ public interface MailEmpfaenger extends JVereinDBObject
   public void setMitglied(Mitglied mitglied) throws RemoteException;
 
   /**
-   * Gibt entweder die Mailadresse des Mitgliedes oder die "nackte" Adresse
-   * zurück
+   * Gibt die Mailadresse des Mailempfängers zurück
    */
-  public String getMailAdresse() throws RemoteException;
+  public String getEmail() throws RemoteException;
+
+  /**
+   * Setzt die Mailadresse des Mailempfängers
+   */
+  public void setEmail(String email) throws RemoteException;
 
   /**
    * Gibt das Datum des letzten Versand der Mail zurück.
