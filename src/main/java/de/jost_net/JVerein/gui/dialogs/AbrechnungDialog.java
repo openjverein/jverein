@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.JVereinPlugin;
 import de.jost_net.JVerein.gui.control.AbrechnungSEPAControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -98,8 +97,8 @@ public class AbrechnungDialog extends AbstractDialog<Boolean>
     {
       rigth.addHeadline("Rechnungen");
       rigth.addLabelPair("Rechnung erstellen²", control.getRechnung());
-      if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG)
-          && JVereinPlugin.isArchiveServiceActive())
+      if ((Boolean) Einstellungen
+          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
       {
         rigth.addLabelPair("Rechnung als Buchungsdokument speichern",
             control.getRechnungsdokumentSpeichern());

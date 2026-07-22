@@ -16,9 +16,15 @@
  **********************************************************************/
 package de.jost_net.JVerein.server;
 
+import java.io.File;
 import java.rmi.RemoteException;
 
+import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.keys.VorlageTyp;
+import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.util.VorlageUtil;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungDokumentImpl extends AbstractDokumentImpl
     implements BuchungDokument
@@ -32,9 +38,90 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   }
 
   @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    super.deleteCheck();
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Dokument kann nicht gelöscht werden, Buchung ist abgeschlossen");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim deleteCheck");
+    }
+  }
+
+  @Override
+  protected void updateCheck() throws ApplicationException
+  {
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Dokument kann nicht geändert werden, Buchung ist abgeschlossen");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim updateCheck");
+    }
+    super.updateCheck();
+  }
+
+  @Override
+  protected void insertCheck() throws ApplicationException
+  {
+    try
+    {
+      if (istAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Es kann kein Dokument hinzugefügt werden, Buchung ist abgeschlossen");
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim insertCheck");
+    }
+    super.insertCheck();
+  }
+
+  private boolean istAbgeschlossen() throws RemoteException
+  {
+    Buchung buchung = Einstellungen.getDBService().createObject(Buchung.class,
+        getReferenz().toString());
+    return buchung.getJahresabschluss() != null;
+  }
+
+  @Override
   protected String getTableName()
   {
     return "buchungdokument";
+  }
+
+  @Override
+  protected String getVerzeichnis()
+  {
+    return "buchungen";
+  }
+
+  @Override
+  public String getRootDir()
+  {
+    return Einstellungen.getBuchungDokumentVerzeichnis() + File.separator;
+  }
+
+  @Override
+  protected String getDateiPfad() throws RemoteException
+  {
+    AbstractJVereinDBObject dbObject = Einstellungen.getDBService()
+        .createObject(Buchung.class, getReferenz().toString());
+    return VorlageUtil.getName(VorlageTyp.BUCHUNG_DOKUMENT_PFAD, dbObject);
   }
 
 }
