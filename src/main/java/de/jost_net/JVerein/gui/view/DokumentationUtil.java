@@ -170,6 +170,9 @@ public class DokumentationUtil
   public static final String EINSTELLUNGEN_BUCHFUEHRUNG = ADMEINSTELLUNG
       + "buchfuehrung";
 
+  public static final String EINSTELLUNGEN_VERZEICHNISSE = ADMEINSTELLUNG
+      + "verzeichnisse";
+
   public static final String EINSTELLUNGEN_VORLAGEN = ADMEINSTELLUNG
       + "vorlagen";
 

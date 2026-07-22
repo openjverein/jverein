@@ -272,6 +272,9 @@ public class Einstellungen
         Boolean.class, "0"),
     ZAHLERBEILASTSCHRIFT("zahlerbeilastschrift", Boolean.class, "1"),
 
+    // Verzeichnisse
+    VORLAGENCSVVERZEICHNIS("vorlagencsvverzeichnis", String.class, ""),
+
     // Spendenbescheinigung
     FINANZAMT("finanzamt", String.class, ""),
     STEUERNUMMER("steuernummer", String.class, ""),
