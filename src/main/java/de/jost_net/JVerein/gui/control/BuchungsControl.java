@@ -922,7 +922,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return buchungsart;
     }
     buchungsart = new BuchungsartInput().getBuchungsartInput(
-        getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
+        getBuchung(), getBuchung().getBuchungsart(), buchungsarttyp.BUCHUNGSART,
         (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     if (getBuchung().isSplitbuchung())

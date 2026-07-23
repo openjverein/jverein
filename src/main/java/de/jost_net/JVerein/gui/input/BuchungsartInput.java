@@ -21,6 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import de.jost_net.JVerein.rmi.Buchung;
+
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.AbstractInputAuswahl;
@@ -51,6 +53,13 @@ public class BuchungsartInput
   public AbstractInput getBuchungsartInput(Buchungsart bart, buchungsarttyp art,
       int auswahl) throws RemoteException
   {
+    return getBuchungsartInput(null, bart, art, auswahl);
+  }
+
+  @SuppressWarnings("unchecked")
+  public AbstractInput getBuchungsartInput(Buchung buchung, Buchungsart bart, buchungsarttyp art,
+      int auswahl) throws RemoteException
+  {
     AbstractInput buchungsart;
     switch (auswahl)
     {
@@ -62,6 +71,73 @@ public class BuchungsartInput
         if (bart != null && it.contains(bart) == null)
         {
           list.add(bart);
+        }
+
+        if (buchung != null)
+        {
+          try
+          {
+            List<de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal> proposals = de.jost_net.JVerein.util.BuchungHistoryMatcher.getProposals(
+                buchung.getName(),
+                buchung.getIban(),
+                buchung.getZweck(),
+                buchung.getBetrag() != null ? buchung.getBetrag() : 0.0
+            );
+            List<Buchungsart> proposedList = new java.util.ArrayList<>();
+            java.util.Set<String> proposedIds = new java.util.HashSet<>();
+            for (de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal p : proposals)
+            {
+              if (p.getBuchungsartId() != null)
+              {
+                try
+                {
+                  Buchungsart b = (Buchungsart) Einstellungen.getDBService()
+                      .createObject(Buchungsart.class, String.valueOf(p.getBuchungsartId()));
+                  if (b != null)
+                  {
+                    String oldBezeichnung = b.getBezeichnung();
+                    b.setBezeichnung("[Vorschlag] " + oldBezeichnung);
+                    proposedList.add(b);
+                    proposedIds.add(b.getID());
+                  }
+                }
+                catch (Exception ex)
+                {
+                  Logger.error("Error loading proposed Buchungsart ID " + p.getBuchungsartId(), ex);
+                }
+              }
+            }
+            
+            // Remove duplicates from the main list
+            for (java.util.Iterator<Buchungsart> iterator = list.iterator(); iterator.hasNext();)
+            {
+              Buchungsart ba = iterator.next();
+              try
+              {
+                if (ba.getID() != null && proposedIds.contains(ba.getID()))
+                {
+                  iterator.remove();
+                }
+              }
+              catch (RemoteException re)
+              {
+                Logger.error("Error checking ID of Buchungsart in list", re);
+              }
+            }
+            
+            // Prepend proposals
+            list.addAll(0, proposedList);
+            
+            // Set value to first proposal if no booking type is set yet
+            if (bart == null && !proposedList.isEmpty())
+            {
+              bart = proposedList.get(0);
+            }
+          }
+          catch (Exception e)
+          {
+            Logger.error("Error generating history proposals for ComboBox", e);
+          }
         }
 
         buchungsart = new SelectInput(list, bart);
@@ -83,7 +159,7 @@ public class BuchungsartInput
         break;
       case AbstractInputAuswahl.SearchInput:
       default:
-        buchungsart = new BuchungsartSearchInput(art);
+        buchungsart = new BuchungsartSearchInput(buchung, art);
 
         switch ((Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGSARTANZEIGE))
@@ -189,10 +265,17 @@ public class BuchungsartInput
   private class BuchungsartSearchInput extends SearchInput
   {
     private buchungsarttyp art;
+    private Buchung buchung;
 
     public BuchungsartSearchInput(buchungsarttyp art)
     {
       this.art = art;
+    }
+
+    public BuchungsartSearchInput(Buchung buchung, buchungsarttyp art)
+    {
+      this.art = art;
+      this.buchung = buchung;
     }
 
     @Override
@@ -200,16 +283,71 @@ public class BuchungsartInput
     {
       try
       {
+        List<Object> results = new java.util.ArrayList<>();
+        if ((text == null || text.trim().isEmpty()) && buchung != null)
+        {
+          List<de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal> proposals = de.jost_net.JVerein.util.BuchungHistoryMatcher.getProposals(
+              buchung.getName(),
+              buchung.getIban(),
+              buchung.getZweck(),
+              buchung.getBetrag() != null ? buchung.getBetrag() : 0.0
+          );
+          for (de.jost_net.JVerein.util.BuchungHistoryMatcher.Proposal p : proposals)
+          {
+            if (p.getBuchungsartId() != null)
+            {
+              try
+              {
+                Buchungsart b = (Buchungsart) Einstellungen.getDBService()
+                    .createObject(Buchungsart.class, String.valueOf(p.getBuchungsartId()));
+                if (b != null)
+                {
+                  results.add(b);
+                }
+              }
+              catch (Exception ex)
+              {
+                Logger.error("Error loading proposed Buchungsart ID " + p.getBuchungsartId(), ex);
+              }
+            }
+          }
+        }
+
         DBIterator<Buchungsart> it = getIterator(art);
 
-        if (text != null)
+        if (text != null && !text.trim().isEmpty())
         {
           text = "%" + text.toUpperCase() + "%";
           it.addFilter(
               "(UPPER(buchungsart.bezeichnung) like ? or buchungsart.nummer like ?) ",
               text, text);
         }
-        return it != null ? PseudoIterator.asList(it) : null;
+
+        if (it != null)
+        {
+          while (it.hasNext())
+          {
+            Buchungsart ba = it.next();
+            boolean duplicate = false;
+            for (Object obj : results)
+            {
+              if (obj instanceof Buchungsart)
+              {
+                Buchungsart added = (Buchungsart) obj;
+                if (added.getID() != null && added.getID().equals(ba.getID()))
+                {
+                  duplicate = true;
+                  break;
+                }
+              }
+            }
+            if (!duplicate)
+            {
+              results.add(ba);
+            }
+          }
+        }
+        return results;
       }
       catch (RemoteException e)
       {
