@@ -78,7 +78,6 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
-
   }
 
   private void dateinameCheck(String dateiname) throws ApplicationException
