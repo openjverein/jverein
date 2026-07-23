@@ -357,6 +357,11 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     ButtonRtoL b = new ButtonRtoL("Senden", context -> {
       try
       {
+        if (getEmpfaenger().getItems().size() == 0)
+        {
+          throw new ApplicationException(
+              "Es sind keine Empfänger eingetragen!");
+        }
         int toBeSentCount = 0;
         for (final MailEmpfaenger empf : (List<MailEmpfaenger>) getEmpfaenger()
             .getItems())
@@ -411,8 +416,10 @@ public class MailControl extends FilterControl implements IMailControl, Savable
       try
       {
         DBTransaction.starten();
-        handleStore(true);
+        doStore();
         sendeMail();
+        getMail().setVersand(new Timestamp(new Date().getTime()));
+        getMail().store();
         updateInputs();
         DBTransaction.commit();
       }
@@ -577,7 +584,6 @@ public class MailControl extends FilterControl implements IMailControl, Savable
               String.format("Anzahl verschickter Mails: %d", sentCount));
           GUI.getStatusBar().setSuccessText(
               "Mail" + (sentCount > 1 ? "s" : "") + " verschickt");
-          getMail().store();
         }
         catch (ApplicationException ae)
         {
@@ -690,7 +696,7 @@ public class MailControl extends FilterControl implements IMailControl, Savable
     try
     {
       DBTransaction.starten();
-      handleStore(false);
+      doStore();
       DBTransaction.commit();
     }
     catch (ApplicationException ae)
@@ -709,26 +715,22 @@ public class MailControl extends FilterControl implements IMailControl, Savable
   /**
    * Speichert die Mail in der DB.
    *
-   * @param mitversand
-   *          wenn true, wird Spalte Versand auf aktuelles Datum gesetzt.
    * @throws ApplicationException
    */
   @SuppressWarnings("unchecked")
-  public void handleStore(boolean mitversand) throws ApplicationException
+  public void doStore() throws ApplicationException
   {
     try
     {
+      Mail m = (Mail) prepareStore();
       if (!hasChanged())
       {
         return;
       }
-      Mail m = (Mail) prepareStore();
+
       m.setBearbeitung(new Timestamp(new Date().getTime()));
-      if (mitversand)
-      {
-        m.setVersand(new Timestamp(new Date().getTime()));
-      }
       m.store();
+
       for (MailEmpfaenger me : (List<MailEmpfaenger>) getEmpfaenger()
           .getItems())
       {

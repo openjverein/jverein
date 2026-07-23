@@ -51,7 +51,7 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   {
     try
     {
-      if (getMail().getVersand() != null)
+      if (getMail() != null && getMail().getVersand() != null)
       {
         throw new ApplicationException(
             "Der Mailanhang kann nicht gelöscht werden, die Mail wurde schon versendet!");
@@ -70,6 +70,11 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   {
     try
     {
+      if (getMail() != null && getMail().getVersand() != null)
+      {
+        throw new ApplicationException(
+            "Mailanhang kann nicht erzeugt werden, die Mail wurde schon versendet!");
+      }
       dateinameCheck(getDateiname());
     }
     catch (RemoteException e)
@@ -95,6 +100,35 @@ public class MailAnhangImpl extends AbstractJVereinDBObject
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      // Wenn die Mail an den Empfänger versendet wurde, darf er nicht mehr
+      // verändert werden
+      if (getMail() != null && getMail().getVersand() != null)
+      {
+        if (hasChanged("mail"))
+        {
+          throw new ApplicationException(
+              "Mail darf nicht verändert werden, die Mail wurde schon versendet!");
+        }
+        if (hasChanged("anhang"))
+        {
+          throw new ApplicationException(
+              "Anhang darf nicht verändert werden, die Mail wurde schon versendet!");
+        }
+        if (hasChanged("dateiname"))
+        {
+          throw new ApplicationException(
+              "Dateiname darf nicht verändert werden, die Mail wurde schon versendet!");
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Update check of mail failed", e);
+      throw new ApplicationException(
+          "Mailanhang kann nicht gespeichert werden. Siehe system log");
+    }
   }
 
   @Override

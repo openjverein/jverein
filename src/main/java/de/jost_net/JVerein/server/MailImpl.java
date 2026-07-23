@@ -107,6 +107,35 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      if (getVersand() == null && hasChanged("versand"))
+      {
+        throw new ApplicationException(
+            "Versanddatum darf nicht gelöscht werden, die Mail wurde schon versendet!");
+      }
+      // Bei bereits versendeten Mails darf Betreff und Text nicht mehr editiert
+      // werden
+      if (getVersand() != null)
+      {
+        if (hasChanged("betreff"))
+        {
+          throw new ApplicationException(
+              "Betreff darf nicht verändert werden, die Mail wurde schon versendet!");
+        }
+        if (hasChanged("txt"))
+        {
+          throw new ApplicationException(
+              "Text darf nicht verändert werden, die Mail wurde schon versendet!");
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Update check of mail failed", e);
+      throw new ApplicationException(
+          "Mail kann nicht gespeichert werden. Siehe system log");
+    }
   }
 
   @Override
