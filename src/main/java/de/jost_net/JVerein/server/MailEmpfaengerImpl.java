@@ -75,9 +75,43 @@ public class MailEmpfaengerImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void updateCheck()
+  protected void updateCheck() throws ApplicationException
   {
     insertCheck();
+    try
+    {
+      if (getVersand() == null && hasChanged("versand"))
+      {
+        throw new ApplicationException(
+            "Versanddatum darf nicht gelöscht werden, die Mail wurde schon an den Empfänger versendet!");
+      }
+      // Wenn die Mail an den Empfänger versendet wurde, darf er nicht mehr
+      // verändert werden
+      if (getVersand() != null)
+      {
+        if (hasChanged("email"))
+        {
+          throw new ApplicationException(
+              "Email darf nicht verändert werden, die Mail wurde schon an den Empfänger versendet!");
+        }
+        if (hasChanged("mail"))
+        {
+          throw new ApplicationException(
+              "Mail darf nicht verändert werden, die Mail wurde schon an den Empfänger versendet!");
+        }
+        if (hasChanged("mitglied"))
+        {
+          throw new ApplicationException(
+              "Mitglied darf nicht verändert werden, die Mail wurde schon an den Empfänger versendet!");
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Update check of mail failed", e);
+      throw new ApplicationException(
+          "Mailempfänger kann nicht gespeichert werden. Siehe system log");
+    }
   }
 
   @Override
