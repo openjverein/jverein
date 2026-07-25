@@ -19,8 +19,10 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.MailAnhang;
 import de.jost_net.JVerein.rmi.MailEmpfaenger;
@@ -57,22 +59,35 @@ public class MailImpl extends AbstractJVereinDBObject implements Mail
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    if (!forcedDelete)
+    try
     {
-      try
+      if (getVersand() != null)
       {
-        if (getVersand() != null)
+        Timestamp versand = new Timestamp(new Date().getTime());
+        List<MailEmpfaenger> empfaenger = getEmpfaenger(true);
+        for (MailEmpfaenger me : empfaenger)
+        {
+          if (me.getVersand() != null && me.getVersand().before(versand))
+          {
+            versand = me.getVersand();
+          }
+        }
+        DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+            .createList(Jahresabschluss.class);
+        it.addFilter("von <= ?", versand);
+        it.addFilter("bis >= ?", versand);
+        if (it.hasNext())
         {
           throw new ApplicationException(
-              "Die Mail kann nicht gelöscht werden, sie wurde schon versendet!");
+              "Die Mail kann nicht gelöscht werden, das zugehörige Geschäftsjahr ist bereits abgeschlossen!");
         }
       }
-      catch (RemoteException e)
-      {
-        String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
-        Logger.error(fehler, e);
-        throw new ApplicationException(fehler);
-      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Mail kann nicht gelöscht werden. Siehe system log";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
     }
   }
 
