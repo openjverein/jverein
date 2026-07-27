@@ -599,39 +599,47 @@ public class SplitbuchungsContainer
 
         SplitbuchungsContainer.add(splitBuchung);
       }
-      if (Math.abs(buchung.getBetrag() - zugeordnet) >= 0.01d)
+      if (zugeordnet != 0d)
       {
-        restBuchung = createSplitbuchung(buchung);
-        restBuchung.setBetrag(buchung.getBetrag() - zugeordnet);
-        restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
-        restBuchung.setSplitId(Long.parseLong(getMaster().getID()));
-
-        SplitbuchungsContainer.add(restBuchung);
-      }
-      // Wenn es nur eine Splitposition gibt, die Splitbuchung auflösen.
-      // (Haupt- und Gegen-Buchung gibt es immer, daher müssen es 3 sein)
-      if (splitbuchungen.size() == 3)
-      {
-        Buchung split = null;
-        for (Buchung b : splitbuchungen)
+        if (Math.abs(buchung.getBetrag() - zugeordnet) >= 0.01d)
         {
-          if (b.getSplitTyp() == SplitbuchungTyp.SPLIT)
-          {
-            split = b;
-            break;
-          }
-        }
-        Buchung haupt = getMaster();
-        haupt.setSollbuchung(sollb);
-        haupt.setBuchungsartId(split.getBuchungsartId());
-        haupt.setBuchungsklasseId(split.getBuchungsklasseId());
-        haupt.setSteuer(split.getSteuer());
+          restBuchung = createSplitbuchung(buchung);
+          restBuchung.setBetrag(buchung.getBetrag() - zugeordnet);
+          restBuchung.setSplitTyp(SplitbuchungTyp.SPLIT);
+          restBuchung.setSplitId(Long.parseLong(getMaster().getID()));
 
-        SplitbuchungsContainer.aufloesen();
+          SplitbuchungsContainer.add(restBuchung);
+        }
+        // Wenn es nur eine Splitposition gibt, die Splitbuchung auflösen.
+        // (Haupt- und Gegen-Buchung gibt es immer, daher müssen es 3 sein)
+        if (splitbuchungen.size() == 3)
+        {
+          Buchung split = null;
+          for (Buchung b : splitbuchungen)
+          {
+            if (b.getSplitTyp() == SplitbuchungTyp.SPLIT)
+            {
+              split = b;
+              break;
+            }
+          }
+          Buchung haupt = getMaster();
+          haupt.setSollbuchung(sollb);
+          haupt.setBuchungsartId(split.getBuchungsartId());
+          haupt.setBuchungsklasseId(split.getBuchungsklasseId());
+          haupt.setSteuer(split.getSteuer());
+
+          SplitbuchungsContainer.aufloesen();
+        }
+        else
+        {
+          SplitbuchungsContainer.handleStore();
+        }
       }
       else
       {
-        SplitbuchungsContainer.handleStore();
+        SplitbuchungsContainer.aufloesen();
+        restBuchung = buchung;
       }
     }
     catch (ApplicationException e)
