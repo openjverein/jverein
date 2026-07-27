@@ -426,6 +426,10 @@ public class EinstellungControl extends AbstractControl
 
   private DirectoryInput buchungsDokumentVerzeichnis;
 
+  private TextInput rechnungsnummer;
+
+  private IntegerInput rechnungZaehler;
+
   public EinstellungControl(AbstractView view)
   {
     super(view);
@@ -943,6 +947,28 @@ public class EinstellungControl extends AbstractControl
     individuellebeitraege = new CheckboxInput(
         (Boolean) Einstellungen.getEinstellung(Property.INDIVIDUELLEBEITRAEGE));
     return individuellebeitraege;
+  }
+
+  public TextInput getRechnungNummer() throws RemoteException
+  {
+    if (rechnungsnummer != null)
+    {
+      return rechnungsnummer;
+    }
+    rechnungsnummer = new TextInput(
+        (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER), 500);
+    return rechnungsnummer;
+  }
+
+  public IntegerInput getRechnungZaehler() throws RemoteException
+  {
+    if (rechnungZaehler != null)
+    {
+      return rechnungZaehler;
+    }
+    rechnungZaehler = new IntegerInput(
+        (Integer) Einstellungen.getEinstellung(Property.RECHNUNG_ZAHLER));
+    return rechnungZaehler;
   }
 
   public TextInput getRechnungTextAbbuchung() throws RemoteException
@@ -2882,6 +2908,10 @@ public class EinstellungControl extends AbstractControl
     {
       DBTransaction.starten();
 
+      Einstellungen.setEinstellung(Property.RECHNUNGSNUMMER,
+          (String) rechnungsnummer.getValue());
+      Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER,
+          (Integer) rechnungZaehler.getValue());
       Einstellungen.setEinstellung(Property.RECHNUNGTEXTABBUCHUNG,
           (String) rechnungtextabbuchung.getValue());
       Einstellungen.setEinstellung(Property.RECHNUNGTEXTUEBERWEISUNG,

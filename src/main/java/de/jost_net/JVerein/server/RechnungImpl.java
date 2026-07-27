@@ -22,9 +22,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.MitgliedMap;
+import de.jost_net.JVerein.Variable.RechnungMap;
+import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.io.IAdresse;
+import de.jost_net.JVerein.io.VelocityTool;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -33,6 +40,7 @@ import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
+import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
@@ -42,9 +50,6 @@ public class RechnungImpl extends AbstractJVereinDBObject
     implements Rechnung, IAdresse, UnreadCounter, IBetrag, IVersand, IMitglied
 {
 
-  /**
-   * 
-   */
   private static final long serialVersionUID = -286067581211521888L;
 
   private Double ist;
@@ -631,5 +636,53 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     // Wegen Interface IAdresse
     return null;
+  }
+
+  @Override
+  public String getNummer() throws RemoteException
+  {
+    return (String) getAttribute("nummer");
+  }
+
+  @Override
+  public void setNummer(String nummer) throws RemoteException
+  {
+    setAttribute("nummer", nummer);
+  }
+
+  @Override
+  public void store() throws RemoteException, ApplicationException
+  {
+    if (isNewObject())
+    {
+      // Speichern, damit es schon eine ID gibt
+      super.store();
+
+      // Rechnungsnummer erstellen
+      Map<String, Object> map = new AllgemeineMap().getMap(null);
+      new RechnungMap().getMap(this, map);
+      if (getMitglied() != null)
+      {
+        map = new MitgliedMap().getMap(getMitglied(), map);
+      }
+      Integer nr = (Integer) Einstellungen
+          .getEinstellung(Property.RECHNUNG_ZAHLER);
+      map.put(RechnungVar.RECHNUNG_ZAEHLER.getName(),
+          StringTool.lpad(nr.toString(),
+              (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
+              "0"));
+
+      Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
+
+      String nummer = VelocityTool.eval(map,
+          (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
+      setNummer(nummer);
+
+      super.store();
+    }
+    else
+    {
+      super.store();
+    }
   }
 }

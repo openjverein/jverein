@@ -427,7 +427,7 @@ public class SollbuchungControl extends DruckMailControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      sollbuchungenList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      sollbuchungenList.addColumn("Rechnung", "rechnung.nummer");
     }
     sollbuchungenList.setMulti(multi);
     if (action == null)

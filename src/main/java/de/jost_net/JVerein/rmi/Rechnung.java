@@ -151,5 +151,9 @@ public interface Rechnung extends JVereinDBObject, IAdresse, IGutschriftProvider
 
   public Long getReferenzrechnungID() throws RemoteException;
 
-  void setReferenzrechnungID(Long referenz) throws RemoteException;
+  public void setReferenzrechnungID(Long referenz) throws RemoteException;
+
+  public String getNummer() throws RemoteException;
+
+  public void setNummer(String nummer) throws RemoteException;
 }
