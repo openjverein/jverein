@@ -29,7 +29,6 @@ import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.io.ExportLayoutParam;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.IOFormat;
@@ -184,13 +183,6 @@ public class ExportDialog extends AbstractDialog<Object>
     String prefix = exp.exporter.getName().replaceAll(" ", "-") + ".";
     final Exporter exporter = exp.exporter;
     final IOFormat format = exp.format;
-
-    // TODO BuchungsControl ist noch nicht Teil von FilterControl und
-    // brauch noch eine extra Behandlung
-    if (dateinameObject instanceof BuchungsControl)
-    {
-      ((BuchungsControl) dateinameObject).refreshBuchungsList();
-    }
 
     // Dialog schliessen
     close();
