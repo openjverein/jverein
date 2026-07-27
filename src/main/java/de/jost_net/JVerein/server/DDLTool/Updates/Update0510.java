@@ -34,8 +34,8 @@ public class Update0510 extends AbstractDDLUpdate
     execute(addColumn("rechnung",
         new Column("nummer", COLTYPE.VARCHAR, 500, null, false, false)));
 
-    // Nummer in Rechnung eintragen, dabei so vilee führende Nullen wie
-    // eingestellt verwenden
+    // Nummer in Rechnung eintragen, dabei so viele führende Nullen wie
+    // eingestellt verwenden.
     // concat ist nötig, damit es bei H2 funktioniert
     execute("UPDATE rechnung SET nummer = case when CHAR_LENGTH(id)>"
         + "(SELECT COALESCE(max(wert),5) FROM einstellungneu WHERE name = '"
