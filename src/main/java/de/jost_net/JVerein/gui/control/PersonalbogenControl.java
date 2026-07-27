@@ -15,6 +15,7 @@ import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.input.CheckboxInput;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -62,6 +63,10 @@ public class PersonalbogenControl extends DruckMailControl
         catch (ApplicationException ae)
         {
           GUI.getStatusBar().setErrorText(ae.getMessage());
+        }
+        catch (OperationCanceledException e)
+        {
+          throw e;
         }
         catch (Exception e)
         {

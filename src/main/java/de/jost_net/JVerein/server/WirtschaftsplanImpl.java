@@ -20,6 +20,7 @@ import java.rmi.RemoteException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -341,6 +342,11 @@ public class WirtschaftsplanImpl extends AbstractJVereinDBObject
     istIterator.addFilter("buchung.konto = konto.id");
     istIterator.addFilter("buchung.datum >= wirtschaftsplan.datum_von");
     istIterator.addFilter("buchung.datum <= wirtschaftsplan.datum_bis");
+    if (getProjektID() != null
+        && (Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
+    {
+      istIterator.addFilter("buchung.projekt = ?", getProjektID());
+    }
     istIterator.addFilter("wirtschaftsplan.id = ?", this.getID());
     istIterator.addGroupBy("wirtschaftsplan.id");
     istIterator.addGroupBy("buchungsart.art");
