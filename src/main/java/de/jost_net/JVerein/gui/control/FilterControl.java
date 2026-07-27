@@ -24,6 +24,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Differenz;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.Filter.FilterArt;
 import de.jost_net.JVerein.keys.KeyEnum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.BeanUtil;
@@ -95,6 +96,25 @@ public abstract class FilterControl extends VorZurueckControl
       filter.put(entry.getKey(), value);
     }
     return filter;
+  }
+
+  /**
+   * Prüft ob alle Input Felder ausgefüllt sind
+   * 
+   * @return
+   */
+  public boolean checkFilter()
+  {
+    for (Entry<Filter, Input> entry : filterMap.entrySet())
+    {
+      Object value = entry.getValue().getValue();
+      if (value == null
+          || (value instanceof String && ((String) value).isBlank()))
+      {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -301,7 +321,12 @@ public abstract class FilterControl extends VorZurueckControl
         input = dInput;
         break;
       case SELECT:
+      case SELECT_OHNE_NULL:
         boolean alle = true;
+        if (filter.getArt() == FilterArt.SELECT_OHNE_NULL)
+        {
+          alle = false;
+        }
         // EnumKey Select
         if (filter.getArray() != null)
         {

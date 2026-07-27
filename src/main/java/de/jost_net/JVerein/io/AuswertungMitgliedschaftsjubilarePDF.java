@@ -21,20 +21,21 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.logging.Logger;
 
-public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
+public class AuswertungMitgliedschaftsjubilarePDF
+    extends AuswertungMitgliedschaftsjubilareAbstract
 {
+
   private FileOutputStream fos;
 
   private Reporter reporter;
@@ -44,22 +45,23 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   @Override
   public String getName()
   {
-    return "Altersjubilare PDF-Export";
+    return "Mitgliedschaftsjubilare PDF";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }
     IOFormat f = new IOFormat()
     {
+
       @Override
       public String getName()
       {
-        return AltersjubilaeumsExportPDF.this.getName();
+        return AuswertungMitgliedschaftsjubilarePDF.this.getName();
       }
 
       /**
@@ -77,35 +79,34 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   @Override
   public String getDateiname(Object object)
   {
-    return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
-        (MitgliedControl) object) + ".pdf";
+    return VorlageUtil.getName(
+        VorlageTyp.AUSWERTUNG_MITGLIEDSCHAFTSJUBILARE_DATEINAME, object)
+        + ".pdf";
   }
 
   @Override
   protected void open() throws DocumentException, IOException
   {
     fos = new FileOutputStream(file);
-    Logger.debug(String.format("Altersjubilare, Jahr=%d", jahr));
-    reporter = new Reporter(fos, title, subtitle);
+    reporter = new Reporter(fos, params);
   }
 
   @Override
   protected void startJahrgang(int jahrgang) throws DocumentException
   {
-    Logger.debug(String.format("Altersjubiläum, Jahrgang=%d", jahrgang));
+    Font font = new Font(params.getFontHeader());
+    font.setSize(11);
     Paragraph pHeader = new Paragraph(
-        "\n" + String.format("%d. Geburtstag", jahrgang),
-        Reporter.getFreeSans(11));
+        "\n" + String.format("%d-jähriges Jubiläum", jahrgang), font);
     reporter.add(pHeader);
-    reporter.addHeaderColumn("Geburtsdatum", Element.ALIGN_CENTER, 50,
-        BaseColor.LIGHT_GRAY);
-
+    reporter.addHeaderColumn("Eintrittsdatum", Element.ALIGN_CENTER, 50,
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Name, Vorname", Element.ALIGN_CENTER, 100,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Anschrift", Element.ALIGN_CENTER, 120,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.addHeaderColumn("Kommunikation", Element.ALIGN_CENTER, 80,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     reporter.createHeader();
     anz = 0;
   }
@@ -116,7 +117,8 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
     if (anz == 0)
     {
       reporter.addColumn("", Element.ALIGN_LEFT);
-      reporter.addColumn("kein Mitglied", Element.ALIGN_LEFT);
+      reporter.addColumn("Kein Mitglied", Element.ALIGN_LEFT,
+          params.getFontNormal());
       reporter.addColumn("", Element.ALIGN_LEFT);
       reporter.addColumn("", Element.ALIGN_LEFT);
     }
@@ -126,10 +128,12 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
   @Override
   protected void add(Mitglied m) throws RemoteException
   {
-    reporter.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getNameVorname(m),
-        Element.ALIGN_LEFT);
-    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
+    reporter.addColumn(m.getEintritt(), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    reporter.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
     String kommunikation = m.getTelefonprivat();
     if (kommunikation.length() > 0 && m.getTelefondienstlich().length() > 0)
     {
@@ -142,7 +146,8 @@ public class AltersjubilaeumsExportPDF extends AltersjubilaeumsExport
       kommunikation += ", ";
     }
     kommunikation += m.getEmail();
-    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false);
+    reporter.addColumn(kommunikation, Element.ALIGN_LEFT, false,
+        params.getFontNormal());
     anz++;
   }
 

@@ -31,19 +31,14 @@ import de.willuhn.util.ProgressMonitor;
 public abstract class KontenrahmenExport implements Exporter
 {
 
-  @Override
-  public abstract String getName();
-
-  @Override
-  public abstract IOFormat[] getIOFormats(Class<?> objectType);
-
   protected File file;
 
   protected Integer jahr;
 
   @Override
   public void doExport(Object[] objects, IOFormat format, File file,
-      ProgressMonitor monitor) throws ApplicationException, IOException
+      ExportLayoutParam params, ProgressMonitor monitor)
+      throws ApplicationException, IOException
   {
     this.file = file;
     open();
@@ -69,18 +64,6 @@ public abstract class KontenrahmenExport implements Exporter
       }
     }
     close();
-  }
-
-  @Override
-  public void calculateTitle(Object object)
-  {
-    // Kein Titel bei xml
-  }
-
-  @Override
-  public void calculateSubitle(Object object)
-  {
-    // Kein Subitel bei xml
   }
 
   protected abstract void open() throws IOException;

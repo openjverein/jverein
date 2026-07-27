@@ -20,14 +20,15 @@ package de.jost_net.JVerein.io;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
+public class AuswertungAltersjubilareCSV
+    extends AuswertungAltersjubilareAbstract
 {
 
   private ArrayList<Mitglied> mitglieder = new ArrayList<>();
@@ -37,13 +38,13 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
   @Override
   public String getName()
   {
-    return "Altersjubilare CSV-Export";
+    return "Altersjubilare CSV";
   }
 
   @Override
   public IOFormat[] getIOFormats(Class<?> objectType)
   {
-    if (objectType != Mitglied.class)
+    if (objectType != MitgliedListeView.class)
     {
       return null;
     }
@@ -53,7 +54,7 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
       @Override
       public String getName()
       {
-        return AltersjubilaeumsExportCSV.this.getName();
+        return AuswertungAltersjubilareCSV.this.getName();
       }
 
       /**
@@ -72,7 +73,7 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
   public String getDateiname(Object object)
   {
     return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_ALTERSJUBILARE_DATEINAME,
-        (MitgliedControl) object) + ".csv";
+        object) + ".csv";
   }
 
   @Override
@@ -104,7 +105,7 @@ public class AltersjubilaeumsExportCSV extends AltersjubilaeumsExport
   protected void close() throws ApplicationException
   {
     Logger.debug(String.format("Alterjubiläum-CSV-Export, Jahr=%d", jahr));
-    MitgliedAuswertungCSV mcsv = new MitgliedAuswertungCSV();
-    mcsv.go(mitglieder, file, null);
+    AuswertungMitgliedCSV mcsv = new AuswertungMitgliedCSV();
+    mcsv.go(mitglieder, file);
   }
 }
