@@ -13,6 +13,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.action;
 
+import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
@@ -33,6 +34,8 @@ public class AnlagenbuchungExportAction implements Action
   {
     try
     {
+      BuchungsControl control = (BuchungsControl) context;
+      control.refreshBuchungsList();
       ExportDialog d = new ExportDialog(new Object[] { context },
           AnlagenbuchungListeView.class, DokumentationUtil.ANLAGENBUCHUNGEN,
           context);
