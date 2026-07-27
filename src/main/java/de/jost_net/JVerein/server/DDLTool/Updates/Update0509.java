@@ -41,11 +41,11 @@ public class Update0509 extends AbstractDDLUpdate
     execute(addColumn("mitglieddokument",
         new Column("hash", COLTYPE.VARBINARY, 500, null, false, false)));
 
-    alterColumnDropNotNull("buchungdokument",
-        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+    execute(alterColumnDropNotNull("buchungdokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    alterColumnDropNotNull("mitglieddokument",
-        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+    execute(alterColumnDropNotNull("mitglieddokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false)));
 
     // Wenn bisher Dokumentenspeicherung aktiv war, dann soll auch weiterhin per
     // Messaging gespeichert werden
