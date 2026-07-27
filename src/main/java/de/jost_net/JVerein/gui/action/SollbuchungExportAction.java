@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.gui.action;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
+import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Sollbuchung;
@@ -37,6 +38,8 @@ public class SollbuchungExportAction implements Action
   {
     try
     {
+      SollbuchungControl control = (SollbuchungControl) context;
+      control.refresh();
       ExportDialog d = new ExportDialog(
           new Object[] { ((FilterControl) context).getFilter() },
           Sollbuchung.class, DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT,
