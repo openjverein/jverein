@@ -2883,8 +2883,7 @@ public class MitgliedControl extends FilterControl implements Savable
       }
       catch (OperationCanceledException oce)
       {
-        Logger.info(oce.getMessage());
-        return;
+        throw oce;
       }
       catch (RemoteException e)
       {
@@ -2897,7 +2896,7 @@ public class MitgliedControl extends FilterControl implements Savable
       catch (Exception e)
       {
         Logger.error("Fehler", e);
-        GUI.getStatusBar().setErrorText("Fehler beim exportieren des Reports");
+        throw new ApplicationException("Fehler beim exportieren des Reports");
       }
     }, null, false, "document-save.png");
     return b;

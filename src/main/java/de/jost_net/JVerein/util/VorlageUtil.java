@@ -756,7 +756,7 @@ public class VorlageUtil
         case AUSWERTUNG_JAHRGANGS_STATISTIK_DATEINAME:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_TITEL:
         case AUSWERTUNG_JAHRGANGS_STATISTIK_SUBTITEL:
-          set.add(Filter.JAHR);
+          set.add(Filter.JUBELJAHR);
           map = new FilterMap().getDummyMap(set, map);
           break;
         case AUSWERTUNG_ARBEITSEINSAETZE_DATEINAME:

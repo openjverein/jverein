@@ -30,6 +30,7 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.Jubeljahr;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -64,11 +65,7 @@ public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
     this.file = file;
     this.params = params;
     Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
-    Integer jahr = (Integer) filter.get(Filter.JAHR);
-    if (jahr == null)
-    {
-      throw new ApplicationException("Auswertungsjahr ist leer");
-    }
+    Integer jahr = ((Jubeljahr) filter.get(Filter.JUBELJAHR)).getKey();
     statistik = new TreeMap<>();
     try
     {
@@ -194,7 +191,7 @@ public abstract class AuswertungJahrgangsstatistikAbstract implements Exporter
   @Override
   public Filter[] getAusgabeParameter(Object object)
   {
-    return new Filter[] { Filter.JAHR };
+    return new Filter[] { Filter.JUBELJAHR };
   }
 
   public class StatistikJahrgang

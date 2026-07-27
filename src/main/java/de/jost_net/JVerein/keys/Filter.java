@@ -155,7 +155,8 @@ public enum Filter
   ZWECK("filter_zweck", "Zweck", "Zweck", FilterArt.TEXT),
 
   // Für Auswertung
-  JAHR("filter_jahr", "Jahr", "2024", FilterArt.INTEGER),
+  JUBELJAHR("filter_jahr", "Jahr", "2024", FilterArt.SELECT_OHNE_NULL,
+      Jubeljahr.getList()),
   AUSGABE("ausgabe_ausgabe", "Ausgabe", "Mitgliederliste", FilterArt.TEXT);
 
   private String setting;
@@ -173,6 +174,7 @@ public enum Filter
   public enum FilterArt
   {
     SELECT,
+    SELECT_OHNE_NULL,
     TEXT,
     DATE,
     ZUSATZFELD,

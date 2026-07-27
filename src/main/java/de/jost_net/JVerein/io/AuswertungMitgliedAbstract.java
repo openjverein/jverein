@@ -56,6 +56,9 @@ public abstract class AuswertungMitgliedAbstract implements Exporter
   protected String getExportName()
   {
     String name = getName();
+    // Extension wird entfernt damit sie in Dateinamen oder Titel nicht
+    // enthalten
+    // ist
     return name.substring(0, name.length() - 4);
   }
 

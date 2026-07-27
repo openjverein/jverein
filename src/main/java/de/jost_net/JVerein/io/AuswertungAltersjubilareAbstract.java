@@ -29,6 +29,7 @@ import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.keys.Jubeljahr;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.jost_net.JVerein.server.MitgliedUtils;
@@ -59,7 +60,7 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
     this.file = file;
     this.params = params;
     Map<Filter, Object> filter = (Map<Filter, Object>) objects[0];
-    Integer jahr = (Integer) filter.get(Filter.JAHR);
+    jahr = ((Jubeljahr) filter.get(Filter.JUBELJAHR)).getKey();
     if (jahr == null)
     {
       throw new ApplicationException("Auswertungsjahr ist leer");
@@ -129,6 +130,6 @@ public abstract class AuswertungAltersjubilareAbstract implements Exporter
   @Override
   public Filter[] getAusgabeParameter(Object object)
   {
-    return new Filter[] { Filter.JAHR };
+    return new Filter[] { Filter.JUBELJAHR };
   }
 }
