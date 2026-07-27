@@ -2852,6 +2852,7 @@ public class MitgliedControl extends FilterControl implements Savable
         saveFilterSettings();
         Mitgliedstyp mitgliedstyp;
         ExportDialog d;
+        TabRefresh();
         ArrayList<Mitglied> list = (ArrayList<Mitglied>) getTablePart()
             .getItems();
         if (mitgliedAuswahl == MitgliedAuswahl.MITGLIEDER)
