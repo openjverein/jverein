@@ -2545,8 +2545,11 @@ public class EinstellungControl extends AbstractControl
           (Boolean) arbeitseinsatz.getValue());
       Einstellungen.setEinstellung(Property.DOKUMENTENSPEICHERUNG,
           (Boolean) dokumentenspeicherung.getValue());
-      Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
-          (Boolean) dokumentenspeicherung_messaging.getValue());
+      if (dokumentenspeicherung_messaging != null)
+      {
+        Einstellungen.setEinstellung(Property.DOKUMENTSPEICHERUNG_MESSAGING,
+            (Boolean) dokumentenspeicherung_messaging.getValue());
+      }
       Einstellungen.setEinstellung(Property.INDIVIDUELLEBEITRAEGE,
           (Boolean) individuellebeitraege.getValue());
       Einstellungen.setEinstellung(Property.EXTERNEMITGLIEDSNUMMER,

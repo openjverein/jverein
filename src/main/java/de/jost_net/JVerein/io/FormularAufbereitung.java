@@ -274,7 +274,7 @@ public class FormularAufbereitung
       }
       if (rechnungNummer)
       {
-        sb.append(fieldsMap.get(AllgemeineVar.ZAEHLER.getName()));
+        sb.append(fieldsMap.get(RechnungVar.NUMMER.getName()));
         if (rechnungDatum)
         {
           sb.append(" ");

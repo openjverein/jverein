@@ -15,6 +15,7 @@ package de.jost_net.JVerein.server.DDLTool.Updates;
 
 import java.sql.Connection;
 
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.server.DDLTool.AbstractDDLUpdate;
 import de.jost_net.JVerein.server.DDLTool.Column;
 import de.willuhn.util.ApplicationException;
@@ -33,8 +34,16 @@ public class Update0510 extends AbstractDDLUpdate
     execute(addColumn("rechnung",
         new Column("nummer", COLTYPE.VARCHAR, 500, null, false, false)));
 
-    // TODO hier sollten auch mit Nullen aufgefüllt werden, so wie es in den
-    // Einstellungen eingestellt ist
-    execute("UPDATE rechnung SET nummer = id");
+    // Nummer in Rechnung eintragen, dabei so vilee führende Nullen wie
+    // eingestellt verwenden
+    // concat ist nötig, damit es bei H2 funktioniert
+    execute("UPDATE rechnung SET nummer = case when CHAR_LENGTH(id)>"
+        + "(SELECT COALESCE(max(wert),5) FROM einstellungneu WHERE name = '"
+        + Property.ZAEHLERLAENGE.getKey()
+        + "') then concat(id,'') else lpad(id, (SELECT COALESCE(max(wert),5) FROM einstellungneu WHERE name = '"
+        + Property.ZAEHLERLAENGE.getKey() + "'),0) end");
+
+    execute("INSERT INTO einstellungneu (name,wert) SELECT '"
+        + Property.RECHNUNG_ZAHLER.getKey() + "', max(id)+1 FROM rechnung");
   }
 }

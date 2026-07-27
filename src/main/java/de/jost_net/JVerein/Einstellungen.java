@@ -314,9 +314,6 @@ public class Einstellungen
 
     // Rechnung
     RECHNUNGSNUMMER("rechnungsnummer", String.class, "$rechnung_id"),
-    // TODO Default-Wert wäre besser der Zähler aus dem Formular, dort kann es
-    // aber verschiedene geben, daher weiß ich nicht, wie man das machen soll.
-    // So muss der Nutzer darauf hingewiesen werden, dass er den zähler manuell
     // festlegen muss
     RECHNUNG_ZAHLER("rechnung_zaehler", Integer.class, "1"),
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
