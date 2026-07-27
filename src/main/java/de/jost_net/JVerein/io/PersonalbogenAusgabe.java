@@ -28,9 +28,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Paragraph;
 
 import de.jost_net.JVerein.Einstellungen;
@@ -38,6 +38,8 @@ import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.gui.control.PersonalbogenControl;
+import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.ExporterExportDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
@@ -67,6 +69,7 @@ import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBObject;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -77,6 +80,10 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   private Reporter rpt;
 
   private PersonalbogenControl control;
+
+  private ExportLayoutParam params;
+
+  private Font font;
 
   public PersonalbogenAusgabe(PersonalbogenControl control)
   {
@@ -109,8 +116,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   }
 
   @Override
-  protected String getDateiname(DBObject object)
-      throws RemoteException
+  protected String getDateiname(DBObject object) throws RemoteException
   {
     if (object != null)
     {
@@ -128,6 +134,31 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       File file, DBObject object)
       throws IOException, DocumentException, ApplicationException
   {
+    if (params == null)
+    {
+      ExporterExportDialog d = new ExporterExportDialog(false, "Personalbogen",
+          ExportArt.PDF, "", "", null);
+      try
+      {
+        if (!d.open())
+        {
+          throw new OperationCanceledException();
+        }
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        String text = "Fehler beim Erstellen des Reports.";
+        Logger.error(text, e);
+        throw new ApplicationException(text);
+      }
+      params = d.getParams();
+      font = new Font(params.getFontHeader());
+      font.setSize(12);
+    }
     generierePersonalbogen(file, (Mitglied) object, control);
   }
 
@@ -160,7 +191,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
 
       if (rpt == null)
       {
-        rpt = new Reporter(fos, "", "");
+        rpt = new Reporter(fos, params);
       }
       else
       {
@@ -248,9 +279,10 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       throws DocumentException, MalformedURLException, IOException,
       ApplicationException
   {
-    rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
+    rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50, params.getColorHeader(),
+        params.getFontHeader());
     rpt.addHeaderColumn("Inhalt", Element.ALIGN_LEFT, 140,
-        BaseColor.LIGHT_GRAY);
+        params.getColorHeader(), params.getFontHeader());
     rpt.createHeader();
     DBIterator<Mitgliedfoto> it = Einstellungen.getDBService()
         .createList(Mitgliedfoto.class);
@@ -260,36 +292,43 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       Mitgliedfoto foto = it.next();
       if (foto.getFoto() != null)
       {
-        rpt.addColumn("Foto", Element.ALIGN_LEFT);
+        rpt.addColumn("Foto", Element.ALIGN_LEFT, params.getFontNormal());
         rpt.addColumn(foto.getFoto(), 100, 100, Element.ALIGN_RIGHT);
       }
     }
     if ((Boolean) Einstellungen.getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
     {
-      rpt.addColumn("Ext. Mitgliedsnummer", Element.ALIGN_LEFT);
+      rpt.addColumn("Ext. Mitgliedsnummer", Element.ALIGN_LEFT,
+          params.getFontNormal());
       rpt.addColumn(m.getExterneMitgliedsnummer() != null
           ? m.getExterneMitgliedsnummer() + ""
-          : "", Element.ALIGN_LEFT);
+          : "", Element.ALIGN_LEFT, params.getFontNormal());
     }
     else
     {
-      rpt.addColumn("Mitgliedsnummer", Element.ALIGN_LEFT);
-      rpt.addColumn(m.getID(), Element.ALIGN_LEFT);
+      rpt.addColumn("Mitgliedsnummer", Element.ALIGN_LEFT,
+          params.getFontNormal());
+      rpt.addColumn(m.getID(), Element.ALIGN_LEFT, params.getFontNormal());
     }
-    rpt.addColumn("Name, Vorname", Element.ALIGN_LEFT);
-    rpt.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT);
-    rpt.addColumn("Anschrift", Element.ALIGN_LEFT);
-    rpt.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT);
-    rpt.addColumn("Geburtsdatum", Element.ALIGN_LEFT);
-    rpt.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT);
+    rpt.addColumn("Name, Vorname", Element.ALIGN_LEFT, params.getFontNormal());
+    rpt.addColumn(Adressaufbereitung.getNameVorname(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn("Anschrift", Element.ALIGN_LEFT, params.getFontNormal());
+    rpt.addColumn(Adressaufbereitung.getAnschrift(m), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn("Geburtsdatum", Element.ALIGN_LEFT, params.getFontNormal());
+    rpt.addColumn(m.getGeburtsdatum(), Element.ALIGN_LEFT,
+        params.getFontNormal());
     if (m.getSterbetag() != null)
     {
-      rpt.addColumn("Sterbetag", Element.ALIGN_LEFT);
-      rpt.addColumn(m.getSterbetag(), Element.ALIGN_LEFT);
+      rpt.addColumn("Sterbetag", Element.ALIGN_LEFT, params.getFontNormal());
+      rpt.addColumn(m.getSterbetag(), Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
-    rpt.addColumn("Geschlecht", Element.ALIGN_LEFT);
-    rpt.addColumn(m.getGeschlecht(), Element.ALIGN_LEFT);
-    rpt.addColumn("Kommunikation", Element.ALIGN_LEFT);
+    rpt.addColumn("Geschlecht", Element.ALIGN_LEFT, params.getFontNormal());
+    rpt.addColumn(m.getGeschlecht(), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn("Kommunikation", Element.ALIGN_LEFT, params.getFontNormal());
     String kommunikation = "";
     if (m.getTelefonprivat().length() != 0)
     {
@@ -319,11 +358,12 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       }
       kommunikation += "Email: " + m.getEmail();
     }
-    rpt.addColumn(kommunikation, Element.ALIGN_LEFT);
+    rpt.addColumn(kommunikation, Element.ALIGN_LEFT, params.getFontNormal());
     if (m.getMitgliedstyp().getID().equals(Mitgliedstyp.MITGLIED))
     {
-      rpt.addColumn("Eintritt", Element.ALIGN_LEFT);
-      rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT);
+      rpt.addColumn("Eintritt", Element.ALIGN_LEFT, params.getFontNormal());
+      rpt.addColumn(m.getEintritt(), Element.ALIGN_LEFT,
+          params.getFontNormal());
       printBeitragsgruppe(rpt, m, m.getBeitragsgruppe(), false);
       if ((Boolean) Einstellungen
           .getEinstellung(Property.SEKUNDAEREBEITRAGSGRUPPEN))
@@ -341,13 +381,14 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       if ((Boolean) Einstellungen
           .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
       {
-        rpt.addColumn("Individueller Beitrag", Element.ALIGN_LEFT);
+        rpt.addColumn("Individueller Beitrag", Element.ALIGN_LEFT,
+            params.getFontNormal());
         if (m.getIndividuellerBeitrag() != null)
         {
           rpt.addColumn(
               Einstellungen.DECIMALFORMAT.format(m.getIndividuellerBeitrag())
                   + " EUR",
-              Element.ALIGN_LEFT);
+              Element.ALIGN_LEFT, params.getFontNormal());
         }
         else
         {
@@ -363,7 +404,7 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         if (itbg.hasNext())
         {
           rpt.addColumn("Familienmitglieder im Familienverband",
-              Element.ALIGN_LEFT);
+              Element.ALIGN_LEFT, params.getFontNormal());
           String familienmitglieder = "";
           while (itbg.hasNext())
           {
@@ -374,7 +415,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
             }
             familienmitglieder += Adressaufbereitung.getNameVorname(mz);
           }
-          rpt.addColumn(familienmitglieder, Element.ALIGN_LEFT);
+          rpt.addColumn(familienmitglieder, Element.ALIGN_LEFT,
+              params.getFontNormal());
         }
       }
       else if (m.getBeitragsgruppe()
@@ -382,11 +424,13 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       {
         Mitglied mfa = (Mitglied) Einstellungen.getDBService()
             .createObject(Mitglied.class, m.getVollZahlerID() + "");
-        rpt.addColumn("Vollzahlendes Familienmitglied", Element.ALIGN_LEFT);
+        rpt.addColumn("Vollzahlendes Familienmitglied", Element.ALIGN_LEFT,
+            params.getFontNormal());
         rpt.addColumn(Adressaufbereitung.getNameVorname(mfa),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
       }
-      rpt.addColumn("Austritts-/Kündigungsdatum", Element.ALIGN_LEFT);
+      rpt.addColumn("Austritts-/Kündigungsdatum", Element.ALIGN_LEFT,
+          params.getFontNormal());
       String akdatum = "";
       if (m.getAustritt() != null)
       {
@@ -400,42 +444,47 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         }
         akdatum += new JVDateFormatTTMMJJJJ().format(m.getKuendigung());
       }
-      rpt.addColumn(akdatum, Element.ALIGN_LEFT);
+      rpt.addColumn(akdatum, Element.ALIGN_LEFT, params.getFontNormal());
     }
-    rpt.addColumn("Zahlungsweg", Element.ALIGN_LEFT);
-    rpt.addColumn(Zahlungsweg.get(m.getZahlungsweg()), Element.ALIGN_LEFT);
+    rpt.addColumn("Zahlungsweg", Element.ALIGN_LEFT, params.getFontNormal());
+    rpt.addColumn(Zahlungsweg.get(m.getZahlungsweg()), Element.ALIGN_LEFT,
+        params.getFontNormal());
     if (m.getBic() != null && m.getBic().length() > 0
         && m.getIban().length() > 0)
     {
-      rpt.addColumn("Bankverbindung", Element.ALIGN_LEFT);
-      rpt.addColumn(m.getBic() + "/" + m.getIban(), Element.ALIGN_LEFT);
+      rpt.addColumn("Bankverbindung", Element.ALIGN_LEFT,
+          params.getFontNormal());
+      rpt.addColumn(m.getBic() + "/" + m.getIban(), Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     if (m.getZahlungsweg() == Zahlungsweg.BASISLASTSCHRIFT)
     {
-      rpt.addColumn("Mandat", Element.ALIGN_LEFT);
+      rpt.addColumn("Mandat", Element.ALIGN_LEFT, params.getFontNormal());
       rpt.addColumn(
           m.getMandatID() + " vom "
               + new JVDateFormatTTMMJJJJ().format(m.getMandatDatum()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, params.getFontNormal());
     }
     if (m.getKontoinhaber() != null && !m.getKontoinhaber().isBlank())
     {
-      rpt.addColumn("Kontoinhaber", Element.ALIGN_LEFT);
-      rpt.addColumn(m.getKontoinhaber(), Element.ALIGN_LEFT);
+      rpt.addColumn("Kontoinhaber", Element.ALIGN_LEFT, params.getFontNormal());
+      rpt.addColumn(m.getKontoinhaber(), Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     if (m.getAbweichenderZahler() != null)
     {
-      rpt.addColumn("Abweichender Zahler", Element.ALIGN_LEFT);
+      rpt.addColumn("Abweichender Zahler", Element.ALIGN_LEFT,
+          params.getFontNormal());
       rpt.addColumn(
           Adressaufbereitung.getIdNameVorname(m.getAbweichenderZahler()),
-          Element.ALIGN_LEFT);
+          Element.ALIGN_LEFT, params.getFontNormal());
     }
     DBIterator<Mitglied> itZahler = Einstellungen.getDBService()
         .createList(Mitglied.class);
     itZahler.addFilter("altzahler = ?", m.getID());
     if (itZahler.hasNext())
     {
-      rpt.addColumn("Zahlt für", Element.ALIGN_LEFT);
+      rpt.addColumn("Zahlt für", Element.ALIGN_LEFT, params.getFontNormal());
       String zahltfuer = "";
       while (itZahler.hasNext())
       {
@@ -446,12 +495,16 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         }
         zahltfuer += Adressaufbereitung.getNameVorname(mz);
       }
-      rpt.addColumn(zahltfuer, Element.ALIGN_LEFT);
+      rpt.addColumn(zahltfuer, Element.ALIGN_LEFT, params.getFontNormal());
     }
-    rpt.addColumn("Datum Erstspeicherung", Element.ALIGN_LEFT);
-    rpt.addColumn(m.getEingabedatum(), Element.ALIGN_LEFT);
-    rpt.addColumn("Datum letzte Änderung", Element.ALIGN_LEFT);
-    rpt.addColumn(m.getLetzteAenderung(), Element.ALIGN_LEFT);
+    rpt.addColumn("Datum Erstspeicherung", Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn(m.getEingabedatum(), Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn("Datum letzte Änderung", Element.ALIGN_LEFT,
+        params.getFontNormal());
+    rpt.addColumn(m.getLetzteAenderung(), Element.ALIGN_LEFT,
+        params.getFontNormal());
     rpt.closeTable();
   }
 
@@ -459,14 +512,14 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
       boolean sek) throws RemoteException, ApplicationException
   {
     rpt.addColumn((sek ? "Sekundäre " : "") + "Beitragsgruppe",
-        Element.ALIGN_LEFT);
+        Element.ALIGN_LEFT, params.getFontNormal());
     String beitragsgruppe = bg.getBezeichnung() + " - "
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
             m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, new Date(), m))
         + " EUR";
-    rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT);
+    rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT, params.getFontNormal());
   }
 
   private void generiereZusatzbetrag(Reporter rpt, Mitglied m)
@@ -478,31 +531,39 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     it.setOrder("ORDER BY faelligkeit DESC");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Zusatzbetrag", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Zusatzbetrag", font));
       rpt.addHeaderColumn("Start", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("nächste Fäll.", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("letzte Ausf.", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Intervall", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
-      rpt.addHeaderColumn("Ende", Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
+      rpt.addHeaderColumn("Ende", Element.ALIGN_LEFT, 30,
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Buchungstext", Element.ALIGN_LEFT, 60,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Betrag", Element.ALIGN_RIGHT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Zusatzbetrag z = it.next();
-        rpt.addColumn(z.getStartdatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getFaelligkeit(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getAusfuehrung(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getIntervallText(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getEndedatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getBuchungstext(), Element.ALIGN_LEFT);
-        rpt.addColumn(z.getBetrag());
+        rpt.addColumn(z.getStartdatum(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getFaelligkeit(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getAusfuehrung(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getIntervallText(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getEndedatum(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getBuchungstext(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(z.getBetrag(), params.getFontNormal(),
+            params.getNegativRot());
       }
     }
     rpt.closeTable();
@@ -518,26 +579,30 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     sollbIt.setOrder("order by " + Sollbuchung.DATUM + " desc");
     if (sollbIt.size() > 0)
     {
-      rpt.add(new Paragraph("Mitgliedskonto", Reporter.getFreeSans(12)));
-      rpt.addHeaderColumn("Text", Element.ALIGN_LEFT, 12, BaseColor.LIGHT_GRAY);
+      rpt.add(new Paragraph("Mitgliedskonto", font));
+      rpt.addHeaderColumn("Text", Element.ALIGN_LEFT, 12,
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Datum", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Zweck", Element.ALIGN_LEFT, 50,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Zahlungsweg", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Betrag", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (sollbIt.hasNext())
       {
         Sollbuchung sollb = sollbIt.next();
-        rpt.addColumn("Soll", Element.ALIGN_LEFT);
-        rpt.addColumn(sollb.getDatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT);
+        rpt.addColumn("Soll", Element.ALIGN_LEFT, params.getFontNormal());
+        rpt.addColumn(sollb.getDatum(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(sollb.getZweck1(), Element.ALIGN_LEFT,
+            params.getFontNormal());
         rpt.addColumn(Zahlungsweg.get(sollb.getZahlungsweg()),
-            Element.ALIGN_LEFT);
-        rpt.addColumn(sollb.getBetrag());
+            Element.ALIGN_LEFT, params.getFontNormal());
+        rpt.addColumn(sollb.getBetrag(), params.getFontNormal(),
+            params.getNegativRot());
         DBIterator<Buchung> it2 = Einstellungen.getDBService()
             .createList(Buchung.class);
         it2.addFilter(Buchung.SOLLBUCHUNG + " = ?",
@@ -546,11 +611,14 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         while (it2.hasNext())
         {
           Buchung bu = it2.next();
-          rpt.addColumn("Ist", Element.ALIGN_RIGHT);
-          rpt.addColumn(bu.getDatum(), Element.ALIGN_LEFT);
-          rpt.addColumn(bu.getZweck(), Element.ALIGN_LEFT);
+          rpt.addColumn("Ist", Element.ALIGN_RIGHT, params.getFontNormal());
+          rpt.addColumn(bu.getDatum(), Element.ALIGN_LEFT,
+              params.getFontNormal());
+          rpt.addColumn(bu.getZweck(), Element.ALIGN_LEFT,
+              params.getFontNormal());
           rpt.addColumn("", Element.ALIGN_LEFT);
-          rpt.addColumn(bu.getBetrag());
+          rpt.addColumn(bu.getBetrag(), params.getFontNormal(),
+              params.getNegativRot());
         }
       }
     }
@@ -561,16 +629,19 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
   private void generiereVermerke(Reporter rpt, Mitglied m)
       throws DocumentException, RemoteException
   {
-    rpt.add(new Paragraph("Vermerke", Reporter.getFreeSans(12)));
-    rpt.addHeaderColumn("Text", Element.ALIGN_LEFT, 100, BaseColor.LIGHT_GRAY);
+    rpt.add(new Paragraph("Vermerke", font));
+    rpt.addHeaderColumn("Text", Element.ALIGN_LEFT, 100,
+        params.getColorHeader(), params.getFontHeader());
     rpt.createHeader();
     if (m.getVermerk1() != null && m.getVermerk1().length() > 0)
     {
-      rpt.addColumn(m.getVermerk1(), Element.ALIGN_LEFT);
+      rpt.addColumn(m.getVermerk1(), Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     if (m.getVermerk2() != null && m.getVermerk2().length() > 0)
     {
-      rpt.addColumn(m.getVermerk2(), Element.ALIGN_LEFT);
+      rpt.addColumn(m.getVermerk2(), Element.ALIGN_LEFT,
+          params.getFontNormal());
     }
     rpt.closeTable();
 
@@ -585,20 +656,22 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     it.setOrder("order by datum desc");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Wiedervorlage", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Wiedervorlage", font));
       rpt.addHeaderColumn("Datum", Element.ALIGN_LEFT, 50,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Vermerk", Element.ALIGN_LEFT, 100,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Erledigung", Element.ALIGN_LEFT, 50,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Wiedervorlage w = it.next();
-        rpt.addColumn(w.getDatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(w.getVermerk(), Element.ALIGN_LEFT);
-        rpt.addColumn(w.getErledigung(), Element.ALIGN_LEFT);
+        rpt.addColumn(w.getDatum(), Element.ALIGN_LEFT, params.getFontNormal());
+        rpt.addColumn(w.getVermerk(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(w.getErledigung(), Element.ALIGN_LEFT,
+            params.getFontNormal());
       }
     }
     rpt.closeTable();
@@ -614,25 +687,29 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     it.setOrder("order by von");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Lehrgänge", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Lehrgänge", font));
       rpt.addHeaderColumn("Lehrgangsart", Element.ALIGN_LEFT, 50,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("am/vom", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
-      rpt.addHeaderColumn("bis", Element.ALIGN_LEFT, 30, BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
+      rpt.addHeaderColumn("bis", Element.ALIGN_LEFT, 30,
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Veranstalter", Element.ALIGN_LEFT, 60,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Ergebnis", Element.ALIGN_LEFT, 60,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Lehrgang l = it.next();
-        rpt.addColumn(l.getLehrgangsart().getBezeichnung(), Element.ALIGN_LEFT);
-        rpt.addColumn(l.getVon(), Element.ALIGN_LEFT);
-        rpt.addColumn(l.getBis(), Element.ALIGN_LEFT);
-        rpt.addColumn(l.getVeranstalter(), Element.ALIGN_LEFT);
-        rpt.addColumn(l.getErgebnis(), Element.ALIGN_LEFT);
+        rpt.addColumn(l.getLehrgangsart().getBezeichnung(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(l.getVon(), Element.ALIGN_LEFT, params.getFontNormal());
+        rpt.addColumn(l.getBis(), Element.ALIGN_LEFT, params.getFontNormal());
+        rpt.addColumn(l.getVeranstalter(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(l.getErgebnis(), Element.ALIGN_LEFT,
+            params.getFontNormal());
       }
     }
     rpt.closeTable();
@@ -646,15 +723,17 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     it.setOrder("order by label");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Zusatzfelder", Reporter.getFreeSans(12)));
-      rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50, BaseColor.LIGHT_GRAY);
+      rpt.add(new Paragraph("Zusatzfelder", font));
+      rpt.addHeaderColumn("Feld", Element.ALIGN_LEFT, 50,
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Inhalt", Element.ALIGN_LEFT, 130,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Felddefinition fd = it.next();
-        rpt.addColumn(fd.getLabel(), Element.ALIGN_LEFT);
+        rpt.addColumn(fd.getLabel(), Element.ALIGN_LEFT,
+            params.getFontNormal());
         DBIterator<Zusatzfelder> it2 = Einstellungen.getDBService()
             .createList(Zusatzfelder.class);
         it2.addFilter("mitglied = ? and felddefinition = ?",
@@ -662,7 +741,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         if (it2.size() > 0)
         {
           Zusatzfelder zf = it2.next();
-          rpt.addColumn(zf.getString(), Element.ALIGN_LEFT);
+          rpt.addColumn(zf.getString(), Element.ALIGN_LEFT,
+              params.getFontNormal());
         }
         else
         {
@@ -698,11 +778,11 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         .execute(sql, new Object[] { m.getID() }, rs);
     if (idliste.size() > 0)
     {
-      rpt.add(new Paragraph("Eigenschaften", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Eigenschaften", font));
       rpt.addHeaderColumn("Eigenschaftengruppe", Element.ALIGN_LEFT, 100,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Eigenschaft", Element.ALIGN_LEFT, 100,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       for (String id : idliste)
       {
@@ -714,9 +794,9 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
           Eigenschaften ei = it.next();
           rpt.addColumn(
               ei.getEigenschaft().getEigenschaftGruppe().getBezeichnung(),
-              Element.ALIGN_LEFT);
+              Element.ALIGN_LEFT, params.getFontNormal());
           rpt.addColumn(ei.getEigenschaft().getBezeichnung(),
-              Element.ALIGN_LEFT);
+              Element.ALIGN_LEFT, params.getFontNormal());
         }
       }
       rpt.closeTable();
@@ -732,20 +812,23 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     it.setOrder("ORDER BY datum");
     if (it.size() > 0)
     {
-      rpt.add(new Paragraph("Arbeitseinsätze", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Arbeitseinsätze", font));
       rpt.addHeaderColumn("Datum", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Stunden", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Bemerkung", Element.ALIGN_LEFT, 90,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Arbeitseinsatz ae = it.next();
-        rpt.addColumn(ae.getDatum(), Element.ALIGN_LEFT);
-        rpt.addColumn(ae.getStunden());
-        rpt.addColumn(ae.getBemerkung(), Element.ALIGN_LEFT);
+        rpt.addColumn(ae.getDatum(), Element.ALIGN_LEFT,
+            params.getFontNormal());
+        rpt.addColumn(ae.getStunden(), params.getFontNormal(),
+            params.getNegativRot());
+        rpt.addColumn(ae.getBemerkung(), Element.ALIGN_LEFT,
+            params.getFontNormal());
       }
     }
     rpt.closeTable();
@@ -760,28 +843,28 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
     // it.setOrder("ORDER BY datum");
     if (it.size() > 0)
     {
-      rpt.add(
-          new Paragraph("Spendenbescheinigungen", Reporter.getFreeSans(12)));
+      rpt.add(new Paragraph("Spendenbescheinigungen", font));
       rpt.addHeaderColumn("Spendenart", Element.ALIGN_LEFT, 30,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Bescheinigungsdatum", Element.ALIGN_LEFT, 60,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Spendedatum", Element.ALIGN_LEFT, 60,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.addHeaderColumn("Betrag", Element.ALIGN_LEFT, 90,
-          BaseColor.LIGHT_GRAY);
+          params.getColorHeader(), params.getFontHeader());
       rpt.createHeader();
       while (it.hasNext())
       {
         Spendenbescheinigung spb = it.next();
-        rpt.addColumn(Spendenart.get(spb.getSpendenart()), Element.ALIGN_LEFT);
+        rpt.addColumn(Spendenart.get(spb.getSpendenart()), Element.ALIGN_LEFT,
+            params.getFontNormal());
         rpt.addColumn(
             new JVDateFormatTTMMJJJJ().format(spb.getBescheinigungsdatum()),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
         rpt.addColumn(new JVDateFormatTTMMJJJJ().format(spb.getSpendedatum()),
-            Element.ALIGN_LEFT);
+            Element.ALIGN_LEFT, params.getFontNormal());
         rpt.addColumn(Einstellungen.DECIMALFORMAT.format(spb.getBetrag()),
-            Element.ALIGN_RIGHT);
+            Element.ALIGN_RIGHT, params.getFontNormal());
       }
     }
     rpt.closeTable();
