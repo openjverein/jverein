@@ -397,7 +397,7 @@ public abstract class FilterControl extends VorZurueckControl
     return input;
   }
 
-  protected void refresh()
+  public void refresh()
   {
     try
     {
