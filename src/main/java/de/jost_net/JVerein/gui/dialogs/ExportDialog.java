@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.IOFormat;
@@ -179,6 +181,20 @@ public class ExportDialog extends AbstractDialog<Object>
     String[] se = exp.format.getFileExtensions();
     String ext = se == null ? "" : se[0];
     ext = ext.replaceAll("\\*.", ""); // "*." entfernen
+
+    // Gefilterte Listen müssen vor dem Export aktuallisiert werden,
+    // dann sonst stimmen ggf. die Filter nicht mit dem Inhalt der Liste
+    // überein.
+    if (dateinameObject instanceof FilterControl)
+    {
+      ((FilterControl) dateinameObject).refresh();
+    }
+    // TODO BuchungsControl ist noch nicht Teil von FilterControl und
+    // brauch noch eine extra Behandlung
+    else if (dateinameObject instanceof BuchungsControl)
+    {
+      ((BuchungsControl) dateinameObject).refreshBuchungsList();
+    }
 
     fd.setFileName(exp.exporter.getDateiname(dateinameObject));
 

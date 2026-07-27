@@ -1557,7 +1557,7 @@ public abstract class FilterControl extends VorZurueckControl
     }, null, false, "eraser.png");
   }
 
-  protected void refresh()
+  public void refresh()
   {
     try
     {
