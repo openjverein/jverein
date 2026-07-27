@@ -46,6 +46,19 @@ public abstract class AbstractJVereinControl extends AbstractControl
         art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
           try
           {
+            // Gefilterte Listen müssen vor dem Export aktuallisiert werden,
+            // dann sonst stimmen ggf. die Filter nicht mit dem Inhalt der Liste
+            // überein.
+            if (this instanceof FilterControl)
+            {
+              ((FilterControl) this).refresh();
+            }
+            // TODO BuchungsControl ist noch nicht Teil von FilterControl und
+            // brauch noch eine extra Behandlung
+            else if (this instanceof BuchungsControl)
+            {
+              ((BuchungsControl) this).refreshBuchungsList();
+            }
             getTablePart().export(getTableTitle(), getTableSubtitle(),
                 getTableDateiname(), art);
           }
