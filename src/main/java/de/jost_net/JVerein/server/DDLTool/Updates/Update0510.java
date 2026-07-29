@@ -52,10 +52,10 @@ public class Update0510 extends AbstractDDLUpdate
     // Fehler aus Update0509 nochmal korrigieren, falls jemand die
     // NigthlyVersion verwendet hat und es somit noch nicht in der Korrekten
     // Form ausgeführt wurde
-    alterColumnDropNotNull("buchungdokument",
-        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+    execute(alterColumnDropNotNull("buchungdokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    alterColumnDropNotNull("mitglieddokument",
-        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+    execute(alterColumnDropNotNull("mitglieddokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false)));
   }
 }
