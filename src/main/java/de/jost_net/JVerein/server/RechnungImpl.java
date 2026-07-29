@@ -689,9 +689,10 @@ public class RechnungImpl extends AbstractJVereinDBObject
               "Rechnung mit dieser Nummer existiert bereits. Rechnungsnummer in Einstellungen korrigieren!");
         }
 
+        super.store();
+
         Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
 
-        super.store();
         transactionCommit();
       }
       catch (Exception e)

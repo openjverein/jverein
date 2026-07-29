@@ -350,7 +350,8 @@ public class RechnungMap extends AbstractMap
           value = "1234";
           break;
         case RECHNUNG_ZAEHLER:
-          value = Einstellungen.getEinstellung(Property.RECHNUNG_ZAHLER);
+          value = Einstellungen.getEinstellung(Property.RECHNUNG_ZAHLER)
+              .toString();
           break;
         case BUCHUNGSDATUM:
           value = Datum.formatDate(new Date()) + "\n"

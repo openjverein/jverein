@@ -33,7 +33,7 @@ public class Update0510 extends AbstractDDLUpdate
   {
 
     execute(addColumn("rechnung",
-        new Column("nummer", COLTYPE.VARCHAR, 500, null, false, false)));
+        new Column("nummer", COLTYPE.VARCHAR, 50, null, false, false)));
 
     // Nummer in Rechnung eintragen, dabei so viele führende Nullen wie
     // eingestellt verwenden.
