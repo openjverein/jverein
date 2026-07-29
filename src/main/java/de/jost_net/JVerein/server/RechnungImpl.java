@@ -676,8 +676,6 @@ public class RechnungImpl extends AbstractJVereinDBObject
                 (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
                 "0"));
 
-        Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
-
         String nummer = VelocityTool.eval(map,
             (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
         setNummer(nummer);
@@ -690,6 +688,8 @@ public class RechnungImpl extends AbstractJVereinDBObject
           throw new ApplicationException(
               "Rechnung mit dieser Nummer existiert bereits. Rechnungsnummer in Einstellungen korrigieren!");
         }
+
+        Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
 
         super.store();
         transactionCommit();
