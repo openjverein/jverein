@@ -6,6 +6,7 @@ releases-test
 nbproject/private/
 .DS_Store
 *.zip
+THIRD-PARTY.txt
 
 jverein.iml
 target
