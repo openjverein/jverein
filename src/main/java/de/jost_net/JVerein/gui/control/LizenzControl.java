@@ -15,6 +15,7 @@ package de.jost_net.JVerein.gui.control;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -39,7 +40,7 @@ public class LizenzControl extends AbstractControl
       {
         throw new ApplicationException("Fehler beim lesen der Lizenz-Datei");
       }
-      text = new String(fis.readAllBytes());
+      text = new String(fis.readAllBytes(), StandardCharsets.UTF_8);
     }
     catch (IOException e)
     {

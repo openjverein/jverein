@@ -32,7 +32,7 @@
 -->
 <form>
 <p><span color="header" font="header">JVerein</span>
-<br/>Vereinsverwaltung-Plugin fuer Jameica
+<br/>Vereinsverwaltung-Plugin für Jameica
 <br/>https://openjverein.github.io
 <br/>GPL 3 http://www.gnu.org/licenses/LICENSE-3.0.txt
 </p>
