@@ -45,7 +45,7 @@
         <#-- bsh brauch extrabehandlung, da es nicht von maven stammt -->
         <#if project.name == "bsh">
          <p><b>${project.name}(${project.version})</b>
-         <br/>${project.description}
+         <br/>BeanShell - Simple Java Scripting
          <br/>${project.groupId} : ${project.artifactId}
          <br/>https://github.com/beanshell/beanshell/
          <br/>Apache-2.0 license - http://www.apache.org/licenses/LICENSE-2.0.txt
