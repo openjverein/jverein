@@ -45,7 +45,8 @@ public class Update0510 extends AbstractDDLUpdate
         + Property.ZAEHLERLAENGE.getKey() + "'),0) end");
 
     execute("INSERT INTO einstellungneu (name,wert) SELECT '"
-        + Property.RECHNUNG_ZAHLER.getKey() + "', max(id)+1 FROM rechnung");
+        + Property.RECHNUNG_ZAHLER.getKey()
+        + "', COALESCE(max(id),0)+1 FROM rechnung");
 
     execute("ALTER TABLE rechnung ADD UNIQUE INDEX `nummer` (`nummer`)");
 
