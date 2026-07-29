@@ -31,6 +31,7 @@ public class Update0510 extends AbstractDDLUpdate
   @Override
   public void run() throws ApplicationException
   {
+
     execute(addColumn("rechnung",
         new Column("nummer", COLTYPE.VARCHAR, 500, null, false, false)));
 
@@ -45,5 +46,16 @@ public class Update0510 extends AbstractDDLUpdate
 
     execute("INSERT INTO einstellungneu (name,wert) SELECT '"
         + Property.RECHNUNG_ZAHLER.getKey() + "', max(id)+1 FROM rechnung");
+
+    execute("ALTER TABLE rechnung ADD UNIQUE INDEX `nummer` (`nummer`)");
+
+    // Fehler aus Update0509 nochmal korrigieren, falls jemand die
+    // NigthlyVersion verwendet hat und es somit noch nicht in der Korrekten
+    // Form ausgeführt wurde
+    alterColumnDropNotNull("buchungdokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
+
+    alterColumnDropNotNull("mitglieddokument",
+        new Column("uuid", COLTYPE.VARCHAR, 50, null, false, false));
   }
 }

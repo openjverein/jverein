@@ -678,6 +678,15 @@ public class RechnungImpl extends AbstractJVereinDBObject
           (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
       setNummer(nummer);
 
+      // Prüfen, ob es schon eine Rechnung mit dieser Nummer gibt
+      DBIterator<?> it = getList();
+      it.addFilter("nummer = ?", nummer);
+      if (it.hasNext())
+      {
+        throw new ApplicationException(
+            "Rechnung mit dieser Nummer existiert bereits. Rechnungsnummer in Einstellungen korrigieren!");
+      }
+
       super.store();
     }
     else
