@@ -13,15 +13,14 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.control;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
-import de.jost_net.JVerein.JVereinPlugin;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.parts.FormTextPart;
-import de.willuhn.jameica.system.Application;
 import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class LizenzControl extends AbstractControl
 {
@@ -30,22 +29,22 @@ public class LizenzControl extends AbstractControl
     super(view);
   }
 
-  public FormTextPart getLibList()
+  public FormTextPart getLibList() throws ApplicationException
   {
-    String path = Application.getPluginLoader().getPlugin(JVereinPlugin.class)
-        .getManifest().getPluginDir();
-
-    File file = new File(path + "/THIRD-PARTY.txt");
-
     String text;
-    try (FileInputStream fis = new FileInputStream(file))
+    try (InputStream fis = getClass().getClassLoader()
+        .getResourceAsStream("third-party-view.txt");)
     {
+      if (fis == null)
+      {
+        throw new ApplicationException("Fehler beim lesen der Lizenz-Datei");
+      }
       text = new String(fis.readAllBytes());
     }
-    catch (Exception e)
+    catch (IOException e)
     {
-      Logger.error("Fehler beim lesen der Datei", e);
-      text = "Fehler beim lesen der Datei";
+      Logger.error("Fehler beim lesen der Lizenz-Datei", e);
+      text = "Fehler beim lesen der Lizenz-Datei";
     }
     return new FormTextPart(text);
   }
