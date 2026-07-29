@@ -655,39 +655,50 @@ public class RechnungImpl extends AbstractJVereinDBObject
   {
     if (isNewObject())
     {
-      // Speichern, damit es schon eine ID gibt
-      super.store();
-
-      // Rechnungsnummer erstellen
-      Map<String, Object> map = new AllgemeineMap().getMap(null);
-      new RechnungMap().getMap(this, map);
-      if (getMitglied() != null)
+      try
       {
-        map = new MitgliedMap().getMap(getMitglied(), map);
+        transactionBegin();
+
+        // Speichern, damit es schon eine ID gibt
+        super.store();
+
+        // Rechnungsnummer erstellen
+        Map<String, Object> map = new AllgemeineMap().getMap(null);
+        new RechnungMap().getMap(this, map);
+        if (getMitglied() != null)
+        {
+          map = new MitgliedMap().getMap(getMitglied(), map);
+        }
+        Integer nr = (Integer) Einstellungen
+            .getEinstellung(Property.RECHNUNG_ZAHLER);
+        map.put(RechnungVar.RECHNUNG_ZAEHLER.getName(),
+            StringTool.lpad(nr.toString(),
+                (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
+                "0"));
+
+        Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
+
+        String nummer = VelocityTool.eval(map,
+            (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
+        setNummer(nummer);
+
+        // Prüfen, ob es schon eine Rechnung mit dieser Nummer gibt
+        DBIterator<?> it = getList();
+        it.addFilter("nummer = ?", nummer);
+        if (it.hasNext())
+        {
+          throw new ApplicationException(
+              "Rechnung mit dieser Nummer existiert bereits. Rechnungsnummer in Einstellungen korrigieren!");
+        }
+
+        super.store();
+        transactionCommit();
       }
-      Integer nr = (Integer) Einstellungen
-          .getEinstellung(Property.RECHNUNG_ZAHLER);
-      map.put(RechnungVar.RECHNUNG_ZAEHLER.getName(),
-          StringTool.lpad(nr.toString(),
-              (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
-              "0"));
-
-      Einstellungen.setEinstellung(Property.RECHNUNG_ZAHLER, nr + 1);
-
-      String nummer = VelocityTool.eval(map,
-          (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
-      setNummer(nummer);
-
-      // Prüfen, ob es schon eine Rechnung mit dieser Nummer gibt
-      DBIterator<?> it = getList();
-      it.addFilter("nummer = ?", nummer);
-      if (it.hasNext())
+      catch (Exception e)
       {
-        throw new ApplicationException(
-            "Rechnung mit dieser Nummer existiert bereits. Rechnungsnummer in Einstellungen korrigieren!");
+        transactionRollback();
+        throw e;
       }
-
-      super.store();
     }
     else
     {
