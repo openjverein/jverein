@@ -678,6 +678,12 @@ public class RechnungImpl extends AbstractJVereinDBObject
 
         String nummer = VelocityTool.eval(map,
             (String) Einstellungen.getEinstellung(Property.RECHNUNGSNUMMER));
+
+        if (nummer.length() > 50)
+        {
+          throw new ApplicationException(
+              "Rechnungsnummer zu lang, maximal 50 Zeichen erlaubt!");
+        }
         setNummer(nummer);
 
         // Prüfen, ob es schon eine Rechnung mit dieser Nummer gibt
