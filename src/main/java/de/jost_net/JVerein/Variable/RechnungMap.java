@@ -111,6 +111,12 @@ public class RechnungMap extends AbstractMap
       Object value = null;
       switch (var)
       {
+        case ID:
+          value = re.getID();
+          break;
+        case RECHNUNG_ZAEHLER:
+          value = Einstellungen.getEinstellung(Property.RECHNUNG_ZAHLER);
+          break;
         case BUCHUNGSDATUM:
         case MK_BUCHUNGSDATUM:
           value = String.join("\n", buchungDatum);
@@ -172,9 +178,7 @@ public class RechnungMap extends AbstractMap
           value = fromDate(re.getDatum());
           break;
         case NUMMER:
-          value = StringTool.lpad(re.getID(),
-              (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE),
-              "0");
+          value = re.getNummer();
           break;
         case PERSONENART:
           value = re.getPersonenart();
@@ -342,6 +346,13 @@ public class RechnungMap extends AbstractMap
       Object value = null;
       switch (var)
       {
+        case ID:
+          value = "1234";
+          break;
+        case RECHNUNG_ZAEHLER:
+          value = Einstellungen.getEinstellung(Property.RECHNUNG_ZAHLER)
+              .toString();
+          break;
         case BUCHUNGSDATUM:
           value = Datum.formatDate(new Date()) + "\n"
               + Datum.formatDate(new Date());

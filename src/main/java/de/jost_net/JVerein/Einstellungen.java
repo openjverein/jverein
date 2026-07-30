@@ -313,6 +313,9 @@ public class Einstellungen
     GEPRUEFTSYNCHRONISIEREN("geprueftsynchronisieren", Boolean.class, "0"),
 
     // Rechnung
+    RECHNUNGSNUMMER("rechnungsnummer", String.class, "$rechnung_id"),
+    // festlegen muss
+    RECHNUNG_ZAHLER("rechnung_zaehler", Integer.class, "1"),
     RECHNUNGTEXTABBUCHUNG("rechnungtextabbuchung", String.class,
         "Der Betrag wird vom Konto ${IBAN}, (BIC ${BIC}) abgebucht."),
     RECHNUNGTEXTUEBERWEISUNG("rechnungtextueberweisung", String.class,

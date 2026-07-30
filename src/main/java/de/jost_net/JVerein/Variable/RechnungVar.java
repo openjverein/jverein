@@ -85,7 +85,9 @@ public enum RechnungVar
   ZAHLUNGSWEG("rechnung_zahlungsweg"),
   KOMMENTAR("rechnung_kommentar"),
   // Muss der letzt Eintrag sein, da hier die Map selbst verwendet wird
-  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text");
+  ZAHLUNGSWEGTEXT("rechnung_zahlungsweg_text"),
+  ID("rechnung_id"),
+  RECHNUNG_ZAEHLER("rechnung_zaehler");
 
   private String name;
 

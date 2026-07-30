@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
@@ -63,7 +62,6 @@ import de.jost_net.JVerein.server.ExtendedDBIterator;
 import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
-import de.jost_net.JVerein.util.StringTool;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.datasource.GenericObject;
@@ -168,7 +166,7 @@ public class RechnungControl extends DruckMailControl implements Savable
     }
     GenericIterator<Rechnung> rechnungen = getRechnungIterator();
     rechnungList = new BetragSummaryTablePart(rechnungen, null);
-    rechnungList.addColumn("Nr", "id-int");
+    rechnungList.addColumn("Nr", "nummer");
     rechnungList.addColumn("Versanddatum", "versanddatum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     rechnungList.addColumn("Rechnungsdatum", "datum",
@@ -497,8 +495,7 @@ public class RechnungControl extends DruckMailControl implements Savable
       return nummer;
     }
 
-    nummer = new TextInput(StringTool.lpad(getRechnung().getID(),
-        (Integer) Einstellungen.getEinstellung(Property.ZAEHLERLAENGE), "0"));
+    nummer = new TextInput(getRechnung().getNummer());
     nummer.setName("Rechnungsnummer");
     nummer.disable();
 

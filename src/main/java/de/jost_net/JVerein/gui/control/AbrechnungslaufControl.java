@@ -504,7 +504,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.RECHNUNGENANZEIGEN))
     {
-      sollbuchungList.addColumn("Rechnung", Sollbuchung.RECHNUNG);
+      sollbuchungList.addColumn("Rechnung", "rechnung.nummer");
     }
     sollbuchungList.setContextMenu(new SollbuchungMenu(null));
     sollbuchungList.setMulti(true);

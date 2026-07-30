@@ -17,6 +17,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
+import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.util.VorlageUtil;
@@ -60,7 +61,10 @@ public class SEPASupport
         File file = File.createTempFile(dateiname, ".pdf");
         FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
             false);
-        aufbereitung.writeForm(re.getFormular(), map);
+        Formular formular = re.getFormular();
+        aufbereitung.writeForm(formular, map);
+        // ggf. hochgezählten Zähler speichern
+        formular.store();
         aufbereitung.closeFormular();
 
         AbstractDokument doc = Einstellungen.getDBService()

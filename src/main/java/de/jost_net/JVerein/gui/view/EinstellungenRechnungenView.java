@@ -41,6 +41,8 @@ public class EinstellungenRechnungenView extends AbstractView
 
     ScrolledContainer cont = new ScrolledContainer(getParent());
 
+    cont.addLabelPair("Rechnung Nummer", control.getRechnungNummer());
+    cont.addLabelPair("Rechnung Zähler", control.getRechnungZaehler());
     cont.addLabelPair("Text Abbuchung", control.getRechnungTextAbbuchung());
     cont.addLabelPair("Text Überweisung",
         control.getRechnungTextUeberweisung());
