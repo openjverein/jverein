@@ -481,6 +481,37 @@
           </execution>
         </executions>
       </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<version>2.7.1</version>
+				<executions>
+					<execution>
+						<id>add-third-party-for-view</id>
+						<goals>
+							<goal>add-third-party</goal>
+						</goals>
+						<configuration>
+							<excludedScopes>test,provided</excludedScopes>
+							<fileTemplate>${project.basedir}/third-party-license.ftl</fileTemplate>
+							<thirdPartyFilename>third-party-view.txt</thirdPartyFilename>
+							<outputDirectory>${project.build.directory}/assembly-lib</outputDirectory>
+							<excludedArtifacts>de.willuhn*|jameica|hibiscus</excludedArtifacts>
+						</configuration>
+					</execution>
+					<execution>
+						<id>add-third-party</id>
+						<goals>
+							<goal>add-third-party</goal>
+						</goals>
+						<configuration>
+							<excludedScopes>test,provided</excludedScopes>
+							<outputDirectory>${project.build.directory}/assembly-lib</outputDirectory>
+							<excludedArtifacts>de.willuhn*|jameica|hibiscus</excludedArtifacts>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
     </plugins>
   </build>
 
