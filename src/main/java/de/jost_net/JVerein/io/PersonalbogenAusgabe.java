@@ -24,6 +24,7 @@ import java.rmi.RemoteException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -463,8 +464,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
-            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, m.getEintritt(),
-            m))
+            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg,
+            m.getEintritt() == null ? new Date() : m.getEintritt(), m))
         + " EUR";
     rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT);
   }
