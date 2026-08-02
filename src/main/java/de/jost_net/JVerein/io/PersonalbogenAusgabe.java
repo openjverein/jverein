@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.control.PersonalbogenControl;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -668,7 +669,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         }
         else
         {
-          rpt.addColumn("", Element.ALIGN_LEFT);
+          rpt.addColumn(fd.getDatentyp() == Datentyp.JANEIN ? "nein" : "",
+              Element.ALIGN_LEFT);
         }
       }
       rpt.closeTable();
