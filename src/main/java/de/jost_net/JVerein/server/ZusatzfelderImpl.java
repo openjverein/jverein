@@ -220,10 +220,6 @@ public class ZusatzfelderImpl extends AbstractDBObject implements Zusatzfelder
           }
           return getFeldGanzzahl().toString();
         case Datentyp.JANEIN:
-          if (getFeldJaNein() == null)
-          {
-            return "";
-          }
           return getFeldJaNein() ? "ja" : "nein";
         case Datentyp.WAEHRUNG:
           if (getFeldWaehrung() != null)
