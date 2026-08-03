@@ -80,9 +80,23 @@ public class BuchungsartControl extends FilterControl implements Savable
 
   private CheckboxInput regexp;
 
+  private boolean isAbgeschlossen = false;
+
   public BuchungsartControl(AbstractView view)
   {
     super(view);
+    if (getBuchungsart() != null)
+    {
+      try
+      {
+        isAbgeschlossen = getBuchungsart().isAbgeschlossen();
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Fehler beim Lesen der Datenbank. Siehe system log";
+        Logger.error(fehler, e);
+      }
+    }
   }
 
   private Buchungsart getBuchungsart()
@@ -107,6 +121,10 @@ public class BuchungsartControl extends FilterControl implements Savable
       nummer.focus();
     }
     nummer.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      nummer.disable();
+    }
     return nummer;
   }
 
@@ -118,6 +136,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     bezeichnung = new TextInput(getBuchungsart().getBezeichnung(), 80);
     bezeichnung.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      bezeichnung.disable();
+    }
     return bezeichnung;
   }
 
@@ -129,6 +151,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     art = new SelectInput(ArtBuchungsart.getArray(),
         new ArtBuchungsart(getBuchungsart().getArt()));
+    if (isAbgeschlossen)
+    {
+      art.disable();
+    }
     return art;
   }
 
@@ -171,13 +197,18 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     spende = new CheckboxInput(getBuchungsart().getSpende());
     spende.addListener(event -> {
-      steuer.setEnabled(!(boolean) spende.getValue());
+      steuer.setEnabled(!(boolean) spende.getValue() && !isAbgeschlossen);
 
       if ((Boolean) spende.getValue())
       {
         steuer.setValue(null);
       }
     });
+    if (getBuchungsart().getSteuer() != null)
+    {
+      spende.setValue(false);
+      spende.disable();
+    }
     return spende;
   }
 
@@ -188,6 +219,10 @@ public class BuchungsartControl extends FilterControl implements Savable
       return abschreibung;
     }
     abschreibung = new CheckboxInput(getBuchungsart().getAbschreibung());
+    if (isAbgeschlossen)
+    {
+      abschreibung.disable();
+    }
     return abschreibung;
   }
 
@@ -201,11 +236,18 @@ public class BuchungsartControl extends FilterControl implements Savable
 
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
+    steuer.addListener(event -> {
+      spende.setEnabled(steuer.getValue() == null && !isAbgeschlossen);
+    });
 
     // Disable steuer for type spende
     if (getBuchungsart().getSpende())
     {
       steuer.setValue(null);
+      steuer.disable();
+    }
+    if (isAbgeschlossen)
+    {
       steuer.disable();
     }
     return steuer;
@@ -273,6 +315,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     buchungsklasse.setValue(getBuchungsart().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
     buchungsklasse.setPleaseChoose("Bitte auswählen");
+    if (isAbgeschlossen)
+    {
+      buchungsklasse.disable();
+    }
     return buchungsklasse;
   }
 
