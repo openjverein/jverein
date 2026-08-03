@@ -197,13 +197,18 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     spende = new CheckboxInput(getBuchungsart().getSpende());
     spende.addListener(event -> {
-      steuer.setEnabled(!(boolean) spende.getValue());
+      steuer.setEnabled(!(boolean) spende.getValue() && !isAbgeschlossen);
 
       if ((Boolean) spende.getValue())
       {
         steuer.setValue(null);
       }
     });
+    if (getBuchungsart().getSteuer() != null)
+    {
+      spende.setValue(false);
+      spende.disable();
+    }
     return spende;
   }
 
@@ -231,6 +236,9 @@ public class BuchungsartControl extends FilterControl implements Savable
 
     steuer.setAttribute("name");
     steuer.setPleaseChoose("Keine Steuer");
+    steuer.addListener(event -> {
+      spende.setEnabled(steuer.getValue() == null && !isAbgeschlossen);
+    });
 
     // Disable steuer for type spende
     if (getBuchungsart().getSpende())
