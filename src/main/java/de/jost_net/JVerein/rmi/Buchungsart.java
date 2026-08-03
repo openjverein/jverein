@@ -68,4 +68,6 @@ public interface Buchungsart extends JVereinDBObject
 
   boolean hasBuchungen() throws RemoteException;
 
+  boolean isAbgeschlossen() throws RemoteException;
+
 }

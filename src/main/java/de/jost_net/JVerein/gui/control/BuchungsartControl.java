@@ -38,8 +38,6 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.server.ExtendedDBIterator;
-import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -91,19 +89,7 @@ public class BuchungsartControl extends FilterControl implements Savable
     {
       try
       {
-        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
-        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-            "buchung");
-        it.addColumn("buchung.id");
-        it.setLimit(1);
-        it.join("jahresabschluss",
-            "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
-        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-        it.addFilter("buchungsart = ?", getBuchungsart().getID());
-        if (it.size() > 0)
-        {
-          isAbgeschlossen = true;
-        }
+        isAbgeschlossen = getBuchungsart().isAbgeschlossen();
       }
       catch (RemoteException e)
       {
@@ -135,6 +121,10 @@ public class BuchungsartControl extends FilterControl implements Savable
       nummer.focus();
     }
     nummer.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      nummer.disable();
+    }
     return nummer;
   }
 
@@ -146,6 +136,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     bezeichnung = new TextInput(getBuchungsart().getBezeichnung(), 80);
     bezeichnung.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      bezeichnung.disable();
+    }
     return bezeichnung;
   }
 

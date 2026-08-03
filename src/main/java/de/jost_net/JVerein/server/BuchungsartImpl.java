@@ -158,19 +158,18 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     insertCheck();
     try
     {
-      boolean isAbgeschlossen = false;
-      // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
-      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-          "buchung");
-      it.addColumn("buchung.id");
-      it.setLimit(1);
-      it.join("jahresabschluss",
-          "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
-      it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-      it.addFilter("buchungsart.id = ?", getID());
-      if (it.hasNext())
+      boolean isAbgeschlossen = isAbgeschlossen();
+
+      if (hasChanged("nummer") && isAbgeschlossen)
       {
-        isAbgeschlossen = true;
+        throw new ApplicationException(
+            "Nummer kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+      }
+
+      if (hasChanged("bezeichnung") && isAbgeschlossen)
+      {
+        throw new ApplicationException(
+            "Bezeichnung kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
       }
 
       if (hasChanged("art") && isAbgeschlossen)
@@ -201,7 +200,8 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
         }
 
         // Prüfen ob es eine Rechnung mit dieser Buchungsart gibt
-        it = new ExtendedDBIterator<>(Sollbuchung.TABLE_NAME);
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            Sollbuchung.TABLE_NAME);
         it.addColumn(Sollbuchung.TABLE_NAME_ID);
         it.setLimit(1);
 
@@ -506,5 +506,23 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     // Alte Steuerbuchungen zählen nicht
     it.addFilter("dependencyid is NUll OR dependencyid = -1");
     return it.hasNext();
+  }
+
+  @Override
+  public boolean isAbgeschlossen() throws RemoteException
+  {
+    // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addColumn("buchung.id");
+    it.setLimit(1);
+    it.join("jahresabschluss",
+        "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+    it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+    it.addFilter("buchungsart.id = ?", getID());
+    if (it.hasNext())
+    {
+      return true;
+    }
+    return false;
   }
 }
