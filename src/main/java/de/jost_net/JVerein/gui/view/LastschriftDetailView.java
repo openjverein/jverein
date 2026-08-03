@@ -66,7 +66,7 @@ public class LastschriftDetailView extends AbstractView
     right.addInput(control.getIBAN());
     right.addInput(control.getBIC());
     right.addInput(control.getBetrag());
-    right.addLabelPair("Versand Datum", control.getVersanddatum());
+    right.addInput(control.getVersanddatum());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),

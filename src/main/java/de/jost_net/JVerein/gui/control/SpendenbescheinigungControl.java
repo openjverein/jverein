@@ -432,6 +432,8 @@ public class SpendenbescheinigungControl extends DruckMailControl
       return versanddatum;
     }
     versanddatum = new DateInput(getSpendenbescheinigung().getVersanddatum());
+    versanddatum.setName("Versand Datum");
+    versanddatum.disable();
     return versanddatum;
   }
 

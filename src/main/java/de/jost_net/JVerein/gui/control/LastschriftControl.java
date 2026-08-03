@@ -540,6 +540,8 @@ public class LastschriftControl extends FilterControl implements Savable
       return versanddatum;
     }
     versanddatum = new DateInput(getLastschrift().getVersanddatum());
+    versanddatum.setName("Versand Datum");
+    versanddatum.disable();
     return versanddatum;
   }
 
