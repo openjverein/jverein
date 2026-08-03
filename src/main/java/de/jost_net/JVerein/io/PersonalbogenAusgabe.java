@@ -43,6 +43,7 @@ import de.jost_net.JVerein.gui.dialogs.ExporterExportDialog;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Beitragsmodel;
+import de.jost_net.JVerein.keys.Datentyp;
 import de.jost_net.JVerein.keys.Spendenart;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -517,7 +518,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         + Einstellungen.DECIMALFORMAT.format(BeitragsUtil.getBeitrag(
             Beitragsmodel.getByKey(
                 (Integer) Einstellungen.getEinstellung(Property.BEITRAGSMODEL)),
-            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg, new Date(), m))
+            m.getZahlungstermin(), m.getZahlungsrhythmus(), bg,
+            m.getEintritt() == null ? new Date() : m.getEintritt(), m))
         + " EUR";
     rpt.addColumn(beitragsgruppe, Element.ALIGN_LEFT, params.getFontNormal());
   }
@@ -746,7 +748,8 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         }
         else
         {
-          rpt.addColumn("", Element.ALIGN_LEFT);
+          rpt.addColumn(fd.getDatentyp() == Datentyp.JANEIN ? "nein" : "",
+              Element.ALIGN_LEFT);
         }
       }
       rpt.closeTable();
