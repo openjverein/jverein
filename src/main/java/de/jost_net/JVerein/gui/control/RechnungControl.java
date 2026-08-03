@@ -736,6 +736,8 @@ public class RechnungControl extends DruckMailControl implements Savable
       return versanddatum;
     }
     versanddatum = new DateInput(getRechnung().getVersanddatum());
+    versanddatum.setName("Versand Datum");
+    versanddatum.disable();
     return versanddatum;
   }
 

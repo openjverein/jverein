@@ -51,7 +51,7 @@ public class RechnungDetailView extends AbstractDetailView
     left.addInput(control.getPersonenart());
     left.addInput(control.getGeschlecht());
     left.addInput(control.getRechnungFormular());
-    left.addLabelPair("Versand Datum", control.getVersanddatum());
+    left.addInput(control.getVersanddatum());
 
     SimpleContainer middle = new SimpleContainer(cl.getComposite());
     middle.addInput(control.getAnrede());
