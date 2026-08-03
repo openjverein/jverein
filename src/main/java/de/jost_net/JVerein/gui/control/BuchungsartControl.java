@@ -38,6 +38,8 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
 import de.jost_net.JVerein.rmi.Steuer;
+import de.jost_net.JVerein.server.ExtendedDBIterator;
+import de.jost_net.JVerein.server.PseudoDBObject;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
@@ -80,9 +82,35 @@ public class BuchungsartControl extends FilterControl implements Savable
 
   private CheckboxInput regexp;
 
+  private boolean isAbgeschlossen = false;
+
   public BuchungsartControl(AbstractView view)
   {
     super(view);
+    if (getBuchungsart() != null)
+    {
+      try
+      {
+        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+            "buchung");
+        it.addColumn("buchung.id");
+        it.setLimit(1);
+        it.join("jahresabschluss",
+            "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+        it.addFilter("buchungsart = ?", getBuchungsart().getID());
+        if (it.size() > 0)
+        {
+          isAbgeschlossen = true;
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Fehler beim Lesen der Datenbank. Siehe system log";
+        Logger.error(fehler, e);
+      }
+    }
   }
 
   private Buchungsart getBuchungsart()
@@ -129,6 +157,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     }
     art = new SelectInput(ArtBuchungsart.getArray(),
         new ArtBuchungsart(getBuchungsart().getArt()));
+    if (isAbgeschlossen)
+    {
+      art.disable();
+    }
     return art;
   }
 
@@ -188,6 +220,10 @@ public class BuchungsartControl extends FilterControl implements Savable
       return abschreibung;
     }
     abschreibung = new CheckboxInput(getBuchungsart().getAbschreibung());
+    if (isAbgeschlossen)
+    {
+      abschreibung.disable();
+    }
     return abschreibung;
   }
 
@@ -206,6 +242,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     if (getBuchungsart().getSpende())
     {
       steuer.setValue(null);
+      steuer.disable();
+    }
+    if (isAbgeschlossen)
+    {
       steuer.disable();
     }
     return steuer;
@@ -273,6 +313,10 @@ public class BuchungsartControl extends FilterControl implements Savable
     buchungsklasse.setValue(getBuchungsart().getBuchungsklasse());
     buchungsklasse.setAttribute(getBuchungartAttribute());
     buchungsklasse.setPleaseChoose("Bitte auswählen");
+    if (isAbgeschlossen)
+    {
+      buchungsklasse.disable();
+    }
     return buchungsklasse;
   }
 

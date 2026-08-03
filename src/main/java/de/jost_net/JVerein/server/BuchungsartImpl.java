@@ -158,22 +158,43 @@ public class BuchungsartImpl extends AbstractJVereinDBObject
     insertCheck();
     try
     {
+      boolean isAbgeschlossen = false;
+      // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
+      ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
+          "buchung");
+      it.addColumn("buchung.id");
+      it.setLimit(1);
+      it.join("jahresabschluss",
+          "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+      it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+      it.addFilter("buchungsart.id = ?", getID());
+      if (it.hasNext())
+      {
+        isAbgeschlossen = true;
+      }
+
+      if (hasChanged("art") && isAbgeschlossen)
+      {
+        throw new ApplicationException(
+            "Art kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+      }
+
+      if (hasChanged("buchungsklasse") && isAbgeschlossen)
+      {
+        throw new ApplicationException(
+            "Buchungsklasse kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+      }
+
+      if (hasChanged("abschreibung") && isAbgeschlossen)
+      {
+        throw new ApplicationException(
+            "Abschreibung kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
+      }
+
       if (hasChanged("steuer")
           && !(Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
-
-        // Prüfen ob es abgeschlossene Buchungen mit der Buchungsart gibt
-        ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>(
-            "buchung");
-        it.addColumn("buchung.id");
-        it.setLimit(1);
-
-        it.join("jahresabschluss",
-            "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
-
-        it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
-        it.addFilter("buchungsart.id = ?", getID());
-        if (it.hasNext())
+        if (isAbgeschlossen)
         {
           throw new ApplicationException(
               "Steuer kann nicht geändert werden, es gibt abgeschlossene Buchungen mit dieser Buchungsart.");
