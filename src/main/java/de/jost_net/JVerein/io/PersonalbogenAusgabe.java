@@ -743,13 +743,13 @@ public class PersonalbogenAusgabe extends AbstractAusgabe
         if (it2.size() > 0)
         {
           Zusatzfelder zf = it2.next();
-          rpt.addColumn(zf.getString(), Element.ALIGN_LEFT,
-              params.getFontNormal());
+          rpt.addColumn(zf.getString() == null ? "" : zf.getString(),
+              Element.ALIGN_LEFT, params.getFontNormal());
         }
         else
         {
           rpt.addColumn(fd.getDatentyp() == Datentyp.JANEIN ? "nein" : "",
-              Element.ALIGN_LEFT);
+              Element.ALIGN_LEFT, params.getFontNormal());
         }
       }
       rpt.closeTable();
