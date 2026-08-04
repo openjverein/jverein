@@ -161,4 +161,6 @@ public interface Konto extends JVereinDBObject
   public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException;
 
   public boolean isAbgeschlossen() throws RemoteException;
+
+  public boolean hasAbschreibung() throws RemoteException;
 }

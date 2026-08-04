@@ -720,4 +720,16 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
     it.addFilter("konto = ?", getID());
     return it.hasNext();
   }
+
+  @Override
+  public boolean hasAbschreibung() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addColumn("buchung.id");
+    it.setLimit(1);
+    it.join("buchungsart", "buchungsart.id = buchung.buchungsart");
+    it.addFilter("konto = ?", getID());
+    it.addFilter("abschreibung IS TRUE");
+    return it.hasNext();
+  }
 }

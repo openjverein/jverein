@@ -136,6 +136,8 @@ public class KontoControl extends FilterControl implements Savable
 
   private boolean isAbgeschlossen = false;
 
+  private boolean hasAbschreibung = false;
+
   public KontoControl(AbstractView view)
   {
     super(view);
@@ -144,6 +146,7 @@ public class KontoControl extends FilterControl implements Savable
       try
       {
         isAbgeschlossen = getKonto().isAbgeschlossen();
+        hasAbschreibung = getKonto().hasAbschreibung();
       }
       catch (RemoteException e)
       {
@@ -220,6 +223,10 @@ public class KontoControl extends FilterControl implements Savable
     if (((Kontoart) getKontoArt().getValue()) != Kontoart.ANLAGE)
     {
       anschaffung.setValue(null);
+      anschaffung.disable();
+    }
+    if (hasAbschreibung)
+    {
       anschaffung.disable();
     }
     return anschaffung;
@@ -886,6 +893,10 @@ public class KontoControl extends FilterControl implements Savable
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
       betrag.setValue(null);
+      betrag.disable();
+    }
+    if (hasAbschreibung)
+    {
       betrag.disable();
     }
     return betrag;
