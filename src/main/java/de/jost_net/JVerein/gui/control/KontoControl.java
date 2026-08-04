@@ -134,9 +134,23 @@ public class KontoControl extends FilterControl implements Savable
 
   Button afabutton;
 
+  private boolean isAbgeschlossen = false;
+
   public KontoControl(AbstractView view)
   {
     super(view);
+    if (getKonto() != null)
+    {
+      try
+      {
+        isAbgeschlossen = getKonto().isAbgeschlossen();
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Fehler beim Lesen der Datenbank. Siehe system log";
+        Logger.error(fehler, e);
+      }
+    }
   }
 
   private Konto getKonto()
@@ -157,6 +171,10 @@ public class KontoControl extends FilterControl implements Savable
     }
     nummer = new TextInput(getKonto().getNummer(), 35);
     nummer.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      nummer.disable();
+    }
     return nummer;
   }
 
@@ -168,6 +186,10 @@ public class KontoControl extends FilterControl implements Savable
     }
     bezeichnung = new TextInput(getKonto().getBezeichnung(), 255);
     bezeichnung.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      bezeichnung.disable();
+    }
     return bezeichnung;
   }
 
@@ -180,6 +202,10 @@ public class KontoControl extends FilterControl implements Savable
     eroeffnung = new DateInput(getKonto().getEroeffnung(),
         new JVDateFormatTTMMJJJJ());
     eroeffnung.setMandatory(true);
+    if (isAbgeschlossen)
+    {
+      eroeffnung.disable();
+    }
     return eroeffnung;
   }
 
@@ -685,6 +711,10 @@ public class KontoControl extends FilterControl implements Savable
         refreshGui();
       }
     });
+    if (isAbgeschlossen)
+    {
+      kontoart.disable();
+    }
     return kontoart;
   }
 
@@ -702,6 +732,10 @@ public class KontoControl extends FilterControl implements Savable
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
       anlagenart.setMandatory(true);
+      if (isAbgeschlossen)
+      {
+        anlagenart.disable();
+      }
     }
     else
     {
@@ -752,6 +786,10 @@ public class KontoControl extends FilterControl implements Savable
     {
       buchungsklasse.setMandatory(false);
     }
+    if (isAbgeschlossen)
+    {
+      buchungsklasse.disable();
+    }
     return buchungsklasse;
   }
 
@@ -787,6 +825,10 @@ public class KontoControl extends FilterControl implements Savable
     if (getKontoArt().getValue() == Kontoart.ANLAGE)
     {
       afaart.setMandatory(true);
+      if (isAbgeschlossen)
+      {
+        afaart.disable();
+      }
     }
     else
     {
@@ -866,6 +908,10 @@ public class KontoControl extends FilterControl implements Savable
     if (getKontoArt().getValue() != Kontoart.ANLAGE)
     {
       nutzungsdauer.setValue(null);
+      nutzungsdauer.disable();
+    }
+    if (isAbgeschlossen)
+    {
       nutzungsdauer.disable();
     }
     return nutzungsdauer;
@@ -1019,6 +1065,10 @@ public class KontoControl extends FilterControl implements Savable
       anlagenzweck.disable();
     }
     anlagenzweck.setPleaseChoose("Bitte wählen");
+    if (isAbgeschlossen)
+    {
+      anlagenzweck.disable();
+    }
     return anlagenzweck;
   }
 
@@ -1173,9 +1223,8 @@ public class KontoControl extends FilterControl implements Savable
     autobutton = new Button("Auto Anlagenwert", c -> handleAuto(), null, true,
         "view-refresh.png");
 
-    if (getBetrag().getValue() != null)
-      autobutton.setEnabled(false);
-    if (getKontoArt().getValue() != Kontoart.ANLAGE)
+    if (getKontoArt().getValue() != Kontoart.ANLAGE
+        || getBetrag().getValue() != null)
     {
       autobutton.setEnabled(false);
     }

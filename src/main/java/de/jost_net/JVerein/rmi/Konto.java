@@ -26,6 +26,51 @@ import de.willuhn.datasource.rmi.DBIterator;
 
 public interface Konto extends JVereinDBObject
 {
+
+  public static final String TABLE_NAME = "konto";
+
+  public static final String TABLE_NAME_ID = "konto.id";
+
+  public static final String PRIMARY_ATTRIBUTE = "bezeichnung";
+
+  public static final String NUMMER = "nummer";
+
+  public static final String BEZEICHNUNG = "bezeichnung";
+
+  public static final String EROEFFNUNG = "eroeffnung";
+
+  public static final String AUFLOESUNG = "aufloesung";
+
+  public static final String HIBISCUSID = "hibiscusid";
+
+  public static final String BUCHUNGSART = "buchungsart";
+
+  public static final String KONTOART = "kontoart";
+
+  public static final String ANLAGENART = "anlagenart";
+
+  public static final String ANLAGENKLASSE = "anlagenklasse";
+
+  public static final String AFAART = "afaart";
+
+  public static final String NUTZUNGSDAUER = "nutzungsdauer";
+
+  public static final String BETRAG = "betrag";
+
+  public static final String KOMMENTAR = "kommentar";
+
+  public static final String ANSCHAFFUNG = "anschaffung";
+
+  public static final String AFASTART = "afastart";
+
+  public static final String AFADAUER = "afadauer";
+
+  public static final String AFARESTWERT = "afarestwert";
+
+  public static final String AFAMODE = "afamode";
+
+  public static final String ZWECK = "zweck";
+
   public String getNummer() throws RemoteException;
 
   public void setNummer(String nummer) throws RemoteException;
@@ -114,4 +159,6 @@ public interface Konto extends JVereinDBObject
   public Anlagenzweck getAnlagenzweck() throws RemoteException;
 
   public void setAnlagenzweck(Anlagenzweck zweck) throws RemoteException;
+
+  public boolean isAbgeschlossen() throws RemoteException;
 }
