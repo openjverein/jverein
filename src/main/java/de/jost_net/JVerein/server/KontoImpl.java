@@ -52,13 +52,13 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   protected String getTableName()
   {
-    return "konto";
+    return TABLE_NAME;
   }
 
   @Override
   public String getPrimaryAttribute()
   {
-    return "bezeichnung";
+    return PRIMARY_ATTRIBUTE;
   }
 
   @Override
@@ -94,6 +94,53 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   protected void updateCheck() throws ApplicationException
   {
     plausi();
+
+    try
+    {
+      boolean isAbgeschlossen = isAbgeschlossen();
+      String text = " kann nicht geändert werden, es gibt abgeschlossene Buchungen auf diesem Konto.";
+
+      if (hasChanged(NUMMER) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Nummer" + text);
+      }
+      if (hasChanged(BEZEICHNUNG) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Bezeichnung" + text);
+      }
+      if (hasChanged(EROEFFNUNG) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Eröffnungsdatum" + text);
+      }
+      if (hasChanged(KONTOART) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Kontoart" + text);
+      }
+      if (hasChanged(ANLAGENART) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Anlagen Buchungsart" + text);
+      }
+      if (hasChanged(ANLAGENKLASSE) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Buchungsklasse" + text);
+      }
+      if (hasChanged(AFAART) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Afa Buchungsart" + text);
+      }
+      if (hasChanged(NUTZUNGSDAUER) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Nutzungsdauer" + text);
+      }
+      if (hasChanged(ZWECK) && isAbgeschlossen)
+      {
+        throw new ApplicationException("Anlagenzweck" + text);
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim Update Check", e);
+    }
   }
 
   private void plausi() throws ApplicationException
@@ -267,61 +314,61 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public String getNummer() throws RemoteException
   {
-    return (String) getAttribute("nummer");
+    return (String) getAttribute(NUMMER);
   }
 
   @Override
   public void setNummer(String nummer) throws RemoteException
   {
-    setAttribute("nummer", nummer);
+    setAttribute(NUMMER, nummer);
   }
 
   @Override
   public String getBezeichnung() throws RemoteException
   {
-    return (String) getAttribute("bezeichnung");
+    return (String) getAttribute(BEZEICHNUNG);
   }
 
   @Override
   public void setBezeichnung(String bezeichnung) throws RemoteException
   {
-    setAttribute("bezeichnung", bezeichnung);
+    setAttribute(BEZEICHNUNG, bezeichnung);
   }
 
   @Override
   public Date getEroeffnung() throws RemoteException
   {
-    return (Date) getAttribute("eroeffnung");
+    return (Date) getAttribute(EROEFFNUNG);
   }
 
   @Override
   public void setEroeffnung(Date eroeffnungdatum) throws RemoteException
   {
-    setAttribute("eroeffnung", eroeffnungdatum);
+    setAttribute(EROEFFNUNG, eroeffnungdatum);
   }
 
   @Override
   public Date getAufloesung() throws RemoteException
   {
-    return (Date) getAttribute("aufloesung");
+    return (Date) getAttribute(AUFLOESUNG);
   }
 
   @Override
   public void setAufloesung(Date aufloesungsdatum) throws RemoteException
   {
-    setAttribute("aufloesung", aufloesungsdatum);
+    setAttribute(AUFLOESUNG, aufloesungsdatum);
   }
 
   @Override
   public Integer getHibiscusId() throws RemoteException
   {
-    return (Integer) getAttribute("hibiscusid");
+    return (Integer) getAttribute(HIBISCUSID);
   }
 
   @Override
   public void setHibiscusId(Integer id) throws RemoteException
   {
-    setAttribute("hibiscusid", id);
+    setAttribute(HIBISCUSID, id);
   }
 
   @Override
@@ -355,7 +402,7 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Buchungsart getBuchungsart() throws RemoteException
   {
-    Object l = (Object) super.getAttribute("buchungsart");
+    Object l = (Object) super.getAttribute(BUCHUNGSART);
     if (l == null)
     {
       return null; // Keine Buchungsart zugeordnet
@@ -368,39 +415,39 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Long getBuchungsartId() throws RemoteException
   {
-    return (Long) super.getAttribute("buchungsart");
+    return (Long) super.getAttribute(BUCHUNGSART);
   }
 
   @Override
   public void setBuchungsartId(Long buchungsartId) throws RemoteException
   {
-    setAttribute("buchungsart", buchungsartId);
+    setAttribute(BUCHUNGSART, buchungsartId);
   }
 
   @Override
   public Kontoart getKontoArt() throws RemoteException
   {
-    Integer tmp = (Integer) super.getAttribute("kontoart");
+    Integer tmp = (Integer) super.getAttribute(KONTOART);
     if (tmp == null)
     {
       return Kontoart.GELD;
     }
     else
     {
-      return Kontoart.getByKey((int) super.getAttribute("kontoart"));
+      return Kontoart.getByKey((int) super.getAttribute(KONTOART));
     }
   }
 
   @Override
   public void setKontoArt(Kontoart kontoart) throws RemoteException
   {
-    setAttribute("kontoart", kontoart.getKey());
+    setAttribute(KONTOART, kontoart.getKey());
   }
 
   @Override
   public Buchungsart getAnlagenart() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("anlagenart");
+    Long l = (Long) super.getAttribute(ANLAGENART);
     if (l == null)
     {
       return null; // Keine Buchungsart zugeordnet
@@ -413,19 +460,19 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Long getAnlagenartId() throws RemoteException
   {
-    return (Long) super.getAttribute("anlagenart");
+    return (Long) super.getAttribute(ANLAGENART);
   }
 
   @Override
   public void setAnlagenartId(Long anlagenartId) throws RemoteException
   {
-    setAttribute("anlagenart", anlagenartId);
+    setAttribute(ANLAGENART, anlagenartId);
   }
 
   @Override
   public Buchungsklasse getBuchungsklasse() throws RemoteException
   {
-    Object l = (Object) super.getAttribute("anlagenklasse");
+    Object l = (Object) super.getAttribute(ANLAGENKLASSE);
     if (l == null)
     {
       return null; // Keine Buchungsklasse zugeordnet
@@ -438,19 +485,19 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Long getBuchungsklasseId() throws RemoteException
   {
-    return (Long) super.getAttribute("anlagenklasse");
+    return (Long) super.getAttribute(ANLAGENKLASSE);
   }
 
   @Override
   public void setBuchungsklasseId(Long anlagenklasseId) throws RemoteException
   {
-    setAttribute("anlagenklasse", anlagenklasseId);
+    setAttribute(ANLAGENKLASSE, anlagenklasseId);
   }
 
   @Override
   public Buchungsart getAfaart() throws RemoteException
   {
-    Long l = (Long) super.getAttribute("afaart");
+    Long l = (Long) super.getAttribute(AFAART);
     if (l == null)
     {
       return null; // Keine Buchungsart zugeordnet
@@ -463,109 +510,109 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   @Override
   public Long getAfaartId() throws RemoteException
   {
-    return (Long) super.getAttribute("afaart");
+    return (Long) super.getAttribute(AFAART);
   }
 
   @Override
   public void setAfaartId(Long afaartId) throws RemoteException
   {
-    setAttribute("afaart", afaartId);
+    setAttribute(AFAART, afaartId);
   }
 
   @Override
   public Integer getNutzungsdauer() throws RemoteException
   {
-    return (Integer) getAttribute("nutzungsdauer");
+    return (Integer) getAttribute(NUTZUNGSDAUER);
   }
 
   @Override
   public void setNutzungsdauer(Integer nutzungsdauer) throws RemoteException
   {
-    setAttribute("nutzungsdauer", nutzungsdauer);
+    setAttribute(NUTZUNGSDAUER, nutzungsdauer);
   }
 
   @Override
   public Double getBetrag() throws RemoteException
   {
-    return (Double) getAttribute("betrag");
+    return (Double) getAttribute(BETRAG);
   }
 
   @Override
   public void setBetrag(Double d) throws RemoteException
   {
-    setAttribute("betrag", d);
+    setAttribute(BETRAG, d);
   }
 
   @Override
   public String getKommentar() throws RemoteException
   {
-    return (String) getAttribute("kommentar");
+    return (String) getAttribute(KOMMENTAR);
   }
 
   @Override
   public void setKommentar(String kommentar) throws RemoteException
   {
-    setAttribute("kommentar", kommentar);
+    setAttribute(KOMMENTAR, kommentar);
   }
 
   @Override
   public Date getAnschaffung() throws RemoteException
   {
-    return (Date) getAttribute("anschaffung");
+    return (Date) getAttribute(ANSCHAFFUNG);
   }
 
   @Override
   public void setAnschaffung(Date anschaffung) throws RemoteException
   {
-    setAttribute("anschaffung", anschaffung);
+    setAttribute(ANSCHAFFUNG, anschaffung);
   }
 
   @Override
   public Double getAfaStart() throws RemoteException
   {
-    return (Double) getAttribute("afastart");
+    return (Double) getAttribute(AFASTART);
   }
 
   @Override
   public void setAfaStart(Double afastart) throws RemoteException
   {
-    setAttribute("afastart", afastart);
+    setAttribute(AFASTART, afastart);
   }
 
   @Override
   public Double getAfaDauer() throws RemoteException
   {
-    return (Double) getAttribute("afadauer");
+    return (Double) getAttribute(AFADAUER);
   }
 
   @Override
   public void setAfaDauer(Double afadauer) throws RemoteException
   {
-    setAttribute("afadauer", afadauer);
+    setAttribute(AFADAUER, afadauer);
   }
 
   @Override
   public Double getAfaRestwert() throws RemoteException
   {
-    return (Double) getAttribute("afarestwert");
+    return (Double) getAttribute(AFARESTWERT);
   }
 
   @Override
   public void setAfaRestwert(Double afarestwert) throws RemoteException
   {
-    setAttribute("afarestwert", afarestwert);
+    setAttribute(AFARESTWERT, afarestwert);
   }
 
   @Override
   public Integer getAfaMode() throws RemoteException
   {
-    return (Integer) getAttribute("afamode");
+    return (Integer) getAttribute(AFAMODE);
   }
 
   @Override
   public void setAfaMode(Integer afamode) throws RemoteException
   {
-    setAttribute("afamode", afamode);
+    setAttribute(AFAMODE, afamode);
   }
 
   @Override
@@ -660,5 +707,17 @@ public class KontoImpl extends AbstractJVereinDBObject implements Konto
   public String getObjektNameMehrzahl()
   {
     return "Konten";
+  }
+
+  @Override
+  public boolean isAbgeschlossen() throws RemoteException
+  {
+    ExtendedDBIterator<PseudoDBObject> it = new ExtendedDBIterator<>("buchung");
+    it.addColumn("buchung.id");
+    it.setLimit(1);
+    it.join("jahresabschluss",
+        "jahresabschluss.von <= buchung.datum and jahresabschluss.bis >= buchung.datum");
+    it.addFilter("konto = ?", getID());
+    return it.hasNext();
   }
 }
