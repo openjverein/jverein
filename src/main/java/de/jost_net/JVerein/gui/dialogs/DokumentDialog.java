@@ -19,13 +19,17 @@ package de.jost_net.JVerein.gui.dialogs;
 
 import java.io.File;
 import java.rmi.RemoteException;
+import java.util.Date;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.rmi.AbstractDokument;
+import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.input.DateInput;
 import de.willuhn.jameica.gui.input.FileInput;
 import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.TextInput;
@@ -46,6 +50,8 @@ public class DokumentDialog extends AbstractDialog<Boolean>
   private AbstractDokument dok = null;
 
   private Settings settings;
+
+  private DateInput datum;
 
   private TextInput bemerkung;
 
@@ -70,6 +76,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
       grDokument.addLabelPair("Datei", getDatei());
     }
     LabelGroup group = new LabelGroup(parent, "Infos");
+    group.addLabelPair("Datum", getDatum());
     group.addLabelPair("Bemerkung", getBemerkung());
     if (dok.getPfad() != null)
     {
@@ -96,6 +103,7 @@ public class DokumentDialog extends AbstractDialog<Boolean>
         settings.setAttribute("lastdir", file.getParent());
         dok.setFile(file);
       }
+      dok.setDatum((Date) datum.getValue());
       dok.setBemerkung((String) bemerkung.getValue());
       dok.store();
       close();
@@ -111,6 +119,27 @@ public class DokumentDialog extends AbstractDialog<Boolean>
   protected Boolean getData() throws Exception
   {
     return true;
+  }
+
+  private DateInput getDatum() throws RemoteException
+  {
+    if (datum != null)
+    {
+      return datum;
+    }
+    Date d = dok.getDatum();
+    if (d == null)
+    {
+      d = new Date();
+    }
+    this.datum = new DateInput(d, new JVDateFormatTTMMJJJJ());
+    this.datum.setTitle("Datum");
+    this.datum.setText("Bitte Datum wählen");
+    if (!dok.isNewObject())
+    {
+      datum.disable();
+    }
+    return datum;
   }
 
   private TextInput getBemerkung() throws RemoteException
