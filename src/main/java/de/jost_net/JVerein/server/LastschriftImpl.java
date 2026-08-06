@@ -24,6 +24,8 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Kursteilnehmer;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mitglied;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class LastschriftImpl extends AbstractJVereinDBObject
     implements Lastschrift, IBetrag, IVersand, IMitglied
@@ -49,9 +51,24 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (!forcedDelete && getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Lastschrift kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      throw new ApplicationException(
+          "Lastschrift kann nicht gelöscht werden. Siehe system log.");
+    }
   }
 
   @Override

@@ -19,8 +19,11 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.util.ApplicationException;
 
 public class AbrechnungslaufImpl extends AbstractJVereinDBObject
@@ -49,17 +52,20 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   @Override
   protected void deleteCheck() throws ApplicationException
   {
-    try
+    if (!forcedDelete)
     {
-      if (getAbgeschlossen())
+      try
       {
-        throw new ApplicationException(
-            "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+        if (getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+        }
       }
-    }
-    catch (RemoteException e)
-    {
-      throw new ApplicationException(e.getMessage());
+      catch (RemoteException e)
+      {
+        throw new ApplicationException(e.getMessage());
+      }
     }
   }
 
@@ -253,7 +259,13 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
    */
   public String getIDText() throws RemoteException
   {
-    return getID() + " " + "vom" + " "
+    String prefix = "";
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN)
+        && getAbgeschlossen())
+    {
+      prefix = "\uD83D\uDD12 ";
+    }
+    return prefix + getID() + " " + "vom" + " "
         + new JVDateFormatTTMMJJJJ().format(getDatum()) + " ("
         + getZahlungsgrund() + ")";
   }
@@ -318,6 +330,17 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Abrechnungsläufe";
+  }
+
+  @Override
+  public boolean isJahrAbgeschlossen() throws RemoteException
+  {
+    DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+        .createList(Jahresabschluss.class);
+    it.addFilter("von <= ?", new Object[] { getFaelligkeit() });
+    it.addFilter("bis >= ?", new Object[] { getFaelligkeit() });
+    it.setLimit(1);
+    return it.hasNext();
   }
 
 }

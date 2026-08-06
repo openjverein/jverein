@@ -1796,6 +1796,13 @@ public class BuchungsControl extends VorZurueckControl implements Savable
           return editable = false;
         }
       }
+      if (getBuchung().getAbrechnungslauf() != null
+          && getBuchung().getAbrechnungslauf().getAbgeschlossen())
+      {
+        GUI.getStatusBar().setErrorText(
+            "Buchung kann nicht bearbeitet werden. Der zugehörige Abrechnungslauf ist abgeschlossen.");
+        return editable = false;
+      }
     }
     catch (RemoteException e)
     {

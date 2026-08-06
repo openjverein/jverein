@@ -73,6 +73,13 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
             "Sollbuchung kann nicht gelöscht werden weil sie zu einer "
                 + "Rechnung gehört!");
       }
+      if (!forcedDelete && getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Sollbuchung kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
     }
     catch (ObjectNotFoundException e)
     {

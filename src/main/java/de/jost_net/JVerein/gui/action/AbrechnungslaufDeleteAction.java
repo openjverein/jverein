@@ -51,6 +51,13 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
     }
     Abrechnungslauf abrl = (Abrechnungslauf) object[0];
 
+    // Prüfen ob der Abrechnungslauf abgeschlossen ist
+    if (abrl.getAbgeschlossen())
+    {
+      throw new ApplicationException(
+          "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+    }
+
     // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
     final DBService service = Einstellungen.getDBService();
     String sql1 = "SELECT jahresabschluss.bis from jahresabschluss "

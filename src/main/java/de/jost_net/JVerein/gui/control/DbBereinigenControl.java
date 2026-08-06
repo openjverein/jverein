@@ -579,7 +579,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           try
           {
-            b.delete();
+            b.deleteForced();
           }
           catch (RemoteException e)
           {
@@ -600,7 +600,7 @@ public class DbBereinigenControl extends AbstractControl
           {
             if (sollloeschen && (b.getSollbuchung() != null))
             {
-              b.getSollbuchung().delete();
+              b.getSollbuchung().deleteForced();
               counts++;
             }
           }
@@ -677,7 +677,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           la = it.next();
-          la.delete();
+          la.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)
@@ -809,7 +809,7 @@ public class DbBereinigenControl extends AbstractControl
             continue;
           }
 
-          al.delete();
+          al.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)

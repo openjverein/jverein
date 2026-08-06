@@ -36,6 +36,7 @@ import de.jost_net.JVerein.gui.menu.BuchungAbrechnugslaufMenu;
 import de.jost_net.JVerein.gui.menu.LastschriftMenu;
 import de.jost_net.JVerein.gui.menu.SollbuchungMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
+import de.jost_net.JVerein.gui.parts.AutoUpdateTablePart;
 import de.jost_net.JVerein.gui.parts.BetragSummaryTablePart;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
@@ -303,9 +304,21 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       return abrechnungslaufList;
     }
 
-    abrechnungslaufList = new JVereinTablePart(getAbrechnungslaeufe(),
+    abrechnungslaufList = new AutoUpdateTablePart(getAbrechnungslaeufe(),
         new EditAction(AbrechnungslaufDetailView.class));
     abrechnungslaufList.addColumn("Nr", "nr");
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
+    {
+      abrechnungslaufList.addColumn("Abgeschlossen", "abgeschlossen",
+          new Formatter()
+          {
+            @Override
+            public String format(Object o)
+            {
+              return (Boolean) o ? "\uD83D\uDD12" : "";
+            }
+          });
+    }
     abrechnungslaufList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
     abrechnungslaufList.addColumn("Modus", "modus",
