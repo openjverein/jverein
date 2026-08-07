@@ -442,7 +442,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           rechnung = it.next();
-          rechnung.delete();
+          rechnung.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)
@@ -493,7 +493,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           sp = it.next();
-          sp.delete();
+          sp.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)

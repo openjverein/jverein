@@ -58,9 +58,25 @@ public class SpendenbescheinigungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    if (!forcedDelete)
+    {
+      try
+      {
+        if (getVersanddatum() != null)
+        {
+          throw new ApplicationException(
+              "Spendenbescheinigung kann nicht gelöscht werden. Sie wurde bereits versendet!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        String msg = "Spendenbescheinigung kann nicht gelöscht werden. Siehe system log";
+        throw new ApplicationException(msg);
+      }
+    }
   }
 
   @Override

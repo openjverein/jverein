@@ -44,6 +44,7 @@ import de.jost_net.JVerein.util.StringTool;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ResultSetExtractor;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class RechnungImpl extends AbstractJVereinDBObject
@@ -57,6 +58,28 @@ public class RechnungImpl extends AbstractJVereinDBObject
   public RechnungImpl() throws RemoteException
   {
     super();
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    if (!forcedDelete)
+    {
+      try
+      {
+        if (getVersanddatum() != null)
+        {
+          throw new ApplicationException(
+              "Rechnung kann nicht gelöscht werden. Sie wurde bereits versendet!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        String msg = "Rechnung kann nicht gelöscht werden. Siehe system log";
+        throw new ApplicationException(msg);
+      }
+    }
   }
 
   @Override
