@@ -18,21 +18,15 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.DokumentControl;
-import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.input.DateInput;
-import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.ColumnLayout;
-import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.ScrolledContainer;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 
@@ -40,14 +34,9 @@ public class BuchungPart implements Part
 {
   private BuchungsControl control;
 
-  private DokumentControl dcontrol;
-
-  private boolean buchungabgeschlossen;
-
-  public BuchungPart(BuchungsControl control, boolean buchungabgeschlossen)
+  public BuchungPart(BuchungsControl control)
   {
     this.control = control;
-    this.buchungabgeschlossen = buchungabgeschlossen;
   }
 
   @Override
@@ -117,23 +106,7 @@ public class BuchungPart implements Part
 
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      LabelGroup grDokument = new LabelGroup(scrolled.getComposite(),
-          "Dokumente", true);
-
-      dcontrol = new DokumentControl(!buchungabgeschlossen,
-          BuchungDokument.class);
-
-      grDokument.getComposite().setLayout(new GridLayout(1, false));
-      ButtonArea butts = new ButtonArea();
-      butts.addButton(dcontrol.getNeuButton());
-      butts.paint(grDokument.getComposite());
-
-      grDokument.addPart(dcontrol.getDokumenteList());
-      dcontrol.setDragDrop(grDokument.getComposite());
-
-      GridData gridData = new GridData(GridData.FILL_BOTH);
-      gridData.heightHint = 150;
-      grDokument.getComposite().setLayoutData(gridData);
+      new BelegPart().paint(scrolled.getComposite());
     }
   }
 }

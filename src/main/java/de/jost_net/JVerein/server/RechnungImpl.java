@@ -687,7 +687,7 @@ public class RechnungImpl extends AbstractJVereinDBObject
 
         // Rechnungsnummer erstellen
         Map<String, Object> map = new AllgemeineMap().getMap(null);
-        new RechnungMap().getMap(this, map);
+        map = new RechnungMap().getMap(this, map);
         if (getMitglied() != null)
         {
           map = new MitgliedMap().getMap(getMitglied(), map);

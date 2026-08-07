@@ -28,10 +28,13 @@ import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.HerkunftSpende;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.AbstractBelegReferenz;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.BuchungsdokumentBuchung;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.IBeleg;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Projekt;
@@ -45,7 +48,7 @@ import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class BuchungImpl extends AbstractJVereinDBObject
-    implements Buchung, IBetrag
+    implements Buchung, IBetrag, IBeleg
 {
 
   private static final long serialVersionUID = 1L;
@@ -802,13 +805,28 @@ public class BuchungImpl extends AbstractJVereinDBObject
 
     if ("document".equals(fieldName))
     {
-      DBIterator<BuchungDokument> list = Einstellungen.getDBService()
-          .createList(BuchungDokument.class);
-      list.addFilter("referenz = ?", Long.valueOf(getID()));
+      DBIterator<BuchungDokument> list = getBelegList();
       if (list.size() > 0)
         return list.size();
       else
         return null;
+    }
+    if ("belegnummern".equals(fieldName))
+    {
+      DBIterator<BuchungDokument> list = getBelegList();
+
+      StringBuilder sb = new StringBuilder();
+      boolean first = true;
+      while (list.hasNext())
+      {
+        if (!first)
+        {
+          sb.append(", ");
+        }
+        first = false;
+        sb.append(list.next().getBelegnummer());
+      }
+      return sb.toString();
     }
 
     return super.getAttribute(fieldName);
@@ -940,19 +958,6 @@ public class BuchungImpl extends AbstractJVereinDBObject
   }
 
   @Override
-  public void delete() throws RemoteException, ApplicationException
-  {
-    DBIterator<BuchungDokument> it = Einstellungen.getDBService()
-        .createList(BuchungDokument.class);
-    it.addFilter("referenz = ?", new Object[] { this.getID() });
-    while (it.hasNext())
-    {
-      it.next().delete();
-    }
-    super.delete();
-  }
-
-  @Override
   public String getBezeichnungSachzuwendung() throws RemoteException
   {
     return (String) getAttribute("bezeichnungsachzuwendung");
@@ -1001,5 +1006,66 @@ public class BuchungImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Buchungen";
+  }
+
+  @Override
+  public AbstractBelegReferenz addBeleg(BuchungDokument dokument)
+      throws RemoteException, ApplicationException
+  {
+    if (isNewObject())
+    {
+      throw new ApplicationException("Buchung bitte erst speichern");
+    }
+    if (dokument == null || dokument.isNewObject())
+    {
+      throw new ApplicationException("Dokument bitte erst speichern");
+    }
+    DBIterator<BuchungDokument> it = getBelegList();
+    it.addFilter("dokument = ?", dokument.getID());
+    if (it.hasNext())
+    {
+      throw new ApplicationException("Dokument '" + dokument.getBemerkung()
+          + "' bereits bei Buchung hinterlegt");
+    }
+
+    BuchungsdokumentBuchung budo = Einstellungen.getDBService()
+        .createObject(BuchungsdokumentBuchung.class, null);
+    budo.setBuchung(this);
+    budo.setDokument(dokument);
+    budo.store();
+
+    return budo;
+  }
+
+  @Override
+  public void removeBeleg(BuchungDokument beleg)
+      throws RemoteException, ApplicationException
+  {
+    if (beleg == null || beleg.isNewObject())
+    {
+      throw new ApplicationException(
+          "Dokument existiert nicht oder wurde noch nicht gespeichert");
+    }
+    DBIterator<BuchungsdokumentBuchung> it = Einstellungen.getDBService()
+        .createList(BuchungsdokumentBuchung.class);
+    it.addFilter("buchungsdokumentbuchung.dokument = ?", beleg.getID());
+    it.addFilter("buchungsdokumentbuchung.buchung = ?", getID());
+    if (!it.hasNext())
+    {
+      throw new ApplicationException(
+          "Dokument ist nicht bei Buchung hinterlegt");
+    }
+    it.next().delete();
+  }
+
+  @Override
+  public DBIterator<BuchungDokument> getBelegList() throws RemoteException
+  {
+    DBIterator<BuchungDokument> it = Einstellungen.getDBService()
+        .createList(BuchungDokument.class);
+    it.join("buchungsdokumentbuchung");
+    it.addFilter("buchungsdokumentbuchung.dokument = buchungdokument.id");
+    it.addFilter("buchungsdokumentbuchung.buchung = ?", getID());
+    return it;
   }
 }

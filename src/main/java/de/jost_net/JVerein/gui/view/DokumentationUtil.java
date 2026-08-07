@@ -96,6 +96,8 @@ public class DokumentationUtil
 
   public static final String BUCHUNGEN = BUCHF + "buchungen";
 
+  public static final String DOKUMENT = BUCHF + "dokument";
+
   public static final String ANLAGENBUCHUNGEN = BUCHF + "anlagenbuchungen";
 
   public static final String BUCHUNGSIMPORT = BUCHF + "buchungsimport";
@@ -230,5 +232,4 @@ public class DokumentationUtil
 
   // Changelog bei Update
   public static final String CHANGELOG = FUNKTIONEN + "notes";
-
 }
