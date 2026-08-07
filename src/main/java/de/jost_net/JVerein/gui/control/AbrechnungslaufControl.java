@@ -310,14 +310,7 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN))
     {
       abrechnungslaufList.addColumn("Abgeschlossen", "abgeschlossen",
-          new Formatter()
-          {
-            @Override
-            public String format(Object o)
-            {
-              return (Boolean) o ? "\uD83D\uDD12" : "";
-            }
-          });
+          o -> (Boolean) o ? "\uD83D\uDD12" : "");
     }
     abrechnungslaufList.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
