@@ -42,6 +42,27 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getSollbuchung().getAbrechnungslauf() != null
+          && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Sollbuchungsposition kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      String msg = "Sollbuchungsposition kann nicht gelöscht werden. Siehe system log";
+      throw new ApplicationException(msg);
+    }
+  }
+
+  @Override
   protected void insertCheck() throws ApplicationException
   {
     try

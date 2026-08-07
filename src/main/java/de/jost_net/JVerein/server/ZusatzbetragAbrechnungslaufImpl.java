@@ -23,6 +23,8 @@ import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Zusatzbetrag;
 import de.jost_net.JVerein.rmi.ZusatzbetragAbrechnungslauf;
 import de.willuhn.datasource.db.AbstractDBObject;
+import de.willuhn.logging.Logger;
+import de.willuhn.util.ApplicationException;
 
 public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject
     implements ZusatzbetragAbrechnungslauf
@@ -48,9 +50,24 @@ public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject
   }
 
   @Override
-  protected void deleteCheck()
+  protected void deleteCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Zusatzbetragabrechnungslauf kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      String msg = "Zusatzbetragabrechnungslauf kann nicht gelöscht werden. Siehe system log";
+      throw new ApplicationException(msg);
+    }
   }
 
   @Override
