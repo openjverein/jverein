@@ -1795,13 +1795,13 @@ public class BuchungsControl extends VorZurueckControl implements Savable
               "Buchung kann nicht bearbeitet werden. Sie ist einer Splitbuchung zugeordnet.");
           return editable = false;
         }
-      }
-      if (getBuchung().getAbrechnungslauf() != null
-          && getBuchung().getAbrechnungslauf().getAbgeschlossen())
-      {
-        GUI.getStatusBar().setErrorText(
-            "Buchung kann nicht bearbeitet werden. Der zugehörige Abrechnungslauf ist abgeschlossen.");
-        return editable = false;
+        if (getBuchung().getAbrechnungslauf() != null
+            && getBuchung().getAbrechnungslauf().getAbgeschlossen())
+        {
+          GUI.getStatusBar().setErrorText(
+              "Buchung kann nicht bearbeitet werden. Der zugehörige Abrechnungslauf ist abgeschlossen.");
+          return editable = false;
+        }
       }
     }
     catch (RemoteException e)

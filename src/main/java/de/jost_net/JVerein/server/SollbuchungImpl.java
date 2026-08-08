@@ -144,6 +144,13 @@ public class SollbuchungImpl extends AbstractJVereinDBObject
           throw new ApplicationException(
               "Sollbuchung kann nicht geändert werden weil sie zu einer Rechnung gehört");
         }
+        if (getAbrechnungslauf() != null
+            && getAbrechnungslauf().getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Sollbuchung kann nicht geändert werden weil der zugehörige "
+                  + "Abrechnungslauf abgeschlossen ist!");
+        }
       }
       catch (ObjectNotFoundException e)
       {

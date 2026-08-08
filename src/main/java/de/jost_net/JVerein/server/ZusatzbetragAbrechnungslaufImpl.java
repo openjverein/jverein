@@ -71,15 +71,45 @@ public class ZusatzbetragAbrechnungslaufImpl extends AbstractDBObject
   }
 
   @Override
-  protected void insertCheck()
+  protected void insertCheck() throws ApplicationException
   {
-    //
+    try
+    {
+      if (getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Zusatzbetragabrechnungslauf kann nicht erzeugt werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      String msg = "Zusatzbetragabrechnungslauf kann nicht erzeugt werden. Siehe system log";
+      throw new ApplicationException(msg);
+    }
   }
 
   @Override
-  protected void updateCheck()
+  protected void updateCheck() throws ApplicationException
   {
-    insertCheck();
+    try
+    {
+      if (getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Zusatzbetragabrechnungslauf kann nicht geändert werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      String msg = "Zusatzbetragabrechnungslauf kann nicht geändert werden. Siehe system log";
+      throw new ApplicationException(msg);
+    }
   }
 
   @Override

@@ -265,6 +265,31 @@ public class BuchungImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    if (!forcedUpdate)
+    {
+      try
+      {
+        Jahresabschluss ja = getJahresabschluss();
+        if (ja != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+        }
+        if (getAbrechnungslauf() != null
+            && getAbrechnungslauf().getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht kann nicht geändert werden weil der zugehörige "
+                  + "Abrechnungslauf abgeschlossen ist!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 

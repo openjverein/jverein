@@ -121,7 +121,7 @@ public abstract class AbstractAusgabe
           {
             IVersand versand = (IVersand) object;
             versand.setVersanddatum(new Date());
-            versand.store();
+            versand.updateForced();
           }
         }
 
@@ -141,7 +141,7 @@ public abstract class AbstractAusgabe
           {
             IVersand versand = (IVersand) object;
             versand.setVersanddatum(new Date());
-            versand.store();
+            versand.updateForced();
           }
         }
         GUI.getStatusBar()

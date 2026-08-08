@@ -74,13 +74,32 @@ public class LastschriftImpl extends AbstractJVereinDBObject
   @Override
   protected void insertCheck()
   {
-    updateCheck();
+    //
   }
 
   @Override
-  protected void updateCheck()
+  protected void updateCheck() throws ApplicationException
   {
-    //
+    if (!forcedUpdate)
+    {
+      try
+      {
+        if (getAbrechnungslauf() != null
+            && getAbrechnungslauf().getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Lastschrift kann nicht geändert werden weil der zugehörige "
+                  + "Abrechnungslauf abgeschlossen ist!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Lastschrift kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
+    insertCheck();
   }
 
   @Override

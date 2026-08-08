@@ -328,7 +328,7 @@ public class ZipMailer
                 if (versand != null)
                 {
                   versand.setVersanddatum(new Date());
-                  versand.store();
+                  versand.updateForced();
                 }
               }
               catch (MessagingException me)
