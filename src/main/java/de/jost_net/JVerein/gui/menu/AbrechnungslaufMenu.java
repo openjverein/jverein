@@ -50,12 +50,12 @@ public class AbrechnungslaufMenu extends ContextMenu
     addItem(new ContextMenuItem("Bearbeiten",
         new EditAction(AbrechnungslaufDetailView.class, part),
         "text-x-generic.png"));
-    addItem(new AbgeschlossenDisabledItem("Löschen",
+    addItem(new CheckedSingleContextMenuItem("Löschen",
         new AbrechnungslaufDeleteAction(), "user-trash-full.png"));
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Gutschrift erstellen",
         new GutschriftAction(), "ueberweisung.png"));
-    addItem(new AbgeschlossenDisabledItem("Pre-Notification",
+    addItem(new CheckedSingleContextMenuItem("Pre-Notification",
         new StartViewAction(PreNotificationMailView.class, true),
         "document-print.png"));
     try
@@ -64,7 +64,10 @@ public class AbrechnungslaufMenu extends ContextMenu
       {
         addItem(ContextMenuItem.SEPARATOR);
         addItem(new AbgeschlossenDisabledItem("Abschließen",
-            new AbrechnungslaufAbschliessenAction(), "lock.png"));
+            new AbrechnungslaufAbschliessenAction(true), "locked.png", false));
+        addItem(new AbgeschlossenDisabledItem("Aufschließen",
+            new AbrechnungslaufAbschliessenAction(false), "unlocked.png",
+            true));
       }
     }
     catch (RemoteException e)
@@ -75,10 +78,13 @@ public class AbrechnungslaufMenu extends ContextMenu
 
   private static class AbgeschlossenDisabledItem extends CheckedContextMenuItem
   {
+    boolean abgeschlossen;
 
-    private AbgeschlossenDisabledItem(String text, Action action, String icon)
+    private AbgeschlossenDisabledItem(String text, Action action, String icon,
+        boolean abgeschlossen)
     {
       super(text, action, icon);
+      this.abgeschlossen = abgeschlossen;
     }
 
     @Override
@@ -89,21 +95,15 @@ public class AbrechnungslaufMenu extends ContextMenu
         Abrechnungslauf abrl = (Abrechnungslauf) o;
         try
         {
-          if (abrl.getAbgeschlossen())
-          {
-            return false;
-          }
-          else
-          {
-            return true;
-          }
+          return !abgeschlossen ^ abrl.getAbgeschlossen()
+              && !abrl.isJahrAbgeschlossen();
         }
         catch (RemoteException e)
         {
-          return false;
+          Logger.error("Fehler", e);
         }
       }
-      return super.isEnabledFor(o);
+      return true;
     }
   }
 

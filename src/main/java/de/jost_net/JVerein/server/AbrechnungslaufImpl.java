@@ -19,8 +19,15 @@ package de.jost_net.JVerein.server;
 import java.rmi.RemoteException;
 import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
+import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.Jahresabschluss;
+import de.jost_net.JVerein.rmi.Lastschrift;
+import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
+import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class AbrechnungslaufImpl extends AbstractJVereinDBObject
@@ -49,17 +56,62 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   @Override
   protected void deleteCheck() throws ApplicationException
   {
+    if (!forcedDelete)
+    {
+      try
+      {
+        if (getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        Logger.error("Fehler", e);
+        String msg = "Abrechnungslauf kann nicht gelöscht werden. Siehe system log";
+        throw new ApplicationException(msg);
+      }
+    }
+
     try
     {
-      if (getAbgeschlossen())
+      // Suche Buchung des Abrechnungslaufes
+      DBIterator<Buchung> bit = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      bit.addFilter("abrechnungslauf = ?", getID());
+      bit.setLimit(1);
+      if (bit.hasNext())
       {
         throw new ApplicationException(
-            "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+            "Abrechnungslauf kann nicht gelöscht werden, er hat noch Buchungen!");
+      }
+      // Suche Sollbuchung des Abrechnungslaufes
+      DBIterator<Sollbuchung> sit = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
+      sit.addFilter("abrechnungslauf = ?", getID());
+      sit.setLimit(1);
+      if (sit.hasNext())
+      {
+        throw new ApplicationException(
+            "Abrechnungslauf kann nicht gelöscht werden, er hat noch Sollbuchungen!");
+      }
+      // Suche Lastschriften des Abrechnungslaufes
+      DBIterator<Lastschrift> lit = Einstellungen.getDBService()
+          .createList(Lastschrift.class);
+      lit.addFilter("abrechnungslauf = ?", getID());
+      lit.setLimit(1);
+      if (lit.hasNext())
+      {
+        throw new ApplicationException(
+            "Abrechnungslauf kann nicht gelöscht werden, er hat noch Lastschriften!");
       }
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException(e.getMessage());
+      Logger.error("Fehler", e);
+      String msg = "Abrechnungslauf kann nicht gelöscht werden. Siehe system log";
+      throw new ApplicationException(msg);
     }
   }
 
@@ -253,7 +305,13 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
    */
   public String getIDText() throws RemoteException
   {
-    return getID() + " " + "vom" + " "
+    String prefix = "";
+    if ((Boolean) Einstellungen.getEinstellung(Property.ABRLABSCHLIESSEN)
+        && getAbgeschlossen())
+    {
+      prefix = "\uD83D\uDD12 ";
+    }
+    return prefix + getID() + " " + "vom" + " "
         + new JVDateFormatTTMMJJJJ().format(getDatum()) + " ("
         + getZahlungsgrund() + ")";
   }
@@ -318,6 +376,17 @@ public class AbrechnungslaufImpl extends AbstractJVereinDBObject
   public String getObjektNameMehrzahl()
   {
     return "Abrechnungsläufe";
+  }
+
+  @Override
+  public boolean isJahrAbgeschlossen() throws RemoteException
+  {
+    DBIterator<Jahresabschluss> it = Einstellungen.getDBService()
+        .createList(Jahresabschluss.class);
+    it.addFilter("von <= ?", new Object[] { getFaelligkeit() });
+    it.addFilter("bis >= ?", new Object[] { getFaelligkeit() });
+    it.setLimit(1);
+    return it.hasNext();
   }
 
 }
