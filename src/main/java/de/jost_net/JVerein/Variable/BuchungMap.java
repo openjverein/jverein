@@ -246,7 +246,7 @@ public class BuchungMap extends AbstractMap
           value = Einstellungen.DECIMALFORMAT.format(10.20);
           break;
         case BETRAGINWORTEN:
-          value = "zehn EURO zwanzig";
+          value = "zehn Euro zwanzig";
           break;
         case BETRAGNETTO:
           value = Einstellungen.DECIMALFORMAT.format(10.20);
