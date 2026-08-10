@@ -79,7 +79,7 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
       }
       catch (RemoteException e)
       {
-        String fehler = "Lastschrift kann nicht gespeichert werden. Siehe system log.";
+        String fehler = "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log.";
         Logger.error(fehler, e);
         throw new ApplicationException(fehler);
       }
@@ -89,7 +89,7 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Buchung kann nicht gespeichert werden. Siehe system log");
+          "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log");
     }
   }
 
@@ -156,7 +156,7 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
     }
     catch (RemoteException e)
     {
-      String fehler = "Lastschrift kann nicht gespeichert werden. Siehe system log.";
+      String fehler = "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log.";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler);
     }
