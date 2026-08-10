@@ -21,6 +21,7 @@ import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -235,6 +236,9 @@ public class FormularfeldControl extends FormularPartControl implements Savable
             "$" + RechnungVar.QRCODE_SUMME.getName());
         break;
       case HINTERGRUND:
+        break;
+      case BUCHUNGSREPORT:
+        map = BuchungMap.getDummyMap(map);
         break;
     }
     return map;

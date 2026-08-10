@@ -118,7 +118,7 @@ public class SpendenbescheinigungMap extends AbstractMap
         case BETRAGINWORTEN:
           Double ganzbetrag = spb.getBetrag() * 100;
           long euro = spb.getBetrag().longValue();
-          long cent = ganzbetrag.longValue() - 100 * euro;
+          long cent = Math.abs(ganzbetrag.longValue() - 100 * euro);
           try
           {
             String wort = GermanNumber.toString(euro);
