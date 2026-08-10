@@ -264,7 +264,7 @@ public enum VorlageTyp
       Vorlageart.DATEINAME.getKey()),
   BUCHUNGSREPORT_DATEINAME("buchungsreport-dateiname",
       "Buchungsreport Dateiname",
-      "$formular_name-$buchung_name-$aktuellesdatum-$aktuellezeit",
+      "$formular_name-$buchung_id-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Abrechnung
