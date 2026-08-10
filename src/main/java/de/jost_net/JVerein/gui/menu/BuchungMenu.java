@@ -29,6 +29,7 @@ import de.jost_net.JVerein.gui.action.BuchungGegenbuchungAction;
 import de.jost_net.JVerein.gui.action.BuchungGeprueftAction;
 import de.jost_net.JVerein.gui.action.BuchungKontoauszugZuordnungAction;
 import de.jost_net.JVerein.gui.action.BuchungProjektZuordnungAction;
+import de.jost_net.JVerein.gui.action.BuchungReportAction;
 import de.jost_net.JVerein.gui.action.BuchungSollbuchungZuordnungAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungEditAction;
@@ -150,6 +151,9 @@ public class BuchungMenu extends ContextMenu
     if (geldkonto)
       addItem(new CheckedContextMenuItem("Kontoauszug zuordnen",
           new BuchungKontoauszugZuordnungAction(), "view-refresh.png"));
+    addItem(new CheckedContextMenuItem("Buchungsreport",
+        new BuchungReportAction(), "document-print.png"));
+
     Plugin syntax = Application.getPluginLoader()
         .getPlugin("de.willuhn.jameica.fibu.Fibu");
     if (syntax != null

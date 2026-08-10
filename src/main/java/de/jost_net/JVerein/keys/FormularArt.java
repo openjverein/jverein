@@ -25,7 +25,8 @@ public enum FormularArt implements KeyEnum
   SAMMELSPENDENBESCHEINIGUNG(5, "Sammelspendenbescheinigung"),
   SEPA_PRENOTIFICATION(6, "SEPA-Prenotification"),
   SACHSPENDENBESCHEINIGUNG(7, "Sachspendenbescheinigung"),
-  HINTERGRUND(8, "Hintergrund/Vordergrund");
+  HINTERGRUND(8, "Hintergrund/Vordergrund"),
+  BUCHUNGSREPORT(9, "Buchungsreport");
 
   private final String text;
 
