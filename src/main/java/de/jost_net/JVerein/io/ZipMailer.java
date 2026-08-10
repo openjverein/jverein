@@ -322,7 +322,8 @@ public class ZipMailer
                     ma.store();
                   }
 
-                  // Versanddatum erst hier speichern,
+                  // Versanddatum erst hier speichern, sonst ist kann der Anhang
+                  // nicht gepeichert werden (da Mail schon versendet).
                   ml.setVersand(new Timestamp(new Date().getTime()));
                   ml.store();
                 }
