@@ -305,7 +305,6 @@ public class ZipMailer
                   ml.setBetreff(betr);
                   ml.setTxt(text);
                   ml.setBearbeitung(new Timestamp(new Date().getTime()));
-                  ml.setVersand(new Timestamp(new Date().getTime()));
                   ml.store();
 
                   MailEmpfaenger me = (MailEmpfaenger) Einstellungen
@@ -322,6 +321,10 @@ public class ZipMailer
                     ma.setMail(ml);
                     ma.store();
                   }
+
+                  // Versanddatum erst hier speichern,
+                  ml.setVersand(new Timestamp(new Date().getTime()));
+                  ml.store();
                 }
 
                 // Als versendet markieren
