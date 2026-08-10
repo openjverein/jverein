@@ -383,6 +383,8 @@ public class VorlageUtil
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
+        case BUCHUNGSREPORT_DATEINAME:
+          map.put("formular_name", name);
         case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap((Buchung) obj, map);
           break;
@@ -860,6 +862,8 @@ public class VorlageUtil
           // Bei zip oder einzelnes Dokument für mehrere Einträge
           // Nur die allgemeine Map
           break;
+        case BUCHUNGSREPORT_DATEINAME:
+          map.put("formular_name", "Buchungsreport");
         case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap(null, map);
           break;

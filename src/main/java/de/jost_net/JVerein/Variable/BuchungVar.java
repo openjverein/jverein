@@ -40,7 +40,8 @@ public enum BuchungVar
   SPENDENBESCHEINIGUNG("buchung_spendenbescheinigung"), //
   ZWECK1("buchung_zweck1"), //
   IBAN("buchung_iban"),
-  STEUER("buchung_steuer_satz");
+  STEUER("buchung_steuer_satz"),
+  BETRAGINWORTEN("buchung_betraginworten");
 
   private String name;
 

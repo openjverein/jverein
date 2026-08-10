@@ -262,6 +262,10 @@ public enum VorlageTyp
       "Wirtschaftspläne Dateiname",
       "Wirtschaftspläne-$aktuellesdatum-$aktuellezeit",
       Vorlageart.DATEINAME.getKey()),
+  BUCHUNGSREPORT_DATEINAME("buchungsreport-dateiname",
+      "Buchungsreport Dateiname",
+      "$formular_name-$buchung_name-$aktuellesdatum-$aktuellezeit",
+      Vorlageart.DATEINAME.getKey()),
 
   // Reports aus Abrechnung
   ABRECHNUNGSLAUF_LASTSCHRIFTEN_DATEINAME(

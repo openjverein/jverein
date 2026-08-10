@@ -11,6 +11,8 @@ import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.StringTool;
+import de.willuhn.logging.Logger;
+import net.numericalchameleon.util.GermanNumber;
 
 public class BuchungMap extends AbstractMap
 {
@@ -51,6 +53,29 @@ public class BuchungMap extends AbstractMap
           value = bu.getBetrag() != null
               ? Einstellungen.DECIMALFORMAT.format(bu.getBetrag())
               : "";
+          break;
+        case BETRAGINWORTEN:
+          Double ganzbetrag = bu.getBetrag() * 100;
+          long euro = bu.getBetrag().longValue();
+          long cent = ganzbetrag.longValue() - 100 * euro;
+          try
+          {
+            String wort = GermanNumber.toString(euro);
+            if (cent == 0)
+            {
+              value = wort;
+            }
+            else
+            {
+              value = wort + " Euro " + GermanNumber.toString(cent);
+            }
+          }
+          catch (Exception e)
+          {
+            Logger.error("Fehler", e);
+            throw new RemoteException(
+                "Fehler bei der Aufbereitung des Betrages in Worten");
+          }
           break;
         case BETRAGNETTO:
           if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
@@ -201,7 +226,7 @@ public class BuchungMap extends AbstractMap
     return map;
   }
 
-  private Map<String, Object> getDummyMap(Map<String, Object> map)
+  public static Map<String, Object> getDummyMap(Map<String, Object> map)
   {
     for (BuchungVar var : BuchungVar.values())
     {
@@ -219,6 +244,9 @@ public class BuchungMap extends AbstractMap
           break;
         case BETRAG:
           value = Einstellungen.DECIMALFORMAT.format(10.20);
+          break;
+        case BETRAGINWORTEN:
+          value = "zehn EURO zwanzig";
           break;
         case BETRAGNETTO:
           value = Einstellungen.DECIMALFORMAT.format(10.20);

@@ -22,6 +22,7 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.LastschriftMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
@@ -88,6 +89,9 @@ public class FormularAnzeigeAction implements Action
           map = RechnungMap.getDummyMap(map);
           break;
         case HINTERGRUND:
+          break;
+        case BUCHUNGSREPORT:
+          map = BuchungMap.getDummyMap(map);
           break;
       }
       FormularAufbereitung fab = new FormularAufbereitung(file, false, false);
