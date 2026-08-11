@@ -584,7 +584,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     {
       buchungList.setContextMenu(new SollbuchungPositionMenu());
     }
-    buchungList.setTableName("Sollbuchungspositionen");
     buchungList.setMulti(true);
     sollbuchungConsumer = new SollbuchungMessageConsumer();
     Application.getMessagingFactory()
@@ -600,7 +599,6 @@ public class SollbuchungControl extends DruckMailControl implements Savable
     }
     istbuchungList = new BuchungListPart(getSollbuchung().getBuchungList(),
         new BuchungAction(false), new BuchungPartBearbeitenMenu());
-    istbuchungList.setTableName("Buchungen");
     Application.getMessagingFactory()
         .registerMessageConsumer(new MitgliedskontoMessageConsumer());
     return istbuchungList;
