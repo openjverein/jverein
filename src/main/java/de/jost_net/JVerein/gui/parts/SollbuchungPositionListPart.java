@@ -44,6 +44,8 @@ public class SollbuchungPositionListPart extends BetragSummaryTablePart
   {
     super(list, action);
 
+    setTableName("SollbuchungsPositionen");
+
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
     addColumn("Zweck", "zweck");
     addColumn("Betrag", "betrag",

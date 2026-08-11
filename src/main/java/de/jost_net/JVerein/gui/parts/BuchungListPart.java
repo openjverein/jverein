@@ -48,6 +48,7 @@ public class BuchungListPart extends BuchungListTablePart
   {
     super(list, action);
 
+    setTableName("Buchungen");
     addColumn("Nr", "id-int");
     addColumn("Konto", "konto");
     addColumn("Datum", "datum", new DateFormatter(new JVDateFormatTTMMJJJJ()));
