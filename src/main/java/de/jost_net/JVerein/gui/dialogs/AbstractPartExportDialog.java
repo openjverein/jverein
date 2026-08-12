@@ -314,13 +314,13 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       File file = new File(p);
       settings.setAttribute(settingPrefix + "lastdir", file.getParent());
 
-      storeExportLayoutParam();
       switch (art)
       {
         case CSV:
           exportCSV(file);
           break;
         case PDF:
+          storeExportLayoutParam();
           exportPDF(file);
           break;
       }
