@@ -158,6 +158,7 @@ public class RechnungMap extends AbstractMap
           // Diese Felder gibt es nicht mehr in der Form, damit bei alten
           // Rechnungs-Formularen nicht der Variablennamen steht hier trotzdem
           // hinzufügen
+          break;
         case DIFFERENZ:
         case MK_IST:
           value = "";
@@ -241,6 +242,7 @@ public class RechnungMap extends AbstractMap
               }
             }
           }
+          break;
         case IBAN:
           value = new IBANFormatter().format(re.getIBAN());
           break;
@@ -346,6 +348,7 @@ public class RechnungMap extends AbstractMap
         case BUCHUNGSDATUM:
           value = Datum.formatDate(new Date()) + "\n"
               + Datum.formatDate(new Date());
+          break;
         case ZAHLUNGSGRUND:
           if (optiert)
           {
