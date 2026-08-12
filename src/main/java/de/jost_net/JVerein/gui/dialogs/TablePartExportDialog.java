@@ -41,6 +41,8 @@ import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.BaseFont;
 
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.Reporter;
@@ -177,7 +179,13 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         for (TableColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
-          csvzeile.put(header[i++], row.getText(index));
+          String text = row.getText(index);
+          // Haken "Geprüft" und Schloß "Abgeschlossen" Icons ersetzen
+          if (text.equals("\u2705") || text.equals("\uD83D\uDD12"))
+          {
+            text = "ja";
+          }
+          csvzeile.put(header[i++], text);
         }
         writer.write(csvzeile, header, cellProcessor);
       }
@@ -215,6 +223,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         for (TableColumn col : listeAuswahl)
         {
           int index = listeOrig.indexOf(col);
+          String text = row.getText(index);
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
           Color bg = (Color) row.getData("background");
@@ -234,16 +243,33 @@ public class TablePartExportDialog extends AbstractPartExportDialog
                 break;
             }
           }
+
+          // Icons ersetzen die in den Standard Fonts nicht enthalten sind
+          Font iconfont = FontFactory.getFont("/fonts/fontawesome-webfont.ttf",
+              BaseFont.IDENTITY_H, font.getSize(), Font.UNDEFINED, null);
+          if (text.equals("\u2705"))
+          {
+            // Der Haken "Geprüft" in der Buchungsliste
+            text = "\uF00C";
+            font = iconfont;
+          }
+          if (text.equals("\uD83D\uDD12"))
+          {
+            // Das Schloß "Abgeschlossen" in der Abrechnungslaufliste
+            text = "\uF023";
+            font = iconfont;
+          }
+
           if (bg == null)
           {
-            reporter.addColumn(row.getText(index),
+            reporter.addColumn(text,
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
                 font);
           }
           else
           {
-            reporter.addColumn(row.getText(index),
+            reporter.addColumn(text,
                 col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
                     : Element.ALIGN_RIGHT,
                 new BaseColor(bg.getRed(), bg.getGreen(), bg.getBlue()), font);
