@@ -92,6 +92,10 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
+    TabGroup tabAlleBuchung = new TabGroup(folder, "Zugeordnete Buchungen",
+        true, 1);
+    control.getAlleBuchungList().paint(tabAlleBuchung.getComposite());
+
     // Aktiver zuletzt ausgewählter Tab.
     if (tabindex != -1)
     {
