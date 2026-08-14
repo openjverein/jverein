@@ -53,8 +53,11 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.ibm.icu.util.Calendar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.ICC_Profile;
 import com.itextpdf.text.pdf.PdfAConformanceException;
 import com.itextpdf.text.pdf.PdfAConformanceLevel;
@@ -62,7 +65,9 @@ import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -130,6 +135,7 @@ public class FormularAufbereitung
   {
     doc = new Document();
     fos = new FileOutputStream(f);
+    FontFactory.registerDirectory("/fonts/");
 
     if (pdfa)
     {
@@ -447,6 +453,47 @@ public class FormularAufbereitung
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
+    // HTML Parsen
+    if (stringVal.contains("<p>"))
+    {
+      float width;
+      float height = y;
+      String align;
+      float xPos;
+      switch (feld.getAusrichtung())
+      {
+        case RECHTS:
+          width = x;
+          xPos = 0;
+          align = "right";
+          break;
+        case MITTE:
+          width = contentByte.getPdfDocument().getPageSize().getWidth();
+          xPos = x < width / 2 ? 0 : x * 2 - width;
+          width = x < width / 2 ? x * 2 : (width - x) * 2;
+          align = "center";
+          break;
+        default:
+          width = contentByte.getPdfDocument().getPageSize().getWidth() - x;
+          xPos = x;
+          align = "left";
+          break;
+      }
+
+      PdfTemplate template = contentByte.createTemplate(width, height);
+      ColumnText ct = new ColumnText(template);
+      ct.setSimpleColumn(0, 0, width, height);
+
+      String css = "*{font-family:'" + feld.getFont() + "';font-size:"
+          + feld.getFontsize() + ";text-align:" + align + "}";
+      for (Element e : XMLWorkerHelper.parseToElementList(stringVal, css))
+      {
+        ct.addElement(e);
+      }
+      ct.go();
+      contentByte.addTemplate(template, xPos, y - height);
+      return;
+    }
     for (String s : stringVal.split("\n"))
     {
       Object o = null;
