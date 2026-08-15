@@ -461,7 +461,7 @@ public class FormularAufbereitung
     if (stringVal.matches("(?si).*</[A-Z]+>.*"))
     {
       boolean first = true;
-      for (String s : stringVal.split("</newPage>"))
+      for (String s : stringVal.split("(?i)</newPage>"))
       {
         if (!first)
         {
@@ -500,7 +500,7 @@ public class FormularAufbereitung
         ct.setSimpleColumn(0, 0, width, height);
 
         String css = "*{font-family:'" + feld.getFont() + "';font-size:"
-            + feld.getFontsize() + ";text-align:" + align + "}";
+            + feld.getFontsize() + "pt;text-align:" + align + "}";
         for (Element e : XMLWorkerHelper.parseToElementList(s, css))
         {
           ct.addElement(e);
