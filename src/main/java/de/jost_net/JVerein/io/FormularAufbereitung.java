@@ -77,6 +77,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.keys.Fonts;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -135,7 +136,10 @@ public class FormularAufbereitung
   {
     doc = new Document();
     fos = new FileOutputStream(f);
-    FontFactory.registerDirectory("/fonts/");
+    for (Fonts f : Fonts.values())
+    {
+      FontFactory.register("/fonts/" + f.getName() + ".ttf", f.getName());
+    }
 
     if (pdfa)
     {
@@ -222,7 +226,7 @@ public class FormularAufbereitung
               StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
         }
 
-        goFormularfeld(contentByte, f, map);
+        goFormularfeld(contentByte, f, map, page);
       }
     }
 
@@ -424,7 +428,7 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Map<String, Object> map)
+      Map<String, Object> map, PdfImportedPage page)
       throws DocumentException, IOException, ApplicationException
   {
     String filename = String.format("/fonts/%s.ttf", feld.getFont());
@@ -454,44 +458,56 @@ public class FormularAufbereitung
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
     // HTML Parsen
-    if (stringVal.contains("<p>"))
+    if (stringVal.matches("(?si).*</[A-Z]+>.*"))
     {
-      float width;
-      float height = y;
-      String align;
-      float xPos;
-      switch (feld.getAusrichtung())
+      boolean first = true;
+      for (String s : stringVal.split("</newPage>"))
       {
-        case RECHTS:
-          width = x;
-          xPos = 0;
-          align = "right";
-          break;
-        case MITTE:
-          width = contentByte.getPdfDocument().getPageSize().getWidth();
-          xPos = x < width / 2 ? 0 : x * 2 - width;
-          width = x < width / 2 ? x * 2 : (width - x) * 2;
-          align = "center";
-          break;
-        default:
-          width = contentByte.getPdfDocument().getPageSize().getWidth() - x;
-          xPos = x;
-          align = "left";
-          break;
-      }
+        if (!first)
+        {
+          doc.newPage();
+          contentByte = writer.getDirectContent();
+          contentByte.addTemplate(page, 0, 0);
+        }
+        first = false;
 
-      PdfTemplate template = contentByte.createTemplate(width, height);
-      ColumnText ct = new ColumnText(template);
-      ct.setSimpleColumn(0, 0, width, height);
+        float width;
+        float height = y;
+        String align;
+        float xPos;
+        switch (feld.getAusrichtung())
+        {
+          case RECHTS:
+            width = x;
+            xPos = 0;
+            align = "right";
+            break;
+          case MITTE:
+            width = contentByte.getPdfDocument().getPageSize().getWidth();
+            xPos = x < width / 2 ? 0 : x * 2 - width;
+            width = x < width / 2 ? x * 2 : (width - x) * 2;
+            align = "center";
+            break;
+          default:
+            width = contentByte.getPdfDocument().getPageSize().getWidth() - x;
+            xPos = x;
+            align = "left";
+            break;
+        }
 
-      String css = "*{font-family:'" + feld.getFont() + "';font-size:"
-          + feld.getFontsize() + ";text-align:" + align + "}";
-      for (Element e : XMLWorkerHelper.parseToElementList(stringVal, css))
-      {
-        ct.addElement(e);
+        PdfTemplate template = contentByte.createTemplate(width, height);
+        ColumnText ct = new ColumnText(template);
+        ct.setSimpleColumn(0, 0, width, height);
+
+        String css = "*{font-family:'" + feld.getFont() + "';font-size:"
+            + feld.getFontsize() + ";text-align:" + align + "}";
+        for (Element e : XMLWorkerHelper.parseToElementList(s, css))
+        {
+          ct.addElement(e);
+        }
+        ct.go();
+        contentByte.addTemplate(template, xPos, y - height);
       }
-      ct.go();
-      contentByte.addTemplate(template, xPos, y - height);
       return;
     }
     for (String s : stringVal.split("\n"))
