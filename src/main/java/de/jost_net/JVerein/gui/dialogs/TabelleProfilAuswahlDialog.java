@@ -71,6 +71,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.ALLGEMEIN, false, "question-circle.png");
+
     buttons.addButton("Neu", context -> {
       handleNeu();
     }, null, true, "document-new.png");
@@ -133,7 +134,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     {
       text = getText((String) getProfilname().getValue());
     }
-    attributes = new TextAreaInput(text, 1024);
+    attributes = new TextAreaInput(text);
     attributes.setHeight(200);
     attributes.setName("Attribute");
     attributes.disable();
@@ -200,8 +201,10 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
         settings.setAttribute(tablePartId + "profile", text.toString());
       }
       settings.setAttribute(tablePartId + "profilname", item);
+      // Spaltenauswahl Attribute speichern
       settings.setAttribute(tablePartId + item + "." + "SPALTEN",
           getSettings(new Settings(AbstractTablePart.class), tablePartId));
+      // CSV/PDF Export Attribute speichern
       settings.setAttribute(tablePartId + item + "." + "EXPORT",
           getSettings(new Settings(TablePartExportDialog.class), tablePartId));
       close();
@@ -309,7 +312,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }
   }
 
-  // Wandelt die Settings in einen Property String um, damit er gespeichert
+  // Wandelt die Settings in einen Property XML String um, damit er gespeichert
   // werden kann
   private String getSettings(Settings s, String prefix)
       throws IOException, RemoteException
@@ -318,16 +321,16 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     Properties prop = new Properties();
     for (String key : s.getAttributes())
     {
-      String entry = s.getString(key, "");
       if (key.startsWith(prefix))
       {
-        prop.put(key.substring(prefix.length()), entry);
+        prop.put(key.substring(prefix.length()), s.getString(key, ""));
       }
     }
     prop.storeToXML(bos, "sicherung", "UTF8");
     return bos.toString();
   }
 
+  // Generiert den Text für das Attribute TextArea
   private String getText(String item)
   {
     StringBuilder text = new StringBuilder();

@@ -78,7 +78,7 @@ public class ProfilnameNeuDialog extends AbstractDialog<String>
       }
       if (list != null && list.contains(profilName))
       {
-        status.setValue("Ein Profil mit dem namen existiert bereits.");
+        status.setValue("Ein Profil mit dem Namen existiert bereits.");
         status.setColor(Color.ERROR);
         return;
       }
