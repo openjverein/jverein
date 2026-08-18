@@ -25,7 +25,10 @@ import java.util.StringTokenizer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+
+import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
@@ -53,7 +56,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     setTitle("Spalten/Export Profile");
-    setSize(500, SWT.DEFAULT);
+    setSize(545, SWT.DEFAULT);
   }
 
   @Override
@@ -63,6 +66,8 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     sc.addInput(getProfilname());
 
     ButtonArea buttons = new ButtonArea();
+    buttons.addButton("Hilfe", new DokumentationAction(),
+        DokumentationUtil.ALLGEMEIN, false, "question-circle.png");
     buttons.addButton("Neu", context -> {
       handleNeu();
     }, null, true, "document-new.png");

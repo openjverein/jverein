@@ -32,9 +32,11 @@ import com.itextpdf.text.pdf.BaseFont;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
 import de.jost_net.JVerein.rmi.Formular;
@@ -155,6 +157,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     setChecked();
 
     ButtonArea b = new ButtonArea();
+    b.addButton("Hilfe", new DokumentationAction(), DokumentationUtil.ALLGEMEIN,
+        false, "question-circle.png");
+
     b.addButton("Speichern", c -> export(), null, true, "ok.png");
 
     b.addButton("Abbrechen", c -> {
