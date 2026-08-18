@@ -130,7 +130,6 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }
     String text = "";
     if (getProfilname().getValue() != null)
-      ;
     {
       text = getText((String) getProfilname().getValue());
     }
@@ -350,7 +349,9 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }
     catch (Exception e)
     {
-      Logger.error("Fehler beim Lesen der Attribute.", e);
+      String error = "Fehler beim Lesen der Attribute.";
+      Logger.error(error, e);
+      return error;
     }
     return "";
   }
