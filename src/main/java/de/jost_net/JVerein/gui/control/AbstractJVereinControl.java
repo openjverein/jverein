@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.TabelleProfilAuswahlDialog;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
@@ -19,6 +20,25 @@ public abstract class AbstractJVereinControl extends AbstractControl
   public AbstractJVereinControl(AbstractView view)
   {
     super(view);
+  }
+
+  public PanelButton getProfilePanelButton()
+  {
+    return new PanelButton("user-check.png", context -> {
+      try
+      {
+        new TabelleProfilAuswahlDialog(getTablePart()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Profil-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Profil-Auswahl-Dialog");
+      }
+    }, "Profile");
   }
 
   public PanelButton getSpaltenPanelButton()

@@ -50,7 +50,7 @@ public class MitgliedSuchProfilListeView extends AbstractView
         control.handleStore(false);
       }
     }, null, true, "document-save.png");
-    buttons.addButton("speichern unter", new Action()
+    buttons.addButton("Speichern unter", new Action()
     {
 
       @Override
