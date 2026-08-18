@@ -155,6 +155,10 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
         handleSpeichern(name);
       }
     }
+    catch (OperationCanceledException ex)
+    {
+      return;
+    }
     catch (Exception e)
     {
       // Abbruch
