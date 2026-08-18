@@ -25,13 +25,13 @@ import java.util.StringTokenizer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
+import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.parts.AbstractTablePart;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -47,6 +47,8 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
   private String tablePartId;
 
   private SelectInput profilname;
+
+  private TextAreaInput attributes;
 
   public TabelleProfilAuswahlDialog(IJVereinPart tablePart)
       throws RemoteException, ApplicationException
@@ -64,6 +66,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
   {
     LabelGroup group = new LabelGroup(parent, null);
     group.addInput(getProfilname());
+    group.addInput(getAttributes());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -106,7 +109,36 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     profilname = new SelectInput(profile,
         settings.getString(tablePartId + "profilname", ""));
     profilname.setName("Profilname");
+    profilname.addListener(event -> {
+      try
+      {
+        getAttributes().setValue(getText((String) getProfilname().getValue()));
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Lesen der Attribute.", e);
+      }
+    });
     return profilname;
+  }
+
+  public TextAreaInput getAttributes() throws RemoteException
+  {
+    if (attributes != null)
+    {
+      return attributes;
+    }
+    String text = "";
+    if (getProfilname().getValue() != null)
+      ;
+    {
+      text = getText((String) getProfilname().getValue());
+    }
+    attributes = new TextAreaInput(text, 1024);
+    attributes.setHeight(200);
+    attributes.setName("Attribute");
+    attributes.disable();
+    return attributes;
   }
 
   // Erzeugt ein neues Profil mit aktuellen Settings und speichert es
@@ -290,6 +322,36 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }
     prop.storeToXML(bos, "sicherung", "UTF8");
     return bos.toString();
+  }
+
+  private String getText(String item)
+  {
+    StringBuilder text = new StringBuilder();
+    text.append("Profil: " + item + "\n");
+    try
+    {
+      if (item != null)
+      {
+        String s = settings.getString(tablePartId + item + "." + "SPALTEN", "");
+        ByteArrayInputStream bis = new ByteArrayInputStream(s.getBytes());
+        Properties p = new Properties();
+        p.loadFromXML(bis);
+        text.append("Spaltenauswahl\n");
+        text.append(p.toString());
+        s = settings.getString(tablePartId + item + "." + "EXPORT", "");
+        bis = new ByteArrayInputStream(s.getBytes());
+        p = new Properties();
+        p.loadFromXML(bis);
+        text.append("\n\nCSV/PDF Export\n");
+        text.append(p.toString());
+        return text.toString();
+      }
+    }
+    catch (Exception e)
+    {
+      Logger.error("Fehler beim Lesen der Attribute.", e);
+    }
+    return "";
   }
 
   @Override
