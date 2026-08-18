@@ -291,6 +291,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
         String key = (String) o;
         s.setAttribute(tablePartId + key, p.getProperty(key));
       }
+      settings.setAttribute(tablePartId + "profilname", item);
       close();
       GUI.getCurrentView().reload();
       GUI.getStatusBar().setSuccessText("Profil " + item + " angewendet.");
