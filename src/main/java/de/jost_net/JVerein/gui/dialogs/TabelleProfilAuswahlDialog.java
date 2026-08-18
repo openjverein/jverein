@@ -34,7 +34,7 @@ import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.AbstractTablePart;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.util.SimpleContainer;
+import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -62,8 +62,8 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
   @Override
   protected void paint(Composite parent) throws Exception
   {
-    SimpleContainer sc = new SimpleContainer(parent);
-    sc.addInput(getProfilname());
+    LabelGroup group = new LabelGroup(parent, null);
+    group.addInput(getProfilname());
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
