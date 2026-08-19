@@ -502,12 +502,12 @@ public class FormularAufbereitung
         StringBuilder sb = new StringBuilder();
         sb.append("*{font-family:'");
         sb.append(feld.getFont());
-        sb.append(";text-align:");
+        sb.append("';text-align:");
         sb.append(align);
         sb.append(";");
         if (feld.getFontsize() != null)
         {
-          sb.append("';font-size:");
+          sb.append(";font-size:");
           sb.append(feld.getFontsize());
           sb.append("pt;");
         }
