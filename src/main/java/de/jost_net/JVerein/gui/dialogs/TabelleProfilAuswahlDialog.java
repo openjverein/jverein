@@ -55,7 +55,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       throws RemoteException, ApplicationException
   {
     super(TabelleProfilAuswahlDialog.POSITION_CENTER);
-    this.tablePartId = tablePart.getTablePartID(tablePartId, null);
+    this.tablePartId = tablePart.getTablePartID(null, tablePart.getTableName());
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     setTitle("Spalten/Export Profile");
@@ -315,6 +315,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
   private void setSettings(Settings s, String data)
       throws InvalidPropertiesFormatException, IOException
   {
+    s.setStoreWhenRead(true);
     ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes());
     Properties p = new Properties();
     p.loadFromXML(bis);
