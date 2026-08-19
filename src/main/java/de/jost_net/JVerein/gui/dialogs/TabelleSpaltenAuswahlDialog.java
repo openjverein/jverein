@@ -79,7 +79,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
         }
       };
 
-      part.addColumn("Namen", "name");
+      part.addColumn("Spalten", "name");
       part.setCheckable(true);
 
       if (tableMap.size() > 1)
