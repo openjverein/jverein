@@ -34,7 +34,7 @@ public class FormularListeView extends AbstractView
   {
     GUI.getView().setTitle("Formulare");
 
-    FormularControl control = new FormularControl(this, null);
+    FormularControl control = new FormularControl(this);
 
     control.getTablePart().paint(this.getParent());
 
