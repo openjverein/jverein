@@ -109,6 +109,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
 
   private BetragSummaryTablePart zusatzbetraegeList;
 
+  private JVereinTablePart allebuchungList;
+
   public final static int TAB_BUCHUNGEN = 0;
 
   public final static int TAB_SOLLBUCHUNGEN = 1;
@@ -116,6 +118,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
   public final static int TAB_LASTSCHRIFTEN = 2;
 
   public final static int TAB_ZUSATZBETRAEGE = 3;
+
+  public final static int TAB_ALLEBUCHUNGEN = 4;
 
   private int selectedTab = TAB_BUCHUNGEN;
 
@@ -408,24 +412,49 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     buchungList = new BuchungListTablePart(PseudoIterator.asList(it),
         new BuchungAction(false, null));
     buchungList.setTableName("Buchungen");
+    addBuchungColumns(buchungList);
+    return buchungList;
+  }
 
-    buchungList.addColumn("Nr", "id-int");
-    buchungList.addColumn("Geprüft", "geprueft",
-        o -> (Boolean) o ? "\u2705" : "");
+  @SuppressWarnings("unchecked")
+  public JVereinTablePart getAlleBuchungList() throws RemoteException
+  {
+    if (allebuchungList != null)
+    {
+      return allebuchungList;
+    }
+    DBIterator<Buchung> it = Einstellungen.getDBService()
+        .createList(Buchung.class);
+    it.join("sollbuchung");
+    it.addFilter("sollbuchung.id = buchung.sollbuchung");
+    it.addFilter("sollbuchung.abrechnungslauf = ?",
+        getAbrechnungslauf().getID());
+
+    allebuchungList = new BuchungListTablePart(PseudoIterator.asList(it),
+        new BuchungAction(false, null));
+    allebuchungList.setTableName("Allebuchungen");
+    addBuchungColumns(allebuchungList);
+    return allebuchungList;
+  }
+
+  private void addBuchungColumns(JVereinTablePart part) throws RemoteException
+  {
+    part.addColumn("Nr", "id-int");
+    part.addColumn("Geprüft", "geprueft", o -> (Boolean) o ? "\u2705" : "");
     if ((Boolean) Einstellungen.getEinstellung(Property.DOKUMENTENSPEICHERUNG))
     {
-      buchungList.addColumn("D", "document");
+      part.addColumn("D", "document");
     }
-    buchungList.addColumn("S", "splittyp",
+    part.addColumn("S", "splittyp",
         o -> SplitbuchungTyp.get((Integer) o).substring(0, 1));
 
-    buchungList.addColumn("Konto", "konto");
-    buchungList.addColumn("Datum", "datum",
+    part.addColumn("Konto", "konto");
+    part.addColumn("Datum", "datum",
         new DateFormatter(new JVDateFormatTTMMJJJJ()));
 
-    buchungList.addColumn("Name", "name");
-    buchungList.addColumn("IBAN oder Kontonummer", "iban", new IBANFormatter());
-    buchungList.addColumn("Verwendungszweck", "zweck", o -> {
+    part.addColumn("Name", "name");
+    part.addColumn("IBAN oder Kontonummer", "iban", new IBANFormatter());
+    part.addColumn("Verwendungszweck", "zweck", o -> {
       if (o == null)
       {
         return null;
@@ -439,21 +468,20 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
     if ((Boolean) Einstellungen
         .getEinstellung(Property.BUCHUNGSKLASSEINBUCHUNG))
     {
-      buchungList.addColumn("Buchungsklasse", "buchungsklasse",
+      part.addColumn("Buchungsklasse", "buchungsklasse",
           new BuchungsklasseFormatter());
     }
 
-    buchungList.addColumn("Buchungsart", "buchungsart",
-        new BuchungsartFormatter());
-    buchungList.addColumn("Betrag", "betrag",
+    part.addColumn("Buchungsart", "buchungsart", new BuchungsartFormatter());
+    part.addColumn("Betrag", "betrag",
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
     if ((Boolean) Einstellungen.getEinstellung(Property.OPTIERT))
     {
-      buchungList.addColumn("Netto", "netto",
+      part.addColumn("Netto", "netto",
           new CurrencyFormatter("", Einstellungen.DECIMALFORMAT));
       if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
       {
-        buchungList.addColumn("Steuer", "steuer", o -> {
+        part.addColumn("Steuer", "steuer", o -> {
           if (o == null)
           {
             return "";
@@ -470,14 +498,12 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
         }, false, Column.ALIGN_RIGHT);
       }
     }
-    buchungList.addColumn(new Column(Buchung.SOLLBUCHUNG,
-        "Mitglied - Sollbuchung", new SollbuchungFormatter(), false,
-        Column.ALIGN_AUTO, Column.SORT_BY_DISPLAY));
-    buchungList.setMulti(true);
+    part.addColumn(new Column(Buchung.SOLLBUCHUNG, "Mitglied - Sollbuchung",
+        new SollbuchungFormatter(), false, Column.ALIGN_AUTO,
+        Column.SORT_BY_DISPLAY));
+    part.setMulti(true);
 
-    buchungList.setContextMenu(new BuchungAbrechnugslaufMenu());
-
-    return buchungList;
+    part.setContextMenu(new BuchungAbrechnugslaufMenu());
   }
 
   public JVereinTablePart getSollbuchungList() throws RemoteException
@@ -632,7 +658,8 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
       try
       {
         new TabelleSpaltenAuswahlDialog(getBuchungList(), getSollbuchungList(),
-            getLastschriftList(), getZusatzbetraegeList()).open();
+            getLastschriftList(), getZusatzbetraegeList(), getAlleBuchungList())
+                .open();
       }
       catch (OperationCanceledException | ApplicationException e)
       {
@@ -666,6 +693,9 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
               break;
             case TAB_ZUSATZBETRAEGE:
               liste = zusatzbetraegeList;
+              break;
+            case TAB_ALLEBUCHUNGEN:
+              liste = allebuchungList;
               break;
             default:
               liste = null;
@@ -727,6 +757,19 @@ public class AbrechnungslaufControl extends FilterControl implements Savable
                       getAbrechnungslauf()),
                   VorlageUtil.getName(
                       VorlageTyp.ABRECHNUNGSLAUF_ZUSATZBETRAEGE_DATEINAME,
+                      getAbrechnungslauf()),
+                  art);
+              break;
+            case TAB_ALLEBUCHUNGEN:
+              liste.export(
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ALLEBUCHUNGEN_TITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ALLEBUCHUNGEN_SUBTITEL,
+                      getAbrechnungslauf()),
+                  VorlageUtil.getName(
+                      VorlageTyp.ABRECHNUNGSLAUF_ALLEBUCHUNGEN_DATEINAME,
                       getAbrechnungslauf()),
                   art);
               break;
