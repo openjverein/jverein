@@ -33,7 +33,6 @@ import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
-import de.willuhn.jameica.gui.parts.AbstractTablePart;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
@@ -51,11 +50,14 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
 
   private TextAreaInput attributes;
 
+  private Settings tablesettings;
+
   public TabelleProfilAuswahlDialog(IJVereinPart tablePart)
       throws RemoteException, ApplicationException
   {
     super(TabelleProfilAuswahlDialog.POSITION_CENTER);
     this.tablePartId = tablePart.getTablePartID(null, tablePart.getTableName());
+    this.tablesettings = tablePart.getSettings();
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     setTitle("Spalten/Export Profile");
@@ -204,7 +206,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       settings.setAttribute(tablePartId + "profilname", item);
       // Spaltenauswahl Attribute speichern
       settings.setAttribute(tablePartId + item + ".SPALTEN",
-          getSettings(new Settings(AbstractTablePart.class), tablePartId));
+          getSettings(tablesettings, tablePartId));
       // CSV/PDF Export Attribute speichern
       settings.setAttribute(tablePartId + item + ".EXPORT",
           getSettings(new Settings(TablePartExportDialog.class), tablePartId));
@@ -273,7 +275,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
         return;
       }
       // Settings für die Spaltenauswahl setzen
-      setSettings(new Settings(AbstractTablePart.class),
+      setSettings(tablesettings,
           settings.getString(tablePartId + item + ".SPALTEN", ""));
       // Settings für die Export Dialoge setzen
       setSettings(new Settings(TablePartExportDialog.class),
@@ -315,7 +317,6 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
   private void setSettings(Settings s, String data)
       throws InvalidPropertiesFormatException, IOException
   {
-    s.setStoreWhenRead(true);
     ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes());
     Properties p = new Properties();
     p.loadFromXML(bis);

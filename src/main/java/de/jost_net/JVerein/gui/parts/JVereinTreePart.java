@@ -30,6 +30,7 @@ import de.willuhn.jameica.gui.parts.TreePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -193,6 +194,12 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   public String getTableName()
   {
     return tableName;
+  }
+
+  @Override
+  public Settings getSettings()
+  {
+    return settings;
   }
 
 }
