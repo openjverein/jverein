@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.InvalidPropertiesFormatException;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
@@ -202,10 +203,10 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       }
       settings.setAttribute(tablePartId + "profilname", item);
       // Spaltenauswahl Attribute speichern
-      settings.setAttribute(tablePartId + item + "." + "SPALTEN",
+      settings.setAttribute(tablePartId + item + ".SPALTEN",
           getSettings(new Settings(AbstractTablePart.class), tablePartId));
       // CSV/PDF Export Attribute speichern
-      settings.setAttribute(tablePartId + item + "." + "EXPORT",
+      settings.setAttribute(tablePartId + item + ".EXPORT",
           getSettings(new Settings(TablePartExportDialog.class), tablePartId));
       close();
       GUI.getStatusBar().setSuccessText("Profil " + item + " gespeichert.");
@@ -246,8 +247,8 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       settings.setAttribute(tablePartId + "profile", text.toString());
       settings.setAttribute(tablePartId + "profilname",
           (String) profilname.getValue());
-      settings.setAttribute(tablePartId + item + "." + "SPALTEN", "");
-      settings.setAttribute(tablePartId + item + "." + "EXPORT", "");
+      settings.setAttribute(tablePartId + item + ".SPALTEN", "");
+      settings.setAttribute(tablePartId + item + ".EXPORT", "");
       close();
       GUI.getStatusBar().setSuccessText("Profil " + item + "  gelöscht.");
     }
@@ -271,32 +272,12 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       {
         return;
       }
-
       // Settings für die Spaltenauswahl setzen
-      Settings s = new Settings(AbstractTablePart.class);
-      String spalten = settings.getString(tablePartId + item + "." + "SPALTEN",
-          "");
-      ByteArrayInputStream bis = new ByteArrayInputStream(spalten.getBytes());
-      Properties p = new Properties();
-      p.loadFromXML(bis);
-      for (Object o : p.keySet())
-      {
-        String key = (String) o;
-        s.setAttribute(tablePartId + key, p.getProperty(key));
-      }
-
+      setSettings(new Settings(AbstractTablePart.class),
+          settings.getString(tablePartId + item + ".SPALTEN", ""));
       // Settings für die Export Dialoge setzen
-      s = new Settings(TablePartExportDialog.class);
-      String exports = settings.getString(tablePartId + item + "." + "EXPORT",
-          "");
-      bis = new ByteArrayInputStream(exports.getBytes());
-      p = new Properties();
-      p.loadFromXML(bis);
-      for (Object o : p.keySet())
-      {
-        String key = (String) o;
-        s.setAttribute(tablePartId + key, p.getProperty(key));
-      }
+      setSettings(new Settings(TablePartExportDialog.class),
+          settings.getString(tablePartId + item + ".EXPORT", ""));
       settings.setAttribute(tablePartId + "profilname", item);
       close();
       GUI.getCurrentView().reload();
@@ -330,6 +311,20 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     return bos.toString();
   }
 
+  // Speichert in Settings die Attribute aus data
+  private void setSettings(Settings s, String data)
+      throws InvalidPropertiesFormatException, IOException
+  {
+    ByteArrayInputStream bis = new ByteArrayInputStream(data.getBytes());
+    Properties p = new Properties();
+    p.loadFromXML(bis);
+    for (Object o : p.keySet())
+    {
+      String key = (String) o;
+      s.setAttribute(tablePartId + key, p.getProperty(key));
+    }
+  }
+
   // Generiert den Text für das Attribute TextArea
   private String getText(String item)
   {
@@ -339,13 +334,13 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     {
       if (item != null)
       {
-        String s = settings.getString(tablePartId + item + "." + "SPALTEN", "");
+        String s = settings.getString(tablePartId + item + ".SPALTEN", "");
         ByteArrayInputStream bis = new ByteArrayInputStream(s.getBytes());
         Properties p = new Properties();
         p.loadFromXML(bis);
         text.append("Spaltenauswahl\n");
         text.append(p.toString());
-        s = settings.getString(tablePartId + item + "." + "EXPORT", "");
+        s = settings.getString(tablePartId + item + ".EXPORT", "");
         bis = new ByteArrayInputStream(s.getBytes());
         p = new Properties();
         p.loadFromXML(bis);
