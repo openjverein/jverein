@@ -461,7 +461,7 @@ public class FormularAufbereitung
     if (stringVal.matches("(?si).*</[A-Z]+>.*"))
     {
       boolean first = true;
-      for (String s : stringVal.split("(?i)</newPage>"))
+      for (String s : stringVal.split("(?i)<newPage />"))
       {
         if (!first)
         {
