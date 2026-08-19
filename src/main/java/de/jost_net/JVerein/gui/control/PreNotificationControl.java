@@ -367,14 +367,6 @@ public class PreNotificationControl extends DruckMailControl
       Lastschrift[] lastschriftarray = (Lastschrift[]) currentObject;
       for (Lastschrift lastschrift : lastschriftarray)
       {
-        Abrechnungslauf abrl = (Abrechnungslauf) lastschrift
-            .getAbrechnungslauf();
-        if (abrl.getAbgeschlossen())
-        {
-          throw new ApplicationException(
-              "Die ausgewählte Lastschrift mit der Nr " + lastschrift.getID()
-                  + " ist bereits abgeschlossen!");
-        }
         lastschriften.add(lastschrift);
       }
     }

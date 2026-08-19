@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.util.Date;
 
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -50,6 +51,13 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
       throw new ApplicationException("Kein Abrechnungslauf ausgewählt");
     }
     Abrechnungslauf abrl = (Abrechnungslauf) object[0];
+
+    // Prüfen ob der Abrechnungslauf abgeschlossen ist
+    if (abrl.getAbgeschlossen())
+    {
+      throw new ApplicationException(
+          "Abgeschlossene Abrechnungsläufe können nicht gelöscht werden!");
+    }
 
     // Prüfe, ob einer der erzeugten Buchungen bereits abgeschlossen ist
     final DBService service = Einstellungen.getDBService();
@@ -173,69 +181,80 @@ public class AbrechnungslaufDeleteAction extends DeleteAction
       return;
     }
 
-    DBIterator<Buchung> it = Einstellungen.getDBService()
-        .createList(Buchung.class);
-    it.addFilter("abrechnungslauf = ?", new Object[] { object.getID() });
-    while (it.hasNext())
+    try
     {
-      Buchung bu = it.next();
-      if (bu.getSpendenbescheinigung() != null)
-        bu.getSpendenbescheinigung().delete();
-      try
+      DBTransaction.starten();
+      DBIterator<Buchung> it = Einstellungen.getDBService()
+          .createList(Buchung.class);
+      it.addFilter("abrechnungslauf = ?", new Object[] { object.getID() });
+      while (it.hasNext())
       {
-        bu.delete();
+        Buchung bu = it.next();
+        if (bu.getSpendenbescheinigung() != null)
+          bu.getSpendenbescheinigung().delete();
+        try
+        {
+          bu.delete();
+        }
+        catch (RemoteException ignore)
+        {
+          // Ignorieren, da die Exception auftritt, wenn die Buchung bereits
+          // gelöscht wurde, z. B. bei Splitbuchungen.
+        }
       }
-      catch (RemoteException ignore)
+      DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
+          .createList(Sollbuchung.class);
+      sollbIt.addFilter(Sollbuchung.ABRECHNUNGSLAUF + " = ?",
+          new Object[] { object.getID() });
+      while (sollbIt.hasNext())
       {
-        // Ignorieren, da die Exception auftritt, wenn die Buchung bereits
-        // gelöscht wurde, z. B. bei Splitbuchungen.
+        Sollbuchung sollb = sollbIt.next();
+        if (sollb.getRechnung() != null)
+          sollb.getRechnung().delete();
+        sollb.delete();
       }
+      it = Einstellungen.getDBService()
+          .createList(ZusatzbetragAbrechnungslauf.class);
+      it.addFilter("abrechnungslauf = ?", object.getID());
+      while (it.hasNext())
+      {
+        ZusatzbetragAbrechnungslauf za = (ZusatzbetragAbrechnungslauf) it
+            .next();
+        Zusatzbetrag z = (Zusatzbetrag) Einstellungen.getDBService()
+            .createObject(Zusatzbetrag.class, za.getZusatzbetrag().getID());
+        try
+        {
+          z.vorherigeFaelligkeit();
+        }
+        catch (RemoteException e)
+        {
+          // Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
+          // nicht weiter zurückgesetzt werden kann
+        }
+        z.setAusfuehrung(za.getLetzteAusfuehrung());
+        z.store();
+      }
+      it = Einstellungen.getDBService().createList(Lastschrift.class);
+      it.addFilter("abrechnungslauf = ?", object.getID());
+      while (it.hasNext())
+      {
+        Lastschrift la = (Lastschrift) it.next();
+        Kursteilnehmer kt = la.getKursteilnehmer();
+        if (kt != null)
+        {
+          kt.resetAbbudatum();
+          kt.store();
+        }
+        la.delete();
+      }
+      object.delete();
+      DBTransaction.commit();
     }
-    DBIterator<Sollbuchung> sollbIt = Einstellungen.getDBService()
-        .createList(Sollbuchung.class);
-    sollbIt.addFilter(Sollbuchung.ABRECHNUNGSLAUF + " = ?",
-        new Object[] { object.getID() });
-    while (sollbIt.hasNext())
+    catch (Exception e)
     {
-      Sollbuchung sollb = sollbIt.next();
-      if (sollb.getRechnung() != null)
-        sollb.getRechnung().delete();
-      sollb.delete();
+      DBTransaction.rollback();
+      throw e;
     }
-    it = Einstellungen.getDBService()
-        .createList(ZusatzbetragAbrechnungslauf.class);
-    it.addFilter("abrechnungslauf = ?", object.getID());
-    while (it.hasNext())
-    {
-      ZusatzbetragAbrechnungslauf za = (ZusatzbetragAbrechnungslauf) it.next();
-      Zusatzbetrag z = (Zusatzbetrag) Einstellungen.getDBService()
-          .createObject(Zusatzbetrag.class, za.getZusatzbetrag().getID());
-      try
-      {
-        z.vorherigeFaelligkeit();
-      }
-      catch (RemoteException e)
-      {
-        // Ignorieren, da die Exeption auftritt wenn das Fälligkeitsdatum
-        // nicht weiter zurückgesetzt werden kann
-      }
-      z.setAusfuehrung(za.getLetzteAusfuehrung());
-      z.store();
-    }
-    it = Einstellungen.getDBService().createList(Lastschrift.class);
-    it.addFilter("abrechnungslauf = ?", object.getID());
-    it.addFilter("kursteilnehmer IS NOT NULL");
-    while (it.hasNext())
-    {
-      Lastschrift la = (Lastschrift) it.next();
-      Kursteilnehmer kt = la.getKursteilnehmer();
-      if (kt != null)
-      {
-        kt.resetAbbudatum();
-        kt.store();
-      }
-    }
-    object.delete();
   }
 
   @Override

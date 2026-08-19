@@ -79,4 +79,5 @@ public interface Abrechnungslauf extends JVereinDBObject
 
   public void setBemerkung(String bemerkung) throws RemoteException;
 
+  boolean isJahrAbgeschlossen() throws RemoteException;
 }

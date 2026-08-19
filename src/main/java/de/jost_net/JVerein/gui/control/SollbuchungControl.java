@@ -868,6 +868,13 @@ public class SollbuchungControl extends DruckMailControl implements Savable
           "Sollbuchung kann nicht bearbeitet werden. Es wurde bereits eine Rechnung über diese Sollbuchung erstellt.");
       return editable = false;
     }
+    if (getSollbuchung().getAbrechnungslauf() != null
+        && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+    {
+      GUI.getStatusBar().setErrorText(
+          "Sollbuchung kann nicht bearbeitet werden. Der zugehörige Abrechnungslauf ist abgeschlossen.");
+      return editable = false;
+    }
     return editable = true;
   }
 

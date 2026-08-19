@@ -42,17 +42,54 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   }
 
   @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      if (getSollbuchung().getAbrechnungslauf() != null
+          && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Sollbuchungsposition kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler", e);
+      String msg = "Sollbuchungsposition kann nicht gelöscht werden. Siehe system log";
+      throw new ApplicationException(msg);
+    }
+  }
+
+  @Override
   protected void insertCheck() throws ApplicationException
   {
     try
     {
+      try
+      {
+        if (getSollbuchung().getAbrechnungslauf() != null
+            && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Sollbuchungsposition kann nicht eingefügt werden weil der Abrechnungslauf "
+                  + "der Sollbuchung abgeschlossen ist!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
       plausi();
     }
     catch (RemoteException e)
     {
       Logger.error("Fehler", e);
       throw new ApplicationException(
-          "Buchung kann nicht gespeichert werden. Siehe system log");
+          "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log");
     }
   }
 
@@ -107,6 +144,22 @@ public class SollbuchungPositionImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    try
+    {
+      if (getSollbuchung().getAbrechnungslauf() != null
+          && getSollbuchung().getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Sollbuchungsposition kann nicht geändert werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
+    }
+    catch (RemoteException e)
+    {
+      String fehler = "Sollbuchungsposition kann nicht gespeichert werden. Siehe system log.";
+      Logger.error(fehler, e);
+      throw new ApplicationException(fehler);
+    }
     insertCheck();
   }
 

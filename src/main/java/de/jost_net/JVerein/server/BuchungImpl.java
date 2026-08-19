@@ -89,6 +89,13 @@ public class BuchungImpl extends AbstractJVereinDBObject
             "Buchung kann nicht gelöscht werden weil sie zu einer "
                 + "Spendenbescheinigung gehört");
       }
+      if (!forcedDelete && getAbrechnungslauf() != null
+          && getAbrechnungslauf().getAbgeschlossen())
+      {
+        throw new ApplicationException(
+            "Buchung kann nicht gelöscht werden weil der zugehörige "
+                + "Abrechnungslauf abgeschlossen ist!");
+      }
     }
     catch (ObjectNotFoundException e)
     {
@@ -258,6 +265,31 @@ public class BuchungImpl extends AbstractJVereinDBObject
   @Override
   protected void updateCheck() throws ApplicationException
   {
+    if (!forcedUpdate)
+    {
+      try
+      {
+        Jahresabschluss ja = getJahresabschluss();
+        if (ja != null)
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht gespeichert werden. Zeitraum ist bereits abgeschlossen!");
+        }
+        if (getAbrechnungslauf() != null
+            && getAbrechnungslauf().getAbgeschlossen())
+        {
+          throw new ApplicationException(
+              "Buchung kann nicht kann nicht geändert werden weil der zugehörige "
+                  + "Abrechnungslauf abgeschlossen ist!");
+        }
+      }
+      catch (RemoteException e)
+      {
+        String fehler = "Buchung kann nicht gespeichert werden. Siehe system log.";
+        Logger.error(fehler, e);
+        throw new ApplicationException(fehler);
+      }
+    }
     insertCheck();
   }
 
@@ -762,6 +794,11 @@ public class BuchungImpl extends AbstractJVereinDBObject
 
     if ("steuer".equals(fieldName))
       return getSteuer();
+
+    if (fieldName.equals("abrechnungslauf"))
+    {
+      return getAbrechnungslauf();
+    }
 
     if ("document".equals(fieldName))
     {
