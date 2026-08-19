@@ -499,9 +499,21 @@ public class FormularAufbereitung
         ColumnText ct = new ColumnText(template);
         ct.setSimpleColumn(0, 0, width, height);
 
-        String css = "*{font-family:'" + feld.getFont() + "';font-size:"
-            + feld.getFontsize() + "pt;text-align:" + align + "}";
-        for (Element e : XMLWorkerHelper.parseToElementList(s, css))
+        StringBuilder sb = new StringBuilder();
+        sb.append("*{font-family:'");
+        sb.append(feld.getFont());
+        sb.append(";text-align:");
+        sb.append(align);
+        sb.append(";");
+        if (feld.getFontsize() != null)
+        {
+          sb.append("';font-size:");
+          sb.append(feld.getFontsize());
+          sb.append("pt;");
+        }
+        sb.append("}");
+
+        for (Element e : XMLWorkerHelper.parseToElementList(s, sb.toString()))
         {
           ct.addElement(e);
         }
