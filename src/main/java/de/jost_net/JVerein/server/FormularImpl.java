@@ -317,6 +317,7 @@ public class FormularImpl extends AbstractJVereinDBObject implements Formular
     DBIterator<Formularfeld> it = Einstellungen.getDBService()
         .createList(Formularfeld.class);
     it.addFilter("formular = ?", getID());
+    it.setOrder("ORDER BY length(name)");
 
     if (seite > 0)
     {

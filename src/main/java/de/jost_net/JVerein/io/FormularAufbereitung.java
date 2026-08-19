@@ -53,8 +53,11 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.ibm.icu.util.Calendar;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.ICC_Profile;
 import com.itextpdf.text.pdf.PdfAConformanceException;
 import com.itextpdf.text.pdf.PdfAConformanceLevel;
@@ -62,7 +65,9 @@ import com.itextpdf.text.pdf.PdfAWriter;
 import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfImportedPage;
 import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.PdfTemplate;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.tool.xml.XMLWorkerHelper;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
@@ -72,6 +77,7 @@ import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.MitgliedVar;
 import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
+import de.jost_net.JVerein.keys.Fonts;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
@@ -130,6 +136,10 @@ public class FormularAufbereitung
   {
     doc = new Document();
     fos = new FileOutputStream(f);
+    for (Fonts f : Fonts.values())
+    {
+      FontFactory.register("/fonts/" + f.getName() + ".ttf", f.getName());
+    }
 
     if (pdfa)
     {
@@ -216,7 +226,7 @@ public class FormularAufbereitung
               StringTool.lpad(zaehler.toString(), zaehlerLaenge, "0"));
         }
 
-        goFormularfeld(contentByte, f, map);
+        goFormularfeld(contentByte, f, map, page);
       }
     }
 
@@ -418,7 +428,7 @@ public class FormularAufbereitung
   }
 
   private void goFormularfeld(PdfContentByte contentByte, Formularfeld feld,
-      Map<String, Object> map)
+      Map<String, Object> map, PdfImportedPage page)
       throws DocumentException, IOException, ApplicationException
   {
     String filename = String.format("/fonts/%s.ttf", feld.getFont());
@@ -447,6 +457,71 @@ public class FormularAufbereitung
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
+    // HTML Parsen
+    if (stringVal.matches("(?si).*</[A-Z]+>.*"))
+    {
+      boolean first = true;
+      for (String s : stringVal.split("(?i)<newPage />"))
+      {
+        if (!first)
+        {
+          doc.newPage();
+          contentByte = writer.getDirectContent();
+          contentByte.addTemplate(page, 0, 0);
+        }
+        first = false;
+
+        float width;
+        float height = y;
+        String align;
+        float xPos;
+        switch (feld.getAusrichtung())
+        {
+          case RECHTS:
+            width = x;
+            xPos = 0;
+            align = "right";
+            break;
+          case MITTE:
+            width = contentByte.getPdfDocument().getPageSize().getWidth();
+            xPos = x < width / 2 ? 0 : x * 2 - width;
+            width = x < width / 2 ? x * 2 : (width - x) * 2;
+            align = "center";
+            break;
+          default:
+            width = contentByte.getPdfDocument().getPageSize().getWidth() - x;
+            xPos = x;
+            align = "left";
+            break;
+        }
+
+        PdfTemplate template = contentByte.createTemplate(width, height);
+        ColumnText ct = new ColumnText(template);
+        ct.setSimpleColumn(0, 0, width, height);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("*{font-family:'");
+        sb.append(feld.getFont());
+        sb.append("';text-align:");
+        sb.append(align);
+        sb.append(";");
+        if (feld.getFontsize() != null)
+        {
+          sb.append(";font-size:");
+          sb.append(feld.getFontsize());
+          sb.append("pt;");
+        }
+        sb.append("}");
+
+        for (Element e : XMLWorkerHelper.parseToElementList(s, sb.toString()))
+        {
+          ct.addElement(e);
+        }
+        ct.go();
+        contentByte.addTemplate(template, xPos, y - height);
+      }
+      return;
+    }
     for (String s : stringVal.split("\n"))
     {
       Object o = null;
