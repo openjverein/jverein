@@ -249,8 +249,8 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       settings.setAttribute(tablePartId + "profile", text.toString());
       settings.setAttribute(tablePartId + "profilname",
           (String) profilname.getValue());
-      settings.setAttribute(tablePartId + item + ".SPALTEN", "");
-      settings.setAttribute(tablePartId + item + ".EXPORT", "");
+      settings.setAttribute(tablePartId + item + ".SPALTEN", (String) null);
+      settings.setAttribute(tablePartId + item + ".EXPORT", (String) null);
       close();
       GUI.getStatusBar().setSuccessText("Profil " + item + "  gelöscht.");
     }

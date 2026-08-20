@@ -202,6 +202,18 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   }
 
   /**
+   * Setzt die anzuzeigenden Spalten auf Defaultwerte
+   * 
+   * @param columns
+   * @throws RemoteException
+   */
+  @Override
+  public void resetSpalten(List<Column> columns) throws RemoteException
+  {
+    resetSpalten(tablePartId, tableName, settings);
+  }
+
+  /**
    * Holt alle Spalten der Tabelle, auch die ausgeblendeten
    * 
    * @return
@@ -240,7 +252,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     {
       if (!new TablePartExportDialog((Table) tableControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename).open())
+          filename, getAllColums()).open())
       {
         throw new OperationCanceledException();
       }

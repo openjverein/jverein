@@ -56,10 +56,11 @@ public class TreePartExportDialog extends AbstractPartExportDialog
   private Tree tree;
 
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+      String title, String subtitle, String filename, List<Column> allColums)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren");
+    super(settingPrefix, art, title, subtitle, filename, "Baum exportieren",
+        allColums);
 
     if (tree == null || tree.isDisposed() || !(tree instanceof Tree))
     {
@@ -366,4 +367,5 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
     }
   }
+
 }

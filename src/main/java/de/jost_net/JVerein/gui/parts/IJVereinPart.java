@@ -38,6 +38,8 @@ public interface IJVereinPart
 
   public void saveSpalten(List<Column> columns) throws RemoteException;
 
+  public void resetSpalten(List<Column> columns) throws RemoteException;
+
   public String getTableName();
 
   public Settings getSettings();
@@ -79,6 +81,16 @@ public interface IJVereinPart
       settings.setAttribute(
           getTablePartID(tablePartId, tableName) + c.getName(),
           columns.contains(c));
+    }
+  }
+
+  default void resetSpalten(String tablePartId, String tableName,
+      Settings settings) throws RemoteException
+  {
+    for (Column c : getAllColums())
+    {
+      settings.setAttribute(
+          getTablePartID(tablePartId, tableName) + c.getName(), (String) null);
     }
   }
 }

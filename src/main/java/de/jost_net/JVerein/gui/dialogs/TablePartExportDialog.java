@@ -57,10 +57,11 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   private Table table;
 
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
+      String title, String subtitle, String filename, List<Column> allColums)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren");
+    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
+        allColums);
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {
