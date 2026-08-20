@@ -40,7 +40,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename,
-        "Saldo Report generieren");
+        "Saldo Report generieren", null);
     this.export = export;
     this.zeile = zeile;
     settings = new Settings(this.getClass());

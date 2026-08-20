@@ -432,14 +432,17 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected void resetSettings() throws RemoteException
   {
-    for (Column col : allColums)
+    if (allColums != null)
     {
-      settings.setAttribute(settingPrefix + "anzeigen." + col.getName(),
-          (String) null);
-      if (art.equals(ExportArt.PDF))
+      for (Column col : allColums)
       {
-        settings.setAttribute(settingPrefix + "breite." + col.getName(),
+        settings.setAttribute(settingPrefix + "anzeigen." + col.getName(),
             (String) null);
+        if (art.equals(ExportArt.PDF))
+        {
+          settings.setAttribute(settingPrefix + "breite." + col.getName(),
+              (String) null);
+        }
       }
     }
     if (art.equals(ExportArt.PDF))

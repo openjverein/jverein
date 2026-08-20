@@ -32,7 +32,8 @@ public class ExporterExportDialog extends AbstractPartExportDialog
       ExportArt art, String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Report generieren");
+    super(settingPrefix, art, title, subtitle, filename, "Report generieren",
+        null);
     supportTable2 = hasColortable2;
     settings = new Settings(this.getClass());
   }
