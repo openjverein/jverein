@@ -126,6 +126,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   private List<Column> allColums;
 
+  private Action breiteResetAction;
+
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
       String title, String subtitle, String filename, String dialogTitel,
       List<Column> allColums) throws ApplicationException
@@ -147,8 +149,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     if (spaltenList != null)
     {
-      spaltenList.addColumn("Name", "text");
+      spaltenList.addColumn("Spalten", "text");
       spaltenList.setCheckable(true);
+      breiteResetAction = action;
     }
 
     if (art.equals(ExportArt.PDF))
@@ -176,8 +179,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         Logger.error("Fehler beim Reset im Tabelle-Export-Dialog", e);
         throw new ApplicationException("Serverfehler");
       }
-      close();
-
     }, null, true, "eraser.png");
 
     b.addButton("Speichern", c -> export(), null, true, "ok.png");
@@ -301,10 +302,87 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
   }
 
+  private void updatePDFInputs() throws RemoteException
+  {
+    // Ränder
+    links.setValue(settings.getInt(settingPrefix + "links", 20));
+    rechts.setValue(settings.getInt(settingPrefix + "rechts", 20));
+    oben.setValue(settings.getInt(settingPrefix + "oben", 20));
+    unten.setValue(settings.getInt(settingPrefix + "unten", 20));
+
+    // Formular
+    Formular f = null;
+    String id = settings.getString(settingPrefix + "hintergrund", "");
+    if (id != null && !id.isEmpty())
+    {
+      try
+      {
+        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
+            id);
+      }
+      catch (Exception ex)
+      {
+        f = null;
+      }
+    }
+    hintergrund.setValue(f);
+    id = settings.getString(settingPrefix + "vordergrund", "");
+    if (id != null && !id.isEmpty())
+    {
+      try
+      {
+        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
+            id);
+      }
+      catch (Exception ex)
+      {
+        f = null;
+      }
+    }
+    vordergrund.setValue(f);
+    headerTransparent.setValue(settings
+        .getBoolean(settingPrefix + "headerTransparent", (Boolean) Einstellungen
+            .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
+    zellenTransparent.setValue(settings
+        .getBoolean(settingPrefix + "zellenTransparent", (Boolean) Einstellungen
+            .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
+    querformat.setValue(settings.getBoolean(settingPrefix + "quer", false));
+
+    // Schriftart
+    fontHeader.setValue(
+        settings.getString(settingPrefix + "font_header", "FreeSans"));
+    fontNormal.setValue(
+        settings.getString(settingPrefix + "font_normal", "FreeSans"));
+    fontFett.setValue(
+        settings.getString(settingPrefix + "font_fett", "FreeSans-Bold"));
+    fontItalic.setValue(
+        settings.getString(settingPrefix + "font_italic", "FreeSans-Oblique"));
+    fontsize.setValue(settings.getInt(settingPrefix + "fontsize", 8));
+    fontsizeHeader
+        .setValue(settings.getInt(settingPrefix + "fontsize_header", 8));
+    negativRot
+        .setValue(settings.getBoolean(settingPrefix + "negativ_rot", true));
+    Color col = new Color(
+        (int) settings.getInt(settingPrefix + "header_color_red", 192),
+        (int) settings.getInt(settingPrefix + "header_color_green", 192),
+        (int) settings.getInt(settingPrefix + "header_color_blue", 192));
+    colorHeader.setValue(col);
+    col = new Color((int) settings.getInt(settingPrefix + "color_red", 192),
+        (int) settings.getInt(settingPrefix + "color_green", 192),
+        (int) settings.getInt(settingPrefix + "color_blue", 192));
+    colorTable.setValue(col);
+    col = new Color((int) settings.getInt(settingPrefix + "color_red2", 230),
+        (int) settings.getInt(settingPrefix + "color_green2", 230),
+        (int) settings.getInt(settingPrefix + "color_blue2", 230));
+    colorTable2.setValue(col);
+  }
+
   protected void export() throws ApplicationException
   {
     try
     {
+      saveSettings();
+
       String extension = "";
       switch (art)
       {
@@ -349,7 +427,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           exportPDF(file);
           break;
       }
-      saveSettings();
 
       success = true;
       close();
@@ -430,7 +507,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }
   }
 
-  protected void resetSettings() throws RemoteException
+  protected void resetSettings() throws RemoteException, ApplicationException
   {
     if (allColums != null)
     {
@@ -443,6 +520,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           settings.setAttribute(settingPrefix + "breite." + col.getName(),
               (String) null);
         }
+      }
+      if (breiteResetAction != null)
+      {
+        breiteResetAction.handleAction(null);
       }
     }
     if (art.equals(ExportArt.PDF))
@@ -480,6 +561,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         settings.setAttribute(settingPrefix + "color_green2", (String) null);
         settings.setAttribute(settingPrefix + "color_blue2", (String) null);
       }
+      updatePDFInputs();
     }
   }
 
