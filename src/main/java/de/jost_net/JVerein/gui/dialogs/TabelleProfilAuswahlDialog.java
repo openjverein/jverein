@@ -61,7 +61,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     setTitle("Spalten/Export Profile");
-    setSize(545, SWT.DEFAULT);
+    setSize(605, SWT.DEFAULT);
   }
 
   @Override
@@ -90,6 +90,10 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     buttons.addButton("Anwenden", context -> {
       handleAnwenden();
     }, null, false, "view-refresh.png");
+
+    buttons.addButton("Reset", context -> {
+      handleReset();
+    }, null, false, "eraser.png");
 
     buttons.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
@@ -292,6 +296,52 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       Logger.error(text, e);
       GUI.getStatusBar().setErrorText(text);
       return;
+    }
+  }
+
+  // Löscht alle Settings der Tabelle bis auf den Ausgabepfad bei CSV und PDF
+  // Export
+  private void handleReset()
+  {
+    try
+    {
+      resetSettings(tablesettings, tablePartId);
+      Settings s = new Settings(TablePartExportDialog.class);
+      String csvDir = s.getString(tablePartId + "CSV.lastdir", "");
+      String pdfDir = s.getString(tablePartId + "PDF.lastdir", "");
+      resetSettings(s, tablePartId);
+      if (!csvDir.isEmpty())
+      {
+        s.setAttribute(tablePartId + "CSV.lastdir", csvDir);
+      }
+      if (!pdfDir.isEmpty())
+      {
+        s.setAttribute(tablePartId + "PDF.lastdir", csvDir);
+      }
+      close();
+      GUI.getCurrentView().reload();
+      GUI.getStatusBar().setSuccessText(
+          "Alle Spalten und CSV/PDF Export Einstellungen gelöscht.");
+    }
+    catch (Exception e)
+    {
+      // Abbruch
+      String text = "Fehler beim Löschen der Settings.";
+      Logger.error(text, e);
+      GUI.getStatusBar().setErrorText(text);
+      return;
+    }
+  }
+
+  // Setzt die Settings zurück
+  private void resetSettings(Settings s, String prefix)
+  {
+    for (String key : s.getAttributes())
+    {
+      if (key.startsWith(prefix))
+      {
+        s.setAttribute(key, (String) null);
+      }
     }
   }
 
