@@ -40,7 +40,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename,
-        "Saldo Report generieren", null);
+        "Saldo Report generieren");
     this.export = export;
     this.zeile = zeile;
     settings = new Settings(this.getClass());
@@ -88,6 +88,12 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
 
   @Override
   void setChecked()
+  {
+    // Kein Spalten Tab
+  }
+
+  @Override
+  void setWidth()
   {
     // Kein Spalten Tab
   }

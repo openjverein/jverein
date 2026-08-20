@@ -16,8 +16,6 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.util.List;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
@@ -51,7 +49,6 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
-import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -124,13 +121,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   private ExportLayoutParam params;
 
-  private List<Column> allColums;
-
-  private Action breiteResetAction;
-
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, String dialogTitel,
-      List<Column> allColums) throws ApplicationException
+      String title, String subtitle, String filename, String dialogTitel)
+      throws ApplicationException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
     this.title = title;
@@ -138,7 +131,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.filename = filename;
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
-    this.allColums = allColums;
 
     setTitle(dialogTitel);
     setSize(400, SWT.DEFAULT);
@@ -151,7 +143,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     {
       spaltenList.addColumn("Spalten", "text");
       spaltenList.setCheckable(true);
-      breiteResetAction = action;
     }
 
     if (art.equals(ExportArt.PDF))
@@ -509,58 +500,21 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   protected void resetSettings() throws RemoteException, ApplicationException
   {
-    if (allColums != null)
+    String dir = settings.getString(settingPrefix + "lastdir", "");
+    for (String key : settings.getAttributes())
     {
-      for (Column col : allColums)
+      if (key.startsWith(settingPrefix))
       {
-        settings.setAttribute(settingPrefix + "anzeigen." + col.getName(),
-            (String) null);
-        if (art.equals(ExportArt.PDF))
-        {
-          settings.setAttribute(settingPrefix + "breite." + col.getName(),
-              (String) null);
-        }
-      }
-      if (breiteResetAction != null)
-      {
-        breiteResetAction.handleAction(null);
+        settings.setAttribute(key, (String) null);
       }
     }
+    if (!dir.isEmpty())
+    {
+      settings.setAttribute(settingPrefix + "lastdir", dir);
+    }
+    setWidth();
     if (art.equals(ExportArt.PDF))
     {
-      settings.setAttribute(settingPrefix + "links", (String) null);
-      settings.setAttribute(settingPrefix + "rechts", (String) null);
-      settings.setAttribute(settingPrefix + "oben", (String) null);
-      settings.setAttribute(settingPrefix + "unten", (String) null);
-
-      settings.setAttribute(settingPrefix + "hintergrund", (String) null);
-      settings.setAttribute(settingPrefix + "vordergrund", (String) null);
-
-      settings.setAttribute(settingPrefix + "headerTransparent", (String) null);
-      settings.setAttribute(settingPrefix + "zellenTransparent", (String) null);
-
-      settings.setAttribute(settingPrefix + "quer", (String) null);
-
-      settings.setAttribute(settingPrefix + "font_header", (String) null);
-      settings.setAttribute(settingPrefix + "font_normal", (String) null);
-      settings.setAttribute(settingPrefix + "font_fett", (String) null);
-      settings.setAttribute(settingPrefix + "font_italic", (String) null);
-      settings.setAttribute(settingPrefix + "fontsize_header", (String) null);
-      settings.setAttribute(settingPrefix + "fontsize", (String) null);
-      settings.setAttribute(settingPrefix + "negativ_rot", (String) null);
-      settings.setAttribute(settingPrefix + "header_color_red", (String) null);
-      settings.setAttribute(settingPrefix + "header_color_green",
-          (String) null);
-      settings.setAttribute(settingPrefix + "header_color_blue", (String) null);
-      settings.setAttribute(settingPrefix + "color_red", (String) null);
-      settings.setAttribute(settingPrefix + "color_green", (String) null);
-      settings.setAttribute(settingPrefix + "color_blue", (String) null);
-      if (supportTable2)
-      {
-        settings.setAttribute(settingPrefix + "color_red2", (String) null);
-        settings.setAttribute(settingPrefix + "color_green2", (String) null);
-        settings.setAttribute(settingPrefix + "color_blue2", (String) null);
-      }
       updatePDFInputs();
     }
   }
@@ -686,6 +640,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   }
 
   abstract void setChecked();
+
+  abstract void setWidth() throws ApplicationException;
 
   abstract void exportCSV(File file) throws IOException;
 

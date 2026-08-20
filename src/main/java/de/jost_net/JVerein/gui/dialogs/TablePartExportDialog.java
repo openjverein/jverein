@@ -46,7 +46,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -56,12 +55,13 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 {
   private Table table;
 
+  private List<TableColumn> listeSortiert;
+
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, List<Column> allColums)
+      String title, String subtitle, String filename)
       throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
-        allColums);
+    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren");
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {
@@ -81,7 +81,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
       throws ApplicationException, RemoteException
   {
     // Spalten so wie angezeigt sortieren
-    List<TableColumn> listeSortiert = new ArrayList<>();
+    listeSortiert = new ArrayList<>();
     int[] order = table.getColumnOrder();
     for (int i = 0; i < table.getColumnCount(); i++)
     {
@@ -118,36 +118,7 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         }
       });
     }
-    createGui(parent, new Action()
-    {
-
-      // Action zum Reset der Spaltenbreiten
-      @SuppressWarnings("unchecked")
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
-          {
-            col.setData(col.getWidth());
-          }
-          spaltenList.removeAll();
-          for (TableColumn col : listeSortiert)
-          {
-            spaltenList.addItem(col);
-            spaltenList.setChecked(col, settings
-                .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-          }
-        }
-        catch (RemoteException re)
-        {
-          Logger.error("Fehler beim zurücksetzen der Breiten", re);
-          throw new ApplicationException(
-              "Fehler beim zurücksetzen der Breiten");
-        }
-      }
-    });
+    createGui(parent, c -> setWidth());
   }
 
   @Override
@@ -295,4 +266,28 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     }
   }
 
+  @SuppressWarnings("unchecked")
+  @Override
+  void setWidth() throws ApplicationException
+  {
+    try
+    {
+      for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
+      {
+        col.setData(col.getWidth());
+      }
+      spaltenList.removeAll();
+      for (TableColumn col : listeSortiert)
+      {
+        spaltenList.addItem(col);
+        spaltenList.setChecked(col, settings
+            .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler beim zurücksetzen der Breiten", re);
+      throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
+    }
+  }
 }
