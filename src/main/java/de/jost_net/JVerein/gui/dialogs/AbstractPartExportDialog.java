@@ -181,7 +181,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       }
     }, null, true, "eraser.png");
 
-    b.addButton("Speichern", c -> export(), null, true, "ok.png");
+    b.addButton("Starten", c -> export(), null, true, "walking.png");
 
     b.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
