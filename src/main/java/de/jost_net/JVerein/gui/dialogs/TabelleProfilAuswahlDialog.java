@@ -355,7 +355,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       }
       if (!pdfDir.isEmpty())
       {
-        s.setAttribute(tablePartId + "PDF.lastdir", csvDir);
+        s.setAttribute(tablePartId + "PDF.lastdir", pdfDir);
       }
       close();
       GUI.getCurrentView().reload();
