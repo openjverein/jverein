@@ -358,9 +358,9 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         (int) settings.getInt(settingPrefix + "header_color_red",
             DEFAULT_HEADER_COLOR_RED),
         (int) settings.getInt(settingPrefix + "header_color_green",
-            DEFAULT_HEADER_COLOR_BLUE),
+            DEFAULT_HEADER_COLOR_GREEN),
         (int) settings.getInt(settingPrefix + "header_color_blue",
-            DEFAULT_HEADER_COLOR_GREEN));
+            DEFAULT_HEADER_COLOR_BLUE));
     colorHeader = new ColorInput(col, false);
     col = new Color(
         (int) settings.getInt(settingPrefix + "color_red", DEFAULT_COLOR_RED),
