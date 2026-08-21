@@ -33,7 +33,7 @@ public class MitgliedSuchProfilListeView extends AbstractView
   @Override
   public void bind() throws Exception
   {
-    GUI.getView().setTitle("Mitglieder Such-Profil");
+    GUI.getView().setTitle("Filter-Profile");
 
     SimpleContainer sc = new SimpleContainer(getParent());
     sc.addInput(control.getProfilname());
