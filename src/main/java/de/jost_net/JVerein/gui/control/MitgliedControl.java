@@ -29,27 +29,17 @@ import org.eclipse.swt.widgets.TreeItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.Queries.MitgliedQuery;
-import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.action.LesefelddefinitionenAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
-import de.jost_net.JVerein.gui.dialogs.ExportDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
-import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.formatter.IBANFormatter;
-import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
-import de.jost_net.JVerein.gui.formatter.StaatFormatter;
-import de.jost_net.JVerein.gui.formatter.ZahlungsrhythmusFormatter;
-import de.jost_net.JVerein.gui.formatter.ZahlungsterminFormatter;
-import de.jost_net.JVerein.gui.formatter.ZahlungswegFormatter;
 import de.jost_net.JVerein.gui.input.BICInput;
 import de.jost_net.JVerein.gui.input.EmailInput;
 import de.jost_net.JVerein.gui.input.GeschlechtInput;
@@ -64,7 +54,6 @@ import de.jost_net.JVerein.gui.input.VollzahlerSearchInput;
 import de.jost_net.JVerein.gui.menu.ArbeitseinsatzMenu;
 import de.jost_net.JVerein.gui.menu.LehrgangMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedMailMenu;
-import de.jost_net.JVerein.gui.menu.MitgliedMenu;
 import de.jost_net.JVerein.gui.menu.MitgliedNextBGruppeMenue;
 import de.jost_net.JVerein.gui.menu.WiedervorlageMenu;
 import de.jost_net.JVerein.gui.menu.ZusatzbetraegeMenu;
@@ -77,20 +66,13 @@ import de.jost_net.JVerein.gui.parts.MitgliedNextBGruppePart;
 import de.jost_net.JVerein.gui.parts.MitgliedSekundaereBeitragsgruppePart;
 import de.jost_net.JVerein.gui.view.AbstractMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.ArbeitseinsatzDetailView;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.LehrgangDetailView;
 import de.jost_net.JVerein.gui.view.MailDetailView;
-import de.jost_net.JVerein.gui.view.MitgliedDetailView;
-import de.jost_net.JVerein.gui.view.MitgliedListeView;
 import de.jost_net.JVerein.gui.view.MitgliedNextBGruppeView;
-import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
-import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
-import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.gui.view.WiedervorlageDetailView;
 import de.jost_net.JVerein.gui.view.ZusatzbetragDetailView;
 import de.jost_net.JVerein.keys.ArtBeitragsart;
 import de.jost_net.JVerein.keys.Datentyp;
-import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.SepaMandatIdSource;
 import de.jost_net.JVerein.keys.Staat;
 import de.jost_net.JVerein.keys.VorlageTyp;
@@ -99,7 +81,6 @@ import de.jost_net.JVerein.keys.Zahlungstermin;
 import de.jost_net.JVerein.keys.Zahlungsweg;
 import de.jost_net.JVerein.rmi.Arbeitseinsatz;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
-import de.jost_net.JVerein.rmi.EigenschaftGruppe;
 import de.jost_net.JVerein.rmi.Eigenschaften;
 import de.jost_net.JVerein.rmi.Felddefinition;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
@@ -151,13 +132,11 @@ import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class MitgliedControl extends FilterControl implements Savable
+public class MitgliedControl extends VorZurueckControl implements Savable
 {
   final LesefeldControl lesefeldControl = new LesefeldControl(null);
 
   private DokumentControl dcontrol;
-
-  private JVereinTablePart mitgliedList;
 
   private SelectNoScrollInput mitgliedstyp;
 
@@ -276,20 +255,13 @@ public class MitgliedControl extends FilterControl implements Savable
 
   private ArrayList<SekundaereBeitragsgruppe> listeSeB;
 
-  // Zeitstempel merken, wann der Letzte refresh ausgeführt wurde.
-  private long lastrefresh = 0;
-
   private String eigenschaftenHash;
-
-  public static MitgliedControl control = null;
 
   private boolean isMitglied = false;
 
   private JVereinTablePart zahtlFuer;
 
   private TabSelection tabSelection = TabSelection.NO_LIST_TAB;
-
-  private MitgliedAuswahl mitgliedAuswahl = MitgliedAuswahl.MITGLIEDER;
 
   public enum TabSelection
   {
@@ -311,14 +283,9 @@ public class MitgliedControl extends FilterControl implements Savable
   public MitgliedControl(AbstractView view)
   {
     super(view);
-    control = this;
     if (view instanceof AbstractMitgliedDetailView)
     {
       isMitglied = ((AbstractMitgliedDetailView) view).isMitgliedDetail();
-    }
-    if (view instanceof MitgliedListeView)
-    {
-      isMitglied = true;
     }
   }
 
@@ -1867,29 +1834,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return b;
   }
 
-  public Button getProfileButton()
-  {
-    Button b = new Button("Filter-Profile", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          saveFilterSettings();
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(e);
-        }
-        GUI.startView(MitgliedSuchProfilListeView.class.getName(), settings);
-      }
-    }, null, true, "user-check.png"); // "true" defines this button as the
-                                      // default button
-    return b;
-  }
-
   public Button getLesefelderEdit()
   {
     return new Button("Bearbeiten",
@@ -1933,238 +1877,6 @@ public class MitgliedControl extends FilterControl implements Savable
     return new Button("Neuer Lehrgang",
         new NewAction(LehrgangDetailView.class, Lehrgang.class, getMitglied()),
         null, false, "document-new.png");
-  }
-
-  @Override
-  public JVereinTablePart getTablePart()
-      throws RemoteException, ApplicationException
-  {
-    return getTablePart(null);
-  }
-
-  public JVereinTablePart getTablePart(Action detailaction)
-      throws RemoteException, ApplicationException
-  {
-    if (mitgliedList != null)
-    {
-      return mitgliedList;
-    }
-    mitgliedList = new JVereinTablePart(
-        new MitgliedQuery(this).get(mitgliedAuswahl, null), null);
-    add("Status", "status", false, new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        return (Boolean) o ? "\u2705" : "\u2757";
-      }
-    }, Column.ALIGN_LEFT, true);
-    add("Mitgliedsnummer", "idint", false, true);
-    try
-    {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.EXTERNEMITGLIEDSNUMMER))
-      {
-        add("Externe Mitgliedsnummer", "externemitgliedsnummer", false, false);
-      }
-    }
-    catch (RemoteException re)
-    {
-      //
-    }
-    add("Kontostand", "kontostand", false, new Formatter()
-    {
-      @Override
-      public String format(Object o)
-      {
-        String anzeige = Einstellungen.DECIMALFORMAT.format((Double) o) + " ";
-        anzeige += ((Double) o) > -0.0049 ? "\u2705" : "\u2757";
-        return anzeige;
-      }
-    }, Column.ALIGN_RIGHT, true);
-    try
-    {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.DOKUMENTENSPEICHERUNG))
-      {
-        add("D", "document", false, true);
-      }
-    }
-    catch (RemoteException e)
-    {
-      //
-    }
-    add("Anrede", "anrede", false, true);
-    add("Titel", "titel", false, true);
-    add("Name", "name", true, true);
-    add("Vorname", "vorname", true, true);
-    add("Adressierungszusatz", "adressierungszusatz", false, true);
-    add("Straße", "strasse", true, true);
-    add("PLZ", "plz", false, true);
-    add("Ort", "ort", true, true);
-    try
-    {
-      if ((Boolean) Einstellungen.getEinstellung(Property.AUSLANDSADRESSEN))
-      {
-        add("Staat", "staat", false, new StaatFormatter(), Column.ALIGN_LEFT,
-            true);
-      }
-    }
-    catch (RemoteException ignore)
-    {
-    }
-    add("Zahlungsweg", "zahlungsweg", false, new ZahlungswegFormatter(),
-        Column.ALIGN_LEFT, true);
-    add("Zahlungsrhytmus", "zahlungsrhytmus", false,
-        new ZahlungsrhythmusFormatter(), Column.ALIGN_LEFT, false);
-    add("Zahlungstermin", "zahlungstermin", false,
-        new ZahlungsterminFormatter(), Column.ALIGN_LEFT, true);
-    add("Datum des Mandats", "mandatdatum", false, true);
-    add("BIC", "bic", false, true);
-    add("IBAN", "iban", false, new IBANFormatter(), Column.ALIGN_LEFT, true);
-    add("Kontoinhaber", "kontoinhaber", false, true);
-    add("Abweichender Zahler", "altzahlerstring", false, true);
-    add("Mandat Version", "mandatversion", false, true);
-    add("Mandat ID", "mandatid", false, true);
-    add("Geburtsdatum", "geburtsdatum", true,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    add("Alter", "alter", false, true);
-    add("Geschlecht", "geschlecht", false, true);
-    add("Telefon privat", "telefonprivat", true, true);
-    add("Telefon dienstlich", "telefondienstlich", false, true);
-    add("Handy", "handy", false, true);
-    add("Email", "email", false, true);
-    add("Eintritt", "eintritt", true,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-        false);
-    add("Beitragsgruppe", "beitragsgruppe", false, false);
-    add("Austritt", "austritt", true,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-        false);
-    add("Kündigung", "kuendigung", false,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-        false);
-    add("Leitweg ID", "leitwegid", false, true);
-    add("Vollzahler", "vollzahlerstring", false, false);
-    try
-    {
-      if ((Boolean) Einstellungen
-          .getEinstellung(Property.INDIVIDUELLEBEITRAEGE))
-      {
-        add("Individueller Beitrag", "individuellerbeitrag", false, false);
-      }
-      if ((Boolean) Einstellungen.getEinstellung(Property.STERBEDATUM))
-      {
-        add("Sterbedatum", "sterbetag", false,
-            new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO,
-            true);
-      }
-    }
-    catch (RemoteException re)
-    {
-      //
-    }
-    add("Eingabedatum", "eingabedatum", false,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    add("Letzte Änderung", "letzteaenderung", false,
-        new DateFormatter(new JVDateFormatTTMMJJJJ()), Column.ALIGN_AUTO, true);
-    try
-    {
-      DBIterator<Felddefinition> it = Einstellungen.getDBService()
-          .createList(Felddefinition.class);
-      while (it.hasNext())
-      {
-        Felddefinition fd = (Felddefinition) it.next();
-        switch (fd.getDatentyp())
-        {
-          case Datentyp.DATUM:
-            add(fd.getLabel(), "zusatzfelder_" + fd.getName(), false,
-                new DateFormatter(new JVDateFormatTTMMJJJJ()),
-                Column.ALIGN_AUTO, true);
-            break;
-          case Datentyp.WAEHRUNG:
-            add(fd.getLabel(), "zusatzfelder_" + fd.getName(), false,
-                new CurrencyFormatter("", Einstellungen.DECIMALFORMAT),
-                Column.ALIGN_AUTO, true);
-            break;
-          case Datentyp.JANEIN:
-            add(fd.getLabel(), "zusatzfelder_" + fd.getName(), false,
-                new JaNeinFormatter(), Column.ALIGN_AUTO, true);
-            break;
-          default:
-            add(fd.getLabel(), "zusatzfelder_" + fd.getName(), false, true);
-            break;
-        }
-      }
-
-      DBIterator<EigenschaftGruppe> eigenschaftGruppeit = Einstellungen
-          .getDBService().createList(EigenschaftGruppe.class);
-      while (eigenschaftGruppeit.hasNext())
-      {
-        EigenschaftGruppe eg = (EigenschaftGruppe) eigenschaftGruppeit.next();
-
-        add(eg.getBezeichnung(), "eigenschaften_" + eg.getName(), false, true);
-      }
-    }
-    catch (RemoteException e)
-    {
-      Logger.error("Fehler", e);
-    }
-
-    mitgliedList.setContextMenu(new MitgliedMenu(detailaction, mitgliedList));
-    mitgliedList.setMulti(true);
-    mitgliedList.setRememberState(true);
-    if (detailaction instanceof MitgliedDetailAction)
-    {
-      mitgliedList
-          .setAction(new EditAction(MitgliedDetailView.class, mitgliedList));
-    }
-    else if (detailaction instanceof NichtMitgliedDetailAction)
-    {
-      mitgliedList.setAction(
-          new EditAction(NichtMitgliedDetailView.class, mitgliedList));
-    }
-    VorZurueckControl.setObjektListe(null, null);
-    return mitgliedList;
-  }
-
-  private void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultvalue, boolean auchNichtMitglied)
-  {
-    add(spaltenbezeichnung, spaltenname, defaultvalue, null, Column.ALIGN_AUTO,
-        auchNichtMitglied);
-  }
-
-  private void add(String spaltenbezeichnung, String spaltenname,
-      boolean defaultVisible, Formatter formatter, int align,
-      boolean auchNichtMitglied)
-  {
-    if (isMitglied || auchNichtMitglied)
-    {
-      mitgliedList.addColumn(
-          new Column(spaltenname, spaltenbezeichnung, formatter, false, align),
-          defaultVisible);
-    }
-  }
-
-  public void refreshMitgliedTable()
-      throws RemoteException, ApplicationException
-  {
-    if (System.currentTimeMillis() - lastrefresh < 500)
-    {
-      Logger.debug(String.format("Zeit zwischen den Refreshs: %s",
-          (System.currentTimeMillis() - lastrefresh)));
-      return;
-    }
-    lastrefresh = System.currentTimeMillis();
-    mitgliedList.removeAll();
-    ArrayList<Mitglied> mitglieder = new MitgliedQuery(this)
-        .get(mitgliedAuswahl, null);
-    for (Mitglied m : mitglieder)
-    {
-      mitgliedList.addItem(m);
-    }
-    mitgliedList.sort();
   }
 
   public TreePart getEigenschaftenTree() throws RemoteException
@@ -2563,22 +2275,6 @@ public class MitgliedControl extends FilterControl implements Savable
   }
 
   @Override
-  public void TabRefresh() throws ApplicationException
-  {
-    if (mitgliedList != null)
-    {
-      try
-      {
-        refreshMitgliedTable();
-      }
-      catch (RemoteException e1)
-      {
-        Logger.error("Fehler", e1);
-      }
-    }
-  }
-
-  @Override
   public boolean hasChanged() throws RemoteException
   {
     // Zusatzfelder testen
@@ -2641,111 +2337,6 @@ public class MitgliedControl extends FilterControl implements Savable
     this.dcontrol = dcontrol;
   }
 
-  public PanelButton exportDetailButton(ExportArt art)
-      throws ApplicationException
-  {
-
-    return new PanelButton(
-        art.equals(ExportArt.PDF) ? "file-pdf.png" : "xsd.png", context -> {
-          JVereinTablePart liste = null;
-          try
-          {
-            liste = getDetailTablePart();
-          }
-          catch (ObjectNotFoundException ex)
-          {
-            throw new ApplicationException(
-                "Es ist kein Tab mit einer Tabelle ausgewählt.");
-          }
-          if (liste == null)
-          {
-            throw new ApplicationException(
-                "PDF Button kann nicht erstellt werden, Tabelle ist nicht geladen.");
-          }
-
-          switch (tabSelection)
-          {
-            case TAB_ZUSATZBETRAEGE:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_WIEDERVORLAGEN:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_MAILS:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_LEHRGAENGE:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_LESEFELDER:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_ARBEITSEINSAETZE:
-              liste.export(VorlageUtil.getName(
-                  VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL, getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(
-                      VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case TAB_DOKUMENTE:
-              liste.export(
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_SUBTITEL,
-                      getMitglied()),
-                  VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
-                      getMitglied()),
-                  art);
-              break;
-            case NO_LIST_TAB:
-              break;
-          }
-        }, art.equals(ExportArt.PDF) ? "PDF" : "CSV");
-  }
-
   public PanelButton getSpaltenDetailPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -2771,7 +2362,8 @@ public class MitgliedControl extends FilterControl implements Savable
     }, "Spalten auswählen");
   }
 
-  private JVereinTablePart getDetailTablePart()
+  @Override
+  public JVereinTablePart getTablePart()
       throws ApplicationException, ObjectNotFoundException
   {
     switch (tabSelection)
@@ -2819,136 +2411,100 @@ public class MitgliedControl extends FilterControl implements Savable
     return dcontrol.getDokumenteList();
   }
 
-  // Überschrieben, um ggf. "Mitglied" aus der Liste der Mitgliedsarten zu
-  // entfernen
-  @Override
-  public Input getFilterInput(Filter filter)
-      throws RemoteException, ApplicationException
-  {
-    Input input = super.getFilterInput(filter);
-    if (filter.equals(Filter.MITGLIEDSTYP)
-        && mitgliedAuswahl.equals(MitgliedAuswahl.NICHTMITGLIEDER))
-    {
-      List<?> list = ((SelectInput) input).getList();
-      for (Object o : list)
-      {
-        if (((Mitgliedstyp) o).getJVereinid() == Integer
-            .parseInt(Mitgliedstyp.MITGLIED))
-        {
-          list.remove(o);
-          break;
-        }
-      }
-    }
-    return input;
-  }
-
-  public Button getExportButton()
-  {
-    @SuppressWarnings("unchecked")
-    Button b = new Button("Export", context -> {
-      try
-      {
-        saveFilterSettings();
-        Mitgliedstyp mitgliedstyp;
-        ExportDialog d;
-        refresh();
-        ArrayList<Mitglied> list = (ArrayList<Mitglied>) getTablePart()
-            .getItems();
-        if (mitgliedAuswahl == MitgliedAuswahl.MITGLIEDER)
-        {
-          mitgliedstyp = Einstellungen.getDBService()
-              .createObject(Mitgliedstyp.class, Mitgliedstyp.MITGLIED);
-        }
-        else
-        {
-          mitgliedstyp = (Mitgliedstyp) getFilter().get(Filter.MITGLIEDSTYP);
-        }
-        Object[] objects = new Object[] { list, getFilterText(false),
-            mitgliedstyp, getFilter() };
-        /*
-         * objects[0] ist ArrayList<Mitglied>, objects[1] ist der Filtertext,
-         * objects[2] ist Mitgliedstyp, objects[3] ist der Filter
-         */
-        if (mitgliedAuswahl == MitgliedAuswahl.MITGLIEDER)
-        {
-          d = new ExportDialog(objects, MitgliedListeView.class,
-              DokumentationUtil.MITGLIEDSUCHE, this);
-        }
-        else
-        {
-          d = new ExportDialog(objects, NichtMitgliedListeView.class,
-              DokumentationUtil.ADRESSEN, this);
-        }
-        d.open();
-      }
-      catch (OperationCanceledException oce)
-      {
-        throw oce;
-      }
-      catch (RemoteException e)
-      {
-        throw new ApplicationException(e);
-      }
-      catch (ApplicationException ae)
-      {
-        throw ae;
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler", e);
-        throw new ApplicationException("Fehler beim exportieren des Reports");
-      }
-    }, null, false, "document-save.png");
-    return b;
-  }
-
   @Override
   protected String getTableTitle()
   {
-    if (isMitglied)
+    switch (tabSelection)
     {
-      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_TITEL, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_TITEL, this);
+      case TAB_ZUSATZBETRAEGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_TITEL,
+            getMitglied());
+      case TAB_WIEDERVORLAGEN:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_TITEL,
+            getMitglied());
+      case TAB_MAILS:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_TITEL,
+            getMitglied());
+      case TAB_LEHRGAENGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_TITEL,
+            getMitglied());
+      case TAB_LESEFELDER:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_TITEL,
+            getMitglied());
+      case TAB_ARBEITSEINSAETZE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_ARBEITSEINSAETZE_TITEL,
+            getMitglied());
+      case TAB_DOKUMENTE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_TITEL,
+            getMitglied());
+      case NO_LIST_TAB:
+      default:
+        return "";
     }
   }
 
   @Override
   protected String getTableSubtitle()
   {
-    if (isMitglied)
+    switch (tabSelection)
     {
-      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_SUBTITEL, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_SUBTITEL, this);
+      case TAB_ZUSATZBETRAEGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_SUBTITEL,
+            getMitglied());
+      case TAB_WIEDERVORLAGEN:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_SUBTITEL,
+            getMitglied());
+      case TAB_MAILS:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_SUBTITEL,
+            getMitglied());
+      case TAB_LEHRGAENGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_SUBTITEL,
+            getMitglied());
+      case TAB_LESEFELDER:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_SUBTITEL,
+            getMitglied());
+      case TAB_ARBEITSEINSAETZE:
+        return VorlageUtil.getName(
+            VorlageTyp.MITGLIED_ARBEITSEINSAETZE_SUBTITEL, getMitglied());
+      case TAB_DOKUMENTE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_SUBTITEL,
+            getMitglied());
+      case NO_LIST_TAB:
+      default:
+        return "";
     }
   }
 
   @Override
   protected String getTableDateiname()
   {
-    if (isMitglied)
+    switch (tabSelection)
     {
-      return VorlageUtil.getName(VorlageTyp.MITGLIEDER_DATEINAME, this);
-    }
-    else
-    {
-      return VorlageUtil.getName(VorlageTyp.NICHT_MITGLIEDER_DATEINAME, this);
+      case TAB_ZUSATZBETRAEGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_ZUSATZBETRAEGE_DATEINAME,
+            getMitglied());
+      case TAB_WIEDERVORLAGEN:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_WIEDERVORLAGEN_DATEINAME,
+            getMitglied());
+      case TAB_MAILS:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_MAILS_DATEINAME,
+            getMitglied());
+      case TAB_LEHRGAENGE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LEHRGAENGE_DATEINAME,
+            getMitglied());
+      case TAB_LESEFELDER:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_LESEFELDER_DATEINAME,
+            getMitglied());
+      case TAB_ARBEITSEINSAETZE:
+        return VorlageUtil.getName(
+            VorlageTyp.MITGLIED_ARBEITSEINSAETZE_DATEINAME, getMitglied());
+      case TAB_DOKUMENTE:
+        return VorlageUtil.getName(VorlageTyp.MITGLIED_DOKUMENTE_DATEINAME,
+            getMitglied());
+      case NO_LIST_TAB:
+      default:
+        return "";
     }
   }
 
-  public void setMitgliedAuswahl(MitgliedAuswahl mitgliedAuswahl)
-  {
-    this.mitgliedAuswahl = mitgliedAuswahl;
-  }
-
-  public MitgliedAuswahl getMitgliedAuswahl()
-  {
-    return mitgliedAuswahl;
-  }
 }
