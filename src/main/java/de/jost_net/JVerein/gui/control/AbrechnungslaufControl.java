@@ -564,7 +564,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
     return zusatzbetraegeList;
   }
 
-  public PanelButton getDetailPanelButton()
+  public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
       try
