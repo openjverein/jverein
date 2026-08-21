@@ -461,7 +461,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     if (art.equals(ExportArt.PDF))
     {
-      settings.setAttribute("links", DEFAULT_LINKS);
+      settings.setAttribute(settingPrefix + "links",
+          (Integer) links.getValue());
       settings.setAttribute(settingPrefix + "rechts",
           (Integer) rechts.getValue());
       settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
