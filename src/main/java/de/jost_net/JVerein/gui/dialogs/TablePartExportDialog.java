@@ -267,7 +267,6 @@ public class TablePartExportDialog extends AbstractPartExportDialog
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   void setWidth() throws ApplicationException
   {
     try
@@ -290,4 +289,25 @@ public class TablePartExportDialog extends AbstractPartExportDialog
       throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
     }
   }
+
+  @Override
+  void resetSpalten() throws ApplicationException
+  {
+    try
+    {
+      spaltenList.removeAll();
+      for (TableColumn col : listeSortiert)
+      {
+        col.setData(col.getWidth());
+        spaltenList.addItem(col);
+        spaltenList.setChecked(col, true);
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler beim zurücksetzen der Spalten", re);
+      throw new ApplicationException("Fehler beim zurücksetzen der Spalten");
+    }
+  }
+
 }

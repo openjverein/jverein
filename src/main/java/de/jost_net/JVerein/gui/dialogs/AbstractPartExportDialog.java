@@ -63,6 +63,52 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     CSV
   }
 
+  private static final int DEFAULT_LINKS = 20;
+
+  private static final int DEFAULT_RECHTS = 20;
+
+  private static final int DEFAULT_OBEN = 20;
+
+  private static final int DEFAULT_UNTEN = 20;
+
+  private static final String DEFAULT_HINTERGRUND = null;
+
+  private static final String DEFAULT_VORDERGRUND = null;
+
+  private static final boolean DEFAULT_QUERFORMAT = false;
+
+  private static final boolean DEFAULT_NEGATIV_ROT = true;
+
+  private static final String DEFAULT_FONT_HEADER = "FreeSans";
+
+  private static final String DEFAULT_FONT_NORMAL = "FreeSans";
+
+  private static final String DEFAULT_FONT_FETT = "FreeSan-Bold";
+
+  private static final String DEFAULT_FONT_ITALIC = "FreeSans-Oblique";
+
+  private static final int DEFAULT_FONT_SIZE = 8;
+
+  private static final int DEFAULT_FONT_SIZE_HEADER = 8;
+
+  private static final int DEFAULT_HEADER_COLOR_RED = 192;
+
+  private static final int DEFAULT_HEADER_COLOR_BLUE = 192;
+
+  private static final int DEFAULT_HEADER_COLOR_GREEN = 192;
+
+  private static final int DEFAULT_COLOR_RED = 192;
+
+  private static final int DEFAULT_COLOR_BLUE = 192;
+
+  private static final int DEFAULT_COLOR_GREEN = 192;
+
+  private static final int DEFAULT_COLOR_RED2 = 230;
+
+  private static final int DEFAULT_COLOR_BLUE2 = 230;
+
+  private static final int DEFAULT_COLOR_GREEN2 = 230;
+
   protected boolean success = false;
 
   protected Settings settings;
@@ -160,17 +206,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     b.addButton("Hilfe", new DokumentationAction(), DokumentationUtil.ALLGEMEIN,
         false, "question-circle.png");
 
-    b.addButton("Reset", c -> {
-      try
-      {
-        resetSettings();
-      }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler beim Reset im Tabelle-Export-Dialog", e);
-        throw new ApplicationException("Serverfehler");
-      }
-    }, null, true, "eraser.png");
+    b.addButton("Reset", c -> resetInputs(), null, true, "eraser.png");
 
     b.addButton("Starten", c -> export(), null, true, "walking.png");
 
@@ -179,6 +215,58 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }, null, false, "process-stop.png");
 
     b.paint(parent);
+  }
+
+  protected void resetInputs() throws ApplicationException
+  {
+    try
+    {
+      resetSpalten();
+      if (art.equals(ExportArt.PDF))
+      {
+        resetPDF();
+      }
+    }
+    catch (RemoteException e)
+    {
+      Logger.error("Fehler beim Reset im Tabelle-Export-Dialog", e);
+      throw new ApplicationException("Serverfehler");
+    }
+  }
+
+  private void resetPDF() throws RemoteException
+  {
+    // Ränder
+    links.setValue(DEFAULT_LINKS);
+    rechts.setValue(DEFAULT_RECHTS);
+    oben.setValue(DEFAULT_OBEN);
+    unten.setValue(DEFAULT_UNTEN);
+
+    // Formular
+    hintergrund.setValue(DEFAULT_HINTERGRUND);
+    vordergrund.setValue(DEFAULT_VORDERGRUND);
+    headerTransparent.setValue((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT));
+    zellenTransparent.setValue((Boolean) Einstellungen
+        .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT));
+    querformat.setValue(DEFAULT_QUERFORMAT);
+
+    // Schriftart
+    fontHeader.setValue(DEFAULT_FONT_HEADER);
+    fontNormal.setValue(DEFAULT_FONT_NORMAL);
+    fontFett.setValue(DEFAULT_FONT_FETT);
+    fontItalic.setValue(DEFAULT_FONT_ITALIC);
+    fontsize.setValue(DEFAULT_FONT_SIZE);
+    fontsizeHeader.setValue(DEFAULT_FONT_SIZE_HEADER);
+    negativRot.setValue(DEFAULT_NEGATIV_ROT);
+    Color col = new Color(DEFAULT_HEADER_COLOR_RED, DEFAULT_HEADER_COLOR_GREEN,
+        DEFAULT_HEADER_COLOR_BLUE);
+    colorHeader.setValue(col);
+    col = new Color(DEFAULT_COLOR_RED, DEFAULT_COLOR_GREEN, DEFAULT_COLOR_BLUE);
+    colorTable.setValue(col);
+    col = new Color(DEFAULT_COLOR_RED2, DEFAULT_COLOR_GREEN2,
+        DEFAULT_COLOR_BLUE2);
+    colorTable2.setValue(col);
   }
 
   protected void zeichnePDF(Composite parent, Action action)
@@ -204,10 +292,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     TabGroup tabFont = new TabGroup(folder, "Schriftart", true, 2);
 
     // Ränder
-    links = new IntegerInput(settings.getInt(settingPrefix + "links", 20));
-    rechts = new IntegerInput(settings.getInt(settingPrefix + "rechts", 20));
-    oben = new IntegerInput(settings.getInt(settingPrefix + "oben", 20));
-    unten = new IntegerInput(settings.getInt(settingPrefix + "unten", 20));
+    links = new IntegerInput(
+        settings.getInt(settingPrefix + "links", DEFAULT_LINKS));
+    rechts = new IntegerInput(
+        settings.getInt(settingPrefix + "rechts", DEFAULT_RECHTS));
+    oben = new IntegerInput(
+        settings.getInt(settingPrefix + "oben", DEFAULT_OBEN));
+    unten = new IntegerInput(
+        settings.getInt(settingPrefix + "unten", DEFAULT_UNTEN));
     tabRaender.addLabelPair("Links", links);
     tabRaender.addLabelPair("Rechts", rechts);
     tabRaender.addLabelPair("Oben", oben);
@@ -228,10 +320,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     // Formular
     hintergrund = new FormularInput(FormularArt.HINTERGRUND,
-        settings.getString(settingPrefix + "hintergrund", ""));
+        settings.getString(settingPrefix + "hintergrund", DEFAULT_HINTERGRUND));
     hintergrund.setPleaseChoose("Kein Formular");
     vordergrund = new FormularInput(FormularArt.HINTERGRUND,
-        settings.getString(settingPrefix + "vordergrund", ""));
+        settings.getString(settingPrefix + "vordergrund", DEFAULT_VORDERGRUND));
     vordergrund.setPleaseChoose("Kein Formular");
     headerTransparent = new CheckboxInput(settings
         .getBoolean(settingPrefix + "headerTransparent", (Boolean) Einstellungen
@@ -240,7 +332,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         .getBoolean(settingPrefix + "zellenTransparent", (Boolean) Einstellungen
             .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
     querformat = new CheckboxInput(
-        settings.getBoolean(settingPrefix + "quer", false));
+        settings.getBoolean(settingPrefix + "quer", DEFAULT_QUERFORMAT));
     tabFormular.addLabelPair("Formular Hintergrund", hintergrund);
     tabFormular.addLabelPair("Formular Vordergrund", vordergrund);
     tabFormular.addLabelPair("Tabellen Header transparent", headerTransparent);
@@ -249,30 +341,40 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
     // Schriftart
     fontHeader = new FontInput(
-        settings.getString(settingPrefix + "font_header", "FreeSans"));
+        settings.getString(settingPrefix + "font_header", DEFAULT_FONT_HEADER));
     fontNormal = new FontInput(
-        settings.getString(settingPrefix + "font_normal", "FreeSans"));
+        settings.getString(settingPrefix + "font_normal", DEFAULT_FONT_NORMAL));
     fontFett = new FontInput(
-        settings.getString(settingPrefix + "font_fett", "FreeSans-Bold"));
+        settings.getString(settingPrefix + "font_fett", DEFAULT_FONT_FETT));
     fontItalic = new FontInput(
-        settings.getString(settingPrefix + "font_italic", "FreeSans-Oblique"));
-    fontsize = new IntegerInput(settings.getInt(settingPrefix + "fontsize", 8));
-    fontsizeHeader = new IntegerInput(
-        settings.getInt(settingPrefix + "fontsize_header", 8));
-    negativRot = new CheckboxInput(
-        settings.getBoolean(settingPrefix + "negativ_rot", true));
+        settings.getString(settingPrefix + "font_italic", DEFAULT_FONT_ITALIC));
+    fontsize = new IntegerInput(
+        settings.getInt(settingPrefix + "fontsize", DEFAULT_FONT_SIZE));
+    fontsizeHeader = new IntegerInput(settings
+        .getInt(settingPrefix + "fontsize_header", DEFAULT_FONT_SIZE_HEADER));
+    negativRot = new CheckboxInput(settings
+        .getBoolean(settingPrefix + "negativ_rot", DEFAULT_NEGATIV_ROT));
     Color col = new Color(
-        (int) settings.getInt(settingPrefix + "header_color_red", 192),
-        (int) settings.getInt(settingPrefix + "header_color_green", 192),
-        (int) settings.getInt(settingPrefix + "header_color_blue", 192));
+        (int) settings.getInt(settingPrefix + "header_color_red",
+            DEFAULT_HEADER_COLOR_RED),
+        (int) settings.getInt(settingPrefix + "header_color_green",
+            DEFAULT_HEADER_COLOR_BLUE),
+        (int) settings.getInt(settingPrefix + "header_color_blue",
+            DEFAULT_HEADER_COLOR_GREEN));
     colorHeader = new ColorInput(col, false);
-    col = new Color((int) settings.getInt(settingPrefix + "color_red", 192),
-        (int) settings.getInt(settingPrefix + "color_green", 192),
-        (int) settings.getInt(settingPrefix + "color_blue", 192));
+    col = new Color(
+        (int) settings.getInt(settingPrefix + "color_red", DEFAULT_COLOR_RED),
+        (int) settings.getInt(settingPrefix + "color_green",
+            DEFAULT_COLOR_GREEN),
+        (int) settings.getInt(settingPrefix + "color_blue",
+            DEFAULT_COLOR_BLUE));
     colorTable = new ColorInput(col, false);
-    col = new Color((int) settings.getInt(settingPrefix + "color_red2", 230),
-        (int) settings.getInt(settingPrefix + "color_green2", 230),
-        (int) settings.getInt(settingPrefix + "color_blue2", 230));
+    col = new Color(
+        (int) settings.getInt(settingPrefix + "color_red2", DEFAULT_COLOR_RED2),
+        (int) settings.getInt(settingPrefix + "color_green2",
+            DEFAULT_COLOR_GREEN2),
+        (int) settings.getInt(settingPrefix + "color_blue2",
+            DEFAULT_COLOR_BLUE2));
     colorTable2 = new ColorInput(col, false);
     tabFont.addHeadline("Tabellen Spaltennamen");
     tabFont.addLabelPair("Schriftart", fontHeader);
@@ -291,81 +393,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     tabFont.addLabelPair("Negative Werte in Rot", negativRot);
     tabFont.addSeparator();
     tabFont.addText("* Bei Zeilen mit Hintergrundfarbe", false);
-  }
-
-  private void updatePDFInputs() throws RemoteException
-  {
-    // Ränder
-    links.setValue(settings.getInt(settingPrefix + "links", 20));
-    rechts.setValue(settings.getInt(settingPrefix + "rechts", 20));
-    oben.setValue(settings.getInt(settingPrefix + "oben", 20));
-    unten.setValue(settings.getInt(settingPrefix + "unten", 20));
-
-    // Formular
-    Formular f = null;
-    String id = settings.getString(settingPrefix + "hintergrund", "");
-    if (id != null && !id.isEmpty())
-    {
-      try
-      {
-        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
-            id);
-      }
-      catch (Exception ex)
-      {
-        f = null;
-      }
-    }
-    hintergrund.setValue(f);
-    id = settings.getString(settingPrefix + "vordergrund", "");
-    if (id != null && !id.isEmpty())
-    {
-      try
-      {
-        f = (Formular) Einstellungen.getDBService().createObject(Formular.class,
-            id);
-      }
-      catch (Exception ex)
-      {
-        f = null;
-      }
-    }
-    vordergrund.setValue(f);
-    headerTransparent.setValue(settings
-        .getBoolean(settingPrefix + "headerTransparent", (Boolean) Einstellungen
-            .getEinstellung(Property.TABELLEN_HEADER_TRANSPARENT)));
-    zellenTransparent.setValue(settings
-        .getBoolean(settingPrefix + "zellenTransparent", (Boolean) Einstellungen
-            .getEinstellung(Property.TABELLEN_ZELLEN_TRANSPARENT)));
-    querformat.setValue(settings.getBoolean(settingPrefix + "quer", false));
-
-    // Schriftart
-    fontHeader.setValue(
-        settings.getString(settingPrefix + "font_header", "FreeSans"));
-    fontNormal.setValue(
-        settings.getString(settingPrefix + "font_normal", "FreeSans"));
-    fontFett.setValue(
-        settings.getString(settingPrefix + "font_fett", "FreeSans-Bold"));
-    fontItalic.setValue(
-        settings.getString(settingPrefix + "font_italic", "FreeSans-Oblique"));
-    fontsize.setValue(settings.getInt(settingPrefix + "fontsize", 8));
-    fontsizeHeader
-        .setValue(settings.getInt(settingPrefix + "fontsize_header", 8));
-    negativRot
-        .setValue(settings.getBoolean(settingPrefix + "negativ_rot", true));
-    Color col = new Color(
-        (int) settings.getInt(settingPrefix + "header_color_red", 192),
-        (int) settings.getInt(settingPrefix + "header_color_green", 192),
-        (int) settings.getInt(settingPrefix + "header_color_blue", 192));
-    colorHeader.setValue(col);
-    col = new Color((int) settings.getInt(settingPrefix + "color_red", 192),
-        (int) settings.getInt(settingPrefix + "color_green", 192),
-        (int) settings.getInt(settingPrefix + "color_blue", 192));
-    colorTable.setValue(col);
-    col = new Color((int) settings.getInt(settingPrefix + "color_red2", 230),
-        (int) settings.getInt(settingPrefix + "color_green2", 230),
-        (int) settings.getInt(settingPrefix + "color_blue2", 230));
-    colorTable2.setValue(col);
   }
 
   protected void export() throws ApplicationException
@@ -434,8 +461,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     if (art.equals(ExportArt.PDF))
     {
-      settings.setAttribute(settingPrefix + "links",
-          (Integer) links.getValue());
+      settings.setAttribute("links", DEFAULT_LINKS);
       settings.setAttribute(settingPrefix + "rechts",
           (Integer) rechts.getValue());
       settings.setAttribute(settingPrefix + "oben", (Integer) oben.getValue());
@@ -495,27 +521,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         settings.setAttribute(settingPrefix + "color_blue2",
             (Integer) col.getBlue());
       }
-    }
-  }
-
-  protected void resetSettings() throws RemoteException, ApplicationException
-  {
-    String dir = settings.getString(settingPrefix + "lastdir", "");
-    for (String key : settings.getAttributes())
-    {
-      if (key.startsWith(settingPrefix))
-      {
-        settings.setAttribute(key, (String) null);
-      }
-    }
-    if (!dir.isEmpty())
-    {
-      settings.setAttribute(settingPrefix + "lastdir", dir);
-    }
-    setWidth();
-    if (art.equals(ExportArt.PDF))
-    {
-      updatePDFInputs();
     }
   }
 
@@ -641,7 +646,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   abstract void setChecked();
 
-  abstract void setWidth() throws ApplicationException;
+  abstract void resetSpalten() throws ApplicationException;
 
   abstract void exportCSV(File file) throws IOException;
 

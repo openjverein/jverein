@@ -93,7 +93,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  void setWidth()
+  void resetSpalten()
   {
     // Kein Spalten Tab
   }

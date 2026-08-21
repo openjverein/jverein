@@ -340,7 +340,6 @@ public class TreePartExportDialog extends AbstractPartExportDialog
   }
 
   @SuppressWarnings("unchecked")
-  @Override
   void setWidth() throws ApplicationException
   {
     try
@@ -361,6 +360,26 @@ public class TreePartExportDialog extends AbstractPartExportDialog
     {
       Logger.error("Fehler beim zurücksetzen der Breiten", re);
       throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
+    }
+  }
+
+  @Override
+  void resetSpalten() throws ApplicationException
+  {
+    try
+    {
+      spaltenList.removeAll();
+      for (TreeColumn col : listeSortiert)
+      {
+        col.setData(col.getWidth());
+        spaltenList.addItem(col);
+        spaltenList.setChecked(col, true);
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler beim zurücksetzen der Spalten", re);
+      throw new ApplicationException("Fehler beim zurücksetzen der Spalten");
     }
   }
 

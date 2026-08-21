@@ -86,7 +86,7 @@ public class ExporterExportDialog extends AbstractPartExportDialog
   }
 
   @Override
-  void setWidth()
+  void resetSpalten()
   {
     // Kein Spalten Tab
   }
