@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.view;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularImportAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.control.FormularListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.AbstractView;
@@ -34,7 +34,7 @@ public class FormularListeView extends AbstractView
   {
     GUI.getView().setTitle("Formulare");
 
-    FormularControl control = new FormularControl(this);
+    FormularListeControl control = new FormularListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

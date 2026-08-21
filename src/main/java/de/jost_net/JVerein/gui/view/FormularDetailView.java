@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.FormularAnzeigeAction;
-import de.jost_net.JVerein.gui.control.FormularPartControl;
+import de.jost_net.JVerein.gui.control.FormularControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
@@ -36,14 +36,14 @@ import de.willuhn.jameica.gui.util.SimpleContainer;
 
 public class FormularDetailView extends AbstractDetailView
 {
-  private FormularPartControl control;
+  private FormularControl control;
 
   @Override
   public void bind() throws Exception
   {
     GUI.getView().setTitle("Formular");
 
-    control = new FormularPartControl(this);
+    control = new FormularControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
