@@ -28,6 +28,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
+import de.jost_net.JVerein.gui.parts.JVereinTreePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
@@ -53,12 +54,18 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
 
   private Settings tablesettings;
 
+  private boolean isTable = true;
+
   public TabelleProfilAuswahlDialog(IJVereinPart tablePart)
       throws RemoteException, ApplicationException
   {
     super(TabelleProfilAuswahlDialog.POSITION_CENTER);
     this.tablePartId = tablePart.getTablePartID(null, tablePart.getTableName());
     this.tablesettings = tablePart.getSettings();
+    if (tablePart instanceof JVereinTreePart)
+    {
+      isTable = false;
+    }
     settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
     setTitle("Spalten/Export Profile");
@@ -251,8 +258,16 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       settings.setAttribute(tablePartId + item + ".SPALTEN",
           getSettings(tablesettings, tablePartId));
       // CSV/PDF Export Attribute speichern
-      settings.setAttribute(tablePartId + item + ".EXPORT",
-          getSettings(new Settings(TablePartExportDialog.class), tablePartId));
+      if (isTable)
+      {
+        settings.setAttribute(tablePartId + item + ".EXPORT", getSettings(
+            new Settings(TablePartExportDialog.class), tablePartId));
+      }
+      else
+      {
+        settings.setAttribute(tablePartId + item + ".EXPORT",
+            getSettings(new Settings(TreePartExportDialog.class), tablePartId));
+      }
       close();
       GUI.getStatusBar().setSuccessText("Profil " + item + " gespeichert.");
     }
@@ -321,8 +336,16 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       setSettings(tablesettings,
           settings.getString(tablePartId + item + ".SPALTEN", ""));
       // Settings für die Export Dialoge setzen
-      setSettings(new Settings(TablePartExportDialog.class),
-          settings.getString(tablePartId + item + ".EXPORT", ""));
+      if (isTable)
+      {
+        setSettings(new Settings(TablePartExportDialog.class),
+            settings.getString(tablePartId + item + ".EXPORT", ""));
+      }
+      else
+      {
+        setSettings(new Settings(TreePartExportDialog.class),
+            settings.getString(tablePartId + item + ".EXPORT", ""));
+      }
       settings.setAttribute(tablePartId + "profilname", item);
       close();
       GUI.getCurrentView().reload();
@@ -345,7 +368,15 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     try
     {
       resetSettings(tablesettings, tablePartId);
-      Settings s = new Settings(TablePartExportDialog.class);
+      Settings s;
+      if (isTable)
+      {
+        s = new Settings(TablePartExportDialog.class);
+      }
+      else
+      {
+        s = new Settings(TreePartExportDialog.class);
+      }
       String csvDir = s.getString(tablePartId + "CSV.lastdir", "");
       String pdfDir = s.getString(tablePartId + "PDF.lastdir", "");
       resetSettings(s, tablePartId);
