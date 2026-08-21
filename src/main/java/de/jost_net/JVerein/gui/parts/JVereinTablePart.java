@@ -17,8 +17,11 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -49,6 +52,8 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -186,6 +191,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -199,18 +205,6 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   public void saveSpalten(List<Column> columns) throws RemoteException
   {
     saveSpalten(columns, tablePartId, tableName, settings);
-  }
-
-  /**
-   * Setzt die anzuzeigenden Spalten auf Defaultwerte
-   * 
-   * @param columns
-   * @throws RemoteException
-   */
-  @Override
-  public void resetSpalten(List<Column> columns) throws RemoteException
-  {
-    resetSpalten(tablePartId, tableName, settings);
   }
 
   /**
@@ -284,4 +278,11 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     return settings;
   }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
+  }
+
 }

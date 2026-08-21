@@ -113,24 +113,14 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
         DokumentationUtil.ALLGEMEIN, false, "question-circle.png");
 
     buttons.addButton("Reset", c -> {
-      try
+      for (IJVereinPart table : tableMap.keySet())
       {
-        for (Entry<IJVereinPart, JVereinTablePart> entry : tableMap.entrySet())
+        for (Column col : table.getAllColums())
         {
-          if (entry.getValue() == null)
-          {
-            continue;
-          }
-          entry.getKey().resetSpalten(entry.getValue().getItems());
+          tableMap.get(table).setChecked(col,
+              table.getDefaults().get(col.getName()));
         }
-        GUI.getCurrentView().reload();
       }
-      catch (RemoteException e)
-      {
-        Logger.error("Fehler beim Reset im Spalten-Auswahl-Dialog", e);
-        throw new ApplicationException("Serverfehler");
-      }
-      close();
 
     }, null, true, "eraser.png");
 

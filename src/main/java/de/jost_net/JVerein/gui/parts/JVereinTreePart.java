@@ -14,8 +14,11 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Tree;
@@ -44,6 +47,8 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt einen neuen Tree basierend auf dem uebergebenen Objekt.
@@ -115,6 +120,7 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -128,18 +134,6 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   public void saveSpalten(List<Column> columns) throws RemoteException
   {
     saveSpalten(columns, tablePartId, tableName, settings);
-  }
-
-  /**
-   * Setzt die anzuzeigenden Spalten auf Defaultwerte
-   * 
-   * @param columns
-   * @throws RemoteException
-   */
-  @Override
-  public void resetSpalten(List<Column> columns) throws RemoteException
-  {
-    resetSpalten(tablePartId, tableName, settings);
   }
 
   /**
@@ -212,6 +206,12 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
   public Settings getSettings()
   {
     return settings;
+  }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
   }
 
 }
