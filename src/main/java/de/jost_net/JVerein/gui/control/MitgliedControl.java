@@ -1869,7 +1869,7 @@ public class MitgliedControl extends FilterControl implements Savable
 
   public Button getProfileButton()
   {
-    Button b = new Button("Such-Profile", new Action()
+    Button b = new Button("Filter-Profile", new Action()
     {
 
       @Override

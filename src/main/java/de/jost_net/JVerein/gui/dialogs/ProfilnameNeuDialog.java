@@ -43,7 +43,8 @@ public class ProfilnameNeuDialog extends AbstractDialog<String>
   {
     super(position);
     this.list = list;
-    setTitle("Profilname eingeben");
+    setTitle("Neues Profil");
+    setPanelText("Bitte Profilname eingeben");
     setSize(400, SWT.DEFAULT);
   }
 

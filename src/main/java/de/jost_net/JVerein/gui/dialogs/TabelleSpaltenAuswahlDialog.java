@@ -122,7 +122,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
         }
       }
 
-    }, null, true, "eraser.png");
+    }, null, true, "edit-undo.png");
 
     buttons.addButton("Speichern", c -> {
       try

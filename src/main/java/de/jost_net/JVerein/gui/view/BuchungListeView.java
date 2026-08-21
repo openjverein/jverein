@@ -100,7 +100,7 @@ public class BuchungListeView extends AbstractView
       {
         control.resetFilter();
       }
-    }, null, false, "eraser.png");
+    }, null, false, "edit-undo.png");
     buttons1.addButton(reset);
 
     Button suchen = new Button("Suchen", new Action()

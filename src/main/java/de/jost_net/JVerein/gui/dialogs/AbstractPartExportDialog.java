@@ -206,7 +206,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     b.addButton("Hilfe", new DokumentationAction(), DokumentationUtil.ALLGEMEIN,
         false, "question-circle.png");
 
-    b.addButton("Reset", c -> resetInputs(), null, true, "eraser.png");
+    b.addButton("Reset", c -> resetInputs(), null, true, "edit-undo.png");
 
     b.addButton("Starten", c -> export(), null, true, "walking.png");
 
@@ -283,7 +283,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       tabSpalten.addPart(spaltenList);
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
-          "eraser.png"));
+          "edit-undo.png"));
       tabSpalten.addButtonArea(buttons);
     }
 

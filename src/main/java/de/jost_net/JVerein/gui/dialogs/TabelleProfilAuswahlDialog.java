@@ -31,6 +31,7 @@ import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
+import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -80,25 +81,63 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }, null, true, "document-new.png");
 
     buttons.addButton("Überchreiben", context -> {
+      if (!confirm("Profil überschreiben",
+          "Soll das ausgewählte Profil wirklich überschrieben werden?"))
+      {
+        return;
+      }
       handleSpeichern(null);
     }, null, false, "document-save.png");
 
     buttons.addButton("Löschen", context -> {
+      if (!confirm("Profil löschen",
+          "Soll das ausgewählte Profil wirklich gelöscht werden?"))
+      {
+        return;
+      }
       handleLoeschen();
     }, null, false, "user-trash-full.png");
 
     buttons.addButton("Anwenden", context -> {
+      if (!confirm("Profil anwenden",
+          "Soll das ausgewählte Profil wirklich angewendet werden?\n"
+              + "Es überschreibt die Einstellungen des Spaltenauswahl Dialogs\n"
+              + "und der CSV/PDF Export Dialoge."))
+      {
+        return;
+      }
       handleAnwenden();
     }, null, false, "view-refresh.png");
 
     buttons.addButton("Reset", context -> {
+      if (!confirm("Einstellungen zurücksetzen",
+          "Sollen die Einstellungen des Spaltenauswahl Dialogs\n"
+              + "und der CSV/PDF Export Dialoge wirklich zurückgesetzt werden?"))
+      {
+        return;
+      }
       handleReset();
-    }, null, false, "eraser.png");
+    }, null, false, "edit-undo.png");
 
     buttons.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
     }, null, false, "process-stop.png");
     buttons.paint(parent);
+  }
+
+  private boolean confirm(String Titel, String Text) throws ApplicationException
+  {
+    YesNoDialog dialog = new YesNoDialog(AbstractDialog.POSITION_CENTER);
+    dialog.setTitle(Titel);
+    dialog.setText(Text);
+    try
+    {
+      return (boolean) dialog.open();
+    }
+    catch (Exception e)
+    {
+      throw new ApplicationException(e);
+    }
   }
 
   private SelectInput getProfilname() throws RemoteException
