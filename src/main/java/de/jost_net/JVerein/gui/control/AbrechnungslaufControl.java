@@ -53,6 +53,7 @@ import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
@@ -306,7 +307,7 @@ public class AbrechnungslaufControl extends VorZurueckControl implements Savable
       case TAB_ALLEBUCHUNGEN:
         return getAlleBuchungList();
       default:
-        return null;
+        throw new ObjectNotFoundException();
     }
   }
 

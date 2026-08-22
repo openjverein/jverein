@@ -2337,7 +2337,7 @@ public class MitgliedControl extends VorZurueckControl implements Savable
     this.dcontrol = dcontrol;
   }
 
-  public PanelButton getSpaltenDetailPanelButton()
+  public PanelButton getDetailSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
       try
@@ -2364,18 +2364,18 @@ public class MitgliedControl extends VorZurueckControl implements Savable
 
   @Override
   public JVereinTablePart getTablePart()
-      throws ApplicationException, ObjectNotFoundException
+      throws ApplicationException, RemoteException
   {
     switch (tabSelection)
     {
       case TAB_ZUSATZBETRAEGE:
-        return zusatzbetraegeList;
+        return getZusatzbetraegeTable();
       case TAB_WIEDERVORLAGEN:
-        return wiedervorlageList;
+        return getWiedervorlageTable();
       case TAB_MAILS:
-        return mailList;
+        return getMailTable();
       case TAB_LEHRGAENGE:
-        return lehrgaengeList;
+        return getLehrgaengeTable();
       case TAB_LESEFELDER:
         try
         {
@@ -2386,7 +2386,7 @@ public class MitgliedControl extends VorZurueckControl implements Savable
           throw new ApplicationException(e.getMessage());
         }
       case TAB_ARBEITSEINSAETZE:
-        return arbeitseinsatzList;
+        return getArbeitseinsatzTable();
       case TAB_DOKUMENTE:
         try
         {
@@ -2399,7 +2399,7 @@ public class MitgliedControl extends VorZurueckControl implements Savable
       case NO_LIST_TAB:
         throw new ObjectNotFoundException();
     }
-    return null;
+    throw new ObjectNotFoundException();
   }
 
   private JVereinTablePart getDocumentPart() throws RemoteException

@@ -420,7 +420,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
     GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
-    GUI.getView().addPanelButton(control.getSpaltenDetailPanelButton());
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   private void zeichneDokumente(Composite parentComposite)
