@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.AbrechnungAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
+import de.jost_net.JVerein.gui.control.AbrechnungslaufListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
@@ -38,7 +38,7 @@ public class AbrechnungslaufListeView extends AbstractView
   {
     GUI.getView().setTitle("Abrechnungsläufe");
 
-    AbrechnungslaufControl control = new AbrechnungslaufControl(this);
+    AbrechnungslaufListeControl control = new AbrechnungslaufListeControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
@@ -71,6 +71,7 @@ public class AbrechnungslaufListeView extends AbstractView
         "document-new.png");
     buttons.paint(this.getParent());
 
+    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());

@@ -29,11 +29,11 @@ import de.jost_net.JVerein.Variable.RechnungVar;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungMap;
 import de.jost_net.JVerein.Variable.SpendenbescheinigungVar;
 import de.jost_net.JVerein.gui.input.FontInput;
-import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.Ausrichtung;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.jost_net.JVerein.rmi.JVereinDBObject;
+import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.input.DecimalInput;
 import de.willuhn.jameica.gui.input.IntegerInput;
@@ -42,7 +42,7 @@ import de.willuhn.jameica.gui.input.TextAreaInput;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class FormularfeldControl extends FormularPartControl implements Savable
+public class FormularfeldControl extends AbstractControl implements Savable
 {
   private TextAreaInput name;
 
@@ -60,9 +60,12 @@ public class FormularfeldControl extends FormularPartControl implements Savable
 
   private SelectInput ausrichtung;
 
+  private Formular formular;
+
   public FormularfeldControl(AbstractView view, Formular formular)
   {
-    super(view, formular);
+    super(view);
+    this.formular = formular;
   }
 
   private Formularfeld getFormularfeld()
@@ -244,31 +247,4 @@ public class FormularfeldControl extends FormularPartControl implements Savable
     return map;
   }
 
-  @Override
-  protected JVereinTablePart getTablePart() throws RemoteException
-  {
-    // Es gitb keine FormularfeldListe View
-    return null;
-  }
-
-  @Override
-  protected String getTableTitle()
-  {
-    // Es gitb keine FormularfeldListe View
-    return null;
-  }
-
-  @Override
-  protected String getTableSubtitle()
-  {
-    // Es gitb keine FormularfeldListe View
-    return null;
-  }
-
-  @Override
-  protected String getTableDateiname()
-  {
-    // Es gitb keine FormularfeldListe View
-    return null;
-  }
 }

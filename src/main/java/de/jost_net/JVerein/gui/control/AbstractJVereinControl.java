@@ -4,7 +4,9 @@ import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.dialogs.TabelleProfilAuswahlDialog;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
@@ -21,6 +23,29 @@ public abstract class AbstractJVereinControl extends AbstractControl
     super(view);
   }
 
+  public PanelButton getProfilePanelButton()
+  {
+    return new PanelButton("user-check.png", context -> {
+      try
+      {
+        new TabelleProfilAuswahlDialog(getTablePart()).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (ObjectNotFoundException e)
+      {
+        throw new ApplicationException("Keine Tabelle vorhanden!");
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Profil-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Profil-Auswahl-Dialog");
+      }
+    }, "Profile");
+  }
+
   public PanelButton getSpaltenPanelButton()
   {
     return new PanelButton("document-properties.png", context -> {
@@ -31,6 +56,10 @@ public abstract class AbstractJVereinControl extends AbstractControl
       catch (OperationCanceledException | ApplicationException e)
       {
         throw e;
+      }
+      catch (ObjectNotFoundException e)
+      {
+        throw new ApplicationException("Keine Tabelle vorhanden!");
       }
       catch (Exception e)
       {
@@ -65,6 +94,10 @@ public abstract class AbstractJVereinControl extends AbstractControl
           catch (OperationCanceledException | ApplicationException e)
           {
             throw e;
+          }
+          catch (ObjectNotFoundException e)
+          {
+            throw new ApplicationException("Keine Tabelle vorhanden!");
           }
           catch (RemoteException e)
           {

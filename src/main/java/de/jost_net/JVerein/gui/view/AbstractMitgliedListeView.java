@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
 import de.jost_net.JVerein.gui.action.MitgliederImportAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.rmi.Mitglied;
 import de.willuhn.datasource.rmi.DBService;
@@ -39,7 +39,7 @@ import de.willuhn.util.ApplicationException;
 public abstract class AbstractMitgliedListeView extends AbstractView
 {
 
-  final MitgliedControl control = new MitgliedControl(this);
+  final MitgliedListeControl control = new MitgliedListeControl(this);
 
   @Override
   public void bind() throws Exception
@@ -86,6 +86,7 @@ public abstract class AbstractMitgliedListeView extends AbstractView
     }
     buttons.paint(this.getParent());
 
+    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
