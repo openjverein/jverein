@@ -466,6 +466,11 @@ public abstract class FilterControl extends VorZurueckControl
     return settings;
   }
 
+  public String getSettingsprefix()
+  {
+    return settingsprefix;
+  }
+
   public String getAdditionalparamprefix1()
   {
     return additionalparamprefix1;
