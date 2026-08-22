@@ -470,10 +470,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
           (Integer) unten.getValue());
 
       settings.setAttribute(settingPrefix + "hintergrund",
-          hintergrund.getValue() == null ? null
+          hintergrund.getValue() == null ? ""
               : ((Formular) hintergrund.getValue()).getID());
       settings.setAttribute(settingPrefix + "vordergrund",
-          vordergrund.getValue() == null ? null
+          vordergrund.getValue() == null ? ""
               : ((Formular) vordergrund.getValue()).getID());
 
       settings.setAttribute(settingPrefix + "headerTransparent",
