@@ -766,7 +766,7 @@ public abstract class FilterControl extends VorZurueckControl
         Logger.error("Fehler beim Profil-Auswahl-Dialog", e);
         throw new ApplicationException("Fehler beim Profil-Auswahl-Dialog");
       }
-    }, null, true, "user-check.png");
+    }, null, false, "user-check.png");
     return b;
   }
 }
