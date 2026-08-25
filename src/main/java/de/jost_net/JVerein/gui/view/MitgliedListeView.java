@@ -31,6 +31,7 @@ import de.willuhn.jameica.gui.input.DialogInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
 import de.willuhn.jameica.gui.util.Color;
+import de.willuhn.jameica.gui.util.Font;
 import de.willuhn.jameica.gui.util.LabelGroup;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
@@ -59,6 +60,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
         SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
     folder.setBackground(Color.BACKGROUND.getSWTColor());
+    folder.setFont(Font.DEFAULT.getSWTFont());
 
     // Erster Tab
     TabGroup tab1 = new TabGroup(folder, "Allgemein", true, 3);
