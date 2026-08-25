@@ -25,13 +25,14 @@ import org.eclipse.swt.widgets.Composite;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.rmi.Suchprofil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
 import de.willuhn.datasource.rmi.ObjectNotFoundException;
+import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.dialogs.YesNoDialog;
@@ -52,15 +53,18 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
 
   private TextAreaInput attributes;
 
-  private MitgliedControl control;
+  private FilterControl control;
 
-  public FilterProfilAuswahlDialog(Settings settings, MitgliedControl control)
-      throws RemoteException, ApplicationException
+  private AbstractView view;
+
+  public FilterProfilAuswahlDialog(Settings settings, FilterControl control,
+      AbstractView view) throws RemoteException, ApplicationException
   {
     super(FilterProfilAuswahlDialog.POSITION_CENTER);
 
     this.settings = settings;
     this.control = control;
+    this.view = view;
     setTitle("Filter Profile");
     setSize(605, SWT.DEFAULT);
   }
@@ -131,6 +135,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     }
     DBService service = Einstellungen.getDBService();
     DBIterator<Suchprofil> profile = service.createList(Suchprofil.class);
+    profile.addFilter("clazz = ?", view.getClass().getName());
     profile.setOrder("ORDER BY bezeichnung");
     Suchprofil sp1 = null;
     try
@@ -194,7 +199,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       {
         Suchprofil sp = (Suchprofil) Einstellungen.getDBService()
             .createObject(Suchprofil.class, null);
-        sp.setClazz(MitgliedControl.class.getName());
+        sp.setClazz(view.getClass().getName());
         sp.setBezeichnung(name);
         handleSpeichern(sp);
       }
@@ -347,9 +352,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     Properties ret = new Properties();
     for (String key : settings.getAttributes())
     {
-      if (key.startsWith(control.getSettingsprefix())
-          || key.startsWith(control.getAdditionalparamprefix1())
-          || key.startsWith(control.getAdditionalparamprefix2()))
+      if (key.startsWith(control.getSettingsPrefix() + "filter_"))
       {
         ret.put(key, settings.getString(key, ""));
       }

@@ -58,6 +58,7 @@ public class AnfangsbestandListeView extends AbstractView
     fbuttons.addButton(zurueck);
     ToolTipButton vor = control.getVorButton(von, bis);
     fbuttons.addButton(vor);
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

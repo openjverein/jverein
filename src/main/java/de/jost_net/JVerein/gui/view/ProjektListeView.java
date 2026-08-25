@@ -68,6 +68,7 @@ public class ProjektListeView extends AbstractView
     fbuttons.addButton(zurueck2);
     ToolTipButton vor2 = control.getVorButton(eingabeVon, eingabeBis);
     fbuttons.addButton(vor2);
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

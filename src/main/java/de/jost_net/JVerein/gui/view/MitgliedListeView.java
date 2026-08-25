@@ -42,7 +42,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
 
   public MitgliedListeView() throws RemoteException
   {
-    control.init("mitglied.", "zusatzfeld.", "zusatzfelder.");
+    control.init("mitglied.");
   }
 
   @Override
@@ -109,7 +109,7 @@ public class MitgliedListeView extends AbstractMitgliedListeView
 
     // Buttons
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton(control.getProfileButton());
+    buttons.addButton(control.getProfileButton(this));
     buttons.addButton(control.getResetButton());
     buttons.addButton(control.getSuchenButton());
     group.addButtonArea(buttons);

@@ -39,7 +39,6 @@ import de.jost_net.JVerein.gui.action.NichtMitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.SollbuchungNeuAction;
 import de.jost_net.JVerein.gui.dialogs.AbweichenderZahlerNeuDialog;
 import de.jost_net.JVerein.gui.dialogs.ExportDialog;
-import de.jost_net.JVerein.gui.dialogs.FilterProfilAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.PersonenartDialog;
 import de.jost_net.JVerein.gui.dialogs.TabelleSpaltenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -1864,37 +1863,6 @@ public class MitgliedControl extends FilterControl implements Savable
           }
         }, null, false, "document-new.png");
     // button
-    return b;
-  }
-
-  public Button getProfileButton()
-  {
-    Button b = new Button("Filter-Profile", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          saveFilterSettings();
-          new FilterProfilAuswahlDialog(settings, control).open();
-        }
-        catch (OperationCanceledException | ApplicationException e)
-        {
-          throw e;
-        }
-        catch (ObjectNotFoundException e)
-        {
-          throw new ApplicationException("Keine Tabelle vorhanden!");
-        }
-        catch (Exception e)
-        {
-          Logger.error("Fehler beim Profil-Auswahl-Dialog", e);
-          throw new ApplicationException("Fehler beim Profil-Auswahl-Dialog");
-        }
-      }
-    }, null, true, "user-check.png");
     return b;
   }
 

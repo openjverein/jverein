@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
+import de.jost_net.JVerein.gui.dialogs.FilterProfilAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
@@ -54,14 +55,18 @@ public abstract class FilterControl extends VorZurueckControl
 
   final static String ALLE = "Alle";
 
+  final static String ZUSATZFELD_PREFIX = "filter_zusatzfeld.";
+
+  final static String ZUSATZFELDER_PREFIX = "filter_zusatzfelder.";
+
   // String für allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
 
   // String für Zusatzfelder
-  private String additionalparamprefix1 = "";
+  private String zusatzfeldprefix = ZUSATZFELD_PREFIX;
 
   // String für Zusatfelder Anzahl
-  private String additionalparamprefix2 = "";
+  private String zusatzfelderprefix = ZUSATZFELDER_PREFIX;
 
   protected Settings settings = null;
 
@@ -276,7 +281,7 @@ public abstract class FilterControl extends VorZurueckControl
         break;
       case ZUSATZFELD:
         ZusatzfelderAuswahlDialog dialog = new ZusatzfelderAuswahlDialog(
-            settings, additionalparamprefix1, additionalparamprefix2);
+            settings, zusatzfeldprefix, zusatzfelderprefix);
 
         DialogInput dInput = new DialogInput("", dialog)
         {
@@ -285,16 +290,15 @@ public abstract class FilterControl extends VorZurueckControl
           {
             this.getControl().setToolTipText(this.getText());
             String text = "";
-            int counter = settings.getInt(additionalparamprefix2 + "counter",
-                0);
+            int counter = settings.getInt(zusatzfelderprefix + "counter", 0);
             for (int i = 1; i <= counter; i++)
             {
-              String t = settings
-                  .getString(additionalparamprefix1 + i + ".value", "");
+              String t = settings.getString(zusatzfeldprefix + i + ".value",
+                  "");
               if (!t.isBlank() && !t.equals("false"))
               {
-                text += settings.getString(additionalparamprefix1 + i + ".name",
-                    "") + " " + t + "\n";
+                text += settings.getString(zusatzfeldprefix + i + ".name", "")
+                    + " " + t + "\n";
               }
             }
             this.setValue(text);
@@ -450,15 +454,14 @@ public abstract class FilterControl extends VorZurueckControl
     }
   }
 
-  public void init(String settingsprefix, String additionalparamprefix1,
-      String additionalparamprefix2)
+  public void init(String settingsprefix)
   {
     if (settingsprefix != null)
+    {
       this.settingsprefix = settingsprefix;
-    if (additionalparamprefix1 != null)
-      this.additionalparamprefix1 = additionalparamprefix1;
-    if (additionalparamprefix2 != null)
-      this.additionalparamprefix2 = additionalparamprefix2;
+      this.zusatzfeldprefix = settingsprefix + ZUSATZFELD_PREFIX;
+      this.zusatzfelderprefix = settingsprefix + ZUSATZFELDER_PREFIX;
+    }
   }
 
   public Settings getSettings()
@@ -466,24 +469,24 @@ public abstract class FilterControl extends VorZurueckControl
     return settings;
   }
 
-  public String getSettingsprefix()
+  public String getSettingsPrefix()
   {
     return settingsprefix;
   }
 
-  public String getAdditionalparamprefix1()
+  public String getZusatzfeldPrefix()
   {
-    return additionalparamprefix1;
+    return zusatzfeldprefix;
   }
 
-  public String getAdditionalparamprefix2()
+  public String getZusatzfelderPrefix()
   {
-    return additionalparamprefix2;
+    return zusatzfelderprefix;
   }
 
   private void setZusatzfelderAuswahl(DialogInput input)
   {
-    int selected = settings.getInt(additionalparamprefix2 + "selected", 0);
+    int selected = settings.getInt(zusatzfelderprefix + "selected", 0);
     String string = "";
     if (selected == 0)
     {
@@ -740,5 +743,30 @@ public abstract class FilterControl extends VorZurueckControl
       }
       refresh();
     }, null, false, "eraser.png");
+  }
+
+  public Button getProfileButton(AbstractView view)
+  {
+    Button b = new Button("Filter-Profile", context -> {
+      try
+      {
+        saveFilterSettings();
+        new FilterProfilAuswahlDialog(settings, this, view).open();
+      }
+      catch (OperationCanceledException | ApplicationException e)
+      {
+        throw e;
+      }
+      catch (ObjectNotFoundException e)
+      {
+        throw new ApplicationException("Keine Tabelle vorhanden!");
+      }
+      catch (Exception e)
+      {
+        Logger.error("Fehler beim Profil-Auswahl-Dialog", e);
+        throw new ApplicationException("Fehler beim Profil-Auswahl-Dialog");
+      }
+    }, null, true, "user-check.png");
+    return b;
   }
 }
