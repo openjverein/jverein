@@ -16,6 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
+import de.willuhn.logging.Logger;
+
 public enum Fonts
 {
   CarlitoRegular("Carlito-Regular"),
@@ -65,7 +67,10 @@ public enum Fonts
         return font;
       }
     }
-    return null;
+    // Default Font verwenden
+    Logger.warn(
+        "Schrift '" + name + "' nicht gefunden, verwende Standartschrift.");
+    return CarlitoRegular;
   }
 
   @Override
