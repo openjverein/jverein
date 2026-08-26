@@ -1,6 +1,7 @@
 package de.jost_net.JVerein.io;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -166,7 +167,7 @@ public class FormularAufbereitungTest
     doReturn(10).when(formularfeld).getFontsize();
 
     Formularfeld feld2 = mock(Formularfeld.class);
-    doReturn("<h1>Feld über mehrere Seiten.</h1>"
+    doReturn("<p>Feld über mehrere Seiten.</p>"
         + "<div style='width:60px'><p>Das ist ein langer Text, die Breite ist per CSS festgelegt.</p></div>[[newPage]]"
         + "<p>Das steht auf der 2. Seite an der gleichen Position wie auf der 1. Seite.</p>")
             .when(feld2).getName();
@@ -202,8 +203,9 @@ public class FormularAufbereitungTest
     // Erstelltes PDF mit Soll-PDF vergleichen
     String soll = getClass().getClassLoader()
         .getResource("formular-test-html.pdf").getFile();
-    assert (new PdfComparator<>(soll, file.getAbsolutePath()).compare()
-        .isEqual());
+    assertTrue(
+        new PdfComparator<>(soll, file.getAbsolutePath()).compare().isEqual(),
+        "Das PDF das aus einem HTML-Formular generiert wurde, sieht nicht wie erwartet aus.");
 
     file.deleteOnExit();
   }
