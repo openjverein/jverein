@@ -702,8 +702,8 @@ public abstract class FilterControl extends VorZurueckControl
   public Button getResetButton()
   {
     return new Button("Filter-Reset", c -> {
-      settings.setAttribute("id", "");
-      settings.setAttribute("profilname", "");
+      settings.setAttribute(settingsprefix + "id", "");
+      settings.setAttribute(settingsprefix + "profilname", "");
 
       for (Entry<Filter, Input> entry : filterMap.entrySet())
       {

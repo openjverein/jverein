@@ -140,8 +140,9 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
     Suchprofil sp1 = null;
     try
     {
-      sp1 = (Suchprofil) Einstellungen.getDBService()
-          .createObject(Suchprofil.class, settings.getString("id", null));
+      sp1 = (Suchprofil) Einstellungen.getDBService().createObject(
+          Suchprofil.class,
+          settings.getString(control.getSettingsPrefix() + "id", null));
     }
     catch (ObjectNotFoundException e)
     {
@@ -235,8 +236,9 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       // Überschreiben eines vorhandenen Suchprofils
       storeSettings(settings, item);
       item.store();
-      settings.setAttribute("id", item.getID());
-      settings.setAttribute("profilname", item.getBezeichnung());
+      settings.setAttribute(control.getSettingsPrefix() + "id", item.getID());
+      settings.setAttribute(control.getSettingsPrefix() + "profilname",
+          item.getBezeichnung());
 
       close();
       GUI.getStatusBar()
@@ -265,8 +267,8 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
 
       if (settings.getString("id", "").equals(item.getID()))
       {
-        settings.setAttribute("id", "");
-        settings.setAttribute("profilname", "");
+        settings.setAttribute(control.getSettingsPrefix() + "id", "");
+        settings.setAttribute(control.getSettingsPrefix() + "profilname", "");
       }
       item.delete();
 
@@ -303,8 +305,9 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
         String key = (String) o;
         settings.setAttribute(key, p.getProperty(key));
       }
-      settings.setAttribute("id", item.getID());
-      settings.setAttribute("profilname", item.getBezeichnung());
+      settings.setAttribute(control.getSettingsPrefix() + "id", item.getID());
+      settings.setAttribute(control.getSettingsPrefix() + "profilname",
+          item.getBezeichnung());
 
       close();
       GUI.getCurrentView().reload();
