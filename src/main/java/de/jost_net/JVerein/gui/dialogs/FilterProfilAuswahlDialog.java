@@ -297,18 +297,17 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       {
         return;
       }
-
+      String prefix = control.getSettingsPrefix();
       ByteArrayInputStream bis = new ByteArrayInputStream(item.getInhalt());
       Properties p = new Properties();
       p.loadFromXML(bis);
       for (Object o : p.keySet())
       {
         String key = (String) o;
-        settings.setAttribute(key, p.getProperty(key));
+        settings.setAttribute(prefix + "filter_" + key, p.getProperty(key));
       }
-      settings.setAttribute(control.getSettingsPrefix() + "id", item.getID());
-      settings.setAttribute(control.getSettingsPrefix() + "profilname",
-          item.getBezeichnung());
+      settings.setAttribute(prefix + "id", item.getID());
+      settings.setAttribute(prefix + "profilname", item.getBezeichnung());
 
       close();
       GUI.getCurrentView().reload();
@@ -354,11 +353,12 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
   private Properties getSettings2Properties(Settings settings)
   {
     Properties ret = new Properties();
+    String prefix = control.getSettingsPrefix() + "filter_";
     for (String key : settings.getAttributes())
     {
-      if (key.startsWith(control.getSettingsPrefix() + "filter_"))
+      if (key.startsWith(prefix))
       {
-        ret.put(key, settings.getString(key, ""));
+        ret.put(key.substring(prefix.length()), settings.getString(key, ""));
       }
     }
     return ret;
