@@ -99,6 +99,8 @@ import de.willuhn.util.ApplicationException;
 public class FormularAufbereitung
 {
 
+  private static boolean fontsInitialiced = false;
+
   private Document doc;
 
   private FileOutputStream fos;
@@ -136,9 +138,13 @@ public class FormularAufbereitung
   {
     doc = new Document();
     fos = new FileOutputStream(f);
-    for (Fonts f : Fonts.values())
+    if (!fontsInitialiced)
     {
-      FontFactory.register("/fonts/" + f.getName() + ".ttf", f.getName());
+      for (Fonts f : Fonts.values())
+      {
+        FontFactory.register("/fonts/" + f.getName() + ".ttf", f.getName());
+      }
+      fontsInitialiced = true;
     }
 
     if (pdfa)
@@ -458,10 +464,11 @@ public class FormularAufbereitung
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
     // HTML Parsen
-    if (stringVal.matches("(?si).*</[A-Z]+>.*"))
+    if (stringVal
+        .matches("(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|ol|ul)>.*"))
     {
       boolean first = true;
-      for (String s : stringVal.split("(?i)<newPage />"))
+      for (String s : stringVal.split("(?i)\\[\\[newPage\\]\\]"))
       {
         if (!first)
         {
@@ -517,7 +524,10 @@ public class FormularAufbereitung
         {
           ct.addElement(e);
         }
-        ct.go();
+        if (ct.go() != 0)
+        {
+          Logger.warn("Nicht aller Text passt auf die Seite");
+        }
         contentByte.addTemplate(template, xPos, y - height);
       }
       return;

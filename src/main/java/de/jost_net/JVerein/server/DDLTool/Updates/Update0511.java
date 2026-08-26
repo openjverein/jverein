@@ -32,6 +32,6 @@ public class Update0511 extends AbstractDDLUpdate
   {
 
     execute(alterColumn("formularfeld",
-        new Column("name", COLTYPE.MEDIUMTEXT, 5000, null, false, false)));
+        new Column("name", COLTYPE.MEDIUMTEXT, 0, null, false, false)));
   }
 }
