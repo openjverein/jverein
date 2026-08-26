@@ -265,7 +265,8 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
         return;
       }
 
-      if (settings.getString("id", "").equals(item.getID()))
+      if (settings.getString(control.getSettingsPrefix() + "id", "")
+          .equals(item.getID()))
       {
         settings.setAttribute(control.getSettingsPrefix() + "id", "");
         settings.setAttribute(control.getSettingsPrefix() + "profilname", "");
