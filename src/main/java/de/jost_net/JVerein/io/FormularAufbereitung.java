@@ -524,7 +524,7 @@ public class FormularAufbereitung
         {
           ct.addElement(e);
         }
-        if (ct.go() != 0)
+        if (ct.go() != ColumnText.NO_MORE_TEXT)
         {
           Logger.warn("Nicht aller Text passt auf die Seite");
         }
