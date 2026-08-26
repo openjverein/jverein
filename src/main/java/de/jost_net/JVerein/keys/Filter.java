@@ -47,7 +47,7 @@ public enum Filter
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", "Alle",
       FilterArt.SELECT, Beitragsgruppe.class),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
-  BETRAG("filter_betrag", "Betrag", "50", FilterArt.TEXT),
+  BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
   BETREFF("filter_betreff", "Betreff", "Betreff", FilterArt.TEXT),
   BEZEICHNUNG("filter_bezeichnung", "Bezeichnung", "Bezeichnung",
       FilterArt.TEXT),
@@ -205,7 +205,8 @@ public enum Filter
     KONTO,
     BUCHUNGSART,
     PROJEKT,
-    STEUER
+    STEUER,
+    BETRAG
   }
 
   Filter(String setting, String anzeigeText, String defalutValue, FilterArt art)

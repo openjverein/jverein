@@ -233,6 +233,19 @@ public abstract class FilterControl extends VorZurueckControl
         input = new TextInput(settingValue, 50);
         input.setName(filter.getAnzeigeText());
         break;
+      case BETRAG:
+        input = new TextInput(settingValue, 50)
+        {
+          @Override
+          protected void update()
+          {
+            super.update();
+            this.text.setToolTipText(
+                "Nach Betrag Suchen\nFolgende Vergleichsoperatoren sind möglich:\n<\t>\t>=\t<=\t| (Betrag)\t.. (Bereich)");
+          }
+        };
+        input.setName(filter.getAnzeigeText());
+        break;
       case CHECKBOX:
         input = new CheckboxInput(Boolean.valueOf(settingValue));
         input.addListener(new FilterListener());
