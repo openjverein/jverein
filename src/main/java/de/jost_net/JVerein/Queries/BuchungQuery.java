@@ -114,6 +114,13 @@ public class BuchungQuery
     final DBService service = Einstellungen.getDBService();
     DBIterator<Buchung> it = service.createList(Buchung.class);
 
+    if (!geldkonto && filter.get(Filter.KONTO) == null)
+    {
+      it.join("konto");
+      it.addFilter("konto.id = buchung.konto");
+      it.addFilter("kontoart = ?", Kontoart.ANLAGE.getKey());
+    }
+
     for (Entry<Filter, Object> entry : filter.entrySet())
     {
       Object value = entry.getValue();
@@ -127,17 +134,7 @@ public class BuchungQuery
           break;
         case KONTO:
           Konto konto = (Konto) value;
-          if (konto != null)
-          {
-            it.addFilter("konto = ? ", konto.getID());
-          }
-          tttelse if (!geldkonto)
-          {
-            it.join("konto");
-            it.addFilter("konto.id = buchung.konto");
-            it.addFilter("kontoart = ?",
-                new Object[] { Kontoart.ANLAGE.getKey() });
-          }
+          it.addFilter("buchung.konto = ? ", konto.getID());
           break;
         case BUCHUNGSART:
           Buchungsart buchungart = (Buchungsart) value;
@@ -240,7 +237,7 @@ public class BuchungQuery
             it.addFilter(Buchung.SOLLBUCHUNG + " is null");
           }
           break;
-        case MITGLIED:
+        case MITGLIED_NAME:
           String mitglied = (String) value;
           String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
           it.join(Sollbuchung.TABLE_NAME);

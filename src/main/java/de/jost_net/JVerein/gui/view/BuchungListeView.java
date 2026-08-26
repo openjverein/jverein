@@ -86,8 +86,7 @@ public class BuchungListeView extends AbstractView
         control.getFilterInput(Filter.UNGEPRUEFT));
     right.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
     right.addInput(control.getFilterInput(Filter.MITGLIED_ZUGEORDNET));
-    right.addLabelPair("Mitglied Name",
-        control.getFilterInput(Filter.MITGLIED));
+    right.addInput(control.getFilterInput(Filter.MITGLIED_NAME));
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
       right.addInput(control.getFilterInput(Filter.STEUER));

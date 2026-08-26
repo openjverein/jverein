@@ -191,6 +191,10 @@ public abstract class FilterControl extends VorZurueckControl
       {
         text = ((Boolean) value) ? "Ja" : "Nein";
       }
+      else if (input instanceof DialogInput)
+      {
+        text = ((DialogInput) input).getText();
+      }
       else
       {
         text = value.toString();
@@ -201,41 +205,6 @@ public abstract class FilterControl extends VorZurueckControl
       }
     }
     return map;
-  }
-
-  /**
-   * Gibt den angezeigten text des Filter zurück
-   * 
-   * @param filter
-   *          Der Filter
-   * @return Filtertext
-   * @throws RemoteException
-   */
-  public String getFilterText(Filter filter) throws RemoteException
-  {
-    Input input = filterMap.get(filter);
-    Object value = input == null ? null : input.getValue();
-    if (value == null
-        || (value instanceof String && ((String) value).isBlank()))
-    {
-      return "";
-    }
-    else if (value instanceof Date)
-    {
-      return new SimpleDateFormat("yyyyMMdd").format(value);
-    }
-    else if (input instanceof SelectInput)
-    {
-      return ((SelectInput) input).getText();
-    }
-    else if (input instanceof CheckboxInput)
-    {
-      return ((Boolean) value) ? "Ja" : "Nein";
-    }
-    else
-    {
-      return value.toString();
-    }
   }
 
   /**
@@ -720,6 +689,8 @@ public abstract class FilterControl extends VorZurueckControl
         value = ((GenericObject) value).getID();
         if (value == null)
         {
+          // Das sind Objekte in SelectInputs die nicht in der DB gespeichert
+          // sind z.B. Buchungsart "Ohne Buchungsart"
           value = 0;
         }
       }
