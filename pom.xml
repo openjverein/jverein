@@ -302,6 +302,11 @@
       <version>${bytebuddy.agent.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>de.redsix</groupId>
+      <artifactId>pdfcompare</artifactId>
+      <version>1.2.9</version>  
+    </dependency>
   </dependencies>
 
   <build>
