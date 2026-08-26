@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Konto;
 
 public class BuchungListeFilterMap extends AbstractMap
@@ -41,7 +41,7 @@ public class BuchungListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    Konto k = (Konto) control.getSuchKonto().getValue();
+    Konto k = (Konto) control.getFilterValue(Filter.KONTO);
     for (BuchungListeFilterVar var : BuchungListeFilterVar.values())
     {
       Object value = null;
@@ -60,41 +60,41 @@ public class BuchungListeFilterMap extends AbstractMap
           }
           break;
         case BUCHUNGSART:
-          value = control.getSuchBuchungsart().getText();
+          value = control.getFilterText(Filter.BUCHUNGSART);
           break;
         case PROJEKT:
           if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
           {
-            value = control.getSuchProjekt().getText();
+            value = control.getFilterText(Filter.PROJEKT);
           }
         case SPLITBUCHUNG:
-          value = control.getSuchSplibuchung().getText();
+          value = control.getFilterText(Filter.SPLITBUCHUNG);
           break;
         case BETRAG:
-          value = control.getSuchBetrag().getValue().toString();
+          value = control.getFilterText(Filter.BETRAG);
           break;
         case DATUM_VON_F:
-          value = fromDate((Date) control.getVondatum().getValue());
+          value = control.getFilterText(Filter.DATUM_VON);
           break;
         case DATUM_BIS_F:
-          value = fromDate((Date) control.getBisdatum().getValue());
+          value = control.getFilterText(Filter.DATUM_BIS);
           break;
         case UNGEPRUEFT:
-          value = (Boolean) control.getUngeprueft().getValue() ? "Ja" : "Nein";
+          value = control.getFilterText(Filter.UNGEPRUEFT);
           break;
         case ENTHALTENER_TEXT:
-          value = control.getSuchtext().getValue().toString();
+          value = control.getFilterText(Filter.ENTHALTENER_TEXT);
           break;
         case MITGLIED_ZUGEORDNET:
-          value = control.getSuchMitgliedZugeordnet().getText();
+          value = control.getFilterText(Filter.MITGLIED_ZUGEORDNET);
           break;
         case MITGLIED_NAME:
-          value = control.getMitglied().getValue().toString();
+          value = control.getFilterText(Filter.MITGLIED);
           break;
         case STEUER:
           if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
           {
-            value = control.getSuchSteuer().getText();
+            value = control.getFilterText(Filter.STEUER);
           }
           break;
       }

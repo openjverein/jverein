@@ -28,13 +28,15 @@ import de.jost_net.JVerein.gui.action.BuchungNeuAction;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.StartViewAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.control.FilterControl.Kontenfilter;
 import de.jost_net.JVerein.gui.control.BuchungsHeaderControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
-import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
+import de.willuhn.jameica.gui.input.DateInput;
+import de.willuhn.jameica.gui.input.Input;
 import de.willuhn.jameica.gui.input.LabelInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -42,7 +44,6 @@ import de.willuhn.jameica.gui.util.Color;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.SimpleContainer;
 import de.willuhn.jameica.gui.util.TabGroup;
-import de.willuhn.util.ApplicationException;
 
 public class BuchungListeView extends AbstractView
 {
@@ -54,6 +55,7 @@ public class BuchungListeView extends AbstractView
 
     final BuchungsControl control = new BuchungsControl(this,
         Kontenfilter.GELDKONTO);
+    control.init("geldkonto.", null, null);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
@@ -67,51 +69,37 @@ public class BuchungListeView extends AbstractView
     SimpleContainer center = new SimpleContainer(cl.getComposite());
     SimpleContainer right = new SimpleContainer(cl.getComposite());
 
-    left.addLabelPair("Konto", control.getSuchKonto());
-    left.addLabelPair("Buchungsart", control.getSuchBuchungsart());
+    left.addInput(control.getFilterInput(Filter.KONTO));
+    left.addInput(control.getFilterInput(Filter.BUCHUNGSART));
     if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
     {
-      left.addLabelPair("Projekt", control.getSuchProjekt());
+      left.addInput(control.getFilterInput(Filter.PROJEKT));
     }
-    left.addLabelPair("Splitbuchung", control.getSuchSplibuchung());
+    left.addInput(control.getFilterInput(Filter.SPLITBUCHUNG));
 
-    center.addLabelPair("Betrag", control.getSuchBetrag());
-    center.addLabelPair("Datum von", control.getVondatum());
-    center.addLabelPair("Datum bis", control.getBisdatum());
-    center.addLabelPair("Nur ungeprüfte", control.getUngeprueft());
-    right.addLabelPair("Enthaltener Text", control.getSuchtext());
-    right.addLabelPair("Mitglied zugeordnet",
-        control.getSuchMitgliedZugeordnet());
-    right.addLabelPair("Mitglied Name", control.getMitglied());
+    center.addInput(control.getFilterInput(Filter.BETRAG));
+    Input datumVon = control.getFilterInput(Filter.DATUM_VON);
+    center.addInput(datumVon);
+    Input datumBis = control.getFilterInput(Filter.DATUM_BIS);
+    center.addInput(datumBis);
+    center.addLabelPair("Nur ungeprüfte",
+        control.getFilterInput(Filter.UNGEPRUEFT));
+    right.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
+    right.addInput(control.getFilterInput(Filter.MITGLIED_ZUGEORDNET));
+    right.addLabelPair("Mitglied Name",
+        control.getFilterInput(Filter.MITGLIED));
     if ((Boolean) Einstellungen.getEinstellung(Property.STEUERINBUCHUNG))
     {
-      right.addLabelPair("Steuer", control.getSuchSteuer());
+      right.addInput(control.getFilterInput(Filter.STEUER));
     }
 
     ButtonArea buttons1 = new ButtonArea();
-    ToolTipButton zurueck = control.getTTZurueckButton();
+    ToolTipButton zurueck = control.getZurueckButton(datumVon, datumBis);
     buttons1.addButton(zurueck);
-    ToolTipButton vor = control.getTTVorButton();
+    ToolTipButton vor = control.getVorButton(datumVon, datumBis);
     buttons1.addButton(vor);
-    Button reset = new Button("Filter-Reset", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.resetFilter();
-      }
-    }, null, false, "eraser.png");
-    buttons1.addButton(reset);
-
-    Button suchen = new Button("Suchen", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        control.refreshBuchungsList();
-      }
-    }, null, true, "search.png");
-    buttons1.addButton(suchen);
+    buttons1.addButton(control.getResetButton());
+    buttons1.addButton(control.getSuchenButton());
     tabAllgemein.addButtonArea(buttons1);
     zurueck.setToolTipText("Datumsbereich zurück");
     vor.setToolTipText("Datumsbereich vowärts");
@@ -145,7 +133,8 @@ public class BuchungListeView extends AbstractView
         new StartViewAction(BuchungsTextKorrekturView.class), null, false,
         "emblem-documents.png");
     buttons.addButton(
-        control.getStarteBuchungSollbuchungZuordnungAutomatischButton());
+        control.getStarteBuchungSollbuchungZuordnungAutomatischButton(
+            (DateInput) datumVon, (DateInput) datumBis));
     buttons.addButton("Import", new BuchungImportAction(), null, false,
         "file-import.png");
     buttons.addButton(new Button("Export", new BuchungExportAction(), control,

@@ -22,6 +22,7 @@ import java.util.Date;
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.view.BuchungDetailView;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Kontoart;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Konto;
@@ -47,7 +48,7 @@ public class BuchungNeuAction implements Action
     {
       buch = (Buchung) Einstellungen.getDBService().createObject(Buchung.class,
           null);
-      Konto konto = (Konto) control.getSuchKonto().getValue();
+      Konto konto = (Konto) control.getFilterValue(Filter.KONTO);
       if (null != konto)
       {
         if (konto.getKontoArt() == Kontoart.ANLAGE)
@@ -59,8 +60,8 @@ public class BuchungNeuAction implements Action
       }
       else
       {
-        String kontoid = control.getSettings()
-            .getString(control.getSettingsPrefix() + "kontoid", "");
+        String kontoid = control.getSettings().getString(
+            control.getSettingsPrefix() + Filter.KONTO.getSetting(), "");
         if (kontoid != null && !kontoid.isEmpty())
         {
           Konto k = null;

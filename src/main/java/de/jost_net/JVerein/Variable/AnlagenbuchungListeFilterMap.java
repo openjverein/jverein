@@ -17,13 +17,13 @@
 package de.jost_net.JVerein.Variable;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.rmi.Konto;
 
 public class AnlagenbuchungListeFilterMap extends AbstractMap
@@ -42,7 +42,7 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
       map = inma;
     }
 
-    Konto k = (Konto) control.getSuchKonto().getValue();
+    Konto k = (Konto) control.getFilterValue(Filter.KONTO);
 
     for (AnlagenbuchungListeFilterVar var : AnlagenbuchungListeFilterVar
         .values())
@@ -71,28 +71,28 @@ public class AnlagenbuchungListeFilterMap extends AbstractMap
           }
           break;
         case BUCHUNGSART:
-          value = control.getSuchBuchungsart().getText();
+          value = control.getFilterText(Filter.BUCHUNGSART);
           break;
         case PROJEKT:
           if ((Boolean) Einstellungen.getEinstellung(Property.PROJEKTEANZEIGEN))
           {
-            value = control.getSuchProjekt().getText();
+            value = control.getFilterText(Filter.PROJEKT);
           }
           break;
         case SPLITBUCHUNG:
-          value = control.getSuchSplibuchung().getText();
+          value = control.getFilterText(Filter.SPLITBUCHUNG);
           break;
         case BETRAG:
-          value = control.getSuchBetrag().getValue().toString();
+          value = control.getFilterText(Filter.BETRAG);
           break;
         case DATUM_VON_F:
-          value = fromDate((Date) control.getVondatum().getValue());
+          value = control.getFilterText(Filter.DATUM_VON);
           break;
         case DATUM_BIS_F:
-          value = fromDate((Date) control.getBisdatum().getValue());
+          value = control.getFilterText(Filter.DATUM_BIS);
           break;
         case ENTHALTENER_TEXT:
-          value = control.getSuchtext().getValue().toString();
+          value = control.getFilterText(Filter.ENTHALTENER_TEXT);
           break;
       }
       map.put(var.getName(), value);

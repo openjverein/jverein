@@ -39,6 +39,7 @@ import de.jost_net.JVerein.gui.action.SplitBuchungAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungBulkAufloesenAction;
 import de.jost_net.JVerein.gui.action.SyntaxExportAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
@@ -62,12 +63,12 @@ public class BuchungMenu extends ContextMenu
    * @throws RemoteException
    */
 
-  public BuchungMenu(BuchungsControl control) throws RemoteException
+  public BuchungMenu(BuchungsControl control, JVereinTablePart part)
+      throws RemoteException
   {
     boolean geldkonto = control.getGeldkonto();
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
-        new BuchungAction(false, control.getTablePart()),
-        "text-x-generic.png"));
+        new BuchungAction(false, part), "text-x-generic.png"));
     addItem(new GeprueftBuchungItem("Als \"geprüft\" markieren",
         new BuchungGeprueftAction(true), "emblem-default.png", false));
     addItem(new GeprueftBuchungItem("Als \"ungeprüft\" markieren",

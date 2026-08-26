@@ -288,7 +288,7 @@ public class BuchungsjournalExportPDF implements Exporter
     }
 
     reporter.closeTable();
-    reporter.addParams(control.getParams(), params);
+    reporter.addParams(control.getFilterText(false), params);
     reporter.close();
     fos.close();
   }

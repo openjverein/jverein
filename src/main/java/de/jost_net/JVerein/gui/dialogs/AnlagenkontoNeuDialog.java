@@ -26,7 +26,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.control.KontoControl;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.control.FilterControl.Kontenfilter;
 import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
@@ -200,8 +200,9 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     {
       return anlagenart;
     }
-    anlagenart = new BuchungsartInput().getBuchungsartInput(buchung.getBuchungsart(),
-        buchungsarttyp.ANLAGENART, (Integer) Einstellungen
+    anlagenart = new BuchungsartInput().getBuchungsartInput(
+        buchung.getBuchungsart(), buchungsarttyp.ANLAGENART,
+        (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     anlagenart.addListener(new AnlagenartListener());
     return anlagenart;
@@ -277,8 +278,8 @@ public class AnlagenkontoNeuDialog extends AbstractDialog<Konto>
     {
       return afaart;
     }
-    afaart = new BuchungsartInput().getBuchungsartInput(null, buchungsarttyp.AFAART,
-        (Integer) Einstellungen
+    afaart = new BuchungsartInput().getBuchungsartInput(null,
+        buchungsarttyp.AFAART, (Integer) Einstellungen
             .getEinstellung(Property.BUCHUNGBUCHUNGSARTAUSWAHL));
     return afaart;
   }

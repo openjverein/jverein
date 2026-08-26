@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl.Kontenfilter;
+import de.jost_net.JVerein.gui.control.FilterControl.Kontenfilter;
 import de.jost_net.JVerein.gui.dialogs.KontoAuswahlDialog;
 import de.jost_net.JVerein.gui.view.AnfangsbestandDetailView;
 import de.jost_net.JVerein.rmi.Anfangsbestand;

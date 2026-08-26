@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,15 +18,24 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
+import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
+import de.jost_net.JVerein.gui.input.KontoauswahlInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Differenz;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Filter.FilterArt;
+import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.keys.KeyEnum;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObject;
@@ -65,6 +75,15 @@ public abstract class FilterControl extends VorZurueckControl
 
   protected Settings settings = null;
 
+  protected Kontenfilter kontenfilter = Kontenfilter.ALLE;
+
+  public enum Kontenfilter
+  {
+    GELDKONTO, // Beinhaltet Rückstellungen
+    ANLAGEKONTO,
+    ALLE
+  }
+
   /**
    * Map mit allen angewendeten Filtern und dem zugehörigen Input
    */
@@ -96,6 +115,19 @@ public abstract class FilterControl extends VorZurueckControl
       filter.put(entry.getKey(), value);
     }
     return filter;
+  }
+
+  /**
+   * Gibt den gewünschten Filter Value zurück
+   * 
+   * @param f
+   *          Filter
+   * 
+   * @return
+   */
+  public Object getFilterValue(Filter f)
+  {
+    return filterMap.get(f).getValue();
   }
 
   /**
@@ -169,6 +201,41 @@ public abstract class FilterControl extends VorZurueckControl
       }
     }
     return map;
+  }
+
+  /**
+   * Gibt den angezeigten text des Filter zurück
+   * 
+   * @param filter
+   *          Der Filter
+   * @return Filtertext
+   * @throws RemoteException
+   */
+  public String getFilterText(Filter filter) throws RemoteException
+  {
+    Input input = filterMap.get(filter);
+    Object value = input == null ? null : input.getValue();
+    if (value == null
+        || (value instanceof String && ((String) value).isBlank()))
+    {
+      return "";
+    }
+    else if (value instanceof Date)
+    {
+      return new SimpleDateFormat("yyyyMMdd").format(value);
+    }
+    else if (input instanceof SelectInput)
+    {
+      return ((SelectInput) input).getText();
+    }
+    else if (input instanceof CheckboxInput)
+    {
+      return ((Boolean) value) ? "Ja" : "Nein";
+    }
+    else
+    {
+      return value.toString();
+    }
   }
 
   /**
@@ -416,6 +483,138 @@ public abstract class FilterControl extends VorZurueckControl
         input.setName(filter.getAnzeigeText());
         input.addListener(new FilterListener());
         break;
+      case KONTO:
+        input = new KontoauswahlInput().getKontoAuswahl(true, settingValue,
+            false, true, kontenfilter);
+        input.addListener(new FilterListener());
+        input.setName(filter.getAnzeigeText());
+        break;
+      case BUCHUNGSART:
+        input = (SelectInput) new BuchungsartInput().getBuchungsartInput(null,
+            buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
+
+        @SuppressWarnings("unchecked")
+        List<Buchungsart> suchliste = (List<Buchungsart>) ((SelectInput) input)
+            .getList();
+        ArrayList<Buchungsart> liste = new ArrayList<>();
+        Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, null);
+        b1.setNummer("");
+        b1.setBezeichnung("Ohne Buchungsart");
+        b1.setArt(-1);
+        liste.add(b1);
+        for (Buchungsart ba : suchliste)
+        {
+          liste.add(ba);
+        }
+        Buchungsart b = null;
+        if (settingValue != null && !settingValue.isBlank())
+        {
+          if (settingValue.equals("0"))
+          {
+            b = b1;
+          }
+          else
+          {
+            try
+            {
+              b = (Buchungsart) Einstellungen.getDBService()
+                  .createObject(Buchungsart.class, settingValue);
+            }
+            catch (ObjectNotFoundException e)
+            {
+              //
+            }
+          }
+        }
+        ((SelectInput) input).setList(liste);
+        input.setValue(b);
+        input.addListener(new FilterListener());
+        ((SelectInput) input).setPleaseChoose(FilterControl.ALLE);
+        input.setName(filter.getAnzeigeText());
+        break;
+      case PROJEKT:
+        ArrayList<Projekt> projektliste = new ArrayList<>();
+        Projekt p1 = (Projekt) Einstellungen.getDBService()
+            .createObject(Projekt.class, null);
+        p1.setBezeichnung("Ohne Projekt");
+        projektliste.add(p1);
+
+        DBIterator<Projekt> list = Einstellungen.getDBService()
+            .createList(Projekt.class);
+        list.setOrder("ORDER BY bezeichnung");
+        while (list.hasNext())
+        {
+          projektliste.add(list.next());
+        }
+
+        Projekt p = null;
+        if (settingValue != null && !settingValue.isBlank())
+        {
+          if (settingValue.equals("0"))
+          {
+            p = p1;
+          }
+          else
+          {
+            try
+            {
+              p = (Projekt) Einstellungen.getDBService()
+                  .createObject(Projekt.class, settingValue);
+            }
+            catch (ObjectNotFoundException e)
+            {
+              //
+            }
+          }
+        }
+        input = new SelectInput(projektliste, p);
+        input.addListener(new FilterListener());
+        ((SelectInput) input).setAttribute("bezeichnung");
+        ((SelectInput) input).setPleaseChoose("Keine Einschränkung");
+        input.setName(filter.getAnzeigeText());
+        break;
+      case STEUER:
+        ArrayList<Steuer> steuerliste = new ArrayList<>();
+        Steuer s1 = (Steuer) Einstellungen.getDBService()
+            .createObject(Steuer.class, null);
+        s1.setName("Ohne Steuer");
+        steuerliste.add(s1);
+
+        DBIterator<Steuer> it = Einstellungen.getDBService()
+            .createList(Steuer.class);
+        it.setOrder("order by name");
+        while (it.hasNext())
+        {
+          steuerliste.add(it.next());
+        }
+
+        Steuer s = null;
+        if (settingValue != null && !settingValue.isBlank())
+        {
+          if (settingValue.equals("0"))
+          {
+            s = s1;
+          }
+          else
+          {
+            try
+            {
+              s = (Steuer) Einstellungen.getDBService()
+                  .createObject(Steuer.class, settingValue);
+            }
+            catch (ObjectNotFoundException e)
+            {
+              //
+            }
+          }
+        }
+        input = new SelectInput(steuerliste, s);
+        ((SelectInput) input).setAttribute("name");
+        ((SelectInput) input).setPleaseChoose("Alle");
+        input.addListener(new FilterListener());
+        input.setName(filter.getAnzeigeText());
+        break;
     }
     filterMap.put(filter, input);
 
@@ -466,6 +665,11 @@ public abstract class FilterControl extends VorZurueckControl
     return settings;
   }
 
+  public String getSettingsPrefix()
+  {
+    return settingsprefix;
+  }
+
   public String getAdditionalparamprefix1()
   {
     return additionalparamprefix1;
@@ -514,6 +718,10 @@ public abstract class FilterControl extends VorZurueckControl
       else if (value instanceof GenericObject)
       {
         value = ((GenericObject) value).getID();
+        if (value == null)
+        {
+          value = 0;
+        }
       }
       else if (value instanceof Date)
       {
@@ -696,6 +904,30 @@ public abstract class FilterControl extends VorZurueckControl
     return new Button("Filter-Reset", c -> {
       settings.setAttribute("id", "");
       settings.setAttribute("profilname", "");
+      Calendar calendar = Calendar.getInstance();
+      Integer year = calendar.get(Calendar.YEAR);
+      Date startGJ = null;
+      Date endGJ = null;
+      try
+      {
+        startGJ = Datum.toDate(
+            (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
+                + year);
+        if (calendar.getTime().before(startGJ))
+        {
+          year = year - 1;
+          startGJ = Datum.toDate((String) Einstellungen
+              .getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+        }
+        calendar.setTime(startGJ);
+        calendar.add(Calendar.YEAR, 1);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        endGJ = calendar.getTime();
+      }
+      catch (RemoteException | ParseException e)
+      {
+        Logger.error("Error filter reset", e);
+      }
 
       for (Entry<Filter, Input> entry : filterMap.entrySet())
       {
@@ -727,6 +959,18 @@ public abstract class FilterControl extends VorZurueckControl
           DialogInput dInput = (DialogInput) input;
           dInput.setValue(null);
           setZusatzfelderAuswahl(dInput);
+        }
+        else if (filter.equals(Filter.DATUM_VON))
+        {
+          input.setValue(startGJ);
+        }
+        else if (filter.equals(Filter.DATUM_BIS))
+        {
+          input.setValue(endGJ);
+        }
+        else if (filter.equals(Filter.KONTO))
+        {
+          // Nicht löschen
         }
         else
         {

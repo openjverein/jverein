@@ -18,9 +18,13 @@ package de.jost_net.JVerein.keys;
 
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
+import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Buchungsklasse;
+import de.jost_net.JVerein.rmi.Konto;
 import de.jost_net.JVerein.rmi.Lehrgangsart;
 import de.jost_net.JVerein.rmi.Mitgliedstyp;
+import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.rmi.DBObject;
 
 /**
@@ -43,9 +47,12 @@ public enum Filter
   BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", "Alle",
       FilterArt.SELECT, Beitragsgruppe.class),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
+  BETRAG("filter_betrag", "Betrag", "50", FilterArt.TEXT),
   BETREFF("filter_betreff", "Betreff", "Betreff", FilterArt.TEXT),
   BEZEICHNUNG("filter_bezeichnung", "Bezeichnung", "Bezeichnung",
       FilterArt.TEXT),
+  BUCHUNGSART("filter_buchungsart", "Buchungsart", "Alle",
+      FilterArt.BUCHUNGSART, Buchungsart.class),
   BUCHUNGSARTART("filter_art", "Art", "Beitrag", FilterArt.SELECT,
       ArtBuchungsart.getArray()),
   BUCHUNGSKLASSE("filter_buchungsklasse", "Buchungsklasse", "Alle",
@@ -108,6 +115,7 @@ public enum Filter
       FilterArt.DATE),
   GESCHLECHT("filter_geschlecht", "Geschlecht", "Alle", FilterArt.SELECT,
       Geschlecht.values()),
+  KONTO("filter_konto", "Konto", "003", FilterArt.KONTO, Konto.class),
   KONTOART("filter_kontoart", "Kontoart", "Alle", FilterArt.SELECT,
       Kontoart.getList()),
   LEHRGANGSART("filter_lehrgangsart", "Lehrgangsart", "Grundkurs",
@@ -124,6 +132,8 @@ public enum Filter
       FilterArt.INTEGER),
   MITGLIEDSTYP("filter_mitgliedstyp", "Mitgliedstyp", "Spender/in",
       FilterArt.SELECT, Mitgliedstyp.class),
+  MITGLIED_ZUGEORDNET("filter_mitglied_zugeordnet", "Mitglied zugeordnet",
+      "Beide", FilterArt.SELECT_OHNE_NULL, MitgliedZugeordnetFilter.values()),
   NAME("filter_name", "Name", "Meier", FilterArt.TEXT),
   NUMMER("filter_nummer", "Nummer", "44", FilterArt.TEXT),
 
@@ -131,14 +141,20 @@ public enum Filter
       FilterArt.CHECKBOX),
   OHNE_ERLEDIGUNG("filter_ohne_erledigung", "Ohne Erledigung", "Ja",
       FilterArt.CHECKBOX),
+  PROJEKT("filter_projekt", "Projekt", "Ohne Projekt", FilterArt.PROJEKT,
+      Projekt.class),
   SPENDENART("filter_spendeart", "Spendenart", "Alle", FilterArt.SELECT,
       SuchSpendenart.values()),
+  SPLITBUCHUNG("filter_splitbuchung", "Splitbuchung", "Alle", FilterArt.SELECT,
+      SplitbuchungFilter.values()),
   STATUS("filter_status", "Status", "Alle", FilterArt.CHECKBOX),
   STERBEDATUM_BIS("filter_sterbedatum_bis_f", "Sterbetag bis", "20241231",
       FilterArt.DATE),
   STERBEDATUM_VON("filter_sterbedatum_von_f", "Sterbetag von", "20240101",
       FilterArt.DATE),
+  STEUER("filter_steuer", "Steuer", "Alle", FilterArt.STEUER, Steuer.class),
   STICHTAG("filter_stichtag_f", "Stichtag", "20240101", FilterArt.DATE),
+  UNGEPRUEFT("filter_ungeprueft", "Nur ungeprüfte", "Ja", FilterArt.CHECKBOX),
   VERANSTALTER("filter_veranstalter", "Veranstalter", "Kursleiter",
       FilterArt.TEXT),
   VERMERK("filter_vermerk", "Vermerk", "Vermerk", FilterArt.TEXT),
@@ -181,7 +197,11 @@ public enum Filter
     EIGENSCHAFTEN,
     CHECKBOX,
     INTEGER,
-    DOUBLE
+    DOUBLE,
+    KONTO,
+    BUCHUNGSART,
+    PROJEKT,
+    STEUER
   }
 
   Filter(String setting, String anzeigeText, String defalutValue, FilterArt art)

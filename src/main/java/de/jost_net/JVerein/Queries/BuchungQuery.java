@@ -20,11 +20,15 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.BuchungsControl.SplitFilter;
 import de.jost_net.JVerein.io.Suchbetrag;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Kontoart;
+import de.jost_net.JVerein.keys.MitgliedZugeordnetFilter;
+import de.jost_net.JVerein.keys.SplitbuchungFilter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -35,34 +39,19 @@ import de.jost_net.JVerein.rmi.Steuer;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.util.ApplicationException;
 
 public class BuchungQuery
 {
-  private Date datumvon;
-
-  private Date datumbis;
-
-  private Konto konto;
-
-  public Buchungsart buchungart;
-
-  private Projekt projekt;
-
-  public String text;
-
-  public String betrag;
-
-  private String mitglied;
-
   private List<Buchung> ergebnis;
-
-  private Boolean hasMitglied;
 
   private boolean geldkonto;
 
-  private Steuer steuer;
+  public String ordername = null;
 
   private HashMap<String, String> sortValues = new HashMap<String, String>();
+
+  private Map<Filter, Object> filter;
 
   private void SortHashMap()
   {
@@ -87,30 +76,11 @@ public class BuchungQuery
     sortValues.put("DEFAULT", "order by datum");
   }
 
-  public String ordername = null;
-
-  private SplitFilter split;
-
-  private Boolean ungeprueft;
-
-  public BuchungQuery(Date datumvon, Date datumbis, Konto konto,
-      Buchungsart buchungsart, Projekt projekt, String text, String betrag,
-      Boolean hasMitglied, String mitglied, boolean geldkonto,
-      SplitFilter split, Boolean ungeprueft, Steuer steuer)
+  public BuchungQuery(Map<Filter, Object> filter, boolean geldkonto)
+      throws ApplicationException
   {
-    this.datumvon = datumvon;
-    this.datumbis = datumbis;
-    this.konto = konto;
-    this.buchungart = buchungsart;
-    this.projekt = projekt;
-    this.text = text;
-    this.betrag = betrag;
-    this.hasMitglied = hasMitglied;
+    this.filter = filter;
     this.geldkonto = geldkonto;
-    this.mitglied = mitglied;
-    this.split = split;
-    this.ungeprueft = ungeprueft;
-    this.steuer = steuer;
   }
 
   public String getOrder(String value)
@@ -138,212 +108,186 @@ public class BuchungQuery
     }
   }
 
-  public Boolean getHasMitglied()
-  {
-    return hasMitglied;
-  }
-
-  public void setHasMitglied(Boolean hasMitglied)
-  {
-    this.hasMitglied = hasMitglied;
-  }
-
-  public Date getDatumvon()
-  {
-    return datumvon;
-  }
-
-  public Date getDatumbis()
-  {
-    return datumbis;
-  }
-
-  public Konto getKonto()
-  {
-    return konto;
-  }
-
-  public Buchungsart getBuchungsart()
-  {
-    return buchungart;
-  }
-
-  public Projekt getProjekt()
-  {
-    return projekt;
-  }
-
-  public String getText()
-  {
-    return text;
-  }
-
   @SuppressWarnings("unchecked")
-  public List<Buchung> get() throws RemoteException
+  public List<Buchung> get() throws RemoteException, ApplicationException
   {
     final DBService service = Einstellungen.getDBService();
     DBIterator<Buchung> it = service.createList(Buchung.class);
 
-    if (mitglied != null && !mitglied.isEmpty())
+    for (Entry<Filter, Object> entry : filter.entrySet())
     {
-      String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
-      it.join(Sollbuchung.TABLE_NAME);
-      it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
-      it.join("mitglied");
-      it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
-      it.addFilter(
-          "(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
-          new Object[] { mitgliedsuche, mitgliedsuche });
-    }
-
-    it.addFilter("buchung.datum >= ? ", datumvon);
-    it.addFilter("buchung.datum <= ? ", datumbis);
-
-    if (konto != null)
-    {
-      it.addFilter("konto = ? ", konto.getID());
-    }
-    else if (!geldkonto)
-    {
-      it.join("konto");
-      it.addFilter("konto.id = buchung.konto");
-      it.addFilter("kontoart = ?", new Object[] { Kontoart.ANLAGE.getKey() });
-    }
-
-    if (buchungart != null)
-    {
-      if (buchungart.getNummer().isEmpty())
+      Object value = entry.getValue();
+      switch (entry.getKey())
       {
-        it.addFilter("buchung.buchungsart is null ");
-      }
-      else
-      {
-        it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
-      }
-    }
-
-    if (hasMitglied != null)
-    {
-      if (hasMitglied)
-      {
-        it.addFilter(Buchung.SOLLBUCHUNG + " is not null");
-      }
-      else
-      {
-        it.addFilter(Buchung.SOLLBUCHUNG + " is null");
-      }
-    }
-
-    if (projekt != null)
-    {
-      if (projekt.getID() == null)
-      {
-        it.addFilter("projekt is null");
-      }
-      else
-      {
-        it.addFilter("projekt = ?", projekt.getID());
-      }
-    }
-
-    if (split != null)
-    {
-      switch (split)
-      {
-        case SPLIT:
-          it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
-              SplitbuchungTyp.SPLIT);
+        case DATUM_VON:
+          it.addFilter("buchung.datum >= ? ", (Date) value);
           break;
-        case HAUPT:
-          it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
-              SplitbuchungTyp.HAUPT);
+        case DATUM_BIS:
+          it.addFilter("buchung.datum <= ? ", (Date) value);
+          break;
+        case KONTO:
+          Konto konto = (Konto) value;
+          if (konto != null)
+          {
+            it.addFilter("konto = ? ", konto.getID());
+          }
+          tttelse if (!geldkonto)
+          {
+            it.join("konto");
+            it.addFilter("konto.id = buchung.konto");
+            it.addFilter("kontoart = ?",
+                new Object[] { Kontoart.ANLAGE.getKey() });
+          }
+          break;
+        case BUCHUNGSART:
+          Buchungsart buchungart = (Buchungsart) value;
+          if (buchungart.getNummer().isEmpty())
+          {
+            it.addFilter("buchung.buchungsart is null ");
+          }
+          else
+          {
+            it.addFilter("buchung.buchungsart = ? ", buchungart.getID());
+          }
+          break;
+        case PROJEKT:
+          Projekt projekt = (Projekt) value;
+          if (projekt.getID() == null)
+          {
+            it.addFilter("projekt is null");
+          }
+          else
+          {
+            it.addFilter("projekt = ?", projekt.getID());
+          }
+          break;
+        case ENTHALTENER_TEXT:
+          String text = (String) value;
+          if (text != null && text.length() > 0)
+          {
+            Long id = 0L;
+            try
+            {
+              id = Long.parseLong(text);
+            }
+            catch (Exception e)
+            {
+
+            }
+            String ttext = text.toUpperCase();
+            ttext = "%" + ttext + "%";
+            it.addFilter(
+                "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
+                    + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
+                ttext, ttext, ttext, id);
+          }
+          break;
+        case BETRAG:
+          String betrag = (String) value;
+          try
+          {
+            Suchbetrag suchbetrag = new Suchbetrag(betrag);
+            switch (suchbetrag.getSuchstrategie())
+            {
+              case GLEICH:
+              {
+                it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
+                break;
+              }
+              case GRÖSSER:
+              {
+                it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
+                break;
+              }
+              case GRÖSSERGLEICH:
+              {
+                it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
+                break;
+              }
+              case BEREICH:
+                it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?",
+                    suchbetrag.getBetrag(), suchbetrag.getBetrag2());
+                break;
+              case KEINE:
+                break;
+              case KLEINER:
+                it.addFilter("buchung.betrag < ?", suchbetrag.getBetrag());
+                break;
+              case KLEINERGLEICH:
+                it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
+                break;
+              case BETRAG:
+                it.addFilter("(buchung.betrag = ? OR buchung.betrag = ?)",
+                    suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
+                break;
+              default:
+                break;
+            }
+          }
+          catch (Exception e)
+          {
+            // throw new RemoteException(e.getMessage());
+          }
+          break;
+        case MITGLIED_ZUGEORDNET:
+          MitgliedZugeordnetFilter filter = (MitgliedZugeordnetFilter) value;
+          if (filter == MitgliedZugeordnetFilter.JA)
+          {
+            it.addFilter(Buchung.SOLLBUCHUNG + " is not null");
+          }
+          else if (filter == MitgliedZugeordnetFilter.NEIN)
+          {
+            it.addFilter(Buchung.SOLLBUCHUNG + " is null");
+          }
+          break;
+        case MITGLIED:
+          String mitglied = (String) value;
+          String mitgliedsuche = "%" + mitglied.toLowerCase() + "%";
+          it.join(Sollbuchung.TABLE_NAME);
+          it.addFilter(Sollbuchung.TABLE_NAME_ID + " = " + Buchung.SOLLBUCHUNG);
+          it.join("mitglied");
+          it.addFilter("mitglied.id = " + Sollbuchung.T_MITGLIED);
+          it.addFilter(
+              "(lower(mitglied.name) like ? or lower(mitglied.vorname) like ?)",
+              new Object[] { mitgliedsuche, mitgliedsuche });
+          break;
+        case SPLITBUCHUNG:
+          SplitbuchungFilter split = (SplitbuchungFilter) value;
+          switch (split)
+          {
+            case SPLIT:
+              it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+                  SplitbuchungTyp.SPLIT);
+              break;
+            case HAUPT:
+              it.addFilter("(buchung.splittyp is null or buchung.splittyp = ?)",
+                  SplitbuchungTyp.HAUPT);
+              break;
+            default:
+              break;
+          }
+          break;
+        case UNGEPRUEFT:
+          Boolean ungeprueft = (Boolean) value;
+          if (ungeprueft != null && ungeprueft)
+          {
+            it.addFilter("(geprueft = 0 or geprueft is null)");
+          }
+          break;
+        case STEUER:
+          Steuer steuer = (Steuer) value;
+          if (steuer.getID() == null)
+          {
+            it.addFilter("steuer is null");
+          }
+          else
+          {
+            it.addFilter("steuer = ? ", steuer.getID());
+          }
           break;
         default:
-          break;
-      }
-    }
-
-    if (ungeprueft != null && ungeprueft)
-    {
-      it.addFilter("(geprueft = 0 or geprueft is null)");
-    }
-
-    if (betrag != null && betrag.length() > 0)
-    {
-      try
-      {
-        Suchbetrag suchbetrag = new Suchbetrag(betrag);
-        switch (suchbetrag.getSuchstrategie())
-        {
-          case GLEICH:
-          {
-            it.addFilter("buchung.betrag = ?", suchbetrag.getBetrag());
-            break;
-          }
-          case GRÖSSER:
-          {
-            it.addFilter("buchung.betrag > ?", suchbetrag.getBetrag());
-            break;
-          }
-          case GRÖSSERGLEICH:
-          {
-            it.addFilter("buchung.betrag >= ?", suchbetrag.getBetrag());
-            break;
-          }
-          case BEREICH:
-            it.addFilter("buchung.betrag >= ? AND buchung.betrag <= ?",
-                suchbetrag.getBetrag(), suchbetrag.getBetrag2());
-            break;
-          case KEINE:
-            break;
-          case KLEINER:
-            it.addFilter("buchung.betrag < ?", suchbetrag.getBetrag());
-            break;
-          case KLEINERGLEICH:
-            it.addFilter("buchung.betrag <= ?", suchbetrag.getBetrag());
-            break;
-          case BETRAG:
-            it.addFilter("(buchung.betrag = ? OR buchung.betrag = ?)",
-                suchbetrag.getBetrag(), suchbetrag.getBetrag().negate());
-            break;
-          default:
-            break;
-        }
-      }
-      catch (Exception e)
-      {
-        // throw new RemoteException(e.getMessage());
-      }
-    }
-
-    if (text != null && text.length() > 0)
-    {
-      Long id = 0L;
-      try
-      {
-        id = Long.parseLong(text);
-      }
-      catch (Exception e)
-      {
-
-      }
-      String ttext = text.toUpperCase();
-      ttext = "%" + ttext + "%";
-      it.addFilter(
-          "(upper(buchung.name) like ? or upper(buchung.zweck) like ? "
-              + "or upper(buchung.kommentar) like ? or buchung.id = ?) ",
-          ttext, ttext, ttext, id);
-    }
-
-    if (steuer != null)
-    {
-      if (steuer.getID() == null)
-      {
-        it.addFilter("steuer is null");
-      }
-      else
-      {
-        it.addFilter("steuer = ? ", steuer.getID());
+          throw new ApplicationException(
+              "Filter nicht implementiert: " + entry.getKey().getAnzeigeText());
       }
     }
 
@@ -356,6 +300,11 @@ public class BuchungQuery
 
     this.ergebnis = it != null ? PseudoIterator.asList(it) : null;
     return ergebnis;
+  }
+
+  public Buchungsart getBuchungsart()
+  {
+    return (Buchungsart) filter.get(Filter.BUCHUNGSART);
   }
 
   public int getSize()
