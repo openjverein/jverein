@@ -48,7 +48,21 @@ public class FilterMap extends AbstractMap
         if (entry.getKey() == Filter.KONTO)
         {
           Konto k = (Konto) control.getFilterValue(Filter.KONTO);
-          map.put(Filter.KONTO_BEZEICHNUNG.getSetting(), k.getBezeichnung());
+          if (k != null)
+          {
+            map.put(Filter.KONTO_NR.getSetting(), k.getNummer());
+            map.put(Filter.KONTO_BEZEICHNUNG.getSetting(), k.getBezeichnung());
+          }
+          else
+          {
+            map.put(Filter.KONTO_NR.getSetting(), "");
+            map.put(Filter.KONTO_BEZEICHNUNG.getSetting(), "");
+          }
+        }
+        else if (entry.getKey() == Filter.KONTO_NR
+            || entry.getKey() == Filter.KONTO_BEZEICHNUNG)
+        {
+          // Ignore
         }
       }
     }

@@ -115,7 +115,10 @@ public enum Filter
       FilterArt.DATE),
   GESCHLECHT("filter_geschlecht", "Geschlecht", "Alle", FilterArt.SELECT,
       Geschlecht.values()),
-  KONTO("filter_konto_nr", "Konto", "888999", FilterArt.KONTO, Konto.class),
+  KONTO("filter_kontoid", "Konto", "3", FilterArt.KONTO, Konto.class),
+  // Die zwei nächsten Filter werden nicht angewendet,sie werden aber bei der
+  // Variablen Ersetzung gebraucht
+  KONTO_NR("filter_konto_nr", "Konto Nummer", "888999", FilterArt.TEXT),
   KONTO_BEZEICHNUNG("filter_konto_bezeichnung", "Konto Bezeichnung", "Giro",
       FilterArt.TEXT),
   KONTOART("filter_kontoart", "Kontoart", "Alle", FilterArt.SELECT,

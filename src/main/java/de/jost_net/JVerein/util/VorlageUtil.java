@@ -719,7 +719,7 @@ public class VorlageUtil
         case SUMMENBUCHUNGEN_TITEL:
         case SUMMENBUCHUNGEN_SUBTITEL:
         case CSVBUCHUNGEN_DATEINAME:
-          set.add(Filter.KONTO);
+          set.add(Filter.KONTO_NR);
           set.add(Filter.KONTO_BEZEICHNUNG);
           set.add(Filter.BUCHUNGSART);
           set.add(Filter.PROJEKT);
@@ -747,7 +747,7 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
-          set.add(Filter.KONTO);
+          set.add(Filter.KONTO_NR);
           set.add(Filter.KONTO_BEZEICHNUNG);
           set.add(Filter.BUCHUNGSART);
           set.add(Filter.PROJEKT);
