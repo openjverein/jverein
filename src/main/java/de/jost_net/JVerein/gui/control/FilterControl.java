@@ -73,6 +73,10 @@ public abstract class FilterControl extends VorZurueckControl
   // String für Zusatfelder Anzahl
   private String additionalparamprefix2 = "";
 
+  // Sagt, ob DATUM_VON und DATUM_BIS mit den Daten des Geschäftsjahres beim
+  // Reset gefüllt werden sollen
+  private boolean initVonBis = false;
+
   protected Settings settings = null;
 
   protected Kontenfilter kontenfilter = Kontenfilter.ALLE;
@@ -92,7 +96,7 @@ public abstract class FilterControl extends VorZurueckControl
   public FilterControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -593,7 +597,7 @@ public abstract class FilterControl extends VorZurueckControl
         }
         input = new SelectInput(steuerliste, s);
         ((SelectInput) input).setAttribute("name");
-        ((SelectInput) input).setPleaseChoose("Alle");
+        ((SelectInput) input).setPleaseChoose(FilterControl.ALLE);
         input.addListener(new FilterListener());
         input.setName(filter.getAnzeigeText());
         break;
@@ -892,25 +896,27 @@ public abstract class FilterControl extends VorZurueckControl
       Integer year = calendar.get(Calendar.YEAR);
       Date startGJ = null;
       Date endGJ = null;
-      try
+      if (initVonBis)
       {
-        startGJ = Datum.toDate(
-            (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
-                + year);
-        if (calendar.getTime().before(startGJ))
+        try
         {
-          year = year - 1;
           startGJ = Datum.toDate((String) Einstellungen
               .getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+          if (calendar.getTime().before(startGJ))
+          {
+            year = year - 1;
+            startGJ = Datum.toDate((String) Einstellungen
+                .getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+          }
+          calendar.setTime(startGJ);
+          calendar.add(Calendar.YEAR, 1);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          endGJ = calendar.getTime();
         }
-        calendar.setTime(startGJ);
-        calendar.add(Calendar.YEAR, 1);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        endGJ = calendar.getTime();
-      }
-      catch (RemoteException | ParseException e)
-      {
-        Logger.error("Error filter reset", e);
+        catch (RemoteException | ParseException e)
+        {
+          Logger.error("Error filter reset", e);
+        }
       }
 
       for (Entry<Filter, Input> entry : filterMap.entrySet())
@@ -944,11 +950,11 @@ public abstract class FilterControl extends VorZurueckControl
           dInput.setValue(null);
           setZusatzfelderAuswahl(dInput);
         }
-        else if (filter.equals(Filter.DATUM_VON))
+        else if (initVonBis && filter.equals(Filter.DATUM_VON))
         {
           input.setValue(startGJ);
         }
-        else if (filter.equals(Filter.DATUM_BIS))
+        else if (initVonBis && filter.equals(Filter.DATUM_BIS))
         {
           input.setValue(endGJ);
         }
@@ -963,5 +969,10 @@ public abstract class FilterControl extends VorZurueckControl
       }
       refresh();
     }, null, false, "eraser.png");
+  }
+
+  public void setInitVonBis(boolean value)
+  {
+    initVonBis = value;
   }
 }

@@ -17,6 +17,7 @@
 package de.jost_net.JVerein.Queries;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +114,15 @@ public class BuchungQuery
   {
     final DBService service = Einstellungen.getDBService();
     DBIterator<Buchung> it = service.createList(Buchung.class);
+
+    Date von = (Date) filter.get(Filter.DATUM_VON);
+    Date bis = (Date) filter.get(Filter.DATUM_BIS);
+    if (von == null || bis == null || von.after(bis))
+    {
+      // Diese Filter müssen gesetzt sein und DATUM_BIS darf nicht nach
+      // DATUM_VON sein!
+      return new ArrayList<Buchung>();
+    }
 
     if (!geldkonto && filter.get(Filter.KONTO) == null)
     {

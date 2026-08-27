@@ -103,7 +103,6 @@ public class KontoauswahlInput
     kontoAuswahl.setComment(konto == null ? "" : konto.getBezeichnung());
     kontoAuswahl.disableClientControl();
     kontoAuswahl.setValue(konto);
-    kontoAuswahl.setMandatory(true);
     return kontoAuswahl;
   }
 

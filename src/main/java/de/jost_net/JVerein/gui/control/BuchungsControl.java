@@ -1515,13 +1515,22 @@ public class BuchungsControl extends FilterControl implements Savable
   @Override
   protected void TabRefresh() throws ApplicationException
   {
-    if (getFilterValue(Filter.DATUM_VON) == null)
+    Date von = (Date) getFilterValue(Filter.DATUM_VON);
+    Date bis = (Date) getFilterValue(Filter.DATUM_BIS);
+    if (von == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Von Datum eingeben!");
+      return;
     }
-    if (getFilterValue(Filter.DATUM_BIS) == null)
+    if (bis == null)
     {
       GUI.getStatusBar().setErrorText("Bitte Bis Datum eingeben!");
+      return;
+    }
+    if (von.after(bis))
+    {
+      GUI.getStatusBar().setErrorText("Von Datum ist nach Bis Datum!");
+      return;
     }
     refreshBuchungsList();
   }

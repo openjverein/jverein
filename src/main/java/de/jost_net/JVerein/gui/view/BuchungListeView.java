@@ -79,8 +79,11 @@ public class BuchungListeView extends AbstractView
 
     center.addInput(control.getFilterInput(Filter.BETRAG));
     Input datumVon = control.getFilterInput(Filter.DATUM_VON);
+    datumVon.setMandatory(true);
     center.addInput(datumVon);
     Input datumBis = control.getFilterInput(Filter.DATUM_BIS);
+    datumBis.setMandatory(true);
+    control.setInitVonBis(true);
     center.addInput(datumBis);
     center.addLabelPair("Nur ungeprüfte",
         control.getFilterInput(Filter.UNGEPRUEFT));

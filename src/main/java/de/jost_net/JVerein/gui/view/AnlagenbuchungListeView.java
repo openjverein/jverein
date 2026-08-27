@@ -74,8 +74,11 @@ public class AnlagenbuchungListeView extends AbstractView
     left.addInput(control.getFilterInput(Filter.SPLITBUCHUNG));
 
     Input datumVon = control.getFilterInput(Filter.DATUM_VON);
+    datumVon.setMandatory(true);
     right.addInput(datumVon);
     Input datumBis = control.getFilterInput(Filter.DATUM_BIS);
+    datumBis.setMandatory(true);
+    control.setInitVonBis(true);
     right.addInput(datumBis);
     right.addInput(control.getFilterInput(Filter.ENTHALTENER_TEXT));
     right.addInput(control.getFilterInput(Filter.BETRAG));
