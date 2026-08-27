@@ -2,9 +2,8 @@ package de.jost_net.JVerein.keys;
 
 public enum MitgliedZugeordnetFilter implements KeyEnum
 {
-  BEIDE(1, "Beide"),
-  JA(2, "Ja"),
-  NEIN(3, "Nein");
+  JA(1, "Ja"),
+  NEIN(2, "Nein");
 
   private int key;
 

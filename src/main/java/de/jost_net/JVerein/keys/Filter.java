@@ -16,6 +16,7 @@
  **********************************************************************/
 package de.jost_net.JVerein.keys;
 
+import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Beitragsgruppe;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -44,18 +45,18 @@ public enum Filter
       FilterArt.DATE),
   AUSTRITT_VON("filter_austrittsdatum_von_f", "Austritt von", "20240101",
       FilterArt.DATE),
-  BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", "Alle",
+  BEITRAGSGRUPPE("filter_beitragsgruppe", "Beitragsgruppe", FilterControl.ALLE,
       FilterArt.SELECT, Beitragsgruppe.class),
   BEMERKUNG("filter_bemerkung", "Bemerkung", "Bemerkung", FilterArt.TEXT),
   BETRAG("filter_betrag", "Betrag", "50", FilterArt.BETRAG),
   BETREFF("filter_betreff", "Betreff", "Betreff", FilterArt.TEXT),
   BEZEICHNUNG("filter_bezeichnung", "Bezeichnung", "Bezeichnung",
       FilterArt.TEXT),
-  BUCHUNGSART("filter_buchungsart", "Buchungsart", "Alle",
+  BUCHUNGSART("filter_buchungsart", "Buchungsart", FilterControl.ALLE,
       FilterArt.BUCHUNGSART, Buchungsart.class),
   BUCHUNGSARTART("filter_art", "Art", "Beitrag", FilterArt.SELECT,
       ArtBuchungsart.getArray()),
-  BUCHUNGSKLASSE("filter_buchungsklasse", "Buchungsklasse", "Alle",
+  BUCHUNGSKLASSE("filter_buchungsklasse", "Buchungsklasse", FilterControl.ALLE,
       FilterArt.SELECT, Buchungsklasse.class),
   DATUM_BEARBEITUNG_BIS("filter_bearbeitung_bis_f", "Bearbeitung bis",
       "20241231", FilterArt.DATE),
@@ -113,33 +114,34 @@ public enum Filter
       FilterArt.DATE),
   GEBURTSDATUM_VON("filter_geburtsdatum_von_f", "Geburtsdatum von", "20240101",
       FilterArt.DATE),
-  GESCHLECHT("filter_geschlecht", "Geschlecht", "Alle", FilterArt.SELECT,
-      Geschlecht.values()),
+  GESCHLECHT("filter_geschlecht", "Geschlecht", FilterControl.ALLE,
+      FilterArt.SELECT, Geschlecht.values()),
   KONTO("filter_kontoid", "Konto", "3", FilterArt.KONTO, Konto.class),
   // Die zwei nächsten Filter werden nicht angewendet,sie werden aber bei der
   // Variablen Ersetzung gebraucht
   KONTO_NR("filter_konto_nr", "Konto Nummer", "888999", FilterArt.TEXT),
   KONTO_BEZEICHNUNG("filter_konto_bezeichnung", "Konto Bezeichnung", "Giro",
       FilterArt.TEXT),
-  KONTOART("filter_kontoart", "Kontoart", "Alle", FilterArt.SELECT,
+  KONTOART("filter_kontoart", "Kontoart", FilterControl.ALLE, FilterArt.SELECT,
       Kontoart.getList()),
   LEHRGANGSART("filter_lehrgangsart", "Lehrgangsart", "Grundkurs",
       FilterArt.SELECT, Lehrgangsart.class),
-  MAIL("filter_mail", "Mail", "Alle", FilterArt.SELECT, MailAuswahl.values()),
+  MAIL("filter_mail", "Mail", FilterControl.ALLE, FilterArt.SELECT,
+      MailAuswahl.values()),
   MAIL_EMPFAENGER("filter_mail_empfaenger", "Mail Empfänger", "Text",
       FilterArt.TEXT),
   MITGLIED("filter_mitglied", "Mitglied", "Meier", FilterArt.TEXT),
   MITGLIED_NAME("filter_mitglied_name", "Mitglied", "Meier", FilterArt.TEXT),
-  MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", "Alle", FilterArt.SELECT,
-      MitgliedsArt.getList()),
-  MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft", "Alle",
-      FilterArt.SELECT, MitgliedStatus.values()),
+  MITGLIEDART("filter_mitgliedsart", "Mitgliedsart", FilterControl.ALLE,
+      FilterArt.SELECT, MitgliedsArt.getList()),
+  MITGLIEDSCHAFT_STATUS("filter_mitgliedschaft", "Mitgliedschaft",
+      FilterControl.ALLE, FilterArt.SELECT, MitgliedStatus.values()),
   MITGLIEDSNUMMER("filter_mitgliedsnummer", "Mitgliedsnummer", "45",
       FilterArt.INTEGER),
   MITGLIEDSTYP("filter_mitgliedstyp", "Mitgliedstyp", "Spender/in",
       FilterArt.SELECT, Mitgliedstyp.class),
   MITGLIED_ZUGEORDNET("filter_mitglied_zugeordnet", "Mitglied zugeordnet",
-      "Beide", FilterArt.SELECT_OHNE_NULL, MitgliedZugeordnetFilter.values()),
+      "Beide", FilterArt.SELECT, MitgliedZugeordnetFilter.values()),
   NAME("filter_name", "Name", "Meier", FilterArt.TEXT),
   NUMMER("filter_nummer", "Nummer", "44", FilterArt.TEXT),
 
@@ -147,7 +149,7 @@ public enum Filter
       FilterArt.CHECKBOX),
   OHNE_ERLEDIGUNG("filter_ohne_erledigung", "Ohne Erledigung", "Ja",
       FilterArt.CHECKBOX),
-  PROJEKT("filter_projekt", "Projekt", "Ohne Projekt", FilterArt.PROJEKT,
+  PROJEKT("filter_projekt", "Projekt", "Ohne Projekt", FilterArt.SELECT,
       Projekt.class),
   SPENDENART("filter_spendeart", "Spendenart", "Alle", FilterArt.SELECT,
       SuchSpendenart.values()),
@@ -158,14 +160,14 @@ public enum Filter
       FilterArt.DATE),
   STERBEDATUM_VON("filter_sterbedatum_von_f", "Sterbetag von", "20240101",
       FilterArt.DATE),
-  STEUER("filter_steuer", "Steuer", "Alle", FilterArt.STEUER, Steuer.class),
+  STEUER("filter_steuer", "Steuer", "Alle", FilterArt.SELECT, Steuer.class),
   STICHTAG("filter_stichtag_f", "Stichtag", "20240101", FilterArt.DATE),
   UNGEPRUEFT("filter_nur_ungepruefte", "Nur ungeprüfte", "Ja",
       FilterArt.CHECKBOX),
   VERANSTALTER("filter_veranstalter", "Veranstalter", "Kursleiter",
       FilterArt.TEXT),
   VERMERK("filter_vermerk", "Vermerk", "Vermerk", FilterArt.TEXT),
-  VERSAND("filter_versand", "Versand", "Alle", FilterArt.SELECT,
+  VERSAND("filter_versand", "Versand", FilterControl.ALLE, FilterArt.SELECT,
       SuchVersand.values()),
   VERWENDUNGSZWECK("filter_verwendungszweck", "Verwendungszweck", "Beitrag",
       FilterArt.TEXT),
@@ -207,8 +209,6 @@ public enum Filter
     DOUBLE,
     KONTO,
     BUCHUNGSART,
-    PROJEKT,
-    STEUER,
     BETRAG
   }
 
@@ -230,12 +230,12 @@ public enum Filter
     this.array = array;
   }
 
-  Filter(String setting, String anzeigeText, String defalutValue, FilterArt art,
+  Filter(String setting, String anzeigeText, String defaultValue, FilterArt art,
       Class<? extends DBObject> dbObject)
   {
     this.setting = setting;
     this.anzeigeText = anzeigeText;
-    this.defaultValue = defalutValue;
+    this.defaultValue = defaultValue;
     this.art = art;
     this.dbObject = dbObject;
   }

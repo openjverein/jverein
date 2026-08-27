@@ -44,7 +44,6 @@ public class FilterMap extends AbstractMap
     {
       for (Entry<Filter, String> entry : control.getFilterText(true).entrySet())
       {
-        map.put(entry.getKey().getSetting(), entry.getValue());
         if (entry.getKey() == Filter.KONTO)
         {
           Konto k = (Konto) control.getFilterValue(Filter.KONTO);
@@ -63,7 +62,9 @@ public class FilterMap extends AbstractMap
             || entry.getKey() == Filter.KONTO_BEZEICHNUNG)
         {
           // Ignore
+          continue;
         }
+        map.put(entry.getKey().getSetting(), entry.getValue());
       }
     }
     return map;

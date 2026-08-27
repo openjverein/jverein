@@ -35,6 +35,7 @@ import de.jost_net.JVerein.rmi.Buchungsart;
 import de.jost_net.JVerein.rmi.Projekt;
 import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.keys.KeyEnum;
+import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.BeanUtil;
@@ -62,7 +63,7 @@ public abstract class FilterControl extends VorZurueckControl
 {
   private Calendar calendar = Calendar.getInstance();
 
-  final static String ALLE = "Alle";
+  public final static String ALLE = "Alle";
 
   // String für allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
@@ -80,13 +81,6 @@ public abstract class FilterControl extends VorZurueckControl
   protected Settings settings = null;
 
   protected Kontenfilter kontenfilter = Kontenfilter.ALLE;
-
-  public enum Kontenfilter
-  {
-    GELDKONTO, // Beinhaltet Rückstellungen
-    ANLAGEKONTO,
-    ALLE
-  }
 
   /**
    * Map mit allen angewendeten Filtern und dem zugehörigen Input
@@ -131,7 +125,11 @@ public abstract class FilterControl extends VorZurueckControl
    */
   public Object getFilterValue(Filter f)
   {
-    return filterMap.get(f).getValue();
+    if (f != null)
+    {
+      return filterMap.get(f).getValue();
+    }
+    return null;
   }
 
   /**
@@ -219,6 +217,7 @@ public abstract class FilterControl extends VorZurueckControl
    * @throws RemoteException
    * @throws ApplicationException
    */
+  @SuppressWarnings("unchecked")
   public Input getFilterInput(Filter filter)
       throws RemoteException, ApplicationException
   {
@@ -412,18 +411,44 @@ public abstract class FilterControl extends VorZurueckControl
         // DBObject Select
         else if (filter.getDbObject() != null)
         {
+
           DBIterator<?> it = Einstellungen.getDBService()
               .createList(filter.getDbObject());
 
-          DBObject def = null;
-          List<?> list = null;
-          try
+          DBObject def0 = null;
+          // Extra DB Einträge die nicht in der DB gespeichert sind
+          if (filter.equals(Filter.PROJEKT))
           {
-            def = Einstellungen.getDBService()
-                .createObject(filter.getDbObject(), settingValue);
+            def0 = (Projekt) Einstellungen.getDBService()
+                .createObject(Projekt.class, null);
+            ((Projekt) def0).setBezeichnung("Ohne Projekt");
           }
-          catch (ObjectNotFoundException e)
+          else if (filter.equals(Filter.STEUER))
           {
+            def0 = (Steuer) Einstellungen.getDBService()
+                .createObject(Steuer.class, null);
+            ((Steuer) def0).setName("Ohne Steuer");
+          }
+
+          DBObject def = null;
+          List<DBObject> list = null;
+          if (settingValue != null && !settingValue.isBlank())
+          {
+            if (settingValue.equals("0"))
+            {
+              def = def0;
+            }
+            else
+            {
+              try
+              {
+                def = Einstellungen.getDBService()
+                    .createObject(filter.getDbObject(), settingValue);
+              }
+              catch (ObjectNotFoundException e)
+              {
+              }
+            }
           }
 
           if (filter.equals(Filter.ABRECHNUNGSLAUF))
@@ -454,6 +479,10 @@ public abstract class FilterControl extends VorZurueckControl
                   return 0;
                 }
               });
+              if (def0 != null)
+              {
+                list.add(def0);
+              }
             }
           }
           input = new SelectInput(list, def);
@@ -479,7 +508,6 @@ public abstract class FilterControl extends VorZurueckControl
         input = (SelectInput) new BuchungsartInput().getBuchungsartInput(null,
             buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
 
-        @SuppressWarnings("unchecked")
         List<Buchungsart> suchliste = (List<Buchungsart>) ((SelectInput) input)
             .getList();
         ArrayList<Buchungsart> liste = new ArrayList<>();
@@ -517,88 +545,6 @@ public abstract class FilterControl extends VorZurueckControl
         input.setValue(b);
         input.addListener(new FilterListener());
         ((SelectInput) input).setPleaseChoose(FilterControl.ALLE);
-        input.setName(filter.getAnzeigeText());
-        break;
-      case PROJEKT:
-        ArrayList<Projekt> projektliste = new ArrayList<>();
-        Projekt p1 = (Projekt) Einstellungen.getDBService()
-            .createObject(Projekt.class, null);
-        p1.setBezeichnung("Ohne Projekt");
-        projektliste.add(p1);
-
-        DBIterator<Projekt> list = Einstellungen.getDBService()
-            .createList(Projekt.class);
-        list.setOrder("ORDER BY bezeichnung");
-        while (list.hasNext())
-        {
-          projektliste.add(list.next());
-        }
-
-        Projekt p = null;
-        if (settingValue != null && !settingValue.isBlank())
-        {
-          if (settingValue.equals("0"))
-          {
-            p = p1;
-          }
-          else
-          {
-            try
-            {
-              p = (Projekt) Einstellungen.getDBService()
-                  .createObject(Projekt.class, settingValue);
-            }
-            catch (ObjectNotFoundException e)
-            {
-              //
-            }
-          }
-        }
-        input = new SelectInput(projektliste, p);
-        input.addListener(new FilterListener());
-        ((SelectInput) input).setAttribute("bezeichnung");
-        ((SelectInput) input).setPleaseChoose("Keine Einschränkung");
-        input.setName(filter.getAnzeigeText());
-        break;
-      case STEUER:
-        ArrayList<Steuer> steuerliste = new ArrayList<>();
-        Steuer s1 = (Steuer) Einstellungen.getDBService()
-            .createObject(Steuer.class, null);
-        s1.setName("Ohne Steuer");
-        steuerliste.add(s1);
-
-        DBIterator<Steuer> it = Einstellungen.getDBService()
-            .createList(Steuer.class);
-        it.setOrder("order by name");
-        while (it.hasNext())
-        {
-          steuerliste.add(it.next());
-        }
-
-        Steuer s = null;
-        if (settingValue != null && !settingValue.isBlank())
-        {
-          if (settingValue.equals("0"))
-          {
-            s = s1;
-          }
-          else
-          {
-            try
-            {
-              s = (Steuer) Einstellungen.getDBService()
-                  .createObject(Steuer.class, settingValue);
-            }
-            catch (ObjectNotFoundException e)
-            {
-              //
-            }
-          }
-        }
-        input = new SelectInput(steuerliste, s);
-        ((SelectInput) input).setAttribute("name");
-        ((SelectInput) input).setPleaseChoose(FilterControl.ALLE);
-        input.addListener(new FilterListener());
         input.setName(filter.getAnzeigeText());
         break;
     }

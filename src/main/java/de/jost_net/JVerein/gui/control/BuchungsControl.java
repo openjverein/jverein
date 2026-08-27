@@ -58,6 +58,7 @@ import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.HerkunftSpende;
+import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
