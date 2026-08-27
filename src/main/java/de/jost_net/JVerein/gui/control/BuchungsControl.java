@@ -112,6 +112,12 @@ import de.willuhn.util.ApplicationException;
 public class BuchungsControl extends FilterControl implements Savable
 {
 
+  public final static String GELDKONTO_PREFIX = "geldkonto.";
+
+  public final static String ANLAGENKONTO_PREFIX = "anlagenkonto.";
+
+  public final static String KONTO_ID = "kontoid";
+
   private BuchungListTablePart buchungsList;
 
   /* Split-Buchnungen */
@@ -184,11 +190,11 @@ public class BuchungsControl extends FilterControl implements Savable
   {
     super(view);
     this.kontenfilter = kontenfilter;
-    settingsprefix = "geldkonto.";
+    settingsprefix = GELDKONTO_PREFIX;
     if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
       geldkonto = false;
-      settingsprefix = "anlagenkonto.";
+      settingsprefix = ANLAGENKONTO_PREFIX;
     }
   }
 
@@ -319,7 +325,7 @@ public class BuchungsControl extends FilterControl implements Savable
       if (null != konto)
         return konto.getID();
     }
-    return settings.getString(settingsprefix + "kontoid", "");
+    return settings.getString(settingsprefix + BuchungsControl.KONTO_ID, "");
   }
 
   public Input getAuszugsnummer()
@@ -931,7 +937,8 @@ public class BuchungsControl extends FilterControl implements Savable
         throw new ApplicationException(
             "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
       }
-      settings.setAttribute(settingsprefix + "kontoid", konto.getID());
+      settings.setAttribute(settingsprefix + BuchungsControl.KONTO_ID,
+          konto.getID());
       return konto;
     }
     catch (RemoteException ex)
