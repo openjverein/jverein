@@ -154,28 +154,38 @@ public class FormularAufbereitungTest
   void formularHtmlTest()
       throws ApplicationException, IOException, DocumentException
   {
-    Formularfeld formularfeld = mock(Formularfeld.class);
+    Formularfeld feld1 = mock(Formularfeld.class);
     doReturn(
         "<table border='1'><tr><td>Spalte</td><td><b>Fett</b></td><td><i>Kursiv</i></td></tr>"
             + "<tr><td><strong>Strong</strong></td><td><small>Klein</small></td><td><s>Durchgestrichen</s></td></tr></table>"
-            + "<ul><li>Aufzählung</li><li>mit mehreren</li><li>Punkten</li></ul>")
-                .when(formularfeld).getName();
-    doReturn(Fonts.FreeSans.getName()).when(formularfeld).getFont();
-    doReturn(30d).when(formularfeld).getX();
-    doReturn(260d).when(formularfeld).getY();
-    doReturn(Ausrichtung.LINKS).when(formularfeld).getAusrichtung();
-    doReturn(10).when(formularfeld).getFontsize();
+            + "<ul style='list-style-type:\"-\"'><li>Aufzählung</li><li>mit mehreren</li><li>Punkten</li></ul>")
+                .when(feld1).getName();
+    doReturn(Fonts.FreeSans.getName()).when(feld1).getFont();
+    doReturn(30d).when(feld1).getX();
+    doReturn(260d).when(feld1).getY();
+    doReturn(Ausrichtung.LINKS).when(feld1).getAusrichtung();
+    doReturn(10).when(feld1).getFontsize();
 
     Formularfeld feld2 = mock(Formularfeld.class);
+    doReturn(
+        "<p>Feld mit ungültiger Font,<br /> Fallback soll verwenet werden</p>")
+            .when(feld2).getName();
+    doReturn("font-gibt-es-nicht").when(feld2).getFont();
+    doReturn(170d).when(feld2).getX();
+    doReturn(180d).when(feld2).getY();
+    doReturn(Ausrichtung.RECHTS).when(feld2).getAusrichtung();
+    doReturn(15).when(feld2).getFontsize();
+
+    Formularfeld feld3 = mock(Formularfeld.class);
     doReturn("<p>Feld über mehrere Seiten.</p>"
         + "<div style='width:60px'><p>Das ist ein langer Text, die Breite ist per CSS festgelegt.</p></div>[[newPage]]"
         + "<p>Das steht auf der 2. Seite an der gleichen Position wie auf der 1. Seite.</p>")
-            .when(feld2).getName();
-    doReturn(Fonts.FreeSans.getName()).when(feld2).getFont();
-    doReturn(40d).when(feld2).getX();
-    doReturn(220d).when(feld2).getY();
-    doReturn(Ausrichtung.MITTE).when(feld2).getAusrichtung();
-    doReturn(10).when(feld2).getFontsize();
+            .when(feld3).getName();
+    doReturn(Fonts.CourierPrime.getName()).when(feld3).getFont();
+    doReturn(40d).when(feld3).getX();
+    doReturn(220d).when(feld3).getY();
+    doReturn(Ausrichtung.MITTE).when(feld3).getAusrichtung();
+    doReturn(12).when(feld3).getFontsize();
 
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     Document doc = new Document();
@@ -190,12 +200,12 @@ public class FormularAufbereitungTest
     doReturn(1).when(formular).getZaehler();
     doReturn(bos.toByteArray()).when(formular).getInhalt();
     doReturn(
-        PseudoIterator.fromArray(new Formularfeld[] { formularfeld, feld2 }))
+        PseudoIterator.fromArray(new Formularfeld[] { feld1, feld2, feld3 }))
             .when(formular).getFormularfelder(1);
 
     File file = File.createTempFile("formular", ".pdf");
 
-    FormularAufbereitung aufbereitung = new FormularAufbereitung(file, false,
+    FormularAufbereitung aufbereitung = new FormularAufbereitung(file, true,
         false);
     aufbereitung.writeForm(formular, Collections.singletonMap("test", "Test"));
     aufbereitung.closeFormular();
