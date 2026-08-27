@@ -53,7 +53,6 @@ public class AnlagenbuchungListeView extends AbstractView
 
     final BuchungsControl control = new BuchungsControl(this,
         Kontenfilter.ANLAGEKONTO);
-    control.init("anlagenkonto.", null, null);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));

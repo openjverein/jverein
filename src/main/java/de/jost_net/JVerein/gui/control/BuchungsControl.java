@@ -183,9 +183,11 @@ public class BuchungsControl extends FilterControl implements Savable
   {
     super(view);
     this.kontenfilter = kontenfilter;
+    settingsprefix = "geldkonto.";
     if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
       geldkonto = false;
+      settingsprefix = "anlagenkonto.";
     }
   }
 

@@ -55,7 +55,6 @@ public class BuchungListeView extends AbstractView
 
     final BuchungsControl control = new BuchungsControl(this,
         Kontenfilter.GELDKONTO);
-    control.init("geldkonto.", null, null);
 
     TabFolder folder = new TabFolder(getParent(), SWT.V_SCROLL | SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
