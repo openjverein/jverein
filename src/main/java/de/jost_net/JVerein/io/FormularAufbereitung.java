@@ -98,9 +98,6 @@ import de.willuhn.util.ApplicationException;
 
 public class FormularAufbereitung
 {
-
-  private static boolean fontsInitialiced = false;
-
   private Document doc;
 
   private FileOutputStream fos;
@@ -133,19 +130,19 @@ public class FormularAufbereitung
     this.encrypt = encrypt;
   }
 
+  static
+  {
+    for (Fonts font : Fonts.values())
+    {
+      FontFactory.register("/fonts/" + font.getName() + ".ttf", font.getName());
+    }
+  }
+
   private void init()
       throws IOException, DocumentException, ApplicationException
   {
     doc = new Document();
     fos = new FileOutputStream(f);
-    if (!fontsInitialiced)
-    {
-      for (Fonts f : Fonts.values())
-      {
-        FontFactory.register("/fonts/" + f.getName() + ".ttf", f.getName());
-      }
-      fontsInitialiced = true;
-    }
 
     if (pdfa)
     {
@@ -437,7 +434,10 @@ public class FormularAufbereitung
       Map<String, Object> map, PdfImportedPage page)
       throws DocumentException, IOException, ApplicationException
   {
-    String filename = String.format("/fonts/%s.ttf", feld.getFont());
+    // Fontname aus Key holen, so wird die Fallback Font verwendet, falls die
+    // angegebene nicht existiert
+    String font = Fonts.getByName(feld.getFont()).getName();
+    String filename = String.format("/fonts/%s.ttf", font);
     BaseFont baseFont = BaseFont.createFont(filename, BaseFont.IDENTITY_H,
         true);
 
@@ -463,20 +463,21 @@ public class FormularAufbereitung
 
     String stringVal = getString(val).replace("\\n", "\n").replaceAll("\r\n",
         "\n");
-    // HTML Parsen
-    if (stringVal
-        .matches("(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|ol|ul)>.*"))
+
+    boolean first = true;
+    for (String textSeite : stringVal.split("(?i)\\[\\[newPage\\]\\]"))
     {
-      boolean first = true;
-      for (String s : stringVal.split("(?i)\\[\\[newPage\\]\\]"))
+      if (!first)
       {
-        if (!first)
-        {
-          doc.newPage();
-          contentByte = writer.getDirectContent();
-          contentByte.addTemplate(page, 0, 0);
-        }
-        first = false;
+        doc.newPage();
+        contentByte = writer.getDirectContent();
+        contentByte.addTemplate(page, 0, 0);
+      }
+      first = false;
+      // HTML Parsen
+      if (stringVal.matches(
+          "(?si).*</(p|span|div|h[1-6]|b|i|u|s|table|ol|ul|strong|small|a)>.*"))
+      {
 
         float width;
         float height = y;
@@ -508,7 +509,7 @@ public class FormularAufbereitung
 
         StringBuilder sb = new StringBuilder();
         sb.append("*{font-family:'");
-        sb.append(feld.getFont());
+        sb.append(font);
         sb.append("';text-align:");
         sb.append(align);
         sb.append(";");
@@ -520,7 +521,8 @@ public class FormularAufbereitung
         }
         sb.append("}");
 
-        for (Element e : XMLWorkerHelper.parseToElementList(s, sb.toString()))
+        for (Element e : XMLWorkerHelper.parseToElementList(textSeite,
+            sb.toString()))
         {
           ct.addElement(e);
         }
@@ -530,89 +532,91 @@ public class FormularAufbereitung
         }
         contentByte.addTemplate(template, xPos, y - height);
       }
-      return;
-    }
-    for (String s : stringVal.split("\n"))
-    {
-      Object o = null;
-      // Unterschrift und QR-Code durch Bild ersetzen
-      if (s.matches("^\\$?[a-zA-Z0-9_]+$"))
+      else
       {
-        if (s.replace("$", "")
-            .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
+        for (String s : textSeite.split("\n"))
         {
-          // QR Code nur bei Zahlungsweg "Überweisung" anzeigen
-          if (map.get(RechnungVar.ZAHLUNGSWEG.getName()) != null
-              && Zahlungsweg.ÜBERWEISUNG != (int) map
-                  .get(RechnungVar.ZAHLUNGSWEG.getName()))
+          Object o = null;
+          // Unterschrift und QR-Code durch Bild ersetzen
+          if (s.matches("^\\$?[a-zA-Z0-9_]+$"))
           {
-            continue;
-          }
+            if (s.replace("$", "")
+                .equalsIgnoreCase(RechnungVar.QRCODE_SUMME.getName()))
+            {
+              // QR Code nur bei Zahlungsweg "Überweisung" anzeigen
+              if (map.get(RechnungVar.ZAHLUNGSWEG.getName()) != null
+                  && Zahlungsweg.ÜBERWEISUNG != (int) map
+                      .get(RechnungVar.ZAHLUNGSWEG.getName()))
+              {
+                continue;
+              }
 
-          com.itextpdf.text.Image i = com.itextpdf.text.Image
-              .getInstance(getPaymentQRCode(map), Color.BLACK);
-          float sz = mm2point(
-              (Integer) Einstellungen.getEinstellung(Property.QRCODESIZEINMM));
+              com.itextpdf.text.Image i = com.itextpdf.text.Image
+                  .getInstance(getPaymentQRCode(map), Color.BLACK);
+              float sz = mm2point((Integer) Einstellungen
+                  .getEinstellung(Property.QRCODESIZEINMM));
+              float offset = 0;
+              switch (feld.getAusrichtung())
+              {
+                case RECHTS:
+                  offset = sz;
+                  break;
+                case MITTE:
+                  offset = sz / 2;
+                default:
+                  break;
+              }
+              contentByte.addImage(i, sz, 0, 0, sz, x - offset, y - sz);
+              y -= sz + 3;
+              continue;
+            }
+
+            // Unterschrift
+            o = map.get(s.replace("$", ""));
+            if (o instanceof com.itextpdf.text.Image)
+            {
+              com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
+              float sh = i.getScaledHeight();
+              float sw = i.getScaledWidth();
+              float offset = 0;
+              switch (feld.getAusrichtung())
+              {
+                case RECHTS:
+                  offset = sw;
+                  break;
+                case MITTE:
+                  offset = sw / 2;
+                default:
+                  break;
+              }
+              contentByte.addImage(i, sw, 0, 0, sh, x - offset, y);
+              y -= sh + 3;
+              continue;
+            }
+            else if (o instanceof String)
+            {
+              s = (String) o;
+            }
+          }
+          contentByte.setFontAndSize(baseFont, feld.getFontsize().floatValue());
+          contentByte.beginText();
           float offset = 0;
           switch (feld.getAusrichtung())
           {
             case RECHTS:
-              offset = sz;
+              offset = contentByte.getEffectiveStringWidth(s, true);
               break;
             case MITTE:
-              offset = sz / 2;
+              offset = contentByte.getEffectiveStringWidth(s, true) / 2;
             default:
               break;
           }
-          contentByte.addImage(i, sz, 0, 0, sz, x - offset, y - sz);
-          y -= sz + 3;
-          continue;
-        }
-
-        // Unterschrift
-        o = map.get(s.replace("$", ""));
-        if (o instanceof com.itextpdf.text.Image)
-        {
-          com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
-          float sh = i.getScaledHeight();
-          float sw = i.getScaledWidth();
-          float offset = 0;
-          switch (feld.getAusrichtung())
-          {
-            case RECHTS:
-              offset = sw;
-              break;
-            case MITTE:
-              offset = sw / 2;
-            default:
-              break;
-          }
-          contentByte.addImage(i, sw, 0, 0, sh, x - offset, y);
-          y -= sh + 3;
-          continue;
-        }
-        else if (o instanceof String)
-        {
-          s = (String) o;
+          contentByte.moveText(x - offset, y);
+          contentByte.showText(s);
+          contentByte.endText();
+          y -= feld.getFontsize().floatValue() + 3;
         }
       }
-      contentByte.setFontAndSize(baseFont, feld.getFontsize().floatValue());
-      contentByte.beginText();
-      float offset = 0;
-      switch (feld.getAusrichtung())
-      {
-        case RECHTS:
-          offset = contentByte.getEffectiveStringWidth(s, true);
-          break;
-        case MITTE:
-          offset = contentByte.getEffectiveStringWidth(s, true) / 2;
-        default:
-          break;
-      }
-      contentByte.moveText(x - offset, y);
-      contentByte.showText(s);
-      contentByte.endText();
-      y -= feld.getFontsize().floatValue() + 3;
     }
   }
 
