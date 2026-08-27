@@ -60,8 +60,8 @@ public class BuchungNeuAction implements Action
       }
       else
       {
-        String kontoid = control.getSettings().getString(
-            control.getSettingsPrefix() + Filter.KONTO.getSetting(), "");
+        String kontoid = control.getSettings()
+            .getString(control.getSettingsPrefix() + "kontoid", "");
         if (kontoid != null && !kontoid.isEmpty())
         {
           Konto k = null;

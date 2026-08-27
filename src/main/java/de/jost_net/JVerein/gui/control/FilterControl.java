@@ -892,12 +892,12 @@ public abstract class FilterControl extends VorZurueckControl
     return new Button("Filter-Reset", c -> {
       settings.setAttribute("id", "");
       settings.setAttribute("profilname", "");
-      Calendar calendar = Calendar.getInstance();
-      Integer year = calendar.get(Calendar.YEAR);
       Date startGJ = null;
       Date endGJ = null;
       if (initVonBis)
       {
+        Calendar calendar = Calendar.getInstance();
+        Integer year = calendar.get(Calendar.YEAR);
         try
         {
           startGJ = Datum.toDate((String) Einstellungen
