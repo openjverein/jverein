@@ -87,12 +87,7 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
       handleNeu();
     }, null, true, "document-new.png");
 
-    buttons.addButton("Überchreiben", context -> {
-      if (!confirm("Profil überschreiben",
-          "Soll das ausgewählte Profil wirklich überschrieben werden?"))
-      {
-        return;
-      }
+    buttons.addButton("Speichern", context -> {
       handleSpeichern(null);
     }, null, false, "document-save.png");
 
@@ -106,13 +101,6 @@ public class TabelleProfilAuswahlDialog extends AbstractDialog<Object>
     }, null, false, "user-trash-full.png");
 
     buttons.addButton("Anwenden", context -> {
-      if (!confirm("Profil anwenden",
-          "Soll das ausgewählte Profil wirklich angewendet werden?\n"
-              + "Es überschreibt die Einstellungen des Spaltenauswahl Dialogs\n"
-              + "und der CSV/PDF Export Dialoge."))
-      {
-        return;
-      }
       handleAnwenden();
     }, null, false, "view-refresh.png");
 
