@@ -417,7 +417,6 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
 
     buttons.paint(parent);
 
-    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());

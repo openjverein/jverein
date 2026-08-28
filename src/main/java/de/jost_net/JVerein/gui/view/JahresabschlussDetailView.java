@@ -103,7 +103,6 @@ public class JahresabschlussDetailView extends AbstractView
     buttons.addButton(save);
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());

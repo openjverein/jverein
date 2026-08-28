@@ -46,7 +46,6 @@ public class AbweichendeZahlerView extends AbstractView
         DokumentationUtil.ABWEICHENDEZAHLER, false, "question-circle.png");
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());

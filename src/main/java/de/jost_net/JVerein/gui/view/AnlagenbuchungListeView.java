@@ -129,7 +129,6 @@ public class AnlagenbuchungListeView extends AbstractView
         "document-new.png");
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.getProfilePanelButton());
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
     GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
     GUI.getView().addPanelButton(control.getSpaltenPanelButton());
