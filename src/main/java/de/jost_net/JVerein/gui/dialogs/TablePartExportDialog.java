@@ -17,15 +17,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -46,21 +43,23 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
-import de.willuhn.jameica.gui.Action;
+import de.willuhn.datasource.BeanUtil;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Settings;
-import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 public class TablePartExportDialog extends AbstractPartExportDialog
 {
   private Table table;
 
+  private JVereinTablePart tablePart;
+
   public TablePartExportDialog(Table table, String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename)
-      throws ApplicationException
+      String title, String subtitle, String filename,
+      JVereinTablePart tablePart) throws ApplicationException
   {
-    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren");
+    super(settingPrefix, art, title, subtitle, filename, "Tabelle exportieren",
+        tablePart);
 
     if (table == null || table.isDisposed() || !(table instanceof Table))
     {
@@ -72,81 +71,8 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     }
 
     this.table = table;
+    this.tablePart = tablePart;
     settings = new Settings(this.getClass());
-  }
-
-  @Override
-  protected void paint(Composite parent)
-      throws ApplicationException, RemoteException
-  {
-    // Spalten so wie angezeigt sortieren
-    List<TableColumn> listeSortiert = new ArrayList<>();
-    int[] order = table.getColumnOrder();
-    for (int i = 0; i < table.getColumnCount(); i++)
-    {
-      TableColumn col = table.getColumn(order[i]);
-      // Leere Dummy-Spalte am Ende überspringen
-      if (col.getText().isBlank())
-      {
-        continue;
-      }
-      col.setData(settings.getInt(settingPrefix + "breite." + col.getText(),
-          col.getWidth()));
-      listeSortiert.add(col);
-    }
-
-    spaltenList = new JVereinTablePart(listeSortiert, null)
-    {
-      // Sortieren verhindern
-      @Override
-      protected void orderBy(int index)
-      {
-        return;
-      }
-    };
-    if (art.equals(ExportArt.PDF))
-    {
-      spaltenList.addChangeListener((object, attribute, newValue) -> {
-        try
-        {
-          ((TableColumn) object).setData(Integer.parseInt(newValue));
-        }
-        catch (Exception e)
-        {
-          throw new ApplicationException("Ungültiger Wert");
-        }
-      });
-    }
-    createGui(parent, new Action()
-    {
-
-      // Action zum Reset der Spaltenbreiten
-      @SuppressWarnings("unchecked")
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          for (TableColumn col : (List<TableColumn>) spaltenList.getItems())
-          {
-            col.setData(col.getWidth());
-          }
-          spaltenList.removeAll();
-          for (TableColumn col : listeSortiert)
-          {
-            spaltenList.addItem(col);
-            spaltenList.setChecked(col, settings
-                .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-          }
-        }
-        catch (RemoteException re)
-        {
-          Logger.error("Fehler beim zurücksetzen der Breiten", re);
-          throw new ApplicationException(
-              "Fehler beim zurücksetzen der Breiten");
-        }
-      }
-    });
   }
 
   @Override
@@ -156,29 +82,27 @@ public class TablePartExportDialog extends AbstractPartExportDialog
         CsvPreference.EXCEL_NORTH_EUROPE_PREFERENCE))
     {
       @SuppressWarnings("unchecked")
-      List<TableColumn> listeAuswahl = spaltenList.getItems();
-      List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
-      TableItem[] rows = table.getItems();
+      List<ExportSpalte> spalten = spaltenList.getItems();
 
-      CellProcessor[] cellProcessor = new CellProcessor[listeAuswahl.size()];
-      String[] header = new String[listeAuswahl.size()];
+      CellProcessor[] cellProcessor = new CellProcessor[spalten.size()];
+      String[] header = new String[spalten.size()];
 
       int n = 0;
-      for (TableColumn col : listeAuswahl)
+      for (ExportSpalte col : spalten)
       {
-        header[n] = col.getText();
+        header[n] = col.getColumn().getName();
         cellProcessor[n++] = new ConvertNullTo("");
       }
       writer.writeHeader(header);
 
-      for (TableItem row : rows)
+      for (Object item : tablePart.getItems())
       {
         Map<String, Object> csvzeile = new HashMap<>();
         int i = 0;
-        for (TableColumn col : listeAuswahl)
+        for (ExportSpalte col : spalten)
         {
-          int index = listeOrig.indexOf(col);
-          String text = row.getText(index);
+          Object o = BeanUtil.get(item, col.getColumn().getColumnId());
+          String text = col.getColumn().getFormattedValue(o, col);
           // Haken "Geprüft" und Schloß "Abgeschlossen" Icons ersetzen
           if (text.equals("\u2705") || text.equals("\uD83D\uDD12"))
           {
@@ -205,30 +129,51 @@ public class TablePartExportDialog extends AbstractPartExportDialog
             (Boolean) zellenTransparent.getValue());)
     {
       @SuppressWarnings("unchecked")
-      List<TableColumn> listeAuswahl = spaltenList.getItems();
-      List<TableColumn> listeOrig = Arrays.asList(table.getColumns());
-      TableItem[] rows = table.getItems();
+      // TODO sortierung
+      List<ExportSpalte> listeAuswahl = spaltenList.getItems();
 
-      for (TableColumn col : listeAuswahl)
+      Object testObject = tablePart.getItems().get(0);
+      for (ExportSpalte col : listeAuswahl)
       {
-        reporter.addHeaderColumn(col.getText(),
-            col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                : Element.ALIGN_RIGHT,
-            (int) col.getData(), getHintergrundHeader(),
+        switch (col.getColumn().getAlign())
+        {
+          case Column.ALIGN_LEFT:
+            col.setAlign(Element.ALIGN_LEFT);
+            break;
+          case Column.ALIGN_RIGHT:
+            col.setAlign(Element.ALIGN_RIGHT);
+            break;
+          case Column.ALIGN_CENTER:
+            col.setAlign(Element.ALIGN_CENTER);
+            break;
+          case Column.ALIGN_AUTO:
+            // Ansonsten Testobjekt laden für automatische Ausrichtung von
+            // Spalten
+            Object value = BeanUtil.get(testObject,
+                col.getColumn().getColumnId());
+            col.setAlign(value instanceof Number ? Element.ALIGN_RIGHT
+                : Element.ALIGN_LEFT);
+            break;
+        }
+
+        reporter.addHeaderColumn(col.getColumn().getName(), col.getAlign(),
+            col.getBreite(), getHintergrundHeader(),
             getFontHeader(BaseColor.BLACK));
       }
       reporter.createHeader();
 
-      for (TableItem row : rows)
+      for (Object origObj : tablePart.getItems())
       {
-        for (TableColumn col : listeAuswahl)
+        TableItem tItem = getItem(table.getItems(), origObj);
+        for (ExportSpalte spalte : listeAuswahl)
         {
-          int index = listeOrig.indexOf(col);
-          String text = row.getText(index);
+          Object o = BeanUtil.get(origObj, spalte.getColumn().getColumnId());
+          String text = spalte.getColumn().getFormattedValue(o, spalte);
+
           // Die Hintergrundfarbe muss in Data gespeichert sein, sonst hängt sie
           // vom verwendeten Theme ab.
-          Color bg = (Color) row.getData("background");
-          Font font = getFont(text, row.getFont(index).getFontData());
+          Color bg = (Color) tItem.getData("background");
+          Font font = getFont(text, tItem.getFont().getFontData());
 
           // Icons ersetzen die in den Standard Fonts nicht enthalten sind
           Font iconfont = FontFactory.getFont("/fonts/fontawesome-webfont.ttf",
@@ -248,17 +193,12 @@ public class TablePartExportDialog extends AbstractPartExportDialog
 
           if (bg == null)
           {
-            reporter.addColumn(text,
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
-                font);
+            reporter.addColumn(text, spalte.getAlign(), font);
           }
           else
           {
-            reporter.addColumn(text,
-                col.getAlignment() == Column.ALIGN_LEFT ? Element.ALIGN_LEFT
-                    : Element.ALIGN_RIGHT,
-                getHintergrundTabelle(), font);
+            reporter.addColumn(text, spalte.getAlign(), getHintergrundTabelle(),
+                font);
           }
         }
       }
@@ -266,32 +206,29 @@ public class TablePartExportDialog extends AbstractPartExportDialog
     }
   }
 
-  @SuppressWarnings("unchecked")
-  @Override
-  protected void saveSettings() throws RemoteException
+  private TableItem getItem(TableItem[] treeItems, Object o)
   {
-    List<TableColumn> itemsChecked = spaltenList.getItems();
-    for (TableColumn col : (List<TableColumn>) spaltenList.getItems(false))
+    for (TableItem i : treeItems)
     {
-      settings.setAttribute(settingPrefix + "anzeigen." + col.getText(),
-          itemsChecked.contains(col));
-      if (art.equals(ExportArt.PDF))
+      if (i.getData().equals(o))
       {
-        settings.setAttribute(settingPrefix + "breite." + col.getText(),
-            (Integer) col.getData());
+        return i;
       }
     }
-    super.saveSettings();
+    return null;
   }
 
   @Override
-  void setChecked()
+  Item getColumn(String name)
   {
-    for (TableColumn col : table.getColumns())
+    for (TableColumn c : table.getColumns())
     {
-      spaltenList.setChecked(col, settings
-          .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
-    }
-  }
+      if (c.getText().equals(name))
 
+      {
+        return c;
+      }
+    }
+    return null;
+  }
 }

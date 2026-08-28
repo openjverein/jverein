@@ -239,7 +239,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     {
       if (!new TablePartExportDialog((Table) tableControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename).open())
+          filename, this).open())
       {
         throw new OperationCanceledException();
       }

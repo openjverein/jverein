@@ -16,13 +16,19 @@ package de.jost_net.JVerein.gui.dialogs;
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Item;
 import org.eclipse.swt.widgets.TabFolder;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TreeColumn;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.DocumentException;
@@ -34,6 +40,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.input.FontInput;
 import de.jost_net.JVerein.gui.input.FormularInput;
+import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.keys.FormularArt;
@@ -47,6 +54,7 @@ import de.willuhn.jameica.gui.input.IntegerInput;
 import de.willuhn.jameica.gui.input.SelectInput;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.parts.ButtonArea;
+import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.util.TabGroup;
 import de.willuhn.jameica.system.OperationCanceledException;
 import de.willuhn.jameica.system.Settings;
@@ -119,9 +127,13 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   private ExportLayoutParam params;
 
+  private IJVereinPart part;
+
+  private List<ExportSpalte> colList;
+
   public AbstractPartExportDialog(String settingPrefix, ExportArt art,
-      String title, String subtitle, String filename, String dialogTitel)
-      throws ApplicationException
+      String title, String subtitle, String filename, String dialogTitel,
+      IJVereinPart part) throws ApplicationException
   {
     super(AbstractPartExportDialog.POSITION_CENTER);
     this.title = title;
@@ -129,6 +141,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.filename = filename;
     this.art = art;
     this.settingPrefix = settingPrefix + art.toString() + ".";
+    this.part = part;
 
     setTitle(dialogTitel);
     setSize(400, SWT.DEFAULT);
@@ -139,7 +152,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   {
     if (spaltenList != null)
     {
-      spaltenList.addColumn("Name", "text");
+      spaltenList.addColumn("Spalten", "column.name");
       spaltenList.setCheckable(true);
     }
 
@@ -155,7 +168,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     setChecked();
 
     ButtonArea b = new ButtonArea();
-    b.addButton("Speichern", c -> export(), null, true, "ok.png");
+
+    b.addButton("Starten", c -> export(), null, true, "walking.png");
 
     b.addButton("Abbrechen", c -> {
       throw new OperationCanceledException();
@@ -174,7 +188,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     if (spaltenList != null)
     {
       TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
-      spaltenList.addColumn("Breite", "data", null, true);
+      spaltenList.addColumn("Breite", "breite", null, true);
       tabSpalten.addPart(spaltenList);
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
@@ -337,8 +351,72 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }
   }
 
+  @Override
+  protected void paint(Composite parent)
+      throws ApplicationException, RemoteException
+  {
+    colList = new ArrayList<>();
+    for (Column col : part.getAllColums())
+    {
+      int breite = settings.getInt(settingPrefix + "breite." + col.getName(),
+          0);
+      if (breite == 0)
+      {
+        Item i = getColumn(col.getName());
+        if (i instanceof TreeColumn)
+        {
+          breite = ((TreeColumn) i).getWidth();
+        }
+        else if (i instanceof TableColumn)
+        {
+          breite = ((TableColumn) i).getWidth();
+        }
+      }
+      colList.add(new ExportSpalte(col, breite));
+    }
+
+    spaltenList = new JVereinTablePart(colList, null)
+    {
+      // Sortieren verhindern
+      @Override
+      protected void orderBy(int index)
+      {
+        return;
+      }
+    };
+    if (art.equals(ExportArt.PDF))
+    {
+      spaltenList.addChangeListener((object, attribute, newValue) -> {
+        try
+        {
+          ((ExportSpalte) object).setBreite(Integer.parseInt(newValue));
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException("Ungültiger Wert");
+        }
+      });
+    }
+    createGui(parent, c -> setWidth());
+  }
+
+  @SuppressWarnings("unchecked")
   protected void saveSettings() throws RemoteException
   {
+    List<ExportSpalte> itemsChecked = spaltenList.getItems();
+    for (ExportSpalte sp : (List<ExportSpalte>) spaltenList.getItems(false))
+    {
+      settings.setAttribute(
+          settingPrefix + "anzeigen." + sp.getColumn().getName(),
+          itemsChecked.contains(sp));
+      if (art.equals(ExportArt.PDF))
+      {
+        settings.setAttribute(
+            settingPrefix + "breite." + sp.getColumn().getName(),
+            sp.getBreite());
+      }
+    }
+
     if (art.equals(ExportArt.PDF))
     {
       settings.setAttribute(settingPrefix + "links",
@@ -525,10 +603,126 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     return success;
   }
 
-  abstract void setChecked();
+  void resetSpalten() throws ApplicationException
+  {
+    try
+    {
+      spaltenList.removeAll();
+      colList = new ArrayList<>();
+      for (Column i : part.getAllColums())
+      {
+        Item c = getColumn(i.getName());
+        int breite = 0;
+        if (c instanceof TreeColumn)
+        {
+          breite = ((TreeColumn) c).getWidth();
+        }
+        else if (c instanceof TableColumn)
+        {
+          breite = ((TableColumn) c).getWidth();
+        }
+        colList.add(new ExportSpalte(i, breite));
+        ExportSpalte item = new ExportSpalte(i, breite);
+        spaltenList.addItem(item);
+        spaltenList.setChecked(item, breite > 0);
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler beim zurücksetzen der Spalten", re);
+      throw new ApplicationException("Fehler beim zurücksetzen der Spalten");
+    }
+  }
+
+  void setWidth() throws ApplicationException
+  {
+    try
+    {
+      spaltenList.removeAll();
+      colList = new ArrayList<>();
+      for (Column col : part.getAllColums())
+      {
+        Item c = getColumn(col.getName());
+        int breite = 0;
+        if (c instanceof TreeColumn)
+        {
+          breite = ((TreeColumn) c).getWidth();
+        }
+        else if (c instanceof TableColumn)
+        {
+          breite = ((TableColumn) c).getWidth();
+        }
+        ExportSpalte item = new ExportSpalte(col, breite);
+        colList.add(item);
+        spaltenList.addItem(item);
+        spaltenList.setChecked(item, settings.getBoolean(
+            settingPrefix + "anzeigen." + col.getName(), breite > 0));
+      }
+    }
+    catch (RemoteException re)
+    {
+      Logger.error("Fehler beim zurücksetzen der Breiten", re);
+      throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
+    }
+  }
+
+  void setChecked()
+  {
+    for (ExportSpalte sp : colList)
+    {
+      spaltenList.setChecked(sp,
+          settings.getBoolean(
+              settingPrefix + "anzeigen." + sp.getColumn().getName(),
+              part.getColums().contains(sp.getColumn())));
+    }
+  }
 
   abstract void exportCSV(File file) throws IOException;
 
   abstract void exportPDF(File file) throws IOException, DocumentException;
 
+  abstract Item getColumn(String name);
+
+  /**
+   * Hilfsklasse für die Spalten inkl. Breite
+   */
+  public class ExportSpalte
+  {
+    private int breite;
+
+    private Column column;
+
+    private int align;
+
+    public ExportSpalte(Column column, int breite)
+    {
+      this.column = column;
+      this.breite = breite;
+    }
+
+    public void setBreite(int breite)
+    {
+      this.breite = breite;
+    }
+
+    public int getBreite()
+    {
+      return breite;
+    }
+
+    public void setAlign(int align)
+    {
+      this.align = align;
+    }
+
+    public int getAlign()
+    {
+      return align;
+    }
+
+    public Column getColumn()
+    {
+      return column;
+    }
+  }
 }

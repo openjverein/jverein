@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Item;
 
 import com.itextpdf.text.DocumentException;
 import de.jost_net.JVerein.io.ISaldoExport;
@@ -40,7 +41,7 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
       throws ApplicationException
   {
     super(settingPrefix, art, title, subtitle, filename,
-        "Saldo Report generieren");
+        "Saldo Report generieren", null);
     this.export = export;
     this.zeile = zeile;
     settings = new Settings(this.getClass());
@@ -92,4 +93,16 @@ public class SaldoPartExportDialog extends AbstractPartExportDialog
     // Kein Spalten Tab
   }
 
+  @Override
+  void resetSpalten()
+  {
+    // Kein Spalten Tab
+  }
+
+  @Override
+  Item getColumn(String name)
+  {
+    // hier nicht nötig
+    return null;
+  }
 }

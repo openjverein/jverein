@@ -168,7 +168,7 @@ public class JVereinTreePart extends TreePart implements IJVereinPart
     {
       if (!new TreePartExportDialog((Tree) treeControl,
           getTablePartID(tablePartId, tableName), art, title, subtitle,
-          filename).open())
+          filename, this).open())
       {
         throw new OperationCanceledException();
       }
