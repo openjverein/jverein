@@ -22,6 +22,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -35,6 +36,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
@@ -126,7 +128,10 @@ public class BuchungsjournalExportPDF implements Exporter
       DocumentException, IOException
   {
     this.params = params;
+    // objects[0] = control, objects[1] ist der Filtertext
     BuchungsControl control = (BuchungsControl) objects[0];
+    @SuppressWarnings("unchecked")
+    Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
     BuchungQuery query = control.getQuery();
     BuchungsjournalSortDialog djs = new BuchungsjournalSortDialog(
         BuchungsjournalSortDialog.POSITION_CENTER);
@@ -288,7 +293,7 @@ public class BuchungsjournalExportPDF implements Exporter
     }
 
     reporter.closeTable();
-    reporter.addParams(control.getParams(), params);
+    reporter.addParams(filterparams, params);
     reporter.close();
     fos.close();
   }
