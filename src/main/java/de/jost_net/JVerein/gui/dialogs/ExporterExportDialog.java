@@ -85,4 +85,10 @@ public class ExporterExportDialog extends AbstractPartExportDialog
     // Kein Spalten Tab
   }
 
+  @Override
+  void resetSpalten()
+  {
+    // Kein Spalten Tab
+  }
+
 }
