@@ -18,14 +18,8 @@ package de.jost_net.JVerein.gui.control;
 
 import java.rmi.RemoteException;
 import java.text.ParseException;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -59,12 +53,12 @@ import de.jost_net.JVerein.gui.menu.SplitBuchungMenu;
 import de.jost_net.JVerein.gui.parts.BuchungListTablePart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.parts.SplitbuchungListTablePart;
-import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.gui.util.AfaUtil;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.jost_net.JVerein.io.Adressbuch.Adressaufbereitung;
-import de.jost_net.JVerein.keys.AbstractInputAuswahl;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.HerkunftSpende;
+import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.keys.SplitbuchungTyp;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Zahlungsweg;
@@ -80,14 +74,11 @@ import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.SollbuchungPosition;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.jost_net.JVerein.rmi.Steuer;
-import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.Geschaeftsjahr;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.jost_net.JVerein.util.VorlageUtil;
-import de.willuhn.datasource.GenericObject;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
-import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -118,10 +109,14 @@ import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
-public class BuchungsControl extends VorZurueckControl implements Savable
+public class BuchungsControl extends FilterControl implements Savable
 {
 
-  private de.willuhn.jameica.system.Settings settings;
+  public final static String GELDKONTO_PREFIX = "geldkonto.";
+
+  public final static String ANLAGENKONTO_PREFIX = "anlagenkonto.";
+
+  public final static String KONTO_ID = "kontoid";
 
   private BuchungListTablePart buchungsList;
 
@@ -153,6 +148,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private TextAreaInput kommentar;
 
+  private SelectInput steuer;
+
   // Definition für beide Auswahlvarianten (SelectInput und
   // BuchungsartSearchInput)
   private AbstractInput buchungsart;
@@ -160,26 +157,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   private SelectInput buchungsklasse;
 
   private SelectInput projekt;
-
-  private DialogInput suchkonto;
-
-  private SelectInput suchbuchungsart;
-
-  private SelectInput suchprojekt;
-
-  private SelectInput hasmitglied;
-
-  private DateInput vondatum = null;
-
-  private DateInput bisdatum = null;
-
-  private TextInput suchtext = null;
-
-  private TextInput suchbetrag = null;
-
-  private TextInput mitglied = null;
-
-  private SelectInput suchsteuer;
 
   private CheckboxInput verzicht;
 
@@ -197,23 +174,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private TextInput iban = null;
 
-  public static final String BUCHUNGSART = "suchbuchungsart";
-
-  public static final String PROJEKT = "suchprojekt";
-
-  public static final String MITGLIEDZUGEORDNET = "suchmitgliedzugeordnet";
-
-  public static final String SUCHSTEUER = "suchsteuer";
+  private CheckboxInput geprueft;
 
   private Vector<Listener> changeKontoListener = new Vector<>();
 
-  protected String settingsprefix = "geldkonto.";
-
-  private Kontenfilter kontenfilter = Kontenfilter.ALLE;
-
   private boolean geldkonto = true;
-
-  private TreeMap<String, String> params;
 
   private boolean editable = false;
 
@@ -221,109 +186,15 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private SollbuchungAuswahlDialog sollbuchungDialog = null;
 
-  // Query Parameter
-  private Date filter_dv;
-
-  private Date filter_db;
-
-  private Konto filter_konto;
-
-  private Boolean filter_mvalue;
-
-  private Buchungsart filter_buchungsart;
-
-  private Projekt filter_projekt;
-
-  private Boolean filter_ungeprueft;
-
-  private String filter_suchtext;
-
-  private String filter_suchbetrag;
-
-  private String filter_mitglied;
-
-  private Steuer filter_steuer;
-
-  private SplitFilter filter_split;
-
-  public enum Kontenfilter
-  {
-    GELDKONTO, // Beinhaltet Rückstellungen
-    ANLAGEKONTO,
-    ALLE
-  }
-
-  public enum SplitFilter
-  {
-    ALLE(0, "Alle"),
-    SPLIT(1, "Nur Splitbuchungen"),
-    HAUPT(2, "Nur Hauptbuchungen");
-
-    private String text;
-
-    private int key;
-
-    SplitFilter(int k, String t)
-    {
-      text = t;
-      key = k;
-    }
-
-    public String getText()
-    {
-      return text;
-    }
-
-    public int getKey()
-    {
-      return key;
-    }
-
-    @Override
-    public String toString()
-    {
-      return getText();
-    }
-
-    public static SplitFilter getByKey(int key)
-    {
-      for (SplitFilter split : SplitFilter.values())
-      {
-        if (split.getKey() == key)
-        {
-          return split;
-        }
-      }
-      return null;
-    }
-  }
-
-  private Calendar calendar = Calendar.getInstance();
-
-  private SelectInput suchsplitbuchung;
-
-  private CheckboxInput ungeprueft;
-
-  private SelectInput steuer;
-
-  private CheckboxInput geprueft;
-
-  private enum RANGE
-  {
-    MONAT,
-    TAG
-  }
-
   public BuchungsControl(AbstractView view, Kontenfilter kontenfilter)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
-    settings.setStoreWhenRead(true);
     this.kontenfilter = kontenfilter;
+    settingsprefix = GELDKONTO_PREFIX;
     if (kontenfilter == Kontenfilter.ANLAGEKONTO)
     {
       geldkonto = false;
-      settingsprefix = "anlagenkonto.";
+      settingsprefix = ANLAGENKONTO_PREFIX;
     }
   }
 
@@ -454,7 +325,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       if (null != konto)
         return konto.getID();
     }
-    return settings.getString(settingsprefix + "kontoid", "");
+    return settings.getString(settingsprefix + BuchungsControl.KONTO_ID, "");
   }
 
   public Input getAuszugsnummer()
@@ -556,112 +427,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     datum.setMandatory(true);
     datum.setEnabled(editable);
     return datum;
-  }
-
-  public TextInput getSuchtext()
-  {
-    if (suchtext != null)
-    {
-      return suchtext;
-    }
-    suchtext = new TextInput(
-        settings.getString(settingsprefix + "suchtext", ""), 35);
-    return suchtext;
-  }
-
-  public boolean isSuchtextAktiv()
-  {
-    return suchtext != null;
-  }
-
-  public TextInput getSuchBetrag() throws RemoteException
-  {
-    if (suchbetrag != null)
-    {
-      return suchbetrag;
-    }
-    suchbetrag = new TextInput(
-        settings.getString(settingsprefix + "suchbetrag", ""))
-    {
-      @Override
-      protected void update()
-      {
-        super.update();
-        this.text.setToolTipText(
-            "Nach Betrag Suchen\nFolgende Vergleichsoperatoren sind möglich:\n<\t>\t>=\t<=\t| (Betrag)\t.. (Bereich)");
-      }
-    };
-    return suchbetrag;
-  }
-
-  public boolean isSuchBetragAktiv()
-  {
-    return suchbetrag != null;
-  }
-
-  public TextInput getMitglied()
-  {
-    if (mitglied != null)
-    {
-      return mitglied;
-    }
-    mitglied = new TextInput(
-        settings.getString(settingsprefix + "mitglied", ""), 35);
-    return mitglied;
-  }
-
-  public boolean isMitgliedAktiv()
-  {
-    return mitglied != null;
-  }
-
-  public SelectInput getSuchSteuer() throws RemoteException
-  {
-    if (suchsteuer != null)
-    {
-      return suchsteuer;
-    }
-    ArrayList<Steuer> steuerliste = new ArrayList<>();
-    Steuer s1 = (Steuer) Einstellungen.getDBService().createObject(Steuer.class,
-        null);
-    s1.setName("Ohne Steuer");
-    steuerliste.add(s1);
-
-    DBIterator<Steuer> it = Einstellungen.getDBService()
-        .createList(Steuer.class);
-    it.setOrder("order by name");
-    while (it.hasNext())
-    {
-      steuerliste.add(it.next());
-    }
-    int swert = settings.getInt(settingsprefix + SUCHSTEUER, -2);
-    Steuer letztesuche = null;
-    if (swert == 0)
-    {
-      letztesuche = steuerliste.get(0);
-    }
-    else
-    {
-      try
-      {
-        letztesuche = (Steuer) Einstellungen.getDBService()
-            .createObject(Steuer.class, String.valueOf(swert));
-      }
-      catch (ObjectNotFoundException e)
-      {
-        //
-      }
-    }
-    suchsteuer = new SelectInput(steuerliste, letztesuche);
-    suchsteuer.setAttribute("name");
-    suchsteuer.setPleaseChoose("Alle");
-    suchsteuer.addListener(new FilterListener());
-    return suchsteuer;
-  }
-
-  public boolean isSuchSteuerAktiv()
-  {
-    return suchsteuer != null;
   }
 
   public CheckboxInput getVerzicht() throws RemoteException
@@ -1009,24 +774,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return projekt;
   }
 
-  public DialogInput getSuchKonto() throws RemoteException
-  {
-    if (suchkonto != null)
-    {
-      return suchkonto;
-    }
-    String kontoid = settings.getString(settingsprefix + "suchkontoid", "");
-    suchkonto = new KontoauswahlInput().getKontoAuswahl(true, kontoid, false,
-        true, kontenfilter);
-    suchkonto.addListener(new FilterListener());
-    return suchkonto;
-  }
-
-  public boolean isSuchKontoAktiv()
-  {
-    return suchkonto != null;
-  }
-
   public Button getSammelueberweisungButton()
   {
     sammelueberweisungButton = new Button("Sammelüberweisung", new Action()
@@ -1078,125 +825,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return sammelueberweisungButton;
   }
 
-  public SelectInput getSuchProjekt() throws RemoteException
-  {
-    if (suchprojekt != null)
-    {
-      return suchprojekt;
-    }
-    ArrayList<Projekt> projektliste = new ArrayList<>();
-    Projekt p1 = (Projekt) Einstellungen.getDBService()
-        .createObject(Projekt.class, null);
-    p1.setBezeichnung("Ohne Projekt");
-    projektliste.add(p1);
-
-    DBIterator<Projekt> list = Einstellungen.getDBService()
-        .createList(Projekt.class);
-    list.setOrder("ORDER BY bezeichnung");
-    while (list.hasNext())
-    {
-      projektliste.add(list.next());
-    }
-
-    int pwert = settings.getInt(settingsprefix + PROJEKT, -2);
-    Projekt p = null;
-    if (pwert == 0)
-    {
-      p = projektliste.get(0);
-    }
-    else
-    {
-      int size = projektliste.size();
-      for (int i = 1; i < size; i++)
-      {
-        if (projektliste.get(i).getID().equalsIgnoreCase(String.valueOf(pwert)))
-        {
-          p = projektliste.get(i);
-          break;
-        }
-      }
-    }
-
-    suchprojekt = new SelectInput(projektliste, p);
-    suchprojekt.addListener(new FilterListener());
-    suchprojekt.setAttribute("bezeichnung");
-    suchprojekt.setPleaseChoose("Keine Einschränkung");
-    return suchprojekt;
-  }
-
-  public boolean isSuchProjektAktiv()
-  {
-    return suchprojekt != null;
-  }
-
-  public SelectInput getSuchSplibuchung()
-  {
-    if (suchsplitbuchung != null)
-    {
-      return suchsplitbuchung;
-    }
-    int split = settings.getInt(settingsprefix + "split",
-        SplitFilter.ALLE.getKey());
-    suchsplitbuchung = new SelectInput(SplitFilter.values(),
-        SplitFilter.getByKey(split));
-    suchsplitbuchung.addListener(new FilterListener());
-
-    return suchsplitbuchung;
-  }
-
-  public boolean isSuchSplibuchungAktiv()
-  {
-    return suchsplitbuchung != null;
-  }
-
-  public SelectInput getSuchBuchungsart() throws RemoteException
-  {
-    if (suchbuchungsart != null)
-    {
-      return suchbuchungsart;
-    }
-
-    suchbuchungsart = (SelectInput) new BuchungsartInput().getBuchungsartInput(
-        null, buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
-
-    @SuppressWarnings("unchecked")
-    List<Buchungsart> suchliste = (List<Buchungsart>) suchbuchungsart.getList();
-    ArrayList<Buchungsart> liste = new ArrayList<>();
-    Buchungsart b2 = (Buchungsart) Einstellungen.getDBService()
-        .createObject(Buchungsart.class, null);
-    b2.setNummer("");
-    b2.setBezeichnung("Ohne Buchungsart");
-    b2.setArt(-1);
-    liste.add(b2);
-    for (Buchungsart ba : suchliste)
-      liste.add(ba);
-
-    String bwert = settings.getString(settingsprefix + BUCHUNGSART, "-99");
-    Buchungsart b = null;
-    int size = liste.size();
-    for (int i = 0; i < size; i++)
-    {
-      if (liste.get(i).getNummer().equals(bwert))
-      {
-        b = liste.get(i);
-        break;
-      }
-    }
-    suchbuchungsart.setList(liste);
-    suchbuchungsart.setValue(b);
-    suchbuchungsart.addListener(new FilterListener());
-    if (suchbuchungsart instanceof SelectInput)
-    {
-      suchbuchungsart.setPleaseChoose(FilterControl.ALLE);
-    }
-    return suchbuchungsart;
-  }
-
-  public boolean isSuchBuchungsartAktiv()
-  {
-    return suchbuchungsart != null;
-  }
-
   public SelectInput getSteuer() throws RemoteException
   {
     if (steuer != null)
@@ -1211,84 +839,11 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return steuer;
   }
 
-  public DateInput getVondatum()
-  {
-    if (vondatum != null)
-    {
-      return vondatum;
-    }
-    Date d = null;
-    try
-    {
-      d = new JVDateFormatTTMMJJJJ()
-          .parse(settings.getString(settingsprefix + "vondatum", "01.01.2006"));
-    }
-    catch (ParseException e)
-    {
-      //
-    }
-    this.vondatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.vondatum.setTitle("Anfangsdatum");
-    this.vondatum.setText("Bitte Anfangsdatum wählen");
-    this.vondatum.setMandatory(true);
-    return vondatum;
-  }
-
-  public boolean isVondatumAktiv()
-  {
-    return vondatum != null;
-  }
-
-  public DateInput getBisdatum()
-  {
-    if (bisdatum != null)
-    {
-      return bisdatum;
-    }
-    Date d = null;
-    try
-    {
-      d = new JVDateFormatTTMMJJJJ()
-          .parse(settings.getString(settingsprefix + "bisdatum", "31.12.2006"));
-    }
-    catch (ParseException e)
-    {
-      //
-    }
-    this.bisdatum = new DateInput(d, new JVDateFormatTTMMJJJJ());
-    this.bisdatum.setTitle("Anfangsdatum");
-    this.bisdatum.setText("Bitte Anfangsdatum wählen");
-    this.bisdatum.setMandatory(true);
-    return bisdatum;
-  }
-
-  public boolean isBisdatumAktiv()
-  {
-    return bisdatum != null;
-  }
-
-  public CheckboxInput getUngeprueft()
-  {
-    if (ungeprueft != null)
-    {
-      return ungeprueft;
-    }
-    ungeprueft = new CheckboxInput(
-        settings.getBoolean(settingsprefix + "ungeprueft", false));
-    ungeprueft.addListener(new FilterListener());
-    return ungeprueft;
-  }
-
-  public boolean isUngeprueftAktiv()
-  {
-    return ungeprueft != null;
-  }
-
-  public Button getStarteBuchungSollbuchungZuordnungAutomatischButton()
+  public Button getStarteBuchungSollbuchungZuordnungAutomatischButton(
+      DateInput vonDatum, DateInput bisDatum)
   {
     Button b = new Button("Zuordnung",
-        new BuchungSollbuchungZuordnungAutomatischAction(getVondatum(),
-            getBisdatum()),
+        new BuchungSollbuchungZuordnungAutomatischAction(vonDatum, bisDatum),
         null, false, "user-friends.png");
     return b;
   }
@@ -1299,7 +854,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     {
 
       @Override
-      public void handleAction(Object context)
+      public void handleAction(Object context) throws ApplicationException
       {
         try
         {
@@ -1382,7 +937,8 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         throw new ApplicationException(
             "Kein Konto Ausgewählt. Ggfs. erst unter Buchführung->Konten ein Konto anlegen.");
       }
-      settings.setAttribute(settingsprefix + "kontoid", konto.getID());
+      settings.setAttribute(settingsprefix + BuchungsControl.KONTO_ID,
+          konto.getID());
       return konto;
     }
     catch (RemoteException ex)
@@ -1455,19 +1011,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
   }
 
   @Override
-  public BuchungListTablePart getTablePart() throws RemoteException
+  public BuchungListTablePart getTablePart()
+      throws RemoteException, ApplicationException
   {
     if (buchungsList != null)
     {
       return buchungsList;
     }
 
-    saveFilterUndParams();
+    saveFilterSettings();
 
-    query = new BuchungQuery(filter_dv, filter_db, filter_konto,
-        filter_buchungsart, filter_projekt, filter_suchtext, filter_suchbetrag,
-        filter_mvalue, filter_mitglied, geldkonto, filter_split,
-        filter_ungeprueft, filter_steuer);
+    query = new BuchungQuery(getFilter(), geldkonto);
 
     List<Buchung> buchungen = query.get();
 
@@ -1575,9 +1129,9 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       buchungsList.addColumn("Spendenbescheinigung", "spendenbescheinigung");
     }
     buchungsList.setMulti(true);
-    buchungsList.setContextMenu(new BuchungMenu(this));
+    buchungsList.setContextMenu(new BuchungMenu(this, buchungsList));
     buchungsList.setRememberState(true);
-    buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+    buchungsList.updateSaldo((Konto) getFilterValue(Filter.KONTO));
     buchungsList.setAction(new BuchungAction(false, buchungsList));
     VorZurueckControl.setObjektListe(null, null);
     informKontoChangeListener();
@@ -1706,33 +1260,17 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return settings;
   }
 
-  public class FilterListener implements Listener
-  {
-    @Override
-    public void handleEvent(Event event)
-    {
-      if (event.type != SWT.Selection)
-      {
-        return;
-      }
-      refreshBuchungsList();
-    }
-  }
-
-  public void refreshBuchungsList()
+  public void refreshBuchungsList() throws ApplicationException
   {
     try
     {
-      saveFilterUndParams();
+      saveFilterSettings();
 
-      query = new BuchungQuery(filter_dv, filter_db, filter_konto,
-          filter_buchungsart, filter_projekt, filter_suchtext,
-          filter_suchbetrag, filter_mvalue, filter_mitglied, geldkonto,
-          filter_split, filter_ungeprueft, filter_steuer);
+      query = new BuchungQuery(getFilter(), geldkonto);
 
       List<Buchung> buchungen = query.get();
 
-      buchungsList.updateSaldo((Konto) getSuchKonto().getValue());
+      buchungsList.updateSaldo((Konto) getFilterValue(Filter.KONTO));
       buchungsList.removeAll();
 
       for (Buchung bu : buchungen)
@@ -1753,7 +1291,7 @@ public class BuchungsControl extends VorZurueckControl implements Savable
 
   private void informKontoChangeListener() throws RemoteException
   {
-    Konto k = (Konto) getSuchKonto().getValue();
+    Konto k = (Konto) getFilterValue(Filter.KONTO);
     Event event = new Event();
     event.data = k;
     for (Listener listener : changeKontoListener)
@@ -1865,47 +1403,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     }
   }
 
-  public SelectInput getSuchMitgliedZugeordnet()
-  {
-    if (hasmitglied != null)
-    {
-      return hasmitglied;
-    }
-
-    ArrayList<MitgliedZustand> liste = new ArrayList<>();
-
-    MitgliedZustand ja = new MitgliedZustand(true, "Ja");
-    liste.add(ja);
-
-    MitgliedZustand nein = new MitgliedZustand(false, "Nein");
-    liste.add(nein);
-
-    MitgliedZustand beide = new MitgliedZustand(null, "Beide");
-    liste.add(beide);
-
-    String bwert = settings.getString(settingsprefix + MITGLIEDZUGEORDNET,
-        "Beide");
-    MitgliedZustand b = ja;
-    for (int i = 0; i < liste.size(); i++)
-    {
-      if (liste.get(i).getText().equals(bwert))
-      {
-        b = liste.get(i);
-        break;
-      }
-    }
-
-    hasmitglied = new SelectInput(liste, b);
-    hasmitglied.addListener(new FilterListener());
-
-    return hasmitglied;
-  }
-
-  public boolean isSuchMitgliedZugeordnetAktiv()
-  {
-    return hasmitglied != null;
-  }
-
   public TextInput getIban() throws RemoteException
   {
     if (iban != null)
@@ -1918,322 +1415,14 @@ public class BuchungsControl extends VorZurueckControl implements Savable
     return iban;
   }
 
-  /**
-   * Hilfsklasse zur Anzeige der Importer.
-   */
-  private class MitgliedZustand
-      implements GenericObject, Comparable<MitgliedZustand>
-  {
-
-    private Boolean value = null;
-
-    private String text = null;
-
-    private MitgliedZustand(Boolean value, String text)
-    {
-      this.value = value;
-      this.text = text;
-    }
-
-    public Boolean getValue()
-    {
-      return value;
-    }
-
-    @SuppressWarnings("unused")
-    public void setValue(Boolean value)
-    {
-      this.value = value;
-    }
-
-    public String getText()
-    {
-      return text;
-    }
-
-    @SuppressWarnings("unused")
-    public void setText(String text)
-    {
-      this.text = text;
-    }
-
-    /**
-     * @see de.willuhn.datasource.GenericObject#getAttribute(java.lang.String)
-     */
-    @Override
-    public Object getAttribute(String arg0)
-    {
-      return getText();
-    }
-
-    /**
-     * @see de.willuhn.datasource.GenericObject#getAttributeNames()
-     */
-    @Override
-    public String[] getAttributeNames()
-    {
-      return new String[] { "name" };
-    }
-
-    /**
-     * @see de.willuhn.datasource.GenericObject#getID()
-     */
-    @Override
-    public String getID()
-    {
-      String repr = "null";
-      if (getValue() != null)
-        Boolean.toString(getValue());
-
-      return getText() + "#" + repr;
-    }
-
-    /**
-     * @see de.willuhn.datasource.GenericObject#getPrimaryAttribute()
-     */
-    @Override
-    public String getPrimaryAttribute()
-    {
-      return "name";
-    }
-
-    /**
-     * @see de.willuhn.datasource.GenericObject#equals(de.willuhn.datasource.GenericObject)
-     */
-    @Override
-    public boolean equals(GenericObject arg0) throws RemoteException
-    {
-      if (arg0 == null)
-        return false;
-      return this.getID().equals(arg0.getID());
-    }
-
-    /**
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(MitgliedZustand o)
-    {
-      if (o == null)
-      {
-        return -1;
-      }
-      try
-      {
-        return this.getText().compareTo((o).getText());
-      }
-      catch (Exception e)
-      {
-        // Tss, dann halt nicht
-      }
-      return 0;
-    }
-
-  }
-
-  public void resetFilter()
-  {
-    try
-    {
-      if (isSuchBuchungsartAktiv())
-      {
-        suchbuchungsart.setValue(null);
-      }
-      if (isSuchProjektAktiv())
-      {
-        suchprojekt.setValue(null);
-      }
-      if (isSuchBetragAktiv())
-      {
-        suchbetrag.setValue("");
-      }
-      if (isSuchSplibuchungAktiv())
-      {
-        suchsplitbuchung.setValue(SplitFilter.ALLE);
-      }
-      if (isSuchMitgliedZugeordnetAktiv())
-      {
-        hasmitglied.setValue(hasmitglied.getList().get(2));
-      }
-      Calendar calendar = Calendar.getInstance();
-      Integer year = calendar.get(Calendar.YEAR);
-      Date startGJ = Datum.toDate(
-          (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
-              + year);
-      if (calendar.getTime().before(startGJ))
-      {
-        year = year - 1;
-        startGJ = Datum.toDate(
-            (String) Einstellungen.getEinstellung(Property.BEGINNGESCHAEFTSJAHR)
-                + year);
-      }
-      if (isVondatumAktiv())
-      {
-        vondatum.setValue(startGJ);
-      }
-      calendar.setTime(startGJ);
-      calendar.add(Calendar.YEAR, 1);
-      calendar.add(Calendar.DAY_OF_MONTH, -1);
-      if (isBisdatumAktiv())
-      {
-        bisdatum.setValue(calendar.getTime());
-      }
-      if (isUngeprueftAktiv())
-      {
-        ungeprueft.setValue(false);
-      }
-      if (isSuchtextAktiv())
-      {
-        suchtext.setValue("");
-      }
-      if (isMitgliedAktiv())
-      {
-        mitglied.setValue("");
-      }
-      if (isSuchSteuerAktiv())
-      {
-        suchsteuer.setValue(null);
-      }
-
-      refreshBuchungsList();
-    }
-    catch (Exception ex)
-    {
-      Logger.error("Error filter reset", ex);
-    }
-  }
-
   public boolean getGeldkonto()
   {
     return geldkonto;
   }
 
-  public String getSettingsPrefix()
-  {
-    return settingsprefix;
-  }
-
-  public ToolTipButton getTTZurueckButton()
-  {
-    return new ToolTipButton("", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Date von = (Date) getVondatum().getValue();
-        Date bis = (Date) getBisdatum().getValue();
-        if (getRangeTyp(von, bis) == RANGE.TAG)
-        {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
-              bis.toInstant());
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.DAY_OF_MONTH, -delta);
-          getVondatum().setValue(calendar.getTime());
-          calendar.setTime(bis);
-          calendar.add(Calendar.DAY_OF_MONTH, -delta);
-          getBisdatum().setValue(calendar.getTime());
-        }
-        else
-        {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
-              .toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
-              .toLocalDate();
-          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.MONTH, -delta);
-          getVondatum().setValue(calendar.getTime());
-          calendar.add(Calendar.MONTH, delta);
-          calendar.add(Calendar.DAY_OF_MONTH, -1);
-          getBisdatum().setValue(calendar.getTime());
-        }
-        refreshBuchungsList();
-      }
-    }, null, false, "go-previous.png");
-  }
-
-  public ToolTipButton getTTVorButton()
-  {
-    return new ToolTipButton("", new Action()
-    {
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        Date von = (Date) getVondatum().getValue();
-        Date bis = (Date) getBisdatum().getValue();
-        if (getRangeTyp(von, bis) == RANGE.TAG)
-        {
-          int delta = (int) ChronoUnit.DAYS.between(von.toInstant(),
-              bis.toInstant());
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.DAY_OF_MONTH, delta);
-          getVondatum().setValue(calendar.getTime());
-          calendar.setTime(bis);
-          calendar.add(Calendar.DAY_OF_MONTH, delta);
-          getBisdatum().setValue(calendar.getTime());
-        }
-        else
-        {
-          LocalDate lvon = von.toInstant().atZone(ZoneId.systemDefault())
-              .toLocalDate();
-          LocalDate lbis = bis.toInstant().atZone(ZoneId.systemDefault())
-              .toLocalDate();
-          int delta = (int) ChronoUnit.MONTHS.between(lvon, lbis);
-          delta++;
-          calendar.setTime(von);
-          calendar.add(Calendar.MONTH, delta);
-          getVondatum().setValue(calendar.getTime());
-          calendar.add(Calendar.MONTH, delta);
-          calendar.add(Calendar.DAY_OF_MONTH, -1);
-          getBisdatum().setValue(calendar.getTime());
-        }
-        refreshBuchungsList();
-      }
-    }, null, false, "go-next.png");
-  }
-
-  private RANGE getRangeTyp(Date von, Date bis) throws ApplicationException
-  {
-    checkDate();
-    calendar.setTime(von);
-    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
-      return RANGE.TAG;
-    calendar.setTime(bis);
-    calendar.add(Calendar.DAY_OF_MONTH, 1);
-    if (calendar.get(Calendar.DAY_OF_MONTH) != 1)
-      return RANGE.TAG;
-    return RANGE.MONAT;
-  }
-
-  private void checkDate() throws ApplicationException
-  {
-    Date von = (Date) getVondatum().getValue();
-    Date bis = (Date) getBisdatum().getValue();
-    if (von == null)
-    {
-      throw new ApplicationException("Bitte Von Datum eingeben!");
-    }
-    if (bis == null)
-    {
-      throw new ApplicationException("Bitte Bis Datum eingeben!");
-    }
-    if (von.after(bis))
-    {
-      throw new ApplicationException("Von Datum ist nach Bis Datum!");
-    }
-  }
-
   public BuchungQuery getQuery()
   {
     return query;
-  }
-
-  public TreeMap<String, String> getParams()
-  {
-    return params;
   }
 
   /**
@@ -2294,175 +1483,6 @@ public class BuchungsControl extends VorZurueckControl implements Savable
         .unRegisterMessageConsumer(splitbuchungConsumer);
   }
 
-  public void saveFilterUndParams() throws RemoteException
-  {
-    params = new TreeMap<>();
-
-    // Werte speichern und Parameter füllen
-    filter_dv = null;
-    if (isVondatumAktiv())
-    {
-      filter_dv = (Date) getVondatum().getValue();
-    }
-    if (filter_dv == null)
-    {
-      throw new RemoteException("Bitte Von Datum eingeben!");
-    }
-    settings.setAttribute(settingsprefix + "vondatum",
-        new JVDateFormatTTMMJJJJ().format(filter_dv));
-
-    filter_db = null;
-    if (isBisdatumAktiv())
-    {
-      filter_db = (Date) getBisdatum().getValue();
-    }
-    if (filter_db == null)
-    {
-      throw new RemoteException("Bitte Bis Datum eingeben!");
-    }
-    settings.setAttribute(settingsprefix + "bisdatum",
-        new JVDateFormatTTMMJJJJ().format(filter_db));
-
-    filter_konto = null;
-    if (isSuchKontoAktiv())
-    {
-      if (getSuchKonto().getValue() != null)
-      {
-        filter_konto = (Konto) getSuchKonto().getValue();
-        settings.setAttribute(settingsprefix + "suchkontoid",
-            filter_konto.getID());
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + "suchkontoid", "");
-      }
-    }
-    filter_mvalue = null;
-    if (isSuchMitgliedZugeordnetAktiv()
-        && getSuchMitgliedZugeordnet().getValue() != null)
-    {
-      MitgliedZustand m = (MitgliedZustand) getSuchMitgliedZugeordnet()
-          .getValue();
-      filter_mvalue = m.getValue();
-      settings.setAttribute(settingsprefix + MITGLIEDZUGEORDNET, m.getText());
-      if (!m.getText().equalsIgnoreCase("Beide"))
-      {
-        params.put("Mitglied zugeordnet? ", m.getText());
-      }
-    }
-    filter_buchungsart = null;
-    if (isSuchBuchungsartAktiv())
-    {
-      filter_buchungsart = (Buchungsart) getSuchBuchungsart().getValue();
-    }
-    if (filter_buchungsart != null)
-    {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
-          filter_buchungsart.getNummer());
-      params.put("Buchungsart ", filter_buchungsart.getBezeichnung());
-    }
-    else
-    {
-      settings.setAttribute(settingsprefix + BuchungsControl.BUCHUNGSART,
-          "-99");
-    }
-    filter_projekt = null;
-    if (isSuchProjektAktiv())
-    {
-      if (getSuchProjekt().getValue() != null)
-      {
-        filter_projekt = (Projekt) getSuchProjekt().getValue();
-        if (filter_projekt.isNewObject())
-        {
-          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, 0);
-        }
-        else
-        {
-          settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT,
-              filter_projekt.getID());
-        }
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + BuchungsControl.PROJEKT, -2);
-      }
-    }
-    filter_ungeprueft = null;
-    if (isUngeprueftAktiv())
-    {
-      filter_ungeprueft = (Boolean) getUngeprueft().getValue();
-      settings.setAttribute(settingsprefix + "ungeprueft", filter_ungeprueft);
-      if (filter_ungeprueft)
-      {
-        params.put("Nur ungeprüfte ", filter_ungeprueft.toString());
-      }
-    }
-    filter_suchtext = null;
-    if (isSuchtextAktiv())
-    {
-      filter_suchtext = (String) getSuchtext().getValue();
-      settings.setAttribute(settingsprefix + "suchtext", filter_suchtext);
-      if (filter_suchtext != null && !filter_suchtext.isEmpty())
-      {
-        params.put("Enthaltener Text ", filter_suchtext);
-      }
-    }
-    filter_suchbetrag = null;
-    if (isSuchBetragAktiv())
-    {
-      filter_suchbetrag = (String) getSuchBetrag().getValue();
-      settings.setAttribute(settingsprefix + "suchbetrag", filter_suchbetrag);
-      if (filter_suchbetrag != null && !filter_suchbetrag.isEmpty())
-      {
-        params.put("Betrag ", filter_suchbetrag);
-      }
-    }
-    filter_mitglied = null;
-    if (isMitgliedAktiv())
-    {
-      filter_mitglied = (String) getMitglied().getValue();
-      settings.setAttribute(settingsprefix + "mitglied", filter_mitglied);
-      if (filter_mitglied != null && !filter_mitglied.isEmpty())
-      {
-        params.put("Mitglied Name ", filter_mitglied);
-      }
-    }
-    filter_split = null;
-    if (isSuchSplibuchungAktiv())
-    {
-      filter_split = (SplitFilter) getSuchSplibuchung().getValue();
-      settings.setAttribute(settingsprefix + "split",
-          (int) filter_split.getKey());
-      if (filter_split != SplitFilter.ALLE)
-      {
-        params.put("Splitbuchung ", filter_split.getText());
-      }
-    }
-
-    filter_steuer = null;
-    if (isSuchSteuerAktiv())
-    {
-      if (getSuchSteuer().getValue() != null)
-      {
-        filter_steuer = (Steuer) getSuchSteuer().getValue();
-        if (filter_steuer.isNewObject())
-        {
-          settings.setAttribute(settingsprefix + SUCHSTEUER, 0);
-        }
-        else
-        {
-          settings.setAttribute(settingsprefix + SUCHSTEUER,
-              filter_steuer.getID());
-        }
-        params.put("Steuer ", filter_steuer.getName());
-      }
-      else
-      {
-        settings.setAttribute(settingsprefix + SUCHSTEUER, -2);
-      }
-    }
-  }
-
   @Override
   protected String getTableTitle()
   {
@@ -2501,4 +1521,28 @@ public class BuchungsControl extends VorZurueckControl implements Savable
       return VorlageUtil.getName(VorlageTyp.ANLAGEN_BUCHUNGEN_DATEINAME, this);
     }
   }
+
+  @Override
+  protected void TabRefresh() throws ApplicationException
+  {
+    Date von = (Date) getFilterValue(Filter.DATUM_VON);
+    Date bis = (Date) getFilterValue(Filter.DATUM_BIS);
+    if (von == null)
+    {
+      GUI.getStatusBar().setErrorText("Bitte Von Datum eingeben!");
+      return;
+    }
+    if (bis == null)
+    {
+      GUI.getStatusBar().setErrorText("Bitte Bis Datum eingeben!");
+      return;
+    }
+    if (von.after(bis))
+    {
+      GUI.getStatusBar().setErrorText("Von Datum ist nach Bis Datum!");
+      return;
+    }
+    refreshBuchungsList();
+  }
+
 }

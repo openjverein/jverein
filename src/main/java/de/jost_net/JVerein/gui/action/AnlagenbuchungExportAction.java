@@ -36,7 +36,8 @@ public class AnlagenbuchungExportAction implements Action
     {
       BuchungsControl control = (BuchungsControl) context;
       control.refreshBuchungsList();
-      ExportDialog d = new ExportDialog(new Object[] { context },
+      ExportDialog d = new ExportDialog(
+          new Object[] { context, control.getFilterText(false) },
           AnlagenbuchungListeView.class, DokumentationUtil.ANLAGENBUCHUNGEN,
           context);
       d.open();

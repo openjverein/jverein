@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,15 +18,25 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import de.jost_net.JVerein.Einstellungen;
+import de.jost_net.JVerein.Einstellungen.Property;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlDialog;
 import de.jost_net.JVerein.gui.dialogs.EigenschaftenAuswahlParameter;
 import de.jost_net.JVerein.gui.dialogs.ZusatzfelderAuswahlDialog;
+import de.jost_net.JVerein.gui.input.BuchungsartInput;
 import de.jost_net.JVerein.gui.input.IntegerNullInput;
+import de.jost_net.JVerein.gui.input.KontoauswahlInput;
+import de.jost_net.JVerein.gui.input.BuchungsartInput.buchungsarttyp;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
+import de.jost_net.JVerein.keys.AbstractInputAuswahl;
 import de.jost_net.JVerein.keys.Differenz;
 import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.Filter.FilterArt;
+import de.jost_net.JVerein.rmi.Buchungsart;
+import de.jost_net.JVerein.rmi.Projekt;
+import de.jost_net.JVerein.rmi.Steuer;
 import de.jost_net.JVerein.keys.KeyEnum;
+import de.jost_net.JVerein.keys.Kontenfilter;
+import de.jost_net.JVerein.util.Datum;
 import de.jost_net.JVerein.util.JVDateFormatTTMMJJJJ;
 import de.willuhn.datasource.BeanUtil;
 import de.willuhn.datasource.GenericObject;
@@ -52,7 +63,7 @@ public abstract class FilterControl extends VorZurueckControl
 {
   private Calendar calendar = Calendar.getInstance();
 
-  final static String ALLE = "Alle";
+  public final static String ALLE = "Alle";
 
   // String für allgemeine Settings z.B. settings1
   protected String settingsprefix = "";
@@ -63,7 +74,13 @@ public abstract class FilterControl extends VorZurueckControl
   // String für Zusatfelder Anzahl
   private String additionalparamprefix2 = "";
 
+  // Sagt, ob DATUM_VON und DATUM_BIS mit den Daten des Geschäftsjahres beim
+  // Reset gefüllt werden sollen
+  private boolean initVonBis = false;
+
   protected Settings settings = null;
+
+  protected Kontenfilter kontenfilter = Kontenfilter.ALLE;
 
   /**
    * Map mit allen angewendeten Filtern und dem zugehörigen Input
@@ -73,7 +90,7 @@ public abstract class FilterControl extends VorZurueckControl
   public FilterControl(AbstractView view)
   {
     super(view);
-    settings = new de.willuhn.jameica.system.Settings(this.getClass());
+    settings = new Settings(this.getClass());
     settings.setStoreWhenRead(true);
   }
 
@@ -96,6 +113,23 @@ public abstract class FilterControl extends VorZurueckControl
       filter.put(entry.getKey(), value);
     }
     return filter;
+  }
+
+  /**
+   * Gibt den gewünschten Filter Value zurück
+   * 
+   * @param f
+   *          Filter
+   * 
+   * @return
+   */
+  public Object getFilterValue(Filter f)
+  {
+    if (f != null && filterMap.get(f) != null)
+    {
+      return filterMap.get(f).getValue();
+    }
+    return null;
   }
 
   /**
@@ -159,6 +193,10 @@ public abstract class FilterControl extends VorZurueckControl
       {
         text = ((Boolean) value) ? "Ja" : "Nein";
       }
+      else if (input instanceof DialogInput)
+      {
+        text = ((DialogInput) input).getText();
+      }
       else
       {
         text = value.toString();
@@ -179,6 +217,7 @@ public abstract class FilterControl extends VorZurueckControl
    * @throws RemoteException
    * @throws ApplicationException
    */
+  @SuppressWarnings("unchecked")
   public Input getFilterInput(Filter filter)
       throws RemoteException, ApplicationException
   {
@@ -195,6 +234,19 @@ public abstract class FilterControl extends VorZurueckControl
     {
       case TEXT:
         input = new TextInput(settingValue, 50);
+        input.setName(filter.getAnzeigeText());
+        break;
+      case BETRAG:
+        input = new TextInput(settingValue, 50)
+        {
+          @Override
+          protected void update()
+          {
+            super.update();
+            this.text.setToolTipText(
+                "Nach Betrag Suchen\nFolgende Vergleichsoperatoren sind möglich:\n<\t>\t>=\t<=\t| (Betrag)\t.. (Bereich)");
+          }
+        };
         input.setName(filter.getAnzeigeText());
         break;
       case CHECKBOX:
@@ -359,18 +411,44 @@ public abstract class FilterControl extends VorZurueckControl
         // DBObject Select
         else if (filter.getDbObject() != null)
         {
+
           DBIterator<?> it = Einstellungen.getDBService()
               .createList(filter.getDbObject());
 
-          DBObject def = null;
-          List<?> list = null;
-          try
+          DBObject def0 = null;
+          // Extra DB Einträge die nicht in der DB gespeichert sind
+          if (filter.equals(Filter.PROJEKT))
           {
-            def = Einstellungen.getDBService()
-                .createObject(filter.getDbObject(), settingValue);
+            def0 = (Projekt) Einstellungen.getDBService()
+                .createObject(Projekt.class, null);
+            ((Projekt) def0).setBezeichnung("Ohne Projekt");
           }
-          catch (ObjectNotFoundException e)
+          else if (filter.equals(Filter.STEUER))
           {
+            def0 = (Steuer) Einstellungen.getDBService()
+                .createObject(Steuer.class, null);
+            ((Steuer) def0).setName("Ohne Steuer");
+          }
+
+          DBObject def = null;
+          List<DBObject> list = null;
+          if (settingValue != null && !settingValue.isBlank())
+          {
+            if (settingValue.equals("0"))
+            {
+              def = def0;
+            }
+            else
+            {
+              try
+              {
+                def = Einstellungen.getDBService()
+                    .createObject(filter.getDbObject(), settingValue);
+              }
+              catch (ObjectNotFoundException e)
+              {
+              }
+            }
           }
 
           if (filter.equals(Filter.ABRECHNUNGSLAUF))
@@ -401,6 +479,10 @@ public abstract class FilterControl extends VorZurueckControl
                   return 0;
                 }
               });
+              if (def0 != null)
+              {
+                list.add(0, def0);
+              }
             }
           }
           input = new SelectInput(list, def);
@@ -415,6 +497,55 @@ public abstract class FilterControl extends VorZurueckControl
         }
         input.setName(filter.getAnzeigeText());
         input.addListener(new FilterListener());
+        break;
+      case KONTO:
+        input = new KontoauswahlInput().getKontoAuswahl(true, settingValue,
+            false, true, kontenfilter);
+        input.addListener(new FilterListener());
+        input.setName(filter.getAnzeigeText());
+        break;
+      case BUCHUNGSART:
+        input = (SelectInput) new BuchungsartInput().getBuchungsartInput(null,
+            buchungsarttyp.BUCHUNGSART, AbstractInputAuswahl.ComboBox);
+
+        List<Buchungsart> suchliste = (List<Buchungsart>) ((SelectInput) input)
+            .getList();
+        ArrayList<Buchungsart> liste = new ArrayList<>();
+        Buchungsart b1 = (Buchungsart) Einstellungen.getDBService()
+            .createObject(Buchungsart.class, null);
+        b1.setNummer("");
+        b1.setBezeichnung("Ohne Buchungsart");
+        b1.setArt(-1);
+        liste.add(b1);
+        for (Buchungsart ba : suchliste)
+        {
+          liste.add(ba);
+        }
+        Buchungsart b = null;
+        if (settingValue != null && !settingValue.isBlank())
+        {
+          if (settingValue.equals("0"))
+          {
+            b = b1;
+          }
+          else
+          {
+            try
+            {
+              b = (Buchungsart) Einstellungen.getDBService()
+                  .createObject(Buchungsart.class, settingValue);
+            }
+            catch (ObjectNotFoundException e)
+            {
+              //
+            }
+          }
+        }
+        ((SelectInput) input).setList(liste);
+        input.setValue(b);
+        input.addListener(new FilterListener());
+        ((SelectInput) input).setPleaseChoose(FilterControl.ALLE);
+        input.setName(filter.getAnzeigeText());
         break;
     }
     filterMap.put(filter, input);
@@ -466,6 +597,11 @@ public abstract class FilterControl extends VorZurueckControl
     return settings;
   }
 
+  public String getSettingsPrefix()
+  {
+    return settingsprefix;
+  }
+
   public String getAdditionalparamprefix1()
   {
     return additionalparamprefix1;
@@ -514,6 +650,12 @@ public abstract class FilterControl extends VorZurueckControl
       else if (value instanceof GenericObject)
       {
         value = ((GenericObject) value).getID();
+        if (value == null)
+        {
+          // Das sind Objekte in SelectInputs die nicht in der DB gespeichert
+          // sind z.B. Buchungsart "Ohne Buchungsart"
+          value = 0;
+        }
       }
       else if (value instanceof Date)
       {
@@ -696,6 +838,32 @@ public abstract class FilterControl extends VorZurueckControl
     return new Button("Filter-Reset", c -> {
       settings.setAttribute("id", "");
       settings.setAttribute("profilname", "");
+      Date startGJ = null;
+      Date endGJ = null;
+      if (initVonBis)
+      {
+        Calendar calendar = Calendar.getInstance();
+        Integer year = calendar.get(Calendar.YEAR);
+        try
+        {
+          startGJ = Datum.toDate((String) Einstellungen
+              .getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+          if (calendar.getTime().before(startGJ))
+          {
+            year = year - 1;
+            startGJ = Datum.toDate((String) Einstellungen
+                .getEinstellung(Property.BEGINNGESCHAEFTSJAHR) + year);
+          }
+          calendar.setTime(startGJ);
+          calendar.add(Calendar.YEAR, 1);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          endGJ = calendar.getTime();
+        }
+        catch (RemoteException | ParseException e)
+        {
+          Logger.error("Error filter reset", e);
+        }
+      }
 
       for (Entry<Filter, Input> entry : filterMap.entrySet())
       {
@@ -728,6 +896,18 @@ public abstract class FilterControl extends VorZurueckControl
           dInput.setValue(null);
           setZusatzfelderAuswahl(dInput);
         }
+        else if (initVonBis && filter.equals(Filter.DATUM_VON))
+        {
+          input.setValue(startGJ);
+        }
+        else if (initVonBis && filter.equals(Filter.DATUM_BIS))
+        {
+          input.setValue(endGJ);
+        }
+        else if (filter.equals(Filter.KONTO))
+        {
+          // Nicht löschen
+        }
         else
         {
           input.setValue(null);
@@ -735,5 +915,10 @@ public abstract class FilterControl extends VorZurueckControl
       }
       refresh();
     }, null, false, "eraser.png");
+  }
+
+  public void setInitVonBis(boolean value)
+  {
+    initVonBis = value;
   }
 }
