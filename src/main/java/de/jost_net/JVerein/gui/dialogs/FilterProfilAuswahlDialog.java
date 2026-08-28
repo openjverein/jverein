@@ -84,12 +84,7 @@ public class FilterProfilAuswahlDialog extends AbstractDialog<Object>
       handleNeu();
     }, null, true, "document-new.png");
 
-    buttons.addButton("Überchreiben", context -> {
-      if (!confirm("Profil überschreiben",
-          "Soll das ausgewählte Profil wirklich überschrieben werden?"))
-      {
-        return;
-      }
+    buttons.addButton("Speichern", context -> {
       handleSpeichern(null);
     }, null, false, "document-save.png");
 
