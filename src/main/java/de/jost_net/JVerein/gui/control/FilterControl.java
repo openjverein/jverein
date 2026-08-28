@@ -481,7 +481,7 @@ public abstract class FilterControl extends VorZurueckControl
               });
               if (def0 != null)
               {
-                list.add(def0);
+                list.add(0, def0);
               }
             }
           }
