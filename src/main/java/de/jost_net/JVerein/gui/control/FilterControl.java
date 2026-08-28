@@ -125,7 +125,7 @@ public abstract class FilterControl extends VorZurueckControl
    */
   public Object getFilterValue(Filter f)
   {
-    if (f != null)
+    if (f != null && filterMap.get(f) != null)
     {
       return filterMap.get(f).getValue();
     }
