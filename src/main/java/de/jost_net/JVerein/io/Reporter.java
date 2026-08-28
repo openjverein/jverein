@@ -26,8 +26,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.TreeMap;
-
 import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
@@ -654,37 +652,6 @@ public class Reporter implements AutoCloseable
         addColumn(entry.getKey().getAnzeigeText(), Element.ALIGN_RIGHT,
             params.getFontNormal());
         addColumn(entry.getValue(), Element.ALIGN_LEFT, params.getFontNormal());
-      }
-      closeTable();
-    }
-  }
-
-  /**
-   * Gibt die Parameter als Tablelle aus
-   * 
-   * @param tree
-   * @param params
-   * @throws DocumentException
-   */
-  // TODO wird nur noch für Buchungen verwendet, sollte auch da zu Filter
-  // umgestellt werden.
-  public void addParams(final TreeMap<String, String> tree,
-      ExportLayoutParam params) throws DocumentException
-  {
-    if (!tree.keySet().isEmpty())
-    {
-      Font font = new Font(params.getFontHeader());
-      font.setSize(11);
-      add(new Paragraph("Filter-Parameter", font));
-      addHeaderColumn("Parameter", Element.ALIGN_RIGHT, 100,
-          params.getColorHeader(), params.getFontHeader());
-      addHeaderColumn("Wert", Element.ALIGN_LEFT, 200, params.getColorHeader(),
-          params.getFontHeader());
-      createHeader(75f, Element.ALIGN_LEFT);
-      for (String key : tree.keySet())
-      {
-        addColumn(key, Element.ALIGN_RIGHT, params.getFontNormal());
-        addColumn(tree.get(key), Element.ALIGN_LEFT, params.getFontNormal());
       }
       closeTable();
     }

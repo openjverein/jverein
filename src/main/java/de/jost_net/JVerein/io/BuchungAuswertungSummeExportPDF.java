@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
@@ -37,6 +38,7 @@ import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
 import de.jost_net.JVerein.gui.view.AnlagenbuchungListeView;
 import de.jost_net.JVerein.gui.view.BuchungListeView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
+import de.jost_net.JVerein.keys.Filter;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.Buchungsart;
@@ -128,7 +130,10 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       DocumentException, IOException
   {
     this.params = params;
+    // objects[0] = control, objects[1] ist der Filtertext
     BuchungsControl control = (BuchungsControl) objects[0];
+    @SuppressWarnings("unchecked")
+    Map<Filter, String> filterparams = (Map<Filter, String>) objects[1];
     BuchungQuery query = control.getQuery();
     ArrayList<Buchungsart> buchungsarten = getBuchungsarten(query);
     kontonummer_in_buchungsliste = getKontonummer();
@@ -232,7 +237,7 @@ public class BuchungAuswertungSummeExportPDF extends BuchungAuswertungExportPDF
       reporter.addColumn("", Element.ALIGN_LEFT, params.getColorTable());
       reporter.closeTable();
     }
-    reporter.addParams(control.getParams(), params);
+    reporter.addParams(filterparams, params);
 
     reporter.close();
     fos.close();
