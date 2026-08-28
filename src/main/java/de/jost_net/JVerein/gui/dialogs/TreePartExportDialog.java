@@ -344,7 +344,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
   {
     try
     {
-      for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems())
+      List<TreeColumn> itemsChecked = spaltenList.getItems();
+      for (TreeColumn col : itemsChecked)
       {
         col.setData(col.getWidth());
       }
@@ -352,8 +353,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       for (TreeColumn col : listeSortiert)
       {
         spaltenList.addItem(col);
-        spaltenList.setChecked(col, settings
-            .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+        spaltenList.setChecked(col, itemsChecked.contains(col));
       }
     }
     catch (RemoteException re)
