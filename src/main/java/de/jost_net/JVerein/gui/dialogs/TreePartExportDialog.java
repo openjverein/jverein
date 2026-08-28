@@ -44,6 +44,7 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.io.FileViewer;
 import de.jost_net.JVerein.io.Reporter;
 import de.jost_net.JVerein.rmi.Formular;
+import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
@@ -53,8 +54,6 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 {
 
   private Tree tree;
-
-  private List<TreeColumn> listeSortiert;
 
   public TreePartExportDialog(Tree tree, String settingPrefix, ExportArt art,
       String title, String subtitle, String filename)
@@ -95,7 +94,7 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       throws ApplicationException, RemoteException
   {
     // Spalten so wie angezeigt sortieren
-    listeSortiert = new ArrayList<>();
+    List<TreeColumn> listeSortiert = new ArrayList<>();
     int[] order = tree.getColumnOrder();
     for (int i = 0; i < tree.getColumnCount(); i++)
     {
@@ -132,7 +131,36 @@ public class TreePartExportDialog extends AbstractPartExportDialog
         }
       });
     }
-    createGui(parent, c -> setWidth());
+    createGui(parent, new Action()
+    {
+
+      // Action zum Reset der Spaltenbreiten
+      @SuppressWarnings("unchecked")
+      @Override
+      public void handleAction(Object context) throws ApplicationException
+      {
+        try
+        {
+          for (TreeColumn col : (List<TreeColumn>) spaltenList.getItems())
+          {
+            col.setData(col.getWidth());
+          }
+          spaltenList.removeAll();
+          for (TreeColumn col : listeSortiert)
+          {
+            spaltenList.addItem(col);
+            spaltenList.setChecked(col, settings
+                .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
+          }
+        }
+        catch (RemoteException re)
+        {
+          Logger.error("Fehler beim zurücksetzen der Breiten", re);
+          throw new ApplicationException(
+              "Fehler beim zurücksetzen der Breiten");
+        }
+      }
+    });
   }
 
   @Override
@@ -338,49 +366,4 @@ public class TreePartExportDialog extends AbstractPartExportDialog
           .getBoolean(settingPrefix + "anzeigen." + col.getText(), true));
     }
   }
-
-  @SuppressWarnings("unchecked")
-  void setWidth() throws ApplicationException
-  {
-    try
-    {
-      List<TreeColumn> itemsChecked = spaltenList.getItems();
-      for (TreeColumn col : itemsChecked)
-      {
-        col.setData(col.getWidth());
-      }
-      spaltenList.removeAll();
-      for (TreeColumn col : listeSortiert)
-      {
-        spaltenList.addItem(col);
-        spaltenList.setChecked(col, itemsChecked.contains(col));
-      }
-    }
-    catch (RemoteException re)
-    {
-      Logger.error("Fehler beim zurücksetzen der Breiten", re);
-      throw new ApplicationException("Fehler beim zurücksetzen der Breiten");
-    }
-  }
-
-  @Override
-  void resetSpalten() throws ApplicationException
-  {
-    try
-    {
-      spaltenList.removeAll();
-      for (TreeColumn col : listeSortiert)
-      {
-        col.setData(col.getWidth());
-        spaltenList.addItem(col);
-        spaltenList.setChecked(col, true);
-      }
-    }
-    catch (RemoteException re)
-    {
-      Logger.error("Fehler beim zurücksetzen der Spalten", re);
-      throw new ApplicationException("Fehler beim zurücksetzen der Spalten");
-    }
-  }
-
 }

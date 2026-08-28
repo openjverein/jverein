@@ -27,10 +27,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.parts.IJVereinPart;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
-import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.dialogs.AbstractDialog;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -109,21 +107,6 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
 
     ButtonArea buttons = new ButtonArea();
 
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ALLGEMEIN, false, "question-circle.png");
-
-    buttons.addButton("Reset", c -> {
-      for (IJVereinPart table : tableMap.keySet())
-      {
-        for (Column col : table.getAllColums())
-        {
-          tableMap.get(table).setChecked(col,
-              table.getDefaults().get(col.getName()));
-        }
-      }
-
-    }, null, true, "edit-undo.png");
-
     buttons.addButton("Speichern", c -> {
       try
       {
@@ -139,7 +122,7 @@ public class TabelleSpaltenAuswahlDialog extends AbstractDialog<Object>
       }
       catch (RemoteException e)
       {
-        Logger.error("Fehler beim Speichern im Spalten-Auswahl-Dialog", e);
+        Logger.error("Fehler beim Spalten-Auswahl-Dialog", e);
         throw new ApplicationException("Serverfehler");
       }
       close();

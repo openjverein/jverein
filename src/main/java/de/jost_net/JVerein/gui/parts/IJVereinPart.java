@@ -16,7 +16,6 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 import java.util.List;
-import java.util.Map;
 
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.willuhn.jameica.gui.GUI;
@@ -34,16 +33,12 @@ public interface IJVereinPart
 
   public List<Column> getColums();
 
-  public Map<String, Boolean> getDefaults();
-
   public void export(String title, String subtitle, String filename,
       ExportArt art) throws ApplicationException;
 
   public void saveSpalten(List<Column> columns) throws RemoteException;
 
   public String getTableName();
-
-  public Settings getSettings();
 
   /**
    * Ermittelt die ID der Tablepart aus der View und ggf. dem angegebenen Namen
@@ -84,5 +79,4 @@ public interface IJVereinPart
           columns.contains(c));
     }
   }
-
 }
