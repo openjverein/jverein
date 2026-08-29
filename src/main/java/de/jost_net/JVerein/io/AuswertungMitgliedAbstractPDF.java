@@ -17,7 +17,7 @@
 package de.jost_net.JVerein.io;
 
 import de.jost_net.JVerein.Queries.MitgliedQuery.MitgliedAuswahl;
-import de.jost_net.JVerein.gui.control.MitgliedControl;
+import de.jost_net.JVerein.gui.control.MitgliedListeControl;
 import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.util.VorlageUtil;
 
@@ -30,7 +30,7 @@ public abstract class AuswertungMitgliedAbstractPDF
   @Override
   public String getDateiname(Object object)
   {
-    if (((MitgliedControl) object).getMitgliedAuswahl()
+    if (((MitgliedListeControl) object).getMitgliedAuswahl()
         .equals(MitgliedAuswahl.MITGLIEDER))
     {
       return VorlageUtil.getName(VorlageTyp.AUSWERTUNG_MITGLIED_DATEINAME,

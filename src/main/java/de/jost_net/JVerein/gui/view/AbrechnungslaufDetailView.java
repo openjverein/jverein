@@ -126,9 +126,9 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
-    GUI.getView().addPanelButton(control.getDetailPanelButton());
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override

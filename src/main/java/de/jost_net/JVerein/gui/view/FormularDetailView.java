@@ -29,7 +29,6 @@ import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.jost_net.JVerein.gui.parts.SaveNeuButton;
-import de.jost_net.JVerein.rmi.Formular;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
 import de.willuhn.jameica.gui.util.LabelGroup;
@@ -44,7 +43,7 @@ public class FormularDetailView extends AbstractDetailView
   {
     GUI.getView().setTitle("Formular");
 
-    control = new FormularControl(this, (Formular) getCurrentObject());
+    control = new FormularControl(this);
 
     LabelGroup group = new LabelGroup(getParent(), "Formular");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 2);
@@ -73,7 +72,7 @@ public class FormularDetailView extends AbstractDetailView
 
     buttons1.paint(cont.getComposite());
 
-    cont.addPart(control.getFormularfeldList());
+    cont.addPart(control.getTablePart());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
     buttons.addButton("Hilfe", new DokumentationAction(),
@@ -88,9 +87,9 @@ public class FormularDetailView extends AbstractDetailView
     buttons.addButton(new SaveNeuButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
-    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getSpaltenPanelButton());
   }
 
   @Override
