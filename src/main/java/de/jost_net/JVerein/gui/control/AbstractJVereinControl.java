@@ -58,12 +58,6 @@ public abstract class AbstractJVereinControl extends AbstractControl
             {
               ((FilterControl) this).refresh();
             }
-            // TODO BuchungsControl ist noch nicht Teil von FilterControl und
-            // brauch noch eine extra Behandlung
-            else if (this instanceof BuchungsControl)
-            {
-              ((BuchungsControl) this).refreshBuchungsList();
-            }
             getTablePart().export(getTableTitle(), getTableSubtitle(),
                 getTableDateiname(), art);
           }
