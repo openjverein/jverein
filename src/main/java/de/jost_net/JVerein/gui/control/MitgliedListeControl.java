@@ -38,7 +38,6 @@ import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.DokumentationUtil;
 import de.jost_net.JVerein.gui.view.MitgliedDetailView;
 import de.jost_net.JVerein.gui.view.MitgliedListeView;
-import de.jost_net.JVerein.gui.view.MitgliedSuchProfilListeView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedDetailView;
 import de.jost_net.JVerein.gui.view.NichtMitgliedListeView;
 import de.jost_net.JVerein.keys.Datentyp;
@@ -53,7 +52,6 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
-import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
 import de.willuhn.jameica.gui.formatter.DateFormatter;
 import de.willuhn.jameica.gui.formatter.Formatter;
@@ -87,29 +85,6 @@ public class MitgliedListeControl extends FilterControl
     {
       isMitglied = true;
     }
-  }
-
-  public Button getProfileButton()
-  {
-    Button b = new Button("Filter-Profile", new Action()
-    {
-
-      @Override
-      public void handleAction(Object context) throws ApplicationException
-      {
-        try
-        {
-          saveFilterSettings();
-        }
-        catch (RemoteException e)
-        {
-          throw new ApplicationException(e);
-        }
-        GUI.startView(MitgliedSuchProfilListeView.class.getName(), settings);
-      }
-    }, null, true, "user-check.png"); // "true" defines this button as the
-                                      // default button
-    return b;
   }
 
   public Button getExportButton()
