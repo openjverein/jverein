@@ -18,7 +18,7 @@ package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.NewAction;
-import de.jost_net.JVerein.gui.control.JahresabschlussControl;
+import de.jost_net.JVerein.gui.control.JahresabschlussListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.willuhn.jameica.gui.AbstractView;
@@ -33,7 +33,7 @@ public class JahresabschlussListeView extends AbstractView
   {
     GUI.getView().setTitle("Jahresabschlüsse");
 
-    JahresabschlussControl control = new JahresabschlussControl(this);
+    JahresabschlussListeControl control = new JahresabschlussListeControl(this);
 
     control.getTablePart().paint(this.getParent());
 

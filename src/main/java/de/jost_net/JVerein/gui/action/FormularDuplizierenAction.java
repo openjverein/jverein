@@ -19,7 +19,7 @@ package de.jost_net.JVerein.gui.action;
 import java.rmi.RemoteException;
 
 import de.jost_net.JVerein.Einstellungen;
-import de.jost_net.JVerein.gui.control.FormularControl;
+import de.jost_net.JVerein.gui.control.FormularListeControl;
 import de.jost_net.JVerein.rmi.Formular;
 import de.jost_net.JVerein.rmi.Formularfeld;
 import de.willuhn.datasource.GenericIterator;
@@ -31,9 +31,9 @@ import de.willuhn.util.ApplicationException;
 public class FormularDuplizierenAction implements Action
 {
 
-  FormularControl control;
+  FormularListeControl control;
 
-  public FormularDuplizierenAction(FormularControl control)
+  public FormularDuplizierenAction(FormularListeControl control)
   {
     this.control = control;
   }
