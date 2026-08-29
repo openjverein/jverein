@@ -44,6 +44,7 @@ import de.jost_net.JVerein.util.VorlageUtil;
 import de.willuhn.datasource.pseudo.PseudoIterator;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
+import de.willuhn.datasource.rmi.ObjectNotFoundException;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.formatter.CurrencyFormatter;
@@ -285,7 +286,7 @@ public class MittelverwendungControl extends AbstractSaldoControl
       case SALDO_REPORT:
         return getMittelverwendungSaldoTable();
       default:
-        return null;
+        throw new ObjectNotFoundException();
     }
 
   }
