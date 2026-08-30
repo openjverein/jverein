@@ -159,7 +159,8 @@ public class TreePartExportDialog extends AbstractPartExportDialog
 
   @SuppressWarnings("unchecked")
   @Override
-  protected void exportPDF(File file) throws IOException, DocumentException
+  protected void exportPDF(File file)
+      throws IOException, DocumentException, ApplicationException
   {
     try (FileOutputStream fos = new FileOutputStream(file);
         Reporter reporter = new Reporter(fos, title, subtitle,
@@ -183,6 +184,11 @@ public class TreePartExportDialog extends AbstractPartExportDialog
       Object testObject = treePart.getItems().get(0);
       for (ExportSpalte col : listeAuswahl)
       {
+        if (col.getBreite() <= 0)
+        {
+          throw new ApplicationException(
+              col.getColumn().getName() + ": Breite muss größer 0 sein!");
+        }
         switch (col.getColumn().getAlign())
         {
           case Column.ALIGN_LEFT:

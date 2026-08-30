@@ -146,7 +146,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     this.part = part;
 
     setTitle(dialogTitel);
-    setSize(400, SWT.DEFAULT);
+    setSize(400, 700);
   }
 
   protected void createGui(Composite parent, Action action)
@@ -690,7 +690,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
 
   abstract void exportCSV(File file) throws IOException;
 
-  abstract void exportPDF(File file) throws IOException, DocumentException;
+  abstract void exportPDF(File file)
+      throws IOException, DocumentException, ApplicationException;
 
   abstract Item getColumn(String name);
 
