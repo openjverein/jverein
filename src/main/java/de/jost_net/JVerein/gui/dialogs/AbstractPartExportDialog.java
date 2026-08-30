@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -163,7 +165,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     else if (spaltenList != null)
     {
       spaltenList.paint(parent);
-      spaltenList.setDragDrop();
     }
 
     setChecked();
@@ -191,7 +192,6 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
       spaltenList.addColumn("Breite", "breite", null, true);
       tabSpalten.addPart(spaltenList);
-      spaltenList.setDragDrop();
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
           "eraser.png"));
@@ -376,6 +376,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       }
       colList.add(new ExportSpalte(col, breite));
     }
+    String[] spaltenNamen = settings.getString(settingPrefix + "order", "")
+        .split(",");
+    colList.sort(Comparator.comparingInt(
+        obj -> Arrays.asList(spaltenNamen).indexOf(obj.getColumn().getName())));
 
     spaltenList = new JVereinTablePart(colList, null)
     {
@@ -400,12 +404,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       });
     }
     createGui(parent, c -> setWidth());
+    spaltenList.setDragDrop();
   }
 
   @SuppressWarnings("unchecked")
   protected void saveSettings() throws RemoteException
   {
     List<ExportSpalte> itemsChecked = spaltenList.getItems();
+    List<String> spaltenNamen = new ArrayList<>();
     for (ExportSpalte sp : (List<ExportSpalte>) spaltenList.getItems(false))
     {
       settings.setAttribute(
@@ -417,7 +423,10 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
             settingPrefix + "breite." + sp.getColumn().getName(),
             sp.getBreite());
       }
+      spaltenNamen.add(sp.getColumn().getName());
     }
+    settings.setAttribute(settingPrefix + "order",
+        String.join(",", spaltenNamen));
 
     if (art.equals(ExportArt.PDF))
     {
