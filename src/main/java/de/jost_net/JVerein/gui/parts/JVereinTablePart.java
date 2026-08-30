@@ -19,8 +19,13 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -30,6 +35,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
 import de.willuhn.datasource.GenericIterator;
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.Column;
 import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
@@ -131,6 +137,43 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     {
       c.setWidth(widthOld);
     }
+
+    table.addListener(SWT.MenuDetect, event -> {
+      Point point = table.toControl(event.x, event.y);
+
+      // Nur reagieren, wenn der Klick im Tabellenkopf liegt
+      if (point.y <= 0 && point.y > -table.getHeaderHeight())
+      {
+        Menu headerMenu = new Menu(table.getShell());
+
+        List<Column> cols = getColums();
+        for (Column col : getAllColums())
+        {
+          MenuItem item = new MenuItem(headerMenu, SWT.CHECK);
+          item.setText(col.getName());
+          item.setSelection(cols.contains(col));
+          item.setData(col);
+
+          item.addListener(SWT.Selection, ev -> {
+            try
+            {
+              settings.setAttribute(
+                  getTablePartID(tablePartId, tableName) + col.getName(),
+                  item.getSelection());
+              GUI.getCurrentView().reload();
+            }
+            catch (RemoteException | ApplicationException e2)
+            {
+              Logger.error("Fehler beim Ändern der Spalte", e2);
+            }
+          });
+        }
+
+        headerMenu.setVisible(true);
+
+        event.doit = false;
+      }
+    });
 
     return ctx;
   }
