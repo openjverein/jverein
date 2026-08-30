@@ -4,7 +4,7 @@
 name: OpenJVerein nightly release
 
 permissions:
-  contents: read
+  contents: write
 
 on:
   push:
@@ -47,8 +47,6 @@ jobs:
     # Update tag
     - name: Tag repo
       uses: richardsimko/update-tag@v3
-      permissions:
-        contents: write
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
       env:
@@ -56,8 +54,6 @@ jobs:
     
     - name: Release
       uses: softprops/action-gh-release@v3
-      permissions:
-        contents: write
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: true
