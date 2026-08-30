@@ -19,10 +19,20 @@ package de.jost_net.JVerein.gui.parts;
 import java.rmi.RemoteException;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSource;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetAdapter;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import de.jost_net.JVerein.gui.dialogs.TablePartExportDialog;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
@@ -253,6 +263,71 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
       Logger.error("Fehler beim Erstellen der Auswertung.", e);
       throw new ApplicationException("Fehler beim Erstellen der Auswertung.");
     }
+  }
+
+  /**
+   * Ermöglich drag'n'drop beim TablePart.
+   * 
+   * @throws ApplicationException
+   */
+  public void setDragDrop() throws ApplicationException
+  {
+    Table table = (Table) tableControl;
+    if (table == null)
+    {
+      Logger.error(
+          "setDragDrop nicht möglich, Tabelle wurde noch nicht gezeichnet");
+      throw new ApplicationException(
+          "setDragDrop nicht möglich, Tabelle wurde noch nicht gezeichnet");
+    }
+    DragSource dragSource = new DragSource(table, DND.DROP_MOVE);
+    dragSource.setTransfer(TextTransfer.getInstance());
+    dragSource.addDragListener(new DragSourceAdapter()
+    {
+      @Override
+      public void dragSetData(DragSourceEvent event)
+      {
+        if (table.getSelection().length == 1)
+        {
+          event.data = table.getSelection()[0].getText();
+        }
+      }
+
+      @Override
+      public void dragStart(DragSourceEvent event)
+      {
+        event.doit = table.getSelectionCount() == 1;
+      }
+    });
+    DropTarget dropTarget = new DropTarget(table, DND.DROP_MOVE);
+    dropTarget.setTransfer(TextTransfer.getInstance());
+    dropTarget.addDropListener(new DropTargetAdapter()
+    {
+      @Override
+      public void drop(DropTargetEvent event)
+      {
+        int targetIndex;
+        if (event.item == null)
+        {
+          targetIndex = table.getItemCount();
+        }
+        else
+        {
+          targetIndex = table.indexOf((TableItem) event.item);
+        }
+        try
+        {
+          Object o = table.getSelection()[0].getData();
+          boolean checked = table.getSelection()[0].getChecked();
+          JVereinTablePart.this.removeItem(o);
+          JVereinTablePart.this.addItem(o, targetIndex, checked);
+        }
+        catch (RemoteException e)
+        {
+          Logger.error("Fehler beim Datenzugriff", e);
+        }
+      }
+    });
   }
 
   public void setTableName(String name)

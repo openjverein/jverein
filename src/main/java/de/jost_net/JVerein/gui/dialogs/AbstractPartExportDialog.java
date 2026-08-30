@@ -148,7 +148,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   }
 
   protected void createGui(Composite parent, Action action)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     if (spaltenList != null)
     {
@@ -163,6 +163,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     else if (spaltenList != null)
     {
       spaltenList.paint(parent);
+      spaltenList.setDragDrop();
     }
 
     setChecked();
@@ -179,7 +180,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
   }
 
   protected void zeichnePDF(Composite parent, Action action)
-      throws RemoteException
+      throws RemoteException, ApplicationException
   {
     TabFolder folder = new TabFolder(parent, SWT.BORDER);
     folder.setLayoutData(new GridData(GridData.FILL_BOTH));
@@ -190,6 +191,7 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
       TabGroup tabSpalten = new TabGroup(folder, "Spalten", true, 1);
       spaltenList.addColumn("Breite", "breite", null, true);
       tabSpalten.addPart(spaltenList);
+      spaltenList.setDragDrop();
       ButtonArea buttons = new ButtonArea();
       buttons.addButton(new Button("Breiten zurücksetzen", action, null, false,
           "eraser.png"));
