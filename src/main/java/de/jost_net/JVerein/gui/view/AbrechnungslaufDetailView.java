@@ -92,6 +92,10 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
       control.getZusatzbetraegeList().paint(tabZusatzbetraege.getComposite());
     }
 
+    TabGroup tabAlleBuchung = new TabGroup(folder, "Zugeordnete Buchungen",
+        true, 1);
+    control.getAlleBuchungList().paint(tabAlleBuchung.getComposite());
+
     // Aktiver zuletzt ausgewählter Tab.
     if (tabindex != -1)
     {
@@ -122,9 +126,9 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     buttons.addButton(new SaveButton(control));
     buttons.paint(this.getParent());
 
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.PDF));
-    GUI.getView().addPanelButton(control.exportDetailButton(ExportArt.CSV));
-    GUI.getView().addPanelButton(control.getDetailPanelButton());
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
+    GUI.getView().addPanelButton(control.exportButton(ExportArt.CSV));
+    GUI.getView().addPanelButton(control.getDetailSpaltenPanelButton());
   }
 
   @Override

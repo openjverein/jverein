@@ -229,6 +229,22 @@ public class TablePartExportDialog extends AbstractPartExportDialog
           Color bg = (Color) row.getData("background");
           Font font = getFont(text, row.getFont(index).getFontData());
 
+          // Icons ersetzen die in den Standard Fonts nicht enthalten sind
+          Font iconfont = FontFactory.getFont("/fonts/fontawesome-webfont.ttf",
+              BaseFont.IDENTITY_H, font.getSize(), Font.UNDEFINED, null);
+          if (text.equals("\u2705"))
+          {
+            // Der Haken "Geprüft" in der Buchungsliste
+            text = "\uF00C";
+            font = iconfont;
+          }
+          if (text.equals("\uD83D\uDD12"))
+          {
+            // Das Schloß "Abgeschlossen" in der Abrechnungslaufliste
+            text = "\uF023";
+            font = iconfont;
+          }
+
           if (bg == null)
           {
             reporter.addColumn(text,

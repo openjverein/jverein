@@ -28,15 +28,21 @@ import java.rmi.RemoteException;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
-import de.willuhn.jameica.gui.dialogs.YesNoDialog;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
 /**
- * Löschen eines Abrechnungslaufes
+ * Abschließen eines Abrechnungslaufes
  */
 public class AbrechnungslaufAbschliessenAction implements Action
 {
+  private boolean abschliessen;
+
+  public AbrechnungslaufAbschliessenAction(boolean abschliessen)
+  {
+    this.abschliessen = abschliessen;
+  }
+
   @Override
   public void handleAction(Object context) throws ApplicationException
   {
@@ -51,35 +57,16 @@ public class AbrechnungslaufAbschliessenAction implements Action
       {
         return;
       }
-      if (abrl.getAbgeschlossen())
+      if (!abrl.isJahrAbgeschlossen())
+      {
+        abrl.setAbgeschlossen(abschliessen);
+        abrl.store();
+      }
+      else
       {
         throw new ApplicationException(
-            "Abrechnungsauf ist bereits abgeschlossen.");
+            "Änderung nicht möglich, der Jahresabschluss ist bereits erstellt.");
       }
-
-      YesNoDialog d = new YesNoDialog(YesNoDialog.POSITION_CENTER);
-      d.setTitle(String.format("Abrechnungslauf %s abschließen", abrl.getID()));
-      d.setText(
-          "Wollen Sie diesen Abrechnungslauf wirklich abschließen?\nEin nachträgliches Löschen ist dann nicht mehr möglich.");
-
-      try
-      {
-        Boolean choice = (Boolean) d.open();
-        if (!choice.booleanValue())
-        {
-          return;
-        }
-      }
-      catch (Exception e)
-      {
-        Logger.error("Fehler beim Abschließen eines Abrechnungslaufes", e);
-        return;
-      }
-
-      abrl.setAbgeschlossen(true);
-      abrl.store();
-
-      GUI.getStatusBar().setSuccessText("Abrechnungslauf wurde abgeschlossen.");
     }
     catch (RemoteException e)
     {

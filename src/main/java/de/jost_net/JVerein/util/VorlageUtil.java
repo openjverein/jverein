@@ -25,9 +25,7 @@ import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
-import de.jost_net.JVerein.Variable.AnlagenbuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
-import de.jost_net.JVerein.Variable.BuchungListeFilterMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
@@ -41,7 +39,6 @@ import de.jost_net.JVerein.Variable.ZusatzbetragListeFilterMap;
 import de.jost_net.JVerein.gui.control.AbstractSaldoControl;
 import de.jost_net.JVerein.gui.control.ArbeitseinsatzAbrechnungControl;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
-import de.jost_net.JVerein.gui.control.BuchungsControl;
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.gui.control.JahresabschlussControl;
 import de.jost_net.JVerein.gui.control.WirtschaftsplanControl;
@@ -146,6 +143,32 @@ public class VorlageUtil
         case FAMILIENVERBAND_DATEINAME:
         case FAMILIENVERBAND_SUBTITEL:
         case FAMILIENVERBAND_TITEL:
+        case BUCHUNGEN_DATEINAME:
+        case BUCHUNGEN_TITEL:
+        case BUCHUNGEN_SUBTITEL:
+        case BUCHUNGSJOURNAL_DATEINAME:
+        case BUCHUNGSJOURNAL_TITEL:
+        case BUCHUNGSJOURNAL_SUBTITEL:
+        case EINZELBUCHUNGEN_DATEINAME:
+        case EINZELBUCHUNGEN_TITEL:
+        case EINZELBUCHUNGEN_SUBTITEL:
+        case SUMMENBUCHUNGEN_DATEINAME:
+        case SUMMENBUCHUNGEN_TITEL:
+        case SUMMENBUCHUNGEN_SUBTITEL:
+        case CSVBUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_DATEINAME:
+        case ANLAGEN_BUCHUNGEN_TITEL:
+        case ANLAGEN_BUCHUNGEN_SUBTITEL:
+        case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
+        case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
+        case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
+        case ANLAGEN_EINZELBUCHUNGEN_DATEINAME:
+        case ANLAGEN_EINZELBUCHUNGEN_TITEL:
+        case ANLAGEN_EINZELBUCHUNGEN_SUBTITEL:
+        case ANLAGEN_SUMMENBUCHUNGEN_DATEINAME:
+        case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
+        case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
+        case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
           map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
@@ -266,6 +289,9 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME:
         case ABRECHNUNGSLAUF_BUCHUNGEN_TITEL:
         case ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_SUBTITEL:
           map = new AbrechnungSollbuchungenParameterMap()
               .getMap((Abrechnungslauf) obj, map);
           break;
@@ -274,37 +300,6 @@ public class VorlageUtil
         case ZUSATZBETRAEGE_SUBTITEL:
           map = new ZusatzbetragListeFilterMap()
               .getMap((ZusatzbetragControl) obj, map);
-          break;
-        case BUCHUNGEN_DATEINAME:
-        case BUCHUNGEN_TITEL:
-        case BUCHUNGEN_SUBTITEL:
-        case BUCHUNGSJOURNAL_DATEINAME:
-        case BUCHUNGSJOURNAL_TITEL:
-        case BUCHUNGSJOURNAL_SUBTITEL:
-        case EINZELBUCHUNGEN_DATEINAME:
-        case EINZELBUCHUNGEN_TITEL:
-        case EINZELBUCHUNGEN_SUBTITEL:
-        case SUMMENBUCHUNGEN_DATEINAME:
-        case SUMMENBUCHUNGEN_TITEL:
-        case SUMMENBUCHUNGEN_SUBTITEL:
-        case CSVBUCHUNGEN_DATEINAME:
-          map = new BuchungListeFilterMap().getMap((BuchungsControl) obj, map);
-          break;
-        case ANLAGEN_BUCHUNGEN_DATEINAME:
-        case ANLAGEN_BUCHUNGEN_TITEL:
-        case ANLAGEN_BUCHUNGEN_SUBTITEL:
-        case ANLAGEN_BUCHUNGSJOURNAL_DATEINAME:
-        case ANLAGEN_BUCHUNGSJOURNAL_TITEL:
-        case ANLAGEN_BUCHUNGSJOURNAL_SUBTITEL:
-        case ANLAGEN_EINZELBUCHUNGEN_DATEINAME:
-        case ANLAGEN_EINZELBUCHUNGEN_TITEL:
-        case ANLAGEN_EINZELBUCHUNGEN_SUBTITEL:
-        case ANLAGEN_SUMMENBUCHUNGEN_DATEINAME:
-        case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
-        case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
-        case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
-          map = new AnlagenbuchungListeFilterMap().getMap((BuchungsControl) obj,
-              map);
           break;
         case JAHRESABSCHLUSS_DATEINAME:
         case JAHRESABSCHLUSS_TITEL:
@@ -666,6 +661,9 @@ public class VorlageUtil
         case ABRECHNUNGSLAUF_BUCHUNGEN_DATEINAME:
         case ABRECHNUNGSLAUF_BUCHUNGEN_TITEL:
         case ABRECHNUNGSLAUF_BUCHUNGEN_SUBTITEL:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_DATEINAME:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_TITEL:
+        case ABRECHNUNGSLAUF_ALLEBUCHUNGEN_SUBTITEL:
           map = AbrechnungSollbuchungenParameterMap.getDummyMap(map);
           break;
         case SOLLBUCHUNGEN_DATEINAME:
@@ -721,7 +719,20 @@ public class VorlageUtil
         case SUMMENBUCHUNGEN_TITEL:
         case SUMMENBUCHUNGEN_SUBTITEL:
         case CSVBUCHUNGEN_DATEINAME:
-          map = BuchungListeFilterMap.getDummyMap(map);
+          set.add(Filter.KONTO_NR);
+          set.add(Filter.KONTO_BEZEICHNUNG);
+          set.add(Filter.BUCHUNGSART);
+          set.add(Filter.PROJEKT);
+          set.add(Filter.SPLITBUCHUNG);
+          set.add(Filter.BETRAG);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.UNGEPRUEFT);
+          set.add(Filter.ENTHALTENER_TEXT);
+          set.add(Filter.MITGLIED_ZUGEORDNET);
+          set.add(Filter.MITGLIED_NAME);
+          set.add(Filter.STEUER);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case ANLAGEN_BUCHUNGEN_DATEINAME:
         case ANLAGEN_BUCHUNGEN_TITEL:
@@ -736,7 +747,16 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
-          map = AnlagenbuchungListeFilterMap.getDummyMap(map);
+          set.add(Filter.KONTO_NR);
+          set.add(Filter.KONTO_BEZEICHNUNG);
+          set.add(Filter.BUCHUNGSART);
+          set.add(Filter.PROJEKT);
+          set.add(Filter.SPLITBUCHUNG);
+          set.add(Filter.BETRAG);
+          set.add(Filter.DATUM_VON);
+          set.add(Filter.DATUM_BIS);
+          set.add(Filter.ENTHALTENER_TEXT);
+          map = new FilterMap().getDummyMap(set, map);
           break;
         case JAHRESABSCHLUSS_DATEINAME:
         case JAHRESABSCHLUSS_TITEL:

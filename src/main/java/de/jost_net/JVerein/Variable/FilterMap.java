@@ -24,6 +24,7 @@ import java.util.Set;
 
 import de.jost_net.JVerein.gui.control.FilterControl;
 import de.jost_net.JVerein.keys.Filter;
+import de.jost_net.JVerein.rmi.Konto;
 
 public class FilterMap extends AbstractMap
 {
@@ -43,6 +44,26 @@ public class FilterMap extends AbstractMap
     {
       for (Entry<Filter, String> entry : control.getFilterText(true).entrySet())
       {
+        if (entry.getKey() == Filter.KONTO)
+        {
+          Konto k = (Konto) control.getFilterValue(Filter.KONTO);
+          if (k != null)
+          {
+            map.put(Filter.KONTO_NR.getSetting(), k.getNummer());
+            map.put(Filter.KONTO_BEZEICHNUNG.getSetting(), k.getBezeichnung());
+          }
+          else
+          {
+            map.put(Filter.KONTO_NR.getSetting(), "");
+            map.put(Filter.KONTO_BEZEICHNUNG.getSetting(), "");
+          }
+        }
+        else if (entry.getKey() == Filter.KONTO_NR
+            || entry.getKey() == Filter.KONTO_BEZEICHNUNG)
+        {
+          // Ignore
+          continue;
+        }
         map.put(entry.getKey().getSetting(), entry.getValue());
       }
     }

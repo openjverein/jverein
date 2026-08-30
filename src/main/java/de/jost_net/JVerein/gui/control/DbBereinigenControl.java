@@ -30,7 +30,6 @@ import de.jost_net.JVerein.rmi.Jahresabschluss;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Mail;
 import de.jost_net.JVerein.rmi.Rechnung;
-import de.jost_net.JVerein.rmi.Sollbuchung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
 import de.willuhn.datasource.rmi.DBIterator;
 import de.willuhn.datasource.rmi.DBService;
@@ -579,7 +578,7 @@ public class DbBereinigenControl extends AbstractControl
           }
           try
           {
-            b.delete();
+            b.deleteForced();
           }
           catch (RemoteException e)
           {
@@ -600,7 +599,7 @@ public class DbBereinigenControl extends AbstractControl
           {
             if (sollloeschen && (b.getSollbuchung() != null))
             {
-              b.getSollbuchung().delete();
+              b.getSollbuchung().deleteForced();
               counts++;
             }
           }
@@ -677,7 +676,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           la = it.next();
-          la.delete();
+          la.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)
@@ -727,89 +726,7 @@ public class DbBereinigenControl extends AbstractControl
         try
         {
           al = it.next();
-          // Suche Buchung des Abrechnungslaufes
-          final DBService service = Einstellungen.getDBService();
-          String sql = "SELECT buchung.id from buchung "
-              + "WHERE abrechnungslauf = ? ";
-          boolean buchungen = (boolean) service.execute(sql,
-              new Object[] { al.getID() }, new ResultSetExtractor()
-              {
-                @Override
-                public Object extract(ResultSet rs)
-                    throws RemoteException, SQLException
-                {
-                  if (rs.next())
-                  {
-                    return true;
-                  }
-                  return false;
-                }
-              });
-          if (buchungen)
-          {
-            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Buchungen"
-                + " zu diesem Abrechnungslauf";
-            monitor.setStatusText(fehler);
-            continue;
-          }
-
-          // Suche Sollbuchung des Abrechnungslaufes
-          final DBService service1 = Einstellungen.getDBService();
-          String sql1 = "SELECT " + Sollbuchung.TABLE_NAME_ID + " from "
-              + Sollbuchung.TABLE_NAME + " WHERE " + Sollbuchung.ABRECHNUNGSLAUF
-              + " = ? ";
-          boolean sollbuchungen = (boolean) service1.execute(sql1,
-              new Object[] { al.getID() }, new ResultSetExtractor()
-              {
-                @Override
-                public Object extract(ResultSet rs)
-                    throws RemoteException, SQLException
-                {
-                  if (rs.next())
-                  {
-                    return true;
-                  }
-                  return false;
-                }
-              });
-          if (sollbuchungen)
-          {
-            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Sollbuchungen"
-                + " zu diesem Abrechnungslauf";
-            monitor.setStatusText(fehler);
-            continue;
-          }
-
-          // Suche Lastschriften des Abrechnungslaufes
-          final DBService service2 = Einstellungen.getDBService();
-          String sql2 = "SELECT lastschrift.id from lastschrift "
-              + "WHERE abrechnungslauf = ? ";
-          boolean lastschriften = (boolean) service2.execute(sql2,
-              new Object[] { al.getID() }, new ResultSetExtractor()
-              {
-                @Override
-                public Object extract(ResultSet rs)
-                    throws RemoteException, SQLException
-                {
-                  if (rs.next())
-                  {
-                    return true;
-                  }
-                  return false;
-                }
-              });
-          if (lastschriften)
-          {
-            String fehler = "Der Abrechnungslauf mit der Nr " + al.getID()
-                + " wurde nicht gelöscht. Es existieren noch Lastschriften"
-                + " zu diesem Abrechnungslauf";
-            monitor.setStatusText(fehler);
-            continue;
-          }
-
-          al.delete();
+          al.deleteForced();
           count++;
         }
         catch (OperationCanceledException oce)
