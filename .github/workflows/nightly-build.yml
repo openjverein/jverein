@@ -3,6 +3,9 @@
 
 name: OpenJVerein nightly release
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
@@ -26,6 +29,7 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
+        set -euo pipefail
         mvn -B -f jverein/pom.xml -Pnightly package
 
         tmp_base_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=project.version -DforceStdout | tail -n1)
@@ -43,6 +47,8 @@ jobs:
     # Update tag
     - name: Tag repo
       uses: richardsimko/update-tag@v3
+      permissions:
+        contents: write
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
       env:
@@ -50,6 +56,8 @@ jobs:
     
     - name: Release
       uses: softprops/action-gh-release@v3
+      permissions:
+        contents: write
       with:
         tag_name: ${{ steps.openjverein.outputs.selected_version }}
         prerelease: true

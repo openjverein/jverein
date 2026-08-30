@@ -3,9 +3,14 @@ name: Merge bugfix branch into master branche
 on:
   push:
     branches:
-      - '[0-9]+.[0-9]+'
+      - '[0-9]+\.[0-9]+'
     paths-ignore:
       - plugin.xml
+concurrency:
+  group: merge-bugfix-into-master
+  cancel-in-progress: false
+permissions:
+  contents: read
 jobs:
   merge-branch:
     if: github.repository == 'openjverein/jverein'
@@ -36,6 +41,8 @@ jobs:
       
       - name: Merge ${{ github.ref_name }} into master
         if: always()
+        permissions:
+          contents: write
         run: |
           # Merge bugfix branch into master with master as king (ours)
           git merge -X ours ${{ github.ref_name }} -m "Auto-merge ${{ github.ref_name }} into master" --stat
