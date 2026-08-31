@@ -31,7 +31,7 @@ public class FreiesFormularMailView extends AbstractView
     GUI.getView().setTitle("Freie Formulare");
 
     final FreieFormulareControl control = new FreieFormulareControl(this);
-    control.init("freieformulare.", "zusatzfeld.", "zusatzfelder.");
+    control.init("freieformulare.");
 
     if (this.getCurrentObject() == null)
     {
@@ -59,6 +59,7 @@ public class FreiesFormularMailView extends AbstractView
       }
 
       ButtonArea fbuttons = new ButtonArea();
+      fbuttons.addButton(control.getProfileButton(this));
       fbuttons.addButton(control.getResetButton());
       fbuttons.addButton(control.getSpeichernButton());
       group.addButtonArea(fbuttons);

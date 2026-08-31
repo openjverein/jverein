@@ -87,6 +87,7 @@ public class AnlagenbuchungListeView extends AbstractView
     buttons1.addButton(zurueck);
     ToolTipButton vor = control.getVorButton(datumVon, datumBis);
     buttons1.addButton(vor);
+    buttons1.addButton(control.getProfileButton(this));
     buttons1.addButton(control.getResetButton());
     buttons1.addButton(control.getSuchenButton());
     tabAllgemein.addButtonArea(buttons1);

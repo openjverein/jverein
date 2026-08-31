@@ -39,7 +39,7 @@ public class RechnungListeView extends AbstractView
     GUI.getView().setTitle("Rechnungen");
 
     RechnungControl control = new RechnungControl(this);
-    control.init(TYP.RECHNUNG.name() + ".", null, null);
+    control.init(TYP.RECHNUNG.name() + ".");
 
     LabelGroup group = new LabelGroup(getParent(), "Filter");
     ColumnLayout cl = new ColumnLayout(group.getComposite(), 3);
@@ -66,6 +66,7 @@ public class RechnungListeView extends AbstractView
     fbuttons.addButton(zurueck);
     ToolTipButton vor = control.getVorButton(von, bis);
     fbuttons.addButton(vor);
+    fbuttons.addButton(control.getProfileButton(this));
     fbuttons.addButton(control.getResetButton());
     fbuttons.addButton(control.getSuchenButton());
     group.addButtonArea(fbuttons);

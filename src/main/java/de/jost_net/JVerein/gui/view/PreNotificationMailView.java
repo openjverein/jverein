@@ -59,7 +59,7 @@ public class PreNotificationMailView extends AbstractView
     GUI.getView().setTitle("Pre-Notification");
 
     final PreNotificationControl control = new PreNotificationControl(this);
-    control.init("prenotification.", null, null);
+    control.init("prenotification.");
 
     if (getCurrentObject() == null
         || getCurrentObject() instanceof Abrechnungslauf)

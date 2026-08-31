@@ -88,8 +88,8 @@ public class MitgliedQuery
   {
 
     this.sort = sort;
-    zusatzfeld = control.getAdditionalparamprefix1();
-    zusatzfelder = control.getAdditionalparamprefix2();
+    zusatzfeld = control.getZusatzfeldPrefix();
+    zusatzfelder = control.getZusatzfelderPrefix();
 
     ArrayList<Object> bedingungen = new ArrayList<>();
 
