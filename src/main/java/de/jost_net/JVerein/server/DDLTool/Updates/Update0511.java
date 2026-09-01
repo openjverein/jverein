@@ -51,11 +51,12 @@ public class Update0511 extends AbstractDDLUpdate
     execute(addColumn("buchungdokument",
         new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    // Bestehende Dokumente haben die gleiche refernz (=buchung_id) für mehre
+    // Bestehende Dokumente haben die gleiche refernz (=buchung_id) für mehrere
     // Dokumente, durch die Migration wird dort Belegnummer = rerferenz gesetzt.
     // Daher kann es mehrfach die gleiche "Belegnummer" für bestehende Dokumente
-    // geben. Ein Unique Key ist daher ohne Migration der bestehdenden Dokumente
-    // nicht möglich.
+    // geben. Ein Unique Key ist ohne Migration der bestehdenden Dokumente nicht
+    // möglich.
+    // TODO unique Belegnummer
     // execute(
     // "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
 
@@ -64,7 +65,8 @@ public class Update0511 extends AbstractDDLUpdate
     // verwendet
     execute("UPDATE buchungdokument SET belegnummer = referenz");
 
-    // TODO Drop referenz
+    // TODO Drop referenz, Sollte erst in einer späteren Version gemacht werden,
+    // falls ein Update fehlschlägt
     // execute(dropColumn("buchungdokument", "referenz"));
 
     execute(createForeignKey("fkBuchung", "buchungsdokumentbuchung", "buchung",
@@ -72,5 +74,11 @@ public class Update0511 extends AbstractDDLUpdate
 
     execute(createForeignKey("fkDokument", "buchungsdokumentbuchung",
         "dokument", "buchungdokument", "id", "CASCADE", "RESTRICT"));
+
+    // Belegnummer soll erstmal von bisheriger Buchungsnummer wieterzählen,
+    // solange nicht individuell in den Einstellungen angepasst wird
+    execute("INSERT INTO einstellungneu (name, wert) "
+        + "SELECT 'beleg_zaehler', COALESCE(MAX(referenz), 0) + 1 "
+        + "FROM buchungdokument WHERE referenz IS NOT NULL;");
   }
 }
