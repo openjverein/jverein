@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
+import de.jost_net.JVerein.DBTools.DBTransaction;
 import de.jost_net.JVerein.gui.action.BuchungAction;
 import de.jost_net.JVerein.gui.formatter.BuchungsartFormatter;
 import de.jost_net.JVerein.gui.formatter.BuchungsklasseFormatter;
@@ -106,6 +107,7 @@ public class BelegControl extends VorZurueckControl implements Savable
   @Override
   public void handleStore() throws ApplicationException
   {
+    DBTransaction.starten();
     try
     {
       BuchungDokument beleg = prepareStore();
@@ -117,12 +119,19 @@ public class BelegControl extends VorZurueckControl implements Savable
         // nich nochmal passiert, auf null setzen
         belegObject = null;
       }
+      DBTransaction.commit();
     }
     catch (RemoteException e)
     {
+      DBTransaction.rollback();
       String fehler = "Fehler bei speichern des Belegs";
       Logger.error(fehler, e);
       throw new ApplicationException(fehler, e);
+    }
+    catch (ApplicationException e)
+    {
+      DBTransaction.rollback();
+      throw e;
     }
   }
 

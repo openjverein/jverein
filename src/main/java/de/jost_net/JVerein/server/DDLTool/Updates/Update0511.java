@@ -42,15 +42,22 @@ public class Update0511 extends AbstractDDLUpdate
     execute(createTable(table));
 
     execute(
-        "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
+        "INSERT INTO buchungsdokumentbuchung (dokument,buchung) SELECT id,referenz FROM buchungdokument"
+            + " WHERE referenz IS NOT NULL");
 
     execute(
-        "INSERT INTO buchungsdokumentbuchung (dokument,buchung) SELECT id,referenz FROM buchungdokument");
+        "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
 
     execute(addColumn("buchungdokument",
         new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
-    execute(
-        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
+
+    // Bestehende Dokumente haben die gleiche refernz (=buchung_id) für mehre
+    // Dokumente, durch die Migration wird dort Belegnummer = rerferenz gesetzt.
+    // Daher kann es mehrfach die gleiche "Belegnummer" für bestehende Dokumente
+    // geben. Ein Unique Key ist daher ohne Migration der bestehdenden Dokumente
+    // nicht möglich.
+    // execute(
+    // "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
 
     // Damit per messaging gespeicherte Dokumente weiterhing gefunden werden,
     // ist die referenz weiter nötig, neuerdings wird dafür die Belegnummer
