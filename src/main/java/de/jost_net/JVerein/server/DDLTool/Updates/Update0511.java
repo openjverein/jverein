@@ -42,6 +42,9 @@ public class Update0511 extends AbstractDDLUpdate
     execute(createTable(table));
 
     execute(
+        "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
+
+    execute(
         "INSERT INTO buchungsdokumentbuchung (dokument,buchung) SELECT id,referenz FROM buchungdokument");
 
     execute(addColumn("buchungdokument",
