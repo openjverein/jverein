@@ -75,7 +75,7 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
     }
     catch (RemoteException e)
     {
-      throw new ApplicationException("Fehler beim insertCheck");
+      throw new ApplicationException("Fehler beim updateCheck");
     }
     super.updateCheck();
   }
@@ -95,6 +95,30 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
       throw new ApplicationException("Fehler beim insertCheck");
     }
     super.insertCheck();
+  }
+
+  @Override
+  protected void deleteCheck() throws ApplicationException
+  {
+    try
+    {
+      // Alle vorhandenn erferenzen des Objects prüfen, ob sie geändert/gelöscht
+      // werden dürfen
+      for (Class<? extends AbstractBelegReferenz> c : belegReferenzList)
+      {
+        DBIterator<AbstractBelegReferenz> it = Einstellungen.getDBService()
+            .createList(c);
+        it.addFilter("dokument = ?", getID());
+        while (it.hasNext())
+        {
+          it.next().checkChangesAllowed();
+        }
+      }
+    }
+    catch (RemoteException e)
+    {
+      throw new ApplicationException("Fehler beim insertCheck");
+    }
   }
 
   @Override

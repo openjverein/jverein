@@ -302,7 +302,7 @@ public class Einstellungen
     AUTOBUCHUNGUEBERNAHME("autobuchunguebernahme", Boolean.class, "1"),
     AUTOMATISCHEBUCHUNGSKORREKTURHIBISCUS("autobuchungskorrekturhibiscus",
         Boolean.class, "1"),
-    BELEG_ZAEHLER("buchung_zaehler", Integer.class, "1"),
+    BELEG_ZAEHLER("beleg_zaehler", Integer.class, "1"),
     BELEGNUMMER("belegnummer", String.class, "$beleg_zaehler"),
 
     KONTONUMMERINBUCHUNGSLISTE("kontonummer_in_buchungsliste", Boolean.class,
