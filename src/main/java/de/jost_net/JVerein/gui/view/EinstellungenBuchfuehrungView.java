@@ -65,7 +65,6 @@ public class EinstellungenBuchfuehrungView extends AbstractView
     cont.addInput(control.getBelegNummer());
     cont.addInput(control.getBelegZaehler());
 
-    // TODO auch Buchung-Map?
     Map<String, Object> map = new AllgemeineMap().getMap(null);
     map = BelegMap.getDummyMap(map);
 
