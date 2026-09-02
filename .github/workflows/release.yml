@@ -1,11 +1,31 @@
 name: OpenJVerein official release
 
-on: workflow_dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: 'Expected release version'
+        required: true
+        type: string
 
+permissions:
+  contents: write
+concurrency:
+  group: openjverein-release
+  cancel-in-progress: false
 jobs:
   release:
+    environment: production
     runs-on: ubuntu-latest
     steps:
+    - name: Check release branch
+      run: |
+        set -euo pipefail
+        if [[ "$GITHUB_REF_NAME" != "master" && ! "$GITHUB_REF_NAME" =~ ^[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Releases are not allowed from branch ${GITHUB_REF_NAME}"
+          exit 1
+        fi
+
     - name: Checkout OpenJVerein
       uses: actions/checkout@v7
       with:
@@ -18,25 +38,102 @@ jobs:
 
     - name: Build OpenJVerein plugin
       id: openjverein
+      env:
+        EXPECTED_VERSION: ${{ inputs.expected_version }}
       run: |
+        set -euo pipefail
+        # Determine Maven version
+        tmp_version=$(mvn -q -f jverein/pom.xml help:evaluate \
+          -Dexpression=project.version \
+          -DforceStdout | tail -n1)
+        echo "Maven version: $tmp_version"
+
+        # Validate version format
+        if [[ ! "$tmp_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Invalid release version: $tmp_version"
+          exit 1
+        fi
+
+        # Validate expected version
+        if [[ ! "$EXPECTED_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          echo "::error::Invalid expected version: $EXPECTED_VERSION"
+          exit 1
+        fi
+
+        if [[ "$EXPECTED_VERSION" != "$tmp_version" ]]; then
+          echo "::error::Version mismatch!"
+          echo "Expected: $EXPECTED_VERSION"
+          echo "Maven:    $tmp_version"
+          exit 1
+        fi
+
+        # Validate plugin.xml version
+        plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/plugin.xml | head -n1)
+
+        echo "plugin.xml version: $plugin_version"
+
+        if [[ "$tmp_version" != "$plugin_version" ]]; then
+          echo "::error::Version mismatch!"
+          echo "pom.xml:    $tmp_version"
+          echo "plugin.xml: $plugin_version"
+          exit 1
+        fi
+
+        # Check whether release tag already exists
+        if git -C jverein ls-remote \
+          --exit-code \
+          --tags origin \
+          "refs/tags/${tmp_version}" >/dev/null 2>&1; then
+
+          echo "::error::Tag ${tmp_version} already exists"
+          exit 1
+        fi
+
+        # Build
         mvn -B -f jverein/pom.xml package
 
-        tmp_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=project.version -DforceStdout | tail -n1)
+        # Determine artifact
         tmp_filename="jverein.${tmp_version}.zip"
         tmp_path="target/releases/${tmp_filename}"
         tmp_plugin_path="target/releases/jverein/plugin.xml"
 
-        echo "selected_version=${tmp_version}" >> $GITHUB_OUTPUT
-        echo "selected_filename=${tmp_filename}" >> $GITHUB_OUTPUT
-        echo "selected_path=${tmp_path}" >> $GITHUB_OUTPUT
-        echo "selected_plugin_path=${tmp_plugin_path}" >> $GITHUB_OUTPUT
-        
-        echo "major=$(echo ${tmp_version} | sed -rn 's/^([0-9]+)\.[0-9]+\.[0-9]+$/\1/p')" >> $GITHUB_OUTPUT
-        echo "minor=$(echo ${tmp_version} | sed -rn 's/^[0-9]+\.([0-9]+)\.[0-9]+$/\1/p')" >> $GITHUB_OUTPUT
-        echo "bugfix=$(echo ${tmp_version} | sed -rn 's/^[0-9]+\.[0-9]+\.([0-9]+)$/\1/p')" >> $GITHUB_OUTPUT
+        # Check artifacts
+        test -f "jverein/${tmp_path}" || {
+          echo "::error::Release file does not exist: ${tmp_path}"
+          exit 1
+        }
+
+        test -f "jverein/${tmp_plugin_path}" || {
+          echo "::error::plugin.xml does not exist: ${tmp_plugin_path}"
+          exit 1
+        }
+
+        built_plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/${tmp_plugin_path} | head -n1)
+
+        if [[ "$tmp_version" != "$built_plugin_version" ]]; then
+          echo "::error::Built plugin.xml version mismatch!"
+          echo "Expected: $tmp_version"
+          echo "Built:    $built_plugin_version"
+          exit 1
+        fi
+
+        # Extract version components
+        major=$(echo "$tmp_version" | sed -rn 's/^([0-9]+)\.[0-9]+\.[0-9]+$/\1/p')
+        minor=$(echo "$tmp_version" | sed -rn 's/^[0-9]+\.([0-9]+)\.[0-9]+$/\1/p')
+        bugfix=$(echo "$tmp_version" | sed -rn 's/^[0-9]+\.[0-9]+\.([0-9]+)$/\1/p')
+
+        # Outputs
+        echo "selected_version=$tmp_version" >> "$GITHUB_OUTPUT"
+        echo "selected_filename=$tmp_filename" >> "$GITHUB_OUTPUT"
+        echo "selected_path=$tmp_path" >> "$GITHUB_OUTPUT"
+        echo "selected_plugin_path=$tmp_plugin_path" >> "$GITHUB_OUTPUT"
+        echo "major=$major" >> "$GITHUB_OUTPUT"
+        echo "minor=$minor" >> "$GITHUB_OUTPUT"
+        echo "bugfix=$bugfix" >> "$GITHUB_OUTPUT"
 
         builddatetime=$(date +'%Y-%m-%d %H:%M')
-        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" >> $GITHUB_STEP_SUMMARY
+        echo "### Version: ${tmp_version} | filename: ${tmp_filename} | build datetime: ${builddatetime}" \
+          >> "$GITHUB_STEP_SUMMARY"
 
     - name: Release
       uses: softprops/action-gh-release@v3
@@ -59,6 +156,7 @@ jobs:
 
     - name: Upload Files to Website repository
       run: |
+        set -euo pipefail
         path=jameica-repository/${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
         if [ ! -d website/$path ];then
           mkdir -p website/$path
@@ -71,9 +169,11 @@ jobs:
         cd website
 
         #Sign zip
+        umask 077
+        trap 'rm -f sign.key' EXIT
         echo "$CODESIGN_KEY" > sign.key
         openssl dgst -sha1 -sign sign.key -out "$path/${{ steps.openjverein.outputs.selected_filename }}.sha1" "$path/${{ steps.openjverein.outputs.selected_filename }}"
-        
+
         git config --local user.email "actions@github.com"
         git config --local user.name "Github Actions"
         
@@ -90,9 +190,17 @@ jobs:
     - name: "Minor/major release: Create new Branch and update versions for bugfix branch"
       if: github.ref_name == 'master'
       run: |
+        set -euo pipefail
         cd jverein
         git config --local user.email "actions@github.com"
         git config --local user.name "Github Actions"
+
+        branch="${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}"
+
+        if git ls-remote --exit-code --heads origin "refs/heads/${branch}" >/dev/null 2>&1; then
+          echo "::error::Branch ${branch} already exists"
+          exit 1
+        fi
         git checkout -b ${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}
         
         new_version=${{ steps.openjverein.outputs.major }}.${{ steps.openjverein.outputs.minor }}.1
@@ -105,6 +213,7 @@ jobs:
         
     - name: Update versions in pom.xml and plugin.xml
       run: |
+        set -euo pipefail
         cd jverein
         git config --local user.email "actions@github.com"
         git config --local user.name "Github Actions"

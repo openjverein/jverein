@@ -3,6 +3,9 @@
 
 name: OpenJVerein nightly release
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -26,6 +29,7 @@ jobs:
     - name: Build openjverein plugin
       id: openjverein
       run: |
+        set -euo pipefail
         mvn -B -f jverein/pom.xml -Pnightly package
 
         tmp_base_version=$(mvn -q -f jverein/pom.xml help:evaluate -Dexpression=project.version -DforceStdout | tail -n1)
