@@ -68,7 +68,7 @@ jobs:
         fi
 
         # Validate plugin.xml version
-		plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/plugin.xml | head -n1)
+        plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/plugin.xml | head -n1)
 
         echo "plugin.xml version: $plugin_version"
 
@@ -108,7 +108,7 @@ jobs:
           exit 1
         }
 
-		built_plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/${tmp_plugin_path} | head -n1)
+        built_plugin_version=$(sed -n 's/.*version="\([^"]*\)".*/\1/p' jverein/${tmp_plugin_path} | head -n1)
 
         if [[ "$tmp_version" != "$built_plugin_version" ]]; then
           echo "::error::Built plugin.xml version mismatch!"
