@@ -645,15 +645,14 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
     }
   }
 
+  @SuppressWarnings("unchecked")
   void setWidth() throws ApplicationException
   {
     try
     {
-      spaltenList.removeAll();
-      colList = new ArrayList<>();
-      for (Column col : part.getAllColums())
+      for (ExportSpalte e : (List<ExportSpalte>) spaltenList.getItems(true))
       {
-        Item c = getColumn(col.getName());
+        Item c = getColumn(e.getColumn().getName());
         int breite = 0;
         if (c instanceof TreeColumn)
         {
@@ -663,11 +662,8 @@ public abstract class AbstractPartExportDialog extends AbstractDialog<Boolean>
         {
           breite = ((TableColumn) c).getWidth();
         }
-        ExportSpalte item = new ExportSpalte(col, breite);
-        colList.add(item);
-        spaltenList.addItem(item);
-        spaltenList.setChecked(item, settings.getBoolean(
-            settingPrefix + "anzeigen." + col.getName(), breite > 0));
+        e.setBreite(breite);
+        spaltenList.updateItem(e, e);
       }
     }
     catch (RemoteException re)
