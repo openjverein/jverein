@@ -50,9 +50,6 @@ public class Update0511 extends AbstractDDLUpdate
     execute(addColumn("buchungdokument",
         new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    execute(
-        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
-
     // Damit per messaging gespeicherte Dokumente weiterhing gefunden werden,
     // ist die referenz weiter nötig, neuerdings wird dafür die Belegnummer
     // verwendet.
@@ -71,6 +68,9 @@ public class Update0511 extends AbstractDDLUpdate
 
     // Temp-Tabelle entfernen
     execute("DROP TEMPORARY TABLE IF EXISTS temp_first;");
+
+    execute(
+        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
 
     execute(createForeignKey("fkBuchung", "buchungsdokumentbuchung", "buchung",
         "buchung", "id", "CASCADE", "RESTRICT"));
