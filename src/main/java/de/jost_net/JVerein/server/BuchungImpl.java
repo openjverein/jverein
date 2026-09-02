@@ -1020,6 +1020,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Dokument bitte erst speichern");
     }
+    updateCheck();
     DBIterator<BuchungDokument> it = getBelegList();
     it.addFilter("dokument = ?", dokument.getID());
     if (it.hasNext())
@@ -1046,6 +1047,7 @@ public class BuchungImpl extends AbstractJVereinDBObject
       throw new ApplicationException(
           "Dokument existiert nicht oder wurde noch nicht gespeichert");
     }
+    updateCheck();
     DBIterator<BuchungsdokumentBuchung> it = Einstellungen.getDBService()
         .createList(BuchungsdokumentBuchung.class);
     it.addFilter("buchungsdokumentbuchung.dokument = ?", beleg.getID());

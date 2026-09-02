@@ -235,8 +235,20 @@ public class BuchungDokumentImpl extends AbstractDokumentImpl
   @Override
   public String getNummer() throws RemoteException
   {
+    // Prefer explicit belegnummer if present (new behaviour),
+    // otherwise fall back to old referenz for backward compatibility.
+
     // Wird zum Speichern per Messaging benötigt
-    return getBelegnummer();
+    String nr = getBelegnummer();
+    if (nr != null && !nr.isBlank())
+    {
+      return nr;
+    }
+
+    // Alte Dokumente haben zT. keine Belegnummer (Wenn es mehrere Dokumente in
+    // einer Buchung gab), dann als Fallback die Referenz verwenden
+    Long ref = getReferenz();
+    return ref == null ? null : ref.toString();
   }
 
   @Override

@@ -41,9 +41,8 @@ public class Update0511 extends AbstractDDLUpdate
     table.add(new Column("buchung", COLTYPE.BIGINT, 4, null, true, false));
     execute(createTable(table));
 
-    execute(
-        "INSERT INTO buchungsdokumentbuchung (dokument,buchung) SELECT id,referenz FROM buchungdokument"
-            + " WHERE referenz IS NOT NULL");
+    execute("INSERT INTO buchungsdokumentbuchung (dokument,buchung) "
+        + "SELECT id, referenz FROM buchungdokument WHERE referenz IS NOT NULL");
 
     execute(
         "CREATE UNIQUE INDEX dokumentbuchung ON buchungsdokumentbuchung (dokument,buchung);");
@@ -51,23 +50,27 @@ public class Update0511 extends AbstractDDLUpdate
     execute(addColumn("buchungdokument",
         new Column("belegnummer", COLTYPE.VARCHAR, 50, null, false, false)));
 
-    // Bestehende Dokumente haben die gleiche refernz (=buchung_id) für mehrere
-    // Dokumente, durch die Migration wird dort Belegnummer = rerferenz gesetzt.
-    // Daher kann es mehrfach die gleiche "Belegnummer" für bestehende Dokumente
-    // geben. Ein Unique Key ist ohne Migration der bestehdenden Dokumente nicht
-    // möglich.
-    // TODO unique Belegnummer
-    // execute(
-    // "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
+    execute(
+        "CREATE UNIQUE INDEX belegnummer ON buchungdokument (belegnummer);");
 
     // Damit per messaging gespeicherte Dokumente weiterhing gefunden werden,
     // ist die referenz weiter nötig, neuerdings wird dafür die Belegnummer
-    // verwendet
-    execute("UPDATE buchungdokument SET belegnummer = referenz");
+    // verwendet.
+    // Nur das erste Dokument pro Buchung wird mit einer Belegnummer versehen,
+    // bei den anderen greift der Falback-Modus in
+    // BuchungDokumentImpl.getNummer().
 
-    // TODO Drop referenz, Sollte erst in einer späteren Version gemacht werden,
-    // falls ein Update fehlschlägt
-    // execute(dropColumn("buchungdokument", "referenz"));
+    // Temp-Tabelle mit jeweils erstem Dokument pro referenz
+    execute("CREATE TEMPORARY TABLE temp_first (id BIGINT PRIMARY KEY);");
+    execute("INSERT INTO temp_first (id) SELECT MIN(id) FROM buchungdokument"
+        + " WHERE referenz IS NOT NULL GROUP BY referenz;");
+
+    // Update nur für diese IDs: setze belegnummer = referenz (als String)
+    execute("UPDATE buchungdokument bd JOIN temp_first tf ON bd.id = tf.id"
+        + " SET bd.belegnummer = CONCAT('', bd.referenz);");
+
+    // Temp-Tabelle entfernen
+    execute("DROP TEMPORARY TABLE IF EXISTS temp_first;");
 
     execute(createForeignKey("fkBuchung", "buchungsdokumentbuchung", "buchung",
         "buchung", "id", "CASCADE", "RESTRICT"));
