@@ -23,4 +23,4 @@ Kontakt
 
 - Web: https://openjverein.github.io
 - eMail:
-    - openjverein@posteo.de
+    - openjverein(at)posteo.de
