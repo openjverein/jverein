@@ -16,7 +16,12 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
+import java.util.Map;
+
+import de.jost_net.JVerein.Variable.AllgemeineMap;
+import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.gui.action.DokumentationAction;
+import de.jost_net.JVerein.gui.action.InsertVariableDialogAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
@@ -57,11 +62,18 @@ public class EinstellungenBuchfuehrungView extends AbstractView
         "Bei automatischem Splitten den "
             + "Verwendungszweck aus den Sollbuchungspositionen übernehmen",
         control.getSplitPositionZweck());
+    cont.addInput(control.getBelegNummer());
+    cont.addInput(control.getBelegZaehler());
+
+    Map<String, Object> map = new AllgemeineMap().getMap(null);
+    map = BelegMap.getDummyMap(map);
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton("Hilfe", new DokumentationAction(),
         DokumentationUtil.EINSTELLUNGEN_BUCHFUEHRUNG, false,
         "question-circle.png");
+    buttons.addButton("Variablen anzeigen", new InsertVariableDialogAction(map),
+        control, false, "bookmark.png");
     buttons.addButton("Speichern", new Action()
     {
 

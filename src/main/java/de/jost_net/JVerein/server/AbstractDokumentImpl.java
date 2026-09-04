@@ -44,7 +44,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 
   private static final long serialVersionUID = 1L;
 
-  private static String HASH_ALGORITHM = "SHA-512";
+  protected static String HASH_ALGORITHM = "SHA-512";
 
   private File file;
 
@@ -57,11 +57,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   public String getPrimaryAttribute()
   {
     return "bemerkung";
-  }
-
-  @Override
-  protected void deleteCheck() throws ApplicationException
-  {
   }
 
   @Override
@@ -92,12 +87,6 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
     {
       throw new ApplicationException("Pfad darf nicht verändert werden!");
     }
-  }
-
-  @Override
-  protected Class<?> getForeignObject(String field)
-  {
-    return null;
   }
 
   @Override
@@ -134,7 +123,9 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
   public void setBemerkung(String bemerkung) throws RemoteException
   {
     setAttribute("bemerkung",
-        bemerkung.length() > 50 ? bemerkung.substring(0, 50) : bemerkung);
+        bemerkung != null && bemerkung.length() > 50
+            ? bemerkung.substring(0, 50)
+            : bemerkung);
   }
 
   @Override
@@ -238,7 +229,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
       setAttribute("datum", new Date());
     }
     File newFile = null;
-    if (file != null)
+    if (file != null && getPfad() == null)
     {
       if (file.isDirectory())
       {
@@ -289,7 +280,7 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
                     + " Bitte in Einstellungen korrigieren.");
           }
           QueryMessage qm = new QueryMessage(
-              getVerzeichnis() + "." + getReferenz(), fis);
+              getVerzeichnis() + "." + getNummer(), fis);
           Application.getMessagingFactory()
               .getMessagingQueue("jameica.messaging.put").sendSyncMessage(qm);
 
@@ -411,4 +402,10 @@ public abstract class AbstractDokumentImpl extends AbstractJVereinDBObject
 
   @Override
   public abstract String getRootDir() throws RemoteException;
+
+  // Wird zum Speichern per Messaging benötigt
+  public String getNummer() throws RemoteException
+  {
+    return getReferenz().toString();
+  }
 }

@@ -14,13 +14,19 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
 
-import java.rmi.RemoteException;
+package de.jost_net.JVerein.Messaging;
 
-public interface BuchungDokument extends AbstractDokument
+import de.willuhn.datasource.GenericObject;
+import de.willuhn.jameica.hbci.messaging.ObjectMessage;
+
+/**
+ * Wird versendet, wenn eine Beleg gelöscht wird.
+ */
+public class BelegRemoveMessage extends ObjectMessage
 {
-  public String getBelegnummer() throws RemoteException;
-
-  public void setBelegnummer(String belegnummer) throws RemoteException;
+  public BelegRemoveMessage(GenericObject object)
+  {
+    super(object);
+  }
 }

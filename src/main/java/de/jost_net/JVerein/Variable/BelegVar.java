@@ -14,13 +14,21 @@
  * heiner@jverein.de
  * www.jverein.de
  **********************************************************************/
-package de.jost_net.JVerein.rmi;
+package de.jost_net.JVerein.Variable;
 
-import java.rmi.RemoteException;
-
-public interface BuchungDokument extends AbstractDokument
+public enum BelegVar
 {
-  public String getBelegnummer() throws RemoteException;
+  BELEG_ZAEHLER("beleg_zaehler");
 
-  public void setBelegnummer(String belegnummer) throws RemoteException;
+  private String name;
+
+  BelegVar(String name)
+  {
+    this.name = name;
+  }
+
+  public String getName()
+  {
+    return name;
+  }
 }
