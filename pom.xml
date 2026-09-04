@@ -85,6 +85,12 @@
       <version>5.1.1</version>
     </dependency>
     <dependency>
+	    <groupId>com.itextpdf.tool</groupId>
+	    <artifactId>xmlworker</artifactId>
+	    <version>5.5.13.6</version>
+	    <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
       <version>2.22.2</version>
@@ -294,6 +300,12 @@
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy-agent</artifactId>
       <version>${bytebuddy.agent.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>de.redsix</groupId>
+      <artifactId>pdfcompare</artifactId>
+      <version>1.2.9</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
