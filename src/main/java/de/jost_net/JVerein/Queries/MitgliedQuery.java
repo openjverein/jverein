@@ -109,9 +109,9 @@ public class MitgliedQuery
         {
           case Datentyp.ZEICHENFOLGE:
           {
-            String val = settings.getString(zusatzfeld + i + ".value", null)
+            String val = settings.getString(zusatzfeld + i + ".value", "")
                 .replace('*', '%');
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null && val.length() > 0)
             {
               sql += "join zusatzfelder " + synonym + " on " + synonym
@@ -127,7 +127,7 @@ public class MitgliedQuery
           case Datentyp.DATUM:
           {
             String val = settings.getString(zusatzfeld + i + ".value", null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null)
             {
               try
@@ -184,7 +184,7 @@ public class MitgliedQuery
           case Datentyp.WAEHRUNG:
           {
             String val = settings.getString(zusatzfeld + i + ".value", null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null)
             {
               try
