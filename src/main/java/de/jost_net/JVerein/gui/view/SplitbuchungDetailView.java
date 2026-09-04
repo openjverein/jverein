@@ -44,11 +44,16 @@ public class SplitbuchungDetailView extends AbstractView
 
     final boolean editable = control.isSplitBuchungEditable();
 
-    InfoPanel info = new InfoPanel();
-    info.setText(SplitbuchungsContainer.getText());
-    info.setTitle("Info");
-    info.setIcon("gtk-info.png");
-    info.paint(getParent());
+    int anzahl = SplitbuchungsContainer.getAnzahl();
+    if (anzahl > 1)
+    {
+      InfoPanel info = new InfoPanel();
+      info.setText("Es werden " + anzahl + " Splitbuchungen erzeugt.\n"
+          + "Geänderte Zwecke oder Kommentare in Splitpositionen werden bei allen Buchungen übernommen.");
+      info.setTitle("Info");
+      info.setIcon("gtk-info.png");
+      info.paint(getParent());
+    }
     control.getSplitBuchungsList().paint(getParent());
 
     ButtonArea buttons = new ButtonArea();
