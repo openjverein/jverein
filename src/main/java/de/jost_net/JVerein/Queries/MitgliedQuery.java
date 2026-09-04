@@ -151,9 +151,17 @@ public class MitgliedQuery
           {
             Integer val = null;
             String tmp = settings.getString(zusatzfeld + i + ".value", "");
+
             if (tmp != null && !tmp.isEmpty())
             {
-              val = Integer.parseInt(tmp);
+              try
+              {
+                val = Integer.parseInt(tmp);
+              }
+              catch (NumberFormatException e)
+              {
+                Logger.error("Fehler beim parsen dern Nummer", e);
+              }
             }
             String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (val != null)
