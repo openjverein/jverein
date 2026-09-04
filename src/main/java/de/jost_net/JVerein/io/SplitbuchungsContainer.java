@@ -565,7 +565,7 @@ public class SplitbuchungsContainer
         {
           betragZuordnen = buchung.getBetrag() - zugeordnet;
         }
-        if (Math.abs(betragZuordnen) < 0.1d)
+        if (Math.abs(betragZuordnen) < 0.01d)
         {
           continue;
         }
