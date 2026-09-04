@@ -109,9 +109,9 @@ public class MitgliedQuery
         {
           case Datentyp.ZEICHENFOLGE:
           {
-            String val = settings.getString(zusatzfeld + i + ".value", null)
+            String val = settings.getString(zusatzfeld + i + ".value", "")
                 .replace('*', '%');
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null && val.length() > 0)
             {
               sql += "join zusatzfelder " + synonym + " on " + synonym
@@ -127,7 +127,7 @@ public class MitgliedQuery
           case Datentyp.DATUM:
           {
             String val = settings.getString(zusatzfeld + i + ".value", null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null)
             {
               try
@@ -151,9 +151,17 @@ public class MitgliedQuery
           {
             Integer val = null;
             String tmp = settings.getString(zusatzfeld + i + ".value", "");
+
             if (tmp != null && !tmp.isEmpty())
             {
-              val = Integer.parseInt(tmp);
+              try
+              {
+                val = Integer.parseInt(tmp);
+              }
+              catch (NumberFormatException e)
+              {
+                Logger.error("Fehler beim parsen dern Nummer", e);
+              }
             }
             String cond = settings.getString(zusatzfeld + i + ".cond", null);
             if (val != null)
@@ -184,7 +192,7 @@ public class MitgliedQuery
           case Datentyp.WAEHRUNG:
           {
             String val = settings.getString(zusatzfeld + i + ".value", null);
-            String cond = settings.getString(zusatzfeld + i + ".cond", null);
+            String cond = settings.getString(zusatzfeld + i + ".cond", "");
             if (val != null)
             {
               try
