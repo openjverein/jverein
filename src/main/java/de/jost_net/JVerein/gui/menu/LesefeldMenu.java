@@ -16,11 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.menu;
 
-import de.jost_net.JVerein.gui.action.DeleteAction;
 import de.jost_net.JVerein.gui.action.EditAction;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
 import de.jost_net.JVerein.gui.view.LesefeldDetailView;
-import de.willuhn.jameica.gui.parts.CheckedContextMenuItem;
 import de.willuhn.jameica.gui.parts.CheckedSingleContextMenuItem;
 import de.willuhn.jameica.gui.parts.ContextMenu;
 
@@ -37,7 +35,6 @@ public class LesefeldMenu extends ContextMenu
   {
     addItem(new CheckedSingleContextMenuItem("Bearbeiten",
         new EditAction(LesefeldDetailView.class, part), "text-x-generic.png"));
-    addItem(new CheckedContextMenuItem("Löschen", new DeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem());
   }
 }

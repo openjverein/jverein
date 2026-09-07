@@ -204,8 +204,8 @@ public class MitgliedMenu extends ContextMenu
             }
           }, "view-refresh.png"));
     }
-    addItem(new CheckedContextMenuItem("Löschen", new MitgliedDeleteAction(),
-        "user-trash-full.png"));
+    addItem(new DeleteMenueItem(new MitgliedDeleteAction()));
+
     addItem(ContextMenuItem.SEPARATOR);
     addItem(new CheckedSingleContextMenuItem("Manuelle Lastschrift",
         new MitgliedLastschriftAction(), "lastschrift.png"));
