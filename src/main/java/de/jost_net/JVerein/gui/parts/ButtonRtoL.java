@@ -10,18 +10,35 @@ package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
 
+import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 
 import de.willuhn.jameica.gui.Action;
+import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
+import de.willuhn.jameica.gui.util.SWTUtil;
+import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Button.
  */
 public class ButtonRtoL extends Button implements Part
 {
+  Listener listener = new ShortcutListener();
+
+  private Action action;
+
+  private Object context;
+
+  private String title;
+
+  private KeyStroke stroke;
+
   /**
    * ct.
    * 
@@ -32,24 +49,35 @@ public class ButtonRtoL extends Button implements Part
    */
   public ButtonRtoL(String title, Action action)
   {
-    super(title, action, null, false);
+    this(title, action, null, false);
   }
 
   public ButtonRtoL(String title, Action action, Object context)
   {
-    super(title, action, context, false);
+    this(title, action, context, false);
   }
 
   public ButtonRtoL(String title, Action action, Object context,
       boolean defaultButton)
   {
-    super(title, action, context, defaultButton, null);
+    this(title, action, context, defaultButton, null);
   }
 
   public ButtonRtoL(String title, Action action, Object context,
       boolean defaultButton, String icon)
   {
+    this(title, action, context, defaultButton, icon, null);
+  }
+
+  public ButtonRtoL(String title, Action action, Object context,
+      boolean defaultButton, String icon, String shortcut)
+  {
     super(title, action, context, defaultButton, icon);
+
+    this.action = action;
+    this.context = context;
+    this.title = title;
+    this.stroke = SWTUtil.getKeyStroke(shortcut);
   }
 
   /**
@@ -60,6 +88,51 @@ public class ButtonRtoL extends Button implements Part
   {
     super.paint(parent);
     button.setOrientation(SWT.LEFT_TO_RIGHT);
+
+    if (stroke != null)
+    {
+      Shell shell = GUI.getShell();
+      shell.forceFocus();
+
+      GUI.getDisplay().addFilter(SWT.KeyDown, listener);
+
+      // Wieder deaktivieren
+      button.addDisposeListener(
+          e -> GUI.getDisplay().removeFilter(SWT.KeyDown, listener));
+
+      if (button.getToolTipText() == null || button.getToolTipText().isBlank())
+      {
+        button.setToolTipText(title + " (" + stroke.format() + ")");
+      }
+    }
+  }
+
+  private class ShortcutListener implements Listener
+  {
+    public void handleEvent(Event event)
+    {
+      if (button.getShell().equals(GUI.getDisplay().getActiveShell())
+          && button.isEnabled() && stroke != null && stroke.isComplete())
+      {
+        if (event.stateMask == stroke.getModifierKeys()
+            && (event.keyCode == stroke.getNaturalKey()
+                || event.keyCode == Character
+                    .toLowerCase(stroke.getNaturalKey())))
+        {
+          GUI.getDisplay().syncExec(() -> {
+            try
+            {
+              action.handleAction(context);
+            }
+            catch (ApplicationException e)
+            {
+              GUI.getStatusBar().setErrorText(e.getMessage());
+            }
+          });
+          event.doit = false;
+        }
+      }
+    }
   }
 
 }

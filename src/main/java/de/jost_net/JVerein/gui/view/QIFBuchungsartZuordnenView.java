@@ -20,8 +20,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.TabFolder;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.QIFBuchungsartZuordnenControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -54,8 +54,7 @@ public class QIFBuchungsartZuordnenView extends AbstractView
         detailControl.getMitgliedZuordnenErlaubt());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.QIFIMPORT, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.QIFIMPORT));
     buttons.addButton("Speichern", detailControl.getSpeichernAction(), null,
         false, "document-save.png");
     buttons.paint(getParent());

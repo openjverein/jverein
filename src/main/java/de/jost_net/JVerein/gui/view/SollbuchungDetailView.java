@@ -21,12 +21,13 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SollbuchungPositionNeuAction;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -66,8 +67,7 @@ public class SollbuchungDetailView extends AbstractDetailView
         "Sollbuchungspositionen");
 
     ButtonAreaRtoL buttons1 = new ButtonAreaRtoL();
-    ButtonRtoL neu = new ButtonRtoL("Neu", new SollbuchungPositionNeuAction(),
-        getCurrentObject(), false, "document-new.png");
+    ButtonRtoL neu = new NewButton(new SollbuchungPositionNeuAction());
     neu.setEnabled(isEditable);
     buttons1.addButton(neu);
 
@@ -85,9 +85,8 @@ public class SollbuchungDetailView extends AbstractDetailView
     buch.addPart(control.getBuchungList());
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT, false,
-        "question-circle.png");
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.MITGLIEDSKONTO_UEBERSICHT));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

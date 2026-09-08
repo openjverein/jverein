@@ -31,11 +31,11 @@ import org.eclipse.swt.widgets.TabFolder;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufControl;
 import de.jost_net.JVerein.gui.control.Savable;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.SaveButton;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.util.ColumnLayout;
@@ -118,8 +118,7 @@ public class AbrechnungslaufDetailView extends AbstractDetailView
     });
 
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ABRECHNUNGSLAUF));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

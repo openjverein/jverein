@@ -16,10 +16,11 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungAufloesenAction;
 import de.jost_net.JVerein.gui.action.SplitbuchungNeuAction;
 import de.jost_net.JVerein.gui.control.BuchungsControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.keys.Kontenfilter;
 import de.jost_net.JVerein.io.SplitbuchungsContainer;
 import de.willuhn.jameica.gui.AbstractView;
@@ -52,10 +53,8 @@ public class SplitbuchungDetailView extends AbstractView
     control.getSplitBuchungsList().paint(getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.SPLITBUCHUNG, false, "question-circle.png");
-    Button neu = new Button("Neu", new SplitbuchungNeuAction(),
-        control.getCurrentObject(), false, "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.SPLITBUCHUNG));
+    Button neu = new NewButton(new SplitbuchungNeuAction());
     neu.setEnabled(editable);
     buttons.addButton(neu);
     Button aufloesen = new Button("Auflösen",

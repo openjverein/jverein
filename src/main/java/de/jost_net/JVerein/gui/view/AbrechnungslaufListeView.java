@@ -17,9 +17,10 @@
 package de.jost_net.JVerein.gui.view;
 
 import de.jost_net.JVerein.gui.action.AbrechnungAction;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AbrechnungslaufListeControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
+import de.jost_net.JVerein.gui.parts.NewButton;
 import de.jost_net.JVerein.gui.parts.ToolTipButton;
 import de.jost_net.JVerein.keys.Filter;
 import de.willuhn.jameica.gui.AbstractView;
@@ -65,10 +66,8 @@ public class AbrechnungslaufListeView extends AbstractView
     control.getTablePart().paint(this.getParent());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.ABRECHNUNGSLAUF, false, "question-circle.png");
-    buttons.addButton("Neu", new AbrechnungAction(), null, false,
-        "document-new.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.ABRECHNUNGSLAUF));
+    buttons.addButton(new NewButton(new AbrechnungAction(), null));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.DbBereinigenControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.ButtonArea;
@@ -101,8 +101,7 @@ public class DbBereinigenView extends AbstractView
     mright.addLabelPair("Versand älter als", control.getDatumAuswahlMails());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.BEREINIGEN, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.BEREINIGEN));
     buttons.addButton(control.getStartLoeschenButton());
     buttons.paint(this.getParent());
   }

@@ -16,8 +16,8 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.EinstellungControl;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.willuhn.jameica.gui.AbstractView;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
@@ -87,9 +87,8 @@ public class EinstellungenAllgemeinView extends AbstractView
         control.getNichtMitgliedPflichtEigenschaften());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN, false,
-        "question-circle.png");
+    buttons
+        .addButton(new HelpButton(DokumentationUtil.EINSTELLUNGEN_ALLGEMEIN));
     buttons.addButton("Speichern", new Action()
     {
 

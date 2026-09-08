@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.TabItem;
 
 import de.jost_net.JVerein.Einstellungen;
 import de.jost_net.JVerein.Einstellungen.Property;
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.action.MitgliedDetailAction;
 import de.jost_net.JVerein.gui.action.MitgliedDuplizierenAction;
 import de.jost_net.JVerein.gui.action.MitgliedMailSendenAction;
@@ -46,6 +45,7 @@ import de.jost_net.JVerein.gui.control.SollbuchungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
 import de.jost_net.JVerein.gui.parts.ButtonAreaRtoL;
 import de.jost_net.JVerein.gui.parts.ButtonRtoL;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.util.SimpleVerticalContainer;
 import de.jost_net.JVerein.keys.Beitragsmodel;
 import de.jost_net.JVerein.rmi.Lesefeld;
@@ -337,8 +337,7 @@ public abstract class AbstractMitgliedDetailView extends AbstractDetailView
       throws RemoteException, ApplicationException
   {
     ButtonAreaRtoL buttons = new ButtonAreaRtoL();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITGLIED, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.MITGLIED));
     buttons.addButton(control.getZurueckButton());
     buttons.addButton(control.getInfoButton());
     buttons.addButton(control.getVorButton());

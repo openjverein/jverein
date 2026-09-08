@@ -16,9 +16,9 @@
  **********************************************************************/
 package de.jost_net.JVerein.gui.view;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.MittelverwendungSaldoControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.gui.parts.QuickAccessPart;
 import de.jost_net.JVerein.gui.parts.VonBisPart;
 import de.willuhn.jameica.gui.AbstractView;
@@ -46,8 +46,7 @@ public class MittelverwendungSaldoView extends AbstractView
     group.addPart(control.getTablePart());
 
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(),
-        DokumentationUtil.MITTELVERWENDUNGSALDO, false, "question-circle.png");
+    buttons.addButton(new HelpButton(DokumentationUtil.MITTELVERWENDUNGSALDO));
     buttons.addButton(control.getStartAuswertungPDFButton());
     buttons.paint(this.getParent());
 

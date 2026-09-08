@@ -25,9 +25,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 
-import de.jost_net.JVerein.gui.action.DokumentationAction;
 import de.jost_net.JVerein.gui.control.AuswertungControl;
 import de.jost_net.JVerein.gui.dialogs.AbstractPartExportDialog.ExportArt;
+import de.jost_net.JVerein.gui.parts.HelpButton;
 import de.jost_net.JVerein.io.ExportLayoutParam;
 import de.jost_net.JVerein.io.Exporter;
 import de.jost_net.JVerein.io.FileViewer;
@@ -120,8 +120,7 @@ public class ExportDialog extends AbstractDialog<Object>
       group.addCheckbox(getOpenFile(), i18n.tr("Datei nach dem Export öffnen"));
     }
     ButtonArea buttons = new ButtonArea();
-    buttons.addButton("Hilfe", new DokumentationAction(), helplink, false,
-        "question-circle.png");
+    buttons.addButton(new HelpButton(helplink));
     Button button = new Button(i18n.tr("Export starten"), new Action()
     {
 
