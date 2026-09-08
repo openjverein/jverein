@@ -91,9 +91,6 @@ public class ButtonRtoL extends Button implements Part
 
     if (stroke != null)
     {
-      Shell shell = GUI.getShell();
-      shell.forceFocus();
-
       GUI.getDisplay().addFilter(SWT.KeyDown, listener);
 
       // Wieder deaktivieren
