@@ -13,30 +13,27 @@ import java.rmi.RemoteException;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import de.jost_net.JVerein.gui.control.listener.ShortcutListener;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.Part;
 import de.willuhn.jameica.gui.parts.Button;
 import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.util.ApplicationException;
 
 /**
  * Ein Button.
  */
 public class ButtonRtoL extends Button implements Part
 {
-  Listener listener = new ShortcutListener();
-
   private Action action;
 
   private Object context;
 
   private String title;
 
-  private KeyStroke stroke;
+  private String shortcut;
 
   /**
    * ct.
@@ -76,7 +73,7 @@ public class ButtonRtoL extends Button implements Part
     this.action = action;
     this.context = context;
     this.title = title;
-    this.stroke = SWTUtil.getKeyStroke(shortcut);
+    this.shortcut = shortcut;
   }
 
   /**
@@ -88,8 +85,11 @@ public class ButtonRtoL extends Button implements Part
     super.paint(parent);
     button.setOrientation(SWT.LEFT_TO_RIGHT);
 
-    if (stroke != null)
+    if (shortcut != null)
     {
+      Listener listener = new ShortcutListener(button, shortcut, action,
+          context);
+
       GUI.getDisplay().addFilter(SWT.KeyDown, listener);
       GUI.getDisplay().addFilter(SWT.MouseDown, listener);
 
@@ -101,40 +101,9 @@ public class ButtonRtoL extends Button implements Part
 
       if (button.getToolTipText() == null || button.getToolTipText().isBlank())
       {
+        KeyStroke stroke = SWTUtil.getKeyStroke(shortcut);
         button.setToolTipText(title + " (" + stroke.format() + ")");
       }
     }
   }
-
-  private class ShortcutListener implements Listener
-  {
-    public void handleEvent(Event event)
-    {
-      if (button.getShell().equals(GUI.getDisplay().getActiveShell())
-          && button.isEnabled() && stroke != null && stroke.isComplete())
-      {
-        if ((event.stateMask == stroke.getModifierKeys()
-            && (event.keyCode == stroke.getNaturalKey()
-                || event.keyCode == Character
-                    .toLowerCase(stroke.getNaturalKey())))
-            // statt Pfeiltasten auch spezielle Maustasten unterstützen
-            || (stroke.getNaturalKey() == SWT.ARROW_LEFT && event.button == 4)
-            || (stroke.getNaturalKey() == SWT.ARROW_RIGHT && event.button == 5))
-        {
-          GUI.getDisplay().syncExec(() -> {
-            try
-            {
-              action.handleAction(context);
-            }
-            catch (ApplicationException e)
-            {
-              GUI.getStatusBar().setErrorText(e.getMessage());
-            }
-          });
-          event.doit = false;
-        }
-      }
-    }
-  }
-
 }

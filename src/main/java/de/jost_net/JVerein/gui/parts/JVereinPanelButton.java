@@ -5,14 +5,13 @@ import java.rmi.RemoteException;
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import de.jost_net.JVerein.gui.control.listener.ShortcutListener;
 import de.willuhn.jameica.gui.Action;
 import de.willuhn.jameica.gui.GUI;
 import de.willuhn.jameica.gui.parts.PanelButton;
 import de.willuhn.jameica.gui.util.SWTUtil;
-import de.willuhn.util.ApplicationException;
 
 /**
  * PannelButton dem ein Shortcut zugewiesen werden kann.
@@ -20,9 +19,7 @@ import de.willuhn.util.ApplicationException;
 public class JVereinPanelButton extends PanelButton
 {
 
-  private KeyStroke stroke;
-
-  Listener listener = new ShortcutListener();
+  private String shortcut;
 
   private Action action;
 
@@ -31,7 +28,7 @@ public class JVereinPanelButton extends PanelButton
   {
     super(icon, action, tooltip);
     this.action = action;
-    this.stroke = SWTUtil.getKeyStroke(shortcut);
+    this.shortcut = shortcut;
   }
 
   /**
@@ -43,8 +40,11 @@ public class JVereinPanelButton extends PanelButton
     super.paint(parent);
     getControl().setOrientation(SWT.LEFT_TO_RIGHT);
 
-    if (stroke != null)
+    if (shortcut != null)
     {
+      Listener listener = new ShortcutListener(getControl(), shortcut, action,
+          null);
+
       GUI.getDisplay().addFilter(SWT.KeyDown, listener);
 
       // Wieder deaktivieren
@@ -53,35 +53,8 @@ public class JVereinPanelButton extends PanelButton
 
       String text = getControl().getToolTipText() == null ? ""
           : getControl().getToolTipText();
+      KeyStroke stroke = SWTUtil.getKeyStroke(shortcut);
       getControl().setToolTipText(text + " (" + stroke.format() + ")");
-    }
-  }
-
-  private class ShortcutListener implements Listener
-  {
-    public void handleEvent(Event event)
-    {
-      if (getControl().getShell().equals(GUI.getDisplay().getActiveShell())
-          && getControl().isEnabled() && stroke != null && stroke.isComplete())
-      {
-        if (event.stateMask == stroke.getModifierKeys()
-            && (event.keyCode == stroke.getNaturalKey()
-                || event.keyCode == Character
-                    .toLowerCase(stroke.getNaturalKey())))
-        {
-          GUI.getDisplay().syncExec(() -> {
-            try
-            {
-              action.handleAction(null);
-            }
-            catch (ApplicationException e)
-            {
-              GUI.getStatusBar().setErrorText(e.getMessage());
-            }
-          });
-          event.doit = false;
-        }
-      }
     }
   }
 }
