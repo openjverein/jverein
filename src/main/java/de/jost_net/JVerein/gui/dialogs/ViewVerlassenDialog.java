@@ -58,7 +58,7 @@ public class ViewVerlassenDialog extends AbstractDialog<Integer>
     buttons.addButton(new ButtonRtoL("Ohne Speichern verlassen", context -> {
       data = VERLASSEN;
       close();
-    }, null, false, "edit-undo.png", "CTRL+O"));
+    }, null, false, "edit-undo.png", "CTRL+SHIFT+W"));
 
     buttons.addButton("Abbrechen", context -> {
       data = ABBRECHEN;
