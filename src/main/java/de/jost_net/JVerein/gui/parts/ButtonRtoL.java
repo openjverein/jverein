@@ -91,10 +91,13 @@ public class ButtonRtoL extends Button implements Part
     if (stroke != null)
     {
       GUI.getDisplay().addFilter(SWT.KeyDown, listener);
+      GUI.getDisplay().addFilter(SWT.MouseDown, listener);
 
       // Wieder deaktivieren
-      button.addDisposeListener(
-          e -> GUI.getDisplay().removeFilter(SWT.KeyDown, listener));
+      button.addDisposeListener(e -> {
+        GUI.getDisplay().removeFilter(SWT.KeyDown, listener);
+        GUI.getDisplay().removeFilter(SWT.MouseDown, listener);
+      });
 
       if (button.getToolTipText() == null || button.getToolTipText().isBlank())
       {
@@ -110,10 +113,13 @@ public class ButtonRtoL extends Button implements Part
       if (button.getShell().equals(GUI.getDisplay().getActiveShell())
           && button.isEnabled() && stroke != null && stroke.isComplete())
       {
-        if (event.stateMask == stroke.getModifierKeys()
+        if ((event.stateMask == stroke.getModifierKeys()
             && (event.keyCode == stroke.getNaturalKey()
                 || event.keyCode == Character
                     .toLowerCase(stroke.getNaturalKey())))
+            // statt Pfeiltasten auch spezielle Maustasten unterstützen
+            || (stroke.getNaturalKey() == SWT.ARROW_LEFT && event.button == 4)
+            || (stroke.getNaturalKey() == SWT.ARROW_RIGHT && event.button == 5))
         {
           GUI.getDisplay().syncExec(() -> {
             try
