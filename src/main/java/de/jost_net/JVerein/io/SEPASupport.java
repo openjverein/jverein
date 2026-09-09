@@ -14,7 +14,6 @@ import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.MitgliedMap;
 import de.jost_net.JVerein.Variable.RechnungMap;
 import de.jost_net.JVerein.keys.VorlageTyp;
-import de.jost_net.JVerein.rmi.AbstractDokument;
 import de.jost_net.JVerein.rmi.Buchung;
 import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Formular;
@@ -67,14 +66,15 @@ public class SEPASupport
         formular.store();
         aufbereitung.closeFormular();
 
-        AbstractDokument doc = Einstellungen.getDBService()
+        BuchungDokument doc = Einstellungen.getDBService()
             .createObject(BuchungDokument.class, null);
-        doc.setReferenz(Long.valueOf(buchung.getID()));
         doc.setBemerkung(file.getName());
         doc.setDatum(new Date());
         doc.setFile(file);
         doc.store();
         file.delete();
+
+        buchung.addBeleg(doc);
       }
       catch (IOException | DocumentException e)
       {

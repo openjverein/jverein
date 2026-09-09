@@ -1040,6 +1040,7 @@ public class BuchungsControl extends FilterControl implements Savable
     {
       buchungsList.addColumn("D", "document");
     }
+    buchungsList.addColumn("Belegnummern", "belegnummern");
     buchungsList.addColumn("S", "splittyp", new Formatter()
     {
       @Override

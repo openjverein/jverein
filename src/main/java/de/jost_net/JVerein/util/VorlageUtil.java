@@ -26,6 +26,7 @@ import de.jost_net.JVerein.Variable.AbrechnungSollbuchungenParameterMap;
 import de.jost_net.JVerein.Variable.AbrechnungslaufParameterMap;
 import de.jost_net.JVerein.Variable.AllgemeineMap;
 import de.jost_net.JVerein.Variable.AuswertungArbeitseinsatzFilterMap;
+import de.jost_net.JVerein.Variable.BelegMap;
 import de.jost_net.JVerein.Variable.BuchungMap;
 import de.jost_net.JVerein.Variable.FilterMap;
 import de.jost_net.JVerein.Variable.JahresabschlussListeFilterMap;
@@ -51,6 +52,7 @@ import de.jost_net.JVerein.keys.VorlageTyp;
 import de.jost_net.JVerein.keys.Vorlageart;
 import de.jost_net.JVerein.rmi.Abrechnungslauf;
 import de.jost_net.JVerein.rmi.Buchung;
+import de.jost_net.JVerein.rmi.BuchungDokument;
 import de.jost_net.JVerein.rmi.Lastschrift;
 import de.jost_net.JVerein.rmi.Rechnung;
 import de.jost_net.JVerein.rmi.Spendenbescheinigung;
@@ -169,6 +171,9 @@ public class VorlageUtil
         case ANLAGEN_SUMMENBUCHUNGEN_TITEL:
         case ANLAGEN_SUMMENBUCHUNGEN_SUBTITEL:
         case ANLAGEN_CSVBUCHUNGEN_DATEINAME:
+        case BELEG_TITEL:
+        case BELEG_SUBTITEL:
+        case BELEG_DATEINAME:
           map = new FilterMap().getMap((FilterControl) obj, map);
           break;
         case AUSWERTUNG_ALTERSJUBILARE_DATEINAME:
@@ -380,8 +385,10 @@ public class VorlageUtil
           break;
         case BUCHUNGSREPORT_DATEINAME:
           map.put("formular_name", name);
-        case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap((Buchung) obj, map);
+          break;
+        case BELEG_PFAD:
+          map = new BelegMap().getMap((BuchungDokument) obj, map);
           break;
       }
     }
@@ -410,6 +417,15 @@ public class VorlageUtil
       map = new AllgemeineMap().getMap(null);
       switch (typ)
       {
+        case BELEG_TITEL:
+        case BELEG_SUBTITEL:
+        case BELEG_DATEINAME:
+          set = new HashSet<>();
+          set.add(Filter.NUMMER);
+          set.add(Filter.BEZEICHNUNG);
+          set.add(Filter.NICHT_ZUGEORDNET);
+          map = new FilterMap().getDummyMap(set, map);
+          break;
         case ABRECHNUNGSLAEUFE_DATEINAME:
         case ABRECHNUNGSLAEUFE_SUBTITEL:
         case ABRECHNUNGSLAEUFE_TITEL:
@@ -884,8 +900,10 @@ public class VorlageUtil
           break;
         case BUCHUNGSREPORT_DATEINAME:
           map.put("formular_name", "Buchungsreport");
-        case BUCHUNG_DOKUMENT_PFAD:
           map = new BuchungMap().getMap(null, map);
+          break;
+        case BELEG_PFAD:
+          map = new BelegMap().getMap(null, map);
           break;
       }
     }
