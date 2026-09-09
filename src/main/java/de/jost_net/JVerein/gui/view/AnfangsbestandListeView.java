@@ -69,7 +69,7 @@ public class AnfangsbestandListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.ANFANGSBESTAENDE));
-    buttons.addButton(new NewButton(new AnfangsbestandNeuAction(), null));
+    buttons.addButton(new NewButton(new AnfangsbestandNeuAction()));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));

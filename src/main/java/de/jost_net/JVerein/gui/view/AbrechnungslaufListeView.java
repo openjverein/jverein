@@ -67,7 +67,7 @@ public class AbrechnungslaufListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.ABRECHNUNGSLAUF));
-    buttons.addButton(new NewButton(new AbrechnungAction(), null));
+    buttons.addButton(new NewButton(new AbrechnungAction()));
     buttons.paint(this.getParent());
 
     GUI.getView().addPanelButton(control.exportButton(ExportArt.PDF));
