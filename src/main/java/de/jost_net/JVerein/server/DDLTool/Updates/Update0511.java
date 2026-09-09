@@ -63,8 +63,8 @@ public class Update0511 extends AbstractDDLUpdate
         + " WHERE referenz IS NOT NULL GROUP BY referenz;");
 
     // Update nur für diese IDs: setze belegnummer = referenz (als String)
-    execute("UPDATE buchungdokument bd JOIN temp_first tf ON bd.id = tf.id"
-        + " SET bd.belegnummer = CONCAT('', bd.referenz);");
+    execute("UPDATE buchungdokument SET belegnummer = CONCAT('', referenz) "
+        + "WHERE id IN (SELECT id  FROM temp_first)");
 
     // Temp-Tabelle entfernen
     execute("DROP TEMPORARY TABLE IF EXISTS temp_first;");
