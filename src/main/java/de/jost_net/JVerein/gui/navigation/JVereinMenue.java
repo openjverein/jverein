@@ -12,6 +12,7 @@ import de.jost_net.JVerein.rmi.Buchung;
 import de.willuhn.jameica.gui.MenuItem;
 import de.willuhn.jameica.gui.extension.Extendable;
 import de.willuhn.jameica.gui.extension.Extension;
+import de.willuhn.logging.Logger;
 
 public class JVereinMenue implements Extension
 {
@@ -36,12 +37,10 @@ public class JVereinMenue implements Extension
           "emblem-documents.png", "ALT+B"));
       jverein.addChild(new JVereinMenueItem(jverein, "Neuer Abrechnungslauf",
           new AbrechnungAction(), "calculator.png", "ALT+A"));
-
     }
     catch (RemoteException e)
     {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      Logger.error("Fehler beim Aufbau des JVerein-Menüs", e);
     }
   }
 
