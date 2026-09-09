@@ -36,7 +36,7 @@ public class ShortcutListener implements Listener
     if (control.getShell().equals(GUI.getDisplay().getActiveShell())
         && control.isEnabled() && stroke != null && stroke.isComplete())
     {
-      if ((event.stateMask == stroke.getModifierKeys()
+      if ((((event.stateMask & SWT.MODIFIER_MASK) == stroke.getModifierKeys())
           && (event.keyCode == stroke.getNaturalKey()
               || event.keyCode == Character
                   .toLowerCase(stroke.getNaturalKey())))
