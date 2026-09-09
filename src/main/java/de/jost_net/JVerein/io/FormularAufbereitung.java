@@ -575,7 +575,7 @@ public class FormularAufbereitung
             o = map.get(s.replace("$", ""));
             if (o instanceof com.itextpdf.text.Image)
             {
-              com.itextpdf.text.Image i = (com.itextpdf.text.Image) val;
+              com.itextpdf.text.Image i = (com.itextpdf.text.Image) o;
               float sh = i.getScaledHeight();
               float sw = i.getScaledWidth();
               float offset = 0;
