@@ -39,7 +39,6 @@ public class WirtschaftsplanListeView extends AbstractView
 
     ButtonArea buttons = new ButtonArea();
     buttons.addButton(new HelpButton(DokumentationUtil.WIRTSCHAFTSPLANUNG));
-    buttons.addButton(new HelpButton(DokumentationUtil.ZUSATZBETRAEGE));
 
     buttons.addButton(new NewButton(
         new NewAction(WirtschaftsplanDetailView.class, Wirtschaftsplan.class)));
