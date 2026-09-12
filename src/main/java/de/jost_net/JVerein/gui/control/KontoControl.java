@@ -41,6 +41,7 @@ import de.jost_net.JVerein.gui.input.IntegerNullInput;
 import de.jost_net.JVerein.gui.input.KontoInput;
 import de.jost_net.JVerein.gui.menu.KontoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
 import de.jost_net.JVerein.gui.view.KontoDetailView;
 import de.jost_net.JVerein.keys.AfaMode;
 import de.jost_net.JVerein.keys.Anlagenzweck;
@@ -365,7 +366,7 @@ public class KontoControl extends FilterControl implements Savable
     }
 
     kontenList = new JVereinTablePart(getKonten(), null);
-    kontenList.addColumn("Nummer", "nummer");
+    kontenList.addColumn(new NaturalOrderColumn("Nummer", "nummer"));
     kontenList.addColumn("Bezeichnung", "bezeichnung");
     kontenList.addColumn("Kontoart", "kontoart", new Formatter()
     {

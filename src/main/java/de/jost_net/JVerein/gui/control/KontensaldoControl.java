@@ -25,6 +25,7 @@ import de.jost_net.JVerein.gui.action.SaldoDetailAction;
 import de.jost_net.JVerein.gui.formatter.SaldoFormatter;
 import de.jost_net.JVerein.gui.menu.SaldoMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
 import de.jost_net.JVerein.gui.parts.SaldoListTablePart;
 import de.jost_net.JVerein.io.ISaldoExport;
 import de.jost_net.JVerein.io.KontenSaldoPDF;
@@ -77,8 +78,8 @@ public class KontensaldoControl extends AbstractSaldoControl
         return;
       }
     };
-    saldoList.addColumn("Kontonummer", KONTO_NUMMER, null, false,
-        Column.ALIGN_RIGHT);
+    saldoList.addColumn(new NaturalOrderColumn("Kontonummer", KONTO_NUMMER,
+        null, false, Column.ALIGN_RIGHT));
     saldoList.addColumn("Bezeichnung", GRUPPE);
     saldoList.addColumn("Anfangsbestand", ANFANGSBESTAND,
         new CurrencyFormatter("", Einstellungen.DECIMALFORMAT), false,

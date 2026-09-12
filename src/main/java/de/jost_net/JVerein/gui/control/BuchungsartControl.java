@@ -27,6 +27,7 @@ import de.jost_net.JVerein.gui.formatter.JaNeinFormatter;
 import de.jost_net.JVerein.gui.input.SteuerInput;
 import de.jost_net.JVerein.gui.menu.BuchungsartMenu;
 import de.jost_net.JVerein.gui.parts.JVereinTablePart;
+import de.jost_net.JVerein.gui.parts.NaturalOrderColumn;
 import de.jost_net.JVerein.gui.view.BuchungsartDetailView;
 import de.jost_net.JVerein.keys.ArtBuchungsart;
 import de.jost_net.JVerein.keys.BuchungsartAnzeige;
@@ -393,7 +394,7 @@ public class BuchungsartControl extends FilterControl implements Savable
       return buchungsartList;
     }
     buchungsartList = new JVereinTablePart(getBuchungsarten(), null);
-    buchungsartList.addColumn("Nummer", "nummer");
+    buchungsartList.addColumn(new NaturalOrderColumn("Nummer", "nummer"));
     buchungsartList.addColumn("Bezeichnung", "bezeichnung");
     buchungsartList.addColumn("Art", "art", new Formatter()
     {
