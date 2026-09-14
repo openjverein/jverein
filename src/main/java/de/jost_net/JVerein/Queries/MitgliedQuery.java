@@ -160,7 +160,7 @@ public class MitgliedQuery
               }
               catch (NumberFormatException e)
               {
-                Logger.error("Fehler beim parsen dern Nummer", e);
+                Logger.error("Fehler beim parsen der Nummer", e);
               }
             }
             String cond = settings.getString(zusatzfeld + i + ".cond", null);
