@@ -17,8 +17,11 @@
 package de.jost_net.JVerein.gui.parts;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Table;
@@ -35,6 +38,7 @@ import de.willuhn.jameica.gui.parts.TablePart;
 import de.willuhn.jameica.gui.parts.table.Feature;
 import de.willuhn.jameica.gui.parts.table.Feature.Context;
 import de.willuhn.jameica.system.OperationCanceledException;
+import de.willuhn.jameica.system.Settings;
 import de.willuhn.logging.Logger;
 import de.willuhn.util.ApplicationException;
 
@@ -48,6 +52,8 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   private String tablePartId;
 
   private String tableName = null;
+
+  private Map<String, Boolean> defaults = new HashMap<>();
 
   /**
    * Erzeugt eine neue leere Standard-Tabelle auf dem uebergebenen Composite.
@@ -185,6 +191,7 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
     if (!col.getName().isBlank())
     {
       this.allColumns.add(col);
+      this.defaults.put(col.getName(), defaultVisible);
     }
   }
 
@@ -265,4 +272,17 @@ public class JVereinTablePart extends TablePart implements IJVereinPart
   {
     return tableName;
   }
+
+  @Override
+  public Settings getSettings()
+  {
+    return settings;
+  }
+
+  @Override
+  public Map<String, Boolean> getDefaults()
+  {
+    return defaults;
+  }
+
 }
